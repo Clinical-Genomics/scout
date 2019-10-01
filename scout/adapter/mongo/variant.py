@@ -412,50 +412,44 @@ class VariantHandler(VariantLoader):
             other_causative(dict)
         """
         # variant id without "*_[variant_type]"
-        variant_prefix = variant_obj['display_name'].rsplit('_', 1)[0]
+        variant_prefix = variant_obj['simple_id']
+        clinical_variant = ''.join([variant_prefix, '_clinical'])
+        research_variant = ''.join([variant_prefix, '_research'])
 
         var_causative_events = self.event_collection.find({
             'institute' : variant_obj['institute'],
             'verb':'mark_causative',
-
-            'subject' : {'$in' : [variant_obj['display_name'], ''.join([variant_prefix, '_research'])] },
+            'subject' : {'$in' : [clinical_variant, research_variant] },
             'category' : 'variant'
         })
 
         for var_event in var_causative_events:
-            other_link = var_event['link']
-            other_causative_id = other_link.split('/')[-1:]
-            other_case_name = other_link.split('/')[2]
+            if var_event['case'] == case_obj['_id']:
+                # This is the variant the search started from, do not collect it
+                continue
+            other_case = self.case(var_event['case'])
 
-            other_causative = {
-                '_id' : other_causative_id,
-                'case_id' : var_event['case'],
-                'case_display_name' : other_case_name
+            if other_case is None:
+                # Other variant belongs to a case that doesn't exist any more
+                continue
 
-            }
-            yield other_causative
+            other_case_causatives = other_case.get('causatives')
 
-            # testing temo stuff:
+            if other_case_causatives and (clinical_variant in other_case_causatives or
+                research_variant in other_case_causatives):
 
+                other_link = var_event['link']
+                # link contains other variant ID
+                other_causative_id = other_link.split('/')[-1:]
 
-            """
-            # link contains other variant ID
-            other_causative_id = other_link.split('/')[-1:]
-
-
-
-            # check that other case still exists
-            case_obj = self.case(var_event['case'])
-            # and that other variants is still registered as causative
-            if case_obj and other_causative_id in case_obj.get('causatives', []):
-                other_case_name = case_obj['display_name']
                 other_causative = {
                     '_id' : other_causative_id,
-                    'case_id' : var_event['case'],
-                    'case_display_name' : other_case_name
+                    'case_id' : other_case['_id'],
+                    'case_display_name' : other_case['display_name']
+
                 }
                 yield other_causative
-        """
+                
 
     def delete_variants(self, case_id, variant_type, category=None):
         """Delete variants of one type for a case
