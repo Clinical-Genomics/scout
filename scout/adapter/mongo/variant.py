@@ -424,13 +424,13 @@ class VariantHandler(VariantLoader):
 
         for var_event in var_causative_events:
             other_link = var_event['link']
-            # variant id is the last part of the link string
+            # link contains other variant ID
             other_causative_id = other_link.split('/')[-1:]
 
             # check that other case still exists
             case_obj = self.case(var_event['case'])
             # and that other variants is still registered as causative
-            if case_obj and other_causative_id in case_obj.get('causatives'):
+            if case_obj and other_causative_id in case_obj.get('causatives', []):
                 other_case_name = case_obj['display_name']
                 other_causative = {
                     '_id' : other_causative_id,
