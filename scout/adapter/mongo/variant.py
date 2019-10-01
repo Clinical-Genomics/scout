@@ -401,7 +401,7 @@ class VariantHandler(VariantLoader):
         return self.variant_collection.find(filters)
 
 
-    def other_causatives(self, case_obj, variant_obj):
+    def other_causatives(self, case_obj, variant_obj, ):
         """Find the same variant marked causative in other cases.
 
         Args:
@@ -417,7 +417,7 @@ class VariantHandler(VariantLoader):
         research_variant = ''.join([variant_prefix, '_research'])
 
         var_causative_events = self.event_collection.find({
-            'institute' : variant_obj['institute'],
+            'institute' : {'$in' : case_obj.get('collaborators')},
             'verb':'mark_causative',
             'subject' : {'$in' : [clinical_variant, research_variant] },
             'category' : 'variant'
