@@ -424,8 +424,25 @@ class VariantHandler(VariantLoader):
 
         for var_event in var_causative_events:
             other_link = var_event['link']
+            other_causative_id = other_link.split('/')[-1:]
+            other_case_name = other_link.split('/')[2]
+
+            other_causative = {
+                '_id' : other_causative_id,
+                'case_id' : var_event['case'],
+                'case_display_name' : other_case_name
+
+            }
+            yield other_causative
+
+            # testing temo stuff:
+
+
+            """
             # link contains other variant ID
             other_causative_id = other_link.split('/')[-1:]
+
+
 
             # check that other case still exists
             case_obj = self.case(var_event['case'])
@@ -438,6 +455,7 @@ class VariantHandler(VariantLoader):
                     'case_display_name' : other_case_name
                 }
                 yield other_causative
+        """
 
     def delete_variants(self, case_id, variant_type, category=None):
         """Delete variants of one type for a case

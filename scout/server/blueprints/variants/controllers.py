@@ -571,14 +571,11 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
     for event in events:
         event['verb'] = VERBS_MAP[event['verb']]
 
-    flash('add_other is {}'.format(add_other))
     other_causatives = []
     # Adds information about other causative variants
     if add_other:
-        for other_variant in store.other_causatives_2(case_obj, variant_obj):
-            other_causatives.append(other_variant)
-
-
+        for other_causative in store.other_causatives_2(case_obj, variant_obj):
+            other_causatives.append(other_causative)
 
     variant_obj = parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build)
 
