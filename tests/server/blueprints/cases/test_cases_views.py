@@ -155,7 +155,7 @@ def test_causatives(app, user_obj, institute_obj, case_obj):
             institute=institute_obj,
             case=case_obj,
             user=user_obj,
-            link='causative_var_link',
+            link='causative_var_link/{}'.format(variant_obj['_id']),
             variant=variant_obj
         )
     updated_case = store.case_collection.find_one({'_id':case_obj['_id']})
