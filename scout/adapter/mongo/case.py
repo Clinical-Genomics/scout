@@ -186,7 +186,7 @@ class CaseHandler(object):
                                 {'from': 'variant',
                                 'localField': 'causatives',
                                 'foreignField': '_id',
-                                'as': 'causative_variant'
+                                'as': 'causative_variant'}
                             },
                             {'$match': {
                                 'causative_variant.hgnc_ids': hgnc_id
