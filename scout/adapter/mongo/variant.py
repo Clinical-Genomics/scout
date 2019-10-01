@@ -355,7 +355,6 @@ class VariantHandler(VariantLoader):
 
         return causatives
 
-
     def check_causatives(self, case_obj=None, institute_obj=None, limit_genes=None):
         """Check if there are any variants that are previously marked causative
 
@@ -372,57 +371,85 @@ class VariantHandler(VariantLoader):
                 causatives(iterable(Variant))
         """
         institute_id = case_obj['owner'] if case_obj else institute_obj['_id']
-        institute_causative_variant_ids = self.get_causatives(institute_id)
-        if len(institute_causative_variant_ids) == 0:
+        var_causative_events = self.event_collection.find({
+            'institute' : institute_id,
+            'verb':'mark_causative',
+            'category' : 'variant'
+        })
+        positional_variant_ids = set()
+        for var_event in var_causative_events:
+            if case_obj and var_event['case'] == case_obj['_id']:
+                # exclude causatives from the same case
+                continue
+            other_case = self.case(var_event['case'])
+            if other_case is None:
+                # Other variant belongs to a case that doesn't exist any more
+                continue
+            other_link = var_event['link']
+            # link contains other variant ID
+            other_causative_id = other_link.split('/')[-1]
+
+            if other_causative_id in other_case.get('causatives',[]):
+                positional_variant_ids.add(var_event['variant_id'])
+
+        if len(positional_variant_ids) == 0:
             return []
-
-        if case_obj:
-            # exclude variants that are marked causative in "case_obj"
-            case_causative_ids = set(case_obj.get('causatives', []))
-            institute_causative_variant_ids = list(
-                set(institute_causative_variant_ids).difference(case_causative_ids)
-            )
-
-        # convert from unique ids to general "variant_id"
-        query = self.variant_collection.find(
-            {'_id': {'$in': institute_causative_variant_ids}},
-            {'variant_id': 1}
-        )
-        positional_variant_ids = [item['variant_id'] for item in query]
-
-        filters = {'variant_id': {'$in': positional_variant_ids}}
+        filters = {'variant_id': {'$in': list(positional_variant_ids)}}
         if case_obj:
             filters['case_id'] = case_obj['_id']
         else:
             filters['institute'] = institute_obj['_id']
         if limit_genes:
             filters['genes.hgnc_id'] = {'$in':limit_genes}
-
         return self.variant_collection.find(filters)
 
-
     def other_causatives(self, case_obj, variant_obj):
-        """Find the same variant in other cases marked causative.
+        """Find the same variant marked causative in other cases.
 
         Args:
             case_obj(dict)
             variant_obj(dict)
 
         Yields:
-            other_variant(dict)
+            other_causative(dict)
         """
         # variant id without "*_[variant_type]"
-        variant_id = variant_obj['display_name'].rsplit('_', 1)[0]
+        variant_prefix = variant_obj['simple_id']
+        clinical_variant = ''.join([variant_prefix, '_clinical'])
+        research_variant = ''.join([variant_prefix, '_research'])
 
-        institute_causatives = self.get_causatives(variant_obj['institute'])
-        for causative_id in institute_causatives:
-            other_variant = self.variant(causative_id)
-            if not other_variant:
+        var_causative_events = self.event_collection.find({
+            'verb':'mark_causative',
+            'subject' : {'$in' : [clinical_variant, research_variant] },
+            'category' : 'variant'
+        })
+
+        for var_event in var_causative_events:
+            if var_event['case'] == case_obj['_id']:
+                # This is the variant the search started from, do not collect it
                 continue
-            not_same_case = other_variant['case_id'] != case_obj['_id']
-            same_variant = other_variant['display_name'].startswith(variant_id)
-            if not_same_case and same_variant:
-                yield other_variant
+            other_case = self.case(var_event['case'])
+            if other_case is None:
+                # Other variant belongs to a case that doesn't exist any more
+                continue
+            if variant_obj['institute'] not in other_case.get('collaborators'):
+                # User doesn't have access to this case/variant
+                continue
+
+            other_case_causatives = other_case.get('causatives', [])
+            other_link = var_event['link']
+            # link contains other variant ID
+            other_causative_id = other_link.split('/')[-1]
+
+            # if variant is still causative for that case:
+            if other_causative_id in other_case_causatives :
+                other_causative = {
+                    '_id' : other_causative_id,
+                    'case_id' : other_case['_id'],
+                    'case_display_name' : other_case['display_name']
+                }
+                yield other_causative
+
 
     def delete_variants(self, case_id, variant_type, category=None):
         """Delete variants of one type for a case
