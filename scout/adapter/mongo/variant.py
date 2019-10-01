@@ -347,7 +347,7 @@ class VariantHandler(VariantLoader):
         elif institute_id:
 
             query = self.case_collection.aggregate([
-                {'$match': {'collaborators': institute_id, 'causatives': {'$exists': True, '$not' : {'$size': 0}}}},
+                {'$match': {'collaborators': institute_id, 'causatives': {'$exists': True}}},
                 {'$unwind': '$causatives'},
                 {'$group': {'_id': '$causatives'}}
             ])
@@ -377,11 +377,8 @@ class VariantHandler(VariantLoader):
             return []
 
         if case_obj:
-            # exclude variants that are marked causative in "case_obj"
-            case_causative_ids = set(case_obj.get('causatives', []))
-            institute_causative_variant_ids = list(
-                set(institute_causative_variant_ids).difference(case_causative_ids)
-            )
+            institute_causative_variant_ids = [id for id in institute_causative_variant_ids
+                if id not in case_obj.get('causatives',[])]
 
         # convert from unique ids to general "variant_id"
         query = self.variant_collection.find(
@@ -399,6 +396,7 @@ class VariantHandler(VariantLoader):
             filters['genes.hgnc_id'] = {'$in':limit_genes}
 
         return self.variant_collection.find(filters)
+
 
 
     def other_causatives(self, case_obj, variant_obj):
