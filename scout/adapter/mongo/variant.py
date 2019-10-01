@@ -435,8 +435,9 @@ class VariantHandler(VariantLoader):
 
             other_case_causatives = other_case.get('causatives')
 
-            if other_case_causatives and (clinical_variant in other_case_causatives or
-                research_variant in other_case_causatives):
+            if other_case_causatives:
+            #and (clinical_variant in other_case_causatives or
+            #    research_variant in other_case_causatives):
 
                 other_link = var_event['link']
                 # link contains other variant ID
@@ -449,7 +450,7 @@ class VariantHandler(VariantLoader):
 
                 }
                 yield other_causative
-                
+
 
     def delete_variants(self, case_id, variant_type, category=None):
         """Delete variants of one type for a case
