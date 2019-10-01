@@ -392,10 +392,13 @@ class VariantHandler(VariantLoader):
             if other_causative_id in other_case.get('causatives',[]):
                 positional_variant_ids.add(var_event['variant_id'])
 
-        if len(institute_causative_variant_ids) == 0:
+        if len(positional_variant_ids) == 0:
             return []
-        LOG.info(institute_causative_variant_ids)
-        filters = {'variant_id': {'$in': positional_variant_ids}}
+        filters = {'variant_id': {'$in': list(positional_variant_ids)}}
+        if case_obj:
+            filters['case_id'] = case_obj['_id']
+        else:
+            filters['institute'] = institute_obj['_id']
         if limit_genes:
             filters['genes.hgnc_id'] = {'$in':limit_genes}
         return self.variant_collection.find(filters)
