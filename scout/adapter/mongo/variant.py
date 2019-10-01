@@ -401,7 +401,7 @@ class VariantHandler(VariantLoader):
         return self.variant_collection.find(filters)
 
 
-    def other_causatives(self, case_obj, variant_obj, ):
+    def other_causatives(self, case_obj, variant_obj):
         """Find the same variant marked causative in other cases.
 
         Args:
@@ -417,7 +417,6 @@ class VariantHandler(VariantLoader):
         research_variant = ''.join([variant_prefix, '_research'])
 
         var_causative_events = self.event_collection.find({
-            'institute' : {'$in' : case_obj.get('collaborators')},
             'verb':'mark_causative',
             'subject' : {'$in' : [clinical_variant, research_variant] },
             'category' : 'variant'
@@ -430,6 +429,9 @@ class VariantHandler(VariantLoader):
             other_case = self.case(var_event['case'])
             if other_case is None:
                 # Other variant belongs to a case that doesn't exist any more
+                continue
+            if variant_obj['institute'] not in other_case.get('collaborators'):
+                # User doesn't have access to this case/variant
                 continue
 
             other_case_causatives = other_case.get('causatives', [])
