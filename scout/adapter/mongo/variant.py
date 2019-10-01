@@ -376,7 +376,7 @@ class VariantHandler(VariantLoader):
             'verb':'mark_causative',
             'category' : 'variant'
         })
-        institute_causative_variant_ids = set()
+        positional_variant_ids = set()
         for var_event in var_causative_events:
             if case_obj and var_event['case'] == case_obj['_id']:
                 # exclude causatives from the same case
@@ -390,12 +390,12 @@ class VariantHandler(VariantLoader):
             other_causative_id = other_link.split('/')[-1]
 
             if other_causative_id in other_case.get('causatives',[]):
-                institute_causative_variant_ids.add(other_causative_id)
+                positional_variant_ids.add(var_event['variant_id'])
 
         if len(institute_causative_variant_ids) == 0:
             return []
         LOG.info(institute_causative_variant_ids)
-        filters = {'_id': {'$in': list(institute_causative_variant_ids)}}
+        filters = {'variant_id': {'$in': positional_variant_ids}}
         if limit_genes:
             filters['genes.hgnc_id'] = {'$in':limit_genes}
         return self.variant_collection.find(filters)
