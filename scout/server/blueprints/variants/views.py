@@ -176,7 +176,7 @@ def variant(institute_id, case_name, variant_id):
     """Display a specific SNV variant."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     log.debug("Variants view requesting data for variant {}".format(variant_id))
-    data = controllers.variant(store, institute_obj, case_obj, variant_id=variant_id)
+    data = controllers.variant(store, institute_obj, case_obj, variant_id=variant_id, add_other=False)
     if data is None:
         log.warning("An error occurred: variants view requesting data for variant {}".format(variant_id))
         flash('An error occurred while retrieving variant object', 'danger')
