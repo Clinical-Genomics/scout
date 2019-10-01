@@ -178,34 +178,44 @@ class CaseHandler(object):
                             query['_id'] = {'$in': similar_case_ids}
             elif name_query.startswith('causative:'):
                 if name_value:
-                    cases_with_gene_doc=self.case_collection.aggregate([
-                        { '$lookup':
-                            {'from': 'variant',
-                            'localField': 'causatives',
-                            'foreignField': '_id',
-                            'as': 'causative_variant'}
-                        },
-                        {'$match': {
-                            'causative_variant.hgnc_symbols': name_value
-                        }},
-                        {'$project': {'_id': 1}}])
-                    case_ids = [case['_id'] for case in cases_with_gene_doc]
-                    query['_id'] = {'$in': case_ids}
+                    hgnc_id=self.hgnc_id(hgnc_symbol=name_value)
+                    if hgnc_id:
+                        cases_with_gene_doc=self.case_collection.aggregate([
+                            { '$unwind': "$causatives" },
+                            { '$lookup':
+                                {'from': 'variant',
+                                'localField': 'causatives',
+                                'foreignField': '_id',
+                                'as': 'causative_variant'}
+                            },
+                            {'$match': {
+                                'causative_variant.hgnc_ids': hgnc_id
+                            }},
+                            {'$project': {'_id': 1}}])
+                        case_ids = [case['_id'] for case in cases_with_gene_doc]
+                        query['_id'] = {'$in': case_ids}
+                    else:
+                        LOG.info("No gene with the HGNC symbol {} found.".format(name_value))
             elif name_query.startswith('pinned:'):
                 if name_value:
-                    cases_with_gene_doc=self.case_collection.aggregate([
-                        { '$lookup':
-                            {'from': 'variant',
-                            'localField': 'suspects',
-                            'foreignField': '_id',
-                            'as': 'suspect_variant'}
-                        },
-                        {'$match': {
-                            'suspect_variant.hgnc_symbols': name_value
-                        }},
-                        {'$project': {'_id': 1}}])
-                    case_ids = [case['_id'] for case in cases_with_gene_doc]
-                    query['_id'] = {'$in': case_ids}
+                    hgnc_id=self.hgnc_id(hgnc_symbol=name_value)
+                    if hgnc_id:
+                        cases_with_gene_doc=self.case_collection.aggregate([
+                            { '$unwind': "$suspects"},
+                            { '$lookup':
+                                {'from': 'variant',
+                                'localField': 'suspects',
+                                'foreignField': '_id',
+                                'as': 'suspect_variant'}
+                            },
+                            {'$match': {
+                                'suspect_variant.hgnc_ids': hgnc_id
+                            }},
+                            {'$project': {'_id': 1}}])
+                        case_ids = [case['_id'] for case in cases_with_gene_doc]
+                        query['_id'] = {'$in': case_ids}
+                    else:
+                        LOG.info("No gene with the HGNC symbol {} found.".format(name_value))
             elif name_query.startswith('synopsis:'):
                 if name_value:
                     query['$text']={'$search':name_value}
