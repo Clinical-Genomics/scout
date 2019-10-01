@@ -125,7 +125,7 @@
 {% macro cell_rank(variant) %}
   <a class="variants-row-item flex-small layout"
      href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,
-                      variant_id=variant._id) }}">
+                      variant_id=variant._id, add_other=False) }}">
     {{ variant.variant_rank }}
   </a>
   {% set comment_count = variant.comments.count() %}
@@ -134,7 +134,7 @@
     <span class="badge pull-right" title="{{ variant.acmg_classification.label }}">
       {{ variant.acmg_classification.short }}
     </span>
-  
+
   {% elif variant.manual_rank %}
     <span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
 
