@@ -401,28 +401,43 @@ class VariantHandler(VariantLoader):
         return self.variant_collection.find(filters)
 
 
-    def other_causatives(self, case_obj, variant_obj):
-        """Find the same variant in other cases marked causative.
+    def other_causatives_2(self, case_obj, variant_obj):
+        """Find the same variant marked causative in other cases.
 
         Args:
             case_obj(dict)
             variant_obj(dict)
 
         Yields:
-            other_variant(dict)
+            other_causative(dict)
         """
         # variant id without "*_[variant_type]"
-        variant_id = variant_obj['display_name'].rsplit('_', 1)[0]
+        variant_prefix = variant_obj['display_name'].rsplit('_', 1)[0]
 
-        institute_causatives = self.get_causatives(variant_obj['institute'])
-        for causative_id in institute_causatives:
-            other_variant = self.variant(causative_id)
-            if not other_variant:
-                continue
-            not_same_case = other_variant['case_id'] != case_obj['_id']
-            same_variant = other_variant['display_name'].startswith(variant_id)
-            if not_same_case and same_variant:
-                yield other_variant
+        var_causative_events = self.event_collection.find({
+            'institute' : variant_obj['institute'],
+            'verb':'mark_causative',
+
+            'subject' : {'$in' : [variant_obj['display_name'], ''.join([variant_prefix, '_research'])] },
+            'category' : 'variant'
+        })
+
+        for var_event in var_causative_events:
+            other_link = var_event['link']
+            # variant id is the last part of the link string
+            other_causative_id = other_link.split('/')[-1:]
+
+            # check that other case still exists
+            case_obj = self.case(var_event['case'])
+            # and that other variants is still registered as causative
+            if case_obj and other_causative_id in case_obj.get('causatives'):
+                other_case_name = case_obj['display_name']
+                other_causative = {
+                    '_id' : other_causative_id,
+                    'case_id' : var_event['case'],
+                    'case_display_name' : other_case_name
+                }
+                yield other_causative
 
     def delete_variants(self, case_id, variant_type, category=None):
         """Delete variants of one type for a case
