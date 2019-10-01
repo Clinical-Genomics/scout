@@ -355,7 +355,6 @@ class VariantHandler(VariantLoader):
 
         return causatives
 
-
     def check_causatives(self, case_obj=None, institute_obj=None, limit_genes=None):
         """Check if there are any variants that are previously marked causative
 
@@ -372,32 +371,34 @@ class VariantHandler(VariantLoader):
                 causatives(iterable(Variant))
         """
         institute_id = case_obj['owner'] if case_obj else institute_obj['_id']
-        institute_causative_variant_ids = self.get_causatives(institute_id)
+        var_causative_events = self.event_collection.find({
+            'institute' : institute_id,
+            'verb':'mark_causative',
+            'category' : 'variant'
+        })
+        institute_causative_variant_ids = set()
+        for var_event in var_causative_events:
+            if case_obj and var_event['case'] == case_obj['_id']:
+                # exclude causatives from the same case
+                continue
+            other_case = self.case(var_event['case'])
+            if other_case is None:
+                # Other variant belongs to a case that doesn't exist any more
+                continue
+            other_link = var_event['link']
+            # link contains other variant ID
+            other_causative_id = other_link.split('/')[-1]
+
+            if other_causative_id in other_case.get('causatives',[]):
+                institute_causative_variant_ids.add(other_causative_id)
+
         if len(institute_causative_variant_ids) == 0:
             return []
-
-        if case_obj:
-            institute_causative_variant_ids = [id for id in institute_causative_variant_ids
-                if id not in case_obj.get('causatives',[])]
-
-        # convert from unique ids to general "variant_id"
-        query = self.variant_collection.find(
-            {'_id': {'$in': institute_causative_variant_ids}},
-            {'variant_id': 1}
-        )
-        positional_variant_ids = [item['variant_id'] for item in query]
-
-        filters = {'variant_id': {'$in': positional_variant_ids}}
-        if case_obj:
-            filters['case_id'] = case_obj['_id']
-        else:
-            filters['institute'] = institute_obj['_id']
+        LOG.info(institute_causative_variant_ids)
+        filters = {'_id': {'$in': list(institute_causative_variant_ids)}}
         if limit_genes:
             filters['genes.hgnc_id'] = {'$in':limit_genes}
-
         return self.variant_collection.find(filters)
-
-
 
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant marked causative in other cases.
