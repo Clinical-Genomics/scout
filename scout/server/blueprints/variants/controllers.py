@@ -575,7 +575,7 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
     # Adds information about other causative variants
     if add_other:
         for other_causative in store.other_causatives(case_obj, variant_obj):
-            # avoid adding duplicates other causatives
+            # avoid adding other causatives duplicates
             other_causatives.add(tuple(other_causative.items()))
         # convert set of tuples into list of dictionaries
         other_causatives = [ dict(item) for item in list(other_causatives)]
