@@ -432,14 +432,13 @@ class VariantHandler(VariantLoader):
                 # Other variant belongs to a case that doesn't exist any more
                 continue
 
-            other_case_causatives = other_case.get('causatives')
+            other_case_causatives = other_case.get('causatives', [])
             other_link = var_event['link']
             # link contains other variant ID
             other_causative_id = other_link.split('/')[-1]
 
-            if other_case_causatives:
-                # and other_causative_id in other_case_causatives:
-                LOG.info('looking for {} in {}'.format(other_causative_id, other_case_causatives))
+            # if variant is still causative for that case:
+            if other_causative_id in other_case_causatives :
                 other_causative = {
                     '_id' : other_causative_id,
                     'case_id' : other_case['_id'],
