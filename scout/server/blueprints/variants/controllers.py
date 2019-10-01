@@ -591,6 +591,7 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
     a = b
     flash('---------------------->microsecs:{}'.format(c.microseconds))
 
+    flash('add_other is {}'.format(add_other))
     other_causatives = []
     # Adds information about other causative variants
     if add_other:
