@@ -848,7 +848,7 @@
         <div class="d-flex mt-1">
           <div class="mr-1">
             <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-              <input type="checkbox" class="ios8-switch" id="hpo_clinical_filter" name="hpo_clinical_filter"{% if case.hpo_clinical_filter %}checked{% endif %}>
+              <input type="checkbox" class="ios8-switch" id="hpo_clinical_filter" onChange="this.form.submit()" name="hpo_clinical_filter"{% if case.hpo_clinical_filter %}checked{% endif %}>
               <label for="hpo_clinical_filter"></label>
             </form>
           </div>
