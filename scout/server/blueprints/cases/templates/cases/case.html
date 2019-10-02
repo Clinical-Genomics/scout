@@ -748,8 +748,8 @@
 {% endmacro %}
 
 {% macro phenotypes_panel() %}
-  <form action="{{ url_for('cases.phenotypes_actions', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-    <div class="panel panel-default">
+  <form action="{{ url_for('cases.phenotypes_actions', institute_id=institute._id, case_name=case.display_name)+'#phenotypes_panel' }}" method="POST">
+    <div id="phenotypes_panel" class="panel panel-default">
       <div class="panel-heading">Added phenotypes</div>
         <ul class="list-group">
         {% for hpo_term in case.phenotype_terms %}
@@ -847,7 +847,7 @@
       <div class="panel-footer">
         <div class="d-flex mt-1">
           <div class="mr-1">
-            <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+            <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name)+'#hpo_clinical_filter' }}" method="POST">
               <input type="checkbox" class="ios8-switch" id="hpo_clinical_filter" onChange="this.form.submit()" name="hpo_clinical_filter"{% if case.hpo_clinical_filter %}checked{% endif %}>
               <label for="hpo_clinical_filter"></label>
             </form>
