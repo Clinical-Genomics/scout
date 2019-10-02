@@ -1,0 +1,61 @@
+---
+
+owner: cust000
+
+family: 'internal_id_2'
+family_name: '643595'
+samples:
+  - analysis_type: wes
+    sample_id: ADM1059A2
+    capture_kit: Agilent_SureSelectCRE.V1
+    father: ADM1059A1
+    mother: ADM1059A3
+    sample_name: NA12882
+    phenotype: affected
+    sex: male
+    expected_coverage: 30
+    mt_bam: scout/demo/reduced_mt.bam
+    vcf2cytosure: scout/demo/ADM1059A2.dummy.cgh
+
+  - analysis_type: wes
+    sample_id: ADM1059A1
+    capture_kit: Agilent_SureSelectCRE.V1
+    father: '0'
+    mother: '0'
+    sample_name: NA12877
+    phenotype: unaffected
+    sex: male
+    expected_coverage: 30
+    mt_bam: scout/demo/reduced_mt.bam
+    vcf2cytosure: scout/demo/ADM1059A1.dummy.cgh
+
+  - analysis_type: wes
+    sample_id: ADM1059A3
+    capture_kit: Agilent_SureSelectCRE.V1
+    father: '0'
+    mother: '0'
+    sample_name: NA12878
+    phenotype: unaffected
+    sex: female
+    expected_coverage: 30
+    mt_bam: scout/demo/reduced_mt.bam
+    vcf2cytosure: scout/demo/ADM1059A3.dummy.cgh
+
+vcf_snv: scout/demo/643595.clinical.vcf.gz
+
+madeline: scout/demo/madeline.xml
+
+peddy_ped: scout/demo/643594.peddy.ped
+peddy_ped_check: scout/demo/643594.ped_check.csv
+peddy_sex_check: scout/demo/643594.sex_check.csv
+
+delivery_report: scout/demo/delivery_report.html
+
+default_gene_panels: [panel1]
+gene_panels: [panel1]
+
+# meta data
+rank_model_version: '1.20'
+rank_score_threshold: -100
+analysis_date: 2016-10-12 14:00:46
+human_genome_build: 37
