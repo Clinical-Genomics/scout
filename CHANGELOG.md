@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [4.x.x]
+## [4.7.2]
 
 ### Added
 - Show earlier ACMG classification in the variant list
@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed igv search not working due to igv.js dist 2.2.17
 - Fixed searches for cases with a gene with variants pinned or marked causative.
 - Load variant pages faster after fixing other causatives query
+- Fixed mitochondrial report bug for variants without genes
 
 
 ## [4.7.1]
