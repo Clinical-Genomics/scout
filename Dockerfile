@@ -17,9 +17,12 @@ RUN pip3 install --trusted-host pypi.org --trusted-host files.pythonhosted.org -
 
 COPY . /scout/
 
+COPY certs/vll.crt /usr/local/share/ca-certificates/vll.crt
+RUN update-ca-certificates
+
 WORKDIR /scout/
 
-EXPOSE 80
+EXPOSE 443
 
 RUN chmod +x /scout/docker-entrypoint.sh
 
