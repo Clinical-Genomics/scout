@@ -4,6 +4,6 @@ SCOUT_CONFIG="/scout/vault/flask.config.py" \
 gunicorn \
    --workers=4 \
    --bind=$HOST:$PORT \
-   --keyfile="vault/key.pem" \
-   --certfile="vault/cert.pem" \
+   --keyfile="/scout/vault/key.pem" \
+   --certfile="/scout/vault/cert.pem" \
    scout.server.auto:app
