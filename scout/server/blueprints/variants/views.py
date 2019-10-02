@@ -367,9 +367,19 @@ def variant_update(institute_id, case_name, variant_id):
     elif request.form.get('acmg_classification'):
         new_acmg = request.form['acmg_classification']
         acmg_classification = variant_obj.get('acmg_classification')
+        # If there already is a classification and the same one is sent again this means that
+        # We want to remove the classification
         if isinstance(acmg_classification, int) and (new_acmg == ACMG_MAP[acmg_classification]):
             new_acmg = None
-        store.update_acmg(institute_obj, case_obj, user_obj, link, variant_obj, new_acmg)
+        print("New acmg", new_acmg)
+        store.submit_evaluation(
+            variant_obj=variant_obj,
+            user_obj=user_obj,
+            institute_obj=institute_obj,
+            case_obj=case_obj,
+            link=link,
+            classification=new_acmg
+        )
         flash("updated ACMG classification: {}".format(new_acmg), 'info')
 
     new_dismiss = request.form.getlist('dismiss_variant')
