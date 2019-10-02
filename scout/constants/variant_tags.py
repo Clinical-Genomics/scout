@@ -176,7 +176,7 @@ DISMISS_VARIANT_OPTIONS = {
     29: {
         'label': 'Technical issues',
         'description': 'Technical issues - likely false positive.',
-        'evidence': ['GT', 'pileup']
+        'evidence': ['GT', 'IGV']
         },
     31: {
         'label': 'No protein function',
