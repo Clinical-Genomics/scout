@@ -1,4 +1,7 @@
+import logging
 import datetime
+
+LOG = logging.getLogger(__name__)
 
 def build_evaluation(variant_specific, variant_id, user_id, user_name,
                      institute_id, case_id, classification, criteria):
@@ -18,6 +21,7 @@ def build_evaluation(variant_specific, variant_id, user_id, user_name,
         evaluation_obj(dict): Correctly formatted evaluation object
 
     """
+    LOG.info("Creating classification: %s for variant %s", classification, variant_id)
     criteria = criteria or []
     evaluation_obj = dict(
         variant_specific = variant_specific,
