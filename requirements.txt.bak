@@ -40,7 +40,6 @@ ped_parser
 
 # extras
 intervaltree==3.0.2
-certifi
 
 # chanjo-report
 python-dateutil
