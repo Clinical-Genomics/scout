@@ -363,7 +363,7 @@ def test_is_benign_2():
 def test_get_acmg_no_terms():
     acmg_terms = []
     res = get_acmg(acmg_terms)
-    assert res == 'uncertain_significance'
+    assert res == None
 
 def test_get_acmg_pathogenic():
     acmg_terms = ['PVS1', 'PS1']
