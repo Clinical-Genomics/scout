@@ -136,7 +136,7 @@ def export_mt_variants(variants, sample_id):
         genes = []
         prot_effect = []
         if variant.get('genes'):
-            for gene in variant['genes']:
+            for gene in variant.get('genes',[]):
                 genes.append(gene.get('hgnc_symbol',''))
                 for transcript in gene.get('transcripts'):
                     if transcript.get('is_canonical') and transcript.get('protein_sequence_name'):
