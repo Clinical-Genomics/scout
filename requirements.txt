@@ -35,7 +35,7 @@ PyYaml>=5.1
 ped_parser
 
 # extras
-intervaltree==3.0.2
+intervaltree==2.1.0
 certifi
 
 # chanjo-report
