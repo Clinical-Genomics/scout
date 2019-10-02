@@ -52,7 +52,13 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         # Get all previous ACMG evalautions of the variant
         evaluations = []
         for evaluation_obj in store.get_evaluations(variant_obj):
-            evaluation_obj['classification'] = ACMG_COMPLETE_MAP[evaluation_obj['classification']]
+            classification = evaluation_obj['classification']
+            # Only show pathogenic/likely pathogenic from other cases on variants page
+            if evaluation_obj['case_id'] != case_obj['_id']:
+                if not classification in ['pathogenic', 'likely_pathogenic']:
+                    continue
+            # Convert the classification int to readable string
+            evaluation_obj['classification'] = ACMG_COMPLETE_MAP.get(classification)
             evaluations.append(evaluation_obj)
         variant_obj['evaluations'] = evaluations
 
@@ -287,7 +293,8 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False, gen
     for compound_obj in compounds:
         compound_obj.update(get_predictions(compound_obj.get('genes', [])))
 
-    if isinstance(variant_obj.get('acmg_classification'), int):
+    classification = variant_obj.get('acmg_classification')
+    if isinstance(classification, int):
         acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
         variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
 
@@ -1202,7 +1209,7 @@ def evaluation(store, evaluation_obj):
     evaluation_obj['variant'] = store.variant(evaluation_obj['variant_specific'])
     evaluation_obj['criteria'] = {criterion['term']: criterion for criterion in
                                   evaluation_obj['criteria']}
-    evaluation_obj['classification'] = ACMG_COMPLETE_MAP[evaluation_obj['classification']]
+    evaluation_obj['classification'] = ACMG_COMPLETE_MAP.get(evaluation_obj['classification'])
     return evaluation_obj
 
 
