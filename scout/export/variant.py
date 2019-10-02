@@ -135,13 +135,16 @@ def export_mt_variants(variants, sample_id):
         line.append(str(position)+change)
         genes = []
         prot_effect = []
-        for gene in variant.get('genes'):
-            genes.append(gene.get('hgnc_symbol',''))
-            for transcript in gene.get('transcripts'):
-                if transcript.get('is_canonical') and transcript.get('protein_sequence_name'):
-                    prot_effect.append(urllib.parse.unquote(transcript.get('protein_sequence_name')))
+        if variant.get('genes'):
+            for gene in variant['genes']:
+                genes.append(gene.get('hgnc_symbol',''))
+                for transcript in gene.get('transcripts'):
+                    if transcript.get('is_canonical') and transcript.get('protein_sequence_name'):
+                        prot_effect.append(urllib.parse.unquote(transcript.get('protein_sequence_name')))
+
         line.append(','.join(prot_effect))
         line.append(','.join(genes))
+
         ref_ad = ''
         alt_ad = ''
         for sample in variant['samples']:
