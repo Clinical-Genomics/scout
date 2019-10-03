@@ -148,6 +148,9 @@
         </div>
       {% else %}
         <i class="text-muted">No more variants to display</i>
+        <a class="btn btn-default" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+          First page
+        </a>
       {% endif %}
     </div>
   </div>
