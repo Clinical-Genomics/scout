@@ -13,4 +13,4 @@
 
 <p align="center"><img height="450" width="800" src="img/v4.png"></p>
 
-**New entry in the blog**: [What's new in 4.0?](blog/new-4.0.0.md)
+**New entry in the blog**: [What's new in 4.7.2?](blog/new-4.7.2.md)

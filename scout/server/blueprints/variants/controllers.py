@@ -52,10 +52,16 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         # Get all previous ACMG evalautions of the variant
         evaluations = []
         for evaluation_obj in store.get_evaluations(variant_obj):
-            evaluation_obj['classification'] = ACMG_COMPLETE_MAP[evaluation_obj['classification']]
+            classification = evaluation_obj['classification']
+            # Only show pathogenic/likely pathogenic from other cases on variants page
+            if evaluation_obj['case_id'] != case_obj['_id']:
+                if not classification in ['pathogenic', 'likely_pathogenic']:
+                    continue
+            # Convert the classification int to readable string
+            evaluation_obj['classification'] = ACMG_COMPLETE_MAP.get(classification)
             evaluations.append(evaluation_obj)
         variant_obj['evaluations'] = evaluations
-            
+
         variants.append(parse_variant(store, institute_obj, case_obj, variant_obj,
                         update=True, genome_build=genome_build))
 
@@ -287,7 +293,8 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False, gen
     for compound_obj in compounds:
         compound_obj.update(get_predictions(compound_obj.get('genes', [])))
 
-    if isinstance(variant_obj.get('acmg_classification'), int):
+    classification = variant_obj.get('acmg_classification')
+    if isinstance(classification, int):
         acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
         variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
 
@@ -556,7 +563,6 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
         # NOTE this will query with variant_id == document_id, not the variant_id.
         variant_obj = store.variant(variant_id, gene_panels=default_panels)
 
-
     genome_build = case_obj.get('genome_build', '37')
     if genome_build not in ['37','38']:
         genome_build = '37'
@@ -572,17 +578,14 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
     for event in events:
         event['verb'] = VERBS_MAP[event['verb']]
 
-    other_causatives = []
+    other_causatives = set()
     # Adds information about other causative variants
     if add_other:
-        for other_variant in store.other_causatives(case_obj, variant_obj):
-            # This should work with old and new ids
-            case_id = other_variant['case_id']
-            other_case = store.case(case_id)
-            if not other_case:
-                continue
-            other_variant['case_display_name'] = other_case.get('display_name', case_id)
-            other_causatives.append(other_variant)
+        for other_causative in store.other_causatives(case_obj, variant_obj):
+            # avoid adding other causatives duplicates
+            other_causatives.add(tuple(other_causative.items()))
+        # convert set of tuples into list of dictionaries
+        other_causatives = [ dict(item) for item in list(other_causatives)]
 
     variant_obj = parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build)
 
@@ -641,6 +644,7 @@ def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, a
         evaluations.append(evaluation_obj)
 
     case_clinvars = store.case_to_clinVars(case_obj.get('display_name'))
+
     if variant_id in case_clinvars:
         variant_obj['clinvar_clinsig'] = case_clinvars.get(variant_id)['clinsig']
 
@@ -1205,7 +1209,7 @@ def evaluation(store, evaluation_obj):
     evaluation_obj['variant'] = store.variant(evaluation_obj['variant_specific'])
     evaluation_obj['criteria'] = {criterion['term']: criterion for criterion in
                                   evaluation_obj['criteria']}
-    evaluation_obj['classification'] = ACMG_COMPLETE_MAP[evaluation_obj['classification']]
+    evaluation_obj['classification'] = ACMG_COMPLETE_MAP.get(evaluation_obj['classification'])
     return evaluation_obj
 
 
