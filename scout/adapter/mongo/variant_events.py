@@ -105,12 +105,12 @@ class VariantEventHandler(object):
         LOG.info("Creating event for ordering validation for variant" \
                     " {0}".format(variant['display_name']))
 
+        LOG.info("Set sanger order to 'True' for %s", variant['display_name'])
         updated_variant = self.variant_collection.find_one_and_update(
             {'_id': variant['_id']},
             {'$set': {'sanger_ordered': True}},
             return_document=pymongo.ReturnDocument.AFTER
         )
-
         self.create_event(
             institute=institute,
             case=case,
@@ -222,6 +222,43 @@ class VariantEventHandler(object):
         sanger_ordered =  [item for item in results]
         return sanger_ordered
 
+    def validated(self, institute_id=None, user_id=None, case_id=None):
+        """Get all variants that have been validated.
+
+        Args:
+            institute_id(str) : The id of an institute
+            user_id(str) : The id of an user
+            case_id(str) : Id of a case
+
+        Returns:
+            validated(list) : a list of dictionaries, each with "case_id" as keys
+                and list of variant ids (variant_id, not _id) as values
+        """
+        query = {'$match': {
+                '$and': [
+                    {'verb': 'validate'},
+                ],
+            }}
+
+        if institute_id:
+            query['$match']['$and'].append({'institute': institute_id})
+        if user_id:
+            query['$match']['$and'].append({'user_id': user_id})
+        if case_id:
+            query['$match']['$and'].append({'case': case_id})
+
+        # Get all sanger ordered variants grouped by case_id
+        results = self.event_collection.aggregate([
+            query,
+            {'$group': {
+                '_id': "$case",
+                'vars': {'$addToSet' : '$variant_id'}
+            }}
+        ])
+
+        sanger_ordered =  [item for item in results]
+        return sanger_ordered
+
     def validate(self, institute, case, user, link, variant, validate_type):
         """Mark validation status for a variant.
 
@@ -241,6 +278,8 @@ class VariantEventHandler(object):
             LOG.warning("Invalid validation string: %s", validate_type)
             LOG.info("Validation options: %s", ', '.join(SANGER_OPTIONS))
             return
+
+        LOG.info("Set validation status to %s for %s", validate_type, variant['display_name'])
         updated_variant = self.variant_collection.find_one_and_update(
             {'_id': variant['_id']},
             {'$set': {'validation': validate_type}},

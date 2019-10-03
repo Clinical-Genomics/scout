@@ -405,7 +405,8 @@ class CaseHandler(object):
         # Check if case exists with old case id
         old_caseid = '-'.join([case_obj['owner'], case_obj['display_name']])
         old_case = self.case(old_caseid)
-        old_sanger_variants = None
+        # This is to keep sanger order and validation status
+        old_sanger_variants = case_sanger_variants(case_obj['_id'])
 
         if old_case:
             LOG.info("Update case id for existing case: %s -> %s", old_caseid, case_obj['_id'])
@@ -453,7 +454,7 @@ class CaseHandler(object):
             self.update_case(case_obj)
 
             # update Sanger status for the new inserted variants
-            self.update_case_sanger_variants(institute_obj,case_obj)
+            self.update_case_sanger_variants(institute_obj,case_obj, old_sanger_variants)
 
         else:
             LOG.info('Loading case %s into database', case_obj['display_name'])
@@ -643,27 +644,30 @@ class CaseHandler(object):
         }
 
         # Add the verified variants
-        case_verif_variants['sanger_verified'] = [var for var in 
-                                                    self.sanger_variants(case_id=case_id)]
-
-        # sanger_ordered is an object like this:
-        # sanger_ordered = [{
-        #       '_id' : case_obj[_id],
-        #       'vars' : [var_obj['variant_id'], ...]
-        #    }]
-        sanger_ordered = self.sanger_ordered(case_id=case_id)
-        if not sanger_ordered:
-            return case_verif_variants
-
-        for var_id in sanger_ordered[0]['vars']:
-            variant_obj = self.variant(case_id=case_id, document_id=var_id)
-            if not variant_obj:
+        LOG.info("Fetching all sanger variants and all validated variants")
+        results = {
+            'sanger_verified' : self.validated(case_id=case_id),
+            'sanger_ordered' : self.sanger_ordered(case_id=case_id)
+        }
+        
+        for category in results:
+            res = results[category]
+            if not res:
                 continue
-            case_verif_variants['sanger_ordered'].append(variant_obj)
-
+            for var_id in res[0]['vars']:
+                variant_obj = self.variant(case_id=case_id, document_id=var_id)
+                if not variant_obj:
+                    continue
+                case_verif_variants[category].append(variant_obj)
+            
+        LOG.info("Nr variants with sanger verification found: %n",
+                 len(case_verif_variants['sanger_verified']))
+        LOG.info("Nr variants with sanger ordered found: %n",
+                 len(case_verif_variants['sanger_ordered']))
+        
         return case_verif_variants
 
-    def update_case_sanger_variants(self, institute_obj, case_obj):
+    def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
         """Update existing variants for a case according to a previous
             verification status.
 
@@ -679,9 +683,7 @@ class CaseHandler(object):
 
         """
         LOG.debug('Updating verification status for variants in case:{}'.format(case_obj['_id']))
-        
-        case_verif_variants = self.case_sanger_variants(case_obj['_id'])
-        
+
         updated_variants = {
             'updated_verified' : [],
             'updated_ordered' : []
@@ -689,13 +691,13 @@ class CaseHandler(object):
         # update verification status for verified variants of a case
         for category in case_verif_variants:
             variants = case_verif_variants[category]
+            verb = 'sanger'
+            if category == 'sanger_verified':
+                verb = 'validate'
             
             for old_var in variants:
                 # new var display name should be the same as old display name:
                 display_name = old_var['display_name']
-                verb = 'sanger'
-                if category == 'sanger_verified':
-                    verb = 'validate'
                 # check if variant still exists
                 new_var = self.variant_collection.find_one({
                     'case_id' : case_obj['_id'],

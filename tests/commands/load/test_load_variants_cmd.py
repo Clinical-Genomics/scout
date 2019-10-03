@@ -110,6 +110,16 @@ def test_reload_variants(mock_app, case_obj, user_obj, institute_obj):
         validate_type = 'True positive'
     )
 
+    # then one variant should have an associated Sanger event
+    assert sum(1 for i in store.event_collection.find({'verb':'validate',
+        'category':'variant'})) == 1
+
+    # Check that the variant is validated
+    new_variant = store.variant_collection.find_one(
+        {'display_name':one_variant['display_name']}
+    )
+    assert new_variant['validation'] == 'True positive'
+
     # force re-upload the same variants using the command line:
     result =  runner.invoke(cli, ['load', 'variants', case_obj['_id'],
         '--snv',

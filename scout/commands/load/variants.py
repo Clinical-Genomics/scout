@@ -72,6 +72,7 @@ def variants(case_id, institute, force, cancer, cancer_research, sv,
             LOG.warning("The gene could not be found")
             raise click.Abort()
 
+    old_sanger_variants = adapter.case_sanger_variants(case_obj['_id'])
     i = 0
     for file_type in files:
         variant_type = file_type['variant_type']
@@ -120,4 +121,4 @@ def variants(case_id, institute, force, cancer, cancer_research, sv,
         return
     
     # update Sanger status for the new inserted variants
-    sanger_updated = adapter.update_case_sanger_variants(institute_obj,case_obj)
+    sanger_updated = adapter.update_case_sanger_variants(institute_obj,case_obj, old_sanger_variants)
