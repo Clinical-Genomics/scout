@@ -757,7 +757,7 @@ class CaseHandler(object):
                         variant=new_var
                     )
                     if updated_variant:
-                        updated_variants['updated_ordered'].append(updated_var['_id'])
+                        updated_variants['updated_ordered'].append(updated_variant['_id'])
 
         n_status_updated = len(updated_variants['updated_verified'])+len(updated_variants['updated_ordered'])
         LOG.debug('Verification status updated for {} variants'.format(n_status_updated))
