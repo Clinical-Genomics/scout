@@ -17,7 +17,7 @@ For bug reports include error messages if there are any.
 ### Scout Git branching strategy
 
 Scout development is organised on a flexible Git ["Release Flow"][release_flow] branching system.
-This more or less means that we make releases in release branhces which corresponds to stable 
+This more or less means that we make releases in release branches which corresponds to stable 
 versions of Scout. 
 In order to add a new feature, create a branch from current master and follow the instructions 
 below:
