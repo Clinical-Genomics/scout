@@ -23,6 +23,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Load variant pages faster after fixing other causatives query
 - Fixed mitochondrial report bug for variants without genes
 
+### Deleted
+- Removed pileup as a bam viewing option. This is replaced by IGV
+
 
 ## [4.7.1]
 
