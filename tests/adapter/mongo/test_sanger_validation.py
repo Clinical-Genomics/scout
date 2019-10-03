@@ -64,16 +64,10 @@ def test_update_case_sanger_variants(adapter, institute_obj, case_obj, user_obj,
 
     variant_obj['validation'] = 'True positive'
     # When assigning a verification to a new variant
-    test_case_verif_variants = {
-        'sanger_verified' : [variant_obj],
-        'sanger_ordered' : [variant_obj]
-    }
-
     # and using the function to update sanger status for the variants
     # of a case
 
-    updated_variants = adapter.update_case_sanger_variants(
-        institute_obj, case_obj, test_case_verif_variants)
+    updated_variants = adapter.update_case_sanger_variants(institute_obj, case_obj)
 
     # Then the verification status should be updated for
     # verified variants

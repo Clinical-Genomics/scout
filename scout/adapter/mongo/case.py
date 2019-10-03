@@ -424,9 +424,6 @@ class CaseHandler(object):
             {'file_name': 'vcf_str', 'variant_type': 'clinical', 'category': 'str'}
         ]
 
-        if update:
-            # collect variants with verification ordered or already validated for this case
-            old_sanger_variants = self.case_sanger_variants(case_obj['_id'])
         try:
             for vcf_file in files:
                 # Check if file exists
@@ -456,11 +453,7 @@ class CaseHandler(object):
             self.update_case(case_obj)
 
             # update Sanger status for the new inserted variants
-            self.update_case_sanger_variants(
-                institute_obj,
-                case_obj,
-                old_sanger_variants
-            )
+            self.update_case_sanger_variants(institute_obj,case_obj)
 
         else:
             LOG.info('Loading case %s into database', case_obj['display_name'])
@@ -649,37 +642,34 @@ class CaseHandler(object):
             'sanger_ordered' : []
         }
 
-        sanger_verified =  self.sanger_variants(case_id=case_id)
-        # This is a pymongo cursor containing variant objects
+        # Add the verified variants
+        case_verif_variants['sanger_verified'] = [var for var in 
+                                                    self.sanger_variants(case_id=case_id)]
 
-        case_verif_variants['sanger_verified'] = list(sanger_verified)
-
-        sanger_ordered = self.sanger_ordered(case_id=case_id)
-        if sanger_ordered:
-            sanger_ordered = sanger_ordered[0]
         # sanger_ordered is an object like this:
-        # sanger_ordered = {
-        #   '_id' : case_obj[_id],
-        #   'vars' : [var_obj['variant_id'], ...]
-        #}
-            for var_id in sanger_ordered['vars']:
-                variant_obj = self.variant(case_id=case_id, document_id=var_id)
-                if variant_obj:
-                    case_verif_variants['sanger_ordered'].append(variant_obj)
+        # sanger_ordered = [{
+        #       '_id' : case_obj[_id],
+        #       'vars' : [var_obj['variant_id'], ...]
+        #    }]
+        sanger_ordered = self.sanger_ordered(case_id=case_id)
+        if not sanger_ordered:
+            return case_verif_variants
+
+        for var_id in sanger_ordered[0]['vars']:
+            variant_obj = self.variant(case_id=case_id, document_id=var_id)
+            if not variant_obj:
+                continue
+            case_verif_variants['sanger_ordered'].append(variant_obj)
 
         return case_verif_variants
 
-    def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
+    def update_case_sanger_variants(self, institute_obj, case_obj):
         """Update existing variants for a case according to a previous
             verification status.
 
             Accepts:
                 institute_obj(dict): an institute object
                 case_obj(dict): a case object
-                case_verif_variants(dict): a dictionary like this: {
-                    'sanger_verified' : [list of vars],
-                    'sanger_ordered' : [list of vars]
-                }
 
             Returns:
                 updated_variants(dict): a dictionary like this: {
@@ -689,17 +679,23 @@ class CaseHandler(object):
 
         """
         LOG.debug('Updating verification status for variants in case:{}'.format(case_obj['_id']))
-
+        
+        case_verif_variants = self.case_sanger_variants(case_obj['_id'])
+        
         updated_variants = {
             'updated_verified' : [],
             'updated_ordered' : []
         }
         # update verification status for verified variants of a case
-        for category, values in case_verif_variants.items():
-            for old_var in case_verif_variants[category]:
+        for category in case_verif_variants:
+            variants = case_verif_variants[category]
+            
+            for old_var in variants:
                 # new var display name should be the same as old display name:
                 display_name = old_var['display_name']
-
+                verb = 'sanger'
+                if category == 'sanger_verified':
+                    verb = 'validate'
                 # check if variant still exists
                 new_var = self.variant_collection.find_one({
                     'case_id' : case_obj['_id'],
@@ -710,54 +706,49 @@ class CaseHandler(object):
                     continue
 
                 # create a link to the new variant for the events
-                link="/{0}/{1}/{2}".format(new_var['institute'], case_obj['display_name'],
-                    new_var['_id'])
+                link="/{0}/{1}/{2}".format(
+                    new_var['institute'], case_obj['display_name'],new_var['_id']
+                )
+
+                old_event = self.event_collection.find_one({
+                    'case' : case_obj['_id'],
+                    'verb' : verb,
+                    'variant_id': old_var['variant_id']
+                })
+
+                if old_event is None:
+                    continue
+
+                user_obj = self.user(old_event['user_id'])
 
                 if category == 'sanger_verified':
-                    old_verif_event = self.event_collection.find_one({
-                        'case' : case_obj['_id'],
-                        'verb' : 'validate',
-                        'variant_id': old_var['variant_id']
-                    })
-                    user_obj = self.user(old_verif_event['user_id'])
-
                     # if a new variant coresponds to the old and
                     # there exist a verification event for the old one
-                    if new_var and old_verif_event:
-                        # validate new variant as well:
-                        updated_var = self.validate(
-                            institute=institute_obj,
-                            case=case_obj,
-                            user=user_obj,
-                            link=link,
-                            variant=new_var,
-                            validate_type=old_var.get('validation')
-                        )
-                        if updated_var:
-                            updated_variants['updated_verified'].append(updated_var['_id'])
+                    # validate new variant as well:
+                    updated_var = self.validate(
+                        institute=institute_obj,
+                        case=case_obj,
+                        user=user_obj,
+                        link=link,
+                        variant=new_var,
+                        validate_type=old_var.get('validation')
+                    )
+                    if updated_var:
+                        updated_variants['updated_verified'].append(updated_var['_id'])
 
-                else: # old variant had Sanger validation ordered
+                else: 
+                    # old variant had Sanger validation ordered
                     # check old event to collect user_obj that ordered the verification:
-                    old_sanger_event = self.event_collection.find_one({
-                        'case' : case_obj['_id'],
-                        'verb' : 'sanger',
-                        'variant_id': old_var['variant_id']
-                    })
-                    if old_sanger_event is None:
-                        continue
-
-                    user_obj = self.user(old_sanger_event['user_id'])
-
                     # set sanger ordered status for the new variant as well:
-                    updated_variant = self.order_verification(
+                    updated_var = self.order_verification(
                         institute=institute_obj,
                         case=case_obj,
                         user=user_obj,
                         link=link,
                         variant=new_var
                     )
-                    if updated_variant:
-                        updated_variants['updated_ordered'].append(updated_variant['_id'])
+                    if updated_var:
+                        updated_variants['updated_ordered'].append(updated_var['_id'])
 
         n_status_updated = len(updated_variants['updated_verified'])+len(updated_variants['updated_ordered'])
         LOG.debug('Verification status updated for {} variants'.format(n_status_updated))

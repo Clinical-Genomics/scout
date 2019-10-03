@@ -46,6 +46,11 @@ def variants(case_id, institute, force, cancer, cancer_research, sv,
         LOG.info("No matching case found")
         raise click.Abort()
 
+    institute_obj = adapter.institute(case_obj['owner'])
+    if not institute_obj:
+        LOG.info("Institute %s does not exist", case_obj['owner'])
+        raise click.Abort()
+
     files = [
         {'category': 'cancer', 'variant_type': 'clinical', 'upload': cancer},
         {'category': 'cancer', 'variant_type': 'research', 'upload': cancer_research},
@@ -72,51 +77,47 @@ def variants(case_id, institute, force, cancer, cancer_research, sv,
         variant_type = file_type['variant_type']
         category = file_type['category']
 
-        if file_type['upload']:
-            i += 1
-            if variant_type == 'research':
-                if not (force or case_obj['research_requested']):
-                    LOG.warning("research not requested, use '--force'")
-                    raise click.Abort()
+        if not file_type['upload']:
+            continue
 
-            # collect variants with verification ordered or already validated for this case
-            old_sanger_variants = adapter.case_sanger_variants(case_obj['_id'])
-
-            LOG.info("Delete {0} {1} variants for case {2}".format(
-                         variant_type, category, case_id))
-            adapter.delete_variants(case_id=case_obj['_id'],
-                                    variant_type=variant_type,
-                                    category=category)
-
-            LOG.info("Load {0} {1} variants for case {2}".format(
-                         variant_type, category, case_id))
-
-            try:
-                adapter.load_variants(
-                    case_obj=case_obj,
-                    variant_type=variant_type,
-                    category=category,
-                    rank_threshold=rank_treshold,
-                    chrom=chrom,
-                    start=start,
-                    end=end,
-                    gene_obj=gene_obj
-                )
-
-            except Exception as e:
-                LOG.warning(e)
+        i += 1
+        if variant_type == 'research':
+            if not (force or case_obj['research_requested']):
+                LOG.warning("research not requested, use '--force'")
                 raise click.Abort()
 
-            # update Sanger status for the new inserted variants
-            institute_obj = adapter.institute(case_obj['owner'])
-            case_obj = adapter.case(case_id=case_obj['_id'])
+        LOG.info("Delete {0} {1} variants for case {2}".format(
+                     variant_type, category, case_id))
+        
+        adapter.delete_variants(
+            case_id=case_obj['_id'],
+            variant_type=variant_type,
+            category=category
+        )
 
-            if institute_obj and case_obj:
-                sanger_updated = adapter.update_case_sanger_variants(
-                    institute_obj,
-                    case_obj,
-                    old_sanger_variants
-                )
+        LOG.info("Load {0} {1} variants for case {2}".format(
+                     variant_type, category, case_id))
+
+        try:
+            adapter.load_variants(
+                case_obj=case_obj,
+                variant_type=variant_type,
+                category=category,
+                rank_threshold=rank_treshold,
+                chrom=chrom,
+                start=start,
+                end=end,
+                gene_obj=gene_obj
+            )
+
+        except Exception as e:
+            LOG.warning(e)
+            raise click.Abort()
+
 
     if i == 0:
         LOG.info("No files where specified to upload variants from")
+        return
+    
+    # update Sanger status for the new inserted variants
+    sanger_updated = adapter.update_case_sanger_variants(institute_obj,case_obj)
