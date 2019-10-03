@@ -1,4 +1,6 @@
-1. Create a release branch with the release name, e.g. 2.0.0 and checkout
+# Instructions to release a new version of Scout
+
+1. Create a release branch with the release name, e.g. `release-2.0.0` and checkout
 
     ```bash
     git checkout -b release-2.0.0
@@ -19,11 +21,13 @@
 1. Commit changes, push to github and create a pull request
 
     ```bash
+    git add scout/__version__.py
+    git add ...
     git commit -m "Release notes version 2.0.0"
     git push -u origin release-2.0.0
     ```
     
-     - On github click "create pull request"
+1. On github click "create pull request"
 
 1. Merge the pull request, at least one person should review and approve first
 
