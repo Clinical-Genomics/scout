@@ -9,7 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 ### Fixed
-
+- Fix issue with STR view next page button not doing its one job.
 
 
 ## [4.7.2]
