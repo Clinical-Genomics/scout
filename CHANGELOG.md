@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.x.x]
 
 ### Added
+- Genes can be manually added to the dynamic gene list directly on the case page
+- Dynanmic gene panels can optionally be used with clinical filter, instead of default gene panel
 
 ### Fixed
 
@@ -21,7 +23,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed igv search not working due to igv.js dist 2.2.17
 - Fixed searches for cases with a gene with variants pinned or marked causative.
 - Load variant pages faster after fixing other causatives query
-- Fixed mitochondrial report bug for variants without genes
 
 
 ## [4.7.1]
