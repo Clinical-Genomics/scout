@@ -1,13 +1,13 @@
 # Contributing to Scout
 
-Hi, nice to hear that you wan't to contribute to Scout! Please have a quick read through this text 
+Hi, nice to hear that you want to contribute to Scout! Please have a quick read through this text 
 first. Contributing could be anything from questions and bug reports (issues), updating the 
 documentation to fixing features.
 
 ## Questions and Bugs
 
-First try to search the issues with some keywords to check if it has been touched before or if 
-there is an ongoing discussion.
+Before submitting a new bug or question try to look into the existing issues (open or closed). 
+Your problem could already be solved or the object of an ongoing discussion.
 
 If you have found a new topic open a issue and describe as detailed as possible your question.
 For bug reports include error messages if there are any.
@@ -17,9 +17,10 @@ For bug reports include error messages if there are any.
 ### Scout Git branching strategy
 
 Scout development is organised on a flexible Git ["Release Flow"][release_flow] branching system.
-This more or less means that we make releases in release brances, these are stable versions of Scout.
-Whenever a feature is added a branch is created from current master, when ready open a pull request
-as described below.
+This more or less means that we make releases in release branhces which corresponds to stable 
+versions of Scout. 
+In order to add a new feature, create a branch from current master and follow the instructions 
+below:
 
 ### Pull requests
 
