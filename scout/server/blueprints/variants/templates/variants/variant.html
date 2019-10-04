@@ -471,13 +471,11 @@ $(document).ready(function(){
           <td>
             {% if variant.chromosome == "MT" %}
               {% if case.mt_bams %}
-                <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.pileup', bam=case.mt_bams, bai=case.mt_bais, vcf=case.region_vcf_file, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50)) }}" target="_blank">Pileup viewer</a><br>
                 <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
               {% else %}
                 <span class="text-muted">MT BAM file(s) missing</span>
               {% endif %}
             {% elif case.bam_files %}
-              <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.pileup', bam=case.bam_files, bai=case.bai_files, vcf=case.region_vcf_file, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50)) }}" target="_blank">Pileup viewer</a><br>
               <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
             {% else %}
               <span class="text-muted">BAM file(s) missing</span>

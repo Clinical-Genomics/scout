@@ -54,11 +54,6 @@ GOOGLE = dict(
     access_token_method='POST'
 )
 
-# Use local files for the genome viewer pileup.js
-PILEUP_GENOME = '/path/to/local/pileup_refs/hg19.2bit'
-PILEUP_EXONS = '/path/to/local/pileup_refs/ensGene.bb'
-
-
 # enable the phenomizer service which links HPO phenotype terms to diseases/genes
 PHENOMIZER_USERNAME = 'phenoUser'
 PHENOMIZER_PASSWORD = 'phenoPassword'
