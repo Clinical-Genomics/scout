@@ -12,6 +12,7 @@
 {% block table_headers %}
   <th>Variant:Transcript:Exon:HGVS</th>
   <th>Tier</th>
+  <th>Score</th>
   <th>Gene</th>
   <th>Chr pos</th>
   <th>ExAC</th>
@@ -35,6 +36,7 @@
         
       </td>
       <td>{{ tier_cell(variant) }}</td>
+      <td>{{ score_cell(variant) }}</td>
       <td>{{ gene_cell(variant) }}</td>
       <td>{{ position_cell(variant) }}</td>
       <td class="text-right">{{ frequency_cell(variant) }}</td>
@@ -73,6 +75,25 @@
     {% endif %}
     <div class="label label-{{ label_class }}">{{ variant.manual_rank }}</div>
   {% endif %}
+{% endmacro %}
+
+{% macro score_cell(variant) %}
+  {% if variant.rank_score %}
+    {% if variant.rank_score < 3 %}
+      {% set label_class = 'default' %}
+    {% elif variant.rank_score == 3 %}
+      {% set label_class = 'info' %}
+    {% elif variant.rank_score == 4 %}
+      {% set label_class = 'primary' %}
+    {% elif variant.rank_score == 5 %}
+      {% set label_class = 'mixed' %}
+    {% elif variant.rank_score == 6 %}
+      {% set label_class = 'warning' %}
+    {% elif variant.rank_score > 6 %}
+      {% set label_class = 'danger' %}
+    {% endif %}
+  {% endif %}
+  <div class="label label-{{ label_class }}">{{ variant.rank_score }} </div>
 {% endmacro %}
 
 {% macro position_cell(variant) %}
