@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.x.x]
 
 ### Added
+- RankScore can be used with VCFs for vcf_cancer files
 
 ### Fixed
 - Fix issue with STR view next page button not doing its one job.
