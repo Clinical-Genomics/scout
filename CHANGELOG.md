@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - RankScore can be used with VCFs for vcf_cancer files
 
 ### Fixed
+- Fix issue with STR view next page button not doing its one job.
 
 ### Deleted
 - Removed pileup as a bam viewing option. This is replaced by IGV
