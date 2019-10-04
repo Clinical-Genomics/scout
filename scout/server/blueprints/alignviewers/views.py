@@ -24,45 +24,6 @@ def remote_static():
     new_resp = send_file_partial(file_path)
     return new_resp
 
-
-@alignviewers_bp.route('/pileup')
-def pileup():
-    """Visualize BAM alignments."""
-    vcf_file = request.args.get('vcf')
-    bam_files = request.args.getlist('bam')
-    bai_files = request.args.getlist('bai')
-    samples = request.args.getlist('sample')
-    alignments = [{'bam': bam, 'bai': bai, 'sample': sample}
-                  for bam, bai, sample in zip(bam_files, bai_files, samples)]
-
-    position = {
-        'contig': request.args['contig'],
-        'start': request.args['start'],
-        'stop': request.args['stop']
-    }
-
-    genome = current_app.config.get('PILEUP_GENOME')
-    if genome:
-        if not os.path.isfile(genome):
-            flash("The pilup genome path ({}) provided does not exist".format(genome))
-            genome = None
-    LOG.debug("Use pileup genome %s", genome)
-
-    exons = current_app.config.get('PILEUP_EXONS')
-    if exons:
-        if not os.path.isfile(exons):
-            flash("The pilup exons path ({}) provided does not exist".format(exons))
-            genome = None
-    LOG.debug("Use pileup exons %s", exons)
-
-    LOG.debug("View alignment for positions Chrom:{0}, Start:{1}, End: {2}".format(
-              position['contig'], position['start'], position['stop']))
-    LOG.debug("Use alignment files {}".format(alignments))
-
-    return render_template('alignviewers/pileup.html', alignments=alignments,
-                           position=position, vcf_file=vcf_file,
-                           genome=genome, exons=exons)
-
 @alignviewers_bp.route('/igv')
 def igv():
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)"""

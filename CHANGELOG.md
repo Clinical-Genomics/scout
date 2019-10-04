@@ -7,9 +7,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.x.x]
 
 ### Added
+- RankScore can be used with VCFs for vcf_cancer files
 
 ### Fixed
 
+### Deleted
+- Removed pileup as a bam viewing option. This is replaced by IGV
 
 
 ## [4.7.2]

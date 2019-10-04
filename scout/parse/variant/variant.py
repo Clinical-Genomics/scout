@@ -130,6 +130,7 @@ def parse_variant(variant, case, variant_type='clinical',
 
     ################# Add rank score #################
     # The rank score is central for displaying variants in scout.
+    # Use RankScore for somatic variations also
 
     rank_score = parse_rank_score(variant.INFO.get('RankScore', ''), genmod_key)
     parsed_variant['rank_score'] = rank_score or 0
