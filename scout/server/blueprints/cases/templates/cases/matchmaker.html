@@ -125,7 +125,6 @@
     {% for match_obj in match_objs %}
       {% if match_obj.match_type == type %}
         {% do matching_patients.append(match_obj.patient_id) %}
-        {{match_obj.match_oid}}
         <div class="accordion" id="accordionExample">
           <div class="card">
             <div class="card-header" id="heading_{{match_obj.match_oid}}">
