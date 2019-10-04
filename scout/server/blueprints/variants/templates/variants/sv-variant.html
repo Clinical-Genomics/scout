@@ -134,11 +134,9 @@
               {{ variant.chromosome }}:{{ variant.position }}
               {% if variant.chromosome == "MT" and case.mt_bams %}
                 - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.pileup', bam=case.mt_bams, bai=case.mt_bais, vcf=case.region_vcf_file, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">Pileup viewer</a><br>
                 <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">IGV viewer</a>
               {% elif case.bam_files %}
                 - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.pileup', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500), vcf=case.vcf_files.vcf_sv) }}" target="_blank">Pileup</a>
                 <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">IGV</a>
               {% else %}
                 - BAM file(s) missing
@@ -151,11 +149,9 @@
               {{ variant.end_chrom }}:{{ variant.end }}
               {% if variant.end_chrom == "MT" and case.mt_bams %}
                 - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.pileup', bam=case.mt_bams, bai=case.mt_bais, vcf=case.region_vcf_file, sample=case.sample_names, contig=variant.end_chrom, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">Pileup viewer</a><br>
                 <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.end_chrom, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">IGV viewer</a>
               {% elif case.bam_files %}
                 - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.pileup', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.end_chrom, start=(variant.end - 500), stop=(variant.end + 500), vcf=case.vcf_files.vcf_sv) }}" target="_blank">Pileup</a>
                 <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.end_chrom, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">IGV</a>
               {% else %}
                 - BAM file(s) missing
@@ -180,11 +176,9 @@
               {{ variant.length }}
               {% if variant.chromosome == "MT" and case.mt_bams %}
                 - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.pileup', bam=case.mt_bams, bai=case.mt_bais, vcf=case.region_vcf_file, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500)) }}" target="_blank">Pileup viewer</a><br>
                 <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500)) }}" target="_blank">IGV viewer</a>
               {% elif case.bam_files and variant.chromosome == variant.end_chrom %}
                 - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.pileup', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500), vcf=case.vcf_files.vcf_sv) }}" target="_blank">Pileup</a>
                 <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500)) }}" target="_blank">IGV</a>
               {% elif case.bam_files %}
                 - Complex rearrangement: check breakpoint alignments.

@@ -50,8 +50,8 @@ $(document).ready(function(){
     {# Email setting must be setup #}
     <li class="nav-item text-nowrap">{{ sanger_button() }}</li>
   {% endif %}
-  <li class="nav-item">{{ pin_button() }}</li>
-  <li class="nav-item text-nowrap">{{ causative_button() }}</li>
+  <li class="nav-item">{{ pin_button() }}</li>
+  <li class="nav-item text-nowrap">{{ causative_button() }}</li>
   {{ super() }}
 {% endblock %}
 
@@ -72,7 +72,7 @@ $(document).ready(function(){
     </div>
     <div class="row">
         <div class="col-sm">{{ inheritance_panel() }}</div>
-        <div class="col-sm">{{ omim_phenotypes() }}</div>
+        <div class="col-sm">{{ omim_phenotypes() }}</div>
     </div>
     <div class="row">
       <div class="col-sm">{{ frequency_list() }}</div>
@@ -452,7 +452,7 @@ $(document).ready(function(){
           <tbody>
             {% for clinsig in variant.clinsig_human %}
               <tr>
-                <td>{{ clinsig.human }}</td>
+                <td>{{ clinsig.human }}</td>
                 <td>
                   <a href="{{ clinsig.link }}" target="_blank">{{ clinsig.accession }}</a>
                 </td>
@@ -483,13 +483,11 @@ $(document).ready(function(){
             <td>
               {% if variant.chromosome == "MT" %}
                 {% if case.mt_bams %}
-                  <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.pileup', bam=case.mt_bams, bai=case.mt_bais, vcf=case.region_vcf_file, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50)) }}" target="_blank">Pileup viewer</a><br>
                   <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
                 {% else %}
                   <span class="text-muted">MT BAM file(s) missing</span>
                 {% endif %}
               {% elif case.bam_files %}
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.pileup', bam=case.bam_files, bai=case.bai_files, vcf=case.region_vcf_file, sample=case.sample_names, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50)) }}" target="_blank">Pileup viewer</a><br>
                 <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
               {% else %}
                 <span class="text-muted">BAM file(s) missing</span>
@@ -1324,7 +1322,7 @@ $(document).ready(function(){
     </div>
     <small class="text-muted">
       <form action="{{ url_for('variants.evaluation', evaluation_id=data._id) }}" method="POST">
-      {{ data.user_name }} on {{ data.created_at.date() }}
+      {{ data.user_name }} on {{ data.created_at.date() }}
       {% if current_variant %}
         <button class="btn btn-xs btn-link">Delete</button>
       {% endif %}
