@@ -42,13 +42,14 @@
       </div>
     </div>
   </form>
-  
+
   <div class="card mt-3">
     <table class="table table-hover table-bordered">
       <thead>
             <tr>
               <th>Variant:Transcript:Exon:HGVS</th>
               <th>Tier</th>
+              <th>Score</th>
               <th>Gene</th>
               <th>Chr pos</th>
               <th>ExAC</th>
@@ -70,6 +71,7 @@
               </a>
             </td>
             <td>{{ tier_cell(variant) }}</td>
+            <td>{{ score_cell(variant) }}</td>
             <td>{{ gene_cell(variant) }}</td>
             <td>{{ position_cell(variant) }}</td>
             <td class="text-right">{{ frequency_cell(variant) }}</td>
@@ -113,6 +115,26 @@
     <div class="badge badge-{{ label_class }}">{{ variant.manual_rank }}</div>
   {% endif %}
 {% endmacro %}
+
+{% macro score_cell(variant) %}
+  {% if variant.rank_score %}
+    {% if variant.rank_score < 3 %}
+      {% set label_class = 'default' %}
+    {% elif variant.rank_score == 3 %}
+      {% set label_class = 'info' %}
+    {% elif variant.rank_score == 4 %}
+      {% set label_class = 'primary' %}
+    {% elif variant.rank_score == 5 %}
+      {% set label_class = 'mixed' %}
+    {% elif variant.rank_score == 6 %}
+      {% set label_class = 'warning' %}
+    {% elif variant.rank_score > 6 %}
+      {% set label_class = 'danger' %}
+    {% endif %}
+  {% endif %}
+  <div class="badge badge-{{ label_class }}">{{ variant.rank_score }} </div>
+{% endmacro %}
+
 
 {% macro position_cell(variant) %}
   {{ variant.chromosome }}<span class="text-muted">:{{ variant.position }}</span>
