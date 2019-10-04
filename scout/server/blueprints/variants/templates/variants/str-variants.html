@@ -37,15 +37,15 @@
     <table class="table table-bordered table-hover">
       <thead>
         <tr>
-          <th class="col-xs-1" title="Rank position">Rank</th>
-          <th class="col-xs-1" title="Repeat ID">Repeat locus</th>
-          <th class="col-xs-2" title="Repeat unit">Reference repeat unit</th>
-          <th class="col-xs-1" title="ALT">Estimated size</th>
-          <th class="col-xs-1" title="ReferenceSize">Reference size</th>
-          <th class="col-xs-1" title="Status">Status</th>
-          <th class="col-xs-2" title="GT">Genotype</th>
-          <th class="col-xs-1" title="Chromosome">Chr.</th>
-          <th class="col-xs-2" title="Position">Position</th>
+          <th class="col-1" title="Rank position">Rank</th>
+          <th class="col-1" title="Repeat ID">Repeat locus</th>
+          <th class="col-2" title="Repeat unit">Reference repeat unit</th>
+          <th class="col-1" title="ALT">Estimated size</th>
+          <th class="col-1" title="ReferenceSize">Reference size</th>
+          <th class="col-1" title="Status">Status</th>
+          <th class="col-2" title="GT">Genotype</th>
+          <th class="col-1" title="Chromosome">Chr.</th>
+          <th class="col-2" title="Position">Position</th>
         </tr>
       </thead>
       <tbody>
@@ -57,7 +57,7 @@
           {% elif variant.str_status == 'full_mutation' %}
               <tr class="bg-warning">
           {% elif variant.str_status == 'pre_mutation' %}
-              <tr class="medium">
+              <tr style="background-color: #ffff66;">
 	        {% else %}
 	            <tr>
 	        {% endif %}
