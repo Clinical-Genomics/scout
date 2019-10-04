@@ -406,7 +406,7 @@ class CaseHandler(object):
         old_caseid = '-'.join([case_obj['owner'], case_obj['display_name']])
         old_case = self.case(old_caseid)
         # This is to keep sanger order and validation status
-        old_sanger_variants = case_sanger_variants(case_obj['_id'])
+        old_sanger_variants = self.case_sanger_variants(case_obj['_id'])
 
         if old_case:
             LOG.info("Update case id for existing case: %s -> %s", old_caseid, case_obj['_id'])
@@ -660,9 +660,9 @@ class CaseHandler(object):
                     continue
                 case_verif_variants[category].append(variant_obj)
             
-        LOG.info("Nr variants with sanger verification found: %n",
+        LOG.info("Nr variants with sanger verification found: %s",
                  len(case_verif_variants['sanger_verified']))
-        LOG.info("Nr variants with sanger ordered found: %n",
+        LOG.info("Nr variants with sanger ordered found: %s",
                  len(case_verif_variants['sanger_ordered']))
         
         return case_verif_variants
@@ -753,7 +753,7 @@ class CaseHandler(object):
                         updated_variants['updated_ordered'].append(updated_var['_id'])
 
         n_status_updated = len(updated_variants['updated_verified'])+len(updated_variants['updated_ordered'])
-        LOG.debug('Verification status updated for {} variants'.format(n_status_updated))
+        LOG.info('Verification status updated for %n variants', n_status_updated)
         return updated_variants
 
 

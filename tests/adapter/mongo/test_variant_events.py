@@ -215,14 +215,14 @@ def test_sanger_ordered(adapter, institute_obj, case_obj, user_obj, variant_obj)
     # by querying database using the user_id
     sanger_results = adapter.sanger_ordered(user_id=user_obj['_id'])
     assert sanger_results[0]['_id'] == case_obj['_id']
-    assert sanger_results[0]['vars'] == [updated_variant['variant_id']]
+    assert sanger_results[0]['vars'] == {updated_variant['variant_id']}
 
     # by querying database using the institute_id
     sanger_results = adapter.sanger_ordered(institute_id=institute_obj['_id'])
     assert sanger_results[0]['_id'] == case_obj['_id']
-    assert sanger_results[0]['vars'] == [updated_variant['variant_id']]
+    assert sanger_results[0]['vars'] == {updated_variant['variant_id']}
 
     # or by querying database using the case id
     sanger_results = adapter.sanger_ordered(case_id=case_obj['_id'])
     assert sanger_results[0]['_id'] == case_obj['_id']
-    assert sanger_results[0]['vars'] == [updated_variant['variant_id']]
+    assert sanger_results[0]['vars'] == {updated_variant['variant_id']}

@@ -7,19 +7,13 @@ from scout.server.blueprints.cases.controllers import get_sanger_unevaluated
 def test_case_sanger_variants(adapter, institute_obj, case_obj, user_obj, variant_obj):
     """Test assigning a verification status to a veriant"""
 
-    # GIVEN a variant db with at least one variant
+    ## GIVEN a variant db with at least one variant
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
     adapter.user_collection.insert_one(user_obj)
     adapter.variant_collection.insert_one(variant_obj)
 
-    # Set variant status as verified
-    adapter.variant_collection.find_one_and_update(
-        {'_id': variant_obj['_id']},
-        {'$set': {'validation': 'False positive'}},
-    )
-
-    # And update Sanger ordering for the variant
+    ## WHEN ordering sanger for a variant
     updated_variant = adapter.order_verification(
         institute=institute_obj,
         case=case_obj,
@@ -28,53 +22,70 @@ def test_case_sanger_variants(adapter, institute_obj, case_obj, user_obj, varian
         variant=variant_obj
     )
 
-    # Then collecting variants using case_sanger_variants should return the same variant
     case_sanger_vars = adapter.case_sanger_variants(case_id=case_obj['_id'])
-    assert case_sanger_vars['sanger_verified'][0]['_id'] == variant_obj['_id']
+    # THEN assert that no verified variants are returned
+    assert case_sanger_vars['sanger_verified'] == []
+    # THEN assert that one variant with sanger ordered is returned
     assert case_sanger_vars['sanger_ordered'][0]['_id'] == updated_variant['_id']
 
+def test_case_verified_variants(adapter, institute_obj, case_obj, user_obj, variant_obj):
+    """Test assigning a verification status to a veriant"""
 
-def test_update_case_sanger_variants(adapter, institute_obj, case_obj, user_obj, variant_obj):
-    """Test updating a verification status for a variant in a case"""
-
-    # GIVEN a database with a case and at least a variant
+    ## GIVEN a variant db with at least one variant
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
     adapter.user_collection.insert_one(user_obj)
     adapter.variant_collection.insert_one(variant_obj)
 
-    # verify test variant (so that it creates an event)
+    ## WHEN setting variant status as verified
     adapter.validate(
-        institute = institute_obj,
-        case = case_obj,
-        user = user_obj,
-        link = 'validate_link',
-        variant = variant_obj,
-        validate_type = 'True positive'
-    )
-
-    # order sanger for the same variant:
-    adapter.order_verification(
         institute=institute_obj,
         case=case_obj,
         user=user_obj,
-        link='sanger_link',
-        variant=variant_obj
+        link='validateSangerlink',
+        variant=variant_obj,
+        validate_type='True positive'
     )
 
-    variant_obj['validation'] = 'True positive'
-    # When assigning a verification to a new variant
-    # and using the function to update sanger status for the variants
-    # of a case
+    case_sanger_vars = adapter.case_sanger_variants(case_id=case_obj['_id'])
+    ## THEN assert that one verified variant is found
+    assert case_sanger_vars['sanger_verified'][0]['_id'] == variant_obj['_id']
+    ## THEN assert that no variants with sanger ordered exists
+    assert case_sanger_vars['sanger_ordered'] == []
 
-    updated_variants = adapter.update_case_sanger_variants(institute_obj, case_obj)
+def test_case_sanger_and_verified_variants(adapter, institute_obj, case_obj, user_obj, variant_obj):
+    """Test assigning a verification status to a veriant"""
 
-    # Then the verification status should be updated for
-    # verified variants
-    assert updated_variants['updated_verified'] == [variant_obj['_id']]
+    ## GIVEN a variant db with at least one variant
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.variant_collection.insert_one(variant_obj)
 
-    # and variants with Sanger ordered
-    assert updated_variants['updated_ordered'] == [variant_obj['_id']]
+    ## WHEN ordering sanger for a variant
+    updated_variant = adapter.order_verification(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link='orderSangerlink',
+        variant=variant_obj
+    )
+    
+    ## WHEN Setting variant status as verified
+    
+    adapter.validate(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link='validateSangerlink',
+        variant=variant_obj,
+        validate_type='True positive'
+    )
+
+    # Then collecting variants using case_sanger_variants should return the same variant
+    case_sanger_vars = adapter.case_sanger_variants(case_id=case_obj['_id'])
+    assert case_sanger_vars['sanger_verified'][0]['_id'] == variant_obj['_id']
+    assert case_sanger_vars['sanger_ordered'][0]['_id'] == updated_variant['_id']
 
 def test_get_sanger_unevaluated(real_populated_database, variant_objs, institute_obj, case_obj, user_obj):
     """Test get all sanger ordered but not evaluated for an institute"""
