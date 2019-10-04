@@ -12,6 +12,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Fix issue with STR view next page button not doing its one job.
 
+### Deleted
+- Removed pileup as a bam viewing option. This is replaced by IGV
+
 
 ## [4.7.2]
 
@@ -23,7 +26,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed searches for cases with a gene with variants pinned or marked causative.
 - Load variant pages faster after fixing other causatives query
 - Fixed mitochondrial report bug for variants without genes
-
 
 ## [4.7.1]
 
