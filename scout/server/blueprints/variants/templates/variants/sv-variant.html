@@ -50,15 +50,15 @@
       <div class="card mt-3">
         <div class="class-body">
           <ul class="list-group">
-            <li class="list-group-item">Rank <span class="badge">{{ variant.variant_rank }}</span></li>
+            <li class="list-group-item">Rank <span class="badge badge-pill badge-secondary pull-right">{{ variant.variant_rank }}</span></li>
             <li class="list-group-item">
               Rank score
-              <span class="badge">{{ variant.rank_score }}</span>
+              <span class="badge badge-pill badge-secondary pull-right">{{ variant.rank_score }}</span>
             </li>
 
             <li class="list-group-item">
               Category
-              <span class="badge">{{ variant.sub_category|upper }}</span>
+              <span class="badge badge-pill badge-secondary pull-right">{{ variant.sub_category|upper }}</span>
             </li>
 
             <div class="list-group-item">
@@ -309,7 +309,7 @@
         <li class="list-group-item">
           {{ freq_name }}
           {% if value %}
-            <span class="badge">{{ value|human_decimal }}</span>
+            <span class="badge badge-secondary pull-right">{{ value|human_decimal }}</span>
           {% else %}
             <span class="pull-right">-</span>
           {% endif %}
