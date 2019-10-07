@@ -149,6 +149,9 @@ def clinvar_submissions(institute_id):
 def matchmaker_matches(institute_id, case_name):
     """Show all MatchMaker matches for a given case"""
     # check that only authorized users can access MME patients matches
+    panel=1
+    if request.method=='POST':
+        panel = panel=request.form.get('pane_id')
     user_obj = store.user(current_user.email)
     if 'mme_submitter' not in user_obj['roles']:
         flash('unauthorized request', 'warning')
@@ -161,13 +164,15 @@ def matchmaker_matches(institute_id, case_name):
         return redirect(request.referrer)
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.mme_matches(case_obj, institute_obj, mme_base_url, mme_token)
+    data['panel'] = panel
     if data and data.get('server_errors'):
         flash('MatchMaker server returned error:{}'.format(data['server_errors']), 'danger')
         return redirect(request.referrer)
     elif not data:
         data = {
             'institute' : institute_obj,
-            'case' : case_obj
+            'case' : case_obj,
+            'panel' : panel
         }
     return data
 

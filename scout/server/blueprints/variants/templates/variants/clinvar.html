@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -8,28 +8,28 @@
 {% set pheno_features = [] %}
 
 {% block top_nav %}
-  <li>
-    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
-  <li>
-    <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
       {{ case.display_name }}
     </a>
   </li>
-  <li>
+  <li class="nav-item">
     {% if cancer %}
-      <a href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
+      <a class="nav-link" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
         {{ variant.variant_type|capitalize }} cancer variants
       </a>
     {% else %}
-      <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
+      <a class="nav-link" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
         {{ variant.variant_type|capitalize }} SNV and INDELs
       </a>
     {% endif %}
   </li>
-  <li class="active">
+  <li class="nav-item active">
     <p class="navbar-text">{{ variant.display_name|truncate(20, True) }}</p>
   </li>
 {% endblock %}
@@ -102,12 +102,13 @@
     <input type="hidden" name="alt@{{pinned._id}}" value="{{ pinned.alternative }}">
     <input type="hidden" name="condition_id_type@{{pinned._id}}" value="HPO">
     <br><br>
-        <div class="panel panel-default">
+        <div class="card panel-default">
           <div class="panel-heading">
+            <h5>
             {% if pinned.category == 'snv' %}
-              <span class="label label-success pull-left">snv</span>
+              <span class="badge badge-success pull-left">snv</span>
             {% else %}
-              <span class="label label-warning pull-left">sv</span>
+              <span class="badge badge-warning pull-left">sv</span>
             {% endif %}
             {% if pinned.simple_id|length > 25 and pinned.cytoband_start %}
               #Variant --> {{ pinned.sub_category+"("+pinned.chromosome+pinned.cytoband_start+"-"+pinned.end_chrom+pinned.cytoband_end+")" }}
@@ -116,6 +117,7 @@
             {% else %}
               #Variant --> {{ pinned.simple_id }}
             {% endif %}
+            </h5>
           </div>
           <table class="table table-bordered table-fixed">
             <tbody>
@@ -170,9 +172,9 @@
                       </tr>
                     {% endif %}
                     <tr>
-                      <td>Variant model of inheritance <br>
+                      <td >Variant model of inheritance <br>
                         {% for model in pinned.genetic_models|sort %}
-                          <span class="label label-info">{{ model }}</span>
+                          <span class="badge badge-info">{{ model }}</span>
                         {% endfor %}
                       </td>
                       <td>
@@ -301,7 +303,7 @@
                     <tr>
                       <td style="width:30%">Condition HPO term(s):<br>(associated with the variant)<br>
                         {% for hpo in pheno_hpos %}
-                          <a href="http://compbio.charite.de/hpoweb/showterm?id={{hpo}}" target="_blank"><span class="label label-info">{{ hpo }}</span></a><br>
+                          <a href="http://compbio.charite.de/hpoweb/showterm?id={{hpo}}" target="_blank"><span class="badge badge-info">{{ hpo }}</span></a><br>
                         {% endfor %}
                       </td>
                       <td>
@@ -414,7 +416,7 @@
           {% endif %}
           <!--end of SV fields-->
 
-          <a href="#more_variant_{{pinned._id}}" data-toggle="collapse">More optional fields</a>
+          <a href="#more_variant_{{pinned._id}}" data-toggle="collapse">More optional fields</a><hr>
           <div id="more_variant_{{pinned._id}}" class="collapse">
             <table class="table table-fixed">
               <tbody>
@@ -472,23 +474,26 @@
           {% for sample in pinned.samples %}
             {% if sample.display_name == individual.display_name and sample.genotype_call != '0/0' and sample.genotype_call != './.' %}
               <div class="form-group" id="cdata_checkbox_{{pinned._id}}" >
-                <div class="checkbox">
-                  <label data-toggle="collapse" data-target="#casedata_{{pinned._id}}" aria-expanded="false" aria-controls="collapseOne">
-                    <input type="checkbox" name="casedata_{{pinned._id}}" id="_{{pinned._id}}"/>Submit case data for this variant
-                  </label>
+                <div class="col-12 card">
+                  <div class="form-check">
+                    <label data-toggle="collapse" class="form-check-label" class="form-check-input" data-target="#casedata_{{pinned._id}}" aria-expanded="false" aria-controls="collapseOne">
+                      <input type="checkbox" class="form-check-input" name="casedata_{{pinned._id}}" id="_{{pinned._id}}"/>Submit case data for this variant
+                    </label>
+                  </div>
                 </div>
               </div>
+
               <div id="casedata_{{pinned._id}}" class="collapse">
                 <input type="hidden" name="collection_method@{{pinned._id}}" value="clinical testing">
                 <input type="hidden" name="individual_id@{{pinned._id}}" value="{{ individual.display_name }}">
                 <input type="hidden" name="linking_id@{{ pinned._id }}" value="{{ pinned._id }}">
-                <div class="panel panel-success">
+                <div class="card">
                   {% if pinned.simple_id|length > 25 and  pinned.cytoband_start%}
-                    <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ pinned.sub_category+"("+pinned.chromosome+pinned.cytoband_start+"-"+pinned.end_chrom+pinned.cytoband_end+")" }}</div>
+                    <div class="card-header">Subject {{ individual.display_name }}, variant {{ pinned.sub_category+"("+pinned.chromosome+pinned.cytoband_start+"-"+pinned.end_chrom+pinned.cytoband_end+")" }}</div>
                   {% elif pinned.simple_id|length > 25 %}
-                    <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ pinned.sub_category+"(chr."+pinned.chromosome+")" }}</div>
+                    <div class="card-header">Subject {{ individual.display_name }}, variant {{ pinned.sub_category+"(chr."+pinned.chromosome+")" }}</div>
                   {% else %}
-                    <div class="panel-heading">Subject {{ individual.display_name }}, variant {{ pinned.simple_id }}</div>
+                    <div class="card-header">Subject {{ individual.display_name }}, variant {{ pinned.simple_id }}</div>
                   {% endif %}
                   <table class="table table-bordered table-fixed">
                     <tbody class="border-top">
@@ -720,11 +725,8 @@
 {% endmacro %}
 
 {% block scripts %}
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+{{ super() }}
 <script type="text/javascript">
-
     var div = document.getElementById("main");
     var inputs = div.getElementsByTagName("input");
     for (var i = 0, len = inputs.length; i < len; ++i) {

@@ -40,7 +40,7 @@ def create_app(config_file=None, config=None):
         app.config.update(config)
     if config_file:
         app.config.from_pyfile(config_file)
-        
+
     # If there is a MatchMaker Exchange server
     # collect the connected external nodes
     app.mme_nodes = mme_nodes(app.config.get('MME_URL'), app.config.get('MME_TOKEN'))
@@ -68,6 +68,8 @@ def create_app(config_file=None, config=None):
             if relevant_endpoint and not current_user.is_authenticated:
                 # combine visited URL (convert byte string query string to unicode!)
                 next_url = "{}?{}".format(request.path, request.query_string.decode())
+                if 'favicon' in next_url:
+                    next_url = None
                 login_url = url_for('login.login', next=next_url)
                 return redirect(login_url)
 

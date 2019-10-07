@@ -22,7 +22,6 @@ from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEA
 from scout.export.variant import export_verified_variants
 from scout.server.utils import institute_and_case, user_institutes
 from scout.server.links import (add_gene_links, ensembl, add_tx_links)
-from .forms import CancerFiltersForm
 from scout.server.blueprints.genes.controllers import gene
 from scout.utils.requests import fetch_refseq_version
 
@@ -1098,10 +1097,9 @@ def verification_email_body(case_name, url, display_name, category, subcategory,
     return html
 
 
-def cancer_variants(store, request_args, institute_id, case_name):
+def cancer_variants(store, request_args, institute_id, case_name, form):
     """Fetch data related to cancer variants for a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    form = CancerFiltersForm(request_args)
     variants_query = store.variants(case_obj['_id'], category='cancer', query=form.data).limit(50)
     data = dict(
         institute=institute_obj,

@@ -20,7 +20,7 @@ from scout.server.utils import templated, institute_and_case, public_endpoint
 from scout.utils.acmg import get_acmg
 from scout.parse.clinvar import set_submission_objects
 from . import controllers
-from .forms import FiltersForm, SvFiltersForm, StrFiltersForm
+from .forms import FiltersForm, SvFiltersForm, StrFiltersForm, CancerFiltersForm
 
 log = logging.getLogger(__name__)
 variants_bp = Blueprint('variants', __name__, static_folder='static', template_folder='templates')
@@ -51,6 +51,7 @@ def variants(institute_id, case_name):
         clinical_filter_panels = default_panels
 
     log.debug("Current default panels: {}".format(default_panels))
+
     if bool(request.form.get('clinical_filter')):
 
         # but not if HPO is selected
@@ -466,7 +467,8 @@ def clinvar(institute_id, case_name, variant_id):
 @templated('variants/cancer-variants.html')
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
-    data = controllers.cancer_variants(store, request.args, institute_id, case_name)
+    form = CancerFiltersForm(request.args)
+    data = controllers.cancer_variants(store, request.args, institute_id, case_name, form)
     return data
 
 

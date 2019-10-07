@@ -1,8 +1,8 @@
 {% macro gene_cell(variant) %}
-  <div class="pull-left">
+  <div class="d-flex justify-content-between align-items-center">
     {% for gene in variant.genes %}
-      <div data-toggle="tooltip" data-placement="left" data-html="true" title="
-      <div class='text-left'>
+      <a data-toggle="tooltip" data-html="true" title="
+      <div>
         <div>
           <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
         </div>
@@ -11,29 +11,21 @@
             <strong>Models</strong>: {{ gene.inheritance|join(',') }}
           </div>
         {% endif %}
-      </div>
-      ">
-        <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-          {{ gene.hgnc_symbol or gene.hgnc_id }}
-        </a>
-      </div>
-   
+      </div>"
+        href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
+      </a>
     {% endfor %}
+    {% if variant.panels|count > 0 %}
+        <a
+          class="badge badge-secondary text-white"
+          data-toggle="popover"
+          data-html="true"
+          data-trigger="hover click"
+          data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
+          title="">{{variant.panels|count}}
+         </a>
+    {% endif %}
   </div>
-  {% if variant.panels|count > 0 %}
-    <div
-       class="badge pull-right"
-       data-toggle="popover"
-       data-placement="right"
-       data-html="true"
-       data-trigger="hover click"
-       data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
-       title=""
-       >
-      {{ variant.panels|count }}
-    </div>
-  {% endif %}    
-    
 {% endmacro %}
 
 {% macro frequency_cell(variant) %}
@@ -68,83 +60,4 @@
   ">
     {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency else '~' }}
   </div>
-{% endmacro %}
-
-{% macro filters_form(form) %}
-  <form method="GET">
-    {{ form.csrf_token }}
-    {{ form.variant_type() }}
-    <div class="form-group">
-      <div class="row">
-        <div class="col-xs-3">
-          {{ form.gene_panels.label(class="control-label") }}
-          {{ form.gene_panels(class="form-control") }}
-        </div>
-        <div class="col-xs-3">
-          {{ form.region_annotations.label(class="control-label") }}
-          {{ form.region_annotations(class="form-control") }}
-        </div>
-        <div class="col-xs-3">
-          {{ form.functional_annotations.label(class="control-label") }}
-          {{ form.functional_annotations(class="form-control") }}
-        </div>
-        <div class="col-xs-3">
-          {{ form.genetic_models.label(class="control-label") }}
-          {{ form.genetic_models(class="form-control") }}
-        </div>
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="row">
-        <div class="col-xs-3">
-          {{ form.hgnc_symbols.label(class="control-label") }}
-          {{ form.hgnc_symbols(class="form-control") }}
-        </div>
-        <div class="col-xs-3">
-          {{ form.cadd_score.label(class="control-label") }}
-          {{ form.cadd_score(class="form-control") }}
-        </div>
-        <div class="col-xs-3">
-          {{ form.cadd_inclusive.label(class="control-label") }}
-          <div>{{ form.cadd_inclusive() }}</div>
-        </div>
-        <div class="col-xs-3">
-          {{ form.clinsig.label(class="control-label") }}
-          {{ form.clinsig(class="form-control") }}
-        </div>
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="row">
-        <div class="col-xs-4">
-          {{ form.gnomad_frequency.label(class="control-label") }}
-          {{ form.gnomad_frequency(class="form-control") }}
-        </div>
-        <div class="col-xs-6">
-          <label class="control-label">Submit</label>
-          <button class="btn btn-primary form-control">Filter variants</button>
-        </div>
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="row">
-        <div class="col-xs-3">
-          {{ form.depth.label(class="control-label") }}
-          {{ form.depth(class="form-control") }}
-        </div>
-        <div class="col-xs-3">
-          {{ form.alt_count.label(class="control-label") }}
-          {{ form.alt_count(class="form-control") }}
-        </div>
-        <div class="col-xs-3">
-          {{ form.control_frequency.label(class="control-label") }}
-          {{ form.control_frequency(class="form-control") }}
-        </div>
-        <div class="col-xs-3">
-          {{ form.mvl_tag.label(class="control-label") }}
-          <div>{{ form.mvl_tag() }}</div>
-        </div>
-      </div>
-    </div>
-  </form>
 {% endmacro %}
