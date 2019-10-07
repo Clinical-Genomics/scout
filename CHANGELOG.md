@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### fixed
 
+- Instructions on how to build docs
 
 ## [4.7.3]
 
