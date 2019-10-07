@@ -13,8 +13,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved dashboard using Chart.js
 
 ### fixed
-
 - Instructions on how to build docs
+- Keep sanger order + verification when updating/reloading variants
 
 ## [4.7.3]
 
