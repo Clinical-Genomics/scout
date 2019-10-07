@@ -1,41 +1,41 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 
 {% block title %}
   {{ super() }} - Institutes
 {% endblock %}
 
 {% block top_nav %}
-  {{ super() }}
-
-  <li>
-    <a href="{{ url_for('cases.index') }}">Institutes</a>
-  </li>
-  <li>
-    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
-      {{ institute.display_name }} Cases
-    </a>
-  </li>
-  <li class="active">
-    <span class="navbar-text">Causatives</span>
-  </li>
-  <li>
-      <a href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All SNVs and INDELs</a>
-    </li>
-   <li>
-     <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
-   </li>
-
-
+{{ super() }}
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">{{ institute.display_name }} Cases</a>
+</li>
+<li class="nav-item active">
+  <a class="nav-link" href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All SNVs and INDELs</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
+</li>
 {% endblock %}
 
 {% block content_main %}
-  <div class="panel panel-default">
-    <div class="panel-heading">Search for genes</div>
-    <div class="panel-body">
+<div class="container-float">
+  <div class="card panel-default">
+    <div class="card-body">
       <form action="{{ url_for('cases.causatives', institute_id=institute._id) }}">
         <div class="row">
-          <div class="col-xs-8">
-            <input name="query" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search...">
+          <div class="col-md-4 col-xs-4">
+            <div class="input-group">
+              <span class="input-group-addon">
+                <span class="glyphicon glyphicon-search"></span>
+              </span>
+              <input name="query" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search gene">
+            </div>
           </div>
           <div class="col-xs-4">
             <button class="btn btn-default form-control">Search</button>
@@ -44,103 +44,102 @@
       </form>
     </div>
   </div>
+</div>
+<div class="list-group" style="margin-top: 25px">
   {% for _, group in variant_groups.items() %}
-    <div class="panel panel-default">
-      {% set variant = group[0][1] %}
-      <div class="panel-heading">
-        {{ variant.hgnc_symbols|join(', ') }}
-        <span class="text-muted">
+  {% set variant = group[0][1] %}
+  <li class="list-group-item">
+    <div class="d-flex justify-content-between">
+      <h5 class="mb-1">{{ variant.hgnc_symbols|join(', ') }}</h5>
+      <span class="text-muted" style="display: inline-block; margin-left: 10px;">
           {{ variant.chromosome }}:{{ variant.position }} {% if variant.is_par %}
-          <span class="label label-info">PAR</span>
+          <span class="badge badge-info">PAR</span>
           {% endif %}
           {{ variant.reference|truncate(30, True) }} → {{ variant.alternative|truncate(30, True) }}
         </span>
-      </div>
-      <ul class="list-group">
-        {% for case, variant in group %}
-          {% if variant._id in case.causatives %}
-            <li class="list-group-item">
-              <div class="row">
-                <div class="col-xs-8 col-md-2">
-                  <a href="{{ url_for('variants.variant',
-                                      institute_id=institute._id,
-                                      case_name=case.display_name,
-                                      variant_id=variant._id) }}">
-                    {{ variant.display_name|truncate(20, True) }}
-                  </a>
-                </div>
-                <div class="col-xs-8 col-md-1">
-                  <span class="label label-default">{{ variant.category|upper }}</span>
-                </div>
-                <div class="col-xs-8 col-md-2">
-                  <a href="#">Rank score <span class="badge">{{ variant.rank_score }}</span></a>
-                </div>
-                <div class="col-xs-8 col-md-2">
-                  zygosity:
-                  {% for sample in variant.samples %}
-                    {% for ind in case.individuals %}
-                      {% if sample.sample_id == ind.individual_id %}
-                          {% if ind.phenotype == 2%}
-                            <span class="label label-danger">{{sample.genotype_call}}</span>
-                          {% else %}
-                            <span class="label label-success">{{sample.genotype_call}}</span>
-                          {% endif %}
-                      {% endif %}
-                    {% endfor %}
+    </div>
+    <ul class="list-group ist-group-flush">
+      {% for case, variant in group %}
+        {% if variant._id in case.causatives %}
+          <div class="list-group-item">
+            <div class="row">
+              <div class="col-xs-8 col-md-2">
+                <a href="{{ url_for('variants.variant',
+                                    institute_id=institute._id,
+                                    case_name=case.display_name,
+                                    variant_id=variant._id) }}">
+                  {{ variant.display_name|truncate(20, True) }}
+                </a>
+              </div>
+              <div class="col-xs-8 col-md-1">
+                <span class="badge badge-secondary">{{ variant.category|upper }}</span>
+              </div>
+              <div class="col-xs-8 col-md-2">
+                <a href="#">Rank score <span class="badge badge-pill badge-secondary">{{ variant.rank_score }}</span></a>
+              </div>
+              <div class="col-xs-8 col-md-2">
+                zygosity:
+                {% for sample in variant.samples %}
+                  {% for ind in case.individuals %}
+                    {% if sample.sample_id == ind.individual_id %}
+                        {% if ind.phenotype == 2%}
+                          <span class="badge badge-danger">{{sample.genotype_call}}</span>
+                        {% else %}
+                          <span class="badge badge-success">{{sample.genotype_call}}</span>
+                        {% endif %}
+                    {% endif %}
                   {% endfor %}
-                </div>
-                <div class="col-xs-8 col-md-2">
-                  inheritance:
-                  {% for model in variant.genetic_models %}
-                    <span class="label label-info">{{model}}</span>
-                  {% endfor %}
-                </div>
-                <div class="col-xs-8 col-md-1">
+                {% endfor %}
+              </div>
+              <div class="col-xs-8 col-md-2">
+                inheritance:
+                {% for model in variant.genetic_models %}
+                  <span class="badge badge-info">{{model}}</span>
+                {% endfor %}
+              </div>
+              <div class="col-xs-8 col-md-1">
                   <a href="#" data-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)" style="text-decoration: none; color: #000;">ACMG:
                   {% if 'acmg_classification' in variant %}
-                    <span class="label label-{{variant.acmg_classification.color}}">{{variant.acmg_classification.short}}</span>
+                    <span class="badge badge-{{variant.acmg_classification.color}}">{{variant.acmg_classification.short}}</span>
                   {% else %}
                   -
                   {% endif %}
                   </a>
                 </div>
-                <div class="col-md-2">
-                  <a href="{{ url_for('cases.case',
-                                      institute_id=institute._id,
-                                      case_name=case.display_name) }}">
-                    {{ case.display_name }}
-                  </a>
-                  <span class="label label-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
-                    {{ case.status }}
-                  </span>
-                </div>
-
+              <div class="col-md-2">
+                <a href="{{ url_for('cases.case',
+                                    institute_id=institute._id,
+                                    case_name=case.display_name) }}">
+                  {{ case.display_name }}
+                </a>
+                <span class="badge badge-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
+                  {{ case.status }}
+                </span>
               </div>
-            </li>
-          {% endif %}
-        {% endfor %}
-      </ul>
-    </div>
+
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </li>
   {% endfor %}
+</div>
 {% endblock %}
 
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
-
   <script>
-
     $(document).ready(function(){
       $('[data-toggle="tooltip"]').tooltip();
     });
-
     $(function () {
       function getTerms(query, process) {
         $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
           process(data)
         });
       }
-
       $(".typeahead").typeahead({
         source: getTerms,
         minLength: 2,

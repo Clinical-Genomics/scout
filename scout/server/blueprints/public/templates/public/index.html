@@ -1,43 +1,45 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 
 {% block content_main %}
-  <header class="jumbotron">
-    <h1>Scout</h1>
-    <p>Analyze VCFs quicker and easier</p>
+<div class="container">
+  <div class="jumbotron mt-3 bg-white">
+    <h1 class="display-4">Scout</h1>
+    <p class="lead">Analyze VCFs quicker and easier</p>
+    <hr class="my-4">
     <p>
       Scout allows you to browse VCFs in a web browser, identify
       compound pairs, and solve cases as a team.
     </p>
 
-    <p><small>Version <strong>{{ version }}</strong></small></p>
+    <p>Version <strong>{{ version }}</strong></p>
 
     {% if current_user.is_authenticated %}
       <p>
-        <a class="btn btn-primary btn-lg" href="{{ url_for('cases.index') }}">
+        <a class="btn btn-primary btn-lg text-white" href="{{ url_for('cases.index') }}" role="button">
           Welcome <strong>{{ current_user.name }}!</strong>
         </a>
       </p>
     {% else %}
       {% if config.GOOGLE %}
-        <a class="btn btn-primary" href="{{ url_for('login.login') }}">
+        <a class="btn btn-primary" href="{{ url_for('login.login') }}" role="button">
           Login with Google
         </a>
       {% else %}
         <form action="{{ url_for('login.login') }}">
           <div class="row">
-            <div class="col-xs-8">
+            <div class="col-8">
               <input type="text" placeholder="email" class="form-control" name="email">
             </div>
-            <div class="col-xs-4">
-              <button type="submit" class="btn btn-primary form-control">Login</button>
+            <div class="col-4">
+              <button type="submit" class="btn btn-primary form-control text-white">Login</button>
             </div>
           </div>
         </form>
       {% endif %}
     {% endif %}
-  </header>
+  </div>
   <main>
-    <div class="row">
+    <div class="row justify-content-center align-items-center">
       <div class="col-xs-12 col-sm-4">
         <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-scilifelab.png') }}">
       </div>
@@ -49,4 +51,5 @@
       </div>
     </div>
   </main>
+</div>
 {% endblock %}

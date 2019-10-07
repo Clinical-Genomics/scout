@@ -1,0 +1,84 @@
+{% extends "bootstrap4.html" %}
+
+{% block title %}
+  {% if title %}
+    {{ title }} - Scout
+  {% else %}
+    Welcome to Scout
+  {% endif %}
+{% endblock title %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+{% endblock head %}
+
+{% block navbar %}
+    <nav class="navbar navbar-expand-lg navbar-inverse">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('cases.index') }}">
+          <img src="{{ url_for('public.static', filename='scout-logo.png') }}" width="30" height="30" class="d-inline-block align-top" alt=""><font color="white">Scout</font></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="fa fa-bars"></span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{{ url_for('public.index') }}">Home</a>
+                <a class="dropdown-item" href="{{ url_for('genes.genes') }}">Genes</a>
+                <a class="dropdown-item" href="{{ url_for('panels.panels') }}">Gene Panels</a>
+                <a class="dropdown-item" href="{{ url_for('phenotypes.hpo_terms') }}">Phenotypes</a>
+                <a class="dropdown-item" href="{{ url_for('login.users') }}">Users</a>
+                <a class="dropdown-item" href="{{ url_for('overview.institutes') }}">Institutes</a>
+                <a class="dropdown-item" href="{{ url_for('dashboard.index') }}">Dashboard</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="http://www.clinicalgenomics.se/scout/" target='_blank'>User guide</a>
+                <a class="dropdown-item" href="https://github.com/Clinical-Genomics/scout/issues" target='_blank'>Open issues</a>
+              </div>
+            </li>
+            {% block top_nav %}{% endblock %}
+          </ul>
+          <ul class="navbar-nav navbar-right">
+            {% block top_nav_right %}
+              {% if current_user.is_authenticated %}
+                <li class="nav-item dropdown">
+                  <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{ current_user.name }} <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a class="dropdown-item" href="{{ url_for('login.logout') }}">Logout</a>
+                    </li>
+                  </ul>
+                </li>
+              {% endif %}
+            {% endblock %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category or 'primary' }} alert-dismissible fade show mt-3" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+  {# application content needs to be provided in the content_main block #}
+  {% block content_main %}{% endblock %}
+  </div>
+{% endblock %}

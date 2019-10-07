@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - Cases
@@ -6,38 +6,38 @@
 
 {% block top_nav %}
   {{ super() }}
-
-  <li>
-    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-  <li class="active">
-    <span class="navbar-text">{{ institute.display_name }} Cases</span>
+  <li class="nav-item active">
+    <a class="nav-link" href="#">{{ institute.display_name }} Cases</a>
   </li>
   {% if config.SHOW_CAUSATIVES %}
-    <li>
-      <a href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
     </li>
-   {% endif %}
-    <li>
-      <a href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All SNVs and INDELs</a>
-    </li>
-   <li>
-     <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
-   </li>
+  {% endif %}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All SNVs and INDELs</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
+  </li>
 {% endblock %}
 
 {% block content_main %}
-  <div class="panel panel-default">
-    <div class="panel-body">
+<div class="container-float">
+  <div class="card panel-default">
+    <div class="card-body">
       {{ search_form() }}
     </div>
-    <div class="panel-footer text-center">
+    <div class="card-footer text-center">
       Showing {{ limit if limit < found_cases else found_cases }} /  {{ found_cases }} cases
     </div>
   </div>
 
   {% if sanger_unevaluated %}
-    <div class="alert alert-info alert-dismissible" role="alert">
+    <div class="container alert alert-info alert-dismissible" role="alert">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       {% if sanger_unevaluated|length > 1%}
       You have <strong>{{ sanger_unevaluated|length }}</strong> cases with Sanger validations to evaluate!
@@ -80,22 +80,24 @@
       </div>
     </div>
   {% endif %}
-
-  {% set ordered_statuses = ['prioritized', 'inactive', 'active', 'archived', 'solved', ] -%}
-  {% for status in ordered_statuses %}
-    {% for group_name, case_group in cases %}
-      {% if status == group_name and case_group|length > 0 %}
-        <div class="table-responsive">{{ cases_table(group_name, case_group) }}</div>
-      {% endif %}    
+  <div>
+    {% set ordered_statuses = ['prioritized', 'inactive', 'active', 'archived', 'solved', ] -%}
+    {% for status in ordered_statuses %}
+      {% for group_name, case_group in cases %}
+        {% if status == group_name and case_group|length > 0 %}
+          <div class="table-responsive">{{ cases_table(group_name, case_group) }}</div>
+        {% endif %}
+      {% endfor %}
     {% endfor %}
-  {% endfor %}
+  </div>
+</div>
 
 {% endblock %}
 
 {% macro search_form() %}
   <form action="{{ url_for('cases.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
     <div class="row">
-      <div class="col-md-4 col-xs-4">
+      <div class="col-md-4 col-sm-4">
         <div class="input-group">
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-search"></span>
@@ -119,24 +121,24 @@
           "></input>
         </div>
       </div>
-      <div class="col-md-2 col-xs-2">
+      <div class="col-md-2 col-sm-2">
         <button type="submit" class="form-control">Search</input>
       </div>
-      <div class="col-md-2 col-xs-2">
+      <div class="col-md-2 col-sm-2">
         <div class="number">
           <label>
               <input name="limit" type="number" step="100" class="form-control" placeholder="Limit" value={{limit}}>
           </label>
         </div>
       </div>
-      <div class="col-md-2 col-xs-2">
+      <div class="col-md-2 col-sm-2">
         <div class="checkbox">
           <label>
             <input type="checkbox" name="skip_assigned" {% if skip_assigned %}checked{% endif %}> Hide assigned
           </label>
         </div>
       </div>
-      <div class="col-md-2 col-xs-2">
+      <div class="col-md-2 col-sm-2">
         <div class="checkbox">
           <label>
             <input type="checkbox" name="is_research" {% if is_research %}checked{% endif %}> Hide non-research
@@ -148,60 +150,65 @@
 {% endmacro %}
 
 {% macro cases_table(group_name, cases) %}
-  <table class="table table-hover table-special">
-    <thead>
-      <tr>
-        <th class="col-xs-2">{{ group_name|capitalize }} cases</th>
-        <th class="col-xs-1">Status<a href="" id="{{group_name}}_status" onclick="updateArgs('{{group_name}}','sort=status');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort cases by 'status'"></i></a></th>
-        <th class="col-xs-2">Analysis date<a href="" id="{{group_name}}_analysis_date" onclick="updateArgs('{{group_name}}','sort=analysis_date');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date from the newest to the oldest"></i></a></th>
-        <th class="col-xs-2">Link</th>
-        <th class="col-xs-2">Sequencing</th>
-        <th class="col-xs-2">Track<a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis track: Rare Disease, Cancer.."></i></a></th>
-        <th class="col-xs-1">Clinvar</th>
-      </tr>
-    </thead>
-    <tbody>
+<div class="card mt-3">
+  <div class="card-body" style="padding: 0;">
+    <table class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th style="width: 25%">{{ group_name|capitalize }} cases</th>
+          <th style="width: 10%">Status <a href="" id="{{group_name}}_status" onclick="updateArgs('{{group_name}}','sort=status');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort cases by 'status'"></i></a></th>
+          <th style="width: 15%">Analysis date <a href="" id="{{group_name}}_analysis_date" onclick="updateArgs('{{group_name}}','sort=analysis_date');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date from the newest to the oldest"></i></a></th>
+          <th style="width: 20%">Link</th>
+          <th style="width: 5%">Sequencing</th>
+          <th style="width: 15%">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track');" class="badge" style="color:black;background-color:white;"><i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis track: Rare Disease, Cancer.."></i></a></th>
+          <th style="width: 10%">Clinvar</th>
+        </tr>
+      </thead>
+      <tbody>
       {% for case in cases %}
         {{ case_row(case) }}
       {% else %}
-        <tr>
-          <td colspan="5">No cases found.</td>
-        </tr>
+          <tr>
+            <td colspan="">No cases found.</td>
+          </tr>
       {% endfor %}
-    </tbody>
-  </table>
+      </tbody>
+    </table>
+  </div><!--end of card-body-->
+</div>
 {% endmacro %}
 
+
 {% macro case_row(case) %}
-  <tr {% if case.status == 'solved' %} class="bg-success" {% endif %}>
+  <tr class="{% if case.status == 'solved' %} bg-success{% endif %}">
     <td>
       <a href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
         {{ case.display_name }}
       </a>
       {% if case.individuals|length > 1 %}
-        <span class="label label-info">
+        <span class="badge badge-primary">
           {% for item in case.individuals %}
-            <span class="small glyphicon glyphicon-user"></span>
+            <i class="fa fa-user"></i>
           {% endfor %}
         </span>
       {% endif %}
       {% for user in case.assignees %}
-        <span class="badge pull-right">{{ user.name }}</span>
+        <span class="badge badge-secondary">{{ user.name }}</span>
       {% endfor %}
       {% if case.needs_check %}
-        <span class="label label-warning">decipher</span>
+        <span class="badge badge-warning">decipher</span>
       {% endif %}
     </td>
     <td>
-      <span class="label label-info">{{ case.status }}</span>
+      <span class="badge badge-primary">{{ case.status }}</span>
       {% if case.is_migrated %}
-        <span class="label label-info">migrated</span>
+        <span class="badge badge-primary">migrated</span>
       {% endif %}
     </td>
     <td>
       {{ case.analysis_date.date() }}
       {% if case.is_rerun %}
-        <span class="badge pull-right">rerun</span>
+        <span class="badge badge-secondary pull-right">rerun</span>
       {% endif %}
     </td>
     <td>
@@ -222,22 +229,22 @@
     <td>
       {% for analysis_type in case.analysis_types %}
         {% if analysis_type == 'wgs' %}
-          {% set label_class = 'primary' %}
+          {% set badge_class = 'primary' %}
         {% elif analysis_type == 'wes' %}
-          {% set label_class = 'warning' %}
+          {% set badge_class = 'warning' %}
         {% elif analysis_type == 'tga' %}
-          {% set label_class = 'info' %}
+          {% set badge_class = 'info' %}
         {% elif analysis_type == 'panel' %}
-          {% set label_class = 'info' %}
+          {% set badge_class = 'info' %}
         {% elif analysis_type == 'mixed' %}
-          {% set label_class = 'mixed' %}
+          {% set badge_class = 'mixed' %}
         {% elif analysis_type == 'external' %}
-          {% set label_class = 'danger' %}
+          {% set badge_class = 'danger' %}
         {% else %}
-          {% set label_class = 'default' %}
+          {% set badge_class = 'default' %}
         {% endif %}
 
-        <span class="label label-{{ label_class }}">
+        <span class="badge badge-{{ badge_class }}">
           {{ analysis_type|upper }}
         </span>
       {% endfor %}
@@ -247,8 +254,7 @@
     </td>
     <td>
       {% if case.clinvar_variants %}
-        <a href="#clinvar_{{case.display_name}}" data-toggle="modal">{{case.clinvar_variants|length}} variants</a>
-
+        <a href="#clinvar_{{case.display_name}}" data-toggle="modal">{{case.clinvar_variants|length}} {% if case.clinvar_variants|length >1 %} variants {% else %} variant {% endif %}</a>
         <!-- Modal -->
         <div class="modal fade" id="clinvar_{{case.display_name}}" tabindex="-1" role="dialog" aria-labelledby="variantModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">

@@ -1,6 +1,6 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
-{% from "utils.html" import flash_messages, comments_table %}
+{% from "utils.html" import comments_table %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - All SNVs and INDELs
@@ -8,59 +8,58 @@
 
 {% block top_nav %}
   {{ super() }}
-  <li>
-    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-  <li>
-    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
       {{ institute.display_name }} Cases
     </a>
   </li>
   {% if config.SHOW_CAUSATIVES %}
-    <li>
-      <a href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
     </li>
    {% endif %}
-   <li class="active">
+   <li class="nav-item active">
      <span class="navbar-text">All SNVs and INDELs</span>
    </li>
    <li>
-     <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
+     <a class="nav-link" href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
    </li>
 
 {% endblock %}
 
 {% block content_main %}
   <form method="POST" id="filters_form" action="{{url_for('cases.gene_variants', institute_id=institute._id)}}" enctype="multipart/form-data">
-    <div class="container-fluid main">
-      <div class="panel-group" id="accordion">
-	<div class="panel panel-default">
-          <div class="panel-heading">
-            <h4 class="panel-title">
+    <div class="container-float">
+      <div id="accordion" >
+	       <div class="card mt-3">
+          <div class="card-header">
+            <h5>
               <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
-		Filters
+		              Filters
               </a>
-            </h4>
+            </h5>
           </div>
           <div id="collapseFilters" class="panel-collapse collapse">
-            <div class="panel-body">{{ filters_form() }}</div>
+            <div class="card-body">{{ filters_form() }}</div>
           </div>
-	</div>
+	       </div>
       </div>
-      {{ flash_messages() }}
     </div>
 
-    <div class="table-responsive">
+    <div class="table-responsive" style="padding-top: 25px;">
       <table class="table table-bordered table-hover">
 	<thead>
           <tr>
-            <th class="col-xs-1" title="Rank score">Case : Score</th>
-            <th class="col-xs-2" title="HGNC symbols">Gene</th>
-            <th class="col-xs-1" title="PopFreq">PopFreq</th>
-            <th class="col-xs-1" title="CADD score">CADD</th>
-            <th class="col-xs-2" title="Gene region annotation">Gene annotation</th>
-            <th class="col-xs-2" title="Functional annotation">Func. annotation</th>
-            <th class="col-xs-3" title="HGVS">HGVS</th>
+            <th scope="col">Case : Score</th>
+            <th scope="col">Gene</th>
+            <th scope="col">PopFreq</th>
+            <th scope="col">CADD</th>
+            <th scope="col">Gene annotation</th>
+            <th scope="col">Func. annotation</th>
+            <th scope="col">HGVS</th>
           </tr>
 	</thead>
 	<tbody>
@@ -70,16 +69,16 @@
 	    {% else %}
 	      <tr>
 	    {% endif %}
-              <td class="text-right">{{ cell_rank(variant) }}</td>
-              <td>{{ gene_cell(variant) }}</td>
-              <td class="text-right">{{ frequency_cell(variant) }}</td>
-              <td class="text-right">{{ cell_cadd(variant) }}</td>
-              <td>
+              <td class="align-middle">{{ cell_rank(variant) }}</td>
+              <td class="align-middle">{{ gene_cell(variant) }}</td>
+              <td class="align-middle">{{ frequency_cell(variant) }}</td>
+              <td class="align-middle">{{ cell_cadd(variant) }}</td>
+              <td class="align-middle">
                 {% for annotation in variant.region_annotations %}
                   <div>{{ annotation }}</div>
                 {% endfor %}
               </td>
-              <td>
+              <td class="align-middle">
                 {% for annotation in variant.functional_annotations %}
                   <div>{{ annotation }}</div>
                 {% endfor %}
@@ -101,16 +100,18 @@
 {% endblock %}
 
 {% macro cell_rank(variant) %}
-<a class="variants-row-item flex-small layout"
-   href="{{ url_for('variants.variant', institute_id=variant.institute,
-        case_name=variant.case_display_name, variant_id=variant._id) }}">
-  {{ variant.case_display_name}} : {{ variant.rank_score|int }}
-</a>
+    <a
+       href="{{ url_for('variants.variant', institute_id=variant.institute,
+            case_name=variant.case_display_name, variant_id=variant._id) }}">
+      {{ variant.case_display_name}}
+    </a>
+    :
+    <span class="badge badge-info">{{ variant.rank_score|int }}</span>
 {% endmacro %}
 
 {% macro cell_cadd(variant) %}
   <div>
-    <div data-toggle="tooltip" data-placement="left" data-html="true" title="
+    <div class="badge badge-primary badge-pill" data-toggle="tooltip" data-placement="left" data-html="true" title="
     <div class='text-left'>
       <strong>Sift</strong>
       {{ variant.sift_predictions|join(',') }} <br>
@@ -144,52 +145,47 @@
 
 {% macro filters_form() %}
     {{ form.csrf_token }}
-
-    <div class="form-group">
       <div class="row">
-        <div class="col-xs-6">
+        <div class="col">
           {{ form.hgnc_symbols.label(class="control-label") }}
           {{ form.hgnc_symbols(class="form-control") }}
         </div>
-        <div class="col-xs-2">
+        <div class="col col-md-3">
           <label class="control-label">Rank Score</label>
           <input type="number" class="form-control" id="rank_score" name="rank_score" min="5" value={{form.rank_score.data}}>
         </div>
-        <div class="col-xs-2">
+        <div class="col col-md-3">
           {{ form.variant_type.label(class="control-label") }}
           {{ form.variant_type(class="form-control") }}
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-3">
+        <div class="col-md-3">
           {{ form.phenotype_terms.label(class="control-label") }}
           {{ form.phenotype_terms(class="form-control") }}
         </div>
-        <div class="col-xs-3">
+        <div class="col-md-3">
           {{ form.phenotype_groups.label(class="control-label") }}
           {{ form.phenotype_groups(class="form-control") }}
         </div>
-        <div class="col-xs-3">
+        <div class="col-md-3">
           {{ form.cohorts.label(class="control-label") }}
           {{ form.cohorts(class="form-control") }}
         </div>
-        <div class="col-xs-3">
+        <div class="col-md-3">
           {{ form.similar_case.label(class="control-label") }}
           {{ form.similar_case(class="form-control") }}
         </div>
       </div>
-    <div class="form-group">
-      <div class="row">
-        <div class="col-xs-6">
-          <label class="control-label">Submit</label>
+      <div class="row justify-content-center mt-3">
+        <div class="col col-md-6">
           <div class="row">
-            <div class="col-xs-6">
+            <div class="col">
               {{ form.filter_variants(class_="btn btn-primary form-control") }}
             </div>
           </div>
         </div>
       </div>
-    </div>
 {% endmacro %}
 
 {% block scripts %}

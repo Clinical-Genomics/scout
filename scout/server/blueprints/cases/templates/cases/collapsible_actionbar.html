@@ -1,0 +1,348 @@
+{% macro action_bar(institute, case, collaborators) %}
+<!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
+  <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
+      <!-- Bootstrap List Group -->
+      <ul class="list-group">
+          <a href="#" data-toggle="sidebar-collapse" class="bg-dark list-group-item list-group-item-action d-flex align-items-center">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span id="collapse-icon" class="fa fa-2x mr-3"></span>
+                  <span id="collapse-text" class="menu-collapsed">Collapse</span>
+              </div>
+          </a>
+          <!-- Menu with submenu -->
+          {{ reports(institute,case) }}
+          {{ analysis_date(case) }}
+          {{ genome_build(case) }}
+          {{ rank_model(case) }}
+          <li class="list-group-item sidebar-separator menu-collapsed"></li>
+          {{ status(institute, case) }}
+          {{ assign(institute, case) }}
+          {% if not (case.is_archived or case.is_research) %}
+            {{ research(case) }}
+          {% endif %}
+          {{ rerun(case) }}
+          {{ share_case(institute, case, collaborators) }}
+          {% if case.needs_check %}
+            {{ check_decipher(case, institute) }}
+          {% endif %}
+          {{ archive_case(institute,case) }}
+      </ul><!-- List Group END-->
+  </div><!-- sidebar-container END -->
+{% endmacro %}
+
+{% macro reports(institute,case) %}
+<a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-start align-items-center">
+        <span class="fa fa-book fa-fw mr-3"></span>
+        <span class="menu-collapsed">Reports</span>
+        <span class="submenu-icon ml-auto"></span>
+    </div>
+</a>
+<!-- Submenu content -->
+<div id='submenu1' class="collapse sidebar-submenu">
+    <a href="{{ url_for('cases.case_report', institute_id=institute._id,
+                      case_name=case.display_name) }}" target="_blank" class="list-group-item list-group-item-action bg-dark text-white">
+        <span class="menu-collapsed">General</span>
+    </a>
+    {% if case.multiqc %}
+    <a href="{{ url_for('cases.multiqc', institute_id=institute._id,
+                        case_name=case.display_name) }}" class="list-group-item list-group-item-action bg-dark text-white">
+        <span class="menu-collapsed">MultiQC</span>
+    </a>
+    {% endif %}
+    <a href="{{ url_for('cases.mt_report', institute_id=institute._id,
+                      case_name=case.display_name) }}" class="list-group-item list-group-item-action bg-dark text-white">
+        <span class="menu-collapsed">mtDNA report</span>
+    </a>
+    {% if case.delivery_report %}
+      <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                            case_name=case.display_name) }}" target="_blank" class="list-group-item list-group-item-action bg-dark text-white">
+          <span class="menu-collapsed">Delivery</span>
+      </a>
+      {% for analysis in case.analyses %}
+        <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                                    case_name=case.display_name, date=analysis.date) }}" target="_blank" class="list-group-item list-group-item-action bg-dark text-white">
+            <span class="menu-collapsed">{{ analysis.date.date() }}</span>
+        </a>
+      {% endfor %}
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro analysis_date(case) %}
+<div href="#" class="bg-dark list-group-item text-white">
+  <div class="d-flex w-100 justify-content-start align-items-center">
+    <span class="fa fa-clock-o fa-fw mr-3"></span>
+    <span class="menu-collapsed">{{ case.analysis_date.date() }}</span>
+  </div>
+</div>
+{% if case.is_migrated %}
+  <div href="#" class="bg-dark list-group-item text-white">
+    <div class="d-flex w-100 justify-content-start align-items-center">
+      <span class="fa fa-info fa-fw mr-3"></span>
+      <span class="menu-collapsed">migrated</span>
+    </div>
+  </div>
+{% endif %}
+{% endmacro %}
+
+{% macro genome_build(case) %}
+<div href="#" class="bg-dark list-group-item text-white">
+  <div class="d-flex w-100 justify-content-start align-items-center">
+      <span class="fa fa-wrench fa-fw mr-3"></span>
+      <span class="menu-collapsed">Genome build {{ case.genome_build }}</span>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro rank_model(case) %}
+<div href="#" class="bg-dark list-group-item text-white">
+  <div class="d-flex w-100 justify-content-start align-items-center">
+      <span class="fa fa-barcode fa-fw mr-3"></span>
+      <span class="menu-collapsed">Rank model v. {{ case.rank_model_version }}</span>
+  </div>
+</div>
+{% if case.sv_rank_model_version %}
+  <div href="#" class="bg-dark list-group-item text-white">
+    <div class="d-flex w-100 justify-content-start align-items-center">
+        <span class="fa fa-barcode fa-fw mr-3"></span>
+        <span class="menu-collapsed">SV rank model v. {{ case.sv_rank_model_version }}</span>
+    </div>
+  </div>
+{% endif %}
+{% endmacro %}
+
+{% macro status(institute, case) %}
+  <div class="list-group-item d-inline-block bg-dark">
+    <form method="POST"
+          action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
+      <div class="nav-sidebar-item" style="color: #FFFFFF;">
+          <span class="fa fa-star fa-fw mr-3"></span>
+          <span class="menu-collapsed">
+          Status: {{ case.status|capitalize }}<br><br>
+          <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+              {% if case.status != 'archived' %}
+                <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#archive_modal">
+                  Archive
+                </button>
+              {% else %}
+                <button type="submit" class="btn btn-info btn-sm" name="status" value="active">
+                  Unarchive
+                </button>
+              {% endif %}
+            </div>
+            <div class="btn-group">
+              <button name="status" value="{{ 'active' if case.status == 'prioritized' else 'prioritized' }}" type="submit" class="btn btn-light btn-sm">
+                {{ 'De-prioritize' if case.status == 'prioritized' else 'Prioritize' }}
+              </button>
+            </div>
+          </div>
+        </span>
+      </div>
+    </form>
+  </div>
+{% endmacro %}
+
+{% macro assign(institute, case) %}
+<div class="list-group-item d-inline-block bg-dark">
+  <div class="nav-sidebar-item" style="color: #FFFFFF;">
+    <span class="fa fa-users fa-fw mr-3"></span>
+    <span class="menu-collapsed">Assignees<br><br>
+      {% for user in case.assignees %}
+        <form method="POST"
+              action="{{ url_for('cases.assign', institute_id=institute._id,
+                                   case_name=case.display_name, user_id=user._id) }}">
+            <button name="action" value="DELETE" class="btn btn-warning btn-xs form-control">
+              <i class="fa fa-remove"></i>
+              {{ user.name }}
+            </button>
+        </form>
+      {% endfor %}
+      <form method="POST"
+          action="{{ url_for('cases.assign', institute_id=institute._id,
+                             case_name=case.display_name) }}"
+          title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
+          <button class="btn btn-light form-control btn-xs">
+            <i class="fa fa-heart"></i> Assign yourself</button>
+      </form>
+    </span>
+  </div>
+</div>
+
+{% endmacro %}
+
+{% macro research(case) %}
+<a href="#submenu2" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+  <div class="d-flex w-100 justify-content-start align-items-center">
+    <span class="fa fa-graduation-cap fa-fw mr-3"></span>
+    <span class="menu-collapsed">Research list</span>
+    <span class="submenu-icon ml-auto"></span>
+  </div>
+</a>
+<!-- Submenu content -->
+<div id='submenu2' class="collapse sidebar-submenu">
+  {% if case.research_requested %}
+    <i>Research pending</i>
+  {% else %}
+    <button type="button" class="btn btn-danger btn-sm form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% macro rerun(case) %}
+<a href="#submenu3" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+  <div class="d-flex w-100 justify-content-start align-items-center">
+    <span class="fa fa-retweet fa-fw mr-3"></span>
+    <span class="menu-collapsed">Reruns</span>
+    <span class="submenu-icon ml-auto"></span>
+  </div>
+</a>
+<!-- Submenu content -->
+<div id='submenu3' class="collapse sidebar-submenu">
+  {% if case.rerun_requested %}
+    <i>Rerun pending</i>
+  {% else %}
+    <button type="button" class="btn btn-warning form-control btn-sm" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% macro share_case(institute, case, collaborators) %}
+<a href="#submenu4" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">  <div class="d-flex w-100 justify-content-start align-items-center"
+  <div class="d-flex w-100 justify-content-start align-items-center">
+    <span class="fa fa-handshake-o fa-fw mr-3"></span>
+    <span class="menu-collapsed">Share case</span>
+    <span class="submenu-icon ml-auto"></span>
+  </div>
+</a>
+<!-- Submenu content -->
+<div id='submenu4' class="collapse sidebar-submenu">
+  {% if collaborators %}
+    <div class="form-group">
+      <form action="{{ url_for('cases.share', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+        <div class="input-group">
+          <select class="form-control" name="collaborator">
+            <option class="placeholder" selected disabled value="">Select institute</option>
+            {% for collab_id, collab_name in collaborators %}
+              <option value="{{ collab_id }}">{{ collab_name }}</option>
+            {% endfor %}
+          </select>
+          <span class="input-group-btn">
+            <button type="submit" class="btn btn-light btn-sm">Share</button>
+          </span>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+  {% if case.o_collaborators %}
+    <form method="POST" action="{{ url_for('cases.share', institute_id=institute._id, case_name=case.display_name) }}">
+      <input type="hidden" name="revoke" />
+      <div class="input-group">
+        <select class="form-control sm" name="collaborator">
+          <option>Institute</option>
+          {% for collab_id, collab_name in case.o_collaborators %}
+            <option value="{{ collab_id }}">{{ collab_name }}</option>
+          {% endfor %}
+        </select>
+        <div class="input-group-btn">
+          <button type="submit" class="btn btn-light btn-sm">Revoke</button>
+        </div>
+      </div>
+    </form>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% macro check_decipher(case, institute) %}
+<a href="#submenu5" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">  <div class="d-flex w-100 justify-content-start align-items-center"
+  <div class="d-flex w-100 justify-content-start align-items-center">
+    <span class="fa fa-check fa-fw mr-3"></span>
+    <span class="menu-collapsed">Decipher check</span>
+    <span class="submenu-icon ml-auto"></span>
+  </div>
+</a>
+<!-- Submenu content -->
+<div id='submenu5' class="collapse sidebar-submenu">
+  <form method="POST"
+            action="{{ url_for('cases.check_case', case_name=case.display_name, institute_id=institute._id) }}">
+        <button name="action" value="DELETE" class="btn btn-success form-control">
+          <i class="fa fa-check-square-o"></i>
+          Decipher Checked
+        </button>
+      </form>
+</div>
+{% endmacro %}
+
+{% macro research_modal(institute, case) %}
+  <form action="{{ url_for('cases.research', institute_id=institute._id,
+                           case_name=case.display_name) }}" method="POST">
+    <div class="modal fade" id="research-modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Request research list</h4>
+          </div>
+          <div class="modal-body">
+            <p>Please confirm that you want to <strong>upload research variants for {{ case.display_name }}</strong>.</p>
+            <p>You also confirm that you have the <strong>relevant consent</strong>.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro rerun_modal(institute, case) %}
+  <form action="{{ url_for('cases.rerun', institute_id=institute._id,
+                           case_name=case.display_name) }}" method="POST">
+    <div id="rerun-modal" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Request rerun</h4>
+          </div>
+          <div class="modal-body">
+            <p>Please confirm that you want to <strong>rerun {{ case.display_name }}</strong>. This will <strong>replace current variants</strong> with updated information.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro archive_case(institute,case)%}
+<div class="modal fade" id="archive_modal" tabindex="-1" role="dialog" aria-labelledby="archiveCaseLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="archiveCaseLabel">Confirm archive case</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure? This will disable the alignment view and delete analysis files.
+        You will have to request a FULL rerun to continue evaluating e.g. research variants.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <form method="POST"
+          action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
+          <button type="submit" class="btn btn-primary" value="archived" name="status">Archive</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}

@@ -1,38 +1,43 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, pedigree_panel %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
 {% endblock %}
 
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+{% endblock %}
+
 {% block top_nav %}
-  <li>
-    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
-  <li>
-    <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
       {{ case.display_name }}
     </a>
   </li>
-  <li>
-    <a href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
       {{ variant.variant_type|capitalize }} structural variants
     </a>
   </li>
-  <li class="active">
-    <p class="navbar-text">{{ variant.display_name|truncate(20, True) }}</p>
+  <li class="active nav-item">
+    <p class="navbar-text text-nowrap">{{ variant.display_name|truncate(20, True) }}</p>
   </li>
 {% endblock %}
 
 {% block top_nav_right %}
   {% if config['MAIL_USERNAME'] %}
     {# Email setting must be setup #}
-    <li>{{ verify_button() }}</li>
+    <li class="nav-item text-nowrap">{{ verify_button() }}</li>
   {% endif %}
-  <li>{{ pin_button() }}</li>
-  <li>{{ causative_button() }}</li>
+  <li class="nav-item text-nowrap">{{ pin_button() }}</li>
+  <li class="nav-item text-nowrap">{{ causative_button() }}</li>
   {{ super() }}
 {% endblock %}
 
@@ -40,158 +45,160 @@
   {% if variant.missing_data %}
     <div class="alert alert-warning">Showing only first 30 genes!</div>
   {% endif %}
-
   <div class="row">
     <div class="col-md-6">
-      <ul class="list-group">
-        <li class="list-group-item">Rank <span class="badge">{{ variant.variant_rank }}</span></li>
+      <div class="card mt-3">
+        <div class="class-body">
+          <ul class="list-group">
+            <li class="list-group-item">Rank <span class="badge badge-pill badge-secondary pull-right">{{ variant.variant_rank }}</span></li>
+            <li class="list-group-item">
+              Rank score
+              <span class="badge badge-pill badge-secondary pull-right">{{ variant.rank_score }}</span>
+            </li>
 
-        <li class="list-group-item">
-          Rank score
-          <span class="badge">{{ variant.rank_score }}</span>
-        </li>
+            <li class="list-group-item">
+              Category
+              <span class="badge badge-pill badge-secondary pull-right">{{ variant.sub_category|upper }}</span>
+            </li>
 
-        <li class="list-group-item">
-          Category
-          <span class="badge">{{ variant.sub_category|upper }}</span>
-        </li>
-
-        <li class="list-group-item">
-          Gene panels
-          <ul class="list-inline pull-right">
-            {% for panel_id in variant.panels %}
-              <li>
-                <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>
-              </li>
-            {% endfor %}
+            <div class="list-group-item">
+              Gene panels
+              <ul class="list-inline pull-right">
+                {% for panel_id in variant.panels %}
+                  <li>
+                    <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="list-group mt-3">
+              <div>
+                <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+                  <label class="ml-3">Variant tag</label>
+                  <div class="row">
+                    <div class="col-8">
+                      <select name="manual_rank" class="form-control ml-3">
+                        <option>Select a tag</option>
+                        {% for rank, data in manual_rank_options.items() %}
+                          <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
+                            {{ data.label }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="col-4">
+                      <button type="submit" class="btn btn-outline-secondary form-control">Save</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="list-group mt-3">
+              <div>
+                <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+                  <label class="ml-3">Dismiss variant</label>
+                  <div class="row">
+                    <div class="col-8 d-flex">
+                      <select multiple="multiple" name="dismiss_variant" id="dismiss_variant" class="ml-3 selectpicker">
+                        <option>Select a tag</option>
+                        {% for rank, data in dismiss_variant_options.items() %}
+                          <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
+                            {{ data.label }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="col-4">
+                      <button type="submit" class="btn btn-outline-secondary form-control">Save</button>
+                    </div>
+                  </div>
+                </form>
+            </div>
           </ul>
-        </li>
+        </div> <!-- end of card -->
+      </div> <!-- end of col -->
+    </div> <!-- end of row -->
 
-        <li class="list-group-item">
-	        <div>
-	          <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
-              <label>Variant tag</label>
-              <div class="row">
-		            <div class="col-xs-8">
-		              <select name="manual_rank" class="form-control">
-		                <option>Select a tag</option>
-		                {% for rank, data in manual_rank_options.items() %}
-                      <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
-                        {{ data.label }}
-                      </option>
-		                {% endfor %}
-		              </select>
-		            </div>
-		            <div class="col-xs-4">
-		              <button type="submit" class="btn btn-default form-control">Save</button>
-		            </div>
-              </div>
-	          </form>
-	        </div>
-	      </li>
-
-        <li class="list-group-item">
-	        <div>
-	          <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
-              <label>Dismiss variant</label>
-              <div class="row">
-		            <div class="col-xs-8">
-		              <select multiple name="dismiss_variant" class="form-control">
-		                <option>Select a tag</option>
-                    {% for rank, data in dismiss_variant_options.items() %}
-                      <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
-                        {{ data.label }}
-                      </option>
-                    {% endfor %}
-		              </select>
-		            </div>
-		            <div class="col-xs-4">
-		              <button type="submit" class="btn btn-default form-control">Save</button>
-		            </div>
-              </div>
-	          </form>
-	        </div>
-	      </li>
-      </ul>
-    </div>
     <div class="col-md-6">
-      <ul class="list-group">
-        <li class="list-group-item">
-          Position
-          <div class="pull-right">
-            {{ variant.chromosome }}:{{ variant.position }} {{ "-" if variant.end_chrom == variant.chromosome else " / "+variant.end_chrom+":" }}{{ variant.end }}
-          </div>
-        </li>
-        <li class="list-group-item">
-          Breakpoint 1
-          <div class="pull-right">
-            {{ variant.chromosome }}:{{ variant.position }}
-            {% if variant.chromosome == "MT" and case.mt_bams %}
-              - Alignment:
-              <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">IGV viewer</a>
-            {% elif case.bam_files %}
-              - Alignment:
-              <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">IGV</a>
-            {% else %}
-              - BAM file(s) missing
-            {% endif %}
-          </div>
-        </li>
-        <li class="list-group-item">
-          Breakpoint 2
-          <div class="pull-right">
-            {{ variant.end_chrom }}:{{ variant.end }}
-            {% if variant.end_chrom == "MT" and case.mt_bams %}
-              - Alignment:
-              <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.end_chrom, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">IGV viewer</a>
-            {% elif case.bam_files %}
-              - Alignment:
-              <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.end_chrom, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">IGV</a>
-            {% else %}
-              - BAM file(s) missing
-            {% endif %}
-          </div>
-        </li>
-	      <li class="list-group-item">
-	        Cytoband
-          <div class="pull-right">
-            {% if variant.chromosome == variant.end_chrom and variant.cytoband_start == variant.cytoband_end %}
-              {{ variant.chromosome }}{{ variant.cytoband_start }}
-            {% elif variant.chromosome == variant.end_chrom %}
-              {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end }}
-            {% else %}
-              {{ variant.chromosome }}{{ variant.cytoband_start }}-{{variant.end_chrom}}{{ variant.cytoband_end }}
-            {% endif %}
-          </div>
-	      </li>
-	      <li class="list-group-item">
-	        Length
-          <div class="pull-right">
-            {{ variant.length }}
-            {% if variant.chromosome == "MT" and case.mt_bams %}
-              - Alignment:
-              <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500)) }}" target="_blank">IGV viewer</a>
-            {% elif case.bam_files and variant.chromosome == variant.end_chrom %}
-              - Alignment:
-              <a class="btn btn-default btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500)) }}" target="_blank">IGV</a>
-            {% elif case.bam_files %}
-              - Complex rearrangement: check breakpoint alignments.
-            {% else %}
-              - BAM file(s) missing
-            {% endif %}
-          </div>
+      <div class="card mt-3">
+        <ul class="list-group">
+          <li class="list-group-item">
+            Position
+            <div class="pull-right">
+              {{ variant.chromosome }}:{{ variant.position }} {{ "-" if variant.end_chrom == variant.chromosome else " / "+variant.end_chrom+":" }}{{ variant.end }}
+            </div>
+          </li>
+          <li class="list-group-item">
+            Breakpoint 1
+            <div class="pull-right">
+              {{ variant.chromosome }}:{{ variant.position }}
+              {% if variant.chromosome == "MT" and case.mt_bams %}
+                - Alignment:
+                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">IGV viewer</a>
+              {% elif case.bam_files %}
+                - Alignment:
+                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">IGV</a>
+              {% else %}
+                - BAM file(s) missing
+              {% endif %}
+            </div>
+          </li>
+          <li class="list-group-item">
+            Breakpoint 2
+            <div class="pull-right">
+              {{ variant.end_chrom }}:{{ variant.end }}
+              {% if variant.end_chrom == "MT" and case.mt_bams %}
+                - Alignment:
+                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.end_chrom, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">IGV viewer</a>
+              {% elif case.bam_files %}
+                - Alignment:
+                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.end_chrom, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">IGV</a>
+              {% else %}
+                - BAM file(s) missing
+              {% endif %}
+            </div>
+          </li>
+  	      <li class="list-group-item">
+  	        Cytoband
+            <div class="pull-right">
+              {% if variant.chromosome == variant.end_chrom and variant.cytoband_start == variant.cytoband_end %}
+                {{ variant.chromosome }}{{ variant.cytoband_start }}
+              {% elif variant.chromosome == variant.end_chrom %}
+                {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end }}
+              {% else %}
+                {{ variant.chromosome }}{{ variant.cytoband_start }}-{{variant.end_chrom}}{{ variant.cytoband_end }}
+              {% endif %}
+            </div>
+  	      </li>
+  	      <li class="list-group-item">
+  	        Length
+            <div class="pull-right">
+              {{ variant.length }}
+              {% if variant.chromosome == "MT" and case.mt_bams %}
+                - Alignment:
+                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500)) }}" target="_blank">IGV viewer</a>
+              {% elif case.bam_files and variant.chromosome == variant.end_chrom %}
+                - Alignment:
+                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500)) }}" target="_blank">IGV</a>
+              {% elif case.bam_files %}
+                - Complex rearrangement: check breakpoint alignments.
+              {% else %}
+                - BAM file(s) missing
+              {% endif %}
+            </div>
 
-	      </li>
-	      <li class="list-group-item">
-	        Type <div class="pull-right">{{ variant.sub_category|upper }}</div>
-	      </li>
-        {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
-          <a href="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Submit to ClinVar</a>
-        {% endif %}
-        {% if variant.clinvar_clinsig%}
-          <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-default form-control">Modify clinvar submission</a>
-        {% endif %}
-      </ul>
+  	      </li>
+  	      <li class="list-group-item">
+  	        Type <div class="pull-right">{{ variant.sub_category|upper }}</div>
+  	      </li>
+          {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
+            <a href="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Submit to ClinVar</a>
+          {% endif %}
+          {% if variant.clinvar_clinsig%}
+            <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-default form-control">Modify clinvar submission</a>
+          {% endif %}
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -251,7 +258,7 @@
                              case_name=case.display_name,
                              variant_id=variant._id) }}"
           method="POST">
-      <button name="action" value="ADD" type="submit" class="btn btn-default navbar-btn" title="Pin variant">Pin</button>
+      <button name="action" value="ADD" type="submit" class="btn btn-light navbar-btn" title="Pin variant">Pin</button>
     </form>
   {% else %}
     <form action="{{ url_for('cases.pin_variant',
@@ -259,7 +266,7 @@
                              case_name=case.display_name,
                              variant_id=variant._id) }}"
           method="POST">
-      <button name="action" value="DELETE" type="submit" class="btn btn-default navbar-btn" title="Unpin variant">Unpin</button>
+      <button name="action" value="DELETE" type="submit" class="btn btn-light navbar-btn" title="Unpin variant">Unpin</button>
     </form>
   {% endif %}
 {% endmacro %}
@@ -271,7 +278,7 @@
                                case_name=case.display_name,
                                variant_id=variant._id) }}"
             method="POST">
-        <button name="action" value="DELETE" type="submit" class="btn btn-default navbar-btn" title="Reset causative">
+        <button name="action" value="DELETE" type="submit" class="btn btn-light navbar-btn" title="Reset causative">
           Reset causative
         </button>
       </form>
@@ -281,7 +288,7 @@
                              case_name=case.display_name,
                              variant_id=variant._id) }}"
           method="POST">
-      <button name="action" value="ADD" type="submit" class="btn btn-default navbar-btn" title="Mark causative" onclick="return confirm('Are you sure?')">
+      <button name="action" value="ADD" type="submit" class="btn btn-light navbar-btn" title="Mark causative" onclick="return confirm('Are you sure?')">
         Mark causative
       </button>
     </form>
@@ -289,14 +296,14 @@
 {% endmacro %}
 
 {% macro frequencies(variant) %}
-  <div class="panel panel-default">
+  <div class="card panel-default mt-3">
     <div class="panel-heading">Frequencies</div>
     <ul class="list-group">
       {% for freq_name, value in variant.frequencies %}
         <li class="list-group-item">
           {{ freq_name }}
           {% if value %}
-            <span class="badge">{{ value|human_decimal }}</span>
+            <span class="badge badge-secondary pull-right">{{ value|human_decimal }}</span>
           {% else %}
             <span class="pull-right">-</span>
           {% endif %}
@@ -307,8 +314,8 @@
 {% endmacro %}
 
 {% macro gt_calls(samples) %}
-  <div class="panel panel-default">
-    <table class="table table-bordered">
+  <div class="card mt-3">
+    <table class="table table-bordered table-sm">
       <thead>
         <tr>
           <th rowspan="2">Sample</th>
@@ -337,7 +344,7 @@
     {% if variant.callers %}
       <div class="panel-footer">
         {% for name, caller in variant.callers %}
-          <span class="label label-default">{{ name }}: {{ caller }}</span>
+          <span class="badge badge-secondary">{{ name }}: {{ caller }}</span>
         {% endfor %}
       </div>
     {% endif %}
@@ -345,7 +352,7 @@
 {% endmacro %}
 
 {% macro genes(variant) %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Genes</div>
     <div class="table-responsive">
       <table class="table table-bordered">
@@ -405,18 +412,18 @@
 
 {% macro ext_links(variant) %}
   {# External links #}
-  <div class="panel panel-default">
+  <div class="card">
     <table class="table table-bordered">
       <tbody>
         <tr>
           <td>
-            <a class="btn btn-link form-control" href="http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target="_blank">Ensembl</a>
+            <a class="btn btn-outline-secondary form-control" href="http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target="_blank">Ensembl</a>
           </td>
           <td>
-            <a class="btn btn-link form-control" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+            <a class="btn btn-outline-secondary form-control" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
           </td>
 	  <td>
-	    <a class="btn btn-link form-control" href="https://decipher.sanger.ac.uk/browser#q/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}%20/location/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target ="_blank">DECIPHER</a>
+	    <a class="btn btn-outline-secondary form-control" href="https://decipher.sanger.ac.uk/browser#q/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}%20/location/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target ="_blank">DECIPHER</a>
 	  </td>
         </tr>
       </tbody>
@@ -426,7 +433,7 @@
 
 
 {% macro overlapping(other_variants, rank_score) %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Overlapping SNVs</div>
     <table class="table table-bordered">
       <thead>
@@ -471,12 +478,12 @@
     {% if variant.validation in ['True positive', 'False positive']%}
       <p class="navbar-text">Validation: {{ variant.validation }}</p>
     {% else %}
-      <button class="btn btn-default navbar-btn" data-toggle="modal" data-target="#cancelVerifyModal">
+      <button class="btn btn-light navbar-btn" data-toggle="modal" data-target="#cancelVerifyModal">
         Verification pending...
       </button>
     {% endif %}
   {% else %}
-    <button class="btn btn-default navbar-btn" data-toggle="modal" data-target="#svVerifyModal">
+    <button class="btn btn-light navbar-btn" data-toggle="modal" data-target="#svVerifyModal">
       Verify
     </button>
   {% endif %}
@@ -490,14 +497,16 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <button class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Order verification</h4>
+          <h5 class="modal-title">Order verification</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
         <div class="modal-body">
           {{ verify_form() }}
         </div>
         <div class="modal-footer">
-          <button class="btn btn-default" data-dismiss="modal">Close</button>
+          <button class="btn btn-danger" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-primary">Send verification order request</button>
         </div>
       </div>
@@ -532,7 +541,7 @@
 
 {% macro verify_form() %}
 <ul class="list-group">
-  <li class="list-group-item">
+  <div class="list-group-item">
     <strong>Case {{ case.display_name }}</strong><br>
     <a href="{{ url_for('variants.sv_variant', institute_id=institute._id,
                         case_name=case.display_name, variant_id=variant._id) }}">
@@ -543,40 +552,39 @@
       {% endif %}
       {{ variant.sub_category|upper }}
     </a>
-  <li class="list-group-item"><strong>Variant type</strong>: {{variant.sub_category|upper}}</li>
-  <li class="list-group-item"><strong>Breakpoint 1</strong>: chr{{variant.chromosome}}:{{variant.position}}</li>
-  <li class="list-group-item"><strong>Breakpoint 2</strong>: chr{{variant.end_chrom if variant.end_chrom else variant.chromosome}}:{{variant.end}}</li>
-  <li class="list-group-item"><strong>Lenght</strong>: {{variant.length}}</li>
-  </li>
-  <li class="list-group-item">
+  <div class="list-group-item"><strong>Variant type</strong>: {{variant.sub_category|upper}}</div>
+  <div class="list-group-item"><strong>Breakpoint 1</strong>: chr{{variant.chromosome}}:{{variant.position}}</div>
+  <div class="list-group-item"><strong>Breakpoint 2</strong>: chr{{variant.end_chrom if variant.end_chrom else variant.chromosome}}:{{variant.end}}</div>
+  <div class="list-group-item"><strong>Lenght</strong>: {{variant.length}}</div>
+  </div>
+  <div class="list-group-item">
     <strong>Encompassing genes</strong>:
     {{ variant.hgnc_symbols|join(', ') }}
-  </li>
-  <li class="list-group-item">
+  </div>
+  <div class="list-group-item">
     <strong>Gene panels</strong>:
     {{ variant.panels|join(', ') }}
-  </li>
-  <li class="list-group-item disabled"><strong>GT call</strong></li>
+  </div>
+  <div class="list-group-item disabled"><strong>GT call</strong></div>
   {% for individual in variant.samples %}
-    <li class="list-group-item">
+    <div class="list-group-item">
       {{ individual.display_name }}: {{ individual.genotype_call }}
-    </li>
+    </div>
   {% endfor %}
-  <li class="list-group-item">
+  <div class="list-group-item">
     <strong>Ordered by</strong>:
     {{ current_user.name }}
-  </li>
+  </div>
 </ul>
 {% endmacro %}
 
 {% block scripts %}
   {{ super() }}
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
   <script>
     $(function () {
-      $('select[multiple]').multiselect({
-        buttonWidth: '100%'
+      $('select[multiple]').selectpicker({
+        width: '100%'
       });
     })
   </script>
