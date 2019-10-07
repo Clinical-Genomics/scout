@@ -16,6 +16,12 @@ MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 
+MAIL_USERNAME = 'dummyscoutuser@gmail.com'
+MAIL_PASSWORD = 'scoutPWD01'
+ADMINS = [
+    'dummyscoutuser@gmail.com',
+]
+
 # Chanjo-Report
 REPORT_LANGUAGE = 'en'
 ACCEPT_LANGUAGES = ['en', 'sv']

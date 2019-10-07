@@ -1,4 +1,3 @@
-from pprint import pprint as pp
 import pytest
 import logging
 import datetime
@@ -6,10 +5,8 @@ import pymongo
 
 from scout.constants import VERBS_MAP
 
-logger = logging.getLogger(__name__)
-
 def test_mark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
-    logger.info("Testing mark a variant causative")
+
     # GIVEN a populated database with variants
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -42,7 +39,6 @@ def test_mark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj)
     assert event_obj['link'] == link
 
 def test_unmark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
-    logger.info("Testing mark a variant causative")
 
     ## GIVEN a adapter with a variant that is marked causative
     adapter.case_collection.insert_one(case_obj)
@@ -81,7 +77,7 @@ def test_unmark_causative(adapter, institute_obj, case_obj, user_obj, variant_ob
 
 
 def test_order_verification(adapter, institute_obj, case_obj, user_obj, variant_obj):
-    logger.info("Testing ordering verification for a variant")
+
     # GIVEN a populated database with variants
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -120,7 +116,7 @@ def test_order_verification(adapter, institute_obj, case_obj, user_obj, variant_
 
 
 def test_cancel_verification(adapter, institute_obj, case_obj, user_obj, variant_obj):
-    logger.info("Testing cancel verification ordering for a variant")
+
     # GIVEN a populated database with a variant that has sanger ordered
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -160,7 +156,6 @@ def test_cancel_verification(adapter, institute_obj, case_obj, user_obj, variant
 
 
 def test_dismiss_variant(adapter, institute_obj, case_obj, user_obj, variant_obj):
-    logger.info("Test dismiss variant")
 
     # GIVEN a variant db with at least one variant, and no events
     adapter.case_collection.insert_one(case_obj)
@@ -196,3 +191,38 @@ def test_dismiss_variant(adapter, institute_obj, case_obj, user_obj, variant_obj
 
     # THEN the variant should be dismissed
     assert updated_variant.get('dismiss_variant') == dismiss_reason
+
+def test_sanger_ordered(adapter, institute_obj, case_obj, user_obj, variant_obj):
+    """Test function that retrieved all variants ordered by institute, user or case"""
+
+    # GIVEN a variant db with at least one variant, and no events
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.variant_collection.insert_one(variant_obj)
+
+    # WHEN ordering sanger for the variant
+    updated_variant = adapter.order_verification(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link='orderSangerlink',
+        variant=variant_obj
+    )
+    updated_variant = adapter.variant_collection.find_one()
+
+    # THEN the 'sanger_ordered' function should retrieve the variant
+    # by querying database using the user_id
+    sanger_results = adapter.sanger_ordered(user_id=user_obj['_id'])
+    assert sanger_results[0]['_id'] == case_obj['_id']
+    assert [var for var in sanger_results[0]['vars']] == [updated_variant['variant_id']]
+
+    # by querying database using the institute_id
+    sanger_results = adapter.sanger_ordered(institute_id=institute_obj['_id'])
+    assert sanger_results[0]['_id'] == case_obj['_id']
+    assert [var for var in sanger_results[0]['vars']] == [updated_variant['variant_id']]
+
+    # or by querying database using the case id
+    sanger_results = adapter.sanger_ordered(case_id=case_obj['_id'])
+    assert sanger_results[0]['_id'] == case_obj['_id']
+    assert [var for var in sanger_results[0]['vars']] == [updated_variant['variant_id']]
