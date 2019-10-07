@@ -131,20 +131,20 @@
     <div class="form-group text-center">
       {% if more_variants %}
         <div class="row">
-          <div class="col-xs-6">
-            <a class="btn btn-default" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
+          <div class="col-6">
+            <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
               Next page
             </a>
           </div>
-          <div class="col-xs-6">
-            <a class="btn btn-default" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+          <div class="col-6">
+            <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
               First page
             </a>
           </div>
         </div>
       {% else %}
         <i class="text-muted">No more variants to display</i>
-        <a class="btn btn-default" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+        <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
           First page
         </a>
       {% endif %}
