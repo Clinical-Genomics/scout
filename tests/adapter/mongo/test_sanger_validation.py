@@ -1,7 +1,91 @@
 # -*- coding: utf-8 -*-
+import pymongo
 from pprint import pprint as pp
 import pytest
 from scout.server.blueprints.cases.controllers import get_sanger_unevaluated
+
+def test_case_sanger_variants(adapter, institute_obj, case_obj, user_obj, variant_obj):
+    """Test assigning a verification status to a veriant"""
+
+    ## GIVEN a variant db with at least one variant
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.variant_collection.insert_one(variant_obj)
+
+    ## WHEN ordering sanger for a variant
+    updated_variant = adapter.order_verification(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link='orderSangerlink',
+        variant=variant_obj
+    )
+
+    case_sanger_vars = adapter.case_sanger_variants(case_id=case_obj['_id'])
+    # THEN assert that no verified variants are returned
+    assert case_sanger_vars['sanger_verified'] == []
+    # THEN assert that one variant with sanger ordered is returned
+    assert case_sanger_vars['sanger_ordered'][0]['_id'] == updated_variant['_id']
+
+def test_case_verified_variants(adapter, institute_obj, case_obj, user_obj, variant_obj):
+    """Test assigning a verification status to a veriant"""
+
+    ## GIVEN a variant db with at least one variant
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.variant_collection.insert_one(variant_obj)
+
+    ## WHEN setting variant status as verified
+    adapter.validate(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link='validateSangerlink',
+        variant=variant_obj,
+        validate_type='True positive'
+    )
+
+    case_sanger_vars = adapter.case_sanger_variants(case_id=case_obj['_id'])
+    ## THEN assert that one verified variant is found
+    assert case_sanger_vars['sanger_verified'][0]['_id'] == variant_obj['_id']
+    ## THEN assert that no variants with sanger ordered exists
+    assert case_sanger_vars['sanger_ordered'] == []
+
+def test_case_sanger_and_verified_variants(adapter, institute_obj, case_obj, user_obj, variant_obj):
+    """Test assigning a verification status to a veriant"""
+
+    ## GIVEN a variant db with at least one variant
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.variant_collection.insert_one(variant_obj)
+
+    ## WHEN ordering sanger for a variant
+    updated_variant = adapter.order_verification(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link='orderSangerlink',
+        variant=variant_obj
+    )
+    
+    ## WHEN Setting variant status as verified
+    
+    adapter.validate(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link='validateSangerlink',
+        variant=variant_obj,
+        validate_type='True positive'
+    )
+
+    # Then collecting variants using case_sanger_variants should return the same variant
+    case_sanger_vars = adapter.case_sanger_variants(case_id=case_obj['_id'])
+    assert case_sanger_vars['sanger_verified'][0]['_id'] == variant_obj['_id']
+    assert case_sanger_vars['sanger_ordered'][0]['_id'] == updated_variant['_id']
 
 def test_get_sanger_unevaluated(real_populated_database, variant_objs, institute_obj, case_obj, user_obj):
     """Test get all sanger ordered but not evaluated for an institute"""
