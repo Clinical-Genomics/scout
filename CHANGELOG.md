@@ -4,12 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [4.x.x]
+
+## [x.x.x]
+
+### Added
+### fixed
+
+## [4.7.3]
 
 ### Added
 - RankScore can be used with VCFs for vcf_cancer files
 
 ### Fixed
+- Fix issue with STR view next page button not doing its one job.
 
 ### Deleted
 - Removed pileup as a bam viewing option. This is replaced by IGV
