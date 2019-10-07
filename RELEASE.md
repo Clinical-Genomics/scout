@@ -47,13 +47,7 @@
 1. build and publish docs (Make sure no unwanted files are added when doing `git add .`, run `git status` first)
 
     ```bash
-    gitbook build docs/
-    git checkout gh-pages
-    cp -R docs/_book/* .
-    git add .
-    git commit -a -m 'Update docs'
-    git push origin gh-pages
-    git checkout master
+    mkdocs gh-deploy
     ```
     
 1. update version to, e.g. 2.1.0dev
