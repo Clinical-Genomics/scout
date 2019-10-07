@@ -560,7 +560,7 @@ class CaseEventHandler(object):
             user=user_obj,
             link=link,
             category='case',
-            verb='update_clincical_filter_hpo',
+            verb='update_clinical_filter_hpo',
             subject=case_obj['display_name'],
         )
 
