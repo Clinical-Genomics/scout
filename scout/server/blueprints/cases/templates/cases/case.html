@@ -932,21 +932,10 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
 <script>
-  // Hide submenus
-$('#body-row .collapse').collapse('hide');
-
-// Collapse/Expand icon
-$('#collapse-icon').addClass('fa-angle-double-left');
-
-// Collapse click
-$('[data-toggle=sidebar-collapse]').click(function() {
-    SidebarCollapse();
-});
-
 $(function () {
       function getTerms(query, process) {
         $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
@@ -970,14 +959,16 @@ $(function () {
         source: getNameTerms,
         minLength: 3,
       });
+      
       $('[data-toggle="tooltip"]').tooltip();
+
       $('select[multiple]').multiselect({
         buttonWidth: '100%'
       });
       $('table').stickyTableHeaders({
         scrollableArea: $(".fixed-panel")[0]
       });
-    })
+  });
 
 function SidebarCollapse () {
     $('.menu-collapsed').toggleClass('d-none');
@@ -996,5 +987,16 @@ function SidebarCollapse () {
     // Collapse/Expand icon
     $('#collapse-icon').toggleClass('fa-angle-double-left fa-angle-double-right');
 }
+
+// Hide submenus
+$('#body-row .collapse').collapse('hide');
+
+// Collapse/Expand icon
+$('#collapse-icon').addClass('fa-angle-double-left');
+
+// Collapse click
+$('[data-toggle=sidebar-collapse]').click(function() {
+  SidebarCollapse();
+});
 </script>
 {% endblock %}
