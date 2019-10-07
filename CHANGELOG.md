@@ -13,9 +13,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved dashboard using Chart.js
 
 ### fixed
-- Fixed missing import for variants with comments
-- Keep sanger order + verification when updating/reloading variants
 
+- Fixed missing import for variants with comments
+- Instructions on how to build docs
+- Keep sanger order + verification when updating/reloading variants
 
 ## [4.7.3]
 
