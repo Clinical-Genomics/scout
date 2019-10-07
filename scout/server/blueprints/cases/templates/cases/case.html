@@ -700,8 +700,8 @@
       <form method="POST"
             action="{{ url_for('cases.phenotypes', institute_id=institute._id,
                                case_name=case.display_name, is_group='yes') }}">
-        <div class="row">
-          <div class="col-xs-7">
+        <div class="form-inline">
+          <div class="form-group mb-2 mx-sm-3">
             <select class="form-control" name="hpo_term">
               <option>Add HPO group...</option>
               {% for hpo_id, group in hpo_groups.items() %}
@@ -711,7 +711,7 @@
               {% endfor %}
             </select>
           </div>
-          <div class="col-xs-5">
+          <div class="form-group mb-2 mx-sm-3">
             <button class="btn btn-outline-secondary form-control" type="submit">Add</button>
           </div>
         </div>
@@ -766,40 +766,38 @@
           <li class="list-group-item">No phenotypes added yet</li>
         {% endfor %}
       </ul>
-      <div class="card-footer">
-        <div class="row">
-          <div class="col-xs-5">
-            <div class="input-group">
-              <span class="input-group-btn">
-                <button class="btn btn-outline-secondary" type="submit" name="action" value="GENERATE">HPO panel</button>
-              </span>
-              <input name="min_match" type="number" min="0" step="1" class="form-control" placeholder="Min matches">
-            </div>
+      <div class="card-body">
+        <div class="form-inline">
+          <div class="form-group mb-2 col-3">
+            <button class="btn btn-secondary" type="submit" name="action" value="GENERATE">HPO panel</button>
+          </div>
+          <div class="form-group mb-2 mx-sm-3 col-4">
+            <input name="min_match" type="number" min="0" step="1" class="form-control" placeholder="Min matches">
           </div>
           {% if config.PHENOMIZER_USERNAME %}
-            <div class="col-xs-4">
+            <div class="form-group mb-2 mx-sm-3 col-3">
               <button class="btn btn-outline-secondary form-control" type="submit" name="action" value="PHENOMIZER">Phenomizer</button>
             </div>
           {% endif %}
-          <div class="col-xs-3">
+          <div class="form-group mb-2 mx-sm-3 col-2">
             <button class="btn btn-danger form-control" type="submit" name="action" value="DELETE">Delete</button>
           </div>
         </div>
       </div>
-    </div>
-    <div class="panel panel-default">
-      <div class="panel-heading">Add genes to the dynamic panel</div>
-      <div class="panel-body">
-        <div class="row">
-          <div class="col-xs-9">
+      <div class="panel-heading panel-heading-secondary">
+          Add genes to the dynamic panel
+      </div>
+      <div class="card-body">
+        <div class="form-inline">
+          <div class="form-group col-8">
             <input name="genes" class="typeahead_gene form-control" data-provide="typeahead" autocomplete="off" placeholder="Search...">
           </div>
-          <div class="col-xs-3">
-            <button class="btn btn-default form-control" type="submit" name="action" value="ADDGENE">Add gene</button>
+          <div class="form-group col-4">
+            <button class="btn btn-secondary form-control" type="submit" name="action" value="ADDGENE">Add gene</button>
           </div>
         </div>
       </div>
-    </div>
+  </div>
   </form>
 {% endmacro %}
 
@@ -860,7 +858,7 @@
               <label for="hpo_clinical_filter"></label>
             </form>
           </div>
-        </div>  
+        </div>
         <div data-placement="top" title="hpo_clinical_filter">Use HPO list for clinical filter</div>
           <form method="POST" action="{{ url_for('variants.variants', institute_id=institute._id,
                            case_name=case.display_name, variant_type='clinical',
