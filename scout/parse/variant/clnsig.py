@@ -1,22 +1,24 @@
 import logging
 
-from scout.constants import REV_CLINSIG_MAP
-
 logger = logging.getLogger(__name__)
 
-
-def parse_clnsig(acc, sig, revstat, transcripts):
+def parse_clnsig(variant, transcripts=None):
     """Get the clnsig information
 
     Args:
+        variant = cyvcf2.Variant
         acc(str): The clnsig accession number, raw from vcf
         sig(str): The clnsig significance score, raw from vcf
         revstat(str): The clnsig revstat, raw from vcf
         transcripts(iterable(dict))
 
     Returns:
-        clnsig_accsessions(list): A list with clnsig accessions
+        clnsig_accsessions(list(dict)): A list with clnsig accessions
     """
+    acc = variant.INFO.get('CLNACC', variant.INFO.get('CLNVID'))
+    sig = variant.INFO.get('CLNSIG')
+    revstat = variant.INFO.get('CLNREVSTAT')
+    
     clnsig_accsessions = []
 
     if acc:

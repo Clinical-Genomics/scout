@@ -235,16 +235,7 @@ def parse_variant(variant, case, variant_type='clinical',
     parsed_variant['hgnc_ids'] = list(hgnc_ids)
 
     ################# Add clinsig prediction #################
-    if variant.INFO.get('CLNACC'):
-        acc = variant.INFO.get('CLNACC')
-    else:
-        acc = variant.INFO.get('CLNVID')
-    clnsig_predictions = parse_clnsig(
-        acc=acc,
-        sig=variant.INFO.get('CLNSIG'),
-        revstat=variant.INFO.get('CLNREVSTAT'),
-        transcripts=parsed_transcripts
-        )
+    clnsig_predictions = parse_clnsig(variant, transcripts=parsed_transcripts)
 
     if clnsig_predictions:
         parsed_variant['clnsig'] = clnsig_predictions
