@@ -32,21 +32,6 @@
 
 {% block top_nav_right %}
   <li class="nav-item text-nowrap"><p class="navbar-text">Panels: {{ (form.gene_panels.data or ['All'])|join(',') }}</p></li>
-  <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Actions <span class="caret"></span></a>
-    <ul class="dropdown-menu">
-      <li>
-        <a class="dropdown-item" href="{{ url_for('variants.sv_variants', institute_id=institute._id,
-                            case_name=case.display_name, variant_type=variant_type,
-                            gene_panels=['hpo']) }}">
-          HPO gene list
-        </a>
-      </li>
-      <li>
-        <a class="dropdown-item" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type=form.variant_type.data, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Reset filters</a>
-      </li>
-    </ul>
-  </li>
   {{ super() }}
 {% endblock %}
 
@@ -99,15 +84,22 @@
 {% macro filters_form() %}
     <input type="hidden" name="variant_type" value="{{ variant_type }}">
       <div class="row">
-        <div class="col-3">
+        <div class="col-2">
           {{ form.gene_panels.label(class="control-label") }}
+          <div class="btn-group d-flex">
+            <a class="btn btn-outline-secondary btn-sm " href="{{ url_for('variants.sv_variants', institute_id=institute._id,
+              case_name=case.display_name, variant_type=form.variant_type.data,
+              gene_panels=['hpo']) }}">HPO gene list</a>
+          </div>
+        </div>
+        <div class="col-2">
           {{ form.gene_panels(class="selectpicker") }}
         </div>
         <div class="col-3">
           {{ form.region_annotations.label(class="control-label") }}
           {{ form.region_annotations(class="selectpicker") }}
         </div>
-        <div class="col-3">
+        <div class="col-2">
           {{ form.functional_annotations.label(class="control-label") }}
           {{ form.functional_annotations(class="selectpicker") }}
         </div>
@@ -164,17 +156,19 @@
         </div>
       </div>
     </div>
-    <div class="form-group d-flex">
-      <div class="row d-flex justify-content-between">
-        <div class="col">
-          {{ form.filter_variants(class_="btn btn-primary form-control") }}
-        </div>
-        <div class="col">
-         {{ form.clinical_filter(class_="btn btn-outline-secondary form-control") }}
-        </div>
-        <div class="col">
-          {{ form.export(class_="btn btn-warning form-control") }}
-        </div>
+    <div class="row">
+      <div class="col-2">
+        <a href="{{ url_for('variants.sv_variants', institute_id=institute._id,
+          case_name=case.display_name, variant_type='clinical',
+          gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
+          class="btn btn-secondary btn-sm" style="color: #ffffff !important;">
+          reset filters
+        </a>
+      </div>
+      <div class="col-10 form-group d-flex">
+        {{ form.filter_variants(class_="btn btn-primary form-control") }}
+        {{ form.clinical_filter(class_="btn btn-outline-secondary form-control") }}
+        {{ form.export(class_="btn btn-warning form-control") }}
       </div>
     </div>
 {% endmacro %}
