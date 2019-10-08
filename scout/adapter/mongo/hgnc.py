@@ -266,10 +266,10 @@ class GeneHandler(object):
             res(pymongo.Cursor(dict))
         """
         LOG.debug("Fetch gene by symbol if possible: {}".format(symbol))
-        res = self.hgnc_collection.find({'hgnc_symbol': symbol, 'build':build})
-        if sum(1 for r in res) == 0:
+        res = self.hgnc_collection.find({'hgnc_symbol': symbol, 'build': build})
+        if res.count() == 0:
             LOG.debug("No gene with symbol {} was found. Attempting an alias.".format(symbol))
-            res = self.hgnc_collection.find({'aliases': symbol, 'build':build})
+            res = self.hgnc_collection.find({'aliases': symbol, 'build': build})
 
         return res
 
