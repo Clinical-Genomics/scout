@@ -306,7 +306,7 @@ class CaseHandler(object):
                 LOG.debug("Check symbol {}".format(symbol))
                 for gene_obj in self.gene_by_alias(symbol=symbol, build=build):
                     res.append(gene_obj)
-
+                    LOG.debug("Appending {}".format(gene_obj))
 
         for gene_obj in res:
             LOG.debug("Appending gene {}".format(gene_obj['hgnc_symbol']))
@@ -319,7 +319,7 @@ class CaseHandler(object):
             )
 
         LOG.info("Update dynamic gene panel for: %s", case['display_name'])
-        LOG.debug("Genes: {}".format(dynamic_gene_list))
+        LOG.info("Genes: {}".format(dynamic_gene_list))
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
             {'$set': {'dynamic_gene_list': dynamic_gene_list,
@@ -659,7 +659,7 @@ class CaseHandler(object):
             'sanger_verified' : self.validated(case_id=case_id),
             'sanger_ordered' : self.sanger_ordered(case_id=case_id)
         }
-        
+
         for category in results:
             res = results[category]
             if not res:
@@ -669,12 +669,12 @@ class CaseHandler(object):
                 if not variant_obj:
                     continue
                 case_verif_variants[category].append(variant_obj)
-            
+
         LOG.info("Nr variants with sanger verification found: %s",
                  len(case_verif_variants['sanger_verified']))
         LOG.info("Nr variants with sanger ordered found: %s",
                  len(case_verif_variants['sanger_ordered']))
-        
+
         return case_verif_variants
 
     def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
@@ -704,7 +704,7 @@ class CaseHandler(object):
             verb = 'sanger'
             if category == 'sanger_verified':
                 verb = 'validate'
-            
+
             for old_var in variants:
                 # new var display name should be the same as old display name:
                 display_name = old_var['display_name']
@@ -748,7 +748,7 @@ class CaseHandler(object):
                     if updated_var:
                         updated_variants['updated_verified'].append(updated_var['_id'])
 
-                else: 
+                else:
                     # old variant had Sanger validation ordered
                     # check old event to collect user_obj that ordered the verification:
                     # set sanger ordered status for the new variant as well:
