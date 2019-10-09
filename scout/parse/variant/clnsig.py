@@ -1,12 +1,12 @@
 import logging
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 def parse_clnsig(variant, transcripts=None):
     """Get the clnsig information
 
     Args:
-        variant = cyvcf2.Variant
+        variant(cyvcf2.Variant)
         acc(str): The clnsig accession number, raw from vcf
         sig(str): The clnsig significance score, raw from vcf
         revstat(str): The clnsig revstat, raw from vcf
@@ -15,58 +15,50 @@ def parse_clnsig(variant, transcripts=None):
     Returns:
         clnsig_accsessions(list(dict)): A list with clnsig accessions
     """
-    acc = variant.INFO.get('CLNACC', variant.INFO.get('CLNVID'))
-    sig = variant.INFO.get('CLNSIG')
-    revstat = variant.INFO.get('CLNREVSTAT')
+    LOG.debug("Parsing ")
+    acc = variant.INFO.get('CLNACC', variant.INFO.get('CLNVID',''))
+    sig = variant.INFO.get('CLNSIG', '').lower()
+    revstat = variant.INFO.get('CLNREVSTAT','').lower()
     
     clnsig_accsessions = []
 
-    if acc:
-    # New format of clinvar allways have integers as accession numbers
-        try:
-            acc = int(acc)
-        except ValueError:
-            pass
-        # There are sometimes different separators so we need to check which
-        # one to use
-        if isinstance(acc, int):
-            revstat_groups = []
-            if revstat:
-                revstat_groups = [rev.lstrip('_') for rev in revstat.split(',')]
+    # There are some versions where clinvar uses integers to represent terms
+    if acc.isdigit():
+        revstat_groups = []
+        if revstat:
+            revstat_groups = [rev.lstrip('_') for rev in revstat.split(',')]
 
-            sig_groups = []
-            if sig:
-                for significance in sig.split('/'):
-                    splitted_word = significance.split('_')
-                    sig_groups.append(' '.join(splitted_word[:2]))
+        sig_groups = []
+        for significance in sig.split(','):
+            for term in significance.lstrip('_').split('/'):
+                sig_groups.append('_'.join(term.split(' ')))
 
-            for sign_term in sig_groups:
+        for sig_term in sig_groups:
+            clnsig_accsessions.append({
+                'value': sig_term,
+                'accession': int(acc),
+                'revstat': ','.join(revstat_groups),
+            })
+    if not clnsig_accsessions and acc:
+    # This is the 'old' clinvar format
+        acc_groups = acc.split('|')
+        sig_groups = sig.split('|')
+        revstat_groups = revstat.split('|')
+        for acc_group, sig_group, revstat_group in zip(acc_groups, sig_groups, revstat_groups):
+            accessions = acc_group.split(',')
+            significances = sig_group.split(',')
+            revstats = revstat_group.split(',')
+            for accession, significance, revstat in zip(accessions, significances, revstats):
                 clnsig_accsessions.append({
-                    'value': sign_term,
-                    'accession': int(acc),
-                    'revstat': ', '.join(revstat_groups),
+                    'value': int(significance),
+                    'accession': accession,
+                    'revstat': revstat,
                 })
-        else:
-            # There are sometimes different separators so we need to check which
-            # one to use
-            acc_groups = acc.split('|')
-            sig_groups = sig.split('|')
-            revstat_groups = revstat.split('|')
-            for acc_group, sig_group, revstat_group in zip(acc_groups, sig_groups, revstat_groups):
-                accessions = acc_group.split(',')
-                significances = sig_group.split(',')
-                revstats = revstat_group.split(',')
-                for accession, significance, revstat in zip(accessions, significances, revstats):
-                    clnsig_accsessions.append({
-                        'value': int(significance),
-                        'accession': accession,
-                        'revstat': revstat,
-                    })
 
-    elif transcripts:
+    if not clnsig_accsessions and transcripts:
         clnsig = set()
         for transcript in transcripts:
-            for annotation in transcript.get('clinsig', []):
+            for annotation in transcript.get('clnsig', []):
                 clnsig.add(annotation)
         for annotation in clnsig:
             clnsig_accsessions.append({'value': annotation})
