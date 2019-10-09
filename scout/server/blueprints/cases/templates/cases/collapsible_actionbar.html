@@ -25,6 +25,7 @@
           {% if case.needs_check %}
             {{ check_decipher(case, institute) }}
           {% endif %}
+          {{ confirm_inactivate(institute,case) }}
           {{ archive_case(institute,case) }}
       </ul><!-- List Group END-->
   </div><!-- sidebar-container END -->
@@ -150,13 +151,16 @@
     <span class="fa fa-users fa-fw mr-3"></span>
     <span class="menu-collapsed">Assignees<br><br>
       {% for user in case.assignees %}
-        <form method="POST"
-              action="{{ url_for('cases.assign', institute_id=institute._id,
-                                   case_name=case.display_name, user_id=user._id) }}">
-            <button name="action" value="DELETE" class="btn btn-warning btn-xs form-control">
-              <i class="fa fa-remove"></i>
-              {{ user.name }}
-            </button>
+        <form method="POST" action="{{ url_for('cases.assign', institute_id=institute._id,
+          case_name=case.display_name, user_id=user._id) }}">
+            {% if case.assignees|length == 1 and not case.status in ['inactive', 'prioritized'] %}
+              <button type="button" name="action" value="DELETE" class="btn btn-warning btn-xs form-control" data-toggle="modal" data-target="#confirm_inactivate">
+            {% else %}
+              <button type="submit" name="action" value="DELETE" class="btn btn-warning btn-xs form-control">
+            {% endif %}
+                <i class="fa fa-remove"></i>
+                  {{ user.name }}
+              </button>
         </form>
       {% endfor %}
       <form method="POST"
@@ -320,6 +324,37 @@
     </div>
   </form>
 {% endmacro %}
+
+{% macro confirm_inactivate(institute, case) %}
+<div class="modal fade" id="confirm_inactivate" tabindex="-1" role="dialog" aria-labelledby="confirmInactivateLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmInactivateLabel">Confirm inactivate case</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        You are the last user working on this case, do you wish to inactivate it?
+      </div>
+      {% if case.assignees %}
+      <div class="modal-footer">
+        <form method="POST" action="{{ url_for('cases.assign', institute_id=institute._id,
+          case_name=case.display_name, user_id=case.assignees[0]._id, inactivate=True) }}">
+          <button name="action" value="DELETE" type="submit" class="btn btn-primary">Inactivate case</button>
+        </form>
+        <form method="POST" action="{{ url_for('cases.assign', institute_id=institute._id,
+          case_name=case.display_name, user_id=case.assignees[0]._id) }}">
+          <button name="action" value="DELETE" type="submit" class="btn btn-secondary" >Do not intactivate</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
 
 {% macro archive_case(institute,case)%}
 <div class="modal fade" id="archive_modal" tabindex="-1" role="dialog" aria-labelledby="archiveCaseLabel" aria-hidden="true">

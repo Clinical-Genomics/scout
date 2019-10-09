@@ -49,7 +49,7 @@ class CaseEventHandler(object):
         )
         return updated_case
 
-    def unassign(self, institute, case, user, link):
+    def unassign(self, institute, case, user, link, inactivate=False):
         """Unassign a user from a case.
 
         This function will create an Event to log that a person has been
@@ -61,6 +61,7 @@ class CaseEventHandler(object):
             case (dict): A Case object
             user (dict): A User object (Should this be a user id?)
             link (dict): The url to be used in the event
+            inactivate(bool): inactivate case if there are no assignees
 
         Returns:
             updated_case (dict): The updated case
@@ -81,8 +82,8 @@ class CaseEventHandler(object):
         LOG.info("Updating {0} to be unassigned with {1}".format(
             case['display_name'], user['name']))
 
-        # if no other user is assigned to the case and case is not prioritized
-        if case['status'] != 'prioritized' and case.get('assignees') == [user['email']]:
+        # if case is not prioritized and user wishes to inactivate it:
+        if case['status'] != 'prioritized' and inactivate:
             # flag case as inactive:
             case['status'] = 'inactive'
 
