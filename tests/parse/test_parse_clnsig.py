@@ -1,5 +1,5 @@
 from pprint import pprint as pp
-from scout.parse.variant.clnsig import parse_clnsig
+from scout.parse.variant.clnsig import (parse_clnsig,is_pathogenic)
 
 def test_parse_classic_clnsig(cyvcf2_variant):
     ## GIVEN a variant with classic clinvar annotations
@@ -155,3 +155,61 @@ def test_parse_clnsig_transcripts(cyvcf2_variant):
     ## THEN assert that they where parsed correct
     assert len(clnsig_annotations) == 1
     assert clnsig_annotations[0]['value'] == 'likely_benign'
+
+
+def test_is_pathogenic_pathogenic(cyvcf2_variant):
+    ## GIVEN a variant with classic clinvar annotations
+    acc_nr = "265359"
+    clnsig = "Pathogenic"
+    revstat = "criteria_provided,_multiple_submitters,_no_conflicts"
+
+    cyvcf2_variant.INFO['CLNVID'] = acc_nr
+    cyvcf2_variant.INFO['CLNSIG'] = clnsig
+    cyvcf2_variant.INFO['CLNREVSTAT'] = revstat
+    
+    ## WHEN checking if variants should be loaded
+    pathogenic = is_pathogenic(cyvcf2_variant)
+    
+    ## THEN assert that The variant should be loaded
+    assert pathogenic == True
+
+def test_is_pathogenic_classic_pathogenic(cyvcf2_variant):
+    ## GIVEN a variant with classic clinvar annotations
+    acc_nr = "RCV000014440.17|RCV000014441.25|RCV000014442.25|RCV000014443.17|RCV000184011.1|RCV000188658.1"
+    clnsig = "5|4|3|2|1|0"
+    revstat = "conf|single|single|single|conf|conf"
+
+    cyvcf2_variant.INFO['CLNVID'] = acc_nr
+    cyvcf2_variant.INFO['CLNSIG'] = clnsig
+    cyvcf2_variant.INFO['CLNREVSTAT'] = revstat
+    
+    ## WHEN checking if variants should be loaded
+    pathogenic = is_pathogenic(cyvcf2_variant)
+    
+    ## THEN assert that The variant should be loaded
+    assert pathogenic == True
+
+def test_is_pathogenic_benign(cyvcf2_variant):
+    ## GIVEN a variant with classic clinvar annotations
+    acc_nr = "265359"
+    clnsig = "Likely_benign"
+    revstat = "criteria_provided,_multiple_submitters,_no_conflicts"
+
+    cyvcf2_variant.INFO['CLNVID'] = acc_nr
+    cyvcf2_variant.INFO['CLNSIG'] = clnsig
+    cyvcf2_variant.INFO['CLNREVSTAT'] = revstat
+    
+    ## WHEN checking if variants should be loaded
+    pathogenic = is_pathogenic(cyvcf2_variant)
+    
+    ## THEN assert that The variant should be loaded
+    assert pathogenic == False
+
+def test_is_pathogenic_no_annotation(cyvcf2_variant):
+    ## GIVEN a variant without clinvar annotations
+    
+    ## WHEN checking if variants should be loaded
+    pathogenic = is_pathogenic(cyvcf2_variant)
+    
+    ## THEN assert that The variant should be loaded
+    assert pathogenic == False
