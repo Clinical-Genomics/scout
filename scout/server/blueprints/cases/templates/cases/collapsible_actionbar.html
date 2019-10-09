@@ -346,7 +346,7 @@
         </form>
         <form method="POST" action="{{ url_for('cases.assign', institute_id=institute._id,
           case_name=case.display_name, user_id=case.assignees[0]._id) }}">
-          <button name="action" value="DELETE" type="submit" class="btn btn-secondary" >Do not intactivate</button>
+          <button name="action" value="DELETE" type="submit" class="btn btn-secondary" >Do not inactivate</button>
         </form>
       </div>
       {% endif %}
