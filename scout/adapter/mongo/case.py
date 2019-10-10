@@ -290,9 +290,8 @@ class CaseHandler(object):
         """
         dynamic_gene_list = []
         if add_only:
-            dynamic_gene_list_cursor = self.case_collection.find({ '_id': case['_id'] },
-                { 'dynamic_gene_list': 1, '_id': 0 })
-            dynamic_gene_list = dynamic_gene_list_cursor[0]['dynamic_gene_list']
+            dynamic_gene_list  = self.case_collection.find_one({ '_id': case['_id'] },
+                { 'dynamic_gene_list': 1, '_id': 0 })['dynamic_gene_list']
             LOG.debug("Add selected: current dynamic gene list: {}".format(dynamic_gene_list))
 
         res = []

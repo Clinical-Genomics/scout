@@ -357,10 +357,10 @@ def test_update_case_collaborators(adapter, case_obj):
     assert set(res['collaborators']) == set([coll_1, coll_2, coll_3])
 
 def test_update_dynamic_gene_list(gene_database, case_obj):
-    adapter = gene_database
     # GIVEN an populated gene database,
+    adapter = gene_database
 
-    # GIVEN a new cases with an empty dynamic_gene_list
+    # GIVEN a case with an empty dynamic_gene_list
     adapter.case_collection.insert_one(case_obj)
     assert adapter.case_collection.find_one()
     assert len(adapter.case(case_obj['_id'])['dynamic_gene_list']) == 0
