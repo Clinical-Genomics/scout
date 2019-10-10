@@ -356,24 +356,23 @@ def test_update_case_collaborators(adapter, case_obj):
     # THEN assert all collaborators where added
     assert set(res['collaborators']) == set([coll_1, coll_2, coll_3])
 
-def test_update_dynamic_gene_list(adapter, case_obj, gene_obj):
-    # GIVEN an empty database,
-    assert adapter.case_collection.find_one() is None
+def test_update_dynamic_gene_list(gene_database, case_obj):
+    adapter = gene_database
+    # GIVEN an populated gene database,
+
     # GIVEN a new cases with an empty dynamic_gene_list
     adapter.case_collection.insert_one(case_obj)
     assert adapter.case_collection.find_one()
     assert len(adapter.case(case_obj['_id'])['dynamic_gene_list']) == 0
 
     # GIVEN a gene with a gene symobl
+    gene_obj = gene_database.hgnc_collection.find_one({'build': '37'})
+    assert gene_obj
     hgnc_symbol = gene_obj.get('hgnc_symbol')
     assert hgnc_symbol
 
-    assert adapter.hgnc_collection.find_one() == None
-    adapter.hgnc_collection.insert_one(gene_obj)
-    assert adapter.hgnc_collection.find_one()
-
     # WHEN updating dynamic gene list with gene
-    adapter.update_dynamic_gene_list(case_obj, hgnc_symbols=[hgnc_symbol], add_only=True)
+    adapter.update_dynamic_gene_list(case_obj, hgnc_symbols=[hgnc_symbol])
     # THEN a the gene list will contain a gene
     assert len(adapter.case(case_obj['_id'])['dynamic_gene_list']) == 1
 

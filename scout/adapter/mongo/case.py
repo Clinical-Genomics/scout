@@ -301,12 +301,10 @@ class CaseHandler(object):
             res = self.hgnc_collection.find({'hgnc_id': {'$in': hgnc_ids}, 'build': build})
         elif hgnc_symbols:
             LOG.info("Fetching genes by hgnc symbols")
-            res = []
             for symbol in hgnc_symbols:
-                LOG.debug("Check symbol {}".format(symbol))
-                for gene_obj in self.gene_by_alias(symbol=symbol, build=build):
+                those_genes = self.gene_by_alias(symbol=symbol, build=build)
+                for gene_obj in those_genes:
                     res.append(gene_obj)
-                    LOG.debug("Appending {}".format(gene_obj))
 
         for gene_obj in res:
             LOG.debug("Appending gene {}".format(gene_obj['hgnc_symbol']))
@@ -319,7 +317,6 @@ class CaseHandler(object):
             )
 
         LOG.info("Update dynamic gene panel for: %s", case['display_name'])
-        LOG.info("Genes: {}".format(dynamic_gene_list))
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
             {'$set': {'dynamic_gene_list': dynamic_gene_list,

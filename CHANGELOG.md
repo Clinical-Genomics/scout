@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated Scout to use Bootstrap 4.3
 - New looks for Scout
 - Improved dashboard using Chart.js
+- Ask before inactivating a case where last assigned user leaves it
 
 ### fixed
 
