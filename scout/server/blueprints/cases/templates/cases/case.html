@@ -769,18 +769,18 @@
       <div class="card-body">
         <div class="form-inline">
           <div class="form-group mb-2 col-3">
-            <button class="btn btn-secondary" type="submit" name="action" value="GENERATE">HPO panel</button>
+            <button class="btn btn-sm btn-secondary" type="submit" name="action" value="GENERATE">HPO panel</button>
           </div>
           <div class="form-group mb-2 mx-sm-3 col-4">
             <input name="min_match" type="number" min="0" step="1" class="form-control" placeholder="Min matches">
           </div>
           {% if config.PHENOMIZER_USERNAME %}
             <div class="form-group mb-2 mx-sm-3 col-3">
-              <button class="btn btn-outline-secondary form-control" type="submit" name="action" value="PHENOMIZER">Phenomizer</button>
+              <button class="btn btn-outline-secondary btn-sm form-control" type="submit" name="action" value="PHENOMIZER">Phenomizer</button>
             </div>
           {% endif %}
           <div class="form-group mb-2 mx-sm-3 col-2">
-            <button class="btn btn-danger form-control" type="submit" name="action" value="DELETE">Delete</button>
+            <button class="btn btn-danger btn-sm form-control" type="submit" name="action" value="DELETE">Delete</button>
           </div>
         </div>
       </div>
