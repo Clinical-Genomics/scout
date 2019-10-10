@@ -31,6 +31,14 @@ def parse_clnsig(variant, transcripts=None):
     clnsig_accsessions = []
 
     if not acc:
+        if transcripts:
+            clnsig = set()
+            for transcript in transcripts:
+                for annotation in transcript.get('clnsig', []):
+                    clnsig.add(annotation)
+            for annotation in clnsig:
+                clnsig_accsessions.append({'value': annotation})
+            
         return clnsig_accsessions
 
     # There are some versions where clinvar uses integers to represent terms
@@ -66,14 +74,6 @@ def parse_clnsig(variant, transcripts=None):
                     'accession': accession,
                     'revstat': revstat,
                 })
-
-    if not clnsig_accsessions and transcripts:
-        clnsig = set()
-        for transcript in transcripts:
-            for annotation in transcript.get('clnsig', []):
-                clnsig.add(annotation)
-        for annotation in clnsig:
-            clnsig_accsessions.append({'value': annotation})
 
     return clnsig_accsessions
 
