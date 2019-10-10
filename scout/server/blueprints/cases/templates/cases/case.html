@@ -701,7 +701,7 @@
             action="{{ url_for('cases.phenotypes', institute_id=institute._id,
                                case_name=case.display_name, is_group='yes') }}">
         <div class="form-inline">
-          <div class="form-group mb-2 mx-sm-3">
+          <div class="form-group mb-2">
             <select class="form-control" name="hpo_term">
               <option>Add HPO group...</option>
               {% for hpo_id, group in hpo_groups.items() %}
@@ -711,8 +711,8 @@
               {% endfor %}
             </select>
           </div>
-          <div class="form-group mb-2 mx-sm-3">
-            <button class="btn btn-outline-secondary form-control" type="submit">Add</button>
+          <div class="form-group mb-2">
+            <button class="btn btn-outline-secondary btn-sm form-control" type="submit">Add</button>
           </div>
         </div>
       </form>
