@@ -23,14 +23,13 @@ def parse_clnsig(variant, transcripts=None):
     Returns:
         clnsig_accsessions(list(dict)): A list with clnsig accessions
     """
-    LOG.debug("Parsing ")
     transcripts = transcripts or []
     acc = variant.INFO.get('CLNACC', variant.INFO.get('CLNVID',''))
     sig = variant.INFO.get('CLNSIG', '').lower()
     revstat = variant.INFO.get('CLNREVSTAT','').lower()
-    
+
     clnsig_accsessions = []
-    
+
     if not acc:
         return clnsig_accsessions
 
