@@ -83,11 +83,13 @@ def test_unassign(adapter, institute_obj, case_obj, user_obj):
     assert sum(1 for i in adapter.event_collection.find()) == 1
 
     # WHEN unassigning the only user assigned to case
+    # and wishes to inactivate it
     updated_case = adapter.unassign(
          institute=institute_obj,
          case=updated_case,
          user=user_obj,
-         link='unassignlink'
+         link='unassignlink',
+         inactivate=True
     )
     # case should become inactive
     assert updated_case['status'] == 'inactive'
