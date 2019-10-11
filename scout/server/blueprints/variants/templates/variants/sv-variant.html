@@ -141,6 +141,7 @@
               {% else %}
                 - BAM file(s) missing
               {% endif %}
+              - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
             </div>
           </li>
           <li class="list-group-item">
@@ -156,6 +157,7 @@
               {% else %}
                 - BAM file(s) missing
               {% endif %}
+                - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.end_chrom }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
             </div>
           </li>
   	      <li class="list-group-item">
@@ -184,6 +186,9 @@
                 - Complex rearrangement: check breakpoint alignments.
               {% else %}
                 - BAM file(s) missing
+              {% endif %}
+              {% if variant.chromosome == variant.end_chrom %}
+              - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
               {% endif %}
             </div>
 
@@ -485,9 +490,6 @@
         <tr>
           <td>
             <a class="btn btn-outline-secondary form-control" href="http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target="_blank">Ensembl</a>
-          </td>
-          <td>
-            <a class="btn btn-outline-secondary form-control" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
           </td>
 	  <td>
 	    <a class="btn btn-outline-secondary form-control" href="https://decipher.sanger.ac.uk/browser#q/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}%20/location/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target ="_blank">DECIPHER</a>
