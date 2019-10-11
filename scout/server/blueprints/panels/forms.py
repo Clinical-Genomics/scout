@@ -2,7 +2,7 @@
 from flask_wtf import FlaskForm
 from wtforms import (BooleanField, TextField, SelectMultipleField, TextField)
 
-from scout.constants import GENETIC_MODELS
+from scout.constants import INHERITANCE_MODELS
 
 
 class PanelGeneForm(FlaskForm):
@@ -10,5 +10,6 @@ class PanelGeneForm(FlaskForm):
     reduced_penetrance = BooleanField()
     mosaicism = BooleanField()
     database_entry_version = TextField()
-    inheritance_models = SelectMultipleField(choices=GENETIC_MODELS)
+    custom_inheritance_model = TextField('Other inheritance models')
+    inheritance_models = SelectMultipleField(choices=INHERITANCE_MODELS)
     comment = TextField()
