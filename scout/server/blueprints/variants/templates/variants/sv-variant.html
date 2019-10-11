@@ -241,7 +241,7 @@
             <a class="nav-item nav-link" id="nav-transcripts-tab" data-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
           </div>
         </nav>
-        <div class="tab-content" id="nav-tabContent">
+        <div class="tab-content mt-3" id="nav-tabContent">
           <div class="tab-pane fade show active" id="nav-genes" role="tabpanel" aria-labelledby="nav-genes-tab">{{ genes_panel(variant) }}</div>
           <div class="tab-pane fade" id="nav-transcripts" role="tabpanel" aria-labelledby="nav-transcripts-tab">{{ transcripts_panel() }}</div>
         </div>
@@ -369,7 +369,6 @@
 
 {% macro genes_panel(variant) %}
   <div class="card panel-default">
-    <div class="panel-heading">Genes</div>
     <div class="table-responsive">
       <table class="table table-bordered">
         <thead>
