@@ -60,7 +60,7 @@
         <div class="row">
           <div class="col-xs-12 col-md-12">{{ roh_panel() }}</div>
         </div>
-        
+
         <div class="row">
           <div class="col-xs-12 col-md-6">{{ synopsis_panel() }}</div>
           <div class="col-xs-12 col-md-6">
@@ -298,7 +298,7 @@
     Ideogram, UPD, ROH
   </div>
   <div class="panel-body">
-    <svg id="roh_svg" width="1900" height="850"></svg> 
+    <svg id="roh_svg" width="1900" height="850"></svg>
   </div>
 </div>
 {% endmacro %}
@@ -999,10 +999,10 @@ $(function () {
     const X_OFFSET = 45 // leftside offset whitespace in the PNGs
     const Y_OFFSET = 5 // make room for arrows pointing at the cytoband
 
-    const IDEOGRAM_IMAGES = ['cytoband.txt.chr1.png', 'cytoband.txt.chr2.png', 
-                             'cytoband.txt.chr3.png', 'cytoband.txt.chr4.png', 
-                             'cytoband.txt.chr5.png', 'cytoband.txt.chr6.png', 
-                             'cytoband.txt.chr7.png', 'cytoband.txt.chr8.png', 
+    const IDEOGRAM_IMAGES = ['cytoband.txt.chr1.png', 'cytoband.txt.chr2.png',
+                             'cytoband.txt.chr3.png', 'cytoband.txt.chr4.png',
+                             'cytoband.txt.chr5.png', 'cytoband.txt.chr6.png',
+                             'cytoband.txt.chr7.png', 'cytoband.txt.chr8.png',
                              'cytoband.txt.chr9.png', 'cytoband.txt.chr10.png',
                              'cytoband.txt.chr11.png', 'cytoband.txt.chr12.png',
                              'cytoband.txt.chr13.png', 'cytoband.txt.chr14.png',
@@ -1022,7 +1022,7 @@ $(function () {
                         'roh_chr22.png', 'roh_chrX.png', 'roh_chrY.png'];
 
     const UPD_IMAGES = ['upd_chr1.png', 'upd_chr2.png', 'upd_chr3.png',
-                        'upd_chr4.png', 'upd_chr5.png', 'upd_chr6.png', 
+                        'upd_chr4.png', 'upd_chr5.png', 'upd_chr6.png',
                         'upd_chr7.png', 'upd_chr8.png', 'upd_chr9.png',
                         'upd_chr10.png', 'upd_chr11.png', 'upd_chr12.png',
                         'upd_chr13.png', 'upd_chr14.png', 'upd_chr15.png',
@@ -1035,7 +1035,7 @@ $(function () {
                          '11', '12', '13', '14', '15', '16', '17', '18',
                          '19', '20', '21', '22', 'X',' Y'];
 
-    const NUMBER_OF_COLUMNS = 3        
+    const NUMBER_OF_COLUMNS = 3
     const OFFSET_X = 60;
     const OFFSET_Y = 30;
 
@@ -1049,7 +1049,7 @@ $(function () {
         }
         return names;
     }
-    
+
     // Draw ROH call pictures -coverage- and UPD pictures -color coded
     // genome regions- onto the dashboard.
     //
@@ -1059,8 +1059,7 @@ $(function () {
         const CYT_WIDTH = 500 ;
         const ROH_IMGPATH = '/{{institute._id}}/{{case.display_name}}/roh_images/'
         var upd_imgPath   = '/{{institute._id}}/{{case.display_name}}/upd_images/'
-        const IDEO_IMGPATH = '/public/static/chr_images/'
-        
+        const IDEO_IMGPATH = '/{{institute._id}}/{{case.display_name}}/chr_images/'
         console.log("draw roh")
         console.log(ROH_IMGPATH)
 
@@ -1100,16 +1099,16 @@ $(function () {
         var chrom22 = {name: '22', length: 114, cent_start: 42, cent_length: 8 }
         var chromX = {name: 'X', length: 305, cent_start: 127, cent_length: 8 }
         var chromY = {name: 'Y', length: 127, cent_start: 39, cent_length: 4 }
-        
+
         chrom_list = [chrom1, chrom2, chrom3, chrom4,
                       chrom5, chrom6, chrom7, chrom8,
                       chrom9, chrom10, chrom11, chrom12,
-                      chrom13, chrom14, chrom15, chrom16, 
+                      chrom13, chrom14, chrom15, chrom16,
                       chrom17, chrom18, chrom19, chrom20,
                       chrom21, chrom22, chromX, chromY]
 
 
-        
+
         // for(i = 0; i< CHROMOSOMES.length; i++){
         for(i = 0; i< chrom_list.length; i++){
             roh_imgObj.src = ROH_IMGPATH + ROH_IMAGES[i]
@@ -1119,7 +1118,7 @@ $(function () {
 
 
 
-            
+
             // console.log("x: %s y: %s", x_pos, y_pos);
             var g = document.createElementNS('http://www.w3.org/2000/svg','g');
             var ideo_image = make_svgimage(IDEO_IMGPATH + ideo_images[i],
@@ -1142,7 +1141,7 @@ $(function () {
 
             var clipPath = make_clipPath(chrom_list[i], x_pos, y_pos)
             ideo_image.setAttributeNS(null, 'clip-path', "url(#clip-chr"+chrom_list[i].name +")")
-            
+
             g.appendChild(roh_image);
             g.appendChild(upd_image);
             g.appendChild(ideo_image);
@@ -1155,7 +1154,7 @@ $(function () {
         }
     }
 
-        
+
     function chromosome_text(text, x, y){
         var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         t.setAttributeNS(null, 'x', x);
@@ -1184,7 +1183,7 @@ $(function () {
         var start_l = {x: chrom.cent_start + chrom.cent_length +5 +5 + x_offset,
                        y: 0 + 25 + y_offset,
                        length: chrom.cent_length }
-        
+
         var start_u = {x: chrom.cent_start + x_offset,
                        y: y_offset,
                        length: chrom.cent_length}
@@ -1203,7 +1202,7 @@ $(function () {
         var c2 = "C " + " " + String(chrom.length + r + x_offset) + " " + String(y_offset) + " "
             + String(chrom.length + r + x_offset) + " " + String(y_offset+25) + " "
             + String(chrom.length + x_offset) + " " + String( y_offset+25)+ " "
-        
+
         path = m + cent_l + b_left + c1 + cent_u + right + c2
         // console.log("*****")
         // console.log(path)
@@ -1218,13 +1217,13 @@ $(function () {
     }
 
 
-    
+
 
     function calc_centromere_upper(pos){
         // Upper waist of centromere
         // ------(L1)      (L4)------
         //          \_____/
-        //       (L2)      (L3)  
+        //       (L2)      (L3)
         var l1 = "L " + String(pos['x']) + " " + String(pos['y']) + " ";
         var l2 = "L " + String(pos['x']+5) + " " + String(pos['y']+3) + " ";
         var l3 = "L " + String(pos['x']+5+pos.length) + " " + String(pos['y']+3) + " ";
@@ -1233,8 +1232,8 @@ $(function () {
         return l1 + l2 + l3 + l4
     }
 
-    
-    
+
+
     function calc_centromere_lower(pos){
         // Lower waist of centromere
         //       (L3)-----(L2)
@@ -1247,10 +1246,10 @@ $(function () {
         // console.log("lower centromere: %s ", l1 + l2 + l3 + l4);
         return l1 + l2 + l3 + l4
     }
-    
 
 
-    
+
+
     function make_svgimage(src, x, y, height, width){
         var svgimg = document.createElementNS('http://www.w3.org/2000/svg','image');
         svgimg.setAttributeNS('http://www.w3.org/1999/xlink','href', src);
@@ -1273,7 +1272,7 @@ $(function () {
     //           \            /
     //            \          /
     //             (c_x, c_y)
-    //                 
+    //
     function make_polygon(x_cyt, y_cyt, pos, link, ) {
         const POLY_WIDTH = 10
         var a = document.createElementNS('http://www.w3.org/2000/svg','a');
@@ -1285,7 +1284,7 @@ $(function () {
         var by = String( y_cyt -10 )
         var cx = String( x_cyt+pos+ Math.floor(POLY_WIDTH/2) + X_OFFSET )
         var cy = String( y_cyt+Y_OFFSET )
-        
+
         poly.setAttributeNS(null,'points', ax + ',' + ay + ' ' + bx + ',' + by + ' ' + cx + ',' + cy );
         poly.setAttributeNS(null,'style', "fill:red;stroke:crimson;stroke-width:1");
         a.appendChild(poly)
@@ -1306,8 +1305,10 @@ $(function () {
     window.onload=function(){
         console.log("Window is loaded!")
         console.log("Draw all cromosome data tracks to svg image area")
-        var testFile = "/public/static/chr_images/cytoband.txt.chr1.png"
-        if(urlExists(testFile)){
+        const IDEO_IMGPATH = '/{{institute._id}}/{{case.display_name}}/chr_images/'
+        var testFile = IDEO_IMGPATH+"cytoband.txt.chr1.png"
+//        if(urlExists(testFile)){
+        if(true) {
             console.log("Draw images")
             draw_tracks()
         }
@@ -1319,7 +1320,7 @@ $(function () {
         }
     }
   </script>
- 
+
 <script>
 function SidebarCollapse () {
     $('.menu-collapsed').toggleClass('d-none');
