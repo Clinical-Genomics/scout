@@ -34,14 +34,27 @@ def variants(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = request.args.get('variant_type', 'clinical')
 
+    if request.form.get('hpo_clinical_filter'):
+        case_obj['hpo_clinical_filter'] = True
+
     # Update filter settings if Clinical Filter was requested
+    clinical_filter_panels = []
 
     default_panels = []
     for panel in case_obj['panels']:
         if panel.get('is_default'):
             default_panels.append(panel['panel_name'])
 
+    if case_obj.get('hpo_clinical_filter'):
+        clinical_filter_panels = ['hpo']
+    else:
+        clinical_filter_panels = default_panels
+
+    log.debug("Current default panels: {}".format(default_panels))
+
     if bool(request.form.get('clinical_filter')):
+
+        # but not if HPO is selected
         clinical_filter = MultiDict({
             'variant_type': 'clinical',
             'region_annotations': ['exonic','splicing'],
@@ -50,7 +63,7 @@ def variants(institute_id, case_name):
             'clinsig_confident_always_returned': True,
             'gnomad_frequency': str(institute_obj['frequency_cutoff']),
             'variant_type': 'clinical',
-            'gene_panels': default_panels
+            'gene_panels': clinical_filter_panels
              })
 
     if(request.method == "POST"):

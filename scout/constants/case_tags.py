@@ -42,6 +42,7 @@ VERBS_MAP = {
     "dismiss_variant": "Dismissed variant for",
     "mosaic_tags": "Updated mosaic tags for",
     "update_default_panels": "updated default panels for",
+    "update_clinical_filter_hpo": "updated clinical filter HPO status for",
     "mme_add": "Exported to MatchMaker patient",
     "mme_remove": "Removed from MatchMaker patient",
 }

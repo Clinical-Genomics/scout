@@ -488,6 +488,30 @@ def test_remove_cohort(adapter, institute_obj, case_obj, user_obj):
     # THEN an event should have been created
     assert sum(1 for i in adapter.event_collection.find()) == 2
 
+
+def test_update_clinical_filter_hpo(adapter, institute_obj, case_obj, user_obj):
+    # GIVEN a case (and its user, institute)
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    # GIVEN no events in the event collection
+    assert sum(1 for i in adapter.event_collection.find()) == 0
+
+    # WHEN calling update function
+    hpo_clinical_filter = True
+    updated_case = adapter.update_clinical_filter_hpo(
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        user_obj=user_obj,
+        link='update_clinical_filter_hpo_link',
+        hpo_clinical_filter=hpo_clinical_filter
+    )
+    # THEN hpo_clinical_filter is actually updated
+    assert updated_case['hpo_clinical_filter'] == hpo_clinical_filter
+    # THEN an event should have been created
+    assert sum(1 for i in adapter.event_collection.find()) == 1
+
+
 def test_update_default_panels(adapter, institute_obj, case_obj, user_obj, dummypanel_obj):
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
