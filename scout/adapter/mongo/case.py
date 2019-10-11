@@ -450,7 +450,7 @@ class CaseHandler(object):
                     case_obj=case_obj,
                     variant_type=variant_type,
                     category=category,
-                    rank_threshold=case_obj.get('rank_score_threshold', 0),
+                    rank_threshold=case_obj.get('rank_score_threshold', 5),
                 )
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
