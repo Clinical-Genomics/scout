@@ -190,9 +190,9 @@ def parse_transcripts(raw_transcripts, allele=None):
             LOG.debug("Something went wrong when parsing frequencies")
             LOG.debug("Only splitted and normalised VEP v90+ is supported")
 
-        clinsig = entry.get('CLIN_SIG')
-        if clinsig:
-            transcript['clinsig'] = clinsig.split('&')
+        clnsig = entry.get('CLIN_SIG', entry.get('ClinVar_CLNSIG'))
+        if clnsig:
+            transcript['clnsig'] = clnsig.split('&')
 
         transcript['dbsnp'] = []
         transcript['cosmic'] = []

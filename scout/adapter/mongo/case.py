@@ -269,7 +269,7 @@ class CaseHandler(object):
 
 
     def update_dynamic_gene_list(self, case, hgnc_symbols=None, hgnc_ids=None,
-                                 phenotype_ids=None, build='37'):
+                                 phenotype_ids=None, build='37', add_only=False):
         """Update the dynamic gene list for a case
 
         Adds a list of dictionaries to case['dynamic_gene_list'] that looks like
@@ -289,18 +289,24 @@ class CaseHandler(object):
             updated_case(dict)
         """
         dynamic_gene_list = []
+        if add_only:
+            dynamic_gene_list  = self.case_collection.find_one({ '_id': case['_id'] },
+                { 'dynamic_gene_list': 1, '_id': 0 })['dynamic_gene_list']
+            LOG.debug("Add selected: current dynamic gene list: {}".format(dynamic_gene_list))
+
         res = []
         if hgnc_ids:
-            LOG.info("Fetching genes by hgnc id")
+            LOG.info("Fetching genes by hgnc id: {}".format(hgnc_ids))
             res = self.hgnc_collection.find({'hgnc_id': {'$in': hgnc_ids}, 'build': build})
         elif hgnc_symbols:
             LOG.info("Fetching genes by hgnc symbols")
-            res = []
             for symbol in hgnc_symbols:
-                for gene_obj in self.gene_by_alias(symbol=symbol, build=build):
+                those_genes = self.gene_by_alias(symbol=symbol, build=build)
+                for gene_obj in those_genes:
                     res.append(gene_obj)
 
         for gene_obj in res:
+            LOG.debug("Appending gene {}".format(gene_obj['hgnc_symbol']))
             dynamic_gene_list.append(
                 {
                     'hgnc_symbol': gene_obj['hgnc_symbol'],
@@ -444,7 +450,7 @@ class CaseHandler(object):
                     case_obj=case_obj,
                     variant_type=variant_type,
                     category=category,
-                    rank_threshold=case_obj.get('rank_score_threshold', 0),
+                    rank_threshold=case_obj.get('rank_score_threshold', 5),
                 )
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
@@ -649,7 +655,7 @@ class CaseHandler(object):
             'sanger_verified' : self.validated(case_id=case_id),
             'sanger_ordered' : self.sanger_ordered(case_id=case_id)
         }
-        
+
         for category in results:
             res = results[category]
             if not res:
@@ -659,12 +665,12 @@ class CaseHandler(object):
                 if not variant_obj:
                     continue
                 case_verif_variants[category].append(variant_obj)
-            
+
         LOG.info("Nr variants with sanger verification found: %s",
                  len(case_verif_variants['sanger_verified']))
         LOG.info("Nr variants with sanger ordered found: %s",
                  len(case_verif_variants['sanger_ordered']))
-        
+
         return case_verif_variants
 
     def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
@@ -694,7 +700,7 @@ class CaseHandler(object):
             verb = 'sanger'
             if category == 'sanger_verified':
                 verb = 'validate'
-            
+
             for old_var in variants:
                 # new var display name should be the same as old display name:
                 display_name = old_var['display_name']
@@ -738,7 +744,7 @@ class CaseHandler(object):
                     if updated_var:
                         updated_variants['updated_verified'].append(updated_var['_id'])
 
-                else: 
+                else:
                     # old variant had Sanger validation ordered
                     # check old event to collect user_obj that ordered the verification:
                     # set sanger ordered status for the new variant as well:

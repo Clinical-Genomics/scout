@@ -566,13 +566,27 @@ def phenotypes_actions(institute_id, case_name):
         return render_template('cases/diseases.html', diseases=diseases,
                                institute=institute_obj, case=case_obj)
 
+    elif action == 'ADDGENE':
+        hgnc_symbol = None
+        for raw_symbol in request.form.getlist('genes'):
+            LOG.debug("raw gene: {}".format(raw_symbol))
+            # avoid empty lists
+            if raw_symbol:
+                # take the first nubmer before |, and remove any space.
+                hgnc_symbol_split = raw_symbol.split('|', 1)[0]
+                hgnc_symbol = int(hgnc_symbol_split.replace(' ', ''))
+            LOG.debug("Parsed HGNC symbol {}".format(hgnc_symbol))
+            store.update_dynamic_gene_list(case_obj, hgnc_ids=[hgnc_symbol], add_only=True)
+
     elif action == 'GENES':
         hgnc_symbols = set()
         for raw_symbols in request.form.getlist('genes'):
+            LOG.debug("raw gene list: {}".format(raw_symbols))
             # avoid empty lists
             if raw_symbols:
                 hgnc_symbols.update(raw_symbol.split(' ', 1)[0] for raw_symbol in
                                     raw_symbols.split('|'))
+            LOG.debug("HGNC symbols {}".format(hgnc_symbols))
         store.update_dynamic_gene_list(case_obj, hgnc_symbols=hgnc_symbols)
 
     elif action == 'GENERATE':
@@ -797,6 +811,13 @@ def default_panels(institute_id, case_name):
     """Update default panels for a case."""
     panel_ids = request.form.getlist('panel_ids')
     controllers.update_default_panels(store, current_user, institute_id, case_name, panel_ids)
+    return redirect(request.referrer)
+
+@cases_bp.route('/<institute_id>/<case_name>/update-clinical-filter-hpo', methods=['POST'])
+def update_clinical_filter_hpo(institute_id, case_name):
+    """Update default panels for a case."""
+    hpo_clinical_filter = request.form.get('hpo_clinical_filter')
+    controllers.update_clinical_filter_hpo(store, current_user, institute_id, case_name, hpo_clinical_filter)
     return redirect(request.referrer)
 
 @cases_bp.route('/<institute_id>/<case_name>/<individual_id>/cgh')
