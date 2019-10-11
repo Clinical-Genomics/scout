@@ -1,15 +1,3 @@
-{% macro flash_messages() %}
-  {% with messages = get_flashed_messages(with_categories=True) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="alert alert-{{ category or 'default' }} alert-dismissible">
-          <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-          {{ message }}
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-{% endmacro %}
 
 {% macro comments_table(institute, case, comments, variant_id=None) %}
   <table class='table table-bordered table-hover table-condensed'>
@@ -27,10 +15,10 @@
       	    <strong> {{ comment.user_name }} </strong>
       	    on {{ comment.created_at.date() }}
       	    {% if comment.level == 'global' %}
-                    <span class='label label-info'>GLOBAL</span>
+                    <span class='badge badge-info'>GLOBAL</span>
                   {% endif %}
       	    {% if comment.created_at < case.updated_at %}
-                    <span class='label label-warning'>OLD</span>
+                    <span class='badge badge-warning'>OLD</span>
                   {% endif %}
       	  </small>
       	</td>
@@ -44,16 +32,16 @@
 {% endmacro %}
 
 {% macro comments_panel(institute, case, current_user, comments, variant_id=None) %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Comments</div>
-    <ul class="list-group list-group-scrollable">
+    <div class="list-group" style="max-height:200px; overflow-y: scroll;">
       {% for comment in comments %}
-        <li class="list-group-item">
+        <a class="list-group-item">
           <div class="row">
             <div class="col-xs-12">{{ comment.content }}</div>
           </div>
           <div class="row">
-            <div class="col-xs-12">
+            <div class="d-flex justify-content-between align-items-center">
               <form method="POST"
                     action="{{ url_for('cases.events', institute_id=institute._id,
                                        case_name=case.display_name,
@@ -63,28 +51,24 @@
                   <strong>{{ comment.user_name }}</strong>
                   on {{ comment.created_at.date() }}
                   {% if comment.level == 'global' %}
-                    <span class="label label-info">GLOBAL</span>
+                    <span class="badge badge-info">GLOBAL</span>
                   {% endif %}
                   {% if comment.created_at < case.updated_at %}
-                    <span class="label label-warning">OLD</span>
+                    <span class="badge badge-warning">OLD</span>
+                  {% endif %}
+                  {% if comment.user_id == current_user.email %}
+                    <button class="btn btn-link btn-sm" type="submit"><i class="fa fa-remove"></i></button>
                   {% endif %}
                 </small>
-                {% if comment.user_id == current_user.email %}
-                  <div class="pull-right">
-                    <button class="btn btn-link btn-sm no-padding" type="submit">
-                      <span class="glyphicon glyphicon-remove"></span>
-                    </button>
-                  </div>
-                {% endif %}
               </form>
             </div>
           </div>
-        </li>
+        </a>
       {% else %}
-        <li class="list-group-item">No comments yet</li>
+        <a class="list-group-item">No comments yet</a>
       {% endfor %}
-    </ul>
-    <div class="panel-footer">
+    </div>
+    <div class="card-footer">
       <form action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) }}" method="POST">
         <input type="hidden" name="link" value="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) if variant_id else url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
         <div class="form-group">
@@ -92,7 +76,7 @@
         </div>
         <div class="row">
           {% if variant_id %}
-            <div class="col-xs-6">
+            <div class="col-sm-6">
               <div class="checkbox">
                 <label>
                   <input type="checkbox" name="level" value="global">
@@ -101,8 +85,8 @@
               </div>
             </div>
           {% endif %}
-          <div class="col-xs-{{ 6 if variant_id else 12 }}">
-            <button class="btn btn-default form-control" type="submit">Comment</button>
+          <div class="col-sm-{{ 6 if variant_id else 12 }}">
+            <button class="btn btn-outline-secondary form-control" type="submit">Comment</button>
           </div>
         </div>
       </form>
@@ -111,14 +95,14 @@
 {% endmacro %}
 
 {% macro activity_panel(events) %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Activity</div>
-    <ul class="list-group list-group-scrollable">
+    <ul class="list-group" style="max-height:400px; overflow-y: scroll;">
       {% for event in events %}
         <li class="list-group-item">
           <strong>{{ event.user_name }}</strong>
           {{ event.verb }}
-          <a href="{{ event.link }}">{{ event.subject }}</a>
+          <a href="{{ event.link }}">{{ event.subject[0:30] }}</a>
           at <span class="timestamp">{{ event.created_at.date() }}</span>
         </li>
       {% else %}
@@ -129,9 +113,9 @@
 {% endmacro %}
 
 {% macro pedigree_panel(case) %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Pedigree</div>
-    <div class="panel-body table-responsive">
+    <div class="card-body table-responsive">
       {% if case.individuals|length == 1 %}
         <p>Single sample case: {{ case.individuals.0.display_name }}</p>
       {% else %}

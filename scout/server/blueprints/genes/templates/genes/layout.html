@@ -1,19 +1,17 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 
 {% block content_main %}
-  <div class="panel panel-default">
-    <div class="panel-heading">Search for genes</div>
-    <div class="panel-body">
-      <form action="{{ url_for('genes.genes') }}">
-        <div class="row">
-          <div class="col-xs-8">
-            <input name="query" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search...">
+  <div class="container-float">
+    <div class="card mt-3">
+      <div class="card-body">
+        <form class="form-inline" action="{{ url_for('genes.genes') }}">
+          <label for="query">Search for genes</label>
+          <div class="form-group">
+            <input name="query" class="typeahead form-control mx-sm-5" data-provide="typeahead" autocomplete="off" placeholder="Search...">
+            <button class="btn btn-outline-secondary form-control">Search</button>
           </div>
-          <div class="col-xs-4">
-            <button class="btn btn-default form-control">Search</button>
-          </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
 {% endblock %}

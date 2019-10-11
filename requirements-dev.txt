@@ -4,7 +4,6 @@
 pytest==3.8
 pytest-flask==0.11
 pytest-cov
-pandas
 mongomock<=3.12
 python-coveralls
 
@@ -15,3 +14,6 @@ twine
 # utils
 invoke
 
+# docs
+mkdocs
+mkdocs-material

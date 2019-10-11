@@ -65,3 +65,41 @@ CASEDATA_HEADER = {
     'testing_lab' : 'Testing laboratory',
     'reported_at' : 'Date variant was reported to submitter'
 }
+
+CLNSIG_TERMS = {
+    'affects',
+    'benign',
+    'benign/likely_benign',
+    'conflicting_interpretations_of_pathogenicity',
+    'likely_benign',
+    'likely_pathogenic',
+    'pathogenic',
+    'pathogenic/likely_pathogenic',
+    'uncertain_significance',
+    'affects',
+    'association',
+    'drug_response',
+    'other',
+    'protective',
+    'risk_factor',
+    'association',
+    'association_not_found',
+    'drug_response',
+    'not_provided',
+    'other',
+    'protective',
+    'risk_factor'
+}
+
+REVSTAT_TERMS = {
+    'conflicting_interpretations',
+    'multiple_submitters',
+    'no_conflicts',
+    'single_submitter',
+    'criteria_provided',
+    'no_assertion_criteria_provided',
+    'no_assertion_provided',
+    'practice_guideline',
+    'reviewed_by_expert_panel'
+}
+

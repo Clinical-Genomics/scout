@@ -20,7 +20,7 @@ from scout.server.utils import templated, institute_and_case, public_endpoint
 from scout.utils.acmg import get_acmg
 from scout.parse.clinvar import set_submission_objects
 from . import controllers
-from .forms import FiltersForm, SvFiltersForm, StrFiltersForm
+from .forms import FiltersForm, SvFiltersForm, StrFiltersForm, CancerFiltersForm
 
 log = logging.getLogger(__name__)
 variants_bp = Blueprint('variants', __name__, static_folder='static', template_folder='templates')
@@ -34,15 +34,27 @@ def variants(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = request.args.get('variant_type', 'clinical')
 
+    if request.form.get('hpo_clinical_filter'):
+        case_obj['hpo_clinical_filter'] = True
+
     # Update filter settings if Clinical Filter was requested
+    clinical_filter_panels = []
 
     default_panels = []
     for panel in case_obj['panels']:
         if panel.get('is_default'):
             default_panels.append(panel['panel_name'])
 
-    request.form.get('gene_panels')
+    if case_obj.get('hpo_clinical_filter'):
+        clinical_filter_panels = ['hpo']
+    else:
+        clinical_filter_panels = default_panels
+
+    log.debug("Current default panels: {}".format(default_panels))
+
     if bool(request.form.get('clinical_filter')):
+
+        # but not if HPO is selected
         clinical_filter = MultiDict({
             'variant_type': 'clinical',
             'region_annotations': ['exonic','splicing'],
@@ -51,7 +63,7 @@ def variants(institute_id, case_name):
             'clinsig_confident_always_returned': True,
             'gnomad_frequency': str(institute_obj['frequency_cutoff']),
             'variant_type': 'clinical',
-            'gene_panels': default_panels
+            'gene_panels': clinical_filter_panels
              })
 
     if(request.method == "POST"):
@@ -455,7 +467,8 @@ def clinvar(institute_id, case_name, variant_id):
 @templated('variants/cancer-variants.html')
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
-    data = controllers.cancer_variants(store, request.args, institute_id, case_name)
+    form = CancerFiltersForm(request.args)
+    data = controllers.cancer_variants(store, request.args, institute_id, case_name, form)
     return data
 
 

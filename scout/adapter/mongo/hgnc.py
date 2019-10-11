@@ -135,13 +135,13 @@ class GeneHandler(object):
 
     def all_genes(self, build=None, add_transcripts=False, limit=100000):
         """Fetch all hgnc genes
-        
+
         Args:
             build(str)
             add_transcripts(bool): If tx information should be added
             limit(int): If only a part of the genes should be added
-            
-        
+
+
             Returns:
                 genes(iterable):
                 limit(int): Maximum number of returned
@@ -151,7 +151,7 @@ class GeneHandler(object):
             build = '38'
 
         LOG.info("Fetching all genes")
-        
+
         hgnc_tx = {}
         if add_transcripts:
             LOG.info("Adding transcripts")
@@ -160,7 +160,7 @@ class GeneHandler(object):
                 if not hgnc_id in hgnc_tx:
                     hgnc_tx[hgnc_id] = []
                 hgnc_tx[hgnc_id].append(tx)
-        
+
         for i,gene_obj in enumerate(self.hgnc_collection.find({'build': build})):
             if i > limit:
                 break
@@ -174,7 +174,7 @@ class GeneHandler(object):
         """Return the number of hgnc genes in collection
 
         If build is used, return the number of genes of a certain build
-        
+
         Args:
             build(str): geneome build. '37' or '38'
 
@@ -187,8 +187,8 @@ class GeneHandler(object):
             query['build'] = build
         else:
             LOG.debug("Fetching all genes")
-            
-        
+
+
         nr=0
         for nr, gene in enumerate(self.hgnc_collection.find(query),1):
             pass
@@ -252,7 +252,7 @@ class GeneHandler(object):
         return hgnc_dict
 
     def gene_by_alias(self, symbol, build='37'):
-        """Return a iterable with hgnc_genes.
+        """Return an iterable with hgnc_genes.
 
         If the gene symbol is listed as primary the iterable will only have
         one result. If not the iterable will include all hgnc genes that have
@@ -265,9 +265,13 @@ class GeneHandler(object):
         Returns:
             res(pymongo.Cursor(dict))
         """
-        res = self.hgnc_collection.find({'hgnc_symbol': symbol, 'build':build})
-        if res.count() == 0:
-            res = self.hgnc_collection.find({'aliases': symbol, 'build':build})
+        LOG.debug("Fetch gene by symbol if possible: {}".format(symbol))
+
+        res = self.hgnc_collection.find({'hgnc_symbol': symbol, 'build': build})
+
+        if (self.hgnc_collection.find_one({'aliases': symbol, 'build': build}) is None):
+            LOG.debug("No gene with symbol {} was found. Attempting an alias.".format(symbol))
+            res = self.hgnc_collection.find({'aliases': symbol, 'build': build})
 
         return res
 

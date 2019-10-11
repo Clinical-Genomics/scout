@@ -32,7 +32,8 @@ def institutes():
                 'coverage_cutoff': ins_obj.get('coverage_cutoff', 'None'),
                 'sanger_recipients': sanger_recipients,
                 'frequency_cutoff': ins_obj.get('frequency_cutoff', 'None'),
-                'phenotype_groups': ins_obj.get('phenotype_groups', PHENOTYPE_GROUPS)
+                'phenotype_groups': ins_obj.get('phenotype_groups', PHENOTYPE_GROUPS),
+                'case_count': sum(1 for i in store.cases(collaborator=ins_obj['_id'])),
             }
         )
 

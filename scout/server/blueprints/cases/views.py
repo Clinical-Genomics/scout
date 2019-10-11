@@ -149,6 +149,9 @@ def clinvar_submissions(institute_id):
 def matchmaker_matches(institute_id, case_name):
     """Show all MatchMaker matches for a given case"""
     # check that only authorized users can access MME patients matches
+    panel=1
+    if request.method=='POST':
+        panel = panel=request.form.get('pane_id')
     user_obj = store.user(current_user.email)
     if 'mme_submitter' not in user_obj['roles']:
         flash('unauthorized request', 'warning')
@@ -161,13 +164,15 @@ def matchmaker_matches(institute_id, case_name):
         return redirect(request.referrer)
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.mme_matches(case_obj, institute_obj, mme_base_url, mme_token)
+    data['panel'] = panel
     if data and data.get('server_errors'):
         flash('MatchMaker server returned error:{}'.format(data['server_errors']), 'danger')
         return redirect(request.referrer)
     elif not data:
         data = {
             'institute' : institute_obj,
-            'case' : case_obj
+            'case' : case_obj,
+            'panel' : panel
         }
     return data
 
@@ -561,13 +566,27 @@ def phenotypes_actions(institute_id, case_name):
         return render_template('cases/diseases.html', diseases=diseases,
                                institute=institute_obj, case=case_obj)
 
+    elif action == 'ADDGENE':
+        hgnc_symbol = None
+        for raw_symbol in request.form.getlist('genes'):
+            LOG.debug("raw gene: {}".format(raw_symbol))
+            # avoid empty lists
+            if raw_symbol:
+                # take the first nubmer before |, and remove any space.
+                hgnc_symbol_split = raw_symbol.split('|', 1)[0]
+                hgnc_symbol = int(hgnc_symbol_split.replace(' ', ''))
+            LOG.debug("Parsed HGNC symbol {}".format(hgnc_symbol))
+            store.update_dynamic_gene_list(case_obj, hgnc_ids=[hgnc_symbol], add_only=True)
+
     elif action == 'GENES':
         hgnc_symbols = set()
         for raw_symbols in request.form.getlist('genes'):
+            LOG.debug("raw gene list: {}".format(raw_symbols))
             # avoid empty lists
             if raw_symbols:
                 hgnc_symbols.update(raw_symbol.split(' ', 1)[0] for raw_symbol in
                                     raw_symbols.split('|'))
+            LOG.debug("HGNC symbols {}".format(hgnc_symbols))
         store.update_dynamic_gene_list(case_obj, hgnc_symbols=hgnc_symbols)
 
     elif action == 'GENERATE':
@@ -627,8 +646,8 @@ def status(institute_id, case_name):
 
 
 @cases_bp.route('/<institute_id>/<case_name>/assign', methods=['POST'])
-@cases_bp.route('/<institute_id>/<case_name>/<user_id>/assign', methods=['POST'])
-def assign(institute_id, case_name, user_id=None):
+@cases_bp.route('/<institute_id>/<case_name>/<user_id>/<inactivate>/assign', methods=['POST'])
+def assign(institute_id, case_name, user_id=None, inactivate=False):
     """Assign and unassign a user from a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     link = url_for('.case', institute_id=institute_id, case_name=case_name)
@@ -637,7 +656,7 @@ def assign(institute_id, case_name, user_id=None):
     else:
         user_obj = store.user(current_user.email)
     if request.form.get('action') == 'DELETE':
-        store.unassign(institute_obj, case_obj, user_obj, link)
+        store.unassign(institute_obj, case_obj, user_obj, link, inactivate)
     else:
         store.assign(institute_obj, case_obj, user_obj, link)
     return redirect(request.referrer)
@@ -792,6 +811,13 @@ def default_panels(institute_id, case_name):
     """Update default panels for a case."""
     panel_ids = request.form.getlist('panel_ids')
     controllers.update_default_panels(store, current_user, institute_id, case_name, panel_ids)
+    return redirect(request.referrer)
+
+@cases_bp.route('/<institute_id>/<case_name>/update-clinical-filter-hpo', methods=['POST'])
+def update_clinical_filter_hpo(institute_id, case_name):
+    """Update default panels for a case."""
+    hpo_clinical_filter = request.form.get('hpo_clinical_filter')
+    controllers.update_clinical_filter_hpo(store, current_user, institute_id, case_name, hpo_clinical_filter)
     return redirect(request.referrer)
 
 @cases_bp.route('/<institute_id>/<case_name>/<individual_id>/cgh')

@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 
 {% block title %}
   {{ super() }} - {{ current_user.name }} - Gene Panels
@@ -6,10 +6,10 @@
 
 {% block top_nav %}
   {{ super() }}
-  <li>
-    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-  <li class="active">
+  <li class="nav-item active">
     <span class="navbar-text">Gene Panels</span>
   </li>
 {% endblock %}
@@ -28,13 +28,15 @@
 {% endblock %} <!-- end of content_main -->
 
 {% macro new_panel() %}
-<div id="newpaneldiv_{{panel_id}}">
-  <div class="panel panel-default">
-    <div class="panel-body">
+<div class="container-float">
+  <div class="card mt-3">
+    <div class="card-body">
       <form class="form-horizontal" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" method="POST">
-        <div class="form-group row">
-          <label for="" class="col-sm-2 col-form-label">New panel</label>
-          <div class="col-sm-3">
+        <div class="form-row">
+          <div class="form-group col-sm-2">
+            <label class="col-form-label">New panel</label>
+          </div>
+          <div class="form-group col-sm-3 text-center">
               <select name="institute" class="form-control">
                 <option>Choose institute...</option>
                 {% for institute in institutes %}
@@ -42,27 +44,31 @@
                 {% endfor %}
               </select>
           </div>
-          <div class="col-sm-3">
+          <div class="col-sm-3 text-center">
               <input type="text" name="new_panel_name" class="form-control" placeholder="Panel ID">
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-4 text-center">
               <input type="text" name="display_name" class="form-control" placeholder="Full name">
             </div>
         </div>
-        <div class="form-group row">
-          <label class="col-sm-2 col-form-label">CSV file</label>
-            <div class="col-sm-5">
-              <input type="file" name="csv_file" class="form-control" required>
-              <p class="help-block">How do I format my <a href="https://www.clinicalgenomics.se/scout/user-guide/panels/#uploading-a-new-gene-panel-version">gene panel file</a>?</p>
-            </div>
-            <div class="col-sm-5">
-              <textarea class="form-control" id="description" name="description" rows="2" placeholder="Description (optional)"></textarea>
-            </div>
+        <div class="form-row ">
+          <div class="form-group col-sm-2">
+            <label class="col-form-label">CSV file</label>
+          </div>
+          <div class="col-sm-5 text-center">
+            <input type="file" name="csv_file" class="custom-file-input" required>
+            <label class="custom-file-label" for="csv_file">Choose file</label><br>
+            <p class="help-block">How do I format my <a href="https://www.clinicalgenomics.se/scout/user-guide/panels/#uploading-a-new-gene-panel-version">gene panel file</a>?</p>
+          </div>
+          <div class="col-sm-5">
+            <textarea class="form-control" id="description" name="description" rows="2" placeholder="Description (optional)"></textarea>
+          </div>
         </div>
-        <div class="row text-center">
-          <button type="submit" class="btn btn-default">Upload</button>
+        <div class="row">
+          <div class="col text-center">
+            <button type="submit" class="btn btn-outline-secondary">Upload</button>
+          </div>
         </div>
-
       </form>
     </div>
   </div>
@@ -70,11 +76,11 @@
 {% endmacro %}
 
 {% macro panel_view(institute,panels) %}
-  <div class="panel panel-default">
+  <div class="card panel-default w-100 mt-3 justify-content-center">
     <div class="panel-heading">
       <strong>{{ institute.display_name }}</strong> - Panels
     </div>
-    <div>
+    <div class="card-body">
         <table class="table table-striped">
         <thead>
           <tr>
@@ -91,9 +97,9 @@
           <tr>
             <td><a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a></td>
             <td>{{ panel.version }} ({{ panel.date.date()}})</td>
-            <td><span class="badge">{{ panel.genes|length}}</span></td>
-            <td><button id="{{panel._id}}" type="button" class="btn btn-primary btn-xs history_btn"><span class="glyphicon glyphicon-zoom-in"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
-            <td><button id="{{panel._id}}" type="button" class="btn btn-warning btn-xs modify_btn"><span class="glyphicon glyphicon-pencil"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
+            <td><span class="badge badge-pill badge-secondary">{{ panel.genes|length}}</span></td>
+            <td><button id="{{panel._id}}" type="button" data-toggle="collapse" href="#paneldiv_{{panel._id}}" aria-expanded="false" aria-controls="paneldiv_{{panel._id}}" class="btn btn-primary btn-xs"><span class="fa fa-search-plus"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
+            <td><button id="{{panel._id}}" type="button" data-toggle="collapse" href="#modifydiv_{{panel._id}}" aria-expanded="false" aria-controls="modifydiv_{{panel._id}}" class="btn btn-warning btn-xs"><span class="fa fa-pencil-square-o"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
           </tr>
           {{ modify_panel(panel._id, panel) }}
         </tbody>
@@ -104,7 +110,7 @@
 {% endmacro %}
 
 {% macro history_view(panel_id, panel_name) %}
-  <div id="paneldiv_{{panel_id}}" style="display:none;">
+  <div id="paneldiv_{{panel_id}}" class="collapse">
     <ul>
     {% for version in panel_versions[panel_name]|sort(attribute='version', reverse=True) %}
       <li><a href={{ url_for('panels.panel', panel_id=version._id) }}>{{ version.version }} {{ version.date.date() }} {{ version.genes|length }} genes</a></li>
@@ -114,40 +120,44 @@
 {% endmacro %}
 
 {% macro modify_panel(panel_id, panel_obj) %}
-  <tr id="modifydiv_{{panel_id}}" style="display:none;">
+  <tr id="modifydiv_{{panel_id}}" class="collapse">
     <td colspan=5>{{ modify_form(panel_obj) }}</td>
   </tr>
 {% endmacro %}
 
 {% macro modify_form(panel_obj) %}
-  <br>
   <strong>{{panel_obj.display_name}}</strong><br>
   <form method="POST" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" class="form-horizontal">
     <input type="hidden" name="panel_name" value="{{panel_obj.panel_name}}">
-    <div class="form-group">
-      <div class="col-sm-3">
-        <div class="radio">
-          <label><input type="radio" name="modify_option" value="add" checked>Add genes from CSV file</label>
+    <div class="row">
+      <div class="col-sm-5">
+        <div class="form-group">
+          <div class="custom-control custom-radio">
+            <input type="radio" id="add" name="modify_option" class="custom-control-input" value="add" checked>
+            <label class="custom-control-label" for="add">Add genes from CSV file</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input type="radio" id="replace" name="modify_option" class="custom-control-input" value="replace">
+            <label class="custom-control-label" for="replace">Replace genes using CSV file</label>
+          </div>
         </div>
-        <div class="radio">
-          <label><input type="radio" name="modify_option" value="replace">Replace genes using CSV file</label>
-        </div>
-      </div><!--end of <div class="col-sm-3">-->
-
-      <div class="form-group">
-          <div class="col-sm-6">
-            <input type="file" name="csv_file" class="form-control" required>
+      </div><!--end of col-->
+      <div class="col-sm-7">
+        <div class="form-group">
+            <input type="file" name="csv_file" class="custom-file-input" required>
+            <label class="custom-file-label" for="csv_file">Choose file</label><br>
             <p class="help-block">How do I format my <a href="https://www.clinicalgenomics.se/scout/user-guide/panels/#uploading-a-new-gene-panel-version">gene panel file</a>?</p>
-          </div>
-          <div class="col-sm-2">
-            <button id="submit" type="submit">submit</button>
-          </div>
+        </div>
+      </div><!--end of col-->
+    </div><!--end of row-->
+    <div class="row">
+      <div class="col text-center">
+        <button id="submit" type="submit" class="btn btn-outline-secondary">submit</button>
       </div>
-    </div><!--end of form-group-->
+    </div>
   </form>
   <br>
 {% endmacro %}
-
 
 {% block scripts %}
 {{ super() }}

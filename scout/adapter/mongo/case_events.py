@@ -49,7 +49,7 @@ class CaseEventHandler(object):
         )
         return updated_case
 
-    def unassign(self, institute, case, user, link):
+    def unassign(self, institute, case, user, link, inactivate=False):
         """Unassign a user from a case.
 
         This function will create an Event to log that a person has been
@@ -61,6 +61,7 @@ class CaseEventHandler(object):
             case (dict): A Case object
             user (dict): A User object (Should this be a user id?)
             link (dict): The url to be used in the event
+            inactivate(bool): inactivate case if there are no assignees
 
         Returns:
             updated_case (dict): The updated case
@@ -81,8 +82,8 @@ class CaseEventHandler(object):
         LOG.info("Updating {0} to be unassigned with {1}".format(
             case['display_name'], user['name']))
 
-        # if no other user is assigned to the case and case is not prioritized
-        if case['status'] != 'prioritized' and case.get('assignees') == [user['email']]:
+        # if case is not prioritized and user wishes to inactivate it:
+        if case['status'] != 'prioritized' and inactivate:
             # flag case as inactive:
             case['status'] = 'inactive'
 
@@ -542,6 +543,39 @@ class CaseEventHandler(object):
         LOG.debug("Case updated")
         return updated_case
 
+    def update_clinical_filter_hpo(self, institute_obj, case_obj, user_obj, link, hpo_clinical_filter):
+        """Update HPO clinical filter setting for a case.
+
+        Arguments:
+            institute_obj (dict): A Institute object
+            case_obj (dict): Case object
+            user_obj (dict): A User object
+            link (str): The url to be used in the event
+            hpo_clinical_filter (bool): Toggle for use of dynamic gene panel in clinical filter.
+        Return:
+            updated_case(dict)
+        """
+        self.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=link,
+            category='case',
+            verb='update_clinical_filter_hpo',
+            subject=case_obj['display_name'],
+        )
+
+        LOG.info("Update HPO clinical filter status for {}".format(case_obj['display_name']))
+
+        updated_case = self.case_collection.find_one_and_update(
+            {'_id': case_obj['_id']},
+            {
+                '$set': {'hpo_clinical_filter': hpo_clinical_filter}
+            },
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+        LOG.debug("Case updated")
+        return updated_case
 
     def update_default_panels(self, institute_obj, case_obj, user_obj, link, panel_objs):
         """Update default panels for a case.

@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 
 {% block title %}
   {{ super() }} - {{ panel.institute.display_name }} - {{ panel.display_name }}
@@ -6,32 +6,29 @@
 
 {% block top_nav %}
   {{ super() }}
-  <li>
-    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-  <li>
-    <a href="{{ url_for('cases.cases', institute_id=panel.institute._id) }}">
-      {{ panel.institute.display_name }}
-    </a>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('panels.panels') }}">Gene Panels</a>
   </li>
-  <li>
-    <a href="{{ url_for('panels.panels') }}">Gene Panels</a>
-  </li>
-  <li class="active">
+  <li class="nav-item active">
     <span class="navbar-text">{{ panel.display_name }} {{ panel.version }}</span>
   </li>
 {% endblock %}
 
 {% block content_main %}
+<div class="container-float">
   <div class="row">
     <div class="col-md-6">{{ overview_panel() }}</div>
     <div class="col-md-6">{{ pending_panel() }}</div>
   </div>
   {{ genes_panel() }}
+</div>
 {% endblock %}
 
 {% macro overview_panel() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Overview</div>
     <ul class="list-group">
       <li class="list-group-item">
@@ -96,14 +93,14 @@
         </li>
       {% endif %}
       <li class="list-group-item">
-        <a href="{{ url_for('panels.panel_export', panel_id=panel._id) }}" class="btn btn-warning btn-xs">Export to PDF</a>
+        <a href="{{ url_for('panels.panel_export', panel_id=panel._id) }}" class="btn btn-warning btn-sm">Export to PDF</a>
       </li>
     </ul>
   </div>
 {% endmacro %}
 
 {% macro genes_panel() %}
-  <div class="panel panel-default">
+  <div class="card panel-default mt-3">
     <div class="panel-heading">Included genes</div>
     <div class="table-responsive">
       <table class="table table-bordered">
@@ -153,19 +150,21 @@
 {% endmacro %}
 
 {% macro pending_panel() %}
-  <div class="panel panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Pending changes</div>
     {% if not panel.is_archived %}
-      <div class="panel-body">
+      <div class="card-body">
         <form action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
-          <div class="row">
-            <div class="col-xs-8">
-              <input name="hgnc_id" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for gene...">
-            </div>
-            <div class="col-xs-4">
-              <button name="action" value="add" class="btn btn-default form-control">
-                Add gene
-              </button>
+          <div class="row search_form mt-3">
+            <div class="input-group">
+              <div class="col-md-6 col-xs-6"">
+                <input name="hgnc_id" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for gene...">
+              </div>
+              <div class="col-xs-4">
+                <button type="submit" name="action" value="add" class="btn btn-outline-secondary form-control">
+                  Add gene
+                </button>
+              </div>
             </div>
           </div>
         </form>
@@ -191,11 +190,11 @@
             {{ gene.symbol }}
           </span>
           {% if gene.action == 'add' %}
-            <span class="label label-primary badge-pill pull-right">{{ gene.action }}</span>
+            <span class="badge badge-primary badge-pill pull-right">{{ gene.action }}</span>
           {% elif gene.action == 'delete' %}
-            <span class="label label-danger badge-pill pull-right">{{ gene.action }}</span>
+            <span class="badge badge-danger badge-pill pull-right">{{ gene.action }}</span>
           {% else %}
-            <span class="label label-secondary badge-pill pull-right">{{ gene.action }}</span>
+            <span class="badge badge-secondary badge-pill pull-right">{{ gene.action }}</span>
           {% endif %}
         </li>
       {% else %}
@@ -203,14 +202,14 @@
       {% endfor %}
     </ul>
     {% if panel.pending and not panel.is_archived %}
-      <div class="panel-footer">
+      <div class="card-footer">
         <form action="{{ url_for('panels.panel_update', panel_id=panel._id) }}" method="POST">
           <div class="form-group">
             <div class="row">
-              <div class="col-xs-3">
-                <label>Version</label>
+              <div class="form-group col-xs-3">
+                <label class="col-form-label">Version</label>
               </div>
-              <div class="col-xs-9">
+              <div class="form-group col-sm-3 text-center">
                 <input class="form-control" name="version" type="number" min="{{panel.version}}" value="{{ panel.version + 1 }}">
               </div>
             </div>
