@@ -284,11 +284,11 @@ def test_apply_pending_add_two_genes(adapter, dummypanel_obj):
 
 def test_apply_pending_edit_gene(adapter, dummypanel_obj):
 
-    ## GIVEN a adapter with a gene panel
+    ## GIVEN an adapter with a gene panel
     adapter.panel_collection.insert_one(dummypanel_obj)
     panel_obj = adapter.panel_collection.find_one()
 
-    # Given a gene of this panels
+    # Given a gene of this panel
     gene = panel_obj['genes'][0]
     hgnc_id = gene['hgnc_id']
     hgnc_symbol = gene['symbol']
@@ -313,7 +313,7 @@ def test_apply_pending_edit_gene(adapter, dummypanel_obj):
     # Then the updated panel
     updated_panel = adapter.panel_collection.find_one( {'_id' : updated_panel_id} )
 
-    # should have the right inheritance models
+    # should show the right inheritance models
     assert updated_panel['genes'][0]['inheritance_models'] == ['AR']
     # and the right custom inheritance models
     assert updated_panel['genes'][0]['custom_inheritance_models'] == ['model_1', 'model_2']
