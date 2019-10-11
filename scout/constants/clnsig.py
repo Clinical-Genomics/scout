@@ -31,6 +31,8 @@ REV_CLINSIG_MAP = {
     'uncertain_significance': 0,
     'likely_pathogenic': 4,
     'pathogenic': 5,
+    # These are here so that the parsing function will work with the older clinvar format
+    # Where significance where annotated with numbers
     0: 0,
     1: 1,
     2: 2,
