@@ -439,8 +439,6 @@
           <th>Strand</th>
           <th>Exon</th>
           <th>Intron</th>
-          <th>cDNA</th>
-          <th>Amino acid</th>
         </tr>
       </thead>
       <tbody>
@@ -472,8 +470,6 @@
               <td class="text-center">{{ transcript.strand }}</td>
               <td>{{ transcript.exon or '' }}</td>
               <td>{{ transcript.intron or '' }}</td>
-              <td>{{ (transcript.coding_sequence_name or '') }}</td>
-              <td>{{ (transcript.protein_sequence_name or '')|url_decode }}</td>
             </tr>
           {% endfor %}
         {% endfor %}
