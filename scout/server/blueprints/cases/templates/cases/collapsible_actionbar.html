@@ -55,7 +55,7 @@
     {% if config.SQLALCHEMY_DATABASE_URI %}
       <form method="POST" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
         <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
-        <a href="#" target="_blank" class="list-group-item list-group-item-action bg-dark text-white" onclick="form.submit();">
+        <a target="_blank" class="list-group-item list-group-item-action bg-dark text-white" onclick="form.submit();">
             <span class="menu-collapsed">Coverage report</span>
         </a>
       </form>
