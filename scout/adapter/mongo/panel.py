@@ -221,12 +221,12 @@ class PanelHandler(object):
         else:
             LOG.info("Fetching gene panels %s from database", panel_id)
             res = self.panel_collection.find(query).sort('version', -1)
-            
+
             for panel in res:
                 return panel
-            
+
             LOG.info("No gene panel found")
-            
+
             return None
 
     def gene_panels(self, panel_id=None, institute_id=None, version=None):
@@ -342,8 +342,8 @@ class PanelHandler(object):
             hgnc_gene(dict)
             action(str): choices=['add','delete','edit']
             info(dict): additional gene info (disease_associated_transcripts,
-                        reduced_penetrance, mosaicism, database_entry_version ,
-                        inheritance_models, comment)
+                        reduced_penetrance, mosaicism, database_entry_version,
+                        inheritance_models, custom_inheritance_models, comment)
 
         Returns:
             updated_panel(dict):
@@ -389,8 +389,9 @@ class PanelHandler(object):
         new_panel = deepcopy(panel_obj)
         new_panel['pending'] = []
         new_panel['date'] = dt.datetime.now()
-        info_fields = ['disease_associated_transcripts', 'inheritance_models', 'reduced_penetrance',
-            'mosaicism', 'database_entry_version', 'comment']
+        info_fields = ['disease_associated_transcripts', 'inheritance_models',
+            'custom_inheritance_models','reduced_penetrance', 'mosaicism',
+            'database_entry_version', 'comment']
         new_genes = []
 
         for update in panel_obj.get('pending', []):
@@ -428,7 +429,7 @@ class PanelHandler(object):
 
             elif action == 'edit':
                 for field in info_fields:
-                    if field in info:
+                    if field in info:    
                         gene[field] = info[field]
                 new_genes.append(gene)
 

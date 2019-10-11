@@ -10,6 +10,6 @@ class PanelGeneForm(FlaskForm):
     reduced_penetrance = BooleanField()
     mosaicism = BooleanField()
     database_entry_version = TextField()
-    custom_inheritance_model = TextField('Other inheritance models')
     inheritance_models = SelectMultipleField(choices=INHERITANCE_MODELS)
+    custom_inheritance_models = TextField('Other inheritance models (comma separated)')
     comment = TextField()
