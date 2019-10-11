@@ -51,7 +51,6 @@
           <span class="menu-collapsed">MultiQC</span>
       </a>
     {% endif %}
-
     {% if config.SQLALCHEMY_DATABASE_URI %}
       <form method="POST" id="coverage_form" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
         <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
@@ -60,7 +59,6 @@
         </a>
       </form>
     {% endif %}
-
     <a href="{{ url_for('cases.mt_report', institute_id=institute._id,
                       case_name=case.display_name) }}" class="list-group-item list-group-item-action bg-dark text-white">
         <span class="menu-collapsed">mtDNA report</span>
