@@ -21,7 +21,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Instructions on how to build docs
 - Keep sanger order + verification when updating/reloading variants
 - Fixed and moved broken filter actions (HPO gene panel and reset filter)
+- Fixed string conversion to number
 - Better inheritance models customization for genes in gene panels
+
 
 ## [4.7.3]
 
