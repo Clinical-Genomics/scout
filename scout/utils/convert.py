@@ -29,7 +29,7 @@ def convert_number(string):
     """
     res = None
     if isint(string):
-        res = int(string)
+        res = int(float(string))
     elif isfloat(string):
         res = float(string) 
     return res
