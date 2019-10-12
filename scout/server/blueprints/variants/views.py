@@ -246,7 +246,6 @@ def sv_variants(institute_id, case_name):
             'region_annotations': ['exonic','splicing'],
             'functional_annotations': SEVERE_SO_TERMS,
             'thousand_genomes_frequency': str(institute_obj['frequency_cutoff']),
-            'variant_type': 'clinical',
             'clingen_ngi': 10,
             'swegen': 10,
             'size': 100,

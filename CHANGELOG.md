@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Genes can be manually added to the dynamic gene list directly on the case page
 - Dynanmic gene panels can optionally be used with clinical filter, instead of default gene panel
 - Load all clinvar variants with clinvar Pathogenic, Likely Pathogenic and Conflicting pathogenic
+- Show transcripts with exon numbers for structural variants
 
 ### fixed
 
@@ -23,6 +24,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Keep sanger order + verification when updating/reloading variants
 - Fixed and moved broken filter actions (HPO gene panel and reset filter)
 - Fixed string conversion to number
+- UCSC links for structural variants are now separated per breakpoint (and whole variant where applicable)
+
 
 ## [4.7.3]
 

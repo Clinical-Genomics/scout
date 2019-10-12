@@ -141,6 +141,7 @@
               {% else %}
                 - BAM file(s) missing
               {% endif %}
+              - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
             </div>
           </li>
           <li class="list-group-item">
@@ -156,6 +157,7 @@
               {% else %}
                 - BAM file(s) missing
               {% endif %}
+                - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.end_chrom }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
             </div>
           </li>
   	      <li class="list-group-item">
@@ -184,6 +186,9 @@
                 - Complex rearrangement: check breakpoint alignments.
               {% else %}
                 - BAM file(s) missing
+              {% endif %}
+              {% if variant.chromosome == variant.end_chrom %}
+              - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
               {% endif %}
             </div>
 
@@ -223,13 +228,24 @@
 
   <div class="row">
     <div class="col-md-12">
-      {{ genes(variant) }}
+      {{ overlapping(overlapping_snvs, variant.rank_score) }}
     </div>
   </div>
 
   <div class="row">
-    <div class="col-md-12">
-      {{ overlapping(overlapping_snvs, variant.rank_score) }}
+    <div class="col-12">
+      <div class="card">
+        <nav>
+          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link active" id="nav-genes-tab" data-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
+            <a class="nav-item nav-link" id="nav-transcripts-tab" data-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
+          </div>
+        </nav>
+        <div class="tab-content mt-3" id="nav-tabContent">
+          <div class="tab-pane fade show active" id="nav-genes" role="tabpanel" aria-labelledby="nav-genes-tab">{{ genes_panel(variant) }}</div>
+          <div class="tab-pane fade" id="nav-transcripts" role="tabpanel" aria-labelledby="nav-transcripts-tab">{{ transcripts_panel() }}</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -351,9 +367,8 @@
   </div>
 {% endmacro %}
 
-{% macro genes(variant) %}
+{% macro genes_panel(variant) %}
   <div class="card panel-default">
-    <div class="panel-heading">Genes</div>
     <div class="table-responsive">
       <table class="table table-bordered">
         <thead>
@@ -371,8 +386,8 @@
             <tr>
               {% if gene.common %}
               <td>
-                <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">
-                  {{ gene.common.hgnc_symbol }}
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                 </a>
               </td>
               <td>
@@ -410,6 +425,58 @@
   </div>
 {% endmacro %}
 
+{% macro transcripts_panel() %}
+  <div class="card panel-default table-responsive fixed-panel">
+    <table class="table table-bordered card-sm">
+      <thead>
+        <tr>
+          <th>Gene</th>
+          <th>Transcript</th>
+          <th>RefSeq</th>
+          <th>Biotype</th>
+          <th>Mutation type</th>
+          <th>Strand</th>
+          <th>Exon</th>
+          <th>Intron</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for gene in variant.genes %}
+          {% for transcript in gene.transcripts %}
+            <tr class="{{ 'danger' if transcript.is_disease_associated }}">
+              <td>
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                </a>
+              </td>
+              <td class="d-flex justify-content-around align-items-center">
+                <a target="_blank" href="{{ transcript.ensembl_link }}">
+                  {{ transcript.transcript_id }}
+                </a>
+                {% if transcript.is_canonical %}
+                  <span class="badge badge-info">C</span>
+                {% endif %}
+              </td>
+              <td>
+                {{ transcript.refseq_identifiers|join(',') }}
+              </td>
+              <td>{{ transcript.biotype or '' }}</td>
+              <td data-toggle="tooltip" data-placement="right" title="{{ transcript.functional_annotations|join(', ') }}">
+                {{ transcript.functional_annotations
+                      |join(', ')
+                      |truncate(20, True) }}
+              </td>
+              <td class="text-center">{{ transcript.strand }}</td>
+              <td>{{ transcript.exon or '' }}</td>
+              <td>{{ transcript.intron or '' }}</td>
+            </tr>
+          {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
+
 {% macro ext_links(variant) %}
   {# External links #}
   <div class="card">
@@ -418,9 +485,6 @@
         <tr>
           <td>
             <a class="btn btn-outline-secondary form-control" href="http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target="_blank">Ensembl</a>
-          </td>
-          <td>
-            <a class="btn btn-outline-secondary form-control" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
           </td>
 	  <td>
 	    <a class="btn btn-outline-secondary form-control" href="https://decipher.sanger.ac.uk/browser#q/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}%20/location/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target ="_blank">DECIPHER</a>
