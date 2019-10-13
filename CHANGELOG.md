@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed and moved broken filter actions (HPO gene panel and reset filter)
 - Fixed string conversion to number
 - UCSC links for structural variants are now separated per breakpoint (and whole variant where applicable)
+- Reintroduced missing coverage report
 - Better inheritance models customization for genes in gene panels
 
 
