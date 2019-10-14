@@ -759,7 +759,7 @@ class CaseHandler(object):
                         updated_variants['updated_ordered'].append(updated_var['_id'])
 
         n_status_updated = len(updated_variants['updated_verified'])+len(updated_variants['updated_ordered'])
-        LOG.info('Verification status updated for %n variants', n_status_updated)
+        LOG.info('Verification status updated for {} variants'.format(n_status_updated))
         return updated_variants
 
 
