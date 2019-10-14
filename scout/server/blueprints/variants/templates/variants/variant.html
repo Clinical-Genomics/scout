@@ -134,6 +134,7 @@ $(document).ready(function(){
       {{ modal_cancel_sanger() }}
     {% endif %}
 </div>
+{{ modal_causative() }}
 {% endblock %}
 
 {% macro sanger_button() %}
@@ -228,15 +229,9 @@ $(document).ready(function(){
         </button>
       </form>
   {% else %}
-    <form action="{{ url_for('cases.mark_causative',
-                             institute_id=institute._id,
-                             case_name=case.display_name,
-                             variant_id=variant._id) }}"
-          method="POST">
-      <button name="action" value="ADD" type="submit" class="btn btn-light" title="Mark causative" onclick="return confirm('Are you sure?')">
-        Mark causative
-      </button>
-    </form>
+  <button class="btn btn-light navbar-btn" data-toggle="modal" data-target="#causativeModal">
+    Mark causative
+  </button>
   {% endif %}
 {% endmacro %}
 
@@ -1177,28 +1172,6 @@ $(document).ready(function(){
   </div>
 {% endmacro %}
 
-<!--
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
--->
-
 {% macro modal_sanger() %}
   <form action="{{ url_for('variants.verify', institute_id=institute._id,
                            case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=True) }}"
@@ -1247,6 +1220,53 @@ $(document).ready(function(){
       </div>
     </div>
   </form>
+{% endmacro %}
+
+
+{% macro modal_causative() %}
+<div class="modal fade" id="causativeModal" tabindex="-1" role="dialog" aria-labelledby="causativeLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+           <h5 class="modal-title" id="causativeLabel">Mark variant as causative</h5>
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+           </button>
+        </div>
+        <form action="{{ url_for('cases.mark_causative', institute_id=institute._id, case_name=case.display_name,
+           variant_id=variant._id) }}" method="POST">
+          <div class="modal-body">
+            <div class="row">
+              <div class="col d-flex align-items-center">
+                  <div class="d-flex justify-content-between">
+                    <div data-placement="top">
+                      Variant explains phenotype partially&nbsp;&nbsp;
+                    </div>
+                    <div>
+                      <input type="checkbox" class="ios8-switch" id="partial_causative" name="partial_causative"
+                        data-toggle='collapse' data-target='#partial_comment'>
+                      <label for="partial_causative"></label>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div id="partial_comment" class="collapse mt-2">
+              <div class="form-group">
+                <textarea class="form-control" name="partial_comment" rows="3" placeholder="Comment (optional)"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button name="action" value="ADD" type="submit" class="btn btn-primary" title="Mark causative">
+              Mark causative
+            </button>
+          </div>
+        </form>
+    </div>
+  </div>
+</div>
+
 {% endmacro %}
 
 {% macro external_links() %}
@@ -1344,6 +1364,6 @@ $(document).ready(function(){
       $('select[multiple]').selectpicker({
         width: '100%'
       });
-    })
+    });
   </script>
 {% endblock %}
