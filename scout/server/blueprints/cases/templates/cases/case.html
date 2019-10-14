@@ -855,7 +855,14 @@
       HPO gene panel ({{ case.dynamic_gene_list|length }} genes)
       {%- if case.dynamic_panel_phenotypes %},
       <span data-toggle="tooltip" data-placement="bottom" title="{{ case.dynamic_panel_phenotypes|join(', ') }}">
-          {{ case.dynamic_panel_phenotypes|length }} phenotypes</span>{% endif %})
+          {{ case.dynamic_panel_phenotypes|length }} phenotypes</span>
+      {% endif %})
+      {% if config.SQLALCHEMY_DATABASE_URI and case.dynamic_gene_list|length > 0 %}
+        <a class="pull-right text-white" href="#" onclick="document.getElementById('hpo-report-form').submit();">Coverage</a>
+        <form id="hpo-report-form" action="{{ url_for('report.report', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
+          <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
+        </form>
+      {% endif %}
     </div>
     <ul class="list-group fixed-panel">
       {% for hpo_gene in case.dynamic_gene_list %}

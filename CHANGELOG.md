@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Ask before inactivating a case where last assigned user leaves it
 - Genes can be manually added to the dynamic gene list directly on the case page
 - Dynanmic gene panels can optionally be used with clinical filter, instead of default gene panel
+- Dynamic gene panels get link out to chanjo-report for coverage report
 - Load all clinvar variants with clinvar Pathogenic, Likely Pathogenic and Conflicting pathogenic
 - Show transcripts with exon numbers for structural variants
 
