@@ -1,4 +1,4 @@
-INHERITANCE_MODELS = (
+GENE_CUSTOM_INHERITANCE_MODELS = (
     ('AD', 'Autosomal Dominant'),
     ('AR', 'Autosomal recessive'),
     ('XL', 'X Linked'),
