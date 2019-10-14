@@ -48,7 +48,7 @@
               <textarea class="form-control" id="panel_description" name="panel_description" rows="3" style="background-color: white;" readonly>{{panel.description}}</textarea>
           </div>
           <div class="btn-group">
-            <button type="button" name="edit" value="edit" class="btn btn-sm btn-default" onclick="editDescription()">
+            <button type="button" name="edit" value="edit" class="btn btn-sm btn-outline-secondary" onclick="editDescription()">
               Edit
             </button>
             <button type="submit" name="update_description" value="update_description" class="btn btn-sm btn-primary">
@@ -130,11 +130,11 @@
               <td>{{ 'Yes' if gene.reduced_penetrance }}</td>
               <td>{{ 'Yes' if gene.mosaicism }}</td>
               <td>{{ gene.database_entry_version }}</td>
-              <td>{{ gene.inheritance_models|join(', ') }}</td>
+              <td>{{ (gene.inheritance_models|list + gene.custom_inheritance_models|list)|join(', ') }}</td>
               <td>{{ gene.comment }}</td>
               <td>
                 {% if not panel.is_archived %}
-                  <a class="btn btn-default btn-xs" href="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}">Edit</a>
+                  <a class="btn btn-outline-secondary btn-xs" href="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}">Edit</a>
                   <form class="pull-right" action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
                     <input type="hidden" name="hgnc_id" value="{{ gene.hgnc_id }}">
                     <button name="action" type="submit" value="delete" class="btn btn-danger btn-xs">Delete</button>
