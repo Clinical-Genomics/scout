@@ -60,8 +60,10 @@ def cases(institute_id):
     LOG.info(type(all_cases))
     sort_by = request.args.get('sort')
     if sort_by:
-        if sort_by == 'analysis_date':
+        if sort_by == 'analysis_date_desc':
             all_cases.sort('analysis_date', pymongo.DESCENDING)
+        elif sort_by == 'analysis_date_asc':
+            all_cases.sort('analysis_date', pymongo.ASCENDING)
         elif sort_by == 'track':
             all_cases.sort('track', pymongo.ASCENDING)
         elif sort_by == 'status':
@@ -75,7 +77,7 @@ def cases(institute_id):
         data['sanger_unevaluated'] = sanger_unevaluated
 
     return dict(institute=institute_obj, skip_assigned=skip_assigned,
-                is_research=is_research, query=query, **data)
+                is_research=is_research, sort_by=sort_by, query=query, **data)
 
 
 @cases_bp.route('/<institute_id>/<case_name>')

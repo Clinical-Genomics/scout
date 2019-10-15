@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Dynamic gene panels get link out to chanjo-report for coverage report
 - Load all clinvar variants with clinvar Pathogenic, Likely Pathogenic and Conflicting pathogenic
 - Show transcripts with exon numbers for structural variants
+- Case date sort order can now be reversed (toggle old->new or new->old).
 
 ### fixed
 - Fixed missing import for variants with comments
