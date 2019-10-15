@@ -321,8 +321,8 @@
       {% for variant in causatives %}
         <li class="list-group-item">
           {% if variant._id %}
-            <div class="row">
-              <div class="col-xs-8">
+            <div class="row align-items-between align-items-center">
+              <div class="col-8">
                 <i class="fa fa-check-circle-o"></i>
 		  {% if variant.category == "snv" %}
                 <a href="{{ url_for('variants.variant',
@@ -344,7 +344,7 @@
                   <span class="badge badge-success">Validated</span>
                 {% endif %}
               </div>
-              <div class="col-xs-4">
+              <div class="col-4">
                 {{ remove_form(url_for('cases.mark_causative',
                                        institute_id=institute._id,
                                        case_name=case.display_name,
@@ -360,40 +360,36 @@
         <div class="card-body">No variants marked causative</div>
       {% endfor %}
     </ul>
+
     <div data-toggle='tooltip' class="panel-heading panel-heading-secondary"
          title="Displays all variants that has been pinned for this case">
       Pinned variants
     </div>
-    <table class="table table-hover">
-      <colgroup>
-        <col class="col-xs-5">
-        <col class="col-xs-2">
-        <col class="col-xs-4">
-        <col class="col-xs-1">
-      </colgroup>
-      <tbody>
-        {% for variant in suspects %}
-          <tr>
-            {% if variant._id %}
-              <td>
-                <i class="fa fa-bookmark"></i>
 
-		  {% if variant.category == "snv" %}
-                <a href="{{ url_for('variants.variant',
-                                    institute_id=variant.institute,
-                                    case_name=case.display_name,
-                                    variant_id=variant._id) }}">
-                      {{ variant.hgnc_symbols|join(', ') }}
-		  {% else %}
-		      <a href="{{ url_for('variants.sv_variant',
-                                    institute_id=variant.institute,
-                                    case_name=case.display_name,
-                                    variant_id=variant._id) }}">
-		      {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
-		  {% endif %}
-                </a>
-              </td>
-              <td>
+    <ul class="list-group">
+      {% for variant in suspects %}
+        <li class="list-group-item">
+          {% if variant._id %}
+            <div class="row">
+              <div class="col-sm-8">
+                <div class="form-group row justify-content-between align-items-center">
+                <div class="ml-3">
+                  <i class="fa fa-bookmark"></i>
+                  {% if variant.category == "snv" %}
+                    <a href="{{ url_for('variants.variant',
+                                        institute_id=variant.institute,
+                                        case_name=case.display_name,
+                                        variant_id=variant._id) }}">
+                          {{ variant.hgnc_symbols|join(', ') }}
+                  {% else %}
+                    <a href="{{ url_for('variants.sv_variant',
+                                              institute_id=variant.institute,
+                                              case_name=case.display_name,
+                                              variant_id=variant._id) }}">
+                    {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
+                  {% endif %}
+                  </a>
+                </div>
                 {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
                   <span class="badge badge-default">Verification ordered</span>
                 {% elif variant.sanger_ordered %}
@@ -404,36 +400,34 @@
                 {% if variant.mosaic_tags %}
                   <span class="badge badge-info">mosaic</span>
                 {% endif %}
-              </td>
-              <td>
                 <form action="{{ url_for('cases.mark_validation',
                                          institute_id=variant.institute,
                                          case_name=case.display_name,
                                          variant_id=variant._id) }}"
                       method="POST" accept-charset="utf-8">
-                  <select class="form-control input-sm" onchange="this.form.submit()" name="type">
+                  <select class="form-control form-control-sm" onchange="this.form.submit()" name="type">
                     {% for type in ('Not validated', 'True positive', 'False positive') %}
                       <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
                     {% endfor %}
                   </select>
                 </form>
-              </td>
-              <td>
-                {{ remove_form(url_for('cases.pin_variant',
-                                       institute_id=institute._id,
-                                       case_name=case.display_name,
-                                       variant_id=variant._id),
-                               button_name='action', button_value='DELETE') }}
-              </td>
-            {% else %}
-              <td colspan="4">{{ variant }} <small class="text-muted">(not loaded)</small></td>
-            {% endif %}
-          </tr>
-        {% else %}
-          <div class="card-body">No variants suspected yet</div>
-        {% endfor %}
-      </tbody>
-    </table>
+              </div>
+            </div>
+
+            <div class="col-sm-4">
+              {{ remove_form(url_for('cases.pin_variant',
+                                     institute_id=institute._id,
+                                     case_name=case.display_name,
+                                     variant_id=variant._id),
+                             button_name='action', button_value='DELETE') }}
+            </div>
+          </div>
+          {% else %}
+            {{ variant }} <small class="text-muted">(not loaded)</small></t
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
   </div>
 {% endmacro %}
 
