@@ -166,9 +166,9 @@
           {% if sort_by == "analysis_date_desc" %}
           <a href="" id="{{group_name}}_analysis_date_asc" onclick="updateArgs('{{group_name}}','sort=analysis_date_asc');" class="badge" style="color:black;background-color:white;">
             <i class="fa fa-sort-desc" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date from the newest to the oldest"></i></a></th>
-          {% elif sortby == "analysis_date_asc" %}
+          {% elif sort_by == "analysis_date_asc" %}
               <a href="" id="{{group_name}}_analysis_date_desc" onclick="updateArgs('{{group_name}}','sort=analysis_date_desc');" class="badge" style="color:black;background-color:white;">
-                <i class="fa fa-sort-asc" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date from the newest to the oldest"></i></a></th>
+                <i class="fa fa-sort-asc" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date from the oldest to the newest"></i></a></th>
           {% else %}
             <a href="" id="{{group_name}}_analysis_date_desc" onclick="updateArgs('{{group_name}}','sort=analysis_date_desc');" class="badge" style="color:gray;background-color:white;">
               <i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date from the oldest to the newest"></i></a></th>
