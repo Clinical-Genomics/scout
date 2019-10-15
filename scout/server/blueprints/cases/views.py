@@ -714,7 +714,13 @@ def mark_causative(institute_id, case_name, variant_id):
     link = url_for('variants.variant', institute_id=institute_id, case_name=case_name,
                    variant_id=variant_id)
     if request.form['action'] == 'ADD':
-        store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
+        if request.form['partial_causative']:
+            omim_terms = request.form.getlist('omim_select')
+            hpo_terms =  request.form.getlist('hpo_select')
+            store.mark_partial_causative(institute_obj, case_obj, user_obj, link,
+                variant_obj, omim_terms, hpo_terms)
+        else:
+            store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
     elif request.form['action'] == 'DELETE':
         store.unmark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
 

@@ -298,11 +298,89 @@ class VariantEventHandler(object):
         )
         return updated_variant
 
-    def mark_causative(self, institute, case, user, link, variant):
+    def mark_partial_causative(self, institute, case, user, link, variant, omim_terms, hpo_terms):
+        """Create an event for marking a variant as partial causative.
+           When a variant is marked as partial causative the case will not be marked as solved.
+           Partial causatives have associated phenotypes (OMIM and HPO terms)
+
+        Arguments:
+          institute (dict): An Institute object
+          case (dict): Case object
+          user (dict): A User object
+          link (str): The url to be used in the event
+          variant (variant): A variant object
+          omim_terms(list): A list of OMIM diagnoses. Example: ['145590', '615349']
+          hpo_terms(list): A list of HPO terms. example: ['Febrile seizures_HP:0002373', 'Abnormality of the clavicle_HP:0000889']
+
+        Returns:
+            updated_case(dict)
+        """
+        display_name = variant['display_name']
+        LOG.info("Mark variant {0} as partial causative in case {1}".format(
+            display_name, case['display_name']))
+
+        hpo_objs_list = []
+        if hpo_terms:
+            # convert this list of strings into a list of dictionaries
+            for term in hpo_terms:
+                term_obj = {
+                    'phenotype_id' : term.split('_')[1],
+                    'feature' : term.split('_')[0],
+                }
+                hpo_objs_list.append(term_obj)
+
+        # crate partial causative object
+        partial_causative = {
+            variant['_id'] : {
+                'diagnosis_phenotypes' : omim_terms,
+                'phenotype_terms' : hpo_objs_list
+            }
+        }
+        # update case with partial causative info
+        updated_case = self.case_collection.find_one_and_update(
+            {'_id': case['_id']},
+            {
+                '$push': {'partial_causatives': partial_causative},
+            },
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+
+        # create associated event
+        LOG.info("Creating case event for marking {0}" \
+                    " partial causative".format(variant['display_name']))
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='case',
+            verb='mark_partial_causative',
+            variant=variant,
+            subject=variant['display_name'],
+        )
+
+        LOG.info("Creating variant event for marking {0}" \
+                    " partial causative".format(case['display_name']))
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='variant',
+            verb='mark_partial_causative',
+            variant=variant,
+            subject=variant['display_name'],
+        )
+        return updated_case
+
+
+    def mark_causative(self, institute, case, user, link, variant, partial_causative=False):
         """Create an event for marking a variant causative.
 
         Arguments:
-          institute (dict): A Institute object
+          institute (dict): An Institute object
           case (dict): Case object
           user (dict): A User object
           link (str): The url to be used in the event
@@ -312,7 +390,7 @@ class VariantEventHandler(object):
             updated_case(dict)
         """
         display_name = variant['display_name']
-        LOG.info("Mark variant {0} as causative in the case {1}".format(
+        LOG.info("Mark variant {0} as causative in case {1}".format(
             display_name, case['display_name']))
 
         LOG.info("Adding variant to causatives in case {0}".format(
