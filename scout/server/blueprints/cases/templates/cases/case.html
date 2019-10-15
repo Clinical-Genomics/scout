@@ -349,7 +349,8 @@
                 {{ remove_form(url_for('cases.mark_causative',
                                        institute_id=institute._id,
                                        case_name=case.display_name,
-                                       variant_id=variant._id),
+                                       variant_id=variant._id,
+                                       partial_causative=False),
                                button_name='action', button_value='DELETE') }}
               </div>
             </div>
@@ -387,7 +388,8 @@
                 {{ remove_form(url_for('cases.mark_causative',
                                        institute_id=institute._id,
                                        case_name=case.display_name,
-                                       variant_id=variant._id),
+                                       variant_id=variant._id,
+                                       partial_causative=True),
                                button_name='action', button_value='DELETE') }}
               </div>
             </div>

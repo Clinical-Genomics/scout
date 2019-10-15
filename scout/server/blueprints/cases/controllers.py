@@ -116,8 +116,8 @@ def case(store, institute_obj, case_obj):
                   case_obj.get('causatives', [])]
     # check for partial causatives and associated phenotypes
     partial_causatives = []
-    for partial_causative_obj in case_obj.get('partial_causatives', []):
-        for id, values in partial_causative_obj.items():
+    if case_obj.get('partial_causatives'):
+        for id, values in case_obj['partial_causatives'].items():
             causative_obj = {
                 'variant' : store.variant(id) or id,
                 'omim_terms' : values.get('diagnosis_phenotypes'),

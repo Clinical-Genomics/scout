@@ -329,18 +329,18 @@ class VariantEventHandler(object):
                 }
                 hpo_objs_list.append(term_obj)
 
-        # crate partial causative object
-        partial_causative = {
-            variant['_id'] : {
-                'diagnosis_phenotypes' : omim_terms,
-                'phenotype_terms' : hpo_objs_list
-            }
+        # update partial causative object
+        case_partial_causatives = case.get('partial_causatives') or {}
+        case_partial_causatives[variant['_id']] = {
+            'diagnosis_phenotypes' : omim_terms,
+            'phenotype_terms' : hpo_objs_list
         }
+
         # update case with partial causative info
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case['_id']},
             {
-                '$push': {'partial_causatives': partial_causative},
+                '$set': {'partial_causatives': case_partial_causatives},
             },
             return_document=pymongo.ReturnDocument.AFTER
         )
@@ -436,6 +436,65 @@ class VariantEventHandler(object):
             subject=variant['display_name'],
         )
         return updated_case
+
+    def unmark_partial_causative(self, institute, case, user, link, variant):
+        """Create an event for unmarking a partial causative variant
+
+        Arguments:
+            institute (dict): A Institute object
+            case (dict): Case object
+            user (dict): A User object
+            link (str): The url to be used in the event
+            variant (dict): A variant object
+
+        Returns:
+            updated_case(dict)
+
+        """
+        display_name = variant['display_name']
+        LOG.info("Remove variant {0} as partially causative in case {1}".format(
+            display_name, case['display_name']))
+
+        # update partial_causative field of this case
+
+        partial_causatives = case.get('partial_causatives') or {}
+        del partial_causatives[variant['_id']]
+
+        updated_case = self.case_collection.find_one_and_update(
+            {'_id': case['_id']},
+            {
+                '$set': {'partial_causatives': partial_causatives},
+            },
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+
+        LOG.info("Creating events for unmarking variant {0} " \
+                    "causative".format(display_name))
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='case',
+            verb='unmark_partial_causative',
+            variant=variant,
+            subject=variant['display_name'],
+        )
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='variant',
+            verb='unmark_partial_causative',
+            variant=variant,
+            subject=variant['display_name'],
+        )
+
+        return updated_case
+
 
     def unmark_causative(self, institute, case, user, link, variant):
         """Create an event for unmarking a variant causative
