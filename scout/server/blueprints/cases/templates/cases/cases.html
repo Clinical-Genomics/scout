@@ -161,15 +161,15 @@
       <thead>
         <tr>
           <th style="width: 25%">{{ group_name|capitalize }} cases</th>
-          <th style="width: 10%">Status <a href="" id="{{group_name}}_status" onclick="updateArgs('{{group_name}}','sort=status','{{sort_option}}');" class="badge" style="color:black;background-color:white;">
+          <th style="width: 10%">Status <a href="" id="{{group_name}}_status" onclick="updateArgs('{{group_name}}','sort=status','{{sort_option}}');" class="badge" style="color:{{'black' if sort_by=='status' else 'grey'}};background-color:white;">
             <i class="fa fa-sort{{'-'+sort_order if sort_by=='status' }}" aria-hidden="true" data-toggle="tooltip" title="Sort cases by 'status'"></i>
           </a></th>
-          <th style="width: 15%">Analysis date <a href="" id="{{group_name}}_analysis_date" onclick="updateArgs('{{group_name}}','sort=analysis_date','{{sort_option}}');" class="badge" style="color:black;background-color:white;">
+          <th style="width: 15%">Analysis date <a href="" id="{{group_name}}_analysis_date" onclick="updateArgs('{{group_name}}','sort=analysis_date','{{sort_option}}');" class="badge" style="color:{{'black' if sort_by=='analysis_date' else 'grey'}};background-color:white;">
             <i class="fa fa-sort{{'-'+sort_order if sort_by=='analysis_date' }}" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date"></i>
           </a></th>
           <th style="width: 20%">Link</th>
           <th style="width: 5%">Sequencing</th>
-          <th style="width: 15%">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track','{{sort_option}}');" class="badge" style="color:black;background-color:white;">
+          <th style="width: 15%">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track','{{sort_option}}');" class="badge" style="color:{{'black' if sort_by=='track' else 'grey'}};background-color:white;">
             <i class="fa fa-sort{{'-'+sort_order if sort_by=='track' }}" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis track: Rare Disease, Cancer.."></i>
           </a></th>
           <th style="width: 10%">Clinvar</th>
