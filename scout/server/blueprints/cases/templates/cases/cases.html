@@ -150,36 +150,28 @@
 {% endmacro %}
 
 {% macro cases_table(group_name, cases) %}
+{% if sort_order == 'asc' %}
+  {% set sort_option = 'desc'%}
+{% else %}
+  {% set sort_option = 'asc'%}
+{% endif %}
 <div class="card mt-3">
   <div class="card-body" style="padding: 0;">
     <table class="table table-hover table-bordered">
       <thead>
         <tr>
           <th style="width: 25%">{{ group_name|capitalize }} cases</th>
-          <th style="width: 10%">Status
-            <a href="" id="{{group_name}}_status" onclick="updateArgs('{{group_name}}','sort=status');" class="badge"
-                {% if (sort_by == "status") %}style="color:black;background-color:white;"
-                {% else %} style="color:gray;background-color:white;"
-                {%endif%}>
-              <i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort cases by 'status'"></i></a></th>
-          <th style="width: 15%">Analysis date
-          {% if sort_by == "analysis_date_desc" %}
-          <a href="" id="{{group_name}}_analysis_date_asc" onclick="updateArgs('{{group_name}}','sort=analysis_date_asc');" class="badge" style="color:black;background-color:white;">
-            <i class="fa fa-sort-desc" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date from the newest to the oldest"></i></a></th>
-          {% elif sort_by == "analysis_date_asc" %}
-              <a href="" id="{{group_name}}_analysis_date_desc" onclick="updateArgs('{{group_name}}','sort=analysis_date_desc');" class="badge" style="color:black;background-color:white;">
-                <i class="fa fa-sort-asc" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date from the oldest to the newest"></i></a></th>
-          {% else %}
-            <a href="" id="{{group_name}}_analysis_date_desc" onclick="updateArgs('{{group_name}}','sort=analysis_date_desc');" class="badge" style="color:gray;background-color:white;">
-              <i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date from the oldest to the newest"></i></a></th>
-          {% endif %}
-
+          <th style="width: 10%">Status <a href="" id="{{group_name}}_status" onclick="updateArgs('{{group_name}}','sort=status','{{sort_option}}');" class="badge" style="color:black;background-color:white;">
+            <i class="fa fa-sort{{'-'+sort_order if sort_by=='status' }}" aria-hidden="true" data-toggle="tooltip" title="Sort cases by 'status'"></i>
+          </a></th>
+          <th style="width: 15%">Analysis date <a href="" id="{{group_name}}_analysis_date" onclick="updateArgs('{{group_name}}','sort=analysis_date','{{sort_option}}');" class="badge" style="color:black;background-color:white;">
+            <i class="fa fa-sort{{'-'+sort_order if sort_by=='analysis_date' }}" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date"></i>
+          </a></th>
           <th style="width: 20%">Link</th>
           <th style="width: 5%">Sequencing</th>
-          <th style="width: 15%">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track');" class="badge"
-            {% if (sort_by == "track") %}style="color:black;background-color:white;"
-            {% else %} style="color:gray;background-color:white;"{%endif%}>
-            <i class="fa fa-sort" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis track: Rare Disease, Cancer.."></i></a></th>
+          <th style="width: 15%">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track','{{sort_option}}');" class="badge" style="color:black;background-color:white;">
+            <i class="fa fa-sort{{'-'+sort_order if sort_by=='track' }}" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis track: Rare Disease, Cancer.."></i>
+          </a></th>
           <th style="width: 10%">Clinvar</th>
         </tr>
       </thead>
@@ -317,8 +309,8 @@
       });
     });
 
-    function updateArgs(caseGroup, sortItem) {
-      sort_items = ['sort=status', 'sort=analysis_date_asc', 'sort=analysis_date_desc', 'sort=track'];
+    function updateArgs(caseGroup, sortItem, sortOrder) {
+      sort_items = ['sort=status', 'sort=analysis_date', 'sort=track', 'order=asc', 'order=desc'];
       //modifying the sorting of cases
       let searchList = window.location.search.split('&');
       if(!searchList[0]){
@@ -329,6 +321,7 @@
       searchList = searchList.filter(f => !sort_items.includes(f))
       //add specific sort param
       searchList.push(sortItem);
+      searchList.push("order="+sortOrder)
 
       sort_link = document.getElementById( caseGroup.concat('_',sortItem.split('=')[1]));
       const url = window.location.href.split('?')[0].concat(searchList.join('&'));
