@@ -282,7 +282,7 @@
                     {% if clinvar.category == 'snv' %}
                       <a href="{{ url_for('variants.variant', institute_id=case.owner, case_name=case.display_name, variant_id=clinvar.local_id) }}" target="_blank">chr{{clinvar.chromosome}}:{{clinvar.start}}_{{clinvar.ref}}>{{clinvar.alt}}</a>
                     {% else %}
-                      <a href="{{ url_for('variants.sv_variant', institute_id=case.owner, case_name=case.display_name, variant_id=clinvar.local_id) }}" target="_blank">chr{{clinvar.chromosome}}:{{clinvar.breakpoint1}}_{{clinvar.var_type}}</a>
+                      <a href="{{ url_for('variant.sv_variant', institute_id=case.owner, case_name=case.display_name, variant_id=clinvar.local_id) }}" target="_blank">chr{{clinvar.chromosome}}:{{clinvar.breakpoint1}}_{{clinvar.var_type}}</a>
                     {% endif %}
                     </li>
                   {% endfor %}

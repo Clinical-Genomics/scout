@@ -45,14 +45,14 @@ from .index import IndexHandler
 from .clinvar import ClinVarHandler
 from .matchmaker import MMEHandler
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
                    HpoHandler, PanelHandler, QueryHandler, VariantHandler,
                    UserHandler, ACMGHandler, IndexHandler, ClinVarHandler,
                    MMEHandler, TranscriptHandler):
 
-    """Adapter for cummunication with a mongo database."""
+    """Adapter for communication with a mongo database."""
 
     def __init__(self, database=None):
         if database:
@@ -63,7 +63,7 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         host = app.config.get('MONGO_HOST', 'localhost')
         port = app.config.get('MONGO_PORT', 27017)
         dbname = app.config['MONGO_DBNAME']
-        log.info("connecting to database: %s:%s/%s", host, port, dbname)
+        LOG.info("connecting to database: %s:%s/%s", host, port, dbname)
         self.setup(app.config['MONGO_DATABASE'])
 
     def setup(self, database):

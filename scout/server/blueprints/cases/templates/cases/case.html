@@ -332,7 +332,7 @@
                                       variant_id=variant._id) }}">
                         {{ variant.hgnc_symbols|join(', ') }}
 		             {% else %}
-        		      <a href="{{ url_for('variants.sv_variant',
+        		      <a href="{{ url_for('variant.sv_variant',
                                             institute_id=variant.institute,
                                             case_name=case.display_name,
                                             variant_id=variant._id) }}">
@@ -453,7 +453,7 @@
                                         variant_id=variant._id) }}">
                           {{ variant.hgnc_symbols|join(', ') }}
                   {% else %}
-                    <a href="{{ url_for('variants.sv_variant',
+                    <a href="{{ url_for('variant.sv_variant',
                                               institute_id=variant.institute,
                                               case_name=case.display_name,
                                               variant_id=variant._id) }}">
@@ -607,7 +607,7 @@
             {% if submission_data.category == 'snv' %}
               <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.start}}_{{submission_data.ref}}>{{submission_data.alt}}</a> ({{submission_data.clinsig}})
             {% else %}
-              <a href="{{ url_for('variants.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a> ({{submission_data.clinsig}})
+              <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a> ({{submission_data.clinsig}})
             {% endif %}
           </li>
         {% endfor %}

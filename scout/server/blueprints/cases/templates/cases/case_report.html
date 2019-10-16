@@ -434,7 +434,7 @@
             {% if variant.category == 'snv' %}
               <td><a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></td>
             {% else %}
-              <td><a href="{{ url_for('variants.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></td>
+              <td><a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></td>
             {% endif %}
 	    <td>
 	      {% for gene in variant.genes %}
@@ -853,7 +853,7 @@
 {% macro sv_variant_content(variant,index) %} <!--The entire description of a structural variant, dynamic contentc -->
 <div class="card" style="border-width: 5px;">
   <div class="card-header">
-    # <a href="{{ url_for('variants.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
+    # <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
     &nbsp;<span class="badge badge-pill badge-warning">SV</span>
   </div>
   <div class="card-body">

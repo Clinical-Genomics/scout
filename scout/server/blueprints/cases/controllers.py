@@ -20,7 +20,7 @@ from scout.export.variant import export_mt_variants
 from scout.server.utils import institute_and_case, user_institutes
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.variants.controllers import variant as variant_decorator
-from scout.server.blueprints.variants.controllers import sv_variant
+from scout.server.blueprints.variant.controllers import sv_variant
 from scout.parse.matchmaker import hpo_terms, omim_terms, genomic_features, parse_matches
 from scout.utils.matchmaker import matchmaker_request
 from scout.server.blueprints.variants.controllers import get_predictions
