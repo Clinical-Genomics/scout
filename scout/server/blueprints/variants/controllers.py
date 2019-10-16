@@ -20,7 +20,7 @@ from scout.constants import (
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
-from scout.server.utils import institute_and_case, user_institutes
+from scout.server.utils import (institute_and_case, user_institutes, case_append_bam, variant_case)
 from scout.server.links import (add_gene_links, ensembl, add_tx_links)
 from scout.server.blueprints.genes.controllers import gene
 from scout.utils.requests import fetch_refseq_version
@@ -130,96 +130,6 @@ def str_variant(store, institute_id, case_name, variant_id):
 
     variant_obj['comments'] = store.events(institute_obj, case=case_obj,
                                            variant_id=variant_obj['variant_id'], comments=True)
-
-    return {
-        'institute': institute_obj,
-        'case': case_obj,
-        'variant': variant_obj,
-        'overlapping_snvs': overlapping_snvs,
-        'manual_rank_options': MANUAL_RANK_OPTIONS,
-        'dismiss_variant_options': DISMISS_VARIANT_OPTIONS
-    }
-
-def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None, add_case=True,
-               get_overlapping=True):
-    """Pre-process an SV variant entry for detail page.
-
-    Adds information to display variant
-
-    Args:
-        store(scout.adapter.MongoAdapter)
-        institute_id(str)
-        case_name(str)
-        variant_id(str)
-        variant_obj(dcit)
-        add_case(bool): If information about case files should be added
-
-    Returns:
-        detailed_information(dict): {
-            'institute': <institute_obj>,
-            'case': <case_obj>,
-            'variant': <variant_obj>,
-            'overlapping_snvs': <overlapping_snvs>,
-            'manual_rank_options': MANUAL_RANK_OPTIONS,
-            'dismiss_variant_options': DISMISS_VARIANT_OPTIONS
-        }
-    """
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-
-    if not variant_obj:
-        variant_obj = store.variant(variant_id)
-
-    if add_case:
-        # fill in information for pilup view
-        variant_case(store, case_obj, variant_obj)
-
-    # frequencies
-    variant_obj['frequencies'] = [
-        ('1000G', variant_obj.get('thousand_genomes_frequency')),
-        ('1000G (left)', variant_obj.get('thousand_genomes_frequency_left')),
-        ('1000G (right)', variant_obj.get('thousand_genomes_frequency_right')),
-        ('GnomAD', variant_obj.get('gnomad_frequency')),
-    ]
-
-    if 'clingen_cgh_benign' in variant_obj:
-        variant_obj['frequencies'].append(('ClinGen CGH (benign)', variant_obj['clingen_cgh_benign']))
-    if 'clingen_cgh_pathogenic' in variant_obj:
-        variant_obj['frequencies'].append(('ClinGen CGH (pathogenic)', variant_obj['clingen_cgh_pathogenic']))
-    if 'clingen_ngi' in variant_obj:
-        variant_obj['frequencies'].append(('ClinGen NGI', variant_obj['clingen_ngi']))
-    if 'clingen_mip' in variant_obj:
-        variant_obj['frequencies'].append(('ClinGen MIP', variant_obj['clingen_mip']))
-    if 'swegen' in variant_obj:
-        variant_obj['frequencies'].append(('SweGen', variant_obj['swegen']))
-    if 'decipher' in variant_obj:
-        variant_obj['frequencies'].append(('Decipher', variant_obj['decipher']))
-
-    variant_obj['callers'] = callers(variant_obj, category='sv')
-
-    overlapping_snvs = []
-    if get_overlapping:
-        overlapping_snvs = (parse_variant(store, institute_obj, case_obj, variant) for variant in
-                            store.overlapping(variant_obj))
-
-    # parse_gene function is not called for SVs, but a link to ensembl gene is required
-    for gene_obj in variant_obj.get('genes', []):
-        if gene_obj.get('common'):
-            ensembl_id = gene_obj['common']['ensembl_id']
-            try:
-                build = int(gene_obj['common'].get('build','37'))
-            except Exception:
-                build = 37
-            gene_obj['ensembl_link'] = ensembl(ensembl_id, build=build)
-
-    variant_obj['comments'] = store.events(institute_obj, case=case_obj,
-                                           variant_id=variant_obj['variant_id'], comments=True)
-
-    case_clinvars = store.case_to_clinVars(case_obj.get('display_name'))
-    if variant_id in case_clinvars:
-        variant_obj['clinvar_clinsig'] = case_clinvars.get(variant_id)['clinsig']
-
-    if not 'end_chrom' in variant_obj:
-        variant_obj['end_chrom'] = variant_obj['chromosome']
 
     return {
         'institute': institute_obj,
@@ -446,74 +356,6 @@ def get_predictions(genes):
             data[pred_key].append(value)
 
     return data
-
-
-def variant_case(store, case_obj, variant_obj):
-    """Pre-process case for the variant view.
-
-    Adds information about files from case obj to variant
-
-    Args:
-        store(scout.adapter.MongoAdapter)
-        case_obj(scout.models.Case)
-        variant_obj(scout.models.Variant)
-    """
-
-    case_append_bam(store, case_obj)
-
-    try:
-        genes = variant_obj.get('genes', [])
-        if len(genes) == 1:
-            hgnc_gene_obj = store.hgnc_gene(variant_obj['genes'][0]['hgnc_id'])
-            if hgnc_gene_obj:
-                vcf_path = store.get_region_vcf(case_obj, gene_obj=hgnc_gene_obj)
-                case_obj['region_vcf_file'] = vcf_path
-            else:
-                case_obj['region_vcf_file'] = None
-        elif len(genes) > 1:
-            chrom = variant_obj['genes'][0]['common']['chromosome']
-            start = min(gene['common']['start'] for gene in variant_obj['genes'])
-            end = max(gene['common']['end'] for gene in variant_obj['genes'])
-            # Create a reduced VCF with variants in the region
-            vcf_path = store.get_region_vcf(case_obj, chrom=chrom, start=start, end=end)
-            case_obj['region_vcf_file'] = vcf_path
-    except (SyntaxError, Exception):
-        LOG.warning("skip VCF region for alignment view")
-
-def case_append_bam(store, case_obj):
-    """Deconvolute information about files to case_obj.
-
-    Args:
-        store(scout.adapter.MongoAdapter)
-        case_obj(scout.models.Case)
-    """
-
-    case_obj['bam_files'] = []
-    case_obj['mt_bams'] = []
-    case_obj['bai_files'] = []
-    case_obj['mt_bais'] = []
-    case_obj['sample_names'] = []
-
-    bam_files = [('bam_file','bam_files', 'bai_files'), ('mt_bam', 'mt_bams', 'mt_bais')]
-    for individual in case_obj['individuals']:
-        case_obj['sample_names'].append(individual.get('display_name'))
-        for bam in bam_files:
-            bam_path = individual.get(bam[0])
-            if bam_path and os.path.exists(bam_path):
-                case_obj[bam[1]].append(bam_path) # either bam_files or mt_bams
-                case_obj[bam[2]].append(find_bai_file(bam_path)) # either bai_files or mt_bais
-            else:
-                LOG.debug("%s: no bam file found", individual['individual_id'])
-
-
-def find_bai_file(bam_file):
-    """Find out BAI file by extension given the BAM file."""
-    bai_file = bam_file.replace('.bam', '.bai')
-    if not os.path.exists(bai_file):
-        # try the other convention
-        bai_file = "{}.bai".format(bam_file)
-    return bai_file
-
 
 def variant(store, institute_obj, case_obj, variant_id=None, variant_obj=None, add_case=True,
             add_other=True, get_overlapping=True):
@@ -993,7 +835,7 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
                     tx_changes.append("<li>{}</li>".format(':'.join(transcript_line)))
 
     else: #SV
-        view_type = 'variants.sv_variant'
+        view_type = 'variant.sv_variant'
         display_name = '_'.join([breakpoint_1, variant_obj.get('sub_category').upper()])
 
     # body of the email

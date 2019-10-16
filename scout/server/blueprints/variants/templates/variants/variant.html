@@ -1007,7 +1007,7 @@
           {% for sv_variant in overlapping_svs %}
             <tr>
               <td>
-                <a href="{{url_for('variants.sv_variant', institute_id=institute._id,
+                <a href="{{url_for('variant.sv_variant', institute_id=institute._id,
                                    case_name=case.display_name, variant_id=sv_variant._id)}}">
                   {{ sv_variant.display_name|truncate(20, True) }}
                 </a>

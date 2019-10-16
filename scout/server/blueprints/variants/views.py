@@ -346,14 +346,6 @@ def sv_variants(institute_id, case_name):
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
                 form=form, severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
-
-@variants_bp.route('/<institute_id>/<case_name>/sv/variants/<variant_id>')
-@templated('variants/sv-variant.html')
-def sv_variant(institute_id, case_name, variant_id):
-    """Display a specific structural variant."""
-    data = controllers.sv_variant(store, institute_id, case_name, variant_id)
-    return data
-
 @variants_bp.route('/<institute_id>/<case_name>/str/variants/<variant_id>')
 @templated('variants/str-variant.html')
 def str_variant(institute_id, case_name, variant_id):
