@@ -37,15 +37,15 @@
     <table class="table table-bordered table-hover">
       <thead>
         <tr>
-          <th class="col-1" title="Rank position">Rank</th>
-          <th class="col-1" title="Repeat ID">Repeat locus</th>
-          <th class="col-2" title="Repeat unit">Reference repeat unit</th>
-          <th class="col-1" title="ALT">Estimated size</th>
-          <th class="col-1" title="ReferenceSize">Reference size</th>
-          <th class="col-1" title="Status">Status</th>
-          <th class="col-2" title="GT">Genotype</th>
-          <th class="col-1" title="Chromosome">Chr.</th>
-          <th class="col-2" title="Position">Position</th>
+          <th class="col-xs-1" title="Rank position">Rank</th>
+          <th class="col-xs-1" title="Repeat ID">Repeat locus</th>
+          <th class="col-xs-2" title="Repeat unit">Reference repeat unit</th>
+          <th class="col-xs-1" title="ALT">Estimated size</th>
+          <th class="col-xs-1" title="ReferenceSize">Reference size</th>
+          <th class="col-xs-1" title="Status">Status</th>
+          <th class="col-xs-2" title="GT">Genotype</th>
+          <th class="col-xs-1" title="Chromosome">Chr.</th>
+          <th class="col-xs-2" title="Position">Position</th>
         </tr>
       </thead>
       <tbody>
@@ -99,7 +99,7 @@
 {% macro cell_rank(variant) %}
   <a class="variants-row-item flex-small layout"
      href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,
-                      variant_id=variant._id) }}">
+                      variant_id=variant._id, str='yes') }}">
     {{ variant.variant_rank }}
   </a>
   {% set comment_count = variant.comments.count() %}
