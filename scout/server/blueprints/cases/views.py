@@ -59,16 +59,22 @@ def cases(institute_id):
 
     LOG.info(type(all_cases))
     sort_by = request.args.get('sort')
+    sort_order = request.args.get('order') or 'asc'
     if sort_by:
+        pymongo_sort = pymongo.ASCENDING
+        if sort_order == 'desc':
+            pymongo_sort = pymongo.DESCENDING
         if sort_by == 'analysis_date':
-            all_cases.sort('analysis_date', pymongo.DESCENDING)
+            all_cases.sort('analysis_date', pymongo_sort)
         elif sort_by == 'track':
-            all_cases.sort('track', pymongo.ASCENDING)
+            all_cases.sort('track', pymongo_sort)
         elif sort_by == 'status':
-            all_cases.sort('status', pymongo.ASCENDING)
+            all_cases.sort('status', pymongo_sort)
 
     LOG.debug("Prepare all cases")
     data = controllers.cases(store, all_cases, limit)
+    data['sort_order'] = sort_order
+    data['sort_by'] = sort_by
 
     sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id, current_user.email)
     if len(sanger_unevaluated)> 0:
