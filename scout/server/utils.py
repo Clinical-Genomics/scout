@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 import os
+import logging
+
 from functools import wraps
 
 from flask import render_template, request, abort, flash
 from flask_login import current_user
+
+LOG = logging.getLogger(__name__)
 
 def templated(template=None):
     """Template decorator.
@@ -79,7 +83,7 @@ def variant_case(store, case_obj, variant_obj):
         variant_obj(scout.models.Variant)
     """
 
-    case_append_bam(store, case_obj)
+    case_append_bam(case_obj)
 
     try:
         chrom = None

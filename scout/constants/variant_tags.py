@@ -1,3 +1,52 @@
+CALLERS = {
+    'snv': [{
+            'id': 'gatk',
+            'name': 'GATK',
+        }, {
+            'id': 'freebayes',
+            'name': 'Freebayes',
+        }, {
+            'id': 'samtools',
+            'name': 'SAMtools',
+        },
+        {
+            'id': 'bcftools',
+            'name': 'Bcftools',
+        }
+    ],
+    'cancer': [{
+            'id': 'mutect',
+            'name': 'MuTect',
+        }, {
+            'id': 'pindel',
+            'name': 'Pindel',
+        }, {
+            'id': 'gatk',
+            'name': 'GATK',
+        }, {
+            'id': 'freebayes',
+            'name': 'Freebayes',
+    }],
+    'sv': [{
+            'id': 'cnvnator',
+            'name': 'CNVnator',
+        }, {
+            'id': 'delly',
+            'name': 'Delly',
+        }, {
+            'id': 'tiddit',
+            'name': 'TIDDIT',
+        }, {
+            'id': 'manta',
+            'name': 'Manta',
+    }],
+    'str': [{
+           'id': 'expansionhunter',
+           'name': 'ExpansionHunter'
+   }]
+}
+
+
 CONSEQUENCE = (
     'deleterious',
     'deleterious_low_confidence',

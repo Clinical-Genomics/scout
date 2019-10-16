@@ -15,7 +15,8 @@ from .so_terms import (SO_TERMS, SO_TERM_KEYS, SEVERE_SO_TERMS)
 from .gene_tags import GENE_CUSTOM_INHERITANCE_MODELS
 from .variant_tags import (CONSEQUENCE, CONSERVATION, DISMISS_VARIANT_OPTIONS,
                            FEATURE_TYPES, SPIDEX_LEVELS, SPIDEX_HUMAN, SV_TYPES,
-                           GENETIC_MODELS, VARIANT_CALL, MANUAL_RANK_OPTIONS, MOSAICISM_OPTIONS)
+                           GENETIC_MODELS, VARIANT_CALL, MANUAL_RANK_OPTIONS, MOSAICISM_OPTIONS,
+                           CALLERS)
 from .case_tags import (ANALYSIS_TYPES, SEX_MAP, REV_SEX_MAP, PHENOTYPE_MAP, CANCER_PHENOTYPE_MAP,
                         REV_PHENOTYPE_MAP, CASE_STATUSES, VERBS_MAP, VERBS)
 from .clnsig import (CLINSIG_MAP, REV_CLINSIG_MAP)
@@ -66,54 +67,6 @@ PAR_COORDINATES = {
         'Y': IntervalTree([Interval(10001, 2781480, 'par1'),
                            Interval(56887903, 57217416, 'par2')])
     },
-}
-
-CALLERS = {
-    'snv': [{
-            'id': 'gatk',
-            'name': 'GATK',
-        }, {
-            'id': 'freebayes',
-            'name': 'Freebayes',
-        }, {
-            'id': 'samtools',
-            'name': 'SAMtools',
-        },
-        {
-            'id': 'bcftools',
-            'name': 'Bcftools',
-        }
-    ],
-    'cancer': [{
-            'id': 'mutect',
-            'name': 'MuTect',
-        }, {
-            'id': 'pindel',
-            'name': 'Pindel',
-        }, {
-            'id': 'gatk',
-            'name': 'GATK',
-        }, {
-            'id': 'freebayes',
-            'name': 'Freebayes',
-    }],
-    'sv': [{
-            'id': 'cnvnator',
-            'name': 'CNVnator',
-        }, {
-            'id': 'delly',
-            'name': 'Delly',
-        }, {
-            'id': 'tiddit',
-            'name': 'TIDDIT',
-        }, {
-            'id': 'manta',
-            'name': 'Manta',
-    }],
-    'str': [{
-           'id': 'expansionhunter',
-           'name': 'ExpansionHunter'
-   }]
 }
 
 BND_ALT_PATTERN = re.compile(r".*[\],\[](.*?):(.*?)[\],\[]")
