@@ -346,13 +346,6 @@ def sv_variants(institute_id, case_name):
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
                 form=form, severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
-@variants_bp.route('/<institute_id>/<case_name>/str/variants/<variant_id>')
-@templated('variants/str-variant.html')
-def str_variant(institute_id, case_name, variant_id):
-    """Display a specific STR variant."""
-    data = controllers.str_variant(store, institute_id, case_name, variant_id)
-    return data
-
 @variants_bp.route('/<institute_id>/<case_name>/<variant_id>/update', methods=['POST'])
 def variant_update(institute_id, case_name, variant_id):
     """Update user-defined information about a variant: manual rank & ACMG."""

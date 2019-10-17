@@ -35,7 +35,7 @@ class VariantHandler(VariantLoader):
     """Methods to handle variants in the mongo adapter"""
 
     def add_gene_info(self, variant_obj, gene_panels=None):
-        """Add extra information about genes from gene panels
+        """Add extra information about genes from gene panels.
 
         Args:
             variant_obj(dict): A variant from the database
@@ -246,12 +246,14 @@ class VariantHandler(VariantLoader):
             query['_id'] = document_id
 
         variant_obj = self.variant_collection.find_one(query)
-        if variant_obj:
-            variant_obj = self.add_gene_info(variant_obj, gene_panels)
-            if variant_obj['chromosome'] in ['X', 'Y']:
-                ## TODO add the build here
-                variant_obj['is_par'] = is_par(variant_obj['chromosome'],
-                                               variant_obj['position'])
+        if not variant_obj:
+            return None
+        
+        variant_obj = self.add_gene_info(variant_obj, gene_panels)
+        chrom = variant_obj['chromosome']
+        if chrom in ['X', 'Y']:
+            ## TODO add the build here
+            variant_obj['is_par'] = is_par(chrom, variant_obj['position'])
         return variant_obj
 
     def gene_variants(self, query=None,
@@ -404,12 +406,19 @@ class VariantHandler(VariantLoader):
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant marked causative in other cases.
 
+        Checks all other cases if there are any variants on the same position that are marked 
+        causative.
+        
         Args:
             case_obj(dict)
             variant_obj(dict)
 
         Yields:
-            other_causative(dict)
+            other_causative(dict) = {
+                                        '_id' : variant_id,
+                                        'case_id' : other_case['_id'],
+                                        'case_display_name' : other_case['display_name']
+                                    }
         """
         # variant id without "*_[variant_type]"
         variant_prefix = variant_obj['simple_id']
@@ -421,6 +430,9 @@ class VariantHandler(VariantLoader):
             'subject' : {'$in' : [clinical_variant, research_variant] },
             'category' : 'variant'
         })
+        
+        # This is to keep track that we do not return the same variant multiple times
+        returned = set()
 
         for var_event in var_causative_events:
             if var_event['case'] == case_obj['_id']:
@@ -440,13 +452,21 @@ class VariantHandler(VariantLoader):
             other_causative_id = other_link.split('/')[-1]
 
             # if variant is still causative for that case:
-            if other_causative_id in other_case_causatives :
-                other_causative = {
-                    '_id' : other_causative_id,
-                    'case_id' : other_case['_id'],
-                    'case_display_name' : other_case['display_name']
-                }
-                yield other_causative
+            if other_causative_id not in other_case_causatives:
+                continue
+
+            other_causative = {
+                '_id' : other_causative_id,
+                'case_id' : other_case['_id'],
+                'case_display_name' : other_case['display_name']
+            }
+            
+            if other_causative in returned:
+                continue
+
+            returned.add(other_causative)
+
+            yield other_causative
 
 
     def delete_variants(self, case_id, variant_type, category=None):
