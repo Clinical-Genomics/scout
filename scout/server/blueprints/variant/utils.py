@@ -358,7 +358,7 @@ def frequency(variant_obj):
 
 
 def end_position(variant_obj):
-    """Calculate end position for a (snv/indel) variant.
+    """Calculate end position for a variant.
     
     Args:
         variant_obj(scout.models.Variant)

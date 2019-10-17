@@ -26,9 +26,8 @@ def variant(institute_id, case_name, variant_id):
         return redirect(request.referrer)
 
     if current_app.config.get('LOQUSDB_SETTINGS'):
-        obs_start = datetime.now()
         data['observations'] = controllers.observations(store, loqusdb,
-            data['case'], data['variant'])
+            case_obj, data['variant'])
     data['cancer'] = request.args.get('cancer') == 'yes'
     return data
 

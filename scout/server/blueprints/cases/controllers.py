@@ -19,12 +19,7 @@ from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OP
 from scout.export.variant import export_mt_variants
 from scout.server.utils import institute_and_case, user_institutes
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
-<<<<<<< HEAD
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
-=======
-from scout.server.blueprints.variants.controllers import variant as variant_decorator
-from scout.server.blueprints.variant.controllers import sv_variant
->>>>>>> Updates sv-variant bp in cases
 from scout.parse.matchmaker import hpo_terms, omim_terms, genomic_features, parse_matches
 from scout.utils.matchmaker import matchmaker_request
 from scout.server.blueprints.variant.controllers import predictions
