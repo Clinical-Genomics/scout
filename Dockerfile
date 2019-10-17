@@ -1,4 +1,4 @@
-FROM python:3.6.9
+FROM python:3.6.8
 
 MAINTAINER Nina Norgren <nina.karlsson.norgren@regionvasterbotten.se>
 
