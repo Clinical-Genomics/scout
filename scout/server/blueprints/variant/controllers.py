@@ -87,9 +87,15 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     # Gather display information for the genes
     variant_obj.update(predictions(variant_obj.get('genes',[])))
 
+    # Prepare classification information for visualisation
+    classification = variant_obj.get('acmg_classification')
+    if isinstance(classification, int):
+        acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
+        variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
+
     # sort compounds on combined rank score
     compounds = variant_obj.get('compounds', [])
-    if compounds and add_compounds:
+    if compounds:
     # Gather display information for the compounds
         for compound_obj in compounds:
             compound_obj.update(predictions(compound_obj.get('genes', [])))
