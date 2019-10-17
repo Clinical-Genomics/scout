@@ -9,6 +9,7 @@ One of the hard problem when dealing with whole genome data is the huge amount v
 ## Annotation keys and tool suggestions
 
 In this section all the different annotation keys and suggestions of tools that can be used to annotate them are listed.
+If nothing else is stated Scout will search in the INFO field to locate the key value pair.
 
 ### Frequencies 
 

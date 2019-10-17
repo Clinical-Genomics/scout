@@ -44,6 +44,7 @@ samples:
     sample_name: NA12882
     phenotype: affected
     sex: male
+    bam_path: path/to/bam
     expected_coverage: 30
   - analysis_type: wes
     sample_id: ADM1059A1
@@ -53,6 +54,7 @@ samples:
     sample_name: NA12877
     phenotype: unaffected
     sex: male
+    bam_path: path/to/bam
     expected_coverage: 30
   - analysis_type: wes
     sample_id: ADM1059A3
@@ -62,6 +64,7 @@ samples:
     sample_name: NA12878
     phenotype: unaffected
     sex: female
+    bam_path: path/to/bam
     expected_coverage: 30
 
 vcf_snv: scout/demo/643594.clinical.vcf.gz
