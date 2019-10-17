@@ -56,6 +56,12 @@ def login():
     return perform_login(user_obj)
 
 
+@login_bp.route('/ldap_login')
+@public_endpoint
+
+
+
+
 @login_bp.route('/logout')
 def logout():
     logout_user()
@@ -93,7 +99,7 @@ def authorized():
     # Try again with lower-cased email address if no match
     if user_obj is None:
         user_obj = store.user(google_data['email'].lower())
-        
+
     if user_obj is None:
         flash("email not whitelisted: {}".format(google_data['email']), 'warning')
         return redirect(url_for('public.index'))

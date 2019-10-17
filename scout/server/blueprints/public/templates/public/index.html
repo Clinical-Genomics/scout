@@ -24,7 +24,14 @@
         <a class="btn btn-primary" href="{{ url_for('login.login') }}" role="button">
           Login with Google
         </a>
-      {% else %}
+      {% elif config.LDAP_HOST %}
+        <form method="POST" action="{{ url_for('login.login') }}">
+          <label>Username{{ form.username() }}</label>
+          <label>Password{{ form.password() }}</label>
+          {{ form.submit() }}
+          {{ form.hidden_tag() }}
+        </form>
+        {% else %}
         <form action="{{ url_for('login.login') }}">
           <div class="row">
             <div class="col-8">

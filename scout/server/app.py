@@ -85,6 +85,7 @@ def configure_extensions(app):
     extensions.login_manager.init_app(app)
     extensions.oauth.init_app(app)
     extensions.mail.init_app(app)
+
     Markdown(app)
 
     if app.config.get('SQLALCHEMY_DATABASE_URI'):
@@ -93,6 +94,10 @@ def configure_extensions(app):
     if app.config.get('LOQUSDB_SETTINGS'):
         # setup LoqusDB
         extensions.loqusdb.init_app(app)
+
+    if app.config.get('LDAP_HOST'):
+        # setup LDAP server
+        extensions.ldap.init_app(app)
 
 
 def register_blueprints(app):

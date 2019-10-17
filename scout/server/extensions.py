@@ -26,9 +26,7 @@ mail = Mail()
 
 
 from loqusdb.plugins import MongoAdapter as LoqusDBMongoAdapter
-
 from scout.adapter.client import get_connection
-
 
 class LoqusDB(LoqusDBMongoAdapter):
     def init_app(self, app):
@@ -39,20 +37,20 @@ class LoqusDB(LoqusDBMongoAdapter):
         return sum(1 for i in self.db.case.find({}))
 
 class MongoDB(object):
-    
+
     def init_app(self, app):
         """Initialize from flask"""
         uri = app.config.get("MONGO_URI", None)
-        
+
         db_name = app.config.get("MONGO_DBNAME", 'scout')
-        
+
         try:
             client = get_connection(
                 host = app.config.get("MONGO_HOST", 'localhost'),
-                port=app.config.get("MONGO_PORT", 27017), 
-                username=app.config.get("MONGO_USERNAME", None), 
+                port=app.config.get("MONGO_PORT", 27017),
+                username=app.config.get("MONGO_USERNAME", None),
                 password=app.config.get("MONGO_PASSWORD", None),
-                uri=uri, 
+                uri=uri,
                 mongodb= db_name
             )
         except ConnectionFailure:
@@ -61,7 +59,24 @@ class MongoDB(object):
         app.config["MONGO_DATABASE"] = client[db_name]
 
         app.config['MONGO_CLIENT'] = client
-        
+
+class Ldap(object):
+
+    def init_app(self, app):
+        """Load all required settings to configure a LDAP connection"""
+
+        app.config['LDAP_PORT'] = app.config.get('LDAP_PORT')
+        app.config['LDAP_HOST'] = app.config.get('LDAP_HOST')
+        app.config['LDAP_BASE_DN'] = app.config.get('LDAP_BASE_DN')
+        app.config['LDAP_USER_RDN_ATTR'] = app.config.get('LDAP_USER_RDN_ATTR')
+        app.config['LDAP_USER_LOGIN_ATTR'] = app.config.get('LDAP_USER_LOGIN_ATTR')
+
+        app.config['LDAP_BIND_USER_DN'] = app.config.get('LDAP_BIND_USER_DN')
+        app.config['LDAP_BIND_USER_PASSWORD'] = app.config.get('LDAP_BIND_USER_PASSWORD')
+        app.config['LDAP_REQUIRED_GROUP'] = app.config.get('LDAP_REQUIRED_GROUP')
+        app.config['LDAP_USER_SEARCH_SCOPE'] = app.config.get('LDAP_USER_SEARCH_SCOPE')
+        app.config['LDAP_GROUP_OBJECT_FILTER'] = app.config.get('LDAP_GROUP_OBJECT_FILTER')
 
 loqusdb = LoqusDB()
 mongo = MongoDB()
+ldap = Ldap()
