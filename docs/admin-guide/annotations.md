@@ -74,7 +74,7 @@ The [PolyPhen][polyphen]) prediction for how a variation affects the protein.
 
 #### Rank score ####
 
-The combined rank score for a variant
+The combined rank score for a variant. For exact info see [test][rank_score_test]
 
 - Key: `RankScore`
 - Value: `Float`
@@ -138,3 +138,6 @@ What variants is this variant in Autosomal Recessive Compound with?
 [phylop]: http://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg19&g=cons100way
 [sift]: http://sift.jcvi.org
 [polyphen]: http://genetics.bwh.harvard.edu/pph2/dokuwiki/
+[polyphen]: http://genetics.bwh.harvard.edu/pph2/dokuwiki/
+
+[rank_score_test]: https://github.com/Clinical-Genomics/scout/blob/master/tests/parse/test_parse_rank_score.py
