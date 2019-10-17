@@ -64,4 +64,7 @@ def default_panels(store, case_obj):
             continue
         default_panels.append(panel_obj)
     return default_panels
-    
+
+def update_hgncsymbol(variant_obj):
+    """Check if the HGNC symbols have changed since the variant was loaded"""
+    pass

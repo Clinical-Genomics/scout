@@ -62,6 +62,10 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
                             store.other_causatives(case_obj, variant_obj)]
 
     variant_obj = parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build)
+    
+    # sort compounds on combined rank score
+    variant_obj['compounds'] = sorted(variant_obj['compounds'],
+                                      key=lambda compound: -compound['combined_score'])
 
     variant_obj['end_position'] = end_position(variant_obj)
     # This is to get the 

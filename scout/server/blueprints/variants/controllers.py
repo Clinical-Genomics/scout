@@ -124,19 +124,18 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False, gen
                                           key=lambda compound: -compound['combined_score'])
 
     # Update the hgnc symbols if they are incorrect
-    variant_genes = variant_obj.get('genes')
-    if variant_genes is not None:
-        for gene_obj in variant_genes:
-            # If there is no hgnc id there is nothin we can do
-            if not gene_obj['hgnc_id']:
+    variant_genes = variant_obj.get('genes',[])
+    for gene_obj in variant_genes:
+        # If there is no hgnc id there is nothing we can do
+        if not gene_obj['hgnc_id']:
+            continue
+        # Else we collect the gene object and check the id
+        if gene_obj.get('hgnc_symbol') is None:
+            hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'], build=genome_build)
+            if not hgnc_gene:
                 continue
-            # Else we collect the gene object and check the id
-            if gene_obj.get('hgnc_symbol') is None:
-                hgnc_gene = store.hgnc_gene(gene_obj['hgnc_id'], build=genome_build)
-                if not hgnc_gene:
-                    continue
-                has_changed = True
-                gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
+            has_changed = True
+            gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
 
     # We update the variant if some information was missing from loading
     # Or if symbold in reference genes have changed
