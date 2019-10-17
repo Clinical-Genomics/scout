@@ -1,7 +1,8 @@
 from scout.server.utils import (institute_and_case, variant_case)
-from scout.constants import (CALLERS, MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, VERBS_MAP)
+from scout.constants import (CALLERS, MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, VERBS_MAP, 
+                             ACMG_MAP)
 
-from scout.server.links import (ensembl)
+from scout.server.links import (ensembl, add_variant_links)
 from .utils import (end_position, default_panels, frequency)
 
 def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, add_case=True,
@@ -52,35 +53,45 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
         variant_case(store, case_obj, variant_obj)
 
     # Collect all the events for the variant
-    events = list(store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id']))
+    events = store.events(institute_obj, case=case_obj, variant_id=variant_obj['variant_id'])
     for event in events:
         event['verb'] = VERBS_MAP[event['verb']]
+    
+    # Comments are not on case level so these needs to be fetched on their own
+    variant_obj['comments'] = store.events(institute_obj, case=case_obj,
+                                           variant_id=variant_obj['variant_id'], comments=True)
 
     # Adds information about other causative variants
     if add_other:
         other_causatives = [causative for causative in 
                             store.other_causatives(case_obj, variant_obj)]
 
-    variant_obj = parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build)
-    
+    # Gather display information for the genes
+    variant_obj.update(predictions(variant_obj.get('genes',[])))
+
+    # Gather display information for the compounds
+    for compound_obj in compounds:
+        compound_obj.update(get_predictions(compound_obj.get('genes', [])))
+
+    # Prepare classification information for visualisation
+    classification = variant_obj.get('acmg_classification')
+    if isinstance(classification, int):
+        acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
+        variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
+
     # sort compounds on combined rank score
     variant_obj['compounds'] = sorted(variant_obj['compounds'],
                                       key=lambda compound: -compound['combined_score'])
 
     variant_obj['end_position'] = end_position(variant_obj)
-    # This is to get the 
+    # This is to convert frequencies to a string
     variant_obj['frequency'] = frequency(variant_obj)
+    # Format clinvar information
     variant_obj['clinsig_human'] = (clinsig_human(variant_obj) if variant_obj.get('clnsig')
                                     else None)
-    variant_obj['thousandg_link'] = thousandg_link(variant_obj, genome_build)
-    variant_obj['exac_link'] = exac_link(variant_obj)
-    variant_obj['gnomad_link'] = gnomad_link(variant_obj)
-    variant_obj['swegen_link'] = swegen_link(variant_obj)
-    variant_obj['cosmic_link'] = cosmic_link(variant_obj)
-    variant_obj['beacon_link'] = beacon_link(variant_obj, genome_build)
-    variant_obj['ucsc_link'] = ucsc_link(variant_obj, genome_build)
-    variant_obj['alamut_link'] = alamut_link(variant_obj)
-    variant_obj['spidex_human'] = spidex_human(variant_obj)
+    # Add general variant links
+    add_variant_links(variant_obj, int(genome_build))
+    
     variant_obj['expected_inheritance'] = expected_inheritance(variant_obj)
     variant_obj['callers'] = callers(variant_obj, category='snv')
 

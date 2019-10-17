@@ -1,5 +1,7 @@
 import logging
 
+from scout.constants import CLINSIG_MAP
+
 LOG = logging.getLogger(__name__)
 
 def frequency(variant_obj):
@@ -68,3 +70,56 @@ def default_panels(store, case_obj):
 def update_hgncsymbol(variant_obj):
     """Check if the HGNC symbols have changed since the variant was loaded"""
     pass
+
+def clinsig_human(variant_obj):
+    """Convert to human readable version of CLINSIG evaluation.
+    
+    The clinical significance from ACMG are stored as numbers. These needs to be converted to human 
+    readable format. Also the link to the accession is built
+    
+    Args:
+        variant_obj(scout.models.Variant)
+    
+    Yields:
+        clinsig_objs(dict): {
+                                'human': str,
+                                'link': str
+                            }
+    
+    """
+    for clinsig_obj in variant_obj['clnsig']:
+        # The clinsig objects allways have a accession
+        if not 'accession' in clinsig_obj:
+            continue
+        # Old version
+        link = "https://www.ncbi.nlm.nih.gov/clinvar/{}"
+        if isinstance(clinsig_obj['accession'], int):
+            # New version
+            link = "https://www.ncbi.nlm.nih.gov/clinvar/variation/{}"
+
+        human_str = 'not provided'
+        clnsig_value = clinsig_obj.get('value')
+        if clnsig_value:
+            try:
+                # Old version
+                int(clinsig_value)
+                human_str = CLINSIG_MAP.get(clinsig_value, 'not provided')
+            except ValueError:
+                # New version
+                human_str = clinsig_value
+
+        clinsig_obj['human'] = human_str
+        clinsig_obj['link'] = link.format(clinsig_obj['accession'])
+
+        yield clinsig_obj
+
+def expected_inheritance(variant_obj):
+    """Gather information from common gene information.
+    
+    Args:
+        variant_obj(scout.models.Variant)
+    """
+    manual_models = set()
+    for gene in variant_obj.get('genes', []):
+        manual_models.update(gene.get('manual_inheritance', []))
+    return list(manual_models)
