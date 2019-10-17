@@ -1,9 +1,9 @@
 from scout.server.utils import (institute_and_case, variant_case)
 from scout.constants import (CALLERS, MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, VERBS_MAP, 
-                             ACMG_MAP)
+                             ACMG_MAP, MOSAICISM_OPTIONS, ACMG_OPTIONS, ACMG_COMPLETE_MAP)
 
 from scout.server.links import (ensembl, add_variant_links)
-from .utils import (end_position, default_panels, frequency)
+from .utils import (end_position, default_panels, frequency, callers, parse_gene, evaluation)
 
 def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, add_case=True,
             add_other=True, get_overlapping=True):
@@ -69,10 +69,6 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     # Gather display information for the genes
     variant_obj.update(predictions(variant_obj.get('genes',[])))
 
-    # Gather display information for the compounds
-    for compound_obj in compounds:
-        compound_obj.update(get_predictions(compound_obj.get('genes', [])))
-
     # Prepare classification information for visualisation
     classification = variant_obj.get('acmg_classification')
     if isinstance(classification, int):
@@ -80,8 +76,14 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
         variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
 
     # sort compounds on combined rank score
-    variant_obj['compounds'] = sorted(variant_obj['compounds'],
-                                      key=lambda compound: -compound['combined_score'])
+    compounds = variant_obj.get('compounds', [])
+    if compounds:
+    # Gather display information for the compounds
+        for compound_obj in compounds:
+            compound_obj.update(predictions(compound_obj.get('genes', [])))
+        
+        variant_obj['compounds'] = sorted(variant_obj['compounds'],
+                                          key=lambda compound: -compound['combined_score'])
 
     variant_obj['end_position'] = end_position(variant_obj)
     # This is to convert frequencies to a string
@@ -92,7 +94,7 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     # Add general variant links
     add_variant_links(variant_obj, int(genome_build))
     
-    variant_obj['expected_inheritance'] = expected_inheritance(variant_obj)
+    # Add display information about callers
     variant_obj['callers'] = callers(variant_obj, category='snv')
 
     individuals = {individual['individual_id']: individual for individual in
@@ -139,9 +141,9 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
         variant_obj['clinvar_clinsig'] = case_clinvars.get(variant_id)['clinsig']
 
     svs = []
-    if get_overlapping:
-        svs = (parse_variant(store, institute_obj, case_obj, variant_obj) for
-                            variant_obj in store.overlapping(variant_obj))
+    # if get_overlapping:
+    #     svs = (parse_variant(store, institute_obj, case_obj, variant_obj) for
+    #                         variant_obj in store.overlapping(variant_obj))
 
     return {
         'institute': institute_obj,
@@ -286,23 +288,6 @@ def frequencies(variant_obj):
         frequencies.append(('Decipher', variant_obj['decipher']))
     
     return frequencies
-
-def callers(variant_obj, category='snv'):
-    """Return info about callers.
-    
-    Args:
-        variant_obj(scout.models.Variant)
-        category(str)
-    
-    Returns:
-        calls(list(str)): A list of the callers that identified the variant
-    """
-    calls = set()
-    for caller in CALLERS[category]:
-        if variant_obj.get(caller['id']):
-            calls.add((caller['name'], variant_obj[caller['id']]))
-
-    return list(calls)
 
 def str_variant(store, institute_id, case_name, variant_id):
     """Pre-process an STR variant entry for detail page.

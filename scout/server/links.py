@@ -1,5 +1,7 @@
 from pprint import pprint as pp
 
+from scout.constants import (SPIDEX_HUMAN)
+
 def add_gene_links(gene_obj, build=37):
     """Update a gene object with links
 

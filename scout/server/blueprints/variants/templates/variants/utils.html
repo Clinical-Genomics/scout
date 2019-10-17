@@ -18,7 +18,7 @@
             {% if compound.not_loaded %}
               {{ compound.display_name }} <small>(not loaded)</small>
             {% else %}
-              <a href='{{ url_for("variants.variant",
+              <a href='{{ url_for("variant.variant",
                                  institute_id=institute._id,
                                  case_name=case.display_name,
                                  variant_id=compound.variant) }}'>

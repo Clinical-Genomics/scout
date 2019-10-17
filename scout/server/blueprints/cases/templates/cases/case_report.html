@@ -432,7 +432,7 @@
           <tr>
             <td>#{{loop.index}}</td>
             {% if variant.category == 'snv' %}
-              <td><a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></td>
+              <td><a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></td>
             {% else %}
               <td><a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></td>
             {% endif %}
@@ -576,7 +576,7 @@
 <div class="card" style="border-width: 5px;">
   <div class="card-header">
     <div class="row">
-      # <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></a>&nbsp;
+      # <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></a>&nbsp;
         <span class="badge badge-pill badge-success">SNV</span>&nbsp;
         {% if variant.sanger_ordered and variant.validation %}
           <span class="badge badge-pill badge-info" title="verif-status">Verification:{{variant.validation}}</span>

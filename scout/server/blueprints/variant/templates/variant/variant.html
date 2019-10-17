@@ -155,7 +155,7 @@
   <ul class="list-group">
     <div class="list-group-item">
       <strong>Case {{ case.display_name }}</strong><br>
-      <a href="{{ url_for('variants.variant', institute_id=institute._id,
+      <a href="{{ url_for('variant.variant', institute_id=institute._id,
                           case_name=case.display_name, variant_id=variant._id) }}">
         {{ variant.display_name }}
       </a>
@@ -253,7 +253,7 @@
         <ul class="list-group list-group-flush">
           {% for other_variant in causatives %}
             <li class="list-group-item">
-              <a href="{{ url_for('variants.variant',
+              <a href="{{ url_for('variant.variant',
                                   institute_id=institute._id,
                                   case_name=other_variant.case_display_name,
                                   variant_id=other_variant._id) }}">
@@ -683,7 +683,7 @@
               <div class="col-9">
                 {% for data in observations['cases'] %}
                   {% if data.variant %}
-                    <a class="ml-3" href="{{ url_for('variants.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+                    <a class="ml-3" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
                   {% else %}
                     <span class="text-muted ml-3">{{ data.case.display_name }}</span>
                   {% endif %}

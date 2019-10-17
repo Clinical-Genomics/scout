@@ -1,6 +1,6 @@
 import logging
 
-from flask import (Blueprint, flash, current_app, redirect)
+from flask import (Blueprint, flash, current_app, redirect, request)
 
 from scout.server.utils import templated
 from scout.server.extensions import (store, loqusdb)
@@ -11,7 +11,7 @@ LOG = logging.getLogger(__name__)
 
 variant_bp = Blueprint('variant', __name__, static_folder='static', template_folder='templates')
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>')
+@variant_bp.route('/<institute_id>/<case_name>/<variant_id>')
 @templated('variant/variant.html')
 def variant(institute_id, case_name, variant_id):
     """Display a specific SNV variant."""
@@ -22,10 +22,10 @@ def variant(institute_id, case_name, variant_id):
         flash('An error occurred while retrieving variant object', 'danger')
         return redirect(request.referrer)
 
-    if current_app.config.get('LOQUSDB_SETTINGS'):
-        data['observations'] = controllers.observations(store, loqusdb,
-            case_obj, data['variant'])
-    data['cancer'] = request.args.get('cancer') == 'yes'
+    # if current_app.config.get('LOQUSDB_SETTINGS'):
+    #     data['observations'] = controllers.observations(store, loqusdb,
+    #         case_obj, data['variant'])
+    # data['cancer'] = request.args.get('cancer') == 'yes'
     return data
 
 @variant_bp.route('/<institute_id>/<case_name>/sv/variants/<variant_id>')

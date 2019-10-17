@@ -521,7 +521,7 @@
         {% for variant in other_variants %}
           <tr>
             <td>
-              <a href="{{ url_for('variants.variant', institute_id=institute._id,
+              <a href="{{ url_for('variant.variant', institute_id=institute._id,
                                   case_name=case.display_name,
                                   variant_id=variant._id)}}">
                 {{ variant.display_name|truncate(20, True) }}

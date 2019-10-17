@@ -408,114 +408,6 @@ def clinsig_human(variant_obj):
 
         yield clinsig_obj
 
-
-def thousandg_link(variant_obj, build=None):
-    """Compose link to 1000G page for detailed information."""
-    dbsnp_id = variant_obj.get('dbsnp_id')
-    build = build or 37
-
-    if not dbsnp_id:
-        return None
-
-    if build == 37:
-        url_template = ("http://grch37.ensembl.org/Homo_sapiens/Variation/Explore"
-                        "?v={};vdb=variation")
-    else:
-        url_template = ("http://www.ensembl.org/Homo_sapiens/Variation/Explore"
-                        "?v={};vdb=variation")
-
-    return url_template.format(dbsnp_id)
-
-
-def exac_link(variant_obj):
-    """Compose link to ExAC website for a variant position."""
-    url_template = ("http://exac.broadinstitute.org/variant/"
-                    "{this[chromosome]}-{this[position]}-{this[reference]}"
-                    "-{this[alternative]}")
-    return url_template.format(this=variant_obj)
-
-
-def gnomad_link(variant_obj):
-    """Compose link to gnomAD website."""
-    url_template = ("http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
-                    "{this[position]}-{this[reference]}-{this[alternative]}")
-    return url_template.format(this=variant_obj)
-
-
-def swegen_link(variant_obj):
-    """Compose link to SweGen Variant Frequency Database."""
-    url_template = ("https://swegen-exac.nbis.se/variant/{this[chromosome]}-"
-                    "{this[position]}-{this[reference]}-{this[alternative]}")
-    return url_template.format(this=variant_obj)
-
-def cosmic_link(variant_obj):
-    """Compose link to COSMIC Database.
-
-    Args:
-        variant_obj(scout.models.Variant)
-
-    Returns:
-        url_template(str): Link to COSMIIC database if cosmic id is present
-    """
-
-    cosmic_ids = variant_obj.get('cosmic_ids')
-
-    if not cosmic_ids:
-        return None
-    else:
-        cosmic_id = cosmic_ids[0]
-        url_template = ("https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}")
-
-
-    return url_template.format(cosmic_id)
-
-def beacon_link(variant_obj, build=None):
-    """Compose link to Beacon Network."""
-    build = build or 37
-    url_template = ("https://beacon-network.org/#/search?pos={this[position]}&"
-                    "chrom={this[chromosome]}&allele={this[alternative]}&"
-                    "ref={this[reference]}&rs=GRCh37")
-    # beacon does not support build 38 at the moment
-    # if build == '38':
-    #     url_template = ("https://beacon-network.org/#/search?pos={this[position]}&"
-    #                     "chrom={this[chromosome]}&allele={this[alternative]}&"
-    #                     "ref={this[reference]}&rs=GRCh38")
-
-    return url_template.format(this=variant_obj)
-
-
-def ucsc_link(variant_obj, build=None):
-    """Compose link to UCSC."""
-    build = build or 37
-    url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&"
-                        "position=chr{this[chromosome]}:{this[position]}"
-                        "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack")
-    if build == 38:
-        url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg20&"
-                        "position=chr{this[chromosome]}:{this[position]}"
-                        "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack")
-
-    return url_template.format(this=variant_obj)
-
-
-def alamut_link(variant_obj):
-    url_template = ("http://localhost:10000/show?request={this[chromosome]}:"
-                    "{this[position]}{this[reference]}>{this[alternative]}")
-    return url_template.format(this=variant_obj)
-
-
-def spidex_human(variant_obj):
-    """Translate SPIDEX annotation to human readable string."""
-    if variant_obj.get('spidex') is None:
-        return 'not_reported'
-    elif abs(variant_obj['spidex']) < SPIDEX_HUMAN['low']['pos'][1]:
-        return 'low'
-    elif abs(variant_obj['spidex']) < SPIDEX_HUMAN['medium']['pos'][1]:
-        return 'medium'
-    else:
-        return 'high'
-
-
 def expected_inheritance(variant_obj):
     """Gather information from common gene information."""
     manual_models = set()
@@ -578,7 +470,7 @@ def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant
     tx_changes = []
 
     if category == 'snv': #SNV
-        view_type = 'variants.variant'
+        view_type = 'variant.variant'
         display_name = variant_obj.get('display_name')
         tx_changes = []
 
@@ -815,7 +707,7 @@ def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, cr
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(user_email)
-    variant_link = url_for('variants.variant', institute_id=institute_id,
+    variant_link = url_for('variant.variant', institute_id=institute_id,
                            case_name=case_name, variant_id=variant_id)
     classification = store.submit_evaluation(
         institute_obj=institute_obj,
