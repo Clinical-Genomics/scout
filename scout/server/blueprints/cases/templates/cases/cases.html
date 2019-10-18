@@ -219,7 +219,7 @@
     <td>
       {{ case.analysis_date.date() }}
       {% if case.rerun_requested %}
-          <span class="badge badge-secondary pull-right">rerun requested</span>
+          <span class="badge badge-secondary pull-right">rerun pending</span>
       {% elif case.is_rerun %}
         <span class="badge badge-secondary pull-right">rerun</span>
       {% endif %}
