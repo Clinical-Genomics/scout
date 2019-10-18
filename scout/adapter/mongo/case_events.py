@@ -294,8 +294,7 @@ class CaseEventHandler(object):
             {'_id': case['_id']},
             {
                 '$set': {
-                    'rerun_requested': True,
-                    'status': case.get('status') if case.get('status') != 'archived' else 'inactive'
+                    'rerun_requested': True
                     }
             },
             return_document=pymongo.ReturnDocument.AFTER
