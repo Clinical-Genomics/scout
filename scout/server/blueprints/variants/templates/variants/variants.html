@@ -48,63 +48,60 @@
             {{ filters_form() }}
         </div>
       </div>
-        <div class="card mt-3">
-          <table class="table table-hover table-bordered">
-            <thead>
-                  <tr>
-                    <th class="col-xs-1" title="Rank position">Rank </th>
-                    <th class="col-xs-1" title="Rank score">Score</th>
-                    <th class="col-xs-1" title="Chromosome">Chr.</th>
-                    <th class="col-xs-1" title="HGNC symbols" >Gene</th>
-                    <th class="col-xs-1" title="1000 Genomes">PopFreq</th>
-                    <th class="col-xs-1" title="CADD score">CADD</th>
-                    <th class="col-xs-1" title="Gene region annotation">Gene annotation</th>
-                    <th class="col-xs-2" title="Functional annotation">Func. annotation</th>
-                    <th class="col-xs-2" title="Inheritance models">Inheritance model</th>
-                    <th class="col-xs-1" title="Overlapping">Overlapping</th>
-                  </tr>
-            </thead>
-            <tbody>
-              {% for variant in variants %}
-                {% if variant.dismiss_variant %}
-                  <tr class="dismiss">
-                {% else %}
-                  <tr>
-                {% endif %}
-                  <td class="d-flex justify-content-between align-items-center">{{ cell_rank(variant) }}</td>
-                  <td class="text-right">{{ variant.rank_score|int }}</td>
-                  <td>{{ variant.chromosome }}</td>
-                  <td>{{ gene_cell(variant) }}</td>
-                  <td class="text-right">{{ frequency_cell(variant) }}</td>
-                  <td class="text-right">{{ cell_cadd(variant) }}</td>
-                  <td>
-                    {% for annotation in variant.region_annotations %}
-                      <div>{{ annotation }}</div>
-                    {% endfor %}
-                  </td>
-                  <td>
-                    {% for annotation in variant.functional_annotations %}
-                      <div>{{ annotation }}</div>
-                    {% endfor %}
-                  </td>
-                  <td>{{ cell_models(variant) }}</td>
-                  <td>{{ overlapping_cell(variant) }}</td>
-                </tr>
+      <div class="card mt-3">
+        <table class="table table-hover table-bordered">
+          <thead>
+            <tr>
+              <th style="width:8%" title="Rank position">Rank </th>
+              <th style="width:8%" title="Rank score">Score</th>
+              <th style="width:8%" title="Chromosome">Chr.</th>
+              <th style="width:8%" title="HGNC symbols" >Gene</th>
+              <th style="width:8%" title="Poulation frequency">PopFreq</th>
+              <th style="width:8%" title="CADD score">CADD</th>
+              <th style="width:8%" title="Gene region annotation">Gene annotation</th>
+              <th style="width:18%"" title="Functional annotation">Func. annotation</th>
+              <th style="width:18%" title="Inheritance models">Inheritance model</th>
+              <th style="width:8%"" title="Overlapping">Overlapping</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for variant in variants %}
+              {% if variant.dismiss_variant %}
+                <tr class="dismiss">
               {% else %}
+                <tr>
+              {% endif %}
+                <td class="d-flex justify-content-between align-items-center">{{ cell_rank(variant) }}</td>
+                <td class="text-right">{{ variant.rank_score|int }}</td>
+                <td>{{ variant.chromosome }}</td>
+                <td>{{ gene_cell(variant) }}</td>
+                <td class="text-right">{{ frequency_cell(variant) }}</td>
+                <td class="text-right">{{ cell_cadd(variant) }}</td>
+                <td>
+                  {% for annotation in variant.region_annotations %}
+                    <div>{{ annotation }}</div>
+                  {% endfor %}
+                </td>
+                <td>
+                  {% for annotation in variant.functional_annotations %}
+                    <div>{{ annotation }}</div>
+                  {% endfor %}
+                </td>
+                <td>{{ cell_models(variant) }}</td>
+                <td>{{ overlapping_cell(variant) }}</td>
+              </tr>
+            {% else %}
               <tr>
                 <td colspan="{{ 10 if form.variant_type.data == 'clinical' else 9 }}">
                   No matching variants
                 </td>
               </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div><!-- end of <div class="card mt-3">-->
-        </div><!-- end of div class="card-body">-->
-      </div>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div><!-- end of <div class="card mt-3">-->
     </div> <!-- end of class="container-float"> -->
       {{ footer() }}
-    </div>
   </form>
 {% endblock %}
 
