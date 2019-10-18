@@ -292,7 +292,8 @@
       <form action="{{ url_for('cases.mark_causative',
                                institute_id=institute._id,
                                case_name=case.display_name,
-                               variant_id=variant._id) }}"
+                               variant_id=variant._id,
+                               partial_causative=False) }}"
             method="POST">
         <button name="action" value="DELETE" type="submit" class="btn btn-light navbar-btn" title="Reset causative">
           Reset causative
@@ -302,7 +303,8 @@
     <form action="{{ url_for('cases.mark_causative',
                              institute_id=institute._id,
                              case_name=case.display_name,
-                             variant_id=variant._id) }}"
+                             variant_id=variant._id,
+                             partial_causative=False) }}"
           method="POST">
       <button name="action" value="ADD" type="submit" class="btn btn-light navbar-btn" title="Mark causative" onclick="return confirm('Are you sure?')">
         Mark causative
