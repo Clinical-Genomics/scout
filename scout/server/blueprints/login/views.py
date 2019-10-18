@@ -23,6 +23,8 @@ login_manager.login_view = 'login.login'
 login_manager.login_message = 'Please log in to access this page.'
 login_manager.login_message_category = 'info'
 
+ldap_users = {} # used by ldap save_user
+
 @login_manager.user_loader
 def load_user(user_id):
     """Returns the currently active user as an object."""
@@ -42,7 +44,16 @@ def get_google_token():
 def login():
     """Login a user if they have access."""
 
-    if current_app.config.get('LDAP_HOST') and request.method == 'POST':
+    if current_app.config.get('LDAP_HOST'):
+        form = LDAPLoginForm()
+
+        if form.validate_on_submit():
+            login_user(form.user)
+            LOG.info('--------------> HERE!!!!')
+
+
+
+        """
         username = request.form.get('username')
         password = request.form.get('password')
         result = ldap_manager.authenticate(username, password)
@@ -54,6 +65,7 @@ def login():
         else:
             flash("username-password combination is not valid, plase try again", "warning")
             return redirect(url_for('public.index'))
+        """
 
     # GET request
     if 'next' in request.args:
@@ -140,7 +152,8 @@ def perform_login(user_dict):
         return redirect(url_for('public.index'))
 
 
-def save_user(username, dn=None, data=None, memberships=None):
-    LOG.info('-------------->THIS IS CALLED!!!!')
+@ldap_manager.save_user
+def save_user(dn, username, data, memberships):
     user = LdapUser(dn, username, data)
+    ldap_users[dn] = user
     return user
