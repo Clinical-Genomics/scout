@@ -457,7 +457,10 @@ def rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
                   html=html, sender=sender, recipients=[recipient],
                   # cc the sender of the email for confirmation
                   cc=[user_obj['email']])
-    mail.send(msg)
+    if recipient:
+        mail.send(msg)
+    else:
+        LOG.error("Cannot send rerun message: no recipient defined in config.")
 
 
 def update_default_panels(store, current_user, institute_id, case_name, panel_ids):
