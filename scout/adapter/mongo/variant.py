@@ -15,8 +15,6 @@ from cyvcf2 import VCF
 from intervaltree import IntervalTree
 
 # Local modules
-from scout.parse.variant.headers import (parse_rank_results_header,
-                                         parse_vep_header)
 from scout.parse.variant.rank_score import parse_rank_score
 
 from scout.parse.variant import parse_variant
