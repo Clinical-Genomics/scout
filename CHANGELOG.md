@@ -30,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Reintroduced missing coverage report
 - Fixed a bug preventing loading samples using the command line
 - Better inheritance models customization for genes in gene panels
+- STR variant page back to list button now does its one job.
 
 
 ## [4.7.3]
