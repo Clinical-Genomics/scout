@@ -867,7 +867,7 @@ def cyvcf2_variant():
             self.ID = '.'
             self.QUAL = None
             self.var_type = 'snp'
-            self.INFO = {'RankScore': "123:10"}
+            self.INFO = {'RankScore': "internal_id:10"}
 
     variant = Cyvcf2Variant()
     return variant
