@@ -5,8 +5,9 @@ from flask import (abort, current_app, Blueprint, flash, redirect, request,
                    session, url_for, render_template)
 from flask_login import login_user, logout_user
 from flask_oauthlib.client import OAuthException
+from flask_ldap3_login.forms import LDAPLoginForm
 
-from scout.server.extensions import google, login_manager, store
+from scout.server.extensions import google, login_manager, store, ldap_manager
 from scout.server.utils import public_endpoint
 from . import controllers
 from .models import LoginUser
@@ -21,9 +22,9 @@ login_manager.login_message_category = 'info'
 
 
 @login_manager.user_loader
-def load_user(user_email):
+def load_user(user_id):
     """Returns the currently active user as an object."""
-    user_obj = store.user(user_email)
+    user_obj = store.user(user_id)
     user_inst = LoginUser(user_obj) if user_obj else None
     return user_inst
 
@@ -34,7 +35,7 @@ def get_google_token():
     return session.get('google_token')
 
 
-@login_bp.route('/login')
+@login_bp.route('/login', methods=['GET', 'POST'])
 @public_endpoint
 def login():
     """Login a user if they have access."""
@@ -46,6 +47,12 @@ def login():
         callback_url = url_for('.authorized', _external=True)
         return google.authorize(callback=callback_url)
 
+    if current_app.config.get('LDAP'):
+        form = LDAPLoginForm()
+        flash('form stuff: --->{}'.format(form))
+        return 'DOING STUFF WITH LDAP'
+
+
     user_email = request.args.get('email')
     user_obj = store.user(user_email)
 
@@ -54,12 +61,6 @@ def login():
         return redirect(url_for('public.index'))
 
     return perform_login(user_obj)
-
-
-@login_bp.route('/ldap_login')
-@public_endpoint
-
-
 
 
 @login_bp.route('/logout')
@@ -127,3 +128,11 @@ def perform_login(user_dict):
     else:
         flash('sorry, you could not log in', 'warning')
         return redirect(url_for('public.index'))
+
+
+@ldap_manager.save_user
+def save_user(dn, username, data, memberships):
+    user = User(dn=dn, username=username)
+    db.session.add(user)
+    db.session.commit()
+    return user

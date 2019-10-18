@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from pymongo.errors import (ConnectionFailure)
-
+from flask_ldap3_login import LDAP3LoginManager
 
 from flask_debugtoolbar import DebugToolbarExtension
 toolbar = DebugToolbarExtension()
@@ -15,6 +15,8 @@ store = MongoAdapter()
 from flask_login import LoginManager
 from flask_oauthlib.client import OAuth
 login_manager = LoginManager()
+ldap_manager = LDAP3LoginManager()
+
 oauth = OAuth()
 # use Google as remote application
 # you must configure 3 values from Google APIs console
@@ -57,25 +59,17 @@ class MongoDB(object):
             context.abort()
 
         app.config["MONGO_DATABASE"] = client[db_name]
-
         app.config['MONGO_CLIENT'] = client
+
 
 class Ldap(object):
 
     def init_app(self, app):
         """Load all required settings to configure a LDAP connection"""
+        ldapconf = app.config.get('LDAP')
+        for key in ldapconf.items():
+            app.config[key] = ldapconf.get(key)
 
-        app.config['LDAP_PORT'] = app.config.get('LDAP_PORT')
-        app.config['LDAP_HOST'] = app.config.get('LDAP_HOST')
-        app.config['LDAP_BASE_DN'] = app.config.get('LDAP_BASE_DN')
-        app.config['LDAP_USER_RDN_ATTR'] = app.config.get('LDAP_USER_RDN_ATTR')
-        app.config['LDAP_USER_LOGIN_ATTR'] = app.config.get('LDAP_USER_LOGIN_ATTR')
-
-        app.config['LDAP_BIND_USER_DN'] = app.config.get('LDAP_BIND_USER_DN')
-        app.config['LDAP_BIND_USER_PASSWORD'] = app.config.get('LDAP_BIND_USER_PASSWORD')
-        app.config['LDAP_REQUIRED_GROUP'] = app.config.get('LDAP_REQUIRED_GROUP')
-        app.config['LDAP_USER_SEARCH_SCOPE'] = app.config.get('LDAP_USER_SEARCH_SCOPE')
-        app.config['LDAP_GROUP_OBJECT_FILTER'] = app.config.get('LDAP_GROUP_OBJECT_FILTER')
 
 loqusdb = LoqusDB()
 mongo = MongoDB()

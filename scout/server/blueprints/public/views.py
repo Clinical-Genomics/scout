@@ -12,5 +12,5 @@ public_bp = Blueprint('public', __name__, template_folder='templates',
 @public_endpoint
 def index():
     """Show the static landing page."""
-    form = LDAPLoginForm()
-    return render_template('public/index.html', version=__version__, form=form)
+    ldap_form = LDAPLoginForm()
+    return render_template('public/index.html', version=__version__, ldap_form=ldap_form)
