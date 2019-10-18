@@ -24,15 +24,17 @@
         <a class="btn btn-primary" href="{{ url_for('login.login') }}" role="button">
           Login with Google
         </a>
-      {% elif config.LDAP %}
+      {% elif config.LDAP_HOST %}
         <form class="form-row" method="POST" action="{{ url_for('login.login') }}">
           <div class="col-4">
-            <label>Username {{ ldap_form.username() }}</label>
+            <input type="text" placeholder="username" class="form-control" name="username" required="required">
           </div>
           <div class="col-4">
-            <label>Password {{ ldap_form.password() }}</label>
+            <input type="text" placeholder="password" class="form-control" name="password" required="required">
           </div>
-          {{ ldap_form.submit() }}
+          <div class="col-4">
+            <button type="submit" class="btn btn-primary form-control text-white">Login</button>
+          </div>
           {{ ldap_form.hidden_tag() }}
         </form>
         {% else %}

@@ -6,20 +6,22 @@ from flask import (abort, current_app, Blueprint, flash, redirect, request,
 from flask_login import login_user, logout_user
 from flask_oauthlib.client import OAuthException
 from flask_ldap3_login.forms import LDAPLoginForm
+from flask_ldap3_login import AuthenticationResponseStatus
 
 from scout.server.extensions import google, login_manager, store, ldap_manager
 from scout.server.utils import public_endpoint
 from . import controllers
-from .models import LoginUser
+from .models import LoginUser, LdapUser
+
+import logging
+LOG = logging.getLogger(__name__)
 
 login_bp = Blueprint('login', __name__, template_folder='templates',
                      static_folder='static', static_url_path='/login/static')
 
-
 login_manager.login_view = 'login.login'
 login_manager.login_message = 'Please log in to access this page.'
 login_manager.login_message_category = 'info'
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -39,19 +41,27 @@ def get_google_token():
 @public_endpoint
 def login():
     """Login a user if they have access."""
-    # store potential next param URL in the session
+
+    if current_app.config.get('LDAP_HOST') and request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        result = ldap_manager.authenticate(username, password)
+
+        if result.status == AuthenticationResponseStatus.success:
+            
+            LOG.info('MI INTOPPO QUA')
+
+        else:
+            flash("username-password combination is not valid, plase try again", "warning")
+            return redirect(url_for('public.index'))
+
+    # GET request
     if 'next' in request.args:
         session['next_url'] = request.args['next']
 
     if current_app.config.get('GOOGLE'):
         callback_url = url_for('.authorized', _external=True)
         return google.authorize(callback=callback_url)
-
-    if current_app.config.get('LDAP'):
-        form = LDAPLoginForm()
-        flash('form stuff: --->{}'.format(form))
-        return 'DOING STUFF WITH LDAP'
-
 
     user_email = request.args.get('email')
     user_obj = store.user(user_email)
@@ -132,7 +142,6 @@ def perform_login(user_dict):
 
 @ldap_manager.save_user
 def save_user(dn, username, data, memberships):
-    user = User(dn=dn, username=username)
-    db.session.add(user)
-    db.session.commit()
+    user = LdapUser(dn, username, data)
+    users[dn] = user
     return user

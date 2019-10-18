@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-
 from pymongo.errors import (ConnectionFailure)
-from flask_ldap3_login import LDAP3LoginManager
 
 from flask_debugtoolbar import DebugToolbarExtension
 toolbar = DebugToolbarExtension()
@@ -13,7 +11,9 @@ from scout.adapter import MongoAdapter
 store = MongoAdapter()
 
 from flask_login import LoginManager
+from flask_ldap3_login import LDAP3LoginManager
 from flask_oauthlib.client import OAuth
+
 login_manager = LoginManager()
 ldap_manager = LDAP3LoginManager()
 
@@ -25,7 +25,6 @@ google = oauth.remote_app('google', app_key='GOOGLE')
 
 from flask_mail import Mail
 mail = Mail()
-
 
 from loqusdb.plugins import MongoAdapter as LoqusDBMongoAdapter
 from scout.adapter.client import get_connection
@@ -62,15 +61,6 @@ class MongoDB(object):
         app.config['MONGO_CLIENT'] = client
 
 
-class Ldap(object):
-
-    def init_app(self, app):
-        """Load all required settings to configure a LDAP connection"""
-        ldapconf = app.config.get('LDAP')
-        for key in ldapconf.items():
-            app.config[key] = ldapconf.get(key)
-
 
 loqusdb = LoqusDB()
 mongo = MongoDB()
-ldap = Ldap()

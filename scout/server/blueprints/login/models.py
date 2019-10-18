@@ -17,3 +17,17 @@ class LoginUser(UserMixin):
     def is_admin(self):
         """Check if the user is admin."""
         return 'admin' in self.roles
+
+
+class LdapUser(UserMixin):
+
+    def __init__(self, dn, username, data=None):
+        self.dn = dn
+        self.username = username
+        self.data = data
+
+    def __repr__(self):
+        return self.dn
+
+    def get_id(self):
+        return self.dn

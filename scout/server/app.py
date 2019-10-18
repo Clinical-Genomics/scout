@@ -83,7 +83,6 @@ def configure_extensions(app):
     extensions.mongo.init_app(app)
     extensions.store.init_app(app)
     extensions.login_manager.init_app(app)
-    extensions.ldap_manager.init_app(app)
     extensions.oauth.init_app(app)
     extensions.mail.init_app(app)
 
@@ -96,10 +95,9 @@ def configure_extensions(app):
         # setup LoqusDB
         extensions.loqusdb.init_app(app)
 
-    if app.config.get('LDAP'):
+    if app.config.get('LDAP_HOST'):
         # setup connection to server
-        extensions.ldap.init_app(app)
-
+        extensions.ldap_manager.init_app(app)
 
 def register_blueprints(app):
     """Register Flask blueprints."""
