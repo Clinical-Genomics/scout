@@ -11,7 +11,7 @@ class LoginUser(UserMixin):
             setattr(self, key, value)
 
     def get_id(self):
-        return self.email
+        return self._id
 
     @property
     def is_admin(self):
@@ -20,7 +20,7 @@ class LoginUser(UserMixin):
 
 
 class LdapUser(UserMixin):
-    def __init__(self, dn, username, data):
+    def __init__(self, dn, username, data=None):
         self.dn = dn
         self.username = username
         self.data = data

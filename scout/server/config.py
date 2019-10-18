@@ -39,10 +39,10 @@ LDAP_BASE_DN = 'dc=example,dc=com'
     # The Username to bind to LDAP with
 LDAP_BIND_USER_DN = 'cn=read-only-admin,dc=example,dc=com'
     # The Password to bind to LDAP with
-LDAP_BIND_USER_PASSWORD = 'password'
+#LDAP_BIND_USER_PASSWORD = 'password'
 # Required group user has to belong to (dirty hack)
 LDAP_REQUIRED_GROUP = 'ou=scientists,dc=example,dc=com'
     # Has to be there
 LDAP_USER_SEARCH_SCOPE = 'SUBTREE',
 LDAP_GROUP_OBJECT_FILTER = '(objectClass=GroupOfUniqueNames)'
-UTH_LDAP_CACHE_GROUPS = True
+#AUTH_LDAP_CACHE_GROUPS = True

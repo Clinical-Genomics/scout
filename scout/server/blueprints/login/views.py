@@ -43,46 +43,36 @@ def get_google_token():
 @public_endpoint
 def login():
     """Login a user if they have access."""
-
-    if current_app.config.get('LDAP_HOST'):
-        form = LDAPLoginForm()
-
-        if form.validate_on_submit():
-            login_user(form.user)
-            LOG.info('--------------> HERE!!!!')
-
-
-
-        """
-        username = request.form.get('username')
-        password = request.form.get('password')
-        result = ldap_manager.authenticate(username, password)
-
-        if result.status == AuthenticationResponseStatus.success:
-            user = save_user(username)
-            perform_login(user)
-
-        else:
-            flash("username-password combination is not valid, plase try again", "warning")
-            return redirect(url_for('public.index'))
-        """
-
-    # GET request
     if 'next' in request.args:
         session['next_url'] = request.args['next']
 
-    if current_app.config.get('GOOGLE'):
+    user_id = None
+    user_dict = None
+    if current_app.config.get('LDAP_HOST') and request.method=='POST':
+        form = LDAPLoginForm()
+        LOG.info('Validating LDAP user')
+        if form.validate_on_submit():
+            user_id = form.username.data
+        else:
+            flash("username-password combination is not valid, plase try again", "warning")
+
+    elif current_app.config.get('GOOGLE'):
+        LOG.info('Validating Google user login')
         callback_url = url_for('.authorized', _external=True)
         return google.authorize(callback=callback_url)
 
-    user_email = request.args.get('email')
-    user_obj = store.user(user_email)
+    else: # log in against Scout database
+        LOG.info('Validating user {} against Scout database'.format(request.args.get('email')))
+        user_id = request.args.get('email')
 
+    user_obj = store.user(user_id)
     if user_obj is None:
-        flash("email not whitelisted: {}".format(user_email), 'warning')
+        flash("User not whitelisted", 'warning')
         return redirect(url_for('public.index'))
 
-    return perform_login(user_obj)
+    user_dict = LoginUser(user_obj)
+
+    return perform_login(user_dict)
 
 
 @login_bp.route('/logout')
@@ -131,8 +121,8 @@ def authorized():
     user_obj['location'] = google_data['locale']
     user_obj['accessed_at'] = datetime.now()
     store.update_user(user_obj)
-    return perform_login(user_obj)
-
+    user_inst = LoginUser(user_obj)
+    return perform_login(user_inst)
 
 @login_bp.route('/users')
 def users():
@@ -140,17 +130,14 @@ def users():
     data = controllers.users(store)
     return render_template('login/users.html', **data)
 
-
 def perform_login(user_dict):
-    user_inst = LoginUser(user_dict)
-    if login_user(user_inst, remember=True):
-        flash("you logged in as: {}".format(user_inst.email), 'success')
+    if login_user(user_dict, remember=True):
+        flash("you logged in as: {}".format(user_dict.name), 'success')
         next_url = session.pop('next_url', None)
         return redirect(request.args.get('next') or next_url or url_for('cases.index'))
     else:
         flash('sorry, you could not log in', 'warning')
         return redirect(url_for('public.index'))
-
 
 @ldap_manager.save_user
 def save_user(dn, username, data, memberships):

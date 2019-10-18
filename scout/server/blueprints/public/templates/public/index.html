@@ -27,15 +27,15 @@
       {% elif config.LDAP_HOST %}
         <form class="form-row" method="POST" action="{{ url_for('login.login') }}">
           <div class="col-4">
-            <input type="text" placeholder="username" class="form-control" name="username" required="required">
+            <label>Username{{ form.username(class="form-control") }}</label>
           </div>
           <div class="col-4">
-            <input type="text" placeholder="password" class="form-control" name="password" required="required">
+            <label>Password{{ form.password(class="form-control") }}</label>
           </div>
           <div class="col-4">
             <button type="submit" class="btn btn-primary form-control text-white">Login</button>
           </div>
-          {{ ldap_form.hidden_tag() }}
+          {{ form.hidden_tag() }}
         </form>
         {% else %}
         <form action="{{ url_for('login.login') }}">
