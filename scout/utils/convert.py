@@ -24,12 +24,12 @@ def make_bool(string):
 def convert_number(string):
     """Convert a string to number
     If int convert to int otherwise float
-    
+
     If not possible return None
     """
     res = None
     if isint(string):
         res = int(float(string))
     elif isfloat(string):
-        res = float(string) 
+        res = float(string)
     return res

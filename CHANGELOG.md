@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Dynamic gene panels get link out to chanjo-report for coverage report
 - Load all clinvar variants with clinvar Pathogenic, Likely Pathogenic and Conflicting pathogenic
 - Show transcripts with exon numbers for structural variants
+- Case sort order can now be toggled between ascending and descending.
 
 ### fixed
 - Fixed missing import for variants with comments
@@ -26,6 +27,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed string conversion to number
 - UCSC links for structural variants are now separated per breakpoint (and whole variant where applicable)
 - Reintroduced missing coverage report
+- Fixed a bug preventing loading samples using the command line
+- Better inheritance models customization for genes in gene panels
 
 
 ## [4.7.3]
