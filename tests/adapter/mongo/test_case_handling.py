@@ -433,7 +433,6 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
     assert sum(1 for i in adapter.cases()) == 0
     adapter.case_collection.insert_one(case_obj)
     assert sum(1 for i in adapter.cases()) == 1
-    logger.info("Testing to update case")
 
     res = adapter.case(case_obj['_id'])
     assert res['status'] == 'inactive'
@@ -447,10 +446,14 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
     # request rerun for test case
     adapter.request_rerun(institute_obj, res, user_obj, 'blank')
     res = adapter.case(case_obj['_id'])
-
+    # THEN rerun_reuquested is flagged
     assert res['rerun_requested'] == True
+    # Make sure case is still archived
+    assert res['status'] == 'archived'
 
-    # Make sure case is not archived
+    # and WHEN updating the case agagin
+    adapter.update_case(case_obj)
+    # THEN it is inactivated
     assert res['status'] == 'inactive'
 
     # Make sure user becomes assignee of the case

@@ -63,10 +63,10 @@ def cases(store, case_query, limit=100):
         case_obj['analysis_types'] = list(analysis_types)
         case_obj['assignees'] = [store.user(user_email) for user_email in
                                  case_obj.get('assignees', [])]
-        case_groups[case_obj['status']].append(case_obj)
         case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
         case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
         case_obj['display_track'] = TRACKS[case_obj.get('track', 'rare')]
+        case_groups[case_obj['status']].append(case_obj)
 
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
