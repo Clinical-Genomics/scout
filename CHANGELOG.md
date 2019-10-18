@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Load all clinvar variants with clinvar Pathogenic, Likely Pathogenic and Conflicting pathogenic
 - Show transcripts with exon numbers for structural variants
 - Case sort order can now be toggled between ascending and descending.
+- Variant can be marked as partial causative if phenotype is available for case
 
 ### fixed
 - Fixed missing import for variants with comments
