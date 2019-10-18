@@ -48,8 +48,8 @@ def login():
         result = ldap_manager.authenticate(username, password)
 
         if result.status == AuthenticationResponseStatus.success:
-            
-            LOG.info('MI INTOPPO QUA')
+            user = save_user(username)
+            perform_login(user)
 
         else:
             flash("username-password combination is not valid, plase try again", "warning")
@@ -140,8 +140,7 @@ def perform_login(user_dict):
         return redirect(url_for('public.index'))
 
 
-@ldap_manager.save_user
-def save_user(dn, username, data, memberships):
+def save_user(username, dn=None, data=None, memberships=None):
+    LOG.info('-------------->THIS IS CALLED!!!!')
     user = LdapUser(dn, username, data)
-    users[dn] = user
     return user

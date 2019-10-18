@@ -21,13 +21,10 @@ class LoginUser(UserMixin):
 
 class LdapUser(UserMixin):
 
-    def __init__(self, dn, username, data=None):
-        self.dn = dn
+    def __init__(self, username, dn=None, data=None):
         self.username = username
+        self.dn = dn
         self.data = data
 
     def __repr__(self):
-        return self.dn
-
-    def get_id(self):
         return self.dn
