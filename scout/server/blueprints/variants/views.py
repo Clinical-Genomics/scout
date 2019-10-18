@@ -217,6 +217,8 @@ def sv_variants(institute_id, case_name):
             default_panels.append(panel['panel_name'])
 
     request.form.get('gene_panels')
+
+    override_filter = false
     if bool(request.form.get('clinical_filter')):
         clinical_filter = MultiDict({
             'variant_type': 'clinical',
@@ -228,9 +230,13 @@ def sv_variants(institute_id, case_name):
             'size': 100,
             'gene_panels': default_panels
              })
+        override_filter = true
+    elif (request.form.get('retrieve_filter')):
+        filter_id = request.form.get('retrieve_filter')
+        filter = store.retrive_filter(institute_id, filter_id=filter_id)
 
     if(request.method == "POST"):
-        if bool(request.form.get('clinical_filter')):
+        if override_filter:
             form = SvFiltersForm(clinical_filter)
             form.csrf_token = request.args.get('csrf_token')
         else:
