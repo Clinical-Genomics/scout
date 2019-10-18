@@ -451,11 +451,6 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
     # Make sure case is still archived
     assert res['status'] == 'archived'
 
-    # and WHEN updating the case agagin
-    adapter.update_case(case_obj)
-    # THEN it is inactivated
-    assert res['status'] == 'inactive'
-
     # Make sure user becomes assignee of the case
     assert user_obj['email'] in res['assignees']
 
@@ -463,6 +458,12 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
     with pytest.raises(ValueError):
         adapter.request_rerun(institute_obj, res, user_obj, 'blank')
 
+    # and WHEN updating the case agagin
+    res = adapter.update_case(case_obj)
+
+    # THEN it is inactivated
+    res = adapter.case(case_obj['_id'])
+    assert res['status'] == 'inactive'
 
 def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
     adapter = hpo_database
