@@ -71,3 +71,80 @@
     </tbody>
   </table>
 {% endmacro %}
+
+{% macro modal_causative(case, institute, variant) %}
+<div class="modal fade" id="causativeModal" tabindex="-1" role="dialog" aria-labelledby="causativeLabel"
+  aria-hidden="true" onsubmit="return validate_causative_form();">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+           <h5 class="modal-title" id="causativeLabel">Mark variant as causative</h5>
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+           </button>
+        </div>
+        <form action="{{ url_for('cases.mark_causative', institute_id=institute._id, case_name=case.display_name,
+           variant_id=variant._id, partial_causative=False) }}" method="POST">
+          <div class="modal-body">
+            <div class="row">
+              <div class="col d-flex">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div data-placement="top">
+                      Variant explains phenotype partially (partial causative)&nbsp;&nbsp;
+                    </div>
+                    <br>
+                    <br>
+                    <div>
+                      <input type="checkbox" class="ios8-switch" id="partial_causative" name="partial_causative"
+                        data-toggle='collapse' data-target='#partial_phenotypes'
+                          {% if case.phenotype_terms|length == 0 and diagnosis_phenotypes|length == 0 %}
+                            disabled
+                          {% endif %}>
+                      <label for="partial_causative"></label>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            {% if case.phenotype_terms|length == 0 and diagnosis_phenotypes|length == 0 %}
+              <h5 class="text-danger small">Assign at least an OMIM diagnosis or a HPO phenotype term to this case to mark this variant as partial causative</h5>
+            {% endif %}
+            <div id="partial_phenotypes" class="collapse mt-2">
+              <h6><strong>Associated phenotype</strong></h6>
+              <!-- A partial causative variant is resposible for a specific phenotype. Make sure phenotype is specified -->
+              <div class="row ml-3">
+                <div class="col-4">
+                  <!-- Phenotype could be specified using OMIM -->
+                  <h6>Diagnosis phenotype (OMIM):</h6>
+                  <select multiple="multiple" name="omim_select" id="omim_select" class="selectpicker">
+                    {% for omim_id in case.diagnosis_phenotypes %}
+                      <option value="{{omim_id}}">
+                        {{ omim_id }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-8">
+                  <!-- Phenotype could also be specified by HPO terms -->
+                  <h6>Phenotype terms (HPO):</h6>
+                  <select multiple="multiple" name="hpo_select" id="hpo_select" class="selectpicker">
+                    {% for hpo_term in case.phenotype_terms %}
+                      <option value="{{hpo_term.feature}}_{{hpo_term.phenotype_id}}">
+                        {{hpo_term.feature}} ({{ hpo_term.phenotype_id }})
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+          </div>
+          <br>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button name="action" value="ADD" type="submit" class="btn btn-primary" title="Mark causative">
+              Mark causative
+            </button>
+          </div>
+        </form>
+    </div>
+  </div>
+</div>
+{% endmacro %}
