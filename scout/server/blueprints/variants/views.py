@@ -198,6 +198,7 @@ def variant(institute_id, case_name, variant_id):
         data['observations'] = controllers.observations(store, loqusdb,
             case_obj, data['variant'])
     data['cancer'] = request.args.get('cancer') == 'yes'
+    data['str'] = request.args.get('str') == 'yes'
     return dict(institute=institute_obj, case=case_obj, **data)
 
 @variants_bp.route('/<institute_id>/<case_name>/str/variants')
