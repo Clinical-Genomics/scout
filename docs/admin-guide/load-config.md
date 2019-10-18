@@ -21,7 +21,7 @@ samples:
     sex: str(mandatory), [male, female, unknown]
     expected_coverage: int(mandatory)
     vcf2cytosure: str(optional) # path to CGH file
-    bam_file: str(optional) # path to bam file
+    bam_path: str(optional) # path to bam file
 
     tissue_type: str(optional)
     tumor_type: str(optional)
