@@ -71,7 +71,6 @@ def login():
         return redirect(url_for('public.index'))
 
     user_dict = LoginUser(user_obj)
-
     return perform_login(user_dict)
 
 
@@ -80,7 +79,6 @@ def logout():
     logout_user()
     flash('you logged out', 'success')
     return redirect(url_for('public.index'))
-
 
 @login_bp.route('/authorized')
 @public_endpoint
