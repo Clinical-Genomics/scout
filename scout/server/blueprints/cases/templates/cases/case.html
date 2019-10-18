@@ -360,7 +360,7 @@
         </li>
       {% endfor %}
       <!-- End of causative variants -->
-      <!-- Partial causative variant -->
+      <!-- Partial causative variants -->
       {% for variant_phenotypes in partial_causatives %}
         {% set variant = variant_phenotypes.variant %}
         <div class="list-group-item">
@@ -426,7 +426,7 @@
           {% endif %}
         </div>
       {% endfor %}
-      <!-- end of partial causative variant -->
+      <!-- end of partial causative variants -->
       {% if not case.causatives|length and not case.partial_causatives|length %}
         <div class="card-body">No variants marked causative</div>
       {% endif %}

@@ -467,7 +467,7 @@ class VariantEventHandler(object):
             return_document=pymongo.ReturnDocument.AFTER
         )
 
-        LOG.info("Creating events for unmarking variant {0} " \
+        LOG.info("Creating events for unmarking variant {0} as partial " \
                     "causative".format(display_name))
 
         self.create_event(
