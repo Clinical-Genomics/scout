@@ -38,6 +38,7 @@ def test_mark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj)
     event_obj = adapter.event_collection.find_one()
     assert event_obj['link'] == link
 
+
 def test_unmark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
 
     ## GIVEN a adapter with a variant that is marked causative
@@ -75,6 +76,88 @@ def test_unmark_causative(adapter, institute_obj, case_obj, user_obj, variant_ob
 
     assert sum(1 for i in adapter.event_collection.find()) == 4
 
+
+def test_mark_partial_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
+
+    # GIVEN a populated database with variants
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.variant_collection.insert_one(variant_obj)
+
+    assert sum(1 for i in adapter.variant_collection.find()) > 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
+
+    # And at least a phenotype (OMIM diagnosis or HPO terms)
+    omim_terms = ['145590', '615349']
+    hpo_terms = ['Febrile seizures_HP:0002373']
+
+    # When marking the variant as partial causative
+    ## WHEN marking a variant as causative
+    updated_case = adapter.mark_partial_causative(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="link_to_partial_causative_variant",
+        variant=variant_obj,
+        omim_terms=omim_terms,
+        hpo_terms=hpo_terms
+    )
+
+    # Then the updated case status should'n be marked as solved
+    assert updated_case['status'] != 'solved'
+
+    # Shoud have one partial causative variant
+    assert len(updated_case['partial_causatives'].keys()) == 1
+
+    # And 2 associated events should be created in database
+    assert sum(1 for i in adapter.event_collection.find()) == 2
+
+def test_unmark_partial_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
+
+    # GIVEN a populated database with variants
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.variant_collection.insert_one(variant_obj)
+
+    assert sum(1 for i in adapter.variant_collection.find()) > 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
+
+    # And at least a phenotype (OMIM diagnosis or HPO terms)
+    omim_terms = ['145590', '615349']
+    hpo_terms = ['Febrile seizures_HP:0002373']
+
+    # When marking the variant as partial causative
+    ## WHEN marking a variant as causative
+    updated_case = adapter.mark_partial_causative(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="link_to_partial_causative_variant",
+        variant=variant_obj,
+        omim_terms=omim_terms,
+        hpo_terms=hpo_terms
+    )
+
+    assert updated_case['partial_causatives'][variant_obj['_id']]
+
+    ## WHEN unmarking a variant as causative
+    unmark_link = 'unMarkPartialCausativelink'
+    updated_case = adapter.unmark_partial_causative(
+        institute=institute_obj,
+        case=updated_case,
+        user=user_obj,
+        link=unmark_link,
+        variant=variant_obj
+    )
+
+    ## THEN assert that the case has no causatives
+    assert len(updated_case['partial_causatives']) == 0
+
+    ## THEN assert that two more events was created
+    assert sum(1 for i in adapter.event_collection.find()) == 4
+    
 
 def test_order_verification(adapter, institute_obj, case_obj, user_obj, variant_obj):
 

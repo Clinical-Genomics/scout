@@ -456,7 +456,6 @@ class VariantEventHandler(object):
             display_name, case['display_name']))
 
         # update partial_causative field of this case
-
         partial_causatives = case.get('partial_causatives') or {}
         del partial_causatives[variant['_id']]
 
