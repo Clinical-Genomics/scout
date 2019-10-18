@@ -17,6 +17,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Dynamic gene panels get link out to chanjo-report for coverage report
 - Load all clinvar variants with clinvar Pathogenic, Likely Pathogenic and Conflicting pathogenic
 - Show transcripts with exon numbers for structural variants
+- Case sort order can now be toggled between ascending and descending.
+- Variants can be marked as partial causative if phenotype is available for case
 
 ### fixed
 - Fixed missing import for variants with comments
@@ -28,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Reintroduced missing coverage report
 - Fixed a bug preventing loading samples using the command line
 - Better inheritance models customization for genes in gene panels
+- STR variant page back to list button now does its one job.
 
 
 ## [4.7.3]

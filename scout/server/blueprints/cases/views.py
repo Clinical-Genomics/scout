@@ -59,16 +59,22 @@ def cases(institute_id):
 
     LOG.info(type(all_cases))
     sort_by = request.args.get('sort')
+    sort_order = request.args.get('order') or 'asc'
     if sort_by:
+        pymongo_sort = pymongo.ASCENDING
+        if sort_order == 'desc':
+            pymongo_sort = pymongo.DESCENDING
         if sort_by == 'analysis_date':
-            all_cases.sort('analysis_date', pymongo.DESCENDING)
+            all_cases.sort('analysis_date', pymongo_sort)
         elif sort_by == 'track':
-            all_cases.sort('track', pymongo.ASCENDING)
+            all_cases.sort('track', pymongo_sort)
         elif sort_by == 'status':
-            all_cases.sort('status', pymongo.ASCENDING)
+            all_cases.sort('status', pymongo_sort)
 
     LOG.debug("Prepare all cases")
     data = controllers.cases(store, all_cases, limit)
+    data['sort_order'] = sort_order
+    data['sort_by'] = sort_by
 
     sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id, current_user.email)
     if len(sanger_unevaluated)> 0:
@@ -705,8 +711,8 @@ def mark_validation(institute_id, case_name, variant_id):
     return redirect(request.referrer or link)
 
 
-@cases_bp.route('/<institute_id>/<case_name>/<variant_id>/causative', methods=['POST'])
-def mark_causative(institute_id, case_name, variant_id):
+@cases_bp.route('/<institute_id>/<case_name>/<variant_id>/<partial_causative>/causative', methods=['POST'])
+def mark_causative(institute_id, case_name, variant_id, partial_causative=False):
     """Mark a variant as confirmed causative."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
@@ -714,9 +720,18 @@ def mark_causative(institute_id, case_name, variant_id):
     link = url_for('variants.variant', institute_id=institute_id, case_name=case_name,
                    variant_id=variant_id)
     if request.form['action'] == 'ADD':
-        store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
+        if 'partial_causative' in request.form:
+            omim_terms = request.form.getlist('omim_select')
+            hpo_terms =  request.form.getlist('hpo_select')
+            store.mark_partial_causative(institute_obj, case_obj, user_obj, link,
+                variant_obj, omim_terms, hpo_terms)
+        else:
+            store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
     elif request.form['action'] == 'DELETE':
-        store.unmark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
+        if eval(partial_causative):
+            store.unmark_partial_causative(institute_obj, case_obj, user_obj, link, variant_obj)
+        else:
+            store.unmark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
 
     # send the user back to the case that was marked as solved
     case_url = url_for('.case', institute_id=institute_id, case_name=case_name)

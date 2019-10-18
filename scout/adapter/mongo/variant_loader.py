@@ -554,6 +554,8 @@ class VariantLoader(object):
         # Parse the neccessary headers from vcf file
         rank_results_header = parse_rank_results_header(vcf_obj)
         vep_header = parse_vep_header(vcf_obj)
+        if vep_header:
+            LOG.info("Found VEP header %s", '|'.join(vep_header))
 
         # This is a dictionary to tell where ind are in vcf
         individual_positions = {}

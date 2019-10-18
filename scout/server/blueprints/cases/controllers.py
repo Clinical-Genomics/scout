@@ -114,6 +114,16 @@ def case(store, institute_obj, case_obj):
                 case_obj.get('suspects', [])]
     causatives = [store.variant(variant_id) or variant_id for variant_id in
                   case_obj.get('causatives', [])]
+    # check for partial causatives and associated phenotypes
+    partial_causatives = []
+    if case_obj.get('partial_causatives'):
+        for id, values in case_obj['partial_causatives'].items():
+            causative_obj = {
+                'variant' : store.variant(id) or id,
+                'omim_terms' : values.get('diagnosis_phenotypes'),
+                'hpo_terms' : values.get('phenotype_terms')
+            }
+            partial_causatives.append(causative_obj)
 
     # Set of all unique genes in the default gene panels
     distinct_genes = set()
@@ -166,6 +176,7 @@ def case(store, institute_obj, case_obj):
         'events': events,
         'suspects': suspects,
         'causatives': causatives,
+        'partial_causatives' : partial_causatives,
         'collaborators': collab_ids,
         'cohort_tags': COHORT_TAGS,
         'mme_nodes': current_app.mme_nodes, # Get available MatchMaker nodes for matching case
