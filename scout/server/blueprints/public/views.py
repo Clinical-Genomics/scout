@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Blueprint, render_template, current_app
+from flask import Blueprint, render_template, current_app, redirect, url_for
 from flask_ldap3_login.forms import LDAPLoginForm
 
 from scout import __version__
@@ -13,8 +13,12 @@ public_bp = Blueprint('public', __name__, template_folder='templates',
 @public_endpoint
 def index():
     """Show the static landing page."""
-
     form = None
     if current_app.config.get('LDAP_HOST'):
         form = LDAPLoginForm()
     return render_template('public/index.html', version=__version__, form=form)
+
+
+@public_bp.route('/favicon.ico')
+def favicon():
+    return redirect(url_for('static', filename='favicon.ico'))

@@ -55,20 +55,24 @@ def login():
             user_id = form.username.data
         else:
             flash("username-password combination is not valid, plase try again", "warning")
+            return redirect(url_for('public.index'))
 
     elif current_app.config.get('GOOGLE'):
         LOG.info('Validating Google user login')
         callback_url = url_for('.authorized', _external=True)
         return google.authorize(callback=callback_url)
 
-    else: # log in against Scout database
-        LOG.info('Validating user {} against Scout database'.format(request.args.get('email')))
+    elif request.args.get('email'): # log in against Scout database
         user_id = request.args.get('email')
+        LOG.info('Validating user {} against Scout database'.format(user_id))
 
     user_obj = store.user(user_id)
     if user_obj is None:
         flash("User not whitelisted", 'warning')
         return redirect(url_for('public.index'))
+
+    user_obj['accessed_at'] = datetime.now()
+    store.update_user(user_obj)
 
     user_dict = LoginUser(user_obj)
     return perform_login(user_dict)
@@ -110,8 +114,6 @@ def authorized():
     # Try again with lower-cased email address if no match
     if user_obj is None:
         user_obj = store.user(google_data['email'].lower())
-
-    if user_obj is None:
         flash("email not whitelisted: {}".format(google_data['email']), 'warning')
         return redirect(url_for('public.index'))
 

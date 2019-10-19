@@ -68,9 +68,7 @@ def create_app(config_file=None, config=None):
             if relevant_endpoint and not current_user.is_authenticated:
                 # combine visited URL (convert byte string query string to unicode!)
                 next_url = "{}?{}".format(request.path, request.query_string.decode())
-                if 'favicon' in next_url:
-                    next_url = None
-                login_url = url_for('login.login', next=next_url)
+                login_url = url_for('public.index', next=next_url)
                 return redirect(login_url)
 
     return app
