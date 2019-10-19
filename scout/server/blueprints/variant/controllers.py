@@ -69,12 +69,6 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     # Gather display information for the genes
     variant_obj.update(predictions(variant_obj.get('genes',[])))
 
-    # Prepare classification information for visualisation
-    classification = variant_obj.get('acmg_classification')
-    if isinstance(classification, int):
-        acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
-        variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
-
     # sort compounds on combined rank score
     compounds = variant_obj.get('compounds', [])
     if compounds:
@@ -86,7 +80,7 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
                                           key=lambda compound: -compound['combined_score'])
 
     variant_obj['end_position'] = end_position(variant_obj)
-    # This is to convert frequencies to a string
+    # This is to convert a summary of frequencies to a string
     variant_obj['frequency'] = frequency(variant_obj)
     # Format clinvar information
     variant_obj['clinsig_human'] = (clinsig_human(variant_obj) if variant_obj.get('clnsig')
@@ -130,6 +124,12 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
         variant_models = set(model.split('_', 1)[0] for model in variant_obj['genetic_models'])
         variant_obj['is_matching_inheritance'] = variant_models & gene_models
 
+    # Prepare classification information for visualisation
+    classification = variant_obj.get('acmg_classification')
+    if isinstance(classification, int):
+        acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
+        variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
+    
     evaluations = []
     for evaluation_obj in store.get_evaluations(variant_obj):
         evaluation(store, evaluation_obj)
