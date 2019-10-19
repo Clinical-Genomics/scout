@@ -52,6 +52,7 @@ def login():
         form = LDAPLoginForm()
         LOG.info('Validating LDAP user')
         if form.validate_on_submit():
+
             user_id = form.username.data
         else:
             flash("username-password combination is not valid, plase try again", "warning")
