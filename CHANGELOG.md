@@ -19,6 +19,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show transcripts with exon numbers for structural variants
 - Case sort order can now be toggled between ascending and descending.
 - Variants can be marked as partial causative if phenotype is available for case
+- Show a frequency tooltip hover for SV-variants.
+
 
 ### fixed
 - Fixed missing import for variants with comments
