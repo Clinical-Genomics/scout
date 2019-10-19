@@ -19,7 +19,7 @@ def build_user(user_info):
     except KeyError as err:
         raise KeyError("A user has to have a name")
 
-    user_obj = User(email=email, name=name, id=user_info['id'])
+    user_obj = User(email=email, name=name, id=user_info.get('id'))
 
     ##TODO check that these are on the correct format
     if 'roles' in user_info:
