@@ -67,6 +67,9 @@ def add_ensembl_info(genes, ensembl_lines):
     ensembl_genes = parse_ensembl_genes(ensembl_lines)
 
     for ensembl_gene in ensembl_genes:
+        if not 'hgnc_id' in ensembl_gene:
+            continue
+        pp(ensembl_gene)
         gene_obj = genes.get(ensembl_gene['hgnc_id'])
         if not gene_obj:
             continue
@@ -161,8 +164,8 @@ def get_correct_ids(hgnc_symbol, alias_genes):
             return set(hgnc_id_info['ids'])
     return hgnc_ids
 
-def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
-               genemap_lines, hpo_lines):
+def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, mim2gene_lines=None, 
+               genemap_lines=None):
     """Gather information from different sources and return a gene dict
 
     Extract information collected from a number of sources and combine them
@@ -203,9 +206,10 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
 
     add_exac_info(genes, symbol_to_id, exac_lines)
 
-    add_omim_info(genes, symbol_to_id, genemap_lines, mim2gene_lines)
-
     add_incomplete_penetrance(genes, symbol_to_id, hpo_lines)
+    
+    if (mim2gene_lines and genemap_lines):
+        add_omim_info(genes, symbol_to_id, genemap_lines, mim2gene_lines)
 
     return genes
 

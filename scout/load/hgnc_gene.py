@@ -89,10 +89,11 @@ def load_hgnc_genes(adapter, genes = None, ensembl_lines=None, hgnc_lines=None, 
         exac_lines = exac_lines or fetch_exac_constraint()
         if not (mim2gene_lines and genemap_lines):
             if not omim_api_key:
-                raise SyntaxError("Need to provide omim api key")
-            mim_files = fetch_mim_files(omim_api_key, mim2genes=True, genemap2=True)
-            mim2gene_lines = mim_files['mim2genes']
-            genemap_lines = mim_files['genemap2']
+                LOG.warning("No omim api key provided!")
+            else:
+                mim_files = fetch_mim_files(omim_api_key, mim2genes=True, genemap2=True)
+                mim2gene_lines = mim_files['mim2genes']
+                genemap_lines = mim_files['genemap2']
         if not hpo_lines:
             hpo_files = fetch_hpo_files(hpogenes=True)
             hpo_lines = hpo_files['hpogenes']
@@ -103,9 +104,9 @@ def load_hgnc_genes(adapter, genes = None, ensembl_lines=None, hgnc_lines=None, 
             ensembl_lines=ensembl_lines,
             hgnc_lines=hgnc_lines,
             exac_lines=exac_lines,
+            hpo_lines=hpo_lines,
             mim2gene_lines=mim2gene_lines,
             genemap_lines=genemap_lines,
-            hpo_lines=hpo_lines
         )
 
     non_existing = 0
