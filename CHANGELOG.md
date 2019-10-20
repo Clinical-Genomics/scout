@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show transcripts with exon numbers for structural variants
 - Case sort order can now be toggled between ascending and descending.
 - Variants can be marked as partial causative if phenotype is available for case.
+- Show a frequency tooltip hover for SV-variants.
 
 ### fixed
 - Fixed missing import for variants with comments
@@ -31,6 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed a bug preventing loading samples using the command line
 - Better inheritance models customization for genes in gene panels
 - STR variant page back to list button now does its one job.
+- Allows to setup scout without a omim api key
 - Request rerun no longer changes case status. Active or archived cases inactivate on upload.
 
 
