@@ -5,7 +5,6 @@ import pytest
 import pymongo
 
 from flask import request
-from flask_ldap3_login import AuthenticationResponse, AuthenticationResponseStatus
 from flask_login import login_user, logout_user
 
 from scout.server.blueprints.login.models import LoginUser
