@@ -3,8 +3,6 @@ from flask import url_for
 from flask_login import current_user
 from scout.server.extensions import store
 from flask_ldap3_login.forms import LDAPLoginForm
-from flask_wtf import FlaskForm
-from wtforms import TextField
 
 
 def test_unathorized_login(app):
