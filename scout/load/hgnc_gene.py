@@ -106,7 +106,7 @@ def load_hgnc_genes(adapter, genes = None, ensembl_lines=None, hgnc_lines=None, 
             exac_lines=exac_lines,
             hpo_lines=hpo_lines,
             mim2gene_lines=mim2gene_lines,
-            genemap_lines=genemap_lines,
+            genemap_lines=genemap_lines
         )
 
     non_existing = 0
