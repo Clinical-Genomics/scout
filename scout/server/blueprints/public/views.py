@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
-from flask import Blueprint, render_template, current_app, redirect, url_for
+import os
+from flask import Blueprint, render_template, current_app, redirect, url_for, send_from_directory
 from flask_ldap3_login.forms import LDAPLoginForm
 
 from scout import __version__
 from scout.server.utils import public_endpoint
+
+import logging
+LOG = logging.getLogger()
 
 
 public_bp = Blueprint('public', __name__, template_folder='templates',
@@ -19,6 +23,6 @@ def index():
     return render_template('public/index.html', version=__version__, form=form)
 
 
-@public_bp.route('/favicon.ico')
+@public_bp.route('/favicon')
 def favicon():
-    return redirect(url_for('static', filename='favicon.ico'))
+    return send_from_directory(current_app.static_folder, 'favicon.ico')

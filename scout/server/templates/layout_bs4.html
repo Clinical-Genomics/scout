@@ -10,12 +10,10 @@
 
 {% block styles %}
   {{ super() }}
-  <link rel="shortcut icon" href="{{ url_for('public.static', filename='favicon.ico') }}">
 {% endblock %}
 
 {% block head %}
   {{ super() }}
-  <link rel="shortcut icon" href="{{ url_for('public.favicon', filename='favicon.ico') }}">
 {% endblock head %}
 
 {% block navbar %}
