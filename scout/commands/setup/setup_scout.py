@@ -48,8 +48,8 @@ def database(context, institute_name, user_name, user_mail, api_key):
     # Fetch the omim information
     api_key = api_key or current_app.config.get('OMIM_API_KEY')
     if not api_key:
-        LOG.warning("Please provide a omim api key with --api-key")
-        raise click.Abort()
+        LOG.warning("No omim api key provided. This means information will be lost in scout")
+        LOG.info("Please request an OMIM api key and run scout update genes")
 
     institute_name = institute_name or context.obj['institute_name']
     user_name = user_name or context.obj['user_name']
