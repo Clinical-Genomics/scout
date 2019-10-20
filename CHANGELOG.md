@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case sort order can now be toggled between ascending and descending.
 - Variants can be marked as partial causative if phenotype is available for case
 - Show a frequency tooltip hover for SV-variants.
+- Added support for LDAP login system
 
 
 ### fixed
@@ -34,6 +35,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better inheritance models customization for genes in gene panels
 - STR variant page back to list button now does its one job.
 - Allows to setup scout without a omim api key
+- Fixed error causing "favicon not found" flash messages
 
 
 ## [4.7.3]
