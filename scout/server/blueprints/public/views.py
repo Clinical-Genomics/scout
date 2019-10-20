@@ -5,10 +5,6 @@ from flask_ldap3_login.forms import LDAPLoginForm
 from scout import __version__
 from scout.server.utils import public_endpoint
 
-import logging
-LOG = logging.getLogger()
-
-
 public_bp = Blueprint('public', __name__, template_folder='templates',
                       static_folder='static', static_url_path='/public/static')
 
