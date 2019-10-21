@@ -47,23 +47,25 @@ def login():
         session['next_url'] = request.args['next']
 
     user_id = None
-    user_dict = None
     if current_app.config.get('LDAP_HOST') and request.method=='POST':
         form = LDAPLoginForm()
         LOG.info('Validating LDAP user')
         if form.validate_on_submit():
-
             user_id = form.username.data
         else:
             flash("username-password combination is not valid, plase try again", "warning")
             return redirect(url_for('public.index'))
 
-    elif current_app.config.get('GOOGLE'):
-        LOG.info('Validating Google user login')
-        callback_url = url_for('.authorized', _external=True)
-        return google.authorize(callback=callback_url)
+    if current_app.config.get('GOOGLE'):
+        if session.get('email'):
+            user_id = session['email']
+            session.pop('email')
+        else:
+            LOG.info('Validating Google user login')
+            callback_url = url_for('.authorized', _external=True)
+            return google.authorize(callback=callback_url)
 
-    elif request.args.get('email'): # log in against Scout database
+    if request.args.get('email'):  # log in against Scout database
         user_id = request.args.get('email')
         LOG.info('Validating user {} against Scout database'.format(user_id))
 
@@ -73,6 +75,9 @@ def login():
         return redirect(url_for('public.index'))
 
     user_obj['accessed_at'] = datetime.now()
+    if session.get('name'): # These args come from google auth
+        user_obj['name'] = session.get('name')
+        user_obj['locale'] = session.get('locale')
     store.update_user(user_obj)
 
     user_dict = LoginUser(user_obj)
@@ -110,20 +115,12 @@ def authorized():
     google_user = google.get('userinfo')
     google_data = google_user.data
 
-    user_obj = store.user(google_data['email'])
+    session['email'] = google_data['email'].lower()
+    session['name'] = google_data['name']
+    session['locale'] = google_data['locale']
 
-    # Try again with lower-cased email address if no match
-    if user_obj is None:
-        user_obj = store.user(google_data['email'].lower())
-        flash("email not whitelisted: {}".format(google_data['email']), 'warning')
-        return redirect(url_for('public.index'))
+    return redirect(url_for('login.login'))
 
-    user_obj['name'] = google_data['name']
-    user_obj['location'] = google_data['locale']
-    user_obj['accessed_at'] = datetime.now()
-    store.update_user(user_obj)
-    user_inst = LoginUser(user_obj)
-    return perform_login(user_inst)
 
 @login_bp.route('/users')
 def users():
