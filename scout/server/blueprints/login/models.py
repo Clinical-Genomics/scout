@@ -11,9 +11,22 @@ class LoginUser(UserMixin):
             setattr(self, key, value)
 
     def get_id(self):
-        return self.email
+        return self._id
 
     @property
     def is_admin(self):
         """Check if the user is admin."""
         return 'admin' in self.roles
+
+
+class LdapUser(UserMixin):
+    def __init__(self, dn, username, data=None):
+        self.dn = dn
+        self.username = username
+        self.data = data
+
+    def __repr__(self):
+        return self.dn
+
+    def get_id(self):
+        return self.dn

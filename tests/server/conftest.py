@@ -42,3 +42,25 @@ def user_info(institute_info):
     _user_info = dict(email='john@doe.com', name='John Doe', roles=['admin','mme_submitter'],
                       institutes=[institute_info['internal_id']])
     return _user_info
+
+
+@pytest.fixture
+def ldap_app(request):
+    """app ficture for testing LDAP connections."""
+    config = {
+        "TESTING": True,
+        "DEBUG" : True,
+        "SERVER_NAME" : "fakey.server.name",
+        "LDAP_HOST" : "ldap://test_ldap_server",
+        'WTF_CSRF_ENABLED' : False,
+        "MONGO_DBNAME" : "testdb"
+    }
+    app = create_app(config=config)
+    ctx = app.app_context()
+    ctx.push()
+
+    def teardown():
+        ctx.pop()
+
+    request.addfinalizer(teardown)
+    return app

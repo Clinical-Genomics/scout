@@ -24,6 +24,7 @@ xlsxwriter
 click<7.0
 requests-oauthlib<1.2.0
 oauthlib<3.0.0
+flask_ldap3_login
 
 # unclear
 Flask-Login
