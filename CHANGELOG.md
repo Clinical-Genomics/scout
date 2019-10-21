@@ -36,6 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - STR variant page back to list button now does its one job.
 - Allows to setup scout without a omim api key
 - Fixed error causing "favicon not found" flash messages
+- Removed flask --version from base cli
 
 
 ## [4.7.3]
