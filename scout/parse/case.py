@@ -324,6 +324,8 @@ def parse_case(config):
         'delivery_report': config.get('delivery_report'),
         'multiqc': config.get('multiqc'),
         'track': config.get('track', 'rare'),
+        'chromograph_image_files': config.get('chromograph_image_files'),
+        'chromograph_prefixes': config.get('chromograph_prefixes')
     }
 
     # add the pedigree figure, this is a xml file which is dumped in the db
