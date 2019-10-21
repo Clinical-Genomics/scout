@@ -7,7 +7,7 @@ from datetime import datetime
 
 class User(dict):
     """User dictionary
-    
+
         _id = str, # required, unique, same as email
         email = str, # required, unique
         name = str, # required=True
@@ -17,16 +17,14 @@ class User(dict):
         institutes = list, # List of institute_ids
         roles = list, # List of roles
     """
-    def __init__(self, email, name, created_at=None, accessed_at=None, location=None, 
+    def __init__(self, email, name, id=None, created_at=None, accessed_at=None, location=None,
                  institutes=None, roles=None):
         super(User, self).__init__()
         self['email'] = email
-        self['_id'] = email
+        self['_id'] = id or email
         self['name'] = name
         self['created_at'] = created_at or datetime.now()
         self['accessed_at'] = accessed_at
         self['location'] = location
         self['institutes'] = institutes or []
         self['roles'] = roles or []
-
-
