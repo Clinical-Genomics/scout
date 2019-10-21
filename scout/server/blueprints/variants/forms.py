@@ -67,6 +67,8 @@ class FiltersForm(FlaskForm):
 
     gnomad_frequency = BetterDecimalField('gnomadAF', places=2)
     chrom = TextField('Chromosome')
+    start = IntegerField('Start position')
+    stop = IntegerField('Stop position')
     local_obs = IntegerField('Local obs. (archive)')
 
     filter_variants = SubmitField(label='Filter variants')
