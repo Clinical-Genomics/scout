@@ -22,6 +22,26 @@ def test_link_genes(genes37_handle, hgnc_handle, exac_handle,
 
         assert gene_obj['hgnc_symbol'] in gene_obj['previous_symbols']
 
+def test_link_genes_no_omim(genes37_handle, hgnc_handle, exac_handle, hpo_genes_handle):
+    ## GIVEN gene informtation without OMIM
+    ## WHEN linking the information from the different sources
+    genes = link_genes(
+        ensembl_lines=genes37_handle, 
+        hgnc_lines=hgnc_handle, 
+        exac_lines=exac_handle, 
+        hpo_lines=hpo_genes_handle,
+    )
+    ## THEN assert that it works even without omim
+    for hgnc_id in genes:
+        gene_obj = genes[hgnc_id]
+        assert gene_obj['hgnc_symbol']
+        assert gene_obj['hgnc_id']
+        assert gene_obj['chromosome']
+        assert gene_obj['start']
+        assert gene_obj['end']
+
+        assert gene_obj['hgnc_symbol'] in gene_obj['previous_symbols']
+
 def test_add_ensembl_info():
     ## GIVEN a dictionary with genes and some ensembl lines
     ensembl_lines = [
