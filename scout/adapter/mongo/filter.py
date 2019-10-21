@@ -42,6 +42,11 @@ class FilterHandler(object):
 
         return filter_id
 
+    def delete_filter(self, filter_id, institute_id, user_id):
+
+
+        return
+
     def filters(self, institute_id, variant_type):
 
         filters_res = self.filter_collection.find(
