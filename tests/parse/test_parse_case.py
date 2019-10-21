@@ -70,7 +70,23 @@ def test_parse_case_rank_model_version(scout_config):
     # THEN the case should have the same rank model version like the config
     assert case_data['rank_model_version'] == scout_config['rank_model_version']
 
+    
+def test_parse_case_chromograph_prefixes(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case a correct chromograph_prefixes
+    assert case_data['chromograph_prefixes']
 
+
+def test_parse_case_madeline(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case a correct chromograph_image_files
+    assert case_data['chromograph_image_files']
+
+    
 def test_parse_case_vcf_files(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
