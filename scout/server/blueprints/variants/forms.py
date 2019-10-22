@@ -3,7 +3,7 @@ import decimal
 
 from flask_wtf import FlaskForm
 from wtforms import (BooleanField, DecimalField, Field, TextField, SelectMultipleField,
-                     HiddenField, IntegerField, SubmitField)
+                     HiddenField, IntegerField, SubmitField, validators)
 from wtforms.widgets import TextInput
 from flask_wtf.file import FileField
 
@@ -66,14 +66,24 @@ class FiltersForm(FlaskForm):
     spidex_human = SelectMultipleField('SPIDEX', choices=SPIDEX_CHOICES)
 
     gnomad_frequency = BetterDecimalField('gnomadAF', places=2)
-    chrom = TextField('Chromosome')
-    start = IntegerField('Start position')
-    stop = IntegerField('Stop position')
+    chrom = TextField('Chromosome', [validators.Optional()])
+    start = IntegerField('Start position', [validators.Optional(), IntegerField])
+    stop = IntegerField('Stop position', [validators.Optional(), IntegerField])
     local_obs = IntegerField('Local obs. (archive)')
 
     filter_variants = SubmitField(label='Filter variants')
     clinical_filter = SubmitField(label='Clinical filter')
     export = SubmitField(label='Filter and export')
+
+    def validate(self):
+        # validate chromosome value if available:
+        chr = self.chrom.data
+        valid_chroms = [ str(chr) for chr in range(1,22) ] + ['X', 'Y', 'MT']
+        if chr and not chr in valid_chroms:
+            LOG.info('------------>CHROMOSOME IS NOT VALID')
+            self.chrom.errors += ('Chromosome field is not valid',)
+            return False
+
 
 class CancerFiltersForm(FlaskForm):
     """Base filters for CancerFiltersForm"""

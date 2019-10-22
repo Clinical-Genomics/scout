@@ -22,7 +22,7 @@ from scout.parse.clinvar import set_submission_objects
 from . import controllers
 from .forms import FiltersForm, SvFiltersForm, StrFiltersForm, CancerFiltersForm
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 variants_bp = Blueprint('variants', __name__, static_folder='static', template_folder='templates')
 
 @variants_bp.route('/<institute_id>/<case_name>/variants', methods=['GET','POST'])
@@ -50,7 +50,7 @@ def variants(institute_id, case_name):
     else:
         clinical_filter_panels = default_panels
 
-    log.debug("Current default panels: {}".format(default_panels))
+    LOG.debug("Current default panels: {}".format(default_panels))
 
     if bool(request.form.get('clinical_filter')):
 
@@ -65,6 +65,8 @@ def variants(institute_id, case_name):
             'variant_type': 'clinical',
             'gene_panels': clinical_filter_panels
              })
+             
+    form = None
 
     if(request.method == "POST"):
         if bool(request.form.get('clinical_filter')):
@@ -72,6 +74,8 @@ def variants(institute_id, case_name):
             form.csrf_token = request.args.get('csrf_token')
         else:
             form = FiltersForm(request.form)
+        if form.validate_on_submit:
+            LOG.info('----------------->FORM IS VALIDATED!')
     else:
         form = FiltersForm(request.args)
 
@@ -89,7 +93,7 @@ def variants(institute_id, case_name):
         file = request.files[form.symbol_file.name]
 
     if request.files and file and file.filename != '':
-        log.debug("Upload file request files: {0}".format(request.files.to_dict()))
+        LOG.debug("Upload file request files: {0}".format(request.files.to_dict()))
         try:
             stream = io.StringIO(file.stream.read().decode('utf-8'), newline=None)
         except UnicodeDecodeError as error:
@@ -97,7 +101,7 @@ def variants(institute_id, case_name):
             return redirect(request.referrer)
 
         hgnc_symbols_set = set(form.hgnc_symbols.data)
-        log.debug("Symbols prior to upload: {0}".format(hgnc_symbols_set))
+        LOG.debug("Symbols prior to upload: {0}".format(hgnc_symbols_set))
         new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
         hgnc_symbols_set.update(new_hgnc_symbols)
         form.hgnc_symbols.data = hgnc_symbols_set
@@ -176,6 +180,7 @@ def variants(institute_id, case_name):
         return Response(generate(",".join(document_header), export_lines), mimetype='text/csv',
                         headers=headers)
 
+
     data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
 
     return dict(institute=institute_obj, case=case_obj, form=form,
@@ -187,10 +192,10 @@ def variants(institute_id, case_name):
 def variant(institute_id, case_name, variant_id):
     """Display a specific SNV variant."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    log.debug("Variants view requesting data for variant {}".format(variant_id))
+    LOG.debug("Variants view requesting data for variant {}".format(variant_id))
     data = controllers.variant(store, institute_obj, case_obj, variant_id=variant_id)
     if data is None:
-        log.warning("An error occurred: variants view requesting data for variant {}".format(variant_id))
+        LOG.warning("An error occurred: variants view requesting data for variant {}".format(variant_id))
         flash('An error occurred while retrieving variant object', 'danger')
         return redirect(request.referrer)
 
@@ -407,7 +412,7 @@ def variant_update(institute_id, case_name, variant_id):
                                      new_dismiss)
             flash("Reset variant dismissal: {}".format(variant_obj.get('dismiss_variant')), 'info')
         else:
-            log.debug("DO NOT reset variant dismissal: {}".format(variant_obj.get('dismiss_variant')), 'info')
+            LOG.debug("DO NOT reset variant dismissal: {}".format(variant_obj.get('dismiss_variant')), 'info')
 
     mosaic_tags = request.form.getlist('mosaic_tags')
     if mosaic_tags:
