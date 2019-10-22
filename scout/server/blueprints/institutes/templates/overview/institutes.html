@@ -24,19 +24,19 @@
           <ul class="list-group list-group-flush">
             <li class="list-group-item">
               Coverage Cutoff
-              <span class="pull-right">{{ institute.coverage_cutoff }}</span>
+              <span class="float-right">{{ institute.coverage_cutoff }}</span>
             </li>
             <div class="list-group-item">
               Sanger Recipients
-              <span class="pull-right">{{ institute.sanger_recipients|join(', ') or '-' }}</span>
+              <span class="float-right">{{ institute.sanger_recipients|join(', ') or '-' }}</span>
             </div>
             <li class="list-group-item">
               Frequency Cutoff
-              <span class="pull-right">{{ institute.frequency_cutoff }}</span>
+              <span class="float-right">{{ institute.frequency_cutoff }}</span>
             </li>
             <li class="list-group-item">
               Number of Cases
-              <span class="pull-right">{{ institute.case_count }}</span>
+              <span class="float-right">{{ institute.case_count }}</span>
             </li>
           </ul>
         </div>
