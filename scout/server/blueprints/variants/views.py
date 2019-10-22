@@ -29,22 +29,6 @@ variants_bp = Blueprint('variants', __name__, static_folder='static', template_f
 @templated('variants/variants.html')
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
-
-    if request.method == "POST":
-        # check submitted data
-        form = FiltersForm(request.form)
-        if form.validate_on_submit():
-            flash('VALIDATED', 'success')
-        else:
-
-            flash('NOT VALIDATED', 'error')
-            return redirect()
-
-
-
-            return dict(institute=institute_obj, case=case_obj, form=form,
-                            severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
-
     page = int(request.form.get('page', 1))
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)

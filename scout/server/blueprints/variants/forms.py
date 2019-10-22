@@ -70,31 +70,12 @@ class FiltersForm(FlaskForm):
     gnomad_frequency = BetterDecimalField('gnomadAF', places=2)
     chrom = TextField('Chromosome', [validators.Optional()])
     start = IntegerField('Start position', [validators.Optional(), IntegerField])
-    stop = IntegerField('Stop position', [validators.Optional(), IntegerField])
+    end = IntegerField('Stop position', [validators.Optional(), IntegerField])
     local_obs = IntegerField('Local obs. (archive)')
 
     filter_variants = SubmitField(label='Filter variants')
     clinical_filter = SubmitField(label='Clinical filter')
     export = SubmitField(label='Filter and export')
-
-    def validate(self):
-        LOG.info('######################IN VALIDATE')
-        # validate chromosome value if available:
-        chr = self.chrom.data
-        if chr:
-            valid_chroms = [ str(chr) for chr in range(1,22) ] + ['X', 'Y', 'MT']
-            if not chr in valid_chroms:
-                self.chrom.errors += ('Chromosome field is not valid',)
-                return False
-
-        return True
-
-        #
-        #if chr and not chr in valid_chroms:
-
-        #    self.chrom.errors += ('Chromosome field is not valid',)
-        #    return False
-
 
 class CancerFiltersForm(FlaskForm):
     """Base filters for CancerFiltersForm"""

@@ -40,7 +40,7 @@
 
 {% block content_main %}
   <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}" enctype="multipart/form-data">
-    {{ form.csrf_token }} 
+    {{ form.csrf_token }}
     <div class="container-float">
       <div class="card panel-default" id="accordion">
         <div class="card-header">
@@ -286,12 +286,19 @@
         </div>
         <div class="col-2">
           {{ wtf.form_field(form.chrom) }}
+          {% if form.chrom.errors %}
+            <ul class=errors>
+            {% for error in form.chrom.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
         </div>
         <div class="col-3">
           {{ wtf.form_field(form.start) }}
         </div>
         <div class="col-3">
-          {{ wtf.form_field(form.stop) }}
+          {{ wtf.form_field(form.end) }}
         </div>
       </div>
     </div>
