@@ -1,5 +1,4 @@
 from scout.constants import CLINSIG_MAP
-import itertools
 import re
 
 def test_build_gene_variant_query(adapter):
