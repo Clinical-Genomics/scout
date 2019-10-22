@@ -254,7 +254,7 @@
 {% endmacro %}
 
 {% macro sv_filters(form, institute, case) %}
-<input type="hidden" name="variant_type" value="{{ variant_type }}">
+<input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
   <div class="row">
     <div class="col-2">
       {{ form.gene_panels.label(class="control-label") }}

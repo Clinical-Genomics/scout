@@ -318,6 +318,8 @@ def sv_variants(institute_id, case_name):
                             case_name=case_obj['display_name'])
         store.update_status(institute_obj, case_obj, user_obj, 'active', case_link)
 
+    LOG.info('-------------------------------> FORM DATA:{}'.format(form.data))
+
     variants_query = store.variants(case_obj['_id'], category='sv',
                                     query=form.data)
     data = {}

@@ -104,6 +104,7 @@ class StrFiltersForm(FlaskForm):
 
 class SvFiltersForm(FiltersForm):
     """Extends FiltersForm for structural variants"""
+    variant_type = HiddenField(default='clinical')
     size = TextField('Length')
     size_shorter = BooleanField('Length shorter than')
     svtype = SelectMultipleField('SVType', choices=SV_TYPE_CHOICES)
