@@ -473,7 +473,7 @@ def cancer_variants(institute_id, case_name):
     return data
 
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['POST'])
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['GET','POST'])
 @templated('variants/acmg.html')
 def variant_acmg(institute_id, case_name, variant_id):
     """ACMG classification form."""
