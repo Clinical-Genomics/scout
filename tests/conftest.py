@@ -720,17 +720,17 @@ def parsed_panel(request, panel_info):
 def dummypanel_geneobj():
     """A panel gene object"""
     gene_obj = {}
-    
+
     gene_obj['symbol'] = 'AAA'
     gene_obj['hgnc_id'] = 100
-    
+
     return gene_obj
 
 @pytest.fixture(scope='function')
 def dummypanel_obj(parsed_panel, dummypanel_geneobj):
     """Return a dummy panel object"""
     dummy_panel = {}
-    
+
     dummy_panel['panel_name'] = parsed_panel['panel_id']
     dummy_panel['institute'] = parsed_panel['institute']
     dummy_panel['version'] = float(parsed_panel['version'])
