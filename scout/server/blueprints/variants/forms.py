@@ -108,7 +108,9 @@ class SvFiltersForm(FiltersForm):
     size_shorter = BooleanField('Length shorter than')
     svtype = SelectMultipleField('SVType', choices=SV_TYPE_CHOICES)
     decipher = BooleanField('Decipher')
-
+    chrom = TextField('Chromosome', [validators.Optional()])
+    start = IntegerField('Start position', [validators.Optional(), IntegerField])
+    end = IntegerField('Stop position', [validators.Optional(), IntegerField])
     clingen_ngi = IntegerField('ClinGen NGI obs')
     swegen = IntegerField('SweGen obs')
 
