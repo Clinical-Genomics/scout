@@ -65,7 +65,7 @@ def get_app(ctx):
 
 
 @click.version_option(__version__)
-@click.group(cls=FlaskGroup, create_app=get_app, invoke_without_command=True, add_default_commands=False)
+@click.group(cls=FlaskGroup, create_app=get_app, invoke_without_command=True, add_default_commands=False, add_version_option=False)
 @click.option('-c', '--config', type=click.Path(exists=True),
               help="Specify the path to a config file with database info.")
 @click.option('--loglevel', default='DEBUG', type=click.Choice(LOG_LEVELS),
