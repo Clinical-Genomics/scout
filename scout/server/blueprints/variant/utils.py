@@ -219,7 +219,7 @@ def predictions(genes):
             if len(genes) == 1:
                 value = gene_obj.get(gene_key, '-')
             else:
-                gene_id = gene_obj.get('hgnc_symbol') or str(gene_obj['hgnc_id'])
+                gene_id = gene_obj.get('hgnc_symbol') or str(gene_obj.get('hgnc_id',0))
                 value = ':'.join([gene_id, gene_obj.get(gene_key, '-')])
             data[pred_key].append(value)
 
@@ -227,6 +227,8 @@ def predictions(genes):
 
 def sv_frequencies(variant_obj):
     """Add frequencies in the correct way for the template
+    
+    This function converts the raw annotations to something better to visualize
     
     Args:
         variant_obj(scout.models.Variant)

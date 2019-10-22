@@ -399,7 +399,7 @@ class VariantHandler(VariantLoader):
         return variants
 
     def evaluated_variants(self, case_id):
-        """Returns variants that has been evaluated
+        """Returns all variants that has been evaluated for a case
 
         Return all variants, snvs/indels and svs from case case_id
         which have a entry for 'acmg_classification', 'manual_rank', 'dismiss_variant'
@@ -428,7 +428,7 @@ class VariantHandler(VariantLoader):
         # Collect the result in a dictionary
         variants = {}
         for var in self.variant_collection.find(query):
-            variants[var['variant_id']] = self.add_gene_info(var)
+            variants[var['variant_id']] = var
 
         # Collect all variant comments from the case
         event_query = {

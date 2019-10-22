@@ -22,7 +22,7 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
         add_case(bool): If info about files case should be added
         add_other(bool): If information about other causatives should be added
         get_overlapping(bool): If overlapping variants should be collected
-        variant_type(str): in ['snv', 'str', 'sv']
+        variant_type(str): in ['snv', 'str', 'sv', 'cancer']
 
     Returns:
         variant_info(dict): {
