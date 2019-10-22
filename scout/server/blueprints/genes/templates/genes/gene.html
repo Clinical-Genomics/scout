@@ -35,32 +35,32 @@
                 <ul class="list-group">
                   <li class="list-group-item">
                     Aliases
-                    <span class="pull-right">{{ aliases|join(', ') }}</span>
+                    <span class="float-right">{{ aliases|join(', ') }}</span>
                   </li>
                   <li class="list-group-item">
                     HGNC ID
-                    <span class="pull-right">
+                    <span class="float-right">
                       <a target="_blank" href={{ record.hgnc_link }} target="_blank"> {{ hgnc_id }}</a>
                     </span>
                   </li>
                   <li class="list-group-item">
                     HGNC symbol
-                    <span class="pull-right">{{ symbol }}</span>
+                    <span class="float-right">{{ symbol }}</span>
                   </li>
                   <li class="list-group-item">
                     Description
-                    <span class="pull-right">{{ description }}</span>
+                    <span class="float-right">{{ description }}</span>
                   </li>
                   <li class="list-group-item">
                     Incomplete penetrance (HPO)
-                    <span class="pull-right">
+                    <span class="float-right">
                       {{ 'yes' if incomplete_penetrance else 'unknown' }}
                     </span>
                   </li>
 
                   <li class="list-group-item">
                     Inheritance models
-                    <span class="pull-right">
+                    <span class="float-right">
                       {{ inheritance_models|join(', ') or '-' }}
                     </span>
                   </li>
@@ -71,25 +71,25 @@
               <div class="panel-heading">Links</div>
             <li class="list-group-item">
               OMIM
-              <span class="pull-right">
+              <span class="float-right">
                 <a target="_blank" href={{ record.omim_link }} target="_blank"> {{ omim_id }}</a>
               </span>
             </li>
             <li class="list-group-item">
               Entrez
-              <span class="pull-right">
+              <span class="float-right">
                 <a target="_blank" href={{ record.entrez_link }} target="_blank"> {{ entrez_id }}</a>
               </span>
             </li>
             <li class="list-group-item">
               pLi Score(ExAC)
-              <span class="pull-right">
+              <span class="float-right">
                 <a target="_blank" href={{ record.exac_link }} target="_blank"> {{ pli_score }}</a>
               </span>
             </li>
             <li class="list-group-item">
               Protein Paint
-              <span class="pull-right">
+              <span class="float-right">
                 <a target="_blank" href={{ record.ppaint_link }} target="_blank"> {{ symbol }}</a>
               </span>
             </li>
@@ -104,7 +104,7 @@
             {% for phenotype in record.phenotypes %}
                 <li class="list-group-item">
                     {{ phenotype.description }}
-                    <span class="pull-right">
+                    <span class="float-right">
                         <a target="_blank" href={{ record.omim_link }} target="_blank"> {{ phenotype.mim_number }}</a>
                     </span>
                 </li>
@@ -138,7 +138,7 @@
   <ul class="list-group">
     <li class="list-group-item">
       Ensembl ID
-      <span class="pull-right">
+      <span class="float-right">
         {%if gene.build == '37'%}
             <a target="_blank" href={{ gene.ensembl_37_link }} target="_blank"> {{ gene.ensembl_id }}</a>
         {% else %}
@@ -148,51 +148,51 @@
     </li>
     <li class="list-group-item">
       Chromosome
-      <span class="pull-right">{{ gene.chromosome }}</span>
+      <span class="float-right">{{ gene.chromosome }}</span>
     </li>
     <li class="list-group-item">
       Position
-      <span class="pull-right">{{ gene.position }}</span>
+      <span class="float-right">{{ gene.position }}</span>
     </li>
     <li class="list-group-item">
       Expression Atlas
-      <span class="pull-right">
+      <span class="float-right">
         <a target="_blank" href={{ gene.expression_atlas_link }} target="_blank"> {{ gene.ensembl_id }}</a>
       </span>
     </li>
     <li class="list-group-item">
       Human Protein Atlas
-      <span class="pull-right">
+      <span class="float-right">
         <a target="_blank" href={{ gene.hpa_link }} target="_blank"> {{ gene.ensembl_id }}</a>
       </span>
     </li>
     <li class="list-group-item">
       Reactome
-      <span class="pull-right">
+      <span class="float-right">
         <a target="_blank" href={{ gene.reactome_link }} target="_blank"> {{ gene.ensembl_id }}</a>
       </span>
     </li>
     <li class="list-group-item">
       ClinGen
-      <span class="pull-right">
+      <span class="float-right">
         <a target="_blank" href={{ gene.clingen_link }} target="_blank"> {{ gene.hgnc_id }}</a>
       </span>
     </li>
     <li class="list-group-item">
       String
-      <span class="pull-right">
+      <span class="float-right">
         <a target="_blank" href={{ gene.string_link }} target="_blank"> {{ gene.ensembl_id }}</a>
       </span>
     </li>
     <li class="list-group-item">
       Vega Database
-      <span class="pull-right">
+      <span class="float-right">
         <a target="_blank" href={{ gene.vega_link }} target="_blank"> {{ gene.vega_id }}</a>
       </span>
     </li>
     <li class="list-group-item">
       UCSC gene browser ({{ gene.build }})
-      <span class="pull-right">
+      <span class="float-right">
         <a target="_blank" href={{ gene.ucsc_link }} target="_blank"> {{ gene.ucsc_id }}</a>
       </span>
     </li>
@@ -208,7 +208,7 @@
             <a target="_blank" href={{ transcript.ensembl_link }} target="_blank"> {{ transcript.ensembl_transcript_id }}</a>
             /  {{ transcript.refseq_identifiers|join(', ') or '-' }}
             {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
-		  <span class="pull-right">{{ transcript['position'] }}</span>
+		  <span class="float-right">{{ transcript['position'] }}</span>
         </li>
       {% endfor %}
     </ul>
