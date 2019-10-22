@@ -307,40 +307,60 @@
 <div class="form-group">
   <div class="row">
     <div class="col-3">
+      {{ form.svtype.label(class="control-label") }}
+      {{ form.svtype(class="form-control selectpicker") }}
+    </div>
+    <div class="col-3">
       {{ form.chrom.label(class="control-label") }}
       {{ form.chrom(class="form-control") }}
     </div>
+    <div class="col-3">
+      {{ wtf.form_field(form.start) }}
+    </div>
+    <div class="col-3">
+      {{ wtf.form_field(form.end) }}
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="row d-flex justify-content-between align-items-center">
     <div class="col-2">
       {{ form.gnomad_frequency.label(class="control-label") }}
       {{ form.gnomad_frequency(class="form-control") }}
     </div>
     <div class="col-2">
        {{ form.clingen_ngi.label(class="control-label") }}
-        {{ form.clingen_ngi(class="form-control") }}
+       {{ form.clingen_ngi(class="form-control") }}
     </div>
     <div class="col-2">
       {{ form.swegen.label(class="control-label") }}
       {{ form.swegen(class="form-control") }}
     </div>
-    <div class="col-3">
-      {{ form.svtype.label(class="control-label") }}
-      {{ form.svtype(class="form-control selectpicker") }}
+
+    <div class="col-6">
+      <div class="row">
+        <div class="col-4">
+          {{ form.filter_variants(class="btn btn-primary form-control") }}
+        </div>
+        <div class="col-4">
+          {{ form.clinical_filter(class="btn btn-outline-secondary form-control ") }}
+        </div>
+        <div class="col-4">
+          {{ form.export(class="btn btn-warning form-control") }}
+        </div>
+      </div>
+      <br>
+      <div class="row">
+        <div class="col-12 text-right">
+          <a href="{{ url_for('variants.sv_variants', institute_id=institute._id,
+            case_name=case.display_name, variant_type='clinical',
+            gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
+            class="btn btn-secondary btn-sm" style="color: #ffffff !important;">
+            reset filters
+          </a>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-2">
-    <a href="{{ url_for('variants.sv_variants', institute_id=institute._id,
-      case_name=case.display_name, variant_type='clinical',
-      gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
-      class="btn btn-secondary btn-sm" style="color: #ffffff !important;">
-      reset filters
-    </a>
-  </div>
-  <div class="col-10 form-group d-flex">
-    {{ form.filter_variants(class_="btn btn-primary form-control") }}
-    {{ form.clinical_filter(class_="btn btn-outline-secondary form-control") }}
-    {{ form.export(class_="btn btn-warning form-control") }}
   </div>
 </div>
 {% endmacro %}

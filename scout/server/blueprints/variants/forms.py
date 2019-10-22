@@ -113,5 +113,4 @@ class SvFiltersForm(FiltersForm):
     end = IntegerField('Stop position', [validators.Optional(), IntegerField])
     clingen_ngi = IntegerField('ClinGen NGI obs')
     swegen = IntegerField('SweGen obs')
-
     export = SubmitField(label='Filter and export')
