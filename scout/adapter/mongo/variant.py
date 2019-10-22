@@ -34,126 +34,6 @@ class VariantHandler(VariantLoader):
 
     """Methods to handle variants in the mongo adapter"""
 
-    def add_gene_info(self, variant_obj, gene_panels=None):
-        """Add extra information about genes from gene panels.
-
-        Args:
-            variant_obj(dict): A variant from the database
-            gene_panels(list(dict)): List of panels from database
-        """
-        gene_panels = gene_panels or []
-
-        # Add a variable that checks if there are any refseq transcripts
-        variant_obj['has_refseq'] = False
-
-        # We need to check if there are any additional information in the gene panels
-
-        # extra_info will hold information from gene panels
-        # Collect all extra info from the panels in a dictionary with hgnc_id as keys
-        extra_info = {}
-        for panel_obj in gene_panels:
-            for gene_info in panel_obj['genes']:
-                hgnc_id = gene_info['hgnc_id']
-                if hgnc_id not in extra_info:
-                    extra_info[hgnc_id] = []
-
-                extra_info[hgnc_id].append(gene_info)
-
-        # Loop over the genes in the variant object to add information
-        # from hgnc_genes and panel genes to the variant object
-        for variant_gene in variant_obj.get('genes', []):
-            hgnc_id = variant_gene['hgnc_id']
-            # Get the hgnc_gene
-            hgnc_gene = self.hgnc_gene(hgnc_id)
-
-            if not hgnc_gene:
-                continue
-
-            # Create a dictionary with transcripts information
-            # Use ensembl transcript id as keys
-            transcripts_dict = {}
-            # Add transcript information from the hgnc gene
-            for transcript in hgnc_gene.get('transcripts', []):
-                tx_id = transcript['ensembl_transcript_id']
-                transcripts_dict[tx_id] = transcript
-
-            # Add the transcripts to the gene object
-            hgnc_gene['transcripts_dict'] = transcripts_dict
-
-            if hgnc_gene.get('incomplete_penetrance'):
-                variant_gene['omim_penetrance'] = True
-
-            ############# PANEL SPECIFIC INFORMATION #############
-            # Panels can have extra information about genes and transcripts
-            panel_info = extra_info.get(hgnc_id, [])
-
-            # Manually annotated disease associated transcripts
-            disease_associated = set()
-            # We need to strip the version to compare against others
-            disease_associated_no_version = set()
-            manual_penetrance = False
-            mosaicism = False
-            manual_inheritance = set()
-
-            # We need to loop since there can be information from multiple panels
-            for gene_info in panel_info:
-                # Check if there are manually annotated disease transcripts
-                for tx in gene_info.get('disease_associated_transcripts', []):
-                    # We remove the version of transcript at this stage
-                    stripped = re.sub(r'\.[0-9]', '', tx)
-                    disease_associated_no_version.add(stripped)
-                    disease_associated.add(tx)
-
-                if gene_info.get('reduced_penetrance'):
-                    manual_penetrance = True
-
-                if gene_info.get('mosaicism'):
-                    mosaicism = True
-
-                manual_inheritance.update(gene_info.get('inheritance_models', []))
-
-            variant_gene['disease_associated_transcripts'] = list(disease_associated)
-            variant_gene['manual_penetrance'] = manual_penetrance
-            variant_gene['mosaicism'] = mosaicism
-            variant_gene['manual_inheritance'] = list(manual_inheritance)
-
-            # Now add the information from hgnc and panels
-            # to the transcripts on the variant
-
-            # First loop over the variants transcripts
-            for transcript in variant_gene.get('transcripts', []):
-                tx_id = transcript['transcript_id']
-                if not tx_id in transcripts_dict:
-                    continue
-
-                # This is the common information about the transcript
-                hgnc_transcript = transcripts_dict[tx_id]
-
-                # Check in the common information if it is a primary transcript
-                if hgnc_transcript.get('is_primary'):
-                    transcript['is_primary'] = True
-                # If the transcript has a ref seq identifier we add that
-                # to the variants transcript
-                if not hgnc_transcript.get('refseq_id'):
-                    continue
-
-                refseq_id = hgnc_transcript['refseq_id']
-                transcript['refseq_id'] = refseq_id
-                variant_obj['has_refseq'] = True
-                # Check if the refseq id are disease associated
-                if refseq_id in disease_associated_no_version:
-                    transcript['is_disease_associated'] = True
-
-                # Since a ensemble transcript can have multiple refseq identifiers we add all of
-                # those
-                transcript['refseq_identifiers'] = hgnc_transcript.get('refseq_identifiers',[])
-
-            variant_gene['common'] = hgnc_gene
-            # Add the associated disease terms
-            variant_gene['disease_terms'] = self.disease_terms(hgnc_id)
-
-        return variant_obj
-
     def variants(self, case_id, query=None, variant_ids=None, category='snv',
                  nr_of_variants=10, skip=0, sort_key='variant_rank'):
         """Returns variants specified in question for a specific case.
@@ -220,17 +100,18 @@ class VariantHandler(VariantLoader):
 
         return self.variant_collection.find(query)
 
-    def variant(self, document_id=None, gene_panels=None, case_id=None, simple_id=None):
+    def variant(self, document_id=None, case_id=None, simple_id=None):
         """Returns the specified variant.
+        
+        Creates a query to the database based on the values of the parameters. 
 
-           Arguments:
-               document_id : A md5 key that represents the variant or "variant_id"
-               gene_panels(List[GenePanel])
-               case_id (str): case id (will search with "variant_id")
-               simple_id (str): a variant simple_id (example: 1_161184089_G_GTA)
+        Arguments:
+            document_id : A md5 key that represents the variant or "variant_id"
+            case_id (str): case id (will search with "variant_id")
+            simple_id (str): a variant simple_id (example: 1_161184089_G_GTA)
 
-           Returns:
-               variant_object(Variant): A odm variant object
+        Returns:
+            variant_object(Variant): A odm variant object
         """
         query = {}
         if case_id and document_id:
@@ -249,17 +130,14 @@ class VariantHandler(VariantLoader):
         if not variant_obj:
             return None
         
-        variant_obj = self.add_gene_info(variant_obj, gene_panels)
         chrom = variant_obj['chromosome']
         if chrom in ['X', 'Y']:
             ## TODO add the build here
             variant_obj['is_par'] = is_par(chrom, variant_obj['position'])
         return variant_obj
 
-    def gene_variants(self, query=None,
-                   category='snv', variant_type=['clinical'],
-                   institute_id=None,
-                   nr_of_variants=50, skip=0):
+    def gene_variants(self, query=None, category='snv', variant_type=['clinical'], 
+                      institute_id=None, nr_of_variants=50, skip=0):
         """Return all variants seen in a given gene.
 
         If skip not equal to 0 skip the first n variants.

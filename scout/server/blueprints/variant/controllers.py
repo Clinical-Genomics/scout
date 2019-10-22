@@ -3,7 +3,8 @@ from scout.constants import (CALLERS, MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIO
                              ACMG_MAP, MOSAICISM_OPTIONS, ACMG_OPTIONS, ACMG_COMPLETE_MAP)
 
 from scout.server.links import (ensembl, add_variant_links)
-from .utils import (end_position, default_panels, frequency, callers, parse_gene, evaluation)
+from .utils import (end_position, default_panels, frequency, callers, evaluation, 
+                    is_affected, predictions, sv_frequencies, add_gene_info)
 
 def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, add_case=True,
             add_other=True, get_overlapping=True):
@@ -39,16 +40,18 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     # If the variant is already collected we skip this part
     if not variant_obj:
         # NOTE this will query with variant_id == document_id, not the variant_id.
-        variant_obj = store.variant(variant_id, gene_panels=default_panels(store, case_obj))
+        variant_obj = store.variant(variant_id)
+
+    if variant_obj is None:
+        return None
 
     genome_build = case_obj.get('genome_build', '37')
     if genome_build not in ['37','38']:
         genome_build = '37'
 
-    if variant_obj is None:
-        return None
-
-    # Add information to case_obj
+    panels = default_panels(store, case_obj)
+    variant_obj = add_gene_info(store, variant_obj, gene_panels=panels, genome_build=genome_build)
+    # Add information about bam files and create a region vcf
     if add_case:
         variant_case(store, case_obj, variant_obj)
 
@@ -62,6 +65,7 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
                                            variant_id=variant_obj['variant_id'], comments=True)
 
     # Adds information about other causative variants
+    other_causatives = []
     if add_other:
         other_causatives = [causative for causative in 
                             store.other_causatives(case_obj, variant_obj)]
@@ -90,39 +94,14 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     
     # Add display information about callers
     variant_obj['callers'] = callers(variant_obj, category='snv')
-
-    individuals = {individual['individual_id']: individual for individual in
-                   case_obj['individuals']}
-    for sample_obj in variant_obj['samples']:
-        individual = individuals[sample_obj.get('sample_id')]
-        if not individual:
-            return None
-        sample_obj['is_affected'] = True if individual['phenotype'] == 2 else False
-
-    gene_models = set()
-    variant_obj['disease_associated_transcripts'] = []
-
-    # Parse the gene models, both from panels and genes
-    for gene_obj in variant_obj.get('genes', []):
-        # Adds gene level links
-        parse_gene(gene_obj, genome_build)
-        omim_models = set()
-        for disease_term in gene_obj.get('disease_terms', []):
-            omim_models.update(disease_term.get('inheritance', []))
-        gene_obj['omim_inheritance'] = list(omim_models)
-
-        # Build strings for the disease associated transcripts from gene panel
-        for refseq_id in gene_obj.get('disease_associated_transcripts', []):
-            hgnc_symbol = (gene_obj['common']['hgnc_symbol'] if gene_obj.get('common') else
-                           gene_obj['hgnc_id'])
-            transcript_str = "{}:{}".format(hgnc_symbol, refseq_id)
-            variant_obj['disease_associated_transcripts'].append(transcript_str)
-
-        gene_models = gene_models | omim_models
+    
+    # Convert affection status to strings for the template
+    is_affected(variant_obj, case_obj)
 
     if variant_obj.get('genetic_models'):
         variant_models = set(model.split('_', 1)[0] for model in variant_obj['genetic_models'])
-        variant_obj['is_matching_inheritance'] = variant_models & gene_models
+        all_models = variant_obj.get('all_models', set())
+        variant_obj['is_matching_inheritance'] = set.intersection(variant_models,all_models)
 
     # Prepare classification information for visualisation
     classification = variant_obj.get('acmg_classification')
@@ -196,7 +175,7 @@ def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None
         variant_case(store, case_obj, variant_obj)
 
     # frequencies
-    variant_obj['frequencies'] = frequencies(variant_obj)
+    variant_obj['frequencies'] = sv_frequencies(variant_obj)
     variant_obj['callers'] = callers(variant_obj, category='sv')
 
     overlapping_snvs = []
@@ -230,64 +209,6 @@ def sv_variant(store, institute_id, case_name, variant_id=None, variant_obj=None
         'manual_rank_options': MANUAL_RANK_OPTIONS,
         'dismiss_variant_options': DISMISS_VARIANT_OPTIONS
     }
-
-def predictions(genes):
-    """Adds information from variant specific genes to display.
-    
-    Args:
-        genes(list[dict])
-    
-    Returns:
-        data(dict)
-    """
-    data = {
-        'sift_predictions': [],
-        'polyphen_predictions': [],
-        'region_annotations': [],
-        'functional_annotations': []
-    }
-    for gene_obj in genes:
-        for pred_key in data:
-            gene_key = pred_key[:-1]
-            if len(genes) == 1:
-                value = gene_obj.get(gene_key, '-')
-            else:
-                gene_id = gene_obj.get('hgnc_symbol') or str(gene_obj['hgnc_id'])
-                value = ':'.join([gene_id, gene_obj.get(gene_key, '-')])
-            data[pred_key].append(value)
-
-    return data
-
-def frequencies(variant_obj):
-    """Add frequencies in the correct way for the template
-    
-    Args:
-        variant_obj(scout.models.Variant)
-    
-    Returns:
-        frequencies(list(tuple)): A list of frequencies to display
-    """
-    
-    # Mandatory frequencies
-    
-    frequencies = [
-        ('GnomAD', variant_obj.get('gnomad_frequency')),
-    ]
-
-    if 'clingen_cgh_benign' in variant_obj:
-        frequencies.append(('ClinGen CGH (benign)', variant_obj['clingen_cgh_benign']))
-    if 'clingen_cgh_pathogenic' in variant_obj:
-        frequencies.append(('ClinGen CGH (pathogenic)', variant_obj['clingen_cgh_pathogenic']))
-    if 'clingen_ngi' in variant_obj:
-        frequencies.append(('ClinGen NGI', variant_obj['clingen_ngi']))
-    if 'clingen_mip' in variant_obj:
-        frequencies.append(('ClinGen MIP', variant_obj['clingen_mip']))
-    if 'swegen' in variant_obj:
-        frequencies.append(('SweGen', variant_obj['swegen']))
-    if 'decipher' in variant_obj:
-        frequencies.append(('Decipher', variant_obj['decipher']))
-    
-    return frequencies
 
 def str_variant(store, institute_id, case_name, variant_id):
     """Pre-process an STR variant entry for detail page.
