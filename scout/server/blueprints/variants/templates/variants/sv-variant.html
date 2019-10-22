@@ -50,20 +50,20 @@
       <div class="card mt-3">
         <div class="class-body">
           <ul class="list-group">
-            <li class="list-group-item">Rank <span class="badge badge-pill badge-secondary pull-right">{{ variant.variant_rank }}</span></li>
+            <li class="list-group-item">Rank <span class="badge badge-pill badge-secondary float-right">{{ variant.variant_rank }}</span></li>
             <li class="list-group-item">
               Rank score
-              <span class="badge badge-pill badge-secondary pull-right">{{ variant.rank_score }}</span>
+              <span class="badge badge-pill badge-secondary float-right">{{ variant.rank_score }}</span>
             </li>
 
             <li class="list-group-item">
               Category
-              <span class="badge badge-pill badge-secondary pull-right">{{ variant.sub_category|upper }}</span>
+              <span class="badge badge-pill badge-secondary float-right">{{ variant.sub_category|upper }}</span>
             </li>
 
             <div class="list-group-item">
               Gene panels
-              <ul class="list-inline pull-right">
+              <ul class="list-inline float-right">
                 {% for panel_id in variant.panels %}
                   <li>
                     <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>
@@ -124,13 +124,13 @@
         <ul class="list-group">
           <li class="list-group-item">
             Position
-            <div class="pull-right">
+            <div class="float-right">
               {{ variant.chromosome }}:{{ variant.position }} {{ "-" if variant.end_chrom == variant.chromosome else " / "+variant.end_chrom+":" }}{{ variant.end }}
             </div>
           </li>
           <li class="list-group-item">
             Breakpoint 1
-            <div class="pull-right">
+            <div class="float-right">
               {{ variant.chromosome }}:{{ variant.position }}
               {% if variant.chromosome == "MT" and case.mt_bams %}
                 - Alignment:
@@ -146,7 +146,7 @@
           </li>
           <li class="list-group-item">
             Breakpoint 2
-            <div class="pull-right">
+            <div class="float-right">
               {{ variant.end_chrom }}:{{ variant.end }}
               {% if variant.end_chrom == "MT" and case.mt_bams %}
                 - Alignment:
@@ -162,7 +162,7 @@
           </li>
   	      <li class="list-group-item">
   	        Cytoband
-            <div class="pull-right">
+            <div class="float-right">
               {% if variant.chromosome == variant.end_chrom and variant.cytoband_start == variant.cytoband_end %}
                 {{ variant.chromosome }}{{ variant.cytoband_start }}
               {% elif variant.chromosome == variant.end_chrom %}
@@ -174,7 +174,7 @@
   	      </li>
   	      <li class="list-group-item">
   	        Length
-            <div class="pull-right">
+            <div class="float-right">
               {{ variant.length }}
               {% if variant.chromosome == "MT" and case.mt_bams %}
                 - Alignment:
@@ -194,7 +194,7 @@
 
   	      </li>
   	      <li class="list-group-item">
-  	        Type <div class="pull-right">{{ variant.sub_category|upper }}</div>
+  	        Type <div class="float-right">{{ variant.sub_category|upper }}</div>
   	      </li>
           {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
             <a href="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Submit to ClinVar</a>
@@ -321,9 +321,9 @@
         <li class="list-group-item">
           {{ freq_name }}
           {% if value %}
-            <span class="badge badge-secondary pull-right">{{ value|human_decimal }}</span>
+            <span class="badge badge-secondary float-right">{{ value|human_decimal }}</span>
           {% else %}
-            <span class="pull-right">-</span>
+            <span class="float-right">-</span>
           {% endif %}
         </li>
       {% endfor %}

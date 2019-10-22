@@ -30,7 +30,7 @@
               <td>
                 {{ user.name }}
                 {% if 'admin' in user.roles %}
-                  <span class="badge badge-info pull-right">ADMIN</span>
+                  <span class="badge badge-info float-right">ADMIN</span>
                 {% endif %}
               </td>
               <td>
@@ -42,11 +42,11 @@
                 {% endfor %}
               </td>
               <td>
-                <div class="pull-left">
+                <div class="float-left">
                   <strong>{{ user.events_rank|capitalize }}</strong><br>
                   <span class="text-muted">{{ user.events }} events</span>
                 </div>
-                <img class="rank-shield pull-right" src="{{ url_for('login.static', filename=(user.events_rank + '.svg')) }}" alt="{{ user.events_rank }}">
+                <img class="rank-shield float-right" src="{{ url_for('login.static', filename=(user.events_rank + '.svg')) }}" alt="{{ user.events_rank }}">
               </td>
             </tr>
           {% endfor %}

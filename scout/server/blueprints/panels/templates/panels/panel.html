@@ -33,11 +33,11 @@
     <ul class="list-group">
       <li class="list-group-item">
         <label for="display_name">Full name</label>
-        <span class="pull-right" id="display_name">{{ panel.display_name }}</span>
+        <span class="float-right" id="display_name">{{ panel.display_name }}</span>
       </li>
       <li class="list-group-item">
         <label for="panel_name">Panel ID</label>
-        <span class="pull-right" id="panel_name">{{ panel.panel_name }}</span>
+        <span class="float-right" id="panel_name">{{ panel.panel_name }}</span>
       </li>
 
       <div class="list-group-item">
@@ -59,21 +59,21 @@
       </div>
       <li class="list-group-item">
         <label for="version">Version</label>
-        <span class="pull-right" id="version">{{ panel.version }}</span>
+        <span class="float-right" id="version">{{ panel.version }}</span>
       </li>
       <li class="list-group-item">
         <label for="n_genes">Number of genes</label>
-        <span class="pull-right" id="n_genes">{{ panel.genes|length }}</span>
+        <span class="float-right" id="n_genes">{{ panel.genes|length }}</span>
       </li>
       <li class="list-group-item">
         <label for="date">Date</label>
-        <span class="pull-right" id="date">{{ panel.date.date() }}</span>
+        <span class="float-right" id="date">{{ panel.date.date() }}</span>
       </li>
       {% if config.SQLALCHEMY_DATABASE_URI and case %}
         <li class="list-group-item">
           <label for="coverage_report">Coverage report</label>
           Coverage report
-          <a class="pull-right" id="coverage_report" href="#" onclick="document.getElementById('report-form').submit();">
+          <a class="float-right" id="coverage_report" href="#" onclick="document.getElementById('report-form').submit();">
             {{ case.display_name }}
           </a>
           <form id="report-form" action="{{ url_for('report.report', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name=panel.name_and_version, level=institute.coverage_cutoff) }}" method="POST" target="_blank">
@@ -82,8 +82,8 @@
         </li>
         <li class="list-group-item">
           Coverage overview
-          <span class="pull-right">
-            <a class="pull-right" href="#" onclick="document.getElementById('report-genes-form').submit();">
+          <span class="float-right">
+            <a class="float-right" href="#" onclick="document.getElementById('report-genes-form').submit();">
               {{ case.display_name }}
             </a>
             <form id="report-genes-form" action="{{ url_for('report.genes', level=institute.coverage_cutoff, sample_id=case.individuals|map(attribute='individual_id')|list) }}" target="_blank" method="POST">
@@ -135,7 +135,7 @@
               <td>
                 {% if not panel.is_archived %}
                   <a class="btn btn-outline-secondary btn-xs" href="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}">Edit</a>
-                  <form class="pull-right" action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
+                  <form class="float-right" action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
                     <input type="hidden" name="hgnc_id" value="{{ gene.hgnc_id }}">
                     <button name="action" type="submit" value="delete" class="btn btn-danger btn-xs">Delete</button>
                   </form>
@@ -190,11 +190,11 @@
             {{ gene.symbol }}
           </span>
           {% if gene.action == 'add' %}
-            <span class="badge badge-primary badge-pill pull-right">{{ gene.action }}</span>
+            <span class="badge badge-primary badge-pill float-right">{{ gene.action }}</span>
           {% elif gene.action == 'delete' %}
-            <span class="badge badge-danger badge-pill pull-right">{{ gene.action }}</span>
+            <span class="badge badge-danger badge-pill float-right">{{ gene.action }}</span>
           {% else %}
-            <span class="badge badge-secondary badge-pill pull-right">{{ gene.action }}</span>
+            <span class="badge badge-secondary badge-pill float-right">{{ gene.action }}</span>
           {% endif %}
         </li>
       {% else %}
