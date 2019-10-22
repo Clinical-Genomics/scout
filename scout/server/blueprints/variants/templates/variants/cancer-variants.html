@@ -88,8 +88,34 @@
       </tbody>
     </table>
   </div><!-- end of card-->
+  <br>
+  <div class="container-fluid">
+      {{ pagination() }}
+  </div>
 </div><!--end of container-float -->
 {% endblock %}
+
+
+
+{% macro pagination() %}
+<form method="POST" id="filters_form" action="{{url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name)}}" >
+  <div class="container-fluid">
+    {% if more_variants %}
+    <div class="d-flex justify-content-around">
+        <div>
+            <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
+        </div>
+        <div>
+          <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value={{ page + 1 }}>Next page</button>
+        </div>
+    </div>
+    {% else %}
+      <i class="text-muted">No more variants to display</i>
+      <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
+    {% endif %}
+  </div>
+</form>
+{% endmacro %}
 
 {% macro actions_cell(variant) %}
   <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,

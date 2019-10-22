@@ -463,16 +463,18 @@ def clinvar(institute_id, case_name, variant_id):
         return redirect(url_for('cases.clinvar_submissions', institute_id=institute_id))
 
 
-@variants_bp.route('/<institute_id>/<case_name>/cancer/variants')
+@variants_bp.route('/<institute_id>/<case_name>/cancer/variants', methods=['GET','POST'])
 @templated('variants/cancer-variants.html')
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     form = CancerFiltersForm(request.args)
-    data = controllers.cancer_variants(store, request.args, institute_id, case_name, form)
+    page = int(request.form.get('page', 1))
+    print(page)
+    data = controllers.cancer_variants(store, request.args, institute_id, case_name, form, page=page)
     return data
 
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['GET', 'POST'])
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['POST'])
 @templated('variants/acmg.html')
 def variant_acmg(institute_id, case_name, variant_id):
     """ACMG classification form."""
