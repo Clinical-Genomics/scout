@@ -29,6 +29,22 @@ variants_bp = Blueprint('variants', __name__, static_folder='static', template_f
 @templated('variants/variants.html')
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
+
+    if request.method == "POST":
+        # check submitted data
+        form = FiltersForm(request.form)
+        if form.validate_on_submit():
+            flash('VALIDATED', 'success')
+        else:
+
+            flash('NOT VALIDATED', 'error')
+            return redirect()
+
+
+
+            return dict(institute=institute_obj, case=case_obj, form=form,
+                            severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
+
     page = int(request.form.get('page', 1))
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -65,8 +81,6 @@ def variants(institute_id, case_name):
             'variant_type': 'clinical',
             'gene_panels': clinical_filter_panels
              })
-             
-    form = None
 
     if(request.method == "POST"):
         if bool(request.form.get('clinical_filter')):
@@ -74,8 +88,6 @@ def variants(institute_id, case_name):
             form.csrf_token = request.args.get('csrf_token')
         else:
             form = FiltersForm(request.form)
-        if form.validate_on_submit:
-            LOG.info('----------------->FORM IS VALIDATED!')
     else:
         form = FiltersForm(request.args)
 
@@ -93,7 +105,7 @@ def variants(institute_id, case_name):
         file = request.files[form.symbol_file.name]
 
     if request.files and file and file.filename != '':
-        LOG.debug("Upload file request files: {0}".format(request.files.to_dict()))
+        log.debug("Upload file request files: {0}".format(request.files.to_dict()))
         try:
             stream = io.StringIO(file.stream.read().decode('utf-8'), newline=None)
         except UnicodeDecodeError as error:
@@ -101,7 +113,7 @@ def variants(institute_id, case_name):
             return redirect(request.referrer)
 
         hgnc_symbols_set = set(form.hgnc_symbols.data)
-        LOG.debug("Symbols prior to upload: {0}".format(hgnc_symbols_set))
+        log.debug("Symbols prior to upload: {0}".format(hgnc_symbols_set))
         new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
         hgnc_symbols_set.update(new_hgnc_symbols)
         form.hgnc_symbols.data = hgnc_symbols_set
@@ -179,7 +191,6 @@ def variants(institute_id, case_name):
         # return a csv with the exported variants
         return Response(generate(",".join(document_header), export_lines), mimetype='text/csv',
                         headers=headers)
-
 
     data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
 

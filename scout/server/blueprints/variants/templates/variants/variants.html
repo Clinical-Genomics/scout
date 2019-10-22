@@ -40,6 +40,7 @@
 
 {% block content_main %}
   <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}" enctype="multipart/form-data">
+    {{ form.csrf_token }} 
     <div class="container-float">
       <div class="card panel-default" id="accordion">
         <div class="card-header">

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import decimal
+import logging
 
 from flask_wtf import FlaskForm
 from wtforms import (BooleanField, DecimalField, Field, TextField, SelectMultipleField,
@@ -9,6 +10,7 @@ from flask_wtf.file import FileField
 
 from scout.constants import (CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS, SO_TERMS,
                              SPIDEX_LEVELS, SV_TYPES)
+LOG = logging.getLogger(__name__)
 
 CLINSIG_OPTIONS = list(CLINSIG_MAP.items())
 FUNC_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in SO_TERMS]
@@ -76,13 +78,22 @@ class FiltersForm(FlaskForm):
     export = SubmitField(label='Filter and export')
 
     def validate(self):
+        LOG.info('######################IN VALIDATE')
         # validate chromosome value if available:
         chr = self.chrom.data
-        valid_chroms = [ str(chr) for chr in range(1,22) ] + ['X', 'Y', 'MT']
-        if chr and not chr in valid_chroms:
-            LOG.info('------------>CHROMOSOME IS NOT VALID')
-            self.chrom.errors += ('Chromosome field is not valid',)
-            return False
+        if chr:
+            valid_chroms = [ str(chr) for chr in range(1,22) ] + ['X', 'Y', 'MT']
+            if not chr in valid_chroms:
+                self.chrom.errors += ('Chromosome field is not valid',)
+                return False
+
+        return True
+
+        #
+        #if chr and not chr in valid_chroms:
+
+        #    self.chrom.errors += ('Chromosome field is not valid',)
+        #    return False
 
 
 class CancerFiltersForm(FlaskForm):
