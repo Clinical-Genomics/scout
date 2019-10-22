@@ -516,7 +516,7 @@ class CaseHandler(object):
             {'_id': case_obj['_id']}
         )
 
-        # if case is updataed and was archived or active - make it inactive
+        # if case is updated and was archived or active - make it inactive
         updated_status = old_case.get('status')
         if old_case.get('status') in ['archived', 'active']:
             updated_status = 'inactive'
