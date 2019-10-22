@@ -624,18 +624,6 @@ def test_query_svs_by_coordinates(real_populated_database, sv_variant_objs, case
     # THEN the same variant should be returned
     assert list(results)[0] == variant_obj
 
-    # WHEN creating a variant filter by chromosome coordinates
-    # Using the same coordinates as the variant
-    query = {
-        'chrom' : variant_obj['chromosome'],
-        'start' : variant_obj['position'],
-        'end' : variant_obj['end']
-    }
-    # AND using the filter in a variant query
-    results = adapter.variants(case_obj['_id'], query=query, category='sv')
-    # THEN the same variant should be returned
-    assert list(results)[0] == variant_obj
-
 
     # When creating a variant filter by chromosome coordinates
     # In this scenario:
