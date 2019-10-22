@@ -469,7 +469,6 @@ def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     form = CancerFiltersForm(request.args)
     page = int(request.form.get('page', 1))
-    print(page)
     data = controllers.cancer_variants(store, request.args, institute_id, case_name, form, page=page)
     return data
 

@@ -95,8 +95,6 @@
 </div><!--end of container-float -->
 {% endblock %}
 
-
-
 {% macro pagination() %}
 <form method="POST" id="filters_form" action="{{url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name)}}" >
   <div class="container-fluid">

@@ -1099,9 +1099,9 @@ def verification_email_body(case_name, url, display_name, category, subcategory,
 
 def cancer_variants(store, request_args, institute_id, case_name, form, page=1):
     """Fetch data related to cancer variants for a case."""
-    
+
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    per_page=50
+    per_page = 50
     skip_count = per_page * max(page - 1, 0)
     variants_query = store.variants(case_obj['_id'], category='cancer', query=form.data)
     variant_count = variants_query.count()
