@@ -65,6 +65,8 @@ def variants(institute_id, case_name):
             'variant_type': 'clinical',
             'gene_panels': clinical_filter_panels
              })
+             
+    form = None
 
     if(request.method == "POST"):
         if bool(request.form.get('clinical_filter')):
@@ -72,6 +74,8 @@ def variants(institute_id, case_name):
             form.csrf_token = request.args.get('csrf_token')
         else:
             form = FiltersForm(request.form)
+        if form.validate_on_submit:
+            LOG.info('----------------->FORM IS VALIDATED!')
     else:
         form = FiltersForm(request.args)
 
@@ -89,7 +93,7 @@ def variants(institute_id, case_name):
         file = request.files[form.symbol_file.name]
 
     if request.files and file and file.filename != '':
-        log.debug("Upload file request files: {0}".format(request.files.to_dict()))
+        LOG.debug("Upload file request files: {0}".format(request.files.to_dict()))
         try:
             stream = io.StringIO(file.stream.read().decode('utf-8'), newline=None)
         except UnicodeDecodeError as error:
@@ -97,7 +101,7 @@ def variants(institute_id, case_name):
             return redirect(request.referrer)
 
         hgnc_symbols_set = set(form.hgnc_symbols.data)
-        log.debug("Symbols prior to upload: {0}".format(hgnc_symbols_set))
+        LOG.debug("Symbols prior to upload: {0}".format(hgnc_symbols_set))
         new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
         hgnc_symbols_set.update(new_hgnc_symbols)
         form.hgnc_symbols.data = hgnc_symbols_set
@@ -175,6 +179,7 @@ def variants(institute_id, case_name):
         # return a csv with the exported variants
         return Response(generate(",".join(document_header), export_lines), mimetype='text/csv',
                         headers=headers)
+
 
     data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
 

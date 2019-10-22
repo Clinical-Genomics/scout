@@ -77,6 +77,16 @@ class FiltersForm(FlaskForm):
     clinical_filter = SubmitField(label='Clinical filter')
     export = SubmitField(label='Filter and export')
 
+    def validate(self):
+        # validate chromosome value if available:
+        chr = self.chrom.data
+        valid_chroms = [ str(chr) for chr in range(1,22) ] + ['X', 'Y', 'MT']
+        if chr and not chr in valid_chroms:
+            LOG.info('------------>CHROMOSOME IS NOT VALID')
+            self.chrom.errors += ('Chromosome field is not valid',)
+            return False
+
+
 class CancerFiltersForm(FlaskForm):
     """Base filters for CancerFiltersForm"""
     variant_type = HiddenField(default='clinical')
