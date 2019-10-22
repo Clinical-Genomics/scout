@@ -42,10 +42,9 @@ def institute_and_case(store, institute_id, case_name=None):
         return abort(404)
 
     if case_name:
-        if case_name:
-            case_obj = store.case(institute_id=institute_id, display_name=case_name)
-            if case_obj is None:
-                return abort(404)
+        case_obj = store.case(institute_id=institute_id, display_name=case_name)
+        if case_obj is None:
+            return abort(404)
 
     # validate that user has access to the institute
     if not current_user.is_admin:
