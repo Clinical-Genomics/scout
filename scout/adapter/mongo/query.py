@@ -335,7 +335,6 @@ class QueryHandler(object):
         return mongo_query
 
 
-
     def gene_filter(self, query, mongo_query):
         """ Adds gene-related filters to the query object
 
@@ -363,7 +362,6 @@ class QueryHandler(object):
             mongo_query['panels'] = {'$in': gene_panels}
 
         return gene_query
-
 
 
     def secondary_query(self, query, mongo_query, secondary_filter=None):

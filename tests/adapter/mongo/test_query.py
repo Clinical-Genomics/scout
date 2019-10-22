@@ -296,7 +296,7 @@ def test_build_clinsig_filter(real_variant_database):
 
     # Modify clnsig value of this variant to 'Pathogenic, Likely pathogenic'
     adapter.variant_collection.update_one(
-        {'_id' : a_variant['_id']}, 
+        {'_id' : a_variant['_id']},
         {'$set' : {'clnsig.0.value': 'Pathogenic, Likely pathogenic'}}
     )
 
@@ -487,6 +487,22 @@ def test_build_chrom(adapter):
 
     assert mongo_query['chromosome'] == chrom
 
+def test_build_chrom_coordinates(adapter):
+    case_id = 'cust000'
+    chrom = '1'
+    start = 79000
+    end = 80000
+    query = {
+        'chrom': '1',
+        'start': start,
+        'end': end
+    }
+
+    mongo_query = adapter.build_query(case_id, query=query)
+
+    assert mongo_query['chromosome'] == chrom
+    assert mongo_query['position'] == start
+    assert mongo_query['end'] == end
 
 def test_build_ngi_sv(adapter):
     case_id = 'cust000'
