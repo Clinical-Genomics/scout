@@ -68,16 +68,16 @@ def add_ensembl_info(genes, ensembl_lines):
 
     for ensembl_gene in ensembl_genes:
         if not 'hgnc_id' in ensembl_gene:
+            LOG.debug("Ensembl gene %s is missing hgnc id. Skipping", ensembl_gene['ensembl_gene_id'])
             continue
-        pp(ensembl_gene)
         gene_obj = genes.get(ensembl_gene['hgnc_id'])
         if not gene_obj:
             continue
         gene_obj['chromosome'] = ensembl_gene['chrom']
         gene_obj['start'] = ensembl_gene['gene_start']
         gene_obj['end'] = ensembl_gene['gene_end']
-        # ensembl ids can differ between builds. There is one stated in HGNC
-        # that is true for build 38. So we add information from ensembl
+        # ensembl ids can differ between builds. The ensembl gene ids from HGNC are only
+        # true for build 38. So we add correct information from ensembl
         gene_obj['ensembl_gene_id'] = ensembl_gene['ensembl_gene_id']
 
 def add_exac_info(genes, alias_genes, exac_lines):

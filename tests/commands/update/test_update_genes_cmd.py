@@ -2,17 +2,11 @@
 
 from scout.commands import cli
 
-def test_update_genes(mock_app):
+def test_update_genes_wrong_omim_key(mock_app):
     """Tests the CLI that updates genes in database"""
 
     runner = mock_app.test_cli_runner()
     assert runner
-
-    # Test CLI base, no arguments provided
-    result =  runner.invoke(cli, ['update', 'genes'])
-    assert 'Please provide a omim api key to load the omim gene panel' in result.output
-    # command raises error because no valid key is provided
-    assert result.exit_code != 0
 
     # Test CLI base, provide non-valid API key
     result =  runner.invoke(cli, ['update', 'genes',
