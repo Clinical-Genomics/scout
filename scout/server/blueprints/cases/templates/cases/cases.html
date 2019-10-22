@@ -216,12 +216,12 @@
         <span class="badge badge-primary">migrated</span>
       {% endif %}
     </td>
-    <td>
+    <td class="d-flex justify-content-between align-items-center">
       {{ case.analysis_date.date() }}
       {% if case.rerun_requested %}
-          <span class="badge badge-secondary float-right">rerun pending</span>
+          <span class="badge badge-secondary">rerun pending</span>
       {% elif case.is_rerun %}
-        <span class="badge badge-secondary float-right">rerun</span>
+        <span class="badge badge-secondary">rerun</span>
       {% endif %}
     </td>
     <td>
