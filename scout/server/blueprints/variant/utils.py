@@ -58,6 +58,7 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
     This function will:
         - Add a dictionary with tx_id -> tx_info to the hgnc variant
         - Add information from the panel
+        - Adds a list of refseq transcripts
     
     Args:
         variant_gene(dict): the gene information from the variant

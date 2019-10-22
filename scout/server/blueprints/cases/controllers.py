@@ -20,7 +20,6 @@ from scout.export.variant import export_mt_variants
 from scout.server.utils import institute_and_case, user_institutes
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
-from scout.server.blueprints.variant.controllers import sv_variant
 from scout.parse.matchmaker import hpo_terms, omim_terms, genomic_features, parse_matches
 from scout.utils.matchmaker import matchmaker_request
 from scout.server.blueprints.variant.controllers import predictions
@@ -252,26 +251,17 @@ def case_report_content(store, institute_obj, case_obj):
         decorated_variants = []
         for var_obj in evaluated_variants[var_type]:
         # We decorate the variant with some extra information
-            if var_obj['category'] == 'snv':
-                decorated_info = variant_decorator(
-                        store=store,
-                        institute_obj=institute_obj,
-                        case_obj=case_obj,
-                        variant_id=None,
-                        variant_obj=var_obj,
-                        add_case=False,
-                        add_other=False,
-                        get_overlapping=False
-                    )
-            else:
-                decorated_info = sv_variant(
+            decorated_info = variant_decorator(
                     store=store,
-                    institute_id=institute_obj['_id'],
-                    case_name=case_obj['display_name'],
+                    institute_obj=institute_obj,
+                    case_obj=case_obj,
+                    variant_id=None,
                     variant_obj=var_obj,
                     add_case=False,
-                    get_overlapping=False
-                    )
+                    add_other=False,
+                    add_compounds=False,
+                    get_overlapping=False,
+                )
             decorated_variants.append(decorated_info['variant'])
         # Add the decorated variants to the case
         data[var_type] = decorated_variants
