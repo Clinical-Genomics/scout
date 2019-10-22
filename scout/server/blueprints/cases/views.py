@@ -790,9 +790,9 @@ def share(institute_id, case_name):
 @cases_bp.route('/<institute_id>/<case_name>/rerun', methods=['POST'])
 def rerun(institute_id, case_name):
     """Request a case to be rerun."""
-    sender = current_app.config['MAIL_USERNAME']
+    sender = current_app.config.get('MAIL_USERNAME')
     recipient = current_app.config.get('TICKET_SYSTEM_EMAIL')
-    
+
     controllers.rerun(store, mail, current_user, institute_id, case_name, sender,
                       recipient)
     return redirect(request.referrer)
