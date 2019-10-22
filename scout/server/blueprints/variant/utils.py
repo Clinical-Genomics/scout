@@ -302,12 +302,15 @@ def transcript_str(transcript_obj, gene_name=None):
         change_str(str): A description of the transcript level change
     """
     # variant between genes
-    gene_part, part_count_raw = 'intergenic', '0'
+    gene_part = 'intergenic'
+    part_count_raw = '0'
 
     if transcript_obj.get('exon'):
-        gene_part, part_count_raw = 'exon', transcript_obj['exon']
+        gene_part = 'exon'
+        part_count_raw = transcript_obj['exon']
     elif transcript_obj.get('intron'):
-        gene_part, part_count_raw = 'intron', transcript_obj['intron']
+        gene_part = 'intron'
+        part_count_raw = transcript_obj['intron']
 
     part_count = part_count_raw.rpartition('/')[0]
     change_str = "{}:{}{}:{}:{}".format(
