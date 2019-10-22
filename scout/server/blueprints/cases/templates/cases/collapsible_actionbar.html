@@ -195,7 +195,7 @@
 <!-- Submenu content -->
 <div id='submenu2' class="collapse sidebar-submenu">
   {% if case.research_requested %}
-    <i>Research pending</i>
+    <i class="text-white">Research pending</i>
   {% else %}
     <button type="button" class="btn btn-danger btn-sm form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
   {% endif %}
@@ -213,7 +213,7 @@
 <!-- Submenu content -->
 <div id='submenu3' class="collapse sidebar-submenu">
   {% if case.rerun_requested %}
-    <i>Rerun pending</i>
+    <i class="text-white">Rerun pending</i>
   {% else %}
     <button type="button" class="btn btn-warning form-control btn-sm" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
   {% endif %}

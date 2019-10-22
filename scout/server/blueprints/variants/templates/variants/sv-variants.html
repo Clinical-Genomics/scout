@@ -92,7 +92,7 @@
   </a>
   {% set comment_count = variant.comments.count() %}
   {% if variant.manual_rank %}
-    <span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
+    <span class="badge float-right" title="Manual rank">{{ variant.manual_rank }}</span>
   {% endif %}
 
   {% if comment_count > 0 %}

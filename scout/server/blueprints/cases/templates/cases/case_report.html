@@ -514,7 +514,7 @@
                       </table>
                       <br><br>
                     {% elif reason == '7' %} <!-- Inheritance pattern not relevant -->
-                      (<span class="pull-left">
+                      (<span class="float-left">
                       {% for model in variant.genetic_models|sort %}
                         <span class="badge badge-info" title="{{genetic_models[model]}}"> {{model}}</span>
                       {% else %}
@@ -749,10 +749,10 @@
           {% endif %}
           </td>
           <td>
-            <span class="pull-left">{{ variant.cadd_score or '-' }}</strong>
+            <span class="float-left">{{ variant.cadd_score or '-' }}</strong>
           </td>
           <td>
-            <span class="pull-left">
+            <span class="float-left">
               {% for model in variant.genetic_models|sort %}
                 <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
               {% else %}
@@ -870,7 +870,7 @@
       </thead>
       <tbody>
         <tr>
-          <td><span class="badge badge-warning pull-left">{{variant.sub_category|upper}}</span></td>
+          <td><span class="badge badge-warning float-left">{{variant.sub_category|upper}}</span></td>
           <td>{{ variant.length }}</td>
           <td>
             {% if variant.chromosome == variant.end_chrom %}
@@ -983,7 +983,7 @@
           {% endif %}
           </td>
           <td>
-            <span class="pull-left">
+            <span class="float-left">
               {% for model in variant.genetic_models|sort %}
                 <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
               {% else %}
