@@ -85,3 +85,93 @@ def test_parse_ensembl_exons_iterable():
     assert parsed_exon['start'] == 1167658
     ## THEN assert end is min(3_utr_start, exon_chrom_end) since strand is 1
     assert parsed_exon['end'] == 1168649
+
+def test_parse_ensembl_exons_missing_five_utr_start():
+    """Test to parse all ensembl exons"""
+    ## GIVEN an iterable with ensembl exon data
+    exons_handle = [
+        "Chromosome/scaffold name\tGene stable ID\tTranscript stable ID\tExon stable ID\tExon"\
+        " region start (bp)\tExon region end (bp)\t5' UTR start\t5' UTR end\t3' UTR start\t3'"\
+        " UTR end\tStrand\tExon rank in transcript",
+        "1\tENSG00000176022\tENST00000379198\tENSE00001439793\t1167629\t1170421\t\t1"\
+        "167658\t1168649\t1170421\t1\t1"
+    ]
+    ## WHEN parsing the exons in that file
+    exons = parse_ensembl_exons(exons_handle)
+    parsed_exon = next(exons)
+
+    ## THEN assert that the exon is correctly parsed
+    assert parsed_exon['chrom'] == '1'
+    assert parsed_exon['ens_exon_id'] == 'ENSE00001439793'
+    assert parsed_exon['transcript'] == 'ENST00000379198'
+    assert parsed_exon['gene'] == 'ENSG00000176022'
+    assert parsed_exon['5_utr_start'] == None
+
+def test_parse_ensembl_exons_missing_five_utr_end():
+    """Test to parse all ensembl exons"""
+    ## GIVEN an iterable with ensembl exon data
+    exons_handle = [
+        "Chromosome/scaffold name\tGene stable ID\tTranscript stable ID\tExon stable ID\tExon"\
+        " region start (bp)\tExon region end (bp)\t5' UTR start\t5' UTR end\t3' UTR start\t3'"\
+        " UTR end\tStrand\tExon rank in transcript",
+        "1\tENSG00000176022\tENST00000379198\tENSE00001439793\t1167629\t1170421\t\t"\
+        "\t1168649\t1170421\t1\t1"
+    ]
+    ## WHEN parsing the exons in that file
+    exons = parse_ensembl_exons(exons_handle)
+    parsed_exon = next(exons)
+
+    ## THEN assert that the exon is correctly parsed
+    assert parsed_exon['chrom'] == '1'
+    assert parsed_exon['ens_exon_id'] == 'ENSE00001439793'
+    assert parsed_exon['transcript'] == 'ENST00000379198'
+    assert parsed_exon['gene'] == 'ENSG00000176022'
+    assert parsed_exon['5_utr_start'] == None
+    assert parsed_exon['5_utr_end'] == None
+
+def test_parse_ensembl_exons_missing_three_utr_start():
+    """Test to parse all ensembl exons"""
+    ## GIVEN an iterable with ensembl exon data
+    exons_handle = [
+        "Chromosome/scaffold name\tGene stable ID\tTranscript stable ID\tExon stable ID\tExon"\
+        " region start (bp)\tExon region end (bp)\t5' UTR start\t5' UTR end\t3' UTR start\t3'"\
+        " UTR end\tStrand\tExon rank in transcript",
+        "1\tENSG00000176022\tENST00000379198\tENSE00001439793\t1167629\t1170421\t\t"\
+        "\t\t1170421\t1\t1"
+    ]
+    ## WHEN parsing the exons in that file
+    exons = parse_ensembl_exons(exons_handle)
+    parsed_exon = next(exons)
+
+    ## THEN assert that the exon is correctly parsed
+    assert parsed_exon['chrom'] == '1'
+    assert parsed_exon['ens_exon_id'] == 'ENSE00001439793'
+    assert parsed_exon['transcript'] == 'ENST00000379198'
+    assert parsed_exon['gene'] == 'ENSG00000176022'
+    assert parsed_exon['5_utr_start'] == None
+    assert parsed_exon['5_utr_end'] == None
+    assert parsed_exon['3_utr_start'] == None
+
+def test_parse_ensembl_exons_missing_three_utr_end():
+    """Test to parse all ensembl exons"""
+    ## GIVEN an iterable with ensembl exon data
+    exons_handle = [
+        "Chromosome/scaffold name\tGene stable ID\tTranscript stable ID\tExon stable ID\tExon"\
+        " region start (bp)\tExon region end (bp)\t5' UTR start\t5' UTR end\t3' UTR start\t3'"\
+        " UTR end\tStrand\tExon rank in transcript",
+        "1\tENSG00000176022\tENST00000379198\tENSE00001439793\t1167629\t1170421\t\t"\
+        "\t\t\t1\t1"
+    ]
+    ## WHEN parsing the exons in that file
+    exons = parse_ensembl_exons(exons_handle)
+    parsed_exon = next(exons)
+
+    ## THEN assert that the exon is correctly parsed
+    assert parsed_exon['chrom'] == '1'
+    assert parsed_exon['ens_exon_id'] == 'ENSE00001439793'
+    assert parsed_exon['transcript'] == 'ENST00000379198'
+    assert parsed_exon['gene'] == 'ENSG00000176022'
+    assert parsed_exon['5_utr_start'] == None
+    assert parsed_exon['5_utr_end'] == None
+    assert parsed_exon['3_utr_start'] == None
+    assert parsed_exon['3_utr_end'] == None

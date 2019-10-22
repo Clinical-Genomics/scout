@@ -47,15 +47,16 @@ def genes(build, api_key):
 
     # Fetch the omim information
     api_key = api_key or current_app.config.get('OMIM_API_KEY')
+    mim_files = {}
     if not api_key:
-        LOG.warning("Please provide a omim api key to load the omim gene panel")
-        raise click.Abort()
+        LOG.warning("No omim api key provided, Please not that some information will be missing")
 
-    try:
-        mim_files = fetch_mim_files(api_key, mim2genes=True, morbidmap=True, genemap2=True)
-    except Exception as err:
-        LOG.warning(err)
-        raise click.Abort()
+    else:
+        try:
+            mim_files = fetch_mim_files(api_key, mim2genes=True, morbidmap=True, genemap2=True)
+        except Exception as err:
+            LOG.warning(err)
+            raise click.Abort()
 
     LOG.warning("Dropping all gene information")
     adapter.drop_genes(build)
@@ -84,8 +85,8 @@ def genes(build, api_key):
             ensembl_lines=ensembl_genes,
             hgnc_lines=hgnc_lines,
             exac_lines=exac_lines,
-            mim2gene_lines=mim_files['mim2genes'],
-            genemap_lines=mim_files['genemap2'],
+            mim2gene_lines=mim_files.get('mim2genes'),
+            genemap_lines=mim_files.get('genemap2'),
             hpo_lines=hpo_genes,
             build=build,
         )
