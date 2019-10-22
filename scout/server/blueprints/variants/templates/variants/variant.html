@@ -278,7 +278,7 @@
           <tr>
             <td>
               Position
-              <span class="pull-right">
+              <span class="float-right">
                 <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
                 {% if variant.is_par %}
                   <span class="badge badge-info">PAR</span>
@@ -287,7 +287,7 @@
             </td>
             <td>
               Change
-              <span class="pull-right"><strong>{{ variant.reference }} → {{ variant.alternative }}</strong></span>
+              <span class="float-right"><strong>{{ variant.reference }} → {{ variant.alternative }}</strong></span>
             </td>
           </tr>
         </tbody>
@@ -319,7 +319,7 @@
       <ul class="list-group">
         <div class="list-group-item">
           <strong>Gene panels</strong>
-          <ul class="list-inline pull-right">
+          <ul class="list-inline float-right">
             {% for panel_id in variant.panels %}
               <li>
                   <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>
@@ -429,14 +429,14 @@
             <td>
               Matches OMIM inhert.
               {% if variant.is_matching_inheritance %}
-                <span class="badge badge-success pull-right">Yes</span>
+                <span class="badge badge-success float-right">Yes</span>
               {% else %}
-                <div class="badge badge-warning pull-right">No</div>
+                <div class="badge badge-warning float-right">No</div>
               {% endif %}
             </td>
             <td>
               Frequency
-              <div class="badge badge-{% if variant.frequency == 'common' %}danger{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %} pull-right">
+              <div class="badge badge-{% if variant.frequency == 'common' %}danger{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %} float-right">
                 {{ variant.frequency }}
               </div>
             </td>
@@ -473,7 +473,7 @@
         {% if variant.dbsnp_id %}
           <li class="list-group-item">
             SNPedia
-            <span class="pull-right">
+            <span class="float-right">
               <a target="_blank" href="http://snpedia.com/index.php/{{ variant.dbsnp_id }}">
                 {{ variant.dbsnp_id }}
               </a>
@@ -556,7 +556,7 @@
                 </td>
                 <td title="{{ transcript.coding_sequence_name or '' }}">
                   {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
-                  <span class="text-muted pull-right">
+                  <span class="text-muted float-right">
                     {{ (transcript.protein_sequence_name or '')|url_decode }}
                   </span>
                 </td>
@@ -585,7 +585,7 @@
                   </td>
                   <td title="{{ transcript.coding_sequence_name or '' }}">
                     {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
-                    <span class="text-muted pull-right">
+                    <span class="text-muted float-right">
                       {{ (transcript.protein_sequence_name or '')|url_decode }}
                     </span>
                   </td>
@@ -609,7 +609,7 @@
         {% else %}
           1000G
         {% endif %}
-        <span class="pull-right">
+        <span class="float-right">
           {% if variant.max_thousand_genomes_frequency %}
             {{ variant.max_thousand_genomes_frequency|human_decimal }} <small>(max)</small> |
           {% endif %}
@@ -618,7 +618,7 @@
       </li>
       <li class="list-group-item">
         <a title="Exome Aggregation Consortium" target="_blank" href="{{ variant.exac_link }}">ExAC</a>
-        <span class="pull-right">
+        <span class="float-right">
           {% if variant.max_exac_frequency %}
             {{ variant.max_exac_frequency|human_decimal }} <small>(max)</small> |
           {% endif %}
@@ -627,7 +627,7 @@
       </li>
       <li class="list-group-item">
         <a title="genome Aggregation Database" target="_blank" href="{{ variant.gnomad_link }}">gnomAD</a>
-        <span class="pull-right">
+        <span class="float-right">
           {% if 'gnomad_frequency' in variant%}
             {% if variant.max_gnomad_frequency %}
               {{ variant.max_gnomad_frequency|human_decimal }}
@@ -719,30 +719,30 @@
     <ul class="list-group">
       <li class="list-group-item">
         Sift
-        <span class="pull-right">{{ variant.sift_predictions|join(', ') }}</span>
+        <span class="float-right">{{ variant.sift_predictions|join(', ') }}</span>
       </li>
       <li class="list-group-item">
         <a href="http://genetics.bwh.harvard.edu/pph2/" target="_blank">Polyphen</a>
-        <span class="pull-right">{{ variant.polyphen_predictions|join(', ') }}</span>
+        <span class="float-right">{{ variant.polyphen_predictions|join(', ') }}</span>
       </li>
       <li class="list-group-item">
         SPIDEX
-        <span class="pull-right">{{ variant.spidex_human }}</span>
+        <span class="float-right">{{ variant.spidex_human }}</span>
       </li>
     </ul>
     <div class="panel-heading">Conservation</div>
     <ul class="list-group">
       <li class="list-group-item">
         PHAST
-        <span class="pull-right">{{ variant.phast_conservation|join(', ') or '-' }}</span>
+        <span class="float-right">{{ variant.phast_conservation|join(', ') or '-' }}</span>
       </li>
       <li class="list-group-item">
         GERP
-        <span class="pull-right">{{ variant.gerp_conservation|join(', ') or '-' }}</span>
+        <span class="float-right">{{ variant.gerp_conservation|join(', ') or '-' }}</span>
       </li>
       <li class="list-group-item">
         phyloP
-        <span class="pull-right">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
+        <span class="float-right">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
       </li>
     </ul>
     <div class="panel-heading">Mappability (<a href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
@@ -773,7 +773,7 @@
       <ul class="list-group">
         <li class="list-group-item">
           Variant inheritance models
-          <span class="pull-right">
+          <span class="float-right">
             {% for model in variant.genetic_models|sort %}
               <span class="badge badge-info">{{ model }}</span>
             {% else %}
@@ -790,11 +790,11 @@
           <tr>
             <td>
               Length
-              <span class="pull-right">{{ variant.azlength }}</span>
+              <span class="float-right">{{ variant.azlength }}</span>
             </td>
             <td>
               Qual
-              <span class="pull-right">{{ variant.azqual }}</span>
+              <span class="float-right">{{ variant.azqual }}</span>
             </td>
           </tr>
         </tbody>
