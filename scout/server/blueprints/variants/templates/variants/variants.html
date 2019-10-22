@@ -120,7 +120,7 @@
 
   {% elif variant.manual_rank %}
 
-    <span class="badge badge-secondary pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
+    <span class="badge badge-secondary float-right" title="Manual rank">{{ variant.manual_rank }}</span>
   {% endif %}
   {% if variant.evaluations %}
     {% for evaluation in (variant.evaluations or []) %}
