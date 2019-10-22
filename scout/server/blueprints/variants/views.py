@@ -262,6 +262,8 @@ def sv_variants(institute_id, case_name):
     else:
         form = SvFiltersForm(request.args)
 
+    form.variant_type.data = variant_type
+
     available_panels = case_obj.get('panels', []) + [
         {'panel_name': 'hpo', 'display_name': 'HPO'}]
 
@@ -317,8 +319,6 @@ def sv_variants(institute_id, case_name):
         case_link = url_for('cases.case', institute_id=institute_obj['_id'],
                             case_name=case_obj['display_name'])
         store.update_status(institute_obj, case_obj, user_obj, 'active', case_link)
-
-    LOG.info('-------------------------------> FORM DATA:{}'.format(form.data))
 
     variants_query = store.variants(case_obj['_id'], category='sv',
                                     query=form.data)
