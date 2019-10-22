@@ -165,8 +165,7 @@ class QueryHandler(object):
 
             elif criterion == 'chrom' and query.get('chrom'): # filter by coordinates
                 LOG.debug('Adding genomic coordinates to the query')
-                chromosome = query['chrom']
-                mongo_query['chromosome'] = chromosome
+                mongo_query['chromosome'] = query['chrom']
 
                 coordinate_query = None
                 if (query.get('start') and query.get('end')):
@@ -358,7 +357,6 @@ class QueryHandler(object):
 
         """
         # Query for overlapping intervals. Taking into account these cases:
-
         #1
         # filter                 xxxxxxxxx
         # Variant           xxxxxxxx
