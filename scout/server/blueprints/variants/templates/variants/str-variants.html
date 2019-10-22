@@ -4,31 +4,32 @@
 {% from "utils.html" import comments_table %}
 
 {% block title %}
-  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - STR variants
+{{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - STR variants
 {% endblock %}
 
 {% block top_nav %}
-  {{ super() }}
-  <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
-      {{ institute.display_name }}
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
-      {{ case.display_name }}
-    </a>
-  </li>
-  <li class="nav-item active">
-    <span class="navbar-text">{{ form.variant_type.data|capitalize }} STRs</span>
-  </li>
+{{ super() }}
+<li class="nav-item">
+  <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+    {{ institute.display_name }}
+  </a>
+</li>
+<li class="nav-item">
+  <a class="nav-link text-nowrap"
+    href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+    {{ case.display_name }}
+  </a>
+</li>
+<li class="nav-item active">
+  <span class="navbar-text">{{ form.variant_type.data|capitalize }} STRs</span>
+</li>
 {% endblock %}
 
 {% block top_nav_right %}
-  {{ super() }}
+{{ super() }}
 {% endblock %}
 
 {% block content_main %}
@@ -42,7 +43,7 @@
           <th style="width:15%" title="Repeat unit">Reference repeat unit</th>
           <th style="width:8%" title="ALT">Estimated size</th>
           <th style="width:8%" title="ReferenceSize">Reference size</th>
-          <th style="width:10%"title="Status">Status</th>
+          <th style="width:10%" title="Status">Status</th>
           <th style="width:18%" title="GT">Genotype</th>
           <th style="width:8%" title="Chromosome">Chr.</th>
           <th style="width:17%" title="Position">Position</th>
@@ -50,44 +51,46 @@
       </thead>
       <tbody>
         {% for variant in variants %}
-          {% if variant.dismiss_variant %}
-              <tr class="dismiss">
+        {% if variant.dismiss_variant %}
+        <tr class="dismiss">
           {% elif variant.str_status == 'normal' %}
-              <tr class="bg-success">
+        <tr class="bg-success">
           {% elif variant.str_status == 'full_mutation' %}
-              <tr class="bg-warning">
+        <tr class="bg-warning">
           {% elif variant.str_status == 'pre_mutation' %}
-              <tr style="background-color: #ffff66;">
-	        {% else %}
-	            <tr>
-	        {% endif %}
-            <td>{{ cell_rank(variant) }}</td>
-            <td>{{ variant.str_repid }}</td>
-	          <td class="text-right">{{ variant.str_ru }}</td>
-            <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
-            <td class="text-right">{{ variant.str_ref }}</td>
-            <td>{{ variant.str_status }}</td>
-            <td>{% for sample in variant.samples %}
-                  {% if sample.genotype_call != "./." %}
-                    <div class="pull-left">{{ sample.display_name }}</div>
-                    <div class="pull-right">{{ sample.genotype_call }}</div><br>
-                  {% endif %}
-                {% endfor %}
-            </td>
-            <td>{{ variant.chromosome }}</td>
-            <td>
-              {{ variant.position }}
-              {% if case.bam_files %}
-                <a class="btn btn-default btn-sm pull-right" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
-              {% endif %}
-            </td>
+        <tr style="background-color: #ffff66;">
+          {% else %}
+        <tr>
+          {% endif %}
+          <td>{{ cell_rank(variant) }}</td>
+          <td>{{ variant.str_repid }}</td>
+          <td class="text-right">{{ variant.str_ru }}</td>
+          <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
+          <td class="text-right">{{ variant.str_ref }}</td>
+          <td>{{ variant.str_status }}</td>
+          <td>{% for sample in variant.samples %}
+            {% if sample.genotype_call != "./." %}
+            <div class="pull-left">{{ sample.display_name }}</div>
+            <div class="pull-right">{{ sample.genotype_call }}</div><br>
+            {% endif %}
+            {% endfor %}
+          </td>
+          <td>{{ variant.chromosome }}</td>
+          <td>
+            {{ variant.position }}
+            {% if case.bam_files %}
+            <a class="btn btn-default btn-sm pull-right"
+              href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}"
+              target="_blank">IGV viewer</a>
+            {% endif %}
+          </td>
         </tr>
         {% else %}
-          <tr>
-            <td colspan="9">
-              No matching variants
-            </td>
-          </tr>
+        <tr>
+          <td colspan="9">
+            No matching variants
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
@@ -97,80 +100,76 @@
 {% endblock %}
 
 {% macro cell_rank(variant) %}
-  <a class="variants-row-item flex-small layout"
-     href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,
+<a class="variants-row-item flex-small layout" href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,
                       variant_id=variant._id, str='yes') }}">
-    {{ variant.variant_rank }}
-  </a>
-  {% set comment_count = variant.comments.count() %}
-  {% if variant.manual_rank %}
-    <span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
+  {{ variant.variant_rank }}
+</a>
+{% set comment_count = variant.comments.count() %}
+{% if variant.manual_rank %}
+<span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
+{% endif %}
+{% if comment_count > 0 %}
+{% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
+<a href="#" class="badge pull-right" data-toggle="popover" data-placement="right" data-html="true"
+  data-trigger="hover click" data-content="{{ comments_content }}" title="">
+  {{ comment_count }}
+  <i class="fa fa-comment"></i>
+  {% if 'GLOBAL' in comments_content %}
+  <i class="fa fa-globe" aria-hidden="true"></i>
   {% endif %}
-  {% if comment_count > 0 %}
-    {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
-    <a href="#"
-       class="badge pull-right"
-       data-toggle="popover"
-       data-placement="right"
-       data-html="true"
-       data-trigger="hover click"
-       data-content="{{ comments_content }}"
-       title=""
-       >
-      {{ comment_count }}
-      <i class="fa fa-comment"></i>
-      {% if 'GLOBAL' in comments_content %}
-        <i class="fa fa-globe" aria-hidden="true"></i>
-      {% endif %}
-    </a>
-  {% endif %}
+</a>
+{% endif %}
 {% endmacro %}
 
 {% macro footer() %}
-  <div class="container-fluid">
-    <div class="form-group text-center">
-      {% if more_variants %}
-        <div class="row">
-          <div class="col-6">
-            <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
-              Next page
-            </a>
-          </div>
-          <div class="col-6">
-            <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
-              First page
-            </a>
-          </div>
-        </div>
-      {% else %}
-        <i class="text-muted">No more variants to display</i>
-        <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+<div class="container-fluid">
+  <div class="form-group text-center">
+    {% if more_variants %}
+    <div class="row">
+      <div class="col-6">
+        <a class="btn btn-outline-secondary mx-auto d-block"
+          href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
+          Next page
+        </a>
+      </div>
+      <div class="col-6">
+        <a class="btn btn-outline-secondary mx-auto d-block"
+          href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
           First page
         </a>
-      {% endif %}
+      </div>
     </div>
+    {% else %}
+    <i class="text-muted">No more variants to display</i>
+    <a class="btn btn-outline-secondary mx-auto d-block"
+      href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+      First page
+    </a>
+    {% endif %}
   </div>
+</div>
 {% endmacro %}
 
 {% block scripts %}
-  {{ super() }}
+{{ super() }}
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-  <script>
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip();
-      $('[data-toggle="popover"]').popover({
-        container: 'body',
-      });
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+<script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="popover"]').popover({
+      container: 'body',
+    });
 
-      $('table').stickyTableHeaders({
-        fixedOffset: $(".navbar-fixed-top")
-      });
+    $('table').stickyTableHeaders({
+      fixedOffset: $(".navbar-fixed-top")
+    });
 
-      $('select[multiple]').multiselect({
-        buttonWidth: '100%'
-      });
-    })
+    $('select[multiple]').multiselect({
+      buttonWidth: '100%'
+    });
+  })
 
-  </script>
+</script>
 {% endblock %}
