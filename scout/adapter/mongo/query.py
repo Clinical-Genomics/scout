@@ -383,7 +383,7 @@ class QueryHandler(object):
                 {   "$and": [
                     {"position": {"$lte": int(query['start'])} },
                     {"end": {"$gte": int(query['end'])} }
-                ]}
+                ]}  #4
             ]
         }
         return coordinate_query
