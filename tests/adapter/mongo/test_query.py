@@ -1,4 +1,5 @@
 from scout.constants import CLINSIG_MAP
+import itertools
 import re
 
 def test_build_gene_variant_query(adapter):
@@ -260,7 +261,6 @@ def test_build_clinsig_filter(real_variant_database):
          }}
         ]
 
-
     assert adapter.variant_collection.find_one()
 
     # Test that the query works with real data:
@@ -379,7 +379,6 @@ def test_build_clinsig_always(real_variant_database):
         ]
 
     # Test that the query works with real data
-
     case_obj = adapter.case_collection.find_one()
     case_id = case_obj['_id']
 
@@ -487,7 +486,7 @@ def test_build_chrom(adapter):
 
     assert mongo_query['chromosome'] == chrom
 
-def test_build_chrom_coordinates(adapter):
+def test_build_coordinate_filter(adapter):
     case_id = 'cust000'
     chrom = '1'
     start = 79000
@@ -497,12 +496,37 @@ def test_build_chrom_coordinates(adapter):
         'start': start,
         'end': end
     }
-
     mongo_query = adapter.build_query(case_id, query=query)
 
     assert mongo_query['chromosome'] == chrom
-    assert mongo_query['position'] == start
-    assert mongo_query['end'] == end
+    assert mongo_query['position'] == {'$lte': end}
+    assert mongo_query['end'] == {'$gte': start}
+
+def test_build_sv_coordinate_filter(adapter):
+    case_id = 'cust000'
+    chrom = '1'
+    start = 79000
+    end = 80000
+    query = {
+        'chrom': '1',
+        'start': start,
+        'end': end
+    }
+    mongo_query = adapter.build_query(case_id, query=query, category='sv')
+
+    assert mongo_query['$and'] == [{
+        "$or": [
+            { "end": { "$gte": start, "$lte": end }}, #1
+            { "position": { "$lte": end, "$gte": start }}, #2
+            {   "$and" : [
+                {"position": {"$gte": start} },
+                {"end": {"$lte": end} }
+            ]}, #3
+            {   "$and": [
+                {"position": {"$lte": start} },
+                {"end": {"$gte": end} }
+            ]}
+        ]}]
 
 def test_build_ngi_sv(adapter):
     case_id = 'cust000'
@@ -554,6 +578,124 @@ def test_build_range(adapter):
     assert mongo_query['chromosome'] == chrom
     assert mongo_query['position'] == {'$lte': end}
     assert mongo_query['end'] == {'$gte': start}
+
+def test_query_snvs_by_coordinates(real_populated_database, variant_objs, case_obj):
+    """Run SNV variant query by coordinates"""
+    adapter = real_populated_database
+
+    # WHEN adding a number of variants
+    for index, variant_obj in enumerate(variant_objs):
+        adapter.load_variant(variant_obj)
+
+    ## GIVEN a variant from the database
+    variant_obj = adapter.variant_collection.find_one()
+
+    # WHEN creating a variant filter by chromosome coordinates
+    query = {
+        'chrom' : variant_obj['chromosome'],
+        'start' : variant_obj['position'],
+        'end' : variant_obj['end']
+    }
+    # AND using the filter in a query
+    results = adapter.variants(case_obj['_id'], query=query)
+    # THEN the same variant should be returned
+    assert list(results)[0] == variant_obj
+
+
+def test_query_svs_by_coordinates(real_populated_database, sv_variant_objs, case_obj):
+    """Run SV variant query by coordinates"""
+    adapter = real_populated_database
+
+    # WHEN adding a number of SV variants
+    for index, variant_obj in enumerate(sv_variant_objs):
+        adapter.load_variant(variant_obj)
+
+    ## GIVEN a variant from the database
+    variant_obj = adapter.variant_collection.find_one()
+
+    # WHEN creating a variant filter by chromosome coordinates
+    # Using the same coordinates as the variant
+    query = {
+        'chrom' : variant_obj['chromosome'],
+        'start' : variant_obj['position'],
+        'end' : variant_obj['end']
+    }
+    # AND using the filter in a variant query
+    results = adapter.variants(case_obj['_id'], query=query, category='sv')
+    # THEN the same variant should be returned
+    assert list(results)[0] == variant_obj
+
+    # WHEN creating a variant filter by chromosome coordinates
+    # Using the same coordinates as the variant
+    query = {
+        'chrom' : variant_obj['chromosome'],
+        'start' : variant_obj['position'],
+        'end' : variant_obj['end']
+    }
+    # AND using the filter in a variant query
+    results = adapter.variants(case_obj['_id'], query=query, category='sv')
+    # THEN the same variant should be returned
+    assert list(results)[0] == variant_obj
+
+
+    # When creating a variant filter by chromosome coordinates
+    # In this scenario:
+    # filter                 xxxxxxxxx
+    # Variant           xxxxxxxx
+    query = {
+        'chrom' : variant_obj['chromosome'],
+        'start' : variant_obj['position']+10,
+        'end' : variant_obj['end']+10
+    }
+    # AND using the filter in a variant query
+    results = adapter.variants(case_obj['_id'], query=query, category='sv')
+    # THEN the same variant should be returned
+    assert list(results)[0] == variant_obj
+
+
+    # When creating a variant filter by chromosome coordinates
+    # In this scenario:
+    # filter                 xxxxxxxxx
+    # Variant                    xxxxxxxx
+    query = {
+        'chrom' : variant_obj['chromosome'],
+        'start' : variant_obj['position']-10,
+        'end' : variant_obj['end']-10
+    }
+    # AND using the filter in a variant query
+    results = adapter.variants(case_obj['_id'], query=query, category='sv')
+    # THEN the same variant should be returned
+    assert list(results)[0] == variant_obj
+
+
+    # When creating a variant filter by chromosome coordinates
+    # In this scenario:
+    # filter                 xxxxxxxxx
+    # Variant                   xx
+    query = {
+        'chrom' : variant_obj['chromosome'],
+        'start' : variant_obj['position']-10,
+        'end' : variant_obj['end']+10
+    }
+    # AND using the filter in a variant query
+    results = adapter.variants(case_obj['_id'], query=query, category='sv')
+    # THEN the same variant should be returned
+    assert list(results)[0] == variant_obj
+
+
+    # When creating a variant filter by chromosome coordinates
+    # In this scenario:
+    # filter                 xxxxxxxxx
+    # Variant             xxxxxxxxxxxxxx
+    query = {
+        'chrom' : variant_obj['chromosome'],
+        'start' : variant_obj['position']+10,
+        'end' : variant_obj['end']-10
+    }
+    # AND using the filter in a variant query
+    results = adapter.variants(case_obj['_id'], query=query, category='sv')
+    # THEN the same variant should be returned
+    assert list(results)[0] == variant_obj
 
 def test_get_overlapping_variant(populated_database, parsed_case):
     """Add a couple of overlapping variants"""
