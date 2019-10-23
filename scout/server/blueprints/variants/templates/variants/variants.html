@@ -71,7 +71,7 @@
               {% else %}
                 <tr>
               {% endif %}
-                <td class="d-flex justify-content-between align-items-center">{{ cell_rank(variant) }}</td>
+                <td class="text-left">{{ cell_rank(variant) }}</td>
                 <td class="text-right">{{ variant.rank_score|int }}</td>
                 <td>{{ variant.chromosome }}</td>
                 <td>{{ gene_cell(variant) }}</td>
@@ -92,7 +92,7 @@
               </tr>
             {% else %}
               <tr>
-                <td colspan="{{ 10 if form.variant_type.data == 'clinical' else 9 }}">
+                <td colspan="">
                   No matching variants
                 </td>
               </tr>
@@ -114,17 +114,17 @@
   {% set comment_count = variant.comments.count() %}
 
   {% if variant.acmg_classification %}
-    <span class="badge badge-primary" title="{{ variant.acmg_classification.label }}">
+    <span class="badge badge-primary" data-toggle="tooltip" data-placement="right" title="ACMG: {{ variant.acmg_classification.label }}">
       {{ variant.acmg_classification.short }}
     </span>
-
-  {% elif variant.manual_rank %}
-
-    <span class="badge badge-secondary float-right" title="Manual rank">{{ variant.manual_rank }}</span>
+  {% endif %}
+  {% if variant.manual_rank %}
+    <span class="badge badge-primary" data-toggle="tooltip" title="Manual rank">{{ variant.manual_rank }}</span>
   {% endif %}
   {% if variant.evaluations %}
     {% for evaluation in (variant.evaluations or []) %}
-      <span class="badge badge-primary" style="margin-left:1px" title="Previously classified as {{ evaluation.classification.label }}">
+      <span class="badge badge-secondary" style="margin-left:1px" data-toggle="tooltip" data-placement="right"
+      title="Previously classified as {{ evaluation.classification.label }}">
       {{ evaluation.classification.short }}
       </span>
     {% endfor %}
@@ -133,7 +133,7 @@
   {% if comment_count > 0 %}
     {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
     <a href="#"
-       class="badge badge-secondary"
+       class="badge badge-info"
        data-toggle="popover"
        data-placement="right"
        data-html="true"
