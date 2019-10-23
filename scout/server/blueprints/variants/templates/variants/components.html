@@ -11,6 +11,15 @@
             <strong>Models</strong>: {{ gene.inheritance|join(',') }}
           </div>
         {% endif %}
+        {% if gene.omim_disease_descriptions %}
+          <div><strong>OMIM disease</strong>
+          {% for disease in gene.omim_disease_descriptions %}
+            <div>
+                {{ disease }}
+            </div>
+          {% endfor %}
+          </div>
+        {% endif %}
       </div>"
         href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
       </a>
