@@ -358,7 +358,7 @@ def frequency(variant_obj):
 
 
 def end_position(variant_obj):
-    """Calculate end position for a variant.
+    """Calculate end position for a (snv/indel) variant.
     
     Args:
         variant_obj(scout.models.Variant)
@@ -366,8 +366,13 @@ def end_position(variant_obj):
     Returns:
         end_position(int)
     """
-    alt_bases = len(variant_obj['alternative'])
-    num_bases = max(len(variant_obj['reference']), alt_bases)
+    alt_len = len(variant_obj['alternative'])
+    ref_len = len(variant_obj['reference'])
+    if alt_len == ref_len:
+        num_bases = alt_len
+    else:
+        num_bases = max(alt_len, ref_len)
+
     return variant_obj['position'] + (num_bases - 1)
 
 def default_panels(store, case_obj):

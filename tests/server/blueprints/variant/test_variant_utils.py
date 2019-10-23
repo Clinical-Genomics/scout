@@ -1,6 +1,14 @@
 from scout.server.blueprints.variant.utils import (predictions, sv_frequencies, is_affected, 
 evaluation, transcript_str, frequency, end_position)
 
+def test_end_position_old_indel():
+    ## GIVEN a small indel
+    var = {'alternative':'TCTC', 'reference': 'AGAG', 'position': 100}
+    ## WHEN getting the end position
+    end = end_position(var)
+    ## THEN assert that the end position is 10 bases
+    assert end == 103
+
 def test_end_position_indel():
     ## GIVEN a single nucleotide variant
     var = {'alternative':'TCTCTCTCACA', 'reference': 't', 'position': 100}
