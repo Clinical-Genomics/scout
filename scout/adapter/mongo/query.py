@@ -170,7 +170,7 @@ class QueryHandler(object):
                     if (query.get('start') and query.get('end')):
                         self.coordinate_filter(query, mongo_query)
                 else: # sv
-                    coordinate_query = [self.sv_coordinate_query(query, query)]
+                    coordinate_query = [self.sv_coordinate_query(query)]
 
 
             elif criterion == 'variant_ids' and variant_ids:
@@ -343,7 +343,7 @@ class QueryHandler(object):
         return mongo_query
 
 
-    def sv_coordinate_query(self, query, mongo_query):
+    def sv_coordinate_query(self, query):
         """ Adds genomic coordinated-related filters to the query object
             This method is called to buid coordinate query for sv variants
 
@@ -355,41 +355,45 @@ class QueryHandler(object):
             coordinate_query(dict): returned object contains coordinate filters for sv variant
 
         """
+        coordinate_query = None
         chromosome_query = { '$or' : [
-            {'chromosome' : mongo_query['chrom'] },
-            {'end_chrom' : mongo_query['chrom']}
+            {'chromosome' : query['chrom'] },
+            {'end_chrom' : query['chrom']}
         ] }
-        # Query for overlapping intervals. Taking into account these cases:
-        #1
-        # filter                 xxxxxxxxx
-        # Variant           xxxxxxxx
+        if query.get('start') and query.get('end'):
+            # Query for overlapping intervals. Taking into account these cases:
+            #1
+            # filter                 xxxxxxxxx
+            # Variant           xxxxxxxx
 
-        #2
-        # filter                 xxxxxxxxx
-        # Variant                    xxxxxxxx
+            #2
+            # filter                 xxxxxxxxx
+            # Variant                    xxxxxxxx
 
-        #3
-        # filter                 xxxxxxxxx
-        # Variant                   xx
+            #3
+            # filter                 xxxxxxxxx
+            # Variant                   xx
 
-        #4
-        # filter                 xxxxxxxxx
-        # Variant             xxxxxxxxxxxxxx
-        position_query = {
-            "$or": [
-                { "end": { "$gte": int(query['start']), "$lte": int(query['end']) }}, #1
-                { "position": { "$lte": int(query['end']), "$gte": int(query['start']) }}, #2
-                {   "$and" : [
-                    {"position": {"$gte": int(query['start'])} },
-                    {"end": {"$lte": int(query['end'])} }
-                ]}, #3
-                {   "$and": [
-                    {"position": {"$lte": int(query['start'])} },
-                    {"end": {"$gte": int(query['end'])} }
-                ]}  #4
-            ]
-        }
-        coordinate_query = { "$and" : [ chromosome_query, position_query] }
+            #4
+            # filter                 xxxxxxxxx
+            # Variant             xxxxxxxxxxxxxx
+            position_query = {
+                "$or": [
+                    { "end": { "$gte": int(query['start']), "$lte": int(query['end']) }}, #1
+                    { "position": { "$lte": int(query['end']), "$gte": int(query['start']) }}, #2
+                    {   "$and" : [
+                        {"position": {"$gte": int(query['start'])} },
+                        {"end": {"$lte": int(query['end'])} }
+                    ]}, #3
+                    {   "$and": [
+                        {"position": {"$lte": int(query['start'])} },
+                        {"end": {"$gte": int(query['end'])} }
+                    ]}  #4
+                ]
+            }
+            coordinate_query = { "$and" : [ chromosome_query, position_query] }
+        else:
+            coordinate_query = chromosome_query
         return coordinate_query
 
 
