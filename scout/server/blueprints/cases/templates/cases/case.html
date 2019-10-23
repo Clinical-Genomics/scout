@@ -58,7 +58,7 @@
           {% endif %}
         </div> <!-- <div class="row" -->
         <div class="row">
-          <div class="col-xs-12 col-md-12">{{ roh_panel() }}</div>
+          <div class="col-sm-12">{{ roh_panel() }}</div>
         </div>
 
 
@@ -293,16 +293,16 @@
   </div>
 {% endmacro %}
 
-{% macro roh_panel() %}
-  <div class="panel panel-default" id="rohPanel">
-  <div data-toggle='tooltip' class="panel-heading" title="down format" >
-    Ideogram, UPD, ROH
-  </div>
+  {% macro roh_panel() %}
+  <div class="d-flex p-2 ">
+    <div class="card panel-default" id="rohPanel">
+      <div class="panel-heading">Ideogram, UPD, ROH</div>
       <br>
-  <div class="panel-body">
-    <svg id="roh_svg" width="1500" height="1250"></svg> 
+      <div class="panel-body">
+        <svg id="roh_svg" width="1050" height="1250"></svg> 
+      </div>
+    </div>
   </div>
-</div>
 {% endmacro %}
 
 
@@ -1095,16 +1095,16 @@ $('[data-toggle=sidebar-collapse]').click(function() {
 
 
 <script>
-    // TODO: Handle trisomy
+  // TODO: Handle trisomy
+  // TODO: name offset constants better
     const WIDTH_BREAKPOINT = 1550  // less will remove one column
-    const X_OFFSET = 45 // leftside offset whitespace in the PNGs
+    const X_OFFSET = 55 // leftside offset whitespace in the PNGs
     const Y_OFFSET = 5  // make room for arrows pointing at the cytoban
     const OFFSET_X = 60;
     const OFFSET_Y = 30;
     const CHROMOSOMES = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
                          '11', '12', '13', '14', '15', '16', '17', '18',
                          '19', '20', '21', '22', 'X',' Y'];
-
 
     
     console.log("window: "+$(window).width())
@@ -1236,7 +1236,7 @@ $('[data-toggle=sidebar-collapse]').click(function() {
 
     function chromosome_text(text, x, y){
         var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        t.setAttributeNS(null, 'x', x);
+        t.setAttributeNS(null, 'x', x+5);
         t.setAttributeNS(null, 'y', y);
         t.appendChild( document.createTextNode(text) );
         return t;
