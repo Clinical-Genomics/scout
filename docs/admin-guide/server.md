@@ -35,6 +35,8 @@ REPORT_LANGUAGE = 'sv'
 MAIL_USERNAME = 'paul.anderson@gmail.com'
 MAIL_PASSWORD = 'mySecretPassw0rd'
 
+TICKET_SYSTEM_EMAIL = 'support@sekvens.nu'
+
 # emails to send error log message to
 ADMINS = ['robin.andeer@scilifelab.se']
 
