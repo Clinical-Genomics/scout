@@ -688,8 +688,7 @@ def test_query_svs_by_coordinates(real_populated_database, sv_variant_objs, case
     assert list(results)[0] == variant_obj
 
     # Query should return also BND variants that have end chromosome on another chromosome than chromomsome
-    variant_obj['end_chrom'] = '6'
-    assert variant_obj['end_chrom'] != variant_obj['chromosome']
+    assert variant_obj['chromosome'] != '6'
     adapter.variant_collection.find_one_and_update({'_id':variant_obj['_id']}, {'$set' : { 'end_chrom' : '6' }})
 
     query = {
