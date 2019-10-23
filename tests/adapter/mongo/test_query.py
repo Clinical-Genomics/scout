@@ -715,11 +715,10 @@ def test_get_overlapping_variant(real_variant_database, case_obj, variant_objs):
             'hgnc_ids': [gene_id],
         }}
     )
-    # THEN the function that finds overlapping variant to the snv_variant
+    # THEN the function that finds overlapping variants to the snv_variant
     results = adapter.overlapping(updated_snv_variant)
     for res in results:
         # SHOULD return SV variant
-        #assert snv_variant == res
         assert res['category'] == 'sv'
         assert res['_id'] == sv_variant_id
 
