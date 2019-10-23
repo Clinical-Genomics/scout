@@ -231,7 +231,8 @@ def predictions(genes):
 def sv_frequencies(variant_obj):
     """Add frequencies in the correct way for the template
     
-    This function converts the raw annotations to something better to visualize
+    This function converts the raw annotations to something better to visualize.
+    GnomAD is mandatory and will always be shown.
     
     Args:
         variant_obj(scout.models.Variant)
@@ -248,14 +249,9 @@ def sv_frequencies(variant_obj):
         'swegen': 'SweGen',
         'decipher': 'Decipher',
     }
-    # Mandatory frequencies
-    
-    frequencies = [
-        ('GnomAD', variant_obj.get('gnomad_frequency')),
-    ]
-    
+    frequencies = []
     for freq_key in sv_freqs:
-        freq_annotation = (sv_freqs[freq_key], variant_obj[freq_key])
+        freq_annotation = (sv_freqs[freq_key], variant_obj.get(freq_key))
         # Allways add gnomad
         if freq_key == 'gnomad_frequency':
             frequencies.append(freq_annotation)
