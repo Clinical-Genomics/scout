@@ -5,12 +5,13 @@ from scout.server.links import (add_gene_links, ensembl, add_tx_links)
 
 LOG = logging.getLogger(__name__)
 
-def add_panel_specific_gene_info(panel_info, gene_obj):
+def add_panel_specific_gene_info(panel_info):
     """Adds manualy curated information from a gene panel to a gene
+    
+    The panel info is a list of dictionaries since there can be multiple infos about a panel.
     
     Args:
         panel_info(list(dict)): List of panel information about a gene
-        gene_obj(dict): The gene information from the variant
     
     Returns:
         panel_specific(dict): A dictionary with a summary of the information from gene panels
@@ -29,7 +30,8 @@ def add_panel_specific_gene_info(panel_info, gene_obj):
         # Check if there are manually annotated disease transcripts
         for tx in gene_info.get('disease_associated_transcripts', []):
             # We remove the version of transcript at this stage
-            stripped = re.sub(r'\.[0-9]', '', tx)
+            stripped = tx.split('.')[0]
+            print(stripped)
             disease_associated_no_version.add(stripped)
             disease_associated.add(tx)
 

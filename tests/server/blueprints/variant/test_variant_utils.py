@@ -1,5 +1,49 @@
 from scout.server.blueprints.variant.utils import (predictions, sv_frequencies, is_affected, 
-evaluation, transcript_str, frequency, end_position)
+evaluation, transcript_str, frequency, end_position, add_panel_specific_gene_info)
+
+
+def test_add_panel_specific_gene_info_disease_tx():
+    ## GIVEN some panel genes and a gene object
+    panel_info = [
+        {
+            'hgnc_id':100, 
+            'symbol': 'AAA', 
+            'disease_associated_transcripts': ['NM001.1']
+        }
+    ]
+    ## WHEN parsing the info
+    panel_info = add_panel_specific_gene_info(panel_info)
+    ## THEN assert no info is returned
+    assert panel_info.get('mosaicism') is False
+    assert panel_info.get('disease_associated_no_version') == set(['NM001'])
+    assert panel_info.get('disease_associated_transcripts') == ['NM001.1']
+
+
+def test_add_panel_specific_gene_info_mosaic():
+    ## GIVEN some panel genes and a gene object
+    panel_info = [{'hgnc_id':100, 'symbol': 'AAA', 'mosaicism': True}]
+    ## WHEN parsing the info
+    panel_info = add_panel_specific_gene_info(panel_info)
+    ## THEN assert no info is returned
+    assert panel_info['mosaicism'] is True
+
+def test_add_panel_specific_gene_info_empty():
+    ## GIVEN some panel genes and a gene object
+    panel_info = []
+    ## WHEN fetching the panel specific info
+    panel_info = add_panel_specific_gene_info(panel_info)
+    ## THEN assert no info is returned
+    for entry in panel_info:
+        assert not panel_info[entry]
+
+def test_add_panel_specific_gene_info():
+    ## GIVEN some panel genes and a gene object
+    panel_info = [{'hgnc_id':100, 'symbol': 'AAA'}]
+    ## WHEN parsing the info
+    panel_info = add_panel_specific_gene_info(panel_info)
+    ## THEN assert no info is returned
+    for entry in panel_info:
+        assert not panel_info[entry]
 
 def test_end_position_old_indel():
     ## GIVEN a small indel
