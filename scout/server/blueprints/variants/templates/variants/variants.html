@@ -119,7 +119,7 @@
     </span>
   {% endif %}
   {% if variant.manual_rank %}
-    <span class="badge badge-secondary" data-toggle="tooltip" title="Manual rank">{{ variant.manual_rank }}</span>
+    <span class="badge badge-primary" data-toggle="tooltip" title="Manual rank">{{ variant.manual_rank }}</span>
   {% endif %}
   {% if variant.evaluations %}
     {% for evaluation in (variant.evaluations or []) %}
