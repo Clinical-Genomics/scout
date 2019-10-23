@@ -690,7 +690,6 @@ def test_query_svs_by_coordinates(real_populated_database, sv_variant_objs, case
 
     # Query should return also BND variants that have end chromosome on another chromosome than chromomsome
     assert variant_obj['chromosome'] != '6'
-    variant_obj['end_chrom'] = '6'
 
     updated_variant = adapter.variant_collection.find_one_and_update(
         {'_id':variant_obj['_id']},
@@ -707,7 +706,7 @@ def test_query_svs_by_coordinates(real_populated_database, sv_variant_objs, case
     # THEN using the filter in a variant query
     results = adapter.variants(case_obj['_id'], query=query, category='sv')
     # The same variant should be returned
-    assert list(results)[0] == updated_variant
+    assert list(results)[0] == updated_variantg
 
 
 def test_get_overlapping_variant(real_variant_database, case_obj, variant_objs):
