@@ -888,5 +888,5 @@ def host_image_aux(institute_id, case_name, image, imgstr):
     chr_path = case_obj.get('chromograph_image_files')
     abs_path = os.path.abspath(chr_path)
     img_path = abs_path +"/" + imgstr
-    LOG.info("Attempting to send {}/{}" .format(img_path, image))
+    LOG.debug("Attempting to send {}/{}" .format(img_path, image))
     return send_from_directory(img_path, image)
