@@ -703,22 +703,27 @@ def test_get_overlapping_variant(real_variant_database, case_obj, variant_objs):
     assert sv_variant
     sv_variant_id = sv_variant['_id']
 
-    # WITH a given gene
+    # WITH a given gene from sv variant
     gene_id = sv_variant['hgnc_ids'][0]
 
     # Retrieve a SNV variant occurring in the same gene:
     snv_variant = adapter.variant_collection.find_one({'category':'snv'})
-    # WHEN genes of this variant overlap with genes of sv variant
-    adapter.variant_collection.find_one_and_update(
+    # And arbitrary set its hgnc_ids to gene_id
+    updated_snv_variant = adapter.variant_collection.find_one_and_update(
         {'_id':snv_variant['_id']},
         {'$set':{
             'hgnc_ids': [gene_id],
         }}
     )
-    # THEN function that finds overlapping variant to the snv_variant
-    results = adapter.overlapping(snv_variant)
+    # THEN the function that finds overlapping variant to the snv_variant
+    results = adapter.overlapping(updated_snv_variant)
     for res in results:
         # SHOULD return SV variant
         #assert snv_variant == res
         assert res['category'] == 'sv'
         assert res['_id'] == sv_variant_id
+
+    # The function should also work the other way around:
+    # and return snv variants that overlaps with sv variants
+    results = list(adapter.overlapping(sv_variant))
+    assert updated_snv_variant in results
