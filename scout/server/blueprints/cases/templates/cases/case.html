@@ -294,10 +294,11 @@
 {% endmacro %}
 
 {% macro roh_panel() %}
-<div class="panel panel-default" id="rohPanel">
+  <div class="panel panel-default" id="rohPanel">
   <div data-toggle='tooltip' class="panel-heading" title="down format" >
     Ideogram, UPD, ROH
   </div>
+      <br>
   <div class="panel-body">
     <svg id="roh_svg" width="1500" height="1250"></svg> 
   </div>
@@ -1398,9 +1399,10 @@ $('[data-toggle=sidebar-collapse]').click(function() {
         console.log(individualsJson)
         var sex = getSex(individualsJson)
         console.log(sex)
-        
-        var pJ = {{case.chromograph_prefixes|tojson}}    // convert to json makes it possible to handle if null
-        var iJ = {{case.chromograph_image_files|tojson}}    // convert to json makes it possible to handle if null
+
+        // convert to case json makes it possible to handle if null
+        var pJ = {{case.chromograph_prefixes|tojson}}  
+        var iJ = {{case.chromograph_image_files|tojson}}    
 
         // testFile is a cytoband image, if configured correctly it should
         // exist -images are drawn -otherwise the panel is hidden
