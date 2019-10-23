@@ -1,5 +1,6 @@
 from scout.constants import CLINSIG_MAP
 import re
+from pymongo import ReturnDocument
 
 def test_build_gene_variant_query(adapter):
     hgnc_symbols = ['POT1']
@@ -689,7 +690,14 @@ def test_query_svs_by_coordinates(real_populated_database, sv_variant_objs, case
 
     # Query should return also BND variants that have end chromosome on another chromosome than chromomsome
     assert variant_obj['chromosome'] != '6'
-    adapter.variant_collection.find_one_and_update({'_id':variant_obj['_id']}, {'$set' : { 'end_chrom' : '6' }})
+    variant_obj['end_chrom'] = '6'
+
+    updated_variant = adapter.variant_collection.find_one_and_update(
+        {'_id':variant_obj['_id']},
+        {'$set' : { 'end_chrom' : '6' }},
+        return_document=ReturnDocument.AFTER
+    )
+    assert updated_variant['end_chrom'] == '6'
 
     query = {
         'chrom' : '6',
@@ -698,8 +706,8 @@ def test_query_svs_by_coordinates(real_populated_database, sv_variant_objs, case
     }
     # THEN using the filter in a variant query
     results = adapter.variants(case_obj['_id'], query=query, category='sv')
-    # THEN the same variant should be returned
-    assert list(results)[0] == variant_obj
+    # The same variant should be returned
+    assert list(results)[0] == updated_variant
 
 
 def test_get_overlapping_variant(real_variant_database, case_obj, variant_objs):
