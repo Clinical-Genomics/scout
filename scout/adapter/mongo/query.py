@@ -164,15 +164,14 @@ class QueryHandler(object):
                 gene_query = self.gene_filter(query, mongo_query)
 
             elif criterion == 'chrom' and query.get('chrom'): # filter by coordinates
-                LOG.debug('Adding genomic coordinates to the query')
-                mongo_query['chromosome'] = query['chrom']
-
                 coordinate_query = None
-                if (query.get('start') and query.get('end')):
-                    if category == 'sv':
-                        coordinate_query = [self.sv_coordinate_filter(query, mongo_query)]
-                    else:
+                if category == 'snv':
+                    mongo_query['chromosome'] = query['chrom']
+                    if (query.get('start') and query.get('end')):
                         self.coordinate_filter(query, mongo_query)
+                else: # sv
+                    coordinate_query = [self.sv_coordinate_query(query, query)]
+
 
             elif criterion == 'variant_ids' and variant_ids:
                 LOG.debug("Adding variant_ids %s to query" % ', '.join(variant_ids))
@@ -344,7 +343,7 @@ class QueryHandler(object):
         return mongo_query
 
 
-    def sv_coordinate_filter(self, query, mongo_query):
+    def sv_coordinate_query(self, query, mongo_query):
         """ Adds genomic coordinated-related filters to the query object
             This method is called to buid coordinate query for sv variants
 
@@ -356,6 +355,10 @@ class QueryHandler(object):
             coordinate_query(dict): returned object contains coordinate filters for sv variant
 
         """
+        chromosome_query = { '$or' : [
+            {'chromosome' : mongo_query['chrom'] },
+            {'end_chrom' : mongo_query['chrom']}
+        ] }
         # Query for overlapping intervals. Taking into account these cases:
         #1
         # filter                 xxxxxxxxx
@@ -372,7 +375,7 @@ class QueryHandler(object):
         #4
         # filter                 xxxxxxxxx
         # Variant             xxxxxxxxxxxxxx
-        coordinate_query = {
+        position_query = {
             "$or": [
                 { "end": { "$gte": int(query['start']), "$lte": int(query['end']) }}, #1
                 { "position": { "$lte": int(query['end']), "$gte": int(query['start']) }}, #2
@@ -386,6 +389,7 @@ class QueryHandler(object):
                 ]}  #4
             ]
         }
+        coordinate_query = { "$and" : [ chromosome_query, position_query] }
         return coordinate_query
 
 
