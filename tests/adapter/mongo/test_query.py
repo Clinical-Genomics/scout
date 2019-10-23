@@ -706,7 +706,7 @@ def test_query_svs_by_coordinates(real_populated_database, sv_variant_objs, case
     # THEN using the filter in a variant query
     results = adapter.variants(case_obj['_id'], query=query, category='sv')
     # The same variant should be returned
-    assert list(results)[0] == updated_variantg
+    assert list(results)[0] == updated_variant
 
 
 def test_get_overlapping_variant(real_variant_database, case_obj, variant_objs):
