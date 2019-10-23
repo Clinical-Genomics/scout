@@ -180,7 +180,7 @@ def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
         
         add_gene_links(variant_gene, genome_build)
         
-        # Add disease associated transcripts to variant
+        # Add disease associated transcripts from panel to variant
         for refseq_id in panel_info.get('disease_associated_transcripts', []):
             transcript_str = "{}:{}".format(hgnc_symbol, refseq_id)
             variant_obj['disease_associated_transcripts'].append(transcript_str)
@@ -239,26 +239,30 @@ def sv_frequencies(variant_obj):
     Returns:
         frequencies(list(tuple)): A list of frequencies to display
     """
-    
+    sv_freqs = {
+        'gnomad_frequency': 'GnomAD',
+        'clingen_cgh_benign': 'ClinGen CGH (benign)',
+        'clingen_cgh_pathogenic': 'ClinGen CGH (pathogenic)',
+        'clingen_ngi': 'ClinGen NGI',
+        'clingen_mip': 'ClinGen MIP',
+        'swegen': 'SweGen',
+        'decipher': 'Decipher',
+    }
     # Mandatory frequencies
     
     frequencies = [
         ('GnomAD', variant_obj.get('gnomad_frequency')),
     ]
-
-    if 'clingen_cgh_benign' in variant_obj:
-        frequencies.append(('ClinGen CGH (benign)', variant_obj['clingen_cgh_benign']))
-    if 'clingen_cgh_pathogenic' in variant_obj:
-        frequencies.append(('ClinGen CGH (pathogenic)', variant_obj['clingen_cgh_pathogenic']))
-    if 'clingen_ngi' in variant_obj:
-        frequencies.append(('ClinGen NGI', variant_obj['clingen_ngi']))
-    if 'clingen_mip' in variant_obj:
-        frequencies.append(('ClinGen MIP', variant_obj['clingen_mip']))
-    if 'swegen' in variant_obj:
-        frequencies.append(('SweGen', variant_obj['swegen']))
-    if 'decipher' in variant_obj:
-        frequencies.append(('Decipher', variant_obj['decipher']))
     
+    for freq_key in sv_freqs:
+        freq_annotation = (sv_freqs[freq_key], variant_obj[freq_key])
+        # Allways add gnomad
+        if freq_key == 'gnomad_frequency':
+            frequencies.append(freq_annotation)
+            continue
+        if freq_key in variant_obj:
+            frequencies.append(freq_annotation)
+
     return frequencies
 
 
