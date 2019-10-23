@@ -253,8 +253,8 @@ def case_report_content(store, institute_obj, case_obj):
         # We decorate the variant with some extra information
             decorated_info = variant_decorator(
                     store=store,
-                    institute_obj=institute_obj,
-                    case_obj=case_obj,
+                    institute_obj=institute_obj['_id'],
+                    case_obj=case_obj['display_name'],
                     variant_id=None,
                     variant_obj=var_obj,
                     add_case=False,

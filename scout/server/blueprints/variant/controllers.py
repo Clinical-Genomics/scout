@@ -145,3 +145,26 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
         'ACMG_OPTIONS': ACMG_OPTIONS,
         'evaluations': evaluations,
     }
+
+def observations(store, loqusdb, case_obj, variant_obj):
+    """Query observations for a variant."""
+    composite_id = ("{this[chromosome]}_{this[position]}_{this[reference]}_"
+                    "{this[alternative]}".format(this=variant_obj))
+    obs_data = loqusdb.get_variant({'_id': composite_id}) or {}
+    obs_data['total'] = loqusdb.case_count()
+
+    obs_data['cases'] = []
+    institute_id = variant_obj['institute']
+    for case_id in obs_data.get('families', []):
+        if case_id != variant_obj['case_id']:
+            # other case might belong to same institute, collaborators or other institutes
+            other_case = store.case(case_id)
+            institute_objs = user_institutes(store, current_user)
+            user_institutes_ids = [inst['_id'] for inst in institute_objs]
+            if other_case and (other_case.get('owner') == institute_id # observation variant has same institute as first variant
+                or institute_id in other_case.get('collaborators', []) # or is in other case collaborators
+                or other_case.get('owner') in user_institutes_ids): # or observation's institute belongs to users institutes
+                other_variant = store.variant(case_id=case_id, simple_id=composite_id)
+                obs_data['cases'].append(dict(case=other_case, variant=other_variant))
+
+    return obs_data
