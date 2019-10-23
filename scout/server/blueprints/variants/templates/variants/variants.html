@@ -71,7 +71,7 @@
               {% else %}
                 <tr>
               {% endif %}
-                <td class="d-flex justify-content-between align-items-center">{{ cell_rank(variant) }}</td>
+                <td class="text-left">{{ cell_rank(variant) }}</td>
                 <td class="text-right">{{ variant.rank_score|int }}</td>
                 <td>{{ variant.chromosome }}</td>
                 <td>{{ gene_cell(variant) }}</td>

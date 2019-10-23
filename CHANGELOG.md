@@ -37,6 +37,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed error causing "favicon not found" flash messages
 - Removed flask --version from base cli
 - Request rerun no longer changes case status. Active or archived cases inactivate on upload.
+- Fixed weird Rank cell in variants page
 
 
 ## [4.7.3]
