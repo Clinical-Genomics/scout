@@ -127,9 +127,9 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
 
     overlapping_vars = []
     if get_overlapping:
-        overlapping_vars = [var.update(predictions(var.get('genes',[]))) 
-                       for var in store.overlapping(variant_obj)]
-
+        for var in store.overlapping(variant_obj):
+            var.update(predictions(var.get('genes',[])))
+            overlapping_vars.append(var)
     variant_obj['end_chrom'] = variant_obj.get('end_chrom', variant_obj['chromosome'])
 
     return {

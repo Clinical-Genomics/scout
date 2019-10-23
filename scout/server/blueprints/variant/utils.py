@@ -173,7 +173,7 @@ def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
 
         ############# PANEL SPECIFIC INFORMATION #############
         # Panels can have extra information about genes and transcripts
-        panel_info = add_panel_specific_gene_info(extra_info.get(hgnc_id, []), variant_gene)
+        panel_info = add_panel_specific_gene_info(extra_info.get(hgnc_id, []))
         variant_gene.update(panel_info)
         
         update_transcripts_information(variant_gene, hgnc_gene, variant_obj)
