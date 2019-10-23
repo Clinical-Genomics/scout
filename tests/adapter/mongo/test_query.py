@@ -684,146 +684,41 @@ def test_query_svs_by_coordinates(real_populated_database, sv_variant_objs, case
     # THEN the same variant should be returned
     assert list(results)[0] == variant_obj
 
-def test_get_overlapping_variant(populated_database, parsed_case):
-    """Add a couple of overlapping variants"""
+def test_get_overlapping_variant(real_variant_database, case_obj, variant_objs):
+    """Test function that finds SVs overlapping to a given SNV"""
 
-    ## GIVEN a database with some basic information but no variants
+    ## GIVEN a database with snv variants
+    adapter = real_variant_database
 
-    case_id = parsed_case['case_id']
-
-    snvs = populated_database.variants(case_id, category='snv')
-    assert sum(1 for i in snvs) == 0
-
-    svs = populated_database.variants(case_id, category='sv')
-    assert sum(1 for i in svs) == 0
-
-    ## WHEN inserting a couple of variants
-
-    institute_id = parsed_case['owner']
-    institute_obj = populated_database.institute(institute_id)
-    snv_one = dict(
-        _id='first',
-        document_id='first',
-        variant_id='first',
-        display_name='first',
-        simple_id='first',
-        variant_type='clinical',
-        category='snv',
-        sub_category='snv',
-        case_id=case_id,
-        chromosome='1',
-        position=235824342,
-        end=235824342,
-        length=1,
-        rank_score=10,
-        variant_rank=1,
-        institute=institute_obj,
-        hgnc_symbols=['LYST'],
-        hgnc_ids=[1968],
-    )
-    populated_database.load_variant(snv_one)
-
-    snv_two = dict(
-        _id='second',
-        document_id='second',
-        variant_id='second',
-        display_name='second',
-        simple_id='second',
-        variant_type='clinical',
-        category='snv',
-        sub_category='snv',
-        case_id=case_id,
-        chromosome='1',
-        position=235710920,
-        end=235710920,
-        length=1,
-        rank_score=9,
-        variant_rank=2,
-        institute=institute_obj,
-        hgnc_symbols=['GNG4'],
-        hgnc_ids=[4407]
-    )
-    populated_database.load_variant(snv_two)
-
-    # create a SV that overlaps just with snv_one
-    sv_one = dict(
-        _id='first_sv',
-        document_id='first_sv',
-        variant_id='first_sv',
-        display_name='first_sv',
-        simple_id='first_sv',
+    # load SV variants
+    adapter.load_variants(
+        case_obj,
         variant_type='clinical',
         category='sv',
-        sub_category='ins',
-        case_id=case_id,
-        chromosome='1',
-        position=235824350,
-        end=235824355,
-        length=5,
-        rank_score=10,
-        variant_rank=1,
-        institute=institute_obj,
-        hgnc_symbols=['LYST'],
-        hgnc_ids=[1968]
+        rank_threshold=-10,
+        build='37'
     )
-    populated_database.load_variant(sv_one)
+    # GIVEN a SV variant from this database
+    sv_variant = adapter.variant_collection.find_one({'category':'sv'})
+    assert sv_variant
+    sv_variant_id = sv_variant['_id']
 
-    # create a SV that overlaps with both variants
-    sv_two = dict(
-        _id='second_sv',
-        document_id='second_sv',
-        variant_id='second_sv',
-        display_name='second_sv',
-        simple_id='second_sv',
-        variant_type='clinical',
-        category='sv',
-        sub_category='del',
-        case_id=case_id,
-        chromosome='1',
-        position=235710900,
-        end=235824450,
-        length=113550,
-        rank_score=15,
-        variant_rank=1,
-        institute=institute_obj,
-        hgnc_symbols=['LYST', 'GNG4'],
-        hgnc_ids=[1968, 4407]
+    # WITH a given gene
+    gene_id = sv_variant['hgnc_ids'][0]
+
+    # Retrieve a SNV variant occurring in the same gene:
+    snv_variant = adapter.variant_collection.find_one({'category':'snv'})
+    # WHEN genes of this variant overlap with genes of sv variant
+    adapter.variant_collection.find_one_and_update(
+        {'_id':snv_variant['_id']},
+        {'$set':{
+            'hgnc_ids': [gene_id],
+        }}
     )
-    populated_database.load_variant(sv_two)
-
-    ## THEN make sure that the variants where inserted
-    result = populated_database.variants(case_id, category='snv')
-    # Thow snvs where loaded
-    assert sum(1 for i in result) == 2
-
-    #Two SV where added
-    result = populated_database.variants(case_id, category='sv')
-    assert sum(1 for i in result) == 2
-
-    # test functions to collect all overlapping variants
-    result = populated_database.overlapping(snv_one)
-    index = 0
-    for variant in result:
-        index += 1
-    assert index == 2
-
-    # test function
-    result = populated_database.overlapping(snv_two)
-    index = 0
-    for variant in result:
-        index += 1
-    assert index == 1
-
-    # test function
-    result = populated_database.overlapping(sv_one)
-    index = 0
-    for variant in result:
-        index += 1
-    assert index == 1
-
-    # test function
-    result = populated_database.overlapping(sv_two)
-    index = 0
-    for variant in result:
-        index += 1
-    assert index == 2
+    # THEN function that finds overlapping variant to the snv_variant
+    results = adapter.overlapping(snv_variant)
+    for res in results:
+        # SHOULD return SV variant
+        #assert snv_variant == res
+        assert res['category'] == 'sv'
+        assert res['_id'] == sv_variant_id
