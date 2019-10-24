@@ -12,6 +12,8 @@ FUNDAMENTAL_CRITERIA = [
     'hgnc_symbols',
     'gene_panels',
     'chrom',
+    'start',
+    'end',
     'variant_ids'
 ]
 

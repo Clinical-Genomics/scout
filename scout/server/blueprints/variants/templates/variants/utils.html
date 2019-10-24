@@ -1,3 +1,5 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
 {% macro compounds_table(institute, case, compounds) %}
   <table class='table table-condensed table-bordered table-sm'>
     <thead>
@@ -144,6 +146,220 @@
             </button>
           </div>
         </form>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+
+{% macro snv_filters(form, institute, case)%}
+<div class="form-group">
+  <div class="row">
+    <div class="col-2">
+      {{ form.gene_panels.label}}
+      <div class="btn-group d-flex">
+        <a class="btn btn-outline-secondary btn-sm " href="{{ url_for('variants.variants', institute_id=institute._id,
+          case_name=case.display_name, variant_type=form.variant_type.data,
+          gene_panels=['hpo']) }}">HPO gene list</a>
+      </div>
+    </div>
+    <div class="col-2">
+      {{form.gene_panels(class="selectpicker")}}
+    </div>
+    <div class="col-2">
+      {{ form.symbol_file.label(class="control-label") }}
+      {{ form.symbol_file(class="form-control-file") }}
+    </div>
+    <div class="col-2">
+      {{ form.region_annotations.label(class="control-label") }}
+      {{ form.region_annotations(class="selectpicker") }}
+    </div>
+    <div class="col-2">
+      {{ form.functional_annotations.label(class="control-label") }}
+      {{ form.functional_annotations(class="selectpicker") }}
+    </div>
+    <div class="col-2">
+      {{ form.genetic_models.label(class="control-label") }}
+      {{ form.genetic_models(class="selectpicker") }}
+    </div>
+  </div>
+</div>
+<div class="form-group">
+<div class="row">
+  <div class="col-3">
+    {{ form.hgnc_symbols.label(class="control-label") }}
+    {{ form.hgnc_symbols(class="form-control") }}
+  </div>
+  <div class="col-1">
+    {{ form.cadd_score.label(class="control-label") }}
+    {{ form.cadd_score(class="form-control") }}
+  </div>
+  <div class="col-2">
+    {{ form.cadd_inclusive.label(class="control-label") }}
+    <div>{{ form.cadd_inclusive() }}</div>
+  </div>
+  <div class="col-2">
+    {{ form.clinsig.label(class="control-label") }}
+    {{ form.clinsig(class="selectpicker") }}
+  </div>
+  <div class="col-2">
+    {{ form.clinsig_confident_always_returned.label(class="control-label") }}
+    <div>{{ form.clinsig_confident_always_returned() }}</div>
+  </div>
+  <div class="col-2">
+    {{ form.spidex_human.label(class="control-label") }}
+    {{ form.spidex_human(class="selectpicker") }}
+  </div>
+</div>
+</div>
+<div class="form-group">
+<div class="row">
+  <div class="col-2">
+    {{ form.gnomad_frequency.label(class="control-label") }}
+    {{ form.gnomad_frequency(class="form-control") }}
+  </div>
+  <div class="col-2">
+    {{ form.local_obs.label(class="control-label") }}
+    {{ form.local_obs(class="form-control") }}
+  </div>
+  <div class="col-2">
+    {{ wtf.form_field(form.chrom) }}
+  </div>
+  <div class="col-3">
+    {{ wtf.form_field(form.start) }}
+  </div>
+  <div class="col-3">
+    {{ wtf.form_field(form.end) }}
+  </div>
+</div>
+</div>
+<div class="form-group">
+  <div class="row justify-content-center" style="margin-top:20px;">
+      <div class="col-4">
+        {{ form.filter_variants(class_="btn btn-primary form-control") }}
+      </div>
+      <div class="col-4">
+         {{ form.clinical_filter(class_="btn btn-outline-secondary form-control") }}
+      </div>
+      <div class="col-4">
+        {{ form.export(class_="btn btn-warning form-control") }}
+      </div>
+  </div><!--end of row-->
+</div>
+<a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name,
+  variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
+   class="btn btn-secondary btn-sm" style="color: #ffffff !important;">
+  reset filters
+</a>
+{% endmacro %}
+
+{% macro sv_filters(form, institute, case) %}
+<input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
+  <div class="row">
+    <div class="col-2">
+      {{ form.gene_panels.label(class="control-label") }}
+      <div class="btn-group d-flex">
+        <a class="btn btn-outline-secondary btn-sm " href="{{ url_for('variants.sv_variants', institute_id=institute._id,
+          case_name=case.display_name, variant_type=form.variant_type.data,
+          gene_panels=['hpo']) }}">HPO gene list</a>
+      </div>
+    </div>
+    <div class="col-2">
+      {{ form.gene_panels(class="selectpicker") }}
+    </div>
+    <div class="col-3">
+      {{ form.region_annotations.label(class="control-label") }}
+      {{ form.region_annotations(class="selectpicker") }}
+    </div>
+    <div class="col-2">
+      {{ form.functional_annotations.label(class="control-label") }}
+      {{ form.functional_annotations(class="selectpicker") }}
+    </div>
+    <div class="col-3">
+      {{ form.genetic_models.label(class="control-label") }}
+      {{ form.genetic_models(class="selectpicker") }}
+    </div>
+  </div>
+<div class="form-group">
+  <div class="row">
+    <div class="col-3">
+      {{ form.hgnc_symbols.label(class="control-label") }}
+      {{ form.hgnc_symbols(class="form-control") }}
+    </div>
+    <div class="col-2">
+      {{ form.size.label(class="control-label") }}
+      {{ form.size(class="form-control", type="number") }}
+    </div>
+    <div class="col-2">
+      {{ form.size_shorter.label(class="control-label") }}
+      <div>{{ form.size_shorter() }}</div>
+    </div>
+    <div class="col-2">
+      {{ form.decipher.label(class="control-label") }}
+      <div>{{ form.decipher() }}</div>
+    </div>
+    <div class="col-3">
+      {{ form.clinsig.label(class="control-label") }}
+      {{ form.clinsig(class="selectpicker") }}
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="row">
+    <div class="col-3">
+      {{ form.svtype.label(class="control-label") }}
+      {{ form.svtype(class="form-control selectpicker") }}
+    </div>
+    <div class="col-3">
+      {{ form.chrom.label(class="control-label") }}
+      {{ form.chrom(class="form-control") }}
+    </div>
+    <div class="col-3">
+      {{ wtf.form_field(form.start) }}
+    </div>
+    <div class="col-3">
+      {{ wtf.form_field(form.end) }}
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="row d-flex justify-content-between align-items-center">
+    <div class="col-2">
+      {{ form.gnomad_frequency.label(class="control-label") }}
+      {{ form.gnomad_frequency(class="form-control") }}
+    </div>
+    <div class="col-2">
+       {{ form.clingen_ngi.label(class="control-label") }}
+       {{ form.clingen_ngi(class="form-control") }}
+    </div>
+    <div class="col-2">
+      {{ form.swegen.label(class="control-label") }}
+      {{ form.swegen(class="form-control") }}
+    </div>
+
+    <div class="col-6">
+      <div class="row">
+        <div class="col-4">
+          {{ form.filter_variants(class="btn btn-primary form-control") }}
+        </div>
+        <div class="col-4">
+          {{ form.clinical_filter(class="btn btn-outline-secondary form-control ") }}
+        </div>
+        <div class="col-4">
+          {{ form.export(class="btn btn-warning form-control") }}
+        </div>
+      </div>
+      <br>
+      <div class="row">
+        <div class="col-12 text-right">
+          <a href="{{ url_for('variants.sv_variants', institute_id=institute._id,
+            case_name=case.display_name, variant_type='clinical',
+            gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
+            class="btn btn-secondary btn-sm" style="color: #ffffff !important;">
+            reset filters
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
