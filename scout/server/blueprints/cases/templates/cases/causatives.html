@@ -31,16 +31,16 @@
 <table id="causatives_table" class="table" cellspacing="0" width="100%">
     <thead>
     <tr>
-      <th>Group</th>
-      <th>Variant Name</th>
-      <th>Cathegory</th>
-      <th>Rank score</th>
-      <th>Zygosity</th>
-      <th>Inharitance</th>
-      <th>ACMG</th>
-      <th>Case Name</th>
-      <th>Case Status</th>
-      <th>??</th>
+      <th style="width:5%">Group</th>
+      <th style="width:10%">Variant Name</th>
+      <th style="width:3%">Cathegory</th>
+      <th style="width:3%">Rank score</th>
+      <th style="width:5%">Zygosity</th>
+      <th style="width:3%">Inharitance</th>
+      <th style="width:5%">ACMG</th>
+      <th style="width:5%">Case Name</th>
+      <th style="width:3%">Case Status</th>
+      <th style="width:20%">??</th>
     </tr>
     </thead>
     <tbody>
@@ -97,7 +97,7 @@
               {{ group_variant.chromosome }}:{{ group_variant.position }} {% if group_variant.is_par %}
               <span class="badge badge-info">PAR</span>
               {% endif %}
-              {{ group_variant.reference|truncate(10, True) }} → {{ group_variant.alternative|truncate(10, True) }}
+              {{ group_variant.reference|truncate(30, True) }} → {{ group_variant.alternative|truncate(30, True) }}
             </span></td>
       </tr>
       {% endif %}
