@@ -586,7 +586,7 @@ def test_sv_frequencies_empty():
     freq = sv_frequencies(var)
     ## THEN assert the correct tuple is returned
     assert len(freq) == 1
-    assert freq[0] == ('GnomAD', var.get('gnomad_frequency'))
+    assert freq[0] == ('GnomAD', var.get('gnomad_frequency', 'NA'))
 
 def test_sv_frequencies_gnomad():
     ## GIVEN a variant object with gnomad annotation
@@ -596,6 +596,15 @@ def test_sv_frequencies_gnomad():
     ## THEN assert the correct tuple is returned
     assert len(freq) == 1
     assert freq[0] == ('GnomAD', var.get('gnomad_frequency'))
+
+def test_sv_frequencies_gnomad_exac():
+    ## GIVEN a variant object with gnomad annotation
+    var = {'exac_frequency': 0.01}
+    ## WHEN parsing the sv frequencies
+    freq = sv_frequencies(var)
+    ## THEN assert the correct tuple is returned
+    assert len(freq) == 1
+    assert freq[0] == ('GnomAD', var.get('exac_frequency'))
 
 
 def test_sv_frequencies_all():
@@ -608,10 +617,11 @@ def test_sv_frequencies_all():
             'clingen_mip': 0.02,
             'swegen': 0.02,
             'decipher': 0.02,
+            'thousand_genomes_frequency': 0.02,
         }
     ## WHEN parsing the sv frequencies
     freq = sv_frequencies(var)
     ## THEN assert the correct tuple is returned
-    assert len(freq) == 7
+    assert len(freq) == 8
     for annotation in freq:
         assert annotation[1] == 0.02

@@ -249,13 +249,15 @@ def sv_frequencies(variant_obj):
         'clingen_mip': 'ClinGen MIP',
         'swegen': 'SweGen',
         'decipher': 'Decipher',
+        'thousand_genomes_frequency': '1000G',
     }
     frequencies = []
     for freq_key in sv_freqs:
         freq_annotation = (sv_freqs[freq_key], variant_obj.get(freq_key))
         # Allways add gnomad
         if freq_key == 'gnomad_frequency':
-            frequencies.append(freq_annotation)
+            value = variant_obj.get('gnomad_frequency', variant_obj.get('exac_frequency', 'NA'))
+            frequencies.append(('GnomAD', value))
             continue
         if freq_key in variant_obj:
             frequencies.append(freq_annotation)

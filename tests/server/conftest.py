@@ -30,6 +30,21 @@ def app(real_database_name, real_variant_database, user_obj):
 
     return app
 
+@pytest.fixture
+def minimal_app(real_database_name, real_populated_database, user_obj):
+    "An app without data"
+    app = create_app(config=dict(TESTING=True, DEBUG=True, MONGO_DBNAME=real_database_name,
+                                 DEBUG_TB_ENABLED=False, LOGIN_DISABLED=True))
+
+    @app.route('/auto_login')
+    def auto_login():
+        log.debug('Got request for auto login for {}'.format(user_obj))
+        user_inst = LoginUser(user_obj)
+        assert login_user(user_inst, remember=True)
+        return "ok"
+
+    return app
+
 
 @pytest.fixture
 def institute_info():
@@ -419,3 +434,285 @@ def hgnc_gene():
         ]
     }
     return gene
+
+@pytest.fixture
+def sv_var_obj():
+    sv_var = {
+    	"_id" : "19ecad237722da35ec5ed01ecc9f0c3b",
+    	"length" : 1,
+    	"mate_id" : null,
+    	"document_id" : "19ecad237722da35ec5ed01ecc9f0c3b",
+    	"end_chrom" : "1",
+    	"variant_id" : "9657183743c80ef8552ef7725c0f4bef",
+    	"freebayes" : "Pass",
+    	"reference" : "A",
+    	"category" : "snv",
+    	"spidex" : 1.7039999961853027,
+    	"institute" : "cust003",
+    	"dbsnp_id" : "rs147223770",
+    	"hgnc_ids" : [
+    		7882
+    	],
+    	"end" : 120478125,
+    	"compounds" : [
+    		{
+    			"display_name" : "1_120602372_A_G",
+    			"not_loaded" : false,
+    			"variant" : "cd6c106e6010a97d20dce3265a7b527a",
+    			"genes" : [
+    				{
+    					"functional_annotation" : "non_coding_transcript_variant",
+    					"hgnc_id" : 7882,
+    					"region_annotation" : "ncRNA_exonic",
+    					"hgnc_symbol" : "NOTCH2"
+    				}
+    			],
+    			"combined_score" : 25,
+    			"rank_score" : 9
+    		},
+    		{
+    			"display_name" : "1_120576878_C_A",
+    			"not_loaded" : false,
+    			"variant" : "d334f56b68089c490a130f6707d05a52",
+    			"genes" : [
+    				{
+    					"functional_annotation" : "non_coding_transcript_variant",
+    					"hgnc_id" : 7882,
+    					"region_annotation" : "ncRNA_exonic",
+    					"hgnc_symbol" : "NOTCH2"
+    				}
+    			],
+    			"combined_score" : 24,
+    			"rank_score" : 8
+    		},
+    		{
+    			"display_name" : "1_120464481_T_C",
+    			"not_loaded" : false,
+    			"variant" : "e1b3a61989b641b5173a68c94960dac7",
+    			"genes" : [
+    				{
+    					"functional_annotation" : "intron_variant",
+    					"hgnc_id" : 7882,
+    					"region_annotation" : "intronic",
+    					"hgnc_symbol" : "NOTCH2"
+    				}
+    			],
+    			"combined_score" : 22,
+    			"rank_score" : 6
+    		},
+    		{
+    			"display_name" : "1_120500463_A_ACACC",
+    			"not_loaded" : false,
+    			"variant" : "61f871950ff8c599df4d6513f959bb9e",
+    			"genes" : [
+    				{
+    					"functional_annotation" : "non_coding_transcript_variant",
+    					"hgnc_id" : 7882,
+    					"region_annotation" : "ncRNA_exonic",
+    					"hgnc_symbol" : "NOTCH2"
+    				}
+    			],
+    			"combined_score" : 22,
+    			"rank_score" : 6
+    		},
+    		{
+    			"display_name" : "1_120560920_T_C",
+    			"not_loaded" : false,
+    			"variant" : "7f6a7dc349249fdcecbf23d084744a1f",
+    			"genes" : [
+    				{
+    					"functional_annotation" : "non_coding_transcript_variant",
+    					"hgnc_id" : 7882,
+    					"region_annotation" : "ncRNA_exonic",
+    					"hgnc_symbol" : "NOTCH2"
+    				}
+    			],
+    			"combined_score" : 22,
+    			"rank_score" : 6
+    		},
+    	],
+    	"samples" : [
+    		{
+    			"genotype_quality" : 99,
+    			"display_name" : "25-1-1A",
+    			"read_depth" : 38,
+    			"genotype_call" : "0/1",
+    			"allele_depths" : [
+    				22,
+    				16
+    			],
+    			"sample_id" : "SVE2126A23"
+    		},
+    		{
+    			"genotype_quality" : 99,
+    			"display_name" : "25-2-1U",
+    			"read_depth" : 26,
+    			"genotype_call" : "0/1",
+    			"allele_depths" : [
+    				13,
+    				13
+    			],
+    			"sample_id" : "ACC3320A8"
+    		},
+    		{
+    			"genotype_quality" : 99,
+    			"display_name" : "25-2-2U",
+    			"read_depth" : 33,
+    			"genotype_call" : "0/0",
+    			"allele_depths" : [
+    				33,
+    				0
+    			],
+    			"sample_id" : "ACC3320A9"
+    		}
+    	],
+    	"panels" : [
+    		"NJU",
+    		"MSKI",
+    		"PEDHEP",
+    		"panel1",
+    		"OMIM-AUTO",
+    		"SKD",
+    		"PIDCAD",
+    		"IEM",
+    		"ID",
+    		"OMIM"
+    	],
+    	"variant_rank" : 18,
+    	"local_obs_old" : 4,
+    	"missing_data" : false,
+    	"rank_score" : 16,
+    	"chromosome" : "1",
+    	"display_name" : "1_120478125_A_C_clinical",
+    	"variant_type" : "clinical",
+    	"case_id" : "soundclam",
+    	"clnsig" : [
+    		{
+    			"revstat" : "single",
+    			"accession" : "RCV000121717.2",
+    			"value" : 2
+    		}
+    	],
+    	"samtools" : "Filtered",
+    	"cytoband_start" : "p12",
+    	"cadd_score" : 29,
+    	"hgnc_symbols" : [
+    		"NOTCH2"
+    	],
+    	"rank_score_results" : [
+    		{
+    			"score" : 3,
+    			"category" : "Splicing"
+    		},
+    		{
+    			"score" : 3,
+    			"category" : "Variant_call_quality_filter"
+    		},
+    		{
+    			"score" : 1,
+    			"category" : "Inheritance_Models"
+    		},
+    		{
+    			"score" : 1,
+    			"category" : "Clinical_significance"
+    		},
+    		{
+    			"score" : 5,
+    			"category" : "Consequence"
+    		},
+    		{
+    			"score" : 0,
+    			"category" : "Gene_intolerance_prediction"
+    		},
+    		{
+    			"score" : 3,
+    			"category" : "Conservation"
+    		},
+    		{
+    			"score" : 2,
+    			"category" : "allele_frequency"
+    		},
+    		{
+    			"score" : 3,
+    			"category" : "Deleteriousness"
+    		},
+    		{
+    			"score" : 1,
+    			"category" : "Protein_prediction"
+    		}
+    	],
+    	"cytoband_end" : "p12",
+    	"thousand_genomes_frequency" : 0.001597439986653626,
+    	"gatk" : "Pass",
+    	"simple_id" : "1_120478125_A_C",
+    	"genetic_models" : [
+    		"AR_comp",
+    		"AR_comp_dn"
+    	],
+    	"quality" : 990.1599731445312,
+    	"filters" : [
+    		"PASS"
+    	],
+    	"sub_category" : "snv",
+    	"genes" : [
+    		{
+    			"functional_annotation" : "missense_variant",
+    			"hgnc_id" : 7882,
+    			"sift_prediction" : "deleterious",
+    			"polyphen_prediction" : "unknown",
+    			"ensembl_id" : "ENSG00000134250",
+    			"inheritance" : [ ],
+    			"description" : "notch 2",
+    			"region_annotation" : "exonic",
+    			"transcripts" : [
+    				{
+    					"smart_domain" : "SM00181",
+    					"hgnc_id" : 7882,
+    					"transcript_id" : "ENST00000256646",
+    					"coding_sequence_name" : "c.3625T>G",
+    					"sift_prediction" : "deleterious",
+    					"region_annotations" : [
+    						"exonic"
+    					],
+    					"swiss_prot" : "Q04721",
+    					"functional_annotations" : [
+    						"missense_variant"
+    					],
+    					"is_canonical" : true,
+    					"protein_sequence_name" : "p.Phe1209Val",
+    					"biotype" : "protein_coding",
+    					"strand" : "-",
+    					"protein_id" : "ENSP00000256646",
+    					"pfam_domain" : "PF00008",
+    					"prosite_profile" : "PS50026",
+    					"polyphen_prediction" : "unknown",
+    					"exon" : "22/34"
+    				},
+    				{
+    					"hgnc_id" : 7882,
+    					"transcript_id" : "ENST00000478864",
+    					"polyphen_prediction" : "unknown",
+    					"sift_prediction" : "unknown",
+    					"region_annotations" : [
+    						"ncRNA_exonic"
+    					],
+    					"swiss_prot" : "unknown",
+    					"functional_annotations" : [
+    						"non_coding_transcript_exon_variant"
+    					],
+    					"is_canonical" : false,
+    					"biotype" : "processed_transcript",
+    					"strand" : "-",
+    					"coding_sequence_name" : "n.285T>G",
+    					"exon" : "2/2"
+    				}
+    			],
+    			"hgnc_symbol" : "NOTCH2"
+    		}
+    	],
+    	"alternative" : "C",
+    	"exac_frequency" : 0.003318999893963337,
+    	"position" : 120478125,
+    	"cosmic_ids" : null
+    }
+    return sv_var

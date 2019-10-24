@@ -48,6 +48,7 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
 
     if variant_obj is None:
         return None
+
     variant_id = variant_obj['variant_id']
 
     genome_build = case_obj.get('genome_build', '37')
