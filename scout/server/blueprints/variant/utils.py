@@ -31,7 +31,6 @@ def add_panel_specific_gene_info(panel_info):
         for tx in gene_info.get('disease_associated_transcripts', []):
             # We remove the version of transcript at this stage
             stripped = tx.split('.')[0]
-            print(stripped)
             disease_associated_no_version.add(stripped)
             disease_associated.add(tx)
 

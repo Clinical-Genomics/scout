@@ -2,9 +2,153 @@ from scout.server.blueprints.variant.utils import (predictions, sv_frequencies, 
 evaluation, transcript_str, frequency, end_position, add_panel_specific_gene_info, 
 update_transcripts_information)
 
-def test_update_transcripts_information_refseq_id(variant_gene, hgnc_gene):
+def test_update_transcripts_information_disease_associated():
+    ## GIVEN a variants gene with info about disease associated tx
+    variant_gene = {
+        "hgnc_id": 10729, 
+        "hgnc_symbol": "SEMA4A",
+        "disease_associated_no_version": ["NM_001193301"],
+        "transcripts": [
+            {
+                "transcript_id": "ENST00000355014", 
+                "hgnc_id": 10729, 
+                "protein_id": "ENSP00000347117", 
+                "sift_prediction": "unknown", 
+                "polyphen_prediction": "unknown", 
+                "swiss_prot": "Q9H3S1",
+                "biotype": "protein_coding", 
+                "functional_annotations": ["intron_variant"], 
+                "region_annotations": ["intronic"], 
+                "intron": "10/14", 
+                "strand": "+", 
+                "coding_sequence_name": "c.1135-4554G>A", 
+                "is_canonical": False
+            }, 
+        ], 
+    }
+    assert variant_gene['transcripts'][0].get('is_disease_associated') is None
+    
+    hgnc_gene = {
+        "_id": {"$oid": "5c8112e701f54818d3cbc04a"}, 
+        "hgnc_id": 10729, 
+        "hgnc_symbol": "SEMA4A", 
+        "ensembl_id": "ENSG00000196189", 
+        "chromosome": "1", 
+        "start": 156117157, 
+        "end": 156147543, 
+        "length": 30386, 
+        "description": "semaphorin 4A", 
+        "aliases": ["SEMA4A", "SEMAB", "CORD10", "SemB", "FLJ12287"], 
+        "primary_transcripts": ["NM_022367"], 
+        "inheritance_models": ["AD", "AR"], 
+        "entrez_id": 64218, 
+        "omim_id": 607292, 
+        "ucsc_id": "uc001fnl.4", 
+        "uniprot_ids": ["Q9H3S1"], 
+        "vega_id": "OTTHUMG00000014042", 
+        "pli_score": 0.615371620982326, 
+        "incomplete_penetrance": False, 
+        "build": "37", 
+        "transcripts": [
+            {
+                "_id": {"$oid": "5c81130601f54818d3cc0514"}, 
+                "ensembl_transcript_id": "ENST00000355014", 
+                "hgnc_id": 10729, 
+                "chrom": "1", 
+                "start": 156119810, 
+                "end": 156147535, 
+                "is_primary": True, 
+                "refseq_id": "NM_001193301", 
+                "refseq_identifiers": ["NM_001193301"], 
+                "build": "37", 
+                "length": 27725
+            }, 
+        ]
+    }
+
+    variant_obj = {}
+    ## WHEN updating the transcripts information
+    update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build=None)
+    ## THEN assert that the tx on variant gene has is disease associated
+    assert variant_gene['transcripts'][0].get('is_disease_associated') is True
+
+
+def test_update_transcripts_information_refseq_id():
     ## GIVEN a variants gene with no primary transcript
-    gene = {
+    variant_gene = {
+        "hgnc_id": 10729, 
+        "hgnc_symbol": "SEMA4A", 
+        "transcripts": [
+            {
+                "transcript_id": "ENST00000355014", 
+                "hgnc_id": 10729, 
+                "protein_id": "ENSP00000347117", 
+                "sift_prediction": "unknown", 
+                "polyphen_prediction": "unknown", 
+                "swiss_prot": "Q9H3S1",
+                "biotype": "protein_coding", 
+                "functional_annotations": ["intron_variant"], 
+                "region_annotations": ["intronic"], 
+                "intron": "10/14", 
+                "strand": "+", 
+                "coding_sequence_name": "c.1135-4554G>A", 
+                "is_canonical": False
+            }, 
+        ], 
+    }
+    assert variant_gene['transcripts'][0].get('refseq_id') is None
+    
+    hgnc_gene = {
+        "_id": {"$oid": "5c8112e701f54818d3cbc04a"}, 
+        "hgnc_id": 10729, 
+        "hgnc_symbol": "SEMA4A", 
+        "ensembl_id": "ENSG00000196189", 
+        "chromosome": "1", 
+        "start": 156117157, 
+        "end": 156147543, 
+        "length": 30386, 
+        "description": "semaphorin 4A", 
+        "aliases": ["SEMA4A", "SEMAB", "CORD10", "SemB", "FLJ12287"], 
+        "primary_transcripts": ["NM_022367"], 
+        "inheritance_models": ["AD", "AR"], 
+        "entrez_id": 64218, 
+        "omim_id": 607292, 
+        "ucsc_id": "uc001fnl.4", 
+        "uniprot_ids": ["Q9H3S1"], 
+        "vega_id": "OTTHUMG00000014042", 
+        "pli_score": 0.615371620982326, 
+        "incomplete_penetrance": False, 
+        "build": "37", 
+        "transcripts": [
+            {
+                "_id": {"$oid": "5c81130601f54818d3cc0514"}, 
+                "ensembl_transcript_id": "ENST00000355014", 
+                "hgnc_id": 10729, 
+                "chrom": "1", 
+                "start": 156119810, 
+                "end": 156147535, 
+                "is_primary": True, 
+                "refseq_id": "NM_001193301", 
+                "refseq_identifiers": ["NM_001193301"], 
+                "build": "37", 
+                "length": 27725
+            }, 
+        ]
+    }
+
+    variant_obj = {}
+    ## WHEN updating the transcripts information
+    update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build=None)
+    ## THEN assert that the tx on variant gene has been given a ref seq id
+    assert variant_gene['transcripts'][0].get('refseq_id') == "NM_001193301"
+    ## THEN assert that the variant obj has refseq ids
+    assert variant_obj['has_refseq'] is True
+    ## THEN assert that the list of primary transcripts has been added
+    assert len(variant_gene['primary_transcripts']) == 1
+
+def test_update_transcripts_information_refseq_id():
+    ## GIVEN a variants gene with no primary transcript
+    variant_gene = {
         "hgnc_id": 10729, 
         "hgnc_symbol": "SEMA4A", 
         "transcripts": [
@@ -76,9 +220,9 @@ def test_update_transcripts_information_refseq_id(variant_gene, hgnc_gene):
     assert len(variant_gene['primary_transcripts']) == 1
     
 
-def test_update_transcripts_information_is_primary(variant_gene, hgnc_gene):
+def test_update_transcripts_information_is_primary():
     ## GIVEN a variants gene with no primary transcript
-    gene = {
+    variant_gene = {
         "hgnc_id": 10729, 
         "hgnc_symbol": "SEMA4A", 
         "transcripts": [
@@ -144,6 +288,15 @@ def test_update_transcripts_information_is_primary(variant_gene, hgnc_gene):
     update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build=None)
     ## THEN assert that the tx on variant gene has been labeled primary transcript
     assert variant_gene['transcripts'][0].get('is_primary') is True
+
+def test_update_transcripts_information(hgnc_gene, variant_gene):
+    ## GIVEN a hgnc gene, a variant gene and a variant object
+    variant_obj = {}
+    assert 'primary_transcripts' not in variant_gene
+    ## WHEN updating the transcript information for the variant gene
+    update_transcripts_information(variant_gene, hgnc_gene, variant_obj)
+    ## THEN assert the function has completed without errors
+    assert 'primary_transcripts' in variant_gene
 
 def test_add_panel_specific_gene_info_disease_tx():
     ## GIVEN some panel genes and a gene object
