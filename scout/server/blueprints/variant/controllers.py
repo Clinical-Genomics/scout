@@ -1,4 +1,4 @@
-from scout.server.utils import (institute_and_case, variant_case)
+from scout.server.utils import (institute_and_case, variant_case, user_institutes)
 from scout.constants import (CALLERS, MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, VERBS_MAP, 
                              ACMG_MAP, MOSAICISM_OPTIONS, ACMG_OPTIONS, ACMG_COMPLETE_MAP)
 
