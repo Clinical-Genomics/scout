@@ -6,7 +6,7 @@ from scout.constants import (CALLERS, MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIO
 
 from scout.server.links import (ensembl, add_variant_links)
 from .utils import (end_position, default_panels, frequency, callers, evaluation, 
-                    is_affected, predictions, sv_frequencies, add_gene_info)
+                    is_affected, predictions, sv_frequencies, add_gene_info, clinsig_human)
 
 def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, add_case=True,
             add_other=True, get_overlapping=True, add_compounds=True, variant_type=None):
