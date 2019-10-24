@@ -126,7 +126,8 @@ def register_filters(app):
             str: humanized string of the decimal number
         """
         min_number = 10 ** -ndigits
-
+        if isinstance(number, str):
+            number = None
         if number is None:
             # NaN
             return '-'
