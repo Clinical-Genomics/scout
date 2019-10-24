@@ -22,26 +22,25 @@
   <a class="nav-link" href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
 </li>
 {% endblock %}
-
 {% block content_main %}
 
 <br>
 <div class="card">
-<br>
-<table id="causatives_table" class="table" cellspacing="0" width="100%">
+  <br>
+  <table id="causatives_table" class="table" cellspacing="0" width="100%">
     <thead>
-    <tr>
-      <th style="width:5%">Group</th>
-      <th style="width:10%">Variant Name</th>
-      <th style="width:3%">Cathegory</th>
-      <th style="width:3%">Rank score</th>
-      <th style="width:5%">Zygosity</th>
-      <th style="width:3%">Inharitance</th>
-      <th style="width:5%">ACMG</th>
-      <th style="width:5%">Case Name</th>
-      <th style="width:3%">Case Status</th>
-      <th style="width:20%">??</th>
-    </tr>
+      <tr>
+        <th style="width:5%">Group</th>
+        <th style="width:10%">Variant Name</th>
+        <th style="width:20%">Change</th>
+        <th style="width:3%">Cathegory</th>
+        <th style="width:3%">Rank score</th>
+        <th style="width:5%">Zygosity</th>
+        <th style="width:3%">Inharitance</th>
+        <th style="width:5%">ACMG</th>
+        <th style="width:5%">Case Name</th>
+        <th style="width:3%">Case Status</th>
+      </tr>
     </thead>
     <tbody>
       {% for _, group in variant_groups.items() %}
@@ -49,61 +48,65 @@
       {% for case, variant in group %}
       {% if variant._id in case.causatives %}
       <tr>
-          <td><h5 class="mb-1">{{ variant.hgnc_symbols|join(', ') }}</h5></td>
-          <td><a href="{{ url_for('variants.variant',
+        <td>
+          <h5 class="mb-1">{{ variant.hgnc_symbols|join(', ') }}</h5>
+        </td>
+        <td><a href="{{ url_for('variants.variant',
             institute_id=institute._id,
             case_name=case.display_name,
-            variant_id=variant._id) }}">{{ variant.display_name|truncate(20, True) }}</a>
-          </td>
-          <td><span class="badge badge-secondary">{{ variant.category|upper }}</span></td>
-          <td><a href="#"><span class="badge badge-pill badge-secondary">{{ variant.rank_score }}</span></a></td>
-          <td>
-              {% for sample in variant.samples %}
-                {% for ind in case.individuals %}
-                  {% if sample.sample_id == ind.individual_id %}
-                      {% if ind.phenotype == 2%}
-                        <span class="badge badge-danger">{{sample.genotype_call}}</span>
-                      {% else %}
-                        <span class="badge badge-success">{{sample.genotype_call}}</span>
-                      {% endif %}
-                  {% endif %}
-                {% endfor %}
-              {% endfor %}</td>
-          <td>{% for model in variant.genetic_models %}
-              <span class="badge badge-info">{{model}}</span>
-            {% endfor %}
-          </td>
-          <td><a href="#" data-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)" style="text-decoration: none; color: #000;">ACMG:
-              {% if 'acmg_classification' in variant %}
-                <span class="badge badge-{{variant.acmg_classification.color}}">{{variant.acmg_classification.short}}</span>
-              {% else %}
-              -
-              {% endif %}
-              </a>
-          </td>
-          <td>
+            variant_id=variant._id) }}">{{ variant.display_name|truncate(20, True) }}
+          </a>
+        </td>
+        <td><span class="text-muted" style="display: inline-block; margin-left: 10px;">
+            {{ group_variant.reference|truncate(20, True) }} → {{ group_variant.alternative|truncate(20, True) }}
+          </span>
+        </td>
+        <td><span class="badge badge-secondary">{{ variant.category|upper }}</span></td>
+        <td><a href="#"><span class="badge badge-pill badge-secondary">{{ variant.rank_score }}</span></a></td>
+        <td>
+          {% for sample in variant.samples %}
+          {% for ind in case.individuals %}
+          {% if sample.sample_id == ind.individual_id %}
+          {% if ind.phenotype == 2%}
+          <span class="badge badge-danger">{{sample.genotype_call}}</span>
+          {% else %}
+          <span class="badge badge-success">{{sample.genotype_call}}</span>
+          {% endif %}
+          {% endif %}
+          {% endfor %}
+          {% endfor %}
+        </td>
+        <td>{% for model in variant.genetic_models %}
+          <span class="badge badge-info">{{model}}</span>
+          {% endfor %}
+        </td>
+        <td>
+          <a href="#" data-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)"
+            style="text-decoration: none; color: #000;">ACMG:
+            {% if 'acmg_classification' in variant %}
+            <span class="badge badge-{{variant.acmg_classification.color}}">{{variant.acmg_classification.short}}</span>
+            {% else %}
+            -
+            {% endif %}
+          </a>
+        </td>
+        <td>
           <a href="{{ url_for('cases.case',
                                     institute_id=institute._id,
                                     case_name=case.display_name) }}">
-                  {{ case.display_name }}
-                </a>
-              </td>
-          <td>
-              <span class="badge badge-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
-                  {{ case.status }}
-                </span>
-          </td>
-          <td><span class="text-muted" style="display: inline-block; margin-left: 10px;">
-              {{ group_variant.chromosome }}:{{ group_variant.position }} {% if group_variant.is_par %}
-              <span class="badge badge-info">PAR</span>
-              {% endif %}
-              {{ group_variant.reference|truncate(30, True) }} → {{ group_variant.alternative|truncate(30, True) }}
-            </span></td>
+            {{ case.display_name }}
+          </a>
+        </td>
+        <td>
+          <span class="badge badge-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
+            {{ case.status }}
+          </span>
+        </td>
       </tr>
       {% endif %}
       {% endfor %}
       {% endfor %}
-  </tbody>
+    </tbody>
   </table>
 </div>
 {% endblock %}
@@ -111,12 +114,12 @@
 {% block scripts %}
   {{ super() }}
   <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
       $('[data-toggle="tooltip"]').tooltip();
     });
     $(function () {
       function getTerms(query, process) {
-        $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
+        $.get("{{ url_for('genes.api_genes') }}", { query: query }, function (data) {
           process(data)
         });
       }
@@ -127,26 +130,22 @@
     })
   </script>
   <script language="JavaScript">
-      $(document).ready(function() {
-          var table = $('#causatives_table').DataTable( {
-              lengthChange: false,
-              buttons: [ 'copy', 'excel' ]
-          } );
-       
-          table.buttons().container()
-          
-              .appendTo( "#causatives_table_wrapper .col-md-6:eq(0)" );
-      } );
-      </script>
-      <script src="//code.jquery.com/jquery-1.12.4.js"></script>
-      <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-      <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
-      <script src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.min.js"></script>
-      <script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.bootstrap4.min.js"></script>
-      <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-      <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
-      <script src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
-      <script src="//cdn.datatables.net/buttons/1.5.1/js/buttons.html5.min.js"></script>
-      <script src="//cdn.datatables.net/buttons/1.5.1/js/buttons.print.min.js"></script>
-      <script src="//cdn.datatables.net/buttons/1.5.1/js/buttons.colVis.min.js"></script>
+    $(document).ready(function () {
+      var table = $('#causatives_table').DataTable({
+        lengthChange: false,
+        buttons: ['copy', 'excel']
+      });
+
+      table.buttons().container()
+
+        .appendTo("#causatives_table_wrapper .col-md-6:eq(0)");
+    });
+  </script>
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.bootstrap4.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script src="//cdn.datatables.net/buttons/1.5.1/js/buttons.html5.min.js"></script>
+  <script src="//cdn.datatables.net/buttons/1.5.1/js/buttons.colVis.min.js"></script>
 {% endblock %}
