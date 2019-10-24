@@ -1,6 +1,56 @@
 from scout.server.blueprints.variant.utils import (predictions, sv_frequencies, is_affected, 
 evaluation, transcript_str, frequency, end_position, add_panel_specific_gene_info, 
-update_transcripts_information)
+update_transcripts_information, clinsig_human)
+
+def test_clinsig_human():
+    ## GIVEN a variant with clinsig info
+    var_obj = {
+        'clnsig': [
+            {
+                'value': 'Likely benign',
+                'accession': 335067,
+                'revstat': 'criteria_provided, single submitter',
+            }
+        ]
+    }
+    ## WHEN getting the clinsig
+    clinsigs = clinsig_human(var_obj)
+    ## THEN assert there where no objects returned
+    clinsig_obj = next(clinsigs)
+    assert clinsig_obj['human'] == 'Likely benign'
+    assert clinsig_obj['link'] == "https://www.ncbi.nlm.nih.gov/clinvar/variation/335067"
+    
+
+
+def test_clinsig_human_no_accession():
+    ## GIVEN a variant with clinsig info wothout accession number
+    var_obj = {
+        'clnsig': [
+            {
+                'value': 'Likely benign',
+                'revstat': 'criteria_provided, single submitter',
+            }
+        ]
+    }
+    ## WHEN getting the clinsig
+    clinsigs = clinsig_human(var_obj)
+    ## THEN assert there where no objects returned since we skip those wothout accession
+    i = 0
+    for i, obj in enumerate(clinsigs,1):
+        pass
+    assert i == 0
+
+
+def test_clinsig_human_no_clnsig():
+    ## GIVEN a variant with clinsig info
+    var_obj = {}
+    ## WHEN getting the clinsig
+    clinsigs = clinsig_human(var_obj)
+    ## THEN assert there where no objects returned
+    i = 0
+    for i, obj in enumerate(clinsigs,1):
+        pass
+    assert i == 0
 
 def test_update_transcripts_information_disease_associated():
     ## GIVEN a variants gene with info about disease associated tx

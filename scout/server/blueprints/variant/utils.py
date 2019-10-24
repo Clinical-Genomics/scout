@@ -418,7 +418,7 @@ def clinsig_human(variant_obj):
                             }
     
     """
-    for clinsig_obj in variant_obj['clnsig']:
+    for clinsig_obj in variant_obj.get('clnsig',[]):
         # The clinsig objects allways have a accession
         if not 'accession' in clinsig_obj:
             continue
@@ -429,8 +429,8 @@ def clinsig_human(variant_obj):
             link = "https://www.ncbi.nlm.nih.gov/clinvar/variation/{}"
 
         human_str = 'not provided'
-        clnsig_value = clinsig_obj.get('value')
-        if clnsig_value:
+        clinsig_value = clinsig_obj.get('value')
+        if clinsig_value:
             try:
                 # Old version
                 int(clinsig_value)
