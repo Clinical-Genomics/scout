@@ -70,7 +70,7 @@ class FiltersForm(FlaskForm):
     gnomad_frequency = BetterDecimalField('gnomadAF', places=2)
     chrom = TextField('Chromosome', [validators.Optional()])
     start = IntegerField('Start position', [validators.Optional(), IntegerField])
-    end = IntegerField('Stop position', [validators.Optional(), IntegerField])
+    end = IntegerField('End position', [validators.Optional(), IntegerField])
     local_obs = IntegerField('Local obs. (archive)')
 
     filter_variants = SubmitField(label='Filter variants')
@@ -111,7 +111,7 @@ class SvFiltersForm(FiltersForm):
     decipher = BooleanField('Decipher')
     chrom = TextField('Chromosome', [validators.Optional()])
     start = IntegerField('Start position', [validators.Optional(), IntegerField])
-    end = IntegerField('Stop position', [validators.Optional(), IntegerField])
+    end = IntegerField('End position', [validators.Optional(), IntegerField])
     clingen_ngi = IntegerField('ClinGen NGI obs')
     swegen = IntegerField('SweGen obs')
     export = SubmitField(label='Filter and export')
