@@ -16,7 +16,8 @@ variant_bp = Blueprint('variant', __name__, static_folder='static', template_fol
 def variant(institute_id, case_name, variant_id):
     """Display a specific SNV variant."""
     LOG.debug("Variants view requesting data for variant {}".format(variant_id))
-    data = controllers.variant(store, institute_id, case_name, variant_id=variant_id)
+    data = controllers.variant(store, institute_id, case_name, variant_id=variant_id, 
+                               variant_type='snv')
     if data is None:
         LOG.warning("An error occurred: variants view requesting data for variant {}".format(variant_id))
         flash('An error occurred while retrieving variant object', 'danger')
@@ -32,7 +33,8 @@ def variant(institute_id, case_name, variant_id):
 @templated('variant/sv-variant.html')
 def sv_variant(institute_id, case_name, variant_id):
     """Display a specific structural variant."""
-    data = controllers.variant(store, institute_id, case_name, variant_id, add_other=False)
+    data = controllers.variant(store, institute_id, case_name, variant_id, add_other=False, 
+                               variant_type='sv')
     return data
 
 @variant_bp.route('/<institute_id>/<case_name>/str/variants/<variant_id>')
@@ -40,5 +42,5 @@ def sv_variant(institute_id, case_name, variant_id):
 def str_variant(institute_id, case_name, variant_id):
     """Display a specific STR variant."""
     data = controllers.variant(store, institute_id, case_name, variant_id, add_other=False, 
-                               get_overlapping=False)
+                               get_overlapping=False, variant_type='str')
     return data
