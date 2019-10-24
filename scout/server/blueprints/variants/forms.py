@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 import decimal
+import logging
 
 from flask_wtf import FlaskForm
 from wtforms import (BooleanField, DecimalField, Field, TextField, SelectMultipleField,
-                     HiddenField, IntegerField, SubmitField)
+                     HiddenField, IntegerField, SubmitField, validators)
 from wtforms.widgets import TextInput
 from flask_wtf.file import FileField
 
 from scout.constants import (CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS, SO_TERMS,
                              SPIDEX_LEVELS, SV_TYPES)
+LOG = logging.getLogger(__name__)
 
 CLINSIG_OPTIONS = list(CLINSIG_MAP.items())
 FUNC_ANNOTATIONS = [(term, term.replace('_', ' ')) for term in SO_TERMS]
@@ -66,7 +68,9 @@ class FiltersForm(FlaskForm):
     spidex_human = SelectMultipleField('SPIDEX', choices=SPIDEX_CHOICES)
 
     gnomad_frequency = BetterDecimalField('gnomadAF', places=2)
-    chrom = TextField('Chromosome')
+    chrom = TextField('Chromosome', [validators.Optional()])
+    start = IntegerField('Start position', [validators.Optional(), IntegerField])
+    end = IntegerField('End position', [validators.Optional(), IntegerField])
     local_obs = IntegerField('Local obs. (archive)')
 
     filter_variants = SubmitField(label='Filter variants')
@@ -100,12 +104,14 @@ class StrFiltersForm(FlaskForm):
 
 class SvFiltersForm(FiltersForm):
     """Extends FiltersForm for structural variants"""
+    variant_type = HiddenField(default='clinical')
     size = TextField('Length')
     size_shorter = BooleanField('Length shorter than')
     svtype = SelectMultipleField('SVType', choices=SV_TYPE_CHOICES)
     decipher = BooleanField('Decipher')
-
+    chrom = TextField('Chromosome', [validators.Optional()])
+    start = IntegerField('Start position', [validators.Optional(), IntegerField])
+    end = IntegerField('End position', [validators.Optional(), IntegerField])
     clingen_ngi = IntegerField('ClinGen NGI obs')
     swegen = IntegerField('SweGen obs')
-
     export = SubmitField(label='Filter and export')

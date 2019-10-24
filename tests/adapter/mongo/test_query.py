@@ -1,5 +1,6 @@
 from scout.constants import CLINSIG_MAP
 import re
+from pymongo import ReturnDocument
 
 def test_build_gene_variant_query(adapter):
     hgnc_symbols = ['POT1']
@@ -260,7 +261,6 @@ def test_build_clinsig_filter(real_variant_database):
          }}
         ]
 
-
     assert adapter.variant_collection.find_one()
 
     # Test that the query works with real data:
@@ -296,7 +296,7 @@ def test_build_clinsig_filter(real_variant_database):
 
     # Modify clnsig value of this variant to 'Pathogenic, Likely pathogenic'
     adapter.variant_collection.update_one(
-        {'_id' : a_variant['_id']}, 
+        {'_id' : a_variant['_id']},
         {'$set' : {'clnsig.0.value': 'Pathogenic, Likely pathogenic'}}
     )
 
@@ -379,7 +379,6 @@ def test_build_clinsig_always(real_variant_database):
         ]
 
     # Test that the query works with real data
-
     case_obj = adapter.case_collection.find_one()
     case_id = case_obj['_id']
 
@@ -487,6 +486,50 @@ def test_build_chrom(adapter):
 
     assert mongo_query['chromosome'] == chrom
 
+def test_build_coordinate_filter(adapter):
+    case_id = 'cust000'
+    chrom = '1'
+    start = 79000
+    end = 80000
+    query = {
+        'chrom': '1',
+        'start': start,
+        'end': end
+    }
+    mongo_query = adapter.build_query(case_id, query=query)
+
+    assert mongo_query['chromosome'] == chrom
+    assert mongo_query['position'] == {'$lte': end}
+    assert mongo_query['end'] == {'$gte': start}
+
+def test_build_sv_coordinate_query(adapter):
+    case_id = 'cust000'
+    chrom = '1'
+    start = 79000
+    end = 80000
+    query = {
+        'chrom': '1',
+        'start': start,
+        'end': end
+    }
+    mongo_query = adapter.build_query(case_id, query=query, category='sv')
+
+    chrom_part = {'$or' : [ {'chromosome' : chrom}, {'end_chrom' : chrom } ] }
+    coordinates_part = {
+        "$or": [
+            { "end": { "$gte": start, "$lte": end }}, #1
+            { "position": { "$lte": end, "$gte": start }}, #2
+            {   "$and" : [
+                {"position": {"$gte": start} },
+                {"end": {"$lte": end} }
+            ]}, #3
+            {   "$and": [
+                {"position": {"$lte": start} },
+                {"end": {"$gte": end} }
+            ]}
+        ]}
+
+    assert mongo_query['$and'] == [ {'$and': [ chrom_part, coordinates_part ]}]
 
 def test_build_ngi_sv(adapter):
     case_id = 'cust000'
@@ -539,146 +582,172 @@ def test_build_range(adapter):
     assert mongo_query['position'] == {'$lte': end}
     assert mongo_query['end'] == {'$gte': start}
 
-def test_get_overlapping_variant(populated_database, parsed_case):
-    """Add a couple of overlapping variants"""
+def test_query_snvs_by_coordinates(real_populated_database, variant_objs, case_obj):
+    """Run SNV variant query by coordinates"""
+    adapter = real_populated_database
 
-    ## GIVEN a database with some basic information but no variants
+    # WHEN adding a number of variants
+    for index, variant_obj in enumerate(variant_objs):
+        adapter.load_variant(variant_obj)
 
-    case_id = parsed_case['case_id']
+    ## GIVEN a variant from the database
+    variant_obj = adapter.variant_collection.find_one()
 
-    snvs = populated_database.variants(case_id, category='snv')
-    assert sum(1 for i in snvs) == 0
+    # WHEN creating a variant filter by chromosome coordinates
+    query = {
+        'chrom' : variant_obj['chromosome'],
+        'start' : variant_obj['position'],
+        'end' : variant_obj['end']
+    }
+    # AND using the filter in a query
+    results = adapter.variants(case_obj['_id'], query=query)
+    # THEN the same variant should be returned
+    assert list(results)[0] == variant_obj
 
-    svs = populated_database.variants(case_id, category='sv')
-    assert sum(1 for i in svs) == 0
 
-    ## WHEN inserting a couple of variants
+def test_query_svs_by_coordinates(real_populated_database, sv_variant_objs, case_obj):
+    """Run SV variant query by coordinates"""
+    adapter = real_populated_database
 
-    institute_id = parsed_case['owner']
-    institute_obj = populated_database.institute(institute_id)
-    snv_one = dict(
-        _id='first',
-        document_id='first',
-        variant_id='first',
-        display_name='first',
-        simple_id='first',
-        variant_type='clinical',
-        category='snv',
-        sub_category='snv',
-        case_id=case_id,
-        chromosome='1',
-        position=235824342,
-        end=235824342,
-        length=1,
-        rank_score=10,
-        variant_rank=1,
-        institute=institute_obj,
-        hgnc_symbols=['LYST'],
-        hgnc_ids=[1968],
+    # WHEN adding a number of SV variants
+    for index, variant_obj in enumerate(sv_variant_objs):
+        adapter.load_variant(variant_obj)
+
+    ## GIVEN a variant from the database
+    variant_obj = adapter.variant_collection.find_one()
+
+    # WHEN creating a variant filter by chromosome coordinates
+    # Using the same coordinates as the variant
+    query = {
+        'chrom' : variant_obj['chromosome'],
+        'start' : variant_obj['position'],
+        'end' : variant_obj['end']
+    }
+    # AND using the filter in a variant query
+    results = adapter.variants(case_obj['_id'], query=query, category='sv')
+    # THEN the same variant should be returned
+    assert list(results)[0] == variant_obj
+
+
+    # When creating a variant filter by chromosome coordinates
+    # In this scenario:
+    # filter                 xxxxxxxxx
+    # Variant           xxxxxxxx
+    query = {
+        'chrom' : variant_obj['chromosome'],
+        'start' : variant_obj['position']+10,
+        'end' : variant_obj['end']+10
+    }
+    # AND using the filter in a variant query
+    results = adapter.variants(case_obj['_id'], query=query, category='sv')
+    # THEN the same variant should be returned
+    assert list(results)[0] == variant_obj
+
+
+    # When creating a variant filter by chromosome coordinates
+    # In this scenario:
+    # filter                 xxxxxxxxx
+    # Variant                    xxxxxxxx
+    query = {
+        'chrom' : variant_obj['chromosome'],
+        'start' : variant_obj['position']-10,
+        'end' : variant_obj['end']-10
+    }
+    # AND using the filter in a variant query
+    results = adapter.variants(case_obj['_id'], query=query, category='sv')
+    # THEN the same variant should be returned
+    assert list(results)[0] == variant_obj
+
+
+    # When creating a variant filter by chromosome coordinates
+    # In this scenario:
+    # filter                 xxxxxxxxx
+    # Variant                   xx
+    query = {
+        'chrom' : variant_obj['chromosome'],
+        'start' : variant_obj['position']-10,
+        'end' : variant_obj['end']+10
+    }
+    # AND using the filter in a variant query
+    results = adapter.variants(case_obj['_id'], query=query, category='sv')
+    # THEN the same variant should be returned
+    assert list(results)[0] == variant_obj
+
+
+    # When creating a variant filter by chromosome coordinates
+    # In this scenario:
+    # filter                 xxxxxxxxx
+    # Variant             xxxxxxxxxxxxxx
+    query = {
+        'chrom' : variant_obj['chromosome'],
+        'start' : variant_obj['position']+10,
+        'end' : variant_obj['end']-10
+    }
+    # AND using the filter in a variant query
+    results = adapter.variants(case_obj['_id'], query=query, category='sv')
+    # THEN the same variant should be returned
+    assert list(results)[0] == variant_obj
+
+    # Query should return also BND variants that have end chromosome on another chromosome than chromomsome
+    assert variant_obj['chromosome'] != '6'
+
+    updated_variant = adapter.variant_collection.find_one_and_update(
+        {'_id':variant_obj['_id']},
+        {'$set' : { 'end_chrom' : '6' }},
+        return_document=ReturnDocument.AFTER
     )
-    populated_database.load_variant(snv_one)
+    assert updated_variant['end_chrom'] == '6'
 
-    snv_two = dict(
-        _id='second',
-        document_id='second',
-        variant_id='second',
-        display_name='second',
-        simple_id='second',
-        variant_type='clinical',
-        category='snv',
-        sub_category='snv',
-        case_id=case_id,
-        chromosome='1',
-        position=235710920,
-        end=235710920,
-        length=1,
-        rank_score=9,
-        variant_rank=2,
-        institute=institute_obj,
-        hgnc_symbols=['GNG4'],
-        hgnc_ids=[4407]
-    )
-    populated_database.load_variant(snv_two)
+    query = {
+        'chrom' : '6',
+        'start' : variant_obj['position']+10,
+        'end' : variant_obj['end']-10
+    }
+    # THEN using the filter in a variant query
+    results = adapter.variants(case_obj['_id'], query=query, category='sv')
+    # The same variant should be returned
+    assert list(results)[0] == updated_variant
 
-    # create a SV that overlaps just with snv_one
-    sv_one = dict(
-        _id='first_sv',
-        document_id='first_sv',
-        variant_id='first_sv',
-        display_name='first_sv',
-        simple_id='first_sv',
+
+def test_get_overlapping_variant(real_variant_database, case_obj, variant_objs):
+    """Test function that finds SVs overlapping to a given SNV"""
+
+    ## GIVEN a database with snv variants
+    adapter = real_variant_database
+
+    # load SV variants
+    adapter.load_variants(
+        case_obj,
         variant_type='clinical',
         category='sv',
-        sub_category='ins',
-        case_id=case_id,
-        chromosome='1',
-        position=235824350,
-        end=235824355,
-        length=5,
-        rank_score=10,
-        variant_rank=1,
-        institute=institute_obj,
-        hgnc_symbols=['LYST'],
-        hgnc_ids=[1968]
+        rank_threshold=-10,
+        build='37'
     )
-    populated_database.load_variant(sv_one)
+    # GIVEN a SV variant from this database
+    sv_variant = adapter.variant_collection.find_one({'category':'sv'})
+    assert sv_variant
+    sv_variant_id = sv_variant['_id']
 
-    # create a SV that overlaps with both variants
-    sv_two = dict(
-        _id='second_sv',
-        document_id='second_sv',
-        variant_id='second_sv',
-        display_name='second_sv',
-        simple_id='second_sv',
-        variant_type='clinical',
-        category='sv',
-        sub_category='del',
-        case_id=case_id,
-        chromosome='1',
-        position=235710900,
-        end=235824450,
-        length=113550,
-        rank_score=15,
-        variant_rank=1,
-        institute=institute_obj,
-        hgnc_symbols=['LYST', 'GNG4'],
-        hgnc_ids=[1968, 4407]
+    # WITH a given gene from sv variant
+    gene_id = sv_variant['hgnc_ids'][0]
+
+    # Retrieve a SNV variant occurring in the same gene:
+    snv_variant = adapter.variant_collection.find_one({'category':'snv'})
+    # And arbitrary set its hgnc_ids to gene_id
+    updated_snv_variant = adapter.variant_collection.find_one_and_update(
+        {'_id':snv_variant['_id']},
+        {'$set':{
+            'hgnc_ids': [gene_id],
+        }}
     )
-    populated_database.load_variant(sv_two)
+    # THEN the function that finds overlapping variants to the snv_variant
+    results = adapter.overlapping(updated_snv_variant)
+    for res in results:
+        # SHOULD return SV variant
+        assert res['category'] == 'sv'
+        assert res['_id'] == sv_variant_id
 
-    ## THEN make sure that the variants where inserted
-    result = populated_database.variants(case_id, category='snv')
-    # Thow snvs where loaded
-    assert sum(1 for i in result) == 2
-
-    #Two SV where added
-    result = populated_database.variants(case_id, category='sv')
-    assert sum(1 for i in result) == 2
-
-    # test functions to collect all overlapping variants
-    result = populated_database.overlapping(snv_one)
-    index = 0
-    for variant in result:
-        index += 1
-    assert index == 2
-
-    # test function
-    result = populated_database.overlapping(snv_two)
-    index = 0
-    for variant in result:
-        index += 1
-    assert index == 1
-
-    # test function
-    result = populated_database.overlapping(sv_one)
-    index = 0
-    for variant in result:
-        index += 1
-    assert index == 1
-
-    # test function
-    result = populated_database.overlapping(sv_two)
-    index = 0
-    for variant in result:
-        index += 1
-    assert index == 2
+    # The function should also work the other way around:
+    # and return snv variants that overlaps with sv variants
+    results = list(adapter.overlapping(sv_variant))
+    assert updated_snv_variant in results
