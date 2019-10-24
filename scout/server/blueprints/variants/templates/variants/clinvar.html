@@ -106,9 +106,9 @@
           <div class="panel-heading">
             <h5>
             {% if pinned.category == 'snv' %}
-              <span class="badge badge-success pull-left">snv</span>
+              <span class="badge badge-success float-left">snv</span>
             {% else %}
-              <span class="badge badge-warning pull-left">sv</span>
+              <span class="badge badge-warning float-left">sv</span>
             {% endif %}
             {% if pinned.simple_id|length > 25 and pinned.cytoband_start %}
               #Variant --> {{ pinned.sub_category+"("+pinned.chromosome+pinned.cytoband_start+"-"+pinned.end_chrom+pinned.cytoband_end+")" }}
