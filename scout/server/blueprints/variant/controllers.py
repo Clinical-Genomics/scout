@@ -1,3 +1,4 @@
+import logging
 from flask import flash
 from datetime import datetime
 
@@ -12,6 +13,8 @@ from .utils import (end_position, default_panels, frequency, callers, evaluation
                     is_affected, predictions, sv_frequencies, add_gene_info, clinsig_human)
 
 from scout.parse.variant.ids import parse_document_id
+
+LOG = logging.getLogger(__name__)
 
 def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, add_case=True,
             add_other=True, get_overlapping=True, add_compounds=True, variant_type=None):
@@ -156,7 +159,27 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     }
 
 def observations(store, loqusdb, case_obj, variant_obj):
-    """Query observations for a variant."""
+    """Query observations for a variant.
+    
+    Check if variant_obj have been observed before ni the loqusdb instance.
+    If not return {}
+    
+    We need to add links to the variant in other cases where the variant has been observed.
+    First we need to make sure that the user has access to these cases. The user_institute_ids holds
+    information about what institutes the user has access to.
+    
+    Loop over the case ids from loqusdb and check if they exist in the scout instance.
+    Also make sure that we do not link to the observation that is the current variant.
+    
+    Args:
+        store (scout.adapter.MongoAdapter)
+        loqusdb (scout.server.extensions.LoqusDB)
+        case_obj (scout.models.Case)
+        variant_obj (scout.models.Variant)
+    
+    Returns:
+        obs_data(dict)
+    """
     chrom = variant_obj['chromosome']
     pos = variant_obj['position']
     ref = variant_obj['reference']
@@ -168,12 +191,15 @@ def observations(store, loqusdb, case_obj, variant_obj):
     flash("Fetching loqus variant..")
     start_loq = datetime.now()
     obs_data = loqusdb.get_variant({'_id': composite_id}) or {}
-    flash("Loqus variant fetched. Time to fetch: {}".format(datetime.now()-start_loq))    
+    if not obs_data:
+        LOG.debug("Could not find any observations for %s", composite_id)
+        return obs_data
+    flash("Loqus variant fetched. Time to fetch: {}".format(datetime.now()-start_loq))
 
     flash("Counting loqus cases")
     count_start = datetime.now()
     obs_data['total'] = loqusdb.case_count()
-    flash("Cases counted. Time to count: {}".format(datetime.now()-count_start))    
+    flash("Cases counted. Time to count: {}".format(datetime.now()-count_start))
 
 
     flash("Fetch all user institutes")
@@ -181,12 +207,12 @@ def observations(store, loqusdb, case_obj, variant_obj):
     user_institutes_ids = set([inst['_id'] for inst in user_institutes(store, current_user)])
     flash("All institutes fetched. Time to fetch: {}".format(datetime.now()-institute_start))
 
-
     flash("Updating cases info")
     cases_start = datetime.now()
     obs_data['cases'] = []
     institute_id = variant_obj['institute']
     for case_id in obs_data.get('families', []):
+        print(case_id, var_case_id)
         if case_id == var_case_id:
             continue
         # other case might belong to same institute, collaborators or other institutes
@@ -196,6 +222,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
         flash("Time to fetch case: {}".format(datetime.now()-case_fetch_start))
         if not other_case:
             # Case could have been removed
+            LOG.debug("Case %s could not be found in database", case_id)
             continue
         other_institutes = set([other_case.get('owner')])
         other_institutes.update(set(other_case.get('collaborators', [])))
@@ -204,12 +231,12 @@ def observations(store, loqusdb, case_obj, variant_obj):
             # If the user does not have access to the information we skip it
             continue
         flash("fetching other variant{}".format(composite_id))
-        document_id = parse_document_id(chrom, pos, ref, alt, var_type, var_case_id)
+        document_id = parse_document_id(chrom, str(pos), ref, alt, var_type, case_id)
         variant_fetch_start = datetime.now()
         other_variant = store.variant(document_id=document_id)
         flash("Time to fetch other variant{}".format(datetime.now()-variant_fetch_start))
         obs_data['cases'].append(dict(case=other_case, variant=other_variant))
     
-    flash("Cases updated. Time to update: {}".format(datetime.now()-cases_start))    
+    flash("Cases updated. Time to update: {}".format(datetime.now()-cases_start))
 
     return obs_data

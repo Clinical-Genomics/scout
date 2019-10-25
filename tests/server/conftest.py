@@ -15,6 +15,37 @@ from scout.load.hpo import load_hpo
 
 log = logging.getLogger(__name__)
 
+
+class LoqusdbMock():
+    """Mock the loqusdb api"""
+    def __init__(self):
+        self.nr_cases = 130
+        self.variants = {
+            '1_169898014_T_C': {'families': ['vitalmouse']}
+        }
+    
+    def case_count(self):
+        return self.nr_cases
+    
+    def get_variant(self, var_dict):
+        return self.variants.get(var_dict['_id'])
+    
+    def _add_variant(self, var_obj):
+        simple_id = var_obj['simple_id']
+        case_id = var_obj['case_id']
+        self.variants[simple_id] = {'families': [case_id]}
+    
+    def _all_variants(self):
+        return self.variants
+    
+
+@pytest.fixture
+def loqusdb():
+    """Return a loqusdb mock"""
+    loqus_mock = LoqusdbMock()
+    return loqus_mock
+    
+
 @pytest.fixture
 def app(real_database_name, real_variant_database, user_obj):
 
