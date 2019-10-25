@@ -43,11 +43,8 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
 
     """
     variant_type = variant_type or 'snv'
-    flash('Start controller variant')
     start = datetime.now()
-    flash('Fetch ins and case')    
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    flash('Time to fetch ins and case: {}'.format(datetime.now()-start))
     # If the variant is already collected we skip this part
     if not variant_obj:
         # NOTE this will query with variant_id == document_id, not the variant_id.
@@ -160,9 +157,19 @@ def observations(store, loqusdb, case_obj, variant_obj):
     """Query observations for a variant."""
     composite_id = ("{this[chromosome]}_{this[position]}_{this[reference]}_"
                     "{this[alternative]}".format(this=variant_obj))
+    flash("Fetching loqus variant..")
+    start_loq = datetime.now()
     obs_data = loqusdb.get_variant({'_id': composite_id}) or {}
-    obs_data['total'] = loqusdb.case_count()
+    flash("Loqus variant fetched. Time to fetch: {}".format(datetime.now()-start_loq))    
 
+    flash("Counting loqus cases")
+    count_start = datetime.now()
+    obs_data['total'] = loqusdb.case_count()
+    flash("Cases counted. Time to count: {}".format(datetime.now()-count_start))    
+
+
+    flash("Updating cases info")
+    cases_start = datetime.now()
     obs_data['cases'] = []
     institute_id = variant_obj['institute']
     for case_id in obs_data.get('families', []):
@@ -176,5 +183,6 @@ def observations(store, loqusdb, case_obj, variant_obj):
                 or other_case.get('owner') in user_institutes_ids): # or observation's institute belongs to users institutes
                 other_variant = store.variant(case_id=case_id, simple_id=composite_id)
                 obs_data['cases'].append(dict(case=other_case, variant=other_variant))
+    flash("Cases updated. Time to updste: {}".format(datetime.now()-cases_start))    
 
     return obs_data
