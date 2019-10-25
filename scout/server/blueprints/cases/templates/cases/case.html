@@ -341,7 +341,7 @@
         <li class="list-group-item">
           {% if variant._id %}
             <div class="row align-items-between align-items-center">
-              <div class="col-8">
+              <div class="col-10">
                 <i class="fa fa-check-circle-o"></i>
 		            {% if variant.category == "snv" %}
                   <a href="{{ url_for('variants.variant',
@@ -363,7 +363,7 @@
                   <span class="badge badge-success">Validated</span>
                 {% endif %}
               </div>
-              <div class="col-4">
+              <div class="col-2">
                 {{ remove_form(url_for('cases.mark_causative',
                                        institute_id=institute._id,
                                        case_name=case.display_name,
@@ -384,7 +384,7 @@
         <div class="list-group-item">
           {% if variant._id %}
             <div class="row align-items-between align-items-center">
-              <div class="col-8">
+              <div class="col-10">
                 <i class="fa fa-check-circle-o"></i>
                 {% if variant.category == "snv" %}
                   <a href="{{ url_for('variants.variant',
@@ -402,7 +402,7 @@
 		             {% endif %}
                  </a>
               </div>
-              <div class="col-4">
+              <div class="col-2">
                 {{ remove_form(url_for('cases.mark_causative',
                                        institute_id=institute._id,
                                        case_name=case.display_name,

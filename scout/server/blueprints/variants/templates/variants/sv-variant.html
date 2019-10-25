@@ -1,5 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, pedigree_panel %}
+{% from "variants/utils.html" import modal_causative %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -264,7 +265,7 @@
     {# Email setting must be setup #}
     {{ modal_cancel_verify() }}
   {% endif %}
-
+{{ modal_causative(case, institute, variant) }}
 {% endblock %}
 
 {% macro pin_button() %}
@@ -299,17 +300,21 @@
           Reset causative
         </button>
       </form>
-  {% else %}
-    <form action="{{ url_for('cases.mark_causative',
-                             institute_id=institute._id,
-                             case_name=case.display_name,
-                             variant_id=variant._id,
-                             partial_causative=False) }}"
-          method="POST">
-      <button name="action" value="ADD" type="submit" class="btn btn-light navbar-btn" title="Mark causative" onclick="return confirm('Are you sure?')">
+      {% elif variant._id in case.partial_causatives %}
+        <form action="{{ url_for('cases.mark_causative',
+                                 institute_id=institute._id,
+                                 case_name=case.display_name,
+                                 variant_id=variant._id,
+                                 partial_causative=True) }}"
+              method="POST">
+        <button name="action" value="DELETE" type="submit" class="btn btn-light navbar-btn" title="Reset causative">
+          Reset partial causative
+        </button>
+      </form>
+      {% else %}
+      <button class="btn btn-light navbar-btn" data-toggle="modal" data-target="#causativeModal">
         Mark causative
       </button>
-    </form>
   {% endif %}
 {% endmacro %}
 
@@ -653,5 +658,17 @@
         width: '100%'
       });
     })
+
+    function validate_causative_form(){
+      var partial_checkbox = document.getElementById("partial_causative");
+      if (partial_checkbox.checked == true){
+        var nOmimTerms = $('#omim_select option:selected').length;
+        var nHpoTerms = $('#hpo_select option:selected').length;
+        if ( nOmimTerms== 0 & nHpoTerms==0){
+          alert('Select at least a phenotype term or diagnosis')
+          return false
+        }
+      }
+    }
   </script>
 {% endblock %}

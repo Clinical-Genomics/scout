@@ -21,8 +21,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Variants can be marked as partial causative if phenotype is available for case.
 - Show a frequency tooltip hover for SV-variants.
 - Added support for LDAP login system
+- Search snv and structural variants by chromosomal coordinates
+- Structural variants can be marked as partial causative if phenotype is available for case.
 - Add support for ROH, WIG and chromosome PNGs in case-view
-
 
 ### fixed
 - Fixed missing import for variants with comments
