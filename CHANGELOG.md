@@ -43,6 +43,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed weird Rank cell in variants page
 - Next and first buttons order swap
 - Added pagination (and POST capability) to cancer variants.
+- Improved loading speed for variant page
 
 ## [4.7.3]
 
