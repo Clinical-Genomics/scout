@@ -474,8 +474,11 @@ def cancer_variants(institute_id, case_name):
 
     if(request.method == "POST"):
         form = CancerFiltersForm(request.form)
+        page = int(request.form.get('page', 1))
     else:
         form = CancerFiltersForm(request.args)
+        page = int(request.args.get('page', 1))
+
 
     available_panels = case_obj.get('panels', []) + [
         {'panel_name': 'hpo', 'display_name': 'HPO'}]
@@ -484,7 +487,7 @@ def cancer_variants(institute_id, case_name):
                      for panel in available_panels]
     form.gene_panels.choices = panel_choices
 
-    page = int(request.args.get('page', 1))
+
     variant_type = request.args.get('variant_type', 'clinical')
     data = controllers.cancer_variants(store, institute_id, case_name, form, page=page)
     return dict(variant_type=variant_type, **data)
