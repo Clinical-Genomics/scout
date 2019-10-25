@@ -168,21 +168,39 @@ def observations(store, loqusdb, case_obj, variant_obj):
     flash("Cases counted. Time to count: {}".format(datetime.now()-count_start))    
 
 
+    flash("Fetch all user institutes")
+    institute_start = datetime.now()
+    user_institutes_ids = set([inst['_id'] for inst in user_institutes(store, current_user)])
+    flash("All institutes fetched. Time to fetch: {}".format(datetime.now()-institute_start))
+
+
     flash("Updating cases info")
     cases_start = datetime.now()
     obs_data['cases'] = []
     institute_id = variant_obj['institute']
     for case_id in obs_data.get('families', []):
-        if case_id != variant_obj['case_id']:
-            # other case might belong to same institute, collaborators or other institutes
-            other_case = store.case(case_id)
-            institute_objs = user_institutes(store, current_user)
-            user_institutes_ids = [inst['_id'] for inst in institute_objs]
-            if other_case and (other_case.get('owner') == institute_id # observation variant has same institute as first variant
-                or institute_id in other_case.get('collaborators', []) # or is in other case collaborators
-                or other_case.get('owner') in user_institutes_ids): # or observation's institute belongs to users institutes
-                other_variant = store.variant(case_id=case_id, simple_id=composite_id)
-                obs_data['cases'].append(dict(case=other_case, variant=other_variant))
-    flash("Cases updated. Time to updste: {}".format(datetime.now()-cases_start))    
+        if case_id == variant_obj['case_id']:
+            continue
+        # other case might belong to same institute, collaborators or other institutes
+        flash("fetching case {}".format(case_id))
+        case_fetch_start = datetime.now()
+        other_case = store.case(case_id)
+        flash("Time to fetch case: {}".format(datetime.now()-case_fetch_start))
+        if not other_case:
+            # Case could have been removed
+            continue
+        other_institutes = set([other_case.get('owner')])
+        other_institutes.update(set(other_case.get('collaborators', [])))
+        
+        if user_institutes_ids.isdisjoint(other_institutes):
+            # If the user does not have access to the information we skip it
+            continue
+        flash("fetching other variant{}".format(composite_id))
+        variant_fetch_start = datetime.now()
+        other_variant = store.variant(case_id=case_id, simple_id=composite_id)
+        flash("Time to fetch other variant{}".format(datetime.now()-variant_fetch_start))
+        obs_data['cases'].append(dict(case=other_case, variant=other_variant))
+    
+    flash("Cases updated. Time to update: {}".format(datetime.now()-cases_start))    
 
     return obs_data
