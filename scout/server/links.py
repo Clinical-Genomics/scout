@@ -239,7 +239,7 @@ def smart(smart_domain):
 
 ############# Variant links ####################
 
-def add_variant_links(variant_obj, build=None):
+def get_variant_links(variant_obj, build=None):
     """Update a variant object with links
 
     Args:
@@ -247,22 +247,24 @@ def add_variant_links(variant_obj, build=None):
         build(int)
 
     Returns:
-        gene_obj(dict): gene_obj updated with many links
+        links(dict): The variant links
     """
     try:
         build = int(build)
-    except ValueError:
+    except (ValueError, TypeError) as err:
         build = 37
-    variant_obj['thousandg_link'] = thousandg_link(variant_obj, build)
-    variant_obj['exac_link'] = exac_link(variant_obj)
-    variant_obj['gnomad_link'] = gnomad_link(variant_obj)
-    variant_obj['swegen_link'] = swegen_link(variant_obj)
-    variant_obj['cosmic_link'] = cosmic_link(variant_obj)
-    variant_obj['beacon_link'] = beacon_link(variant_obj, build)
-    variant_obj['ucsc_link'] = ucsc_link(variant_obj, build)
-    variant_obj['alamut_link'] = alamut_link(variant_obj)
-    variant_obj['spidex_human'] = spidex_human(variant_obj)
-
+    links = dict(
+        thousandg_link = thousandg_link(variant_obj, build),
+        exac_link = exac_link(variant_obj),
+        gnomad_link = gnomad_link(variant_obj),
+        swegen_link = swegen_link(variant_obj),
+        cosmic_link = cosmic_link(variant_obj),
+        beacon_link = beacon_link(variant_obj, build),
+        ucsc_link = ucsc_link(variant_obj, build),
+        alamut_link = alamut_link(variant_obj),
+        spidex_human = spidex_human(variant_obj),
+    )
+    return links
 
 def thousandg_link(variant_obj, build=None):
     """Compose link to 1000G page for detailed information."""

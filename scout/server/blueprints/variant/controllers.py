@@ -7,7 +7,7 @@ from scout.server.utils import (institute_and_case, variant_case, user_institute
 from scout.constants import (CALLERS, MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, VERBS_MAP, 
                              ACMG_MAP, MOSAICISM_OPTIONS, ACMG_OPTIONS, ACMG_COMPLETE_MAP)
 
-from scout.server.links import (ensembl, add_variant_links)
+from scout.server.links import (ensembl, get_variant_links)
 from .utils import (end_position, default_panels, frequency, callers, evaluation, 
                     is_affected, predictions, sv_frequencies, add_gene_info, clinsig_human)
 
@@ -98,6 +98,9 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
                                           key=lambda compound: -compound['combined_score'])
 
     variant_obj['end_position'] = end_position(variant_obj)
+
+    # Add general variant links
+    variant_obj.update(get_variant_links(variant_obj, int(genome_build)))
     if variant_type == 'sv':
         variant_obj['frequencies'] = sv_frequencies(variant_obj)
     elif variant_type in ['snv', 'cancer']:
@@ -106,8 +109,6 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     # Format clinvar information
     variant_obj['clinsig_human'] = (clinsig_human(variant_obj) if variant_obj.get('clnsig')
                                     else None)
-    # Add general variant links
-    add_variant_links(variant_obj, int(genome_build))
     
     # Add display information about callers
     variant_obj['callers'] = callers(variant_obj, category=variant_type)
@@ -188,11 +189,13 @@ def observations(store, loqusdb, case_obj, variant_obj):
 
     composite_id = ("{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt))
     obs_data = loqusdb.get_variant({'_id': composite_id}) or {}
+
+    # Add case count even if there where no hit
+    obs_data['total'] = loqusdb.case_count()
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)
         return obs_data
-
-    obs_data['total'] = loqusdb.case_count()
+    
     user_institutes_ids = set([inst['_id'] for inst in user_institutes(store, current_user)])
 
     obs_data['cases'] = []

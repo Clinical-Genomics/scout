@@ -251,6 +251,7 @@ def sv_frequencies(variant_obj):
         'decipher': 'Decipher',
         'thousand_genomes_frequency': '1000G',
     }
+
     frequencies = []
     for freq_key in sv_freqs:
         freq_annotation = (sv_freqs[freq_key], variant_obj.get(freq_key))

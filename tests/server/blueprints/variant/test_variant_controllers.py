@@ -6,6 +6,27 @@ from scout.server.extensions import (store, loqusdb)
 from flask import url_for, current_app
 from flask_login import current_user
 
+def test_observations_controller_non_existing(app, real_variant_database, case_obj, loqusdb):
+    ## GIVEN a database and a loqusdb mock without the variant
+    var_obj = real_variant_database.variant_collection.find_one()
+    assert var_obj
+
+    ## WHEN updating the case_id for the variant
+    var_obj['case_id'] = 'internal_id2'
+
+    data = None
+    with app.test_client() as client:
+        resp = client.get(url_for('auto_login'))
+        data = observations(real_variant_database, loqusdb, case_obj, var_obj)
+
+    ## THEN assert that the number of cases is still returned
+    assert data['total'] == loqusdb.nr_cases
+    ## THEN assert the cases variable is in data
+    assert 'cases' in data
+    ## THEN assert there are no case information returned
+    assert data['cases'] == []
+    
+
 def test_observations_controller(app, real_variant_database, case_obj, loqusdb):
     ## GIVEN a database and a loqusdb mock with one variant from the database
     var_obj = real_variant_database.variant_collection.find_one()
@@ -19,8 +40,6 @@ def test_observations_controller(app, real_variant_database, case_obj, loqusdb):
     data = None
     with app.test_client() as client:
         resp = client.get(url_for('auto_login'))
-
-
         data = observations(real_variant_database, loqusdb, case_obj, var_obj)
 
     ## THEN assert that the data was found
