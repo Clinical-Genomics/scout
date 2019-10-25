@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show a frequency tooltip hover for SV-variants.
 - Added support for LDAP login system
 - Search snv and structural variants by chromosomal coordinates
+- structural variants can be marked as partial causative if phenotype is available for case.
 
 ### fixed
 - Fixed missing import for variants with comments
