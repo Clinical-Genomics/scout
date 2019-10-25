@@ -69,8 +69,8 @@
             <td>{{ variant.str_status }}</td>
             <td>{% for sample in variant.samples %}
                   {% if sample.genotype_call != "./." %}
-                    <div class="pull-left">{{ sample.display_name }}</div>
-                    <div class="pull-right">{{ sample.genotype_call }}</div><br>
+                    <div class="float-left">{{ sample.display_name }}</div>
+                    <div class="float-right">{{ sample.genotype_call }}</div><br>
                   {% endif %}
                 {% endfor %}
             </td>
@@ -78,7 +78,7 @@
             <td>
               {{ variant.position }}
               {% if case.bam_files %}
-                <a class="btn btn-default btn-sm pull-right" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
+                <a class="btn btn-default btn-sm float-right" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
               {% endif %}
             </td>
         </tr>
@@ -92,6 +92,7 @@
       </tbody>
     </table>
   </div>
+  <br>
   {{ footer() }}
 </form>
 {% endblock %}
@@ -104,12 +105,12 @@
   </a>
   {% set comment_count = variant.comments.count() %}
   {% if variant.manual_rank %}
-    <span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
+    <span class="badge float-right" title="Manual rank">{{ variant.manual_rank }}</span>
   {% endif %}
   {% if comment_count > 0 %}
     {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
     <a href="#"
-       class="badge pull-right"
+       class="badge float-right"
        data-toggle="popover"
        data-placement="right"
        data-html="true"
@@ -132,25 +133,21 @@
       {% if more_variants %}
         <div class="row">
             <div class="col-6">
-                <button class="btn btn-outline-secondary mx-auto d-block"
-                  href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">	
                   First page
-                </button>
+              </a>
               </div>
               <div class="col-6">
-                <button class="btn btn-outline-secondary mx-auto d-block"
-                  href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
+                <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
                   Next page
-                </button>
+                </a>
               </div>
-          </div>
         </div>
       {% else %}
         <i class="text-muted">No more variants to display</i>
-        <button class="btn btn-outline-secondary mx-auto d-block"
-      href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+        <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">	
       First page
-      </button>
+        </a>
       {% endif %}
     </div>
   </div>

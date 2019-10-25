@@ -22,7 +22,7 @@ from scout.parse.clinvar import set_submission_objects
 from . import controllers
 from .forms import FiltersForm, SvFiltersForm, StrFiltersForm, CancerFiltersForm
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 variants_bp = Blueprint('variants', __name__, static_folder='static', template_folder='templates')
 
 @variants_bp.route('/<institute_id>/<case_name>/variants', methods=['GET','POST'])
@@ -50,7 +50,7 @@ def variants(institute_id, case_name):
     else:
         clinical_filter_panels = default_panels
 
-    log.debug("Current default panels: {}".format(default_panels))
+    LOG.debug("Current default panels: {}".format(default_panels))
 
     if bool(request.form.get('clinical_filter')):
 
@@ -187,10 +187,10 @@ def variants(institute_id, case_name):
 def variant(institute_id, case_name, variant_id):
     """Display a specific SNV variant."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    log.debug("Variants view requesting data for variant {}".format(variant_id))
+    LOG.debug("Variants view requesting data for variant {}".format(variant_id))
     data = controllers.variant(store, institute_obj, case_obj, variant_id=variant_id)
     if data is None:
-        log.warning("An error occurred: variants view requesting data for variant {}".format(variant_id))
+        LOG.warning("An error occurred: variants view requesting data for variant {}".format(variant_id))
         flash('An error occurred while retrieving variant object', 'danger')
         return redirect(request.referrer)
 
@@ -261,6 +261,8 @@ def sv_variants(institute_id, case_name):
             form = SvFiltersForm(request.form)
     else:
         form = SvFiltersForm(request.args)
+
+    form.variant_type.data = variant_type
 
     available_panels = case_obj.get('panels', []) + [
         {'panel_name': 'hpo', 'display_name': 'HPO'}]
@@ -407,7 +409,7 @@ def variant_update(institute_id, case_name, variant_id):
                                      new_dismiss)
             flash("Reset variant dismissal: {}".format(variant_obj.get('dismiss_variant')), 'info')
         else:
-            log.debug("DO NOT reset variant dismissal: {}".format(variant_obj.get('dismiss_variant')), 'info')
+            LOG.debug("DO NOT reset variant dismissal: {}".format(variant_obj.get('dismiss_variant')), 'info')
 
     mosaic_tags = request.form.getlist('mosaic_tags')
     if mosaic_tags:
@@ -436,7 +438,7 @@ def verify(institute_id, case_name, variant_id, variant_category, order):
 
     try:
         controllers.variant_verification(store=store, mail=mail, institute_obj=institute_obj, case_obj=case_obj, user_obj=user_obj, comment=comment,
-                           variant_obj=variant_obj, sender=current_app.config['MAIL_USERNAME'], variant_url=request.referrer, order=order, url_builder=url_for)
+                           variant_obj=variant_obj, sender=current_app.config.get('MAIL_USERNAME'), variant_url=request.referrer, order=order, url_builder=url_for)
     except controllers.MissingVerificationRecipientError:
         flash('No verification recipients added to institute.', 'danger')
 
@@ -488,7 +490,7 @@ def cancer_variants(institute_id, case_name):
     return dict(variant_type=variant_type, **data)
 
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['POST'])
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['GET','POST'])
 @templated('variants/acmg.html')
 def variant_acmg(institute_id, case_name, variant_id):
     """ACMG classification form."""
