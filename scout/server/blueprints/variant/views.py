@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from flask import (Blueprint, flash, current_app, redirect, request)
 
@@ -16,16 +17,22 @@ variant_bp = Blueprint('variant', __name__, static_folder='static', template_fol
 def variant(institute_id, case_name, variant_id):
     """Display a specific SNV variant."""
     LOG.debug("Variants view requesting data for variant {}".format(variant_id))
+    start_time = datetime.now()
+    flash('Fetching variant')
     data = controllers.variant(store, institute_id, case_name, variant_id=variant_id, 
                                variant_type='snv')
+    flash('Variant fetched. Time to fetch: {}'.format(datetime.now()-start_time))
     if data is None:
         LOG.warning("An error occurred: variants view requesting data for variant {}".format(variant_id))
         flash('An error occurred while retrieving variant object', 'danger')
         return redirect(request.referrer)
 
     if current_app.config.get('LOQUSDB_SETTINGS'):
+        flash('Fetching observations')
+        obs_start = datetime.now()
         data['observations'] = controllers.observations(store, loqusdb,
             data['case'], data['variant'])
+        flash('Observations fetched. Time to fetch observations:{}'.format(datetime.now()-obs_start))
     data['cancer'] = request.args.get('cancer') == 'yes'
     return data
 

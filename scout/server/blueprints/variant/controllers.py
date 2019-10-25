@@ -1,3 +1,6 @@
+from flask import flash
+from datetime import datetime
+
 from flask_login import current_user
 
 from scout.server.utils import (institute_and_case, variant_case, user_institutes)
@@ -40,7 +43,11 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
 
     """
     variant_type = variant_type or 'snv'
+    flash('Start controller variant')
+    start = datetime.now()
+    flash('Fetch ins and case')    
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    flash('Time to fetch ins and case: {}'.format(datetime.now()-start))
     # If the variant is already collected we skip this part
     if not variant_obj:
         # NOTE this will query with variant_id == document_id, not the variant_id.
