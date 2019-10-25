@@ -1097,7 +1097,7 @@ def verification_email_body(case_name, url, display_name, category, subcategory,
     return html
 
 
-def cancer_variants(store, request_args, institute_id, case_name, form, page=1):
+def cancer_variants(store, institute_id, case_name, form, page=1):
     """Fetch data related to cancer variants for a case."""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -1115,7 +1115,6 @@ def cancer_variants(store, request_args, institute_id, case_name, form, page=1):
         variants=(parse_variant(store, institute_obj, case_obj, variant, update=True) for
                   variant in variant_res),
         form=form,
-        variant_type=request_args.get('variant_type', 'clinical')
     )
     return data
 

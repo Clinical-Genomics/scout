@@ -467,10 +467,25 @@ def clinvar(institute_id, case_name, variant_id):
 @templated('variants/cancer-variants.html')
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
-    form = CancerFiltersForm(request.args)
-    page = int(request.form.get('page', 1))
-    data = controllers.cancer_variants(store, request.args, institute_id, case_name, form, page=page)
-    return data
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    if(request.method == "POST"):
+        form = CancerFiltersForm(request.form)
+    else:
+        form = CancerFiltersForm(request.args)
+
+    available_panels = case_obj.get('panels', []) + [
+        {'panel_name': 'hpo', 'display_name': 'HPO'}]
+
+    panel_choices = [(panel['panel_name'], panel['display_name'])
+                     for panel in available_panels]
+    form.gene_panels.choices = panel_choices
+
+    page = int(request.args.get('page', 1))
+    variant_type = request.args.get('variant_type', 'clinical')
+    data = controllers.cancer_variants(store, institute_id, case_name, form, page=page)
+    return dict(variant_type=variant_type, **data)
 
 
 @variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['POST'])

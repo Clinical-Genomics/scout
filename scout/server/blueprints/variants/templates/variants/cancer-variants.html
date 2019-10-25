@@ -32,7 +32,7 @@
 
 {% block content_main %}
 <div class="container-float">
-  <form method="GET" id="filters_form">
+  <form method="POST" id="filters_form">
     <div class="card panel-default" id="accordion">
       <div class="card-header">
         <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
@@ -96,7 +96,6 @@
 {% endblock %}
 
 {% macro pagination() %}
-<form method="POST" id="filters_form" action="{{url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name)}}" >
   <div class="container-fluid">
     {% if more_variants %}
     <div class="d-flex justify-content-around">
