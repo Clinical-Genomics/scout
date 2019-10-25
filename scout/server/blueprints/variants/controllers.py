@@ -1097,17 +1097,24 @@ def verification_email_body(case_name, url, display_name, category, subcategory,
     return html
 
 
-def cancer_variants(store, request_args, institute_id, case_name, form):
+def cancer_variants(store, institute_id, case_name, form, page=1):
     """Fetch data related to cancer variants for a case."""
+
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variants_query = store.variants(case_obj['_id'], category='cancer', query=form.data).limit(50)
+    per_page = 50
+    skip_count = per_page * max(page - 1, 0)
+    variants_query = store.variants(case_obj['_id'], category='cancer', query=form.data)
+    variant_count = variants_query.count()
+    more_variants = True if variant_count > (skip_count + per_page) else False
+    variant_res = variants_query.skip(skip_count).limit(per_page)
     data = dict(
+        page=page,
+        more_variants=more_variants,
         institute=institute_obj,
         case=case_obj,
         variants=(parse_variant(store, institute_obj, case_obj, variant, update=True) for
-                  variant in variants_query),
+                  variant in variant_res),
         form=form,
-        variant_type=request_args.get('variant_type', 'clinical'),
     )
     return data
 

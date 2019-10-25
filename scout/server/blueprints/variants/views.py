@@ -465,16 +465,35 @@ def clinvar(institute_id, case_name, variant_id):
         return redirect(url_for('cases.clinvar_submissions', institute_id=institute_id))
 
 
-@variants_bp.route('/<institute_id>/<case_name>/cancer/variants')
+@variants_bp.route('/<institute_id>/<case_name>/cancer/variants', methods=['GET','POST'])
 @templated('variants/cancer-variants.html')
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
-    form = CancerFiltersForm(request.args)
-    data = controllers.cancer_variants(store, request.args, institute_id, case_name, form)
-    return data
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    if(request.method == "POST"):
+        form = CancerFiltersForm(request.form)
+        page = int(request.form.get('page', 1))
+    else:
+        form = CancerFiltersForm(request.args)
+        page = int(request.args.get('page', 1))
 
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['GET', 'POST'])
+    available_panels = case_obj.get('panels', []) + [
+        {'panel_name': 'hpo', 'display_name': 'HPO'}]
+
+    panel_choices = [(panel['panel_name'], panel['display_name'])
+                     for panel in available_panels]
+    form.gene_panels.choices = panel_choices
+
+
+    variant_type = request.args.get('variant_type', 'clinical')
+    data = controllers.cancer_variants(store, institute_id, case_name, form, page=page)
+    return dict(variant_type=variant_type, **data)
+
+
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['GET','POST'])
 @templated('variants/acmg.html')
 def variant_acmg(institute_id, case_name, variant_id):
     """ACMG classification form."""

@@ -32,7 +32,7 @@
 
 {% block content_main %}
 <div class="container-float">
-  <form method="GET" id="filters_form">
+  <form method="POST" id="filters_form">
     <div class="card panel-default" id="accordion">
       <div class="card-header">
         <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
@@ -41,12 +41,12 @@
           {{ filters_form() }}
       </div>
     </div>
-  </form>
 
   <div class="card mt-3">
     <table class="table table-hover table-bordered">
       <thead>
             <tr>
+              <th style="width:4%" title="Rank position">Rank</th>
               <th>Variant:Transcript:Exon:HGVS</th>
               <th>Tier</th>
               <th>Score</th>
@@ -62,6 +62,7 @@
       <tbody>
         {% for variant in variants %}
           <tr>
+              <td>{{ variant.variant_rank }}</td>
             <td>
               <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,
                                   variant_id=variant._id, cancer='yes') }}">
@@ -88,8 +89,31 @@
       </tbody>
     </table>
   </div><!-- end of card-->
+  <br>
+  <div class="container-fluid">
+      {{ pagination() }}
+  </div>
 </div><!--end of container-float -->
 {% endblock %}
+
+{% macro pagination() %}
+  <div class="container-fluid">
+    {% if more_variants %}
+    <div class="d-flex justify-content-around">
+        <div>
+            <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
+        </div>
+        <div>
+          <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value={{ page + 1 }}>Next page</button>
+        </div>
+    </div>
+    {% else %}
+      <i class="text-muted">No more variants to display</i>
+      <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
+    {% endif %}
+  </div>
+</form>
+{% endmacro %}
 
 {% macro actions_cell(variant) %}
   <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,
