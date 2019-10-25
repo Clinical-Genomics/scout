@@ -482,7 +482,7 @@ def cancer_variants(institute_id, case_name):
     data = controllers.cancer_variants(store, institute_id, case_name, form, page=page)
     return dict(variant_type=variant_type, **data)
 
-
+@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['GET','POST'])
 @templated('variants/acmg.html')
 def variant_acmg(institute_id, case_name, variant_id):
     """ACMG classification form."""

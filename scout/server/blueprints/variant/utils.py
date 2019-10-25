@@ -5,7 +5,6 @@ from scout.server.links import (add_gene_links, ensembl, add_tx_links)
 
 LOG = logging.getLogger(__name__)
 
-<<<<<<< HEAD
 def add_panel_specific_gene_info(panel_info):
     """Adds manualy curated information from a gene panel to a gene
     
@@ -288,30 +287,6 @@ def is_affected(variant_obj, case_obj):
         
         if individual['phenotype'] == 2:
             sample_obj['is_affected'] = True 
-=======
-def transcript_str(transcript_obj, gene_name=None):
-    """Generate amino acid change as a string."""
-    if transcript_obj.get('exon'):
-        gene_part, part_count_raw = 'exon', transcript_obj['exon']
-    elif transcript_obj.get('intron'):
-        gene_part, part_count_raw = 'intron', transcript_obj['intron']
-    else:
-        # variant between genes
-        gene_part, part_count_raw = 'intergenic', '0'
-
-    part_count = part_count_raw.rpartition('/')[0]
-    change_str = "{}:{}{}:{}:{}".format(
-        transcript_obj.get('refseq_id', ''),
-        gene_part,
-        part_count,
-        transcript_obj.get('coding_sequence_name', 'NA'),
-        transcript_obj.get('protein_sequence_name', 'NA'),
-    )
-    if gene_name:
-        change_str = "{}:".format(gene_name) + change_str
-    return change_str
-
->>>>>>> Moves variant template to blueprint/variant
 
 def evaluation(store, evaluation_obj):
     """Fetch and fill-in evaluation object."""
@@ -323,7 +298,6 @@ def evaluation(store, evaluation_obj):
     evaluation_obj['classification'] = ACMG_COMPLETE_MAP.get(evaluation_obj['classification'])
     return evaluation_obj
 
-<<<<<<< HEAD
 def transcript_str(transcript_obj, gene_name=None):
     """Generate amino acid change as a string.
     
@@ -357,36 +331,6 @@ def transcript_str(transcript_obj, gene_name=None):
         change_str = "{}:".format(gene_name) + change_str
 
     return change_str
-=======
-def parse_gene(gene_obj, build=None):
-    """Parse variant genes."""
-    build = build or 37
-
-    if gene_obj.get('common'):
-        add_gene_links(gene_obj, build)
-        refseq_transcripts = []
-        for tx_obj in gene_obj['transcripts']:
-            parse_transcript(gene_obj, tx_obj, build)
-
-            # select refseq transcripts as "primary"
-            if not tx_obj.get('refseq_id'):
-                continue
-
-            refseq_transcripts.append(tx_obj)
-
-        gene_obj['primary_transcripts'] = (refseq_transcripts if refseq_transcripts else [])
-
-def parse_transcript(gene_obj, tx_obj, build=None):
-    """Parse variant gene transcript (VEP)."""
-    build = build or 37
-    add_tx_links(tx_obj, build)
-
-    if tx_obj.get('refseq_id'):
-        gene_name = (gene_obj['common']['hgnc_symbol'] if gene_obj['common'] else
-                     gene_obj['hgnc_id'])
-        tx_obj['change_str'] = transcript_str(tx_obj, gene_name)
->>>>>>> Moves variant template to blueprint/variant
-
 
 def frequency(variant_obj):
     """Returns a judgement on the overall frequency of the variant.
@@ -410,7 +354,6 @@ def frequency(variant_obj):
         return 'uncommon'
     
     return 'rare'
-
 
 def end_position(variant_obj):
     """Calculate end position for a variant.
