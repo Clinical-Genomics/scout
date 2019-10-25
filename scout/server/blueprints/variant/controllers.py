@@ -1,5 +1,4 @@
 import logging
-from flask import flash
 from datetime import datetime
 
 from flask_login import current_user
@@ -188,38 +187,21 @@ def observations(store, loqusdb, case_obj, variant_obj):
     var_type = variant_obj.get('variant_type', 'clinical')
 
     composite_id = ("{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt))
-    flash("Fetching loqus variant..")
-    start_loq = datetime.now()
     obs_data = loqusdb.get_variant({'_id': composite_id}) or {}
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)
         return obs_data
-    flash("Loqus variant fetched. Time to fetch: {}".format(datetime.now()-start_loq))
 
-    flash("Counting loqus cases")
-    count_start = datetime.now()
     obs_data['total'] = loqusdb.case_count()
-    flash("Cases counted. Time to count: {}".format(datetime.now()-count_start))
-
-
-    flash("Fetch all user institutes")
-    institute_start = datetime.now()
     user_institutes_ids = set([inst['_id'] for inst in user_institutes(store, current_user)])
-    flash("All institutes fetched. Time to fetch: {}".format(datetime.now()-institute_start))
 
-    flash("Updating cases info")
-    cases_start = datetime.now()
     obs_data['cases'] = []
     institute_id = variant_obj['institute']
     for case_id in obs_data.get('families', []):
-        print(case_id, var_case_id)
         if case_id == var_case_id:
             continue
         # other case might belong to same institute, collaborators or other institutes
-        flash("fetching case {}".format(case_id))
-        case_fetch_start = datetime.now()
         other_case = store.case(case_id)
-        flash("Time to fetch case: {}".format(datetime.now()-case_fetch_start))
         if not other_case:
             # Case could have been removed
             LOG.debug("Case %s could not be found in database", case_id)
@@ -230,13 +212,8 @@ def observations(store, loqusdb, case_obj, variant_obj):
         if user_institutes_ids.isdisjoint(other_institutes):
             # If the user does not have access to the information we skip it
             continue
-        flash("fetching other variant{}".format(composite_id))
         document_id = parse_document_id(chrom, str(pos), ref, alt, var_type, case_id)
-        variant_fetch_start = datetime.now()
         other_variant = store.variant(document_id=document_id)
-        flash("Time to fetch other variant{}".format(datetime.now()-variant_fetch_start))
         obs_data['cases'].append(dict(case=other_case, variant=other_variant))
-    
-    flash("Cases updated. Time to update: {}".format(datetime.now()-cases_start))
 
     return obs_data

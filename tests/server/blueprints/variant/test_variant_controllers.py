@@ -6,25 +6,25 @@ from scout.server.extensions import (store, loqusdb)
 from flask import url_for, current_app
 from flask_login import current_user
 
-# def test_observations_controller(app, real_variant_database, case_obj, loqusdb):
-#     ## GIVEN a database and a loqusdb mock with one variant from the database
-#     var_obj = real_variant_database.variant_collection.find_one()
-#     assert var_obj
-#
-#     loqusdb._add_variant(var_obj)
-#
-#     ## WHEN updating the case_id for the variant
-#     var_obj['case_id'] = 'internal_id2'
-#
-#     data = None
-#     with app.test_client() as client:
-#         resp = client.get(url_for('auto_login'))
-#
-#
-#         data = observations(real_variant_database, loqusdb, case_obj, var_obj)
-#
-#     ## THEN assert that the data was found
-#     assert data
+def test_observations_controller(app, real_variant_database, case_obj, loqusdb):
+    ## GIVEN a database and a loqusdb mock with one variant from the database
+    var_obj = real_variant_database.variant_collection.find_one()
+    assert var_obj
+
+    loqusdb._add_variant(var_obj)
+
+    ## WHEN updating the case_id for the variant
+    var_obj['case_id'] = 'internal_id2'
+
+    data = None
+    with app.test_client() as client:
+        resp = client.get(url_for('auto_login'))
+
+
+        data = observations(real_variant_database, loqusdb, case_obj, var_obj)
+
+    ## THEN assert that the data was found
+    assert data
 
 
 def test_variant_controller_with_compounds(app, institute_obj, case_obj):
