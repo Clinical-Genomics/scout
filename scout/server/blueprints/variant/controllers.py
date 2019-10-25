@@ -11,6 +11,8 @@ from scout.server.links import (ensembl, add_variant_links)
 from .utils import (end_position, default_panels, frequency, callers, evaluation, 
                     is_affected, predictions, sv_frequencies, add_gene_info, clinsig_human)
 
+from scout.parse.variant.ids import parse_document_id
+
 def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, add_case=True,
             add_other=True, get_overlapping=True, add_compounds=True, variant_type=None):
     """Pre-process a single variant for the detailed variant view.
@@ -155,8 +157,14 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
 
 def observations(store, loqusdb, case_obj, variant_obj):
     """Query observations for a variant."""
-    composite_id = ("{this[chromosome]}_{this[position]}_{this[reference]}_"
-                    "{this[alternative]}".format(this=variant_obj))
+    chrom = variant_obj['chromosome']
+    pos = variant_obj['position']
+    ref = variant_obj['reference']
+    alt = variant_obj['alternative']
+    var_case_id = variant_obj['case_id']
+    var_type = variant_obj.get('variant_type', 'clinical')
+
+    composite_id = ("{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt))
     flash("Fetching loqus variant..")
     start_loq = datetime.now()
     obs_data = loqusdb.get_variant({'_id': composite_id}) or {}
@@ -179,7 +187,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
     obs_data['cases'] = []
     institute_id = variant_obj['institute']
     for case_id in obs_data.get('families', []):
-        if case_id == variant_obj['case_id']:
+        if case_id == var_case_id:
             continue
         # other case might belong to same institute, collaborators or other institutes
         flash("fetching case {}".format(case_id))
@@ -196,8 +204,9 @@ def observations(store, loqusdb, case_obj, variant_obj):
             # If the user does not have access to the information we skip it
             continue
         flash("fetching other variant{}".format(composite_id))
+        document_id = parse_document_id(chrom, pos, ref, alt, var_type, var_case_id)
         variant_fetch_start = datetime.now()
-        other_variant = store.variant(case_id=case_id, simple_id=composite_id)
+        other_variant = store.variant(document_id=document_id)
         flash("Time to fetch other variant{}".format(datetime.now()-variant_fetch_start))
         obs_data['cases'].append(dict(case=other_case, variant=other_variant))
     
