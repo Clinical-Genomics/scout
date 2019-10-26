@@ -249,8 +249,10 @@
 <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name,
   variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
    class="btn btn-secondary btn-sm" style="color: #ffffff !important;">
-  reset filters
-</a>
+   Reset filters
+ </a>
+ {{ form.save_filter(class="btn btn-secondary btn-sm") }}
+ {{ form.load_filter(class="btn btn-secondary btn-sm") }}
 {% endmacro %}
 
 {% macro sv_filters(form, institute, case) %}
@@ -356,8 +358,10 @@
             case_name=case.display_name, variant_type='clinical',
             gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
             class="btn btn-secondary btn-sm" style="color: #ffffff !important;">
-            reset filters
+            Reset filters
           </a>
+          {{ form.save_filter(class="btn btn-secondary btn-sm") }}
+          {{ form.load_filter(class="btn btn-secondary btn-sm") }}
         </div>
       </div>
     </div>

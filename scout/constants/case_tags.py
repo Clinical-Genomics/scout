@@ -47,6 +47,7 @@ VERBS_MAP = {
     "update_clinical_filter_hpo": "updated clinical filter HPO status for",
     "mme_add": "Exported to MatchMaker patient",
     "mme_remove": "Removed from MatchMaker patient",
+    "filter_stash": "stored a filter for "
 }
 
 VERBS = list(VERBS_MAP.keys())

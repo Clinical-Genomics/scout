@@ -77,6 +77,10 @@ class FiltersForm(FlaskForm):
     clinical_filter = SubmitField(label='Clinical filter')
     export = SubmitField(label='Filter and export')
 
+    save_filter = SubmitField(label='Save filter')
+    load_filter = SubmitField(label='Load filter')
+
+
 class CancerFiltersForm(FlaskForm):
     """Base filters for CancerFiltersForm"""
     variant_type = HiddenField(default='clinical')

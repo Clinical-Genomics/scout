@@ -49,7 +49,6 @@ def variants(institute_id, case_name):
     LOG.debug("Current default panels: {}".format(default_panels))
 
     if bool(request.form.get('clinical_filter')):
-
         # but not if HPO is selected
         clinical_filter = MultiDict({
             'variant_type': 'clinical',
@@ -62,14 +61,26 @@ def variants(institute_id, case_name):
             'gene_panels': clinical_filter_panels
              })
 
+    user_obj = store.user(current_user.email)
     if(request.method == "POST"):
+        # If special filter buttons were selected:
         if bool(request.form.get('clinical_filter')):
             form = FiltersForm(clinical_filter)
             form.csrf_token = request.args.get('csrf_token')
+        elif bool(request.form.get('save_filter')):
+            # The form should be applied and remain set the page after saving
+            form = FiltersForm(request.form)
+            # Stash the filter to db to make available for this institute
+            filter_obj = request.form
+            store.stash_filter(filter_obj, institute_obj, case_obj, user_obj)
+        elif bool(request.form.get('load_filter')):
+            filter_obj = store.apply_filter(institute_id, filter_id)
+            form = FiltersForm(MultiDict(filter_obj))
         else:
             form = FiltersForm(request.form)
     else:
         form = FiltersForm(request.args)
+
 
     # populate available panel choices
     available_panels = case_obj.get('panels', []) + [
