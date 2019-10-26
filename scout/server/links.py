@@ -1,5 +1,7 @@
 from pprint import pprint as pp
 
+from scout.constants import SPIDEX_HUMAN
+
 def add_gene_links(gene_obj, build=37):
     """Update a gene object with links
 
@@ -12,7 +14,7 @@ def add_gene_links(gene_obj, build=37):
     """
     try:
         build = int(build)
-    except ValueError:
+    except (ValueError, TypeError) as err:
         build = 37
     # Add links that use the hgnc_id
     hgnc_id = gene_obj['hgnc_id']
@@ -233,3 +235,135 @@ def smart(smart_domain):
         return None
 
     return link.format(smart_domain)
+
+############# Variant links ####################
+
+def get_variant_links(variant_obj, build=None):
+    """Update a variant object with links
+
+    Args:
+        variant_obj(scout.models.Variant)
+        build(int)
+
+    Returns:
+        links(dict): The variant links
+    """
+    try:
+        build = int(build)
+    except (ValueError, TypeError) as err:
+        build = 37
+    links = dict(
+        thousandg_link = thousandg_link(variant_obj, build),
+        exac_link = exac_link(variant_obj),
+        gnomad_link = gnomad_link(variant_obj),
+        swegen_link = swegen_link(variant_obj),
+        cosmic_link = cosmic_link(variant_obj),
+        beacon_link = beacon_link(variant_obj, build),
+        ucsc_link = ucsc_link(variant_obj, build),
+        alamut_link = alamut_link(variant_obj),
+        spidex_human = spidex_human(variant_obj),
+    )
+    return links
+
+def thousandg_link(variant_obj, build=None):
+    """Compose link to 1000G page for detailed information."""
+    dbsnp_id = variant_obj.get('dbsnp_id')
+    build = build or 37
+
+    if not dbsnp_id:
+        return None
+
+    if build == 37:
+        url_template = ("http://grch37.ensembl.org/Homo_sapiens/Variation/Explore"
+                        "?v={};vdb=variation")
+    else:
+        url_template = ("http://www.ensembl.org/Homo_sapiens/Variation/Explore"
+                        "?v={};vdb=variation")
+
+    return url_template.format(dbsnp_id)
+
+def exac_link(variant_obj):
+    """Compose link to ExAC website for a variant position."""
+    url_template = ("http://exac.broadinstitute.org/variant/"
+                    "{this[chromosome]}-{this[position]}-{this[reference]}"
+                    "-{this[alternative]}")
+    return url_template.format(this=variant_obj)
+
+def gnomad_link(variant_obj):
+    """Compose link to gnomAD website."""
+    url_template = ("http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
+                    "{this[position]}-{this[reference]}-{this[alternative]}")
+    return url_template.format(this=variant_obj)
+
+def swegen_link(variant_obj):
+    """Compose link to SweGen Variant Frequency Database."""
+    url_template = ("https://swegen-exac.nbis.se/variant/{this[chromosome]}-"
+                    "{this[position]}-{this[reference]}-{this[alternative]}")
+    return url_template.format(this=variant_obj)
+
+def cosmic_link(variant_obj):
+    """Compose link to COSMIC Database.
+
+    Args:
+        variant_obj(scout.models.Variant)
+
+    Returns:
+        url_template(str): Link to COSMIIC database if cosmic id is present
+    """
+
+    cosmic_ids = variant_obj.get('cosmic_ids')
+
+    if not cosmic_ids:
+        return None
+    else:
+        cosmic_id = cosmic_ids[0]
+        url_template = ("https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}")
+
+
+    return url_template.format(cosmic_id)
+
+def beacon_link(variant_obj, build=None):
+    """Compose link to Beacon Network."""
+    build = build or 37
+    url_template = ("https://beacon-network.org/#/search?pos={this[position]}&"
+                    "chrom={this[chromosome]}&allele={this[alternative]}&"
+                    "ref={this[reference]}&rs=GRCh37")
+    # beacon does not support build 38 at the moment
+    # if build == '38':
+    #     url_template = ("https://beacon-network.org/#/search?pos={this[position]}&"
+    #                     "chrom={this[chromosome]}&allele={this[alternative]}&"
+    #                     "ref={this[reference]}&rs=GRCh38")
+
+    return url_template.format(this=variant_obj)
+
+
+def ucsc_link(variant_obj, build=None):
+    """Compose link to UCSC."""
+    build = build or 37
+    url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&"
+                        "position=chr{this[chromosome]}:{this[position]}"
+                        "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack")
+    if build == 38:
+        url_template = ("http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg20&"
+                        "position=chr{this[chromosome]}:{this[position]}"
+                        "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack")
+
+    return url_template.format(this=variant_obj)
+
+
+def alamut_link(variant_obj):
+    url_template = ("http://localhost:10000/show?request={this[chromosome]}:"
+                    "{this[position]}{this[reference]}>{this[alternative]}")
+    return url_template.format(this=variant_obj)
+
+
+def spidex_human(variant_obj):
+    """Translate SPIDEX annotation to human readable string."""
+    if variant_obj.get('spidex') is None:
+        return 'not_reported'
+    elif abs(variant_obj['spidex']) < SPIDEX_HUMAN['low']['pos'][1]:
+        return 'low'
+    elif abs(variant_obj['spidex']) < SPIDEX_HUMAN['medium']['pos'][1]:
+        return 'medium'
+    else:
+        return 'high'

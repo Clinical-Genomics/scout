@@ -181,26 +181,6 @@ def variants(institute_id, case_name):
     return dict(institute=institute_obj, case=case_obj, form=form,
                     severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
-
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>')
-@templated('variants/variant.html')
-def variant(institute_id, case_name, variant_id):
-    """Display a specific SNV variant."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    LOG.debug("Variants view requesting data for variant {}".format(variant_id))
-    data = controllers.variant(store, institute_obj, case_obj, variant_id=variant_id)
-    if data is None:
-        LOG.warning("An error occurred: variants view requesting data for variant {}".format(variant_id))
-        flash('An error occurred while retrieving variant object', 'danger')
-        return redirect(request.referrer)
-
-    if current_app.config.get('LOQUSDB_SETTINGS'):
-        data['observations'] = controllers.observations(store, loqusdb,
-            case_obj, data['variant'])
-    data['cancer'] = request.args.get('cancer') == 'yes'
-    data['str'] = request.args.get('str') == 'yes'
-    return dict(institute=institute_obj, case=case_obj, **data)
-
 @variants_bp.route('/<institute_id>/<case_name>/str/variants')
 @templated('variants/str-variants.html')
 def str_variants(institute_id, case_name):
@@ -345,21 +325,6 @@ def sv_variants(institute_id, case_name):
 
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
                 form=form, severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
-
-
-@variants_bp.route('/<institute_id>/<case_name>/sv/variants/<variant_id>')
-@templated('variants/sv-variant.html')
-def sv_variant(institute_id, case_name, variant_id):
-    """Display a specific structural variant."""
-    data = controllers.sv_variant(store, institute_id, case_name, variant_id)
-    return data
-
-@variants_bp.route('/<institute_id>/<case_name>/str/variants/<variant_id>')
-@templated('variants/str-variant.html')
-def str_variant(institute_id, case_name, variant_id):
-    """Display a specific STR variant."""
-    data = controllers.str_variant(store, institute_id, case_name, variant_id)
-    return data
 
 @variants_bp.route('/<institute_id>/<case_name>/<variant_id>/update', methods=['POST'])
 def variant_update(institute_id, case_name, variant_id):

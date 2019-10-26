@@ -70,7 +70,7 @@
     </div>
     <div class="card-footer">
       <form action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) }}" method="POST">
-        <input type="hidden" name="link" value="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) if variant_id else url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+        <input type="hidden" name="link" value="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) if variant_id else url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
         <div class="form-group">
           <textarea class="form-control" name="content" placeholder="Leave a comment"></textarea>
         </div>
