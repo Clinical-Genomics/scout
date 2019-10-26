@@ -22,7 +22,7 @@ from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_li
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.parse.matchmaker import hpo_terms, omim_terms, genomic_features, parse_matches
 from scout.utils.matchmaker import matchmaker_request
-from scout.server.blueprints.variants.controllers import get_predictions
+from scout.server.blueprints.variant.utils import predictions
 from scout.server.blueprints.genes.controllers import gene
 
 LOG = logging.getLogger(__name__)
@@ -558,7 +558,7 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
                 variant_obj['hgvs'] = hgvs
 
             # populate variant predictions for display
-            variant_obj.update(get_predictions(variant_genes))
+            variant_obj.update(predictions(variant_genes))
 
         variants.append(variant_obj)
 

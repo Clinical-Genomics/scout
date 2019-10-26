@@ -74,7 +74,7 @@
             </div>
             <div class="list-group mt-3">
               <div>
-                <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+                <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
                   <label class="ml-3">Variant tag</label>
                   <div class="row">
                     <div class="col-8">
@@ -96,7 +96,7 @@
             </div>
             <div class="list-group mt-3">
               <div>
-                <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+                <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
                   <label class="ml-3">Dismiss variant</label>
                   <div class="row">
                     <div class="col-8 d-flex">
@@ -198,7 +198,7 @@
   	        Type <div class="float-right">{{ variant.sub_category|upper }}</div>
   	      </li>
           {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
-            <a href="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Submit to ClinVar</a>
+            <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Submit to ClinVar</a>
           {% endif %}
           {% if variant.clinvar_clinsig%}
             <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-default form-control">Modify clinvar submission</a>

@@ -1,16 +1,22 @@
 import logging
 
+from datetime import date
+
+from flask import url_for
 from flask_login import current_user
 
 from scout.server.utils import (institute_and_case, variant_case, user_institutes)
 from scout.constants import (CALLERS, MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, VERBS_MAP, 
-                             ACMG_MAP, MOSAICISM_OPTIONS, ACMG_OPTIONS, ACMG_COMPLETE_MAP)
+                             ACMG_MAP, MOSAICISM_OPTIONS, ACMG_OPTIONS, ACMG_COMPLETE_MAP, 
+                             ACMG_CRITERIA)
 
 from scout.server.links import (ensembl, get_variant_links)
+from scout.parse.variant.ids import parse_document_id
+from scout.utils.requests import fetch_refseq_version
+
 from .utils import (end_position, default_panels, frequency, callers, evaluation, 
                     is_affected, predictions, sv_frequencies, add_gene_info, clinsig_human)
 
-from scout.parse.variant.ids import parse_document_id
 
 LOG = logging.getLogger(__name__)
 
@@ -224,3 +230,87 @@ def observations(store, loqusdb, case_obj, variant_obj):
         obs_data['cases'].append(dict(case=other_case, variant=other_variant))
 
     return obs_data
+
+def variant_acmg(store, institute_id, case_name, variant_id):
+    """Collect data relevant for rendering ACMG classification form.
+    
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str): institute_obj['_id']
+        case_name(str): case_obj['display_name']
+        variant_id(str): variant_obj['document_id']
+    
+    Returns:
+        data(dict): Things for the template
+    """
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    return dict(institute=institute_obj, case=case_obj, variant=variant_obj,
+                CRITERIA=ACMG_CRITERIA, ACMG_OPTIONS=ACMG_OPTIONS)
+
+
+def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, criteria):
+    """Calculate an ACMG classification based on a list of criteria.
+    
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str): institute_obj['_id']
+        case_name(str): case_obj['display_name']
+        variant_id(str): variant_obj['document_id']
+        user_mail(str)
+        criteris()
+    
+    Returns:
+        data(dict): Things for the template
+        
+    """
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_obj = store.variant(variant_id)
+    user_obj = store.user(user_email)
+    variant_link = url_for('variant.variant', institute_id=institute_id,
+                           case_name=case_name, variant_id=variant_id)
+    classification = store.submit_evaluation(
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        variant_obj=variant_obj,
+        user_obj=user_obj,
+        link=variant_link,
+        criteria=criteria,
+    )
+    return classification
+
+def clinvar_export(store, institute_id, case_name, variant_id):
+    """Gather the required data for creating the clinvar submission form
+
+        Args:
+            store(scout.adapter.MongoAdapter)
+            institute_id(str): Institute ID
+            case_name(str): case ID
+            variant_id(str): variant._id
+
+        Returns:
+            data(dict): all the required data (case and variant level) to pre-fill in fields 
+                        in the clinvar submission form
+
+    """
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    pinned = [store.variant(variant_id) or variant_id for variant_id in
+                  case_obj.get('suspects', [])]
+    variant_obj = store.variant(variant_id)
+
+    # gather missing transcript info from entrez (refseq id version)
+    for pinned_var in pinned:
+        for gene in pinned_var.get('genes'):
+            for transcript in gene.get('transcripts'):
+                refseq_id = transcript.get('refseq_id')
+                if not refseq_id:
+                    continue
+                transcript['refseq_id'] = fetch_refseq_version(refseq_id)
+
+    return dict(
+        today = str(date.today()),
+        institute=institute_obj,
+        case=case_obj,
+        variant=variant_obj,
+        pinned_vars=pinned
+    )
