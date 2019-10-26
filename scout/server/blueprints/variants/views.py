@@ -7,16 +7,14 @@ import datetime
 import zipfile
 import pathlib
 
-from flask import (Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify, Response,
-                    session, send_file)
-from werkzeug.datastructures import Headers, MultiDict
+from flask import (Blueprint, request, redirect, abort, flash, current_app, url_for, Response,
+                   send_file)
+from werkzeug.datastructures import (Headers, MultiDict)
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
-from scout.constants.acmg import ACMG_CRITERIA
-from scout.constants import ACMG_MAP
-from scout.server.extensions import store, mail, loqusdb
-from scout.server.utils import templated, institute_and_case, public_endpoint
+from scout.server.extensions import store
+from scout.server.utils import (templated, institute_and_case)
 from . import controllers
 from .forms import FiltersForm, SvFiltersForm, StrFiltersForm, CancerFiltersForm
 
@@ -323,34 +321,6 @@ def sv_variants(institute_id, case_name):
 
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
                 form=form, severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
-
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/<variant_category>/<order>', methods=['POST'])
-def verify(institute_id, case_name, variant_id, variant_category, order):
-    """Start procedure to validate variant using other techniques."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_obj = store.variant(variant_id)
-    user_obj = store.user(current_user.email)
-
-    comment = request.form.get('verification_comment')
-
-    try:
-        controllers.variant_verification(
-                                    store=store, 
-                                    mail=mail, 
-                                    institute_obj=institute_obj, 
-                                    case_obj=case_obj, 
-                                    user_obj=user_obj, 
-                                    comment=comment,
-                                    variant_obj=variant_obj, 
-                                    sender=current_app.config.get('MAIL_USERNAME'), 
-                                    variant_url=request.referrer, 
-                                    order=order, 
-                                    url_builder=url_for
-                                )
-    except controllers.MissingVerificationRecipientError:
-        flash('No verification recipients added to institute.', 'danger')
-
-    return redirect(request.referrer)
 
 @variants_bp.route('/<institute_id>/<case_name>/cancer/variants', methods=['GET','POST'])
 @templated('variants/cancer-variants.html')

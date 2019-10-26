@@ -37,6 +37,28 @@ class LoqusdbMock():
     def _all_variants(self):
         return self.variants
     
+# -*- coding: utf-8 -*-
+
+
+class MockMail:
+    _send_was_called = False
+    _message = None
+
+    def send(self, message):
+        self._send_was_called = True
+        self._message = message
+
+@pytest.fixture
+def mock_mail():
+    return MockMail()
+
+@pytest.fixture
+def mock_sender():
+    return 'mock_sender'
+
+@pytest.fixture
+def mock_comment():
+    return 'mock_comment'
 
 @pytest.fixture
 def loqusdb():

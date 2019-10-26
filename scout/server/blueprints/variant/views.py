@@ -12,6 +12,9 @@ from scout.server.blueprints.variant.controllers import variant_acmg as acmg_con
 from scout.server.blueprints.variant.controllers import (observations, variant_acmg_post, 
                                                          clinvar_export)
 
+from scout.server.blueprints.variant.verification_controllers import (variant_verification, 
+MissingVerificationRecipientError)
+
 from scout.parse.clinvar import set_submission_objects
 
 from scout.constants import ACMG_MAP, ACMG_CRITERIA
@@ -188,3 +191,25 @@ def clinvar(institute_id, case_name, variant_id):
 
     # Redirect to clinvar submissions handling page, and pass it the updated_submission_object
     return redirect(url_for('cases.clinvar_submissions', institute_id=institute_id))
+
+@variant_bp.route('/<institute_id>/<case_name>/<variant_id>/<variant_category>/<order>', methods=['POST'])
+def verify(institute_id, case_name, variant_id, variant_category, order):
+    """Start procedure to validate variant using other techniques."""
+    comment = request.form.get('verification_comment')
+
+    try:
+        controllers.variant_verification(
+                                    store=store, 
+                                    institute_id=institute_id, 
+                                    case_name=case_name, 
+                                    comment=comment,
+                                    variant_obj=variant_id, 
+                                    sender=current_app.config.get('MAIL_USERNAME'), 
+                                    variant_url=request.referrer, 
+                                    order=order, 
+                                    url_builder=url_for
+                                )
+    except MissingVerificationRecipientError:
+        flash('No verification recipients added to institute.', 'danger')
+
+    return redirect(request.referrer)

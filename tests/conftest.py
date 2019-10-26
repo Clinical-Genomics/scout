@@ -56,8 +56,8 @@ from scout.models.hgnc_map import HgncGene
 DATABASE = 'testdb'
 REAL_DATABASE = 'realtestdb'
 
-root_logger = logging.getLogger()
-init_log(root_logger, loglevel='INFO')
+# root_logger = logging.getLogger()
+# init_log(root_logger, loglevel='INFO')
 LOG = logging.getLogger(__name__)
 
 ##################### Gene fixtures #####################
