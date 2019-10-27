@@ -12,17 +12,21 @@ LOG = logging.getLogger(__name__)
 class FilterHandler(object):
     """Class to handle persistent variant filters in the mongo adapter"""
 
-    def retrieve_filter(self, filter_id):
+    def retrieve_filter(self, filter_display_id):
         """Retrieve a known stored filter object from the db
 
             Arguments:
-                filter_id
+                filter_display_id(str)
 
             Returns:
                 filter_obj(dict)
         """
-        filter_obj = self.filter_collection.find_one({'_id': filter_id})
+        LOG.info("Retrieve filter {}".format(filter_display_id))
+        filter_obj = self.filter_collection.find_one({'_id': ObjectId(filter_display_id)})
+        LOG.debug("Filter obj: {}".format(filter_obj))
 
+        # use _id to preselect the currently loaded filter, and drop it while we are at it
+        filter_obj.update([('filters', filter_obj.pop('_id', None))])
         return filter_obj
 
     def stash_filter(self, filter_obj, institute_obj, case_obj, user_obj, category='snv'):
@@ -42,11 +46,24 @@ class FilterHandler(object):
         LOG.info("Stashing filter for user '%s' and institute %s, version %s",
             user_obj.get('email'), institute_obj.get('display_name'), filter_interface_version)
 
-        filter_dict = {'category': category}
+        LOG.info("Filter object {}".format(filter_obj))
+
+        institute_id = institute_obj.get('_id')
+        filter_dict = {'institute_id': institute_id,
+            'category': category,}
+
+        # make up a default display name
+        filter_dict['display_name'] = institute_obj.get(
+                'display_name') + "-" + case_obj.get('display_name')
+
         for (element, value) in filter_obj.lists():
             if value == ['']:
                 continue
             if element == 'save_filter':
+                continue
+            if element == 'filter_display_name':
+                # filter display_name if given
+                filter_dict['display_name'] = value[0]
                 continue
             filter_dict[element] = value
 
@@ -70,7 +87,7 @@ class FilterHandler(object):
 
         return
 
-    def filters(self, institute_id, category):
+    def filters(self, institute_id, category="snv"):
 
         filters_res = self.filter_collection.find(
             {'institute_id': institute_id, 'category': category})

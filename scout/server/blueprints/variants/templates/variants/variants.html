@@ -247,6 +247,11 @@
       return true;
     }
 
+    function promptFilterName(suggestion) {
+      name = prompt("Please give the filter a name:", suggestion);
+      document.forms["filters_form"].elements["filter_display_name"].value = name;
+    }
+
     $('select[multiple]').selectpicker({
       width: '100%'
     });

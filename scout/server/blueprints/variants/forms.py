@@ -4,7 +4,7 @@ import logging
 
 from flask_wtf import FlaskForm
 from wtforms import (BooleanField, DecimalField, Field, TextField, SelectMultipleField,
-                     HiddenField, IntegerField, SubmitField, validators)
+                     SelectField, HiddenField, IntegerField, SubmitField, validators)
 from wtforms.widgets import TextInput
 from flask_wtf.file import FileField
 
@@ -77,7 +77,8 @@ class FiltersForm(FlaskForm):
     clinical_filter = SubmitField(label='Clinical filter')
     export = SubmitField(label='Filter and export')
 
-    filters = SelectMultipleField(choices=[])
+    filters = SelectField(choices=[])
+    filter_display_name = HiddenField(default='')
     save_filter = SubmitField(label='Save filter')
     load_filter = SubmitField(label='Load filter')
 

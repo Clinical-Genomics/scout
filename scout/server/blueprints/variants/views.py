@@ -74,7 +74,8 @@ def variants(institute_id, case_name):
             filter_obj = request.form
             store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category='snv')
         elif bool(request.form.get('load_filter')):
-            filter_obj = store.retrieve_filter(institute_id, filter_id)
+            filter_display_name = request.form.get('filters')
+            filter_obj = store.retrieve_filter(filter_display_name)
             form = FiltersForm(MultiDict(filter_obj))
         else:
             form = FiltersForm(request.form)
