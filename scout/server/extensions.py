@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from pymongo.errors import (ConnectionFailure)
 
 from flask_debugtoolbar import DebugToolbarExtension
@@ -29,9 +30,13 @@ mail = Mail()
 from loqusdb.plugins import MongoAdapter as LoqusDBMongoAdapter
 from scout.adapter.client import get_connection
 
+LOG = logging.getLogger(__name__)
+
+
 class LoqusDB(LoqusDBMongoAdapter):
     def init_app(self, app):
         """Initialize from Flask."""
+        LOG.info("Connecting to loqusdb")
         self.connect(**app.config['LOQUSDB_SETTINGS'])
 
     def case_count(self):

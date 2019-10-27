@@ -16,7 +16,7 @@
   {% endif %}
   <hr>
   <div class="container mt-3">
-    <form action="{{ url_for('variants.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+    <form action="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
       <div class="card panel-default mt-3">
         <div class="card-body">
           {% if not evaluation %}

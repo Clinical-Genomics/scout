@@ -64,7 +64,7 @@
           <tr>
               <td>{{ variant.variant_rank }}</td>
             <td>
-              <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,
+              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
                                   variant_id=variant._id, cancer='yes') }}">
               {% for annotation in variant.canonical_transcripts %}
                 <div>{{ annotation }}</div>
@@ -116,7 +116,7 @@
 {% endmacro %}
 
 {% macro actions_cell(variant) %}
-  <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,
+  <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
                       variant_id=variant._id, cancer='yes') }}">View</a>
   {% if variant.comments %}
     <span class="glyphicon glyphicon-comment"></span>

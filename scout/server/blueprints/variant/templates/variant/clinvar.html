@@ -45,7 +45,7 @@
     The form present on this page mirrors the fields on the Clinvar submission spreadsheets. After collecting all the required fields for submitting one or more variants to Clinvar, the info is subsequently processed into comma separated files, ready to be uploaded in the submission process.<br>
     Link to the official Clinvar <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#sub_info" target="_blank">documentation</a>.
   <br><br>
-  <form action="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST" id="clivar_form">
+  <form action="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST" id="clivar_form">
     <input type="hidden" name="main_var" value="{{ variant._id }}">
     <input type="hidden" name="case_id" value="{{ case._id }}">
     {% if 'phenotype_groups' in case and case.phenotype_groups|length >0 or 'phenotype_terms' in case and case.phenotype_terms|length >0 %}
