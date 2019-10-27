@@ -77,6 +77,7 @@ class FiltersForm(FlaskForm):
     clinical_filter = SubmitField(label='Clinical filter')
     export = SubmitField(label='Filter and export')
 
+    filters = SelectMultipleField(choices=[])
     save_filter = SubmitField(label='Save filter')
     load_filter = SubmitField(label='Load filter')
 

@@ -72,15 +72,19 @@ def variants(institute_id, case_name):
             form = FiltersForm(request.form)
             # Stash the filter to db to make available for this institute
             filter_obj = request.form
-            store.stash_filter(filter_obj, institute_obj, case_obj, user_obj)
+            store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category='snv')
         elif bool(request.form.get('load_filter')):
-            filter_obj = store.apply_filter(institute_id, filter_id)
+            filter_obj = store.retrieve_filter(institute_id, filter_id)
             form = FiltersForm(MultiDict(filter_obj))
         else:
             form = FiltersForm(request.form)
     else:
         form = FiltersForm(request.args)
 
+    # populate filters dropdown
+    available_filters = store.filters(institute_id, category='snv')
+    form.filters.choices = [(filter.get('_id'), filter.get('display_name'))
+        for filter in available_filters]
 
     # populate available panel choices
     available_panels = case_obj.get('panels', []) + [

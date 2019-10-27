@@ -12,7 +12,7 @@ LOG = logging.getLogger(__name__)
 class FilterHandler(object):
     """Class to handle persistent variant filters in the mongo adapter"""
 
-    def apply_filter(self, filter_id):
+    def retrieve_filter(self, filter_id):
         """Retrieve a known stored filter object from the db
 
             Arguments:
@@ -25,13 +25,14 @@ class FilterHandler(object):
 
         return filter_obj
 
-    def stash_filter(self, filter_obj, institute_obj, case_obj, user_obj):
+    def stash_filter(self, filter_obj, institute_obj, case_obj, user_obj, category='snv'):
         """Store away filter settings for later use.
 
             Arguments:
                 filter_obj(MultiDict)
                 institute_obj(str)
                 user_obj(str)
+                category(str): in ['cancer', 'snv', 'str', 'sv'].
 
             Returns:
                 filter_id(str)
@@ -41,7 +42,7 @@ class FilterHandler(object):
         LOG.info("Stashing filter for user '%s' and institute %s, version %s",
             user_obj.get('email'), institute_obj.get('display_name'), filter_interface_version)
 
-        filter_dict = {}
+        filter_dict = {'category': category}
         for (element, value) in filter_obj.lists():
             if value == ['']:
                 continue
@@ -69,9 +70,9 @@ class FilterHandler(object):
 
         return
 
-    def filters(self, institute_id, variant_type):
+    def filters(self, institute_id, category):
 
         filters_res = self.filter_collection.find(
-            {'institute_id': institute_id, 'variant_type': variant_type})
+            {'institute_id': institute_id, 'category': category})
 
         return filters_res

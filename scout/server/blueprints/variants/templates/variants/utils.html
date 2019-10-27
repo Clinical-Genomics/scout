@@ -151,6 +151,28 @@
 </div>
 {% endmacro %}
 
+{% macro modal_filter(institute, filter_form) %}
+<div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterLabel"
+  aria-hidden="true" onsubmit="return validate_filter_form();">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+         <h5 class="modal-title" id="filterLabel">Save filter settings</h5>
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+           <span aria-hidden="true">&times;</span>
+         </button>
+      </div>
+      <form action="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+        <div class="modal-body">
+          <div class="row">
+
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endmacro %}
 
 {% macro snv_filters(form, institute, case)%}
 <div class="form-group">
@@ -246,13 +268,26 @@
       </div>
   </div><!--end of row-->
 </div>
-<a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name,
-  variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
-   class="btn btn-secondary btn-sm" style="color: #ffffff !important;">
-   Reset filters
- </a>
- {{ form.save_filter(class="btn btn-secondary btn-sm") }}
- {{ form.load_filter(class="btn btn-secondary btn-sm") }}
+<div class="form-group">
+  <div class="row justify-content-left" style="margin-top:20px;">
+    <div class="col-1">
+      <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name,
+        variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
+        class="btn btn-secondary btn-sm" style="color: #ffffff !important;">
+        Reset filters
+      </a>
+    </div>
+    <div class="col-1">
+      {{ form.save_filter(class="btn btn-secondary btn-sm") }}
+    </div>
+    <div class="col-2">
+      {{ form.filters(class="selectpicker") }}
+    </div>
+    <div class="col-1">
+      {{ form.load_filter(class="btn btn-secondary btn-sm") }}
+    </div>
+  </div>
+</div>
 {% endmacro %}
 
 {% macro sv_filters(form, institute, case) %}
@@ -361,7 +396,9 @@
             Reset filters
           </a>
           {{ form.save_filter(class="btn btn-secondary btn-sm") }}
+          {{ form.filters(class="selectpicker") }}
           {{ form.load_filter(class="btn btn-secondary btn-sm") }}
+
         </div>
       </div>
     </div>
