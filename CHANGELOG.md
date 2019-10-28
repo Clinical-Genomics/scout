@@ -44,6 +44,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Next and first buttons order swap
 - Added pagination (and POST capability) to cancer variants.
 - Improves loading speed for variant page
+- Improved Clinvar submission form
 
 ## [4.7.3]
 
