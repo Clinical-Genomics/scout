@@ -77,14 +77,7 @@ class VariantLoader(object):
         requests = []
 
         for index, var_obj in enumerate(variants):
-            if len(requests) > 5000:
-                try:
-                    self.variant_collection.bulk_write(requests, ordered=False)
-                    requests = []
-                except BulkWriteError as err:
-                    LOG.warning("Updating variant rank failed")
-                    raise err
-
+            
             operation = pymongo.UpdateOne(
                 {'_id': var_obj['_id']},
                 {
@@ -93,13 +86,23 @@ class VariantLoader(object):
                     }
                 })
             requests.append(operation)
+            
+            if not len(requests) > 5000:
+                continue
+            try:
+                self.variant_collection.bulk_write(requests, ordered=False)
+                requests = []
+            except BulkWriteError as err:
+                LOG.warning("Updating variant rank failed")
+                raise err
 
         #Update the final bulk
-        try:
-            self.variant_collection.bulk_write(requests, ordered=False)
-        except BulkWriteError as err:
-            LOG.warning("Updating variant rank failed")
-            raise err
+        if len(requests) > 0:
+            try:
+                self.variant_collection.bulk_write(requests, ordered=False)
+            except BulkWriteError as err:
+                LOG.warning("Updating variant rank failed")
+                raise err
 
         LOG.info("Updating variant_rank done")
 
