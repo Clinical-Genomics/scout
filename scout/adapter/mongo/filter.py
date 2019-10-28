@@ -12,7 +12,7 @@ LOG = logging.getLogger(__name__)
 class FilterHandler(object):
     """Class to handle persistent variant filters in the mongo adapter"""
 
-    def retrieve_filter(self, filter_display_id):
+    def retrieve_filter(self, filter_id):
         """Retrieve a known stored filter object from the db
 
             Arguments:
@@ -21,9 +21,8 @@ class FilterHandler(object):
             Returns:
                 filter_obj(dict)
         """
-        LOG.info("Retrieve filter {}".format(filter_display_id))
-        filter_obj = self.filter_collection.find_one({'_id': ObjectId(filter_display_id)})
-        LOG.debug("Filter obj: {}".format(filter_obj))
+        LOG.debug("Retrieve filter {}".format(filter_id))
+        filter_obj = self.filter_collection.find_one({'_id': ObjectId(filter_id)})
 
         # use _id to preselect the currently loaded filter, and drop it while we are at it
         filter_obj.update([('filters', filter_obj.pop('_id', None))])
