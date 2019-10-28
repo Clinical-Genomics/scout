@@ -255,13 +255,19 @@
                       </td>
                     </tr>
                     <tr>
-                      <td>Date last evaluated</td>
-                      <td><input type="text" id="Date last evaluated_{{pinned._id}}" name="last_evaluated@{{pinned._id}}" placeholder="yyyy-mm-dd" value="{{today}}" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))" ></td>
+                      <td>Comment on clinical significance</td>
+                      <td>
+                        <textarea name="clinsig_comment@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                      </td>
                     </tr>
                   </table>
                 </td>
                 <td>
                   <table class="table table-fixed">
+                    <tr>
+                      <td>Date last evaluated</td>
+                      <td><input type="text" id="Date last evaluated_{{pinned._id}}" name="last_evaluated@{{pinned._id}}" placeholder="yyyy-mm-dd" value="{{today}}" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))" ></td>
+                    </tr>
                     <tr>
                       <td>Functional consequence:<br>(based on experimental evidence, leave blank if unsure)</td>
                       <td>
@@ -666,22 +672,14 @@
                         <td>
                           <table class="table table-fixed">
                             <tr>
-                              <td style="width:30%">Subject phenotypes<br>(HPO terms. ONLY if different from variant's HPO terms)</td>
+                              <td style="width:30%">Clinical features<br>(HPO terms. ONLY if different from variant's HPO terms)</td>
                               <td>
-                                <textarea id="clin_features" name="clin_features@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40">
-                                </textarea>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>Comments on clinical features</td>
-                              <td>
-                                <textarea name="clin_features_comment@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>Evidence citations</td>
-                              <td>
-                                <textarea name="evidence_cit@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                                {% for hpo in pheno_hpos %}
+                                  <input type="checkbox" id="clin_features@{{pinned._id}}" value="HPO_{{hpo}}" name="clin_features@{{pinned._id}}"><a href="http://compbio.charite.de/hpoweb/showterm?id={{hpo}}"
+                                    target="_blank" class="text-blue"> {{ hpo }} - {{pheno_features[loop.index -1]}}</a></input><br>
+                                {% else %}
+                                  No preselected HPO term available.
+                                {% endfor %}
                               </td>
                             </tr>
                             <tr>
@@ -763,8 +761,6 @@
           }
         }
     }
-
-    $('textarea#clin_features').html($('textarea#clin_features').html().trim());
 
     $('#all_vars').change(function() {
       if(this.checked) {
