@@ -172,6 +172,7 @@ def acmg():
     classification = get_acmg(criteria)
     return jsonify(dict(classification=classification))
 
+
 @variant_bp.route('/<institute_id>/<case_name>/<variant_id>/clinvar', methods=['POST', 'GET'])
 @templated('variant/clinvar.html')
 def clinvar(institute_id, case_name, variant_id):
@@ -197,7 +198,7 @@ def clinvar(institute_id, case_name, variant_id):
                 if key.startswith('conditions@'): # Filling in 'condition_id_type' and 'condition_id_value' in variant data
                     form_dict['@'.join(['condition_id_type',variant_id])] = ';'.join(cond_types) # Flattened list
                     form_dict['@'.join(['condition_id_value',variant_id])] = ';'.join(cond_values) # Flattened list
-                elif key.startswith('clin_features@'): # Filling in 'clin_features' in casedata 
+                elif key.startswith('clin_features@'): # Filling in 'clin_features' in casedata
                     form_dict['@'.join(['clin_features',variant_id])] = ';'.join(cond_values) # Flattened list
 
         else:

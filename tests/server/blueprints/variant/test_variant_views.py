@@ -3,6 +3,16 @@ from flask import url_for, current_app
 from flask_login import current_user
 from urllib.parse import urlencode
 
+def test_acmg(app):
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+
+        # the acmg endpoint endpoint should return an acmg json file
+        resp = client.get('/api/v1/acmg')
+        assert resp.status_code == 200
+        assert resp.data
+
 def test_variant(app, institute_obj, case_obj, variant_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
