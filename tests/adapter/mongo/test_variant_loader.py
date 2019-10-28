@@ -21,7 +21,7 @@ def test_load_variants_high_treshold(real_populated_database, case_obj):
     individual_positions = {
         'ADM1059A2': 0,
         'ADM1059A1': 1,
-        'ADM1059A1': 1,
+        'ADM1059A3': 2,
     }
     ## THEN assert that no variants are inserted
     nr_inserted = adapter._load_variants(vcf, 'clinical', case_obj, individual_positions, 
