@@ -71,6 +71,7 @@ def test_clinvar(app, case_obj, variant_obj, institute_obj):
         # WHEN instead the page is requested via POST method
         # using a test clinvar form:
         data = urlencode({
+            'main_var' : variant_obj['_id'],
             '@'.join(['local_id', variant_obj['_id']]) : variant_obj['_id'],
             '@'.join(['chromosome', variant_obj['_id']]) : variant_obj['chromosome'],
             '@'.join(['start', variant_obj['_id']]) : variant_obj['position'],
@@ -78,7 +79,7 @@ def test_clinvar(app, case_obj, variant_obj, institute_obj):
             '@'.join(['condition_id_value', variant_obj['_id']]) : ['HPO_HP:0001250', 'OMIM_145590'],
             '@'.join(['clin_features', variant_obj['_id']]) : ['HPO_HP:0001507']
         })
-        resp = client.post(url_for('variants.sv_variants',
+        resp = client.post(url_for('variant.clinvar',
             institute_id=institute_obj['internal_id'],
             case_name=case_obj['display_name'],
             variant_id=variant_obj['_id']),
@@ -86,4 +87,4 @@ def test_clinvar(app, case_obj, variant_obj, institute_obj):
             content_type="application/x-www-form-urlencoded"
         )
         # THEN the request status should be a redirect
-        assert resp.status_code == 200
+        assert resp.status_code == 302
