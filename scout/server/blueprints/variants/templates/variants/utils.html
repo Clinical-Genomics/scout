@@ -246,24 +246,24 @@
   </div>
 </div>
 <div class="form-group">
-  <div class="row justify-content-left" style="margin-top:20px;">
-    <div class="col-1">
+  <div class="row" style="margin-top:20px;">
+    <div class="col-3">
       <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name,
         variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
-        class="btn btn-secondary btn-sm" style="color: #ffffff !important;">
+        class="btn btn-secondary" style="color: #ffffff !important;">
         Reset filters
       </a>
     </div>
     <div class="col-1">
       <input type="hidden" name="filter_display_name" value="">
-      {{ form.save_filter(class="btn btn-secondary btn-sm",
+      {{ form.save_filter(class="btn btn-secondary",
           onclick="promptFilterName('"+institute.display_name +"-" + case.display_name+"')")}}
     </div>
     <div class="col-2">
       {{ form.filters(class="selectpicker") }}
     </div>
     <div class="col-1">
-      {{ form.load_filter(class="btn btn-secondary btn-sm") }}
+      {{ form.load_filter(class="btn btn-secondary") }}
     </div>
   </div>
 </div>
@@ -364,25 +364,25 @@
       {{ form.export(class="btn btn-warning form-control") }}
     </div>
   </div>
-  <div class="row justify-content-left" style="margin-top:20px;">
-    <div class="col-1">
+  <div class="row" style="margin-top:20px;">
+    <div class="col-3">
       <a href="{{ url_for('variants.sv_variants', institute_id=institute._id,
         case_name=case.display_name, variant_type='clinical',
         gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
-        class="btn btn-secondary btn-sm" style="color: #ffffff !important;">
+        class="btn btn-secondary" style="color: #ffffff !important;">
         Reset filters
       </a>
     </div>
     <div class="col-1">
       <input type="hidden" name="filter_display_name" value="">
-      {{ form.save_filter(class="btn btn-secondary btn-sm",
+      {{ form.save_filter(class="btn btn-secondary",
           onclick="promptFilterName('"+institute.display_name +"-" + case.display_name+"')")}}
     </div>
     <div class="col-2">
       {{ form.filters(class="selectpicker") }}
     </div>
     <div class="col-1">
-      {{ form.load_filter(class="btn btn-secondary btn-sm") }}
+      {{ form.load_filter(class="btn btn-secondary") }}
     </div>
   </div>
 </div>
@@ -453,7 +453,7 @@
     </div>
     <div class="form-group">
       <div class="row">
-        <div class="col-3">
+        <div class="col-2">
           {{ form.gnomad_frequency.label(class="control-label") }}
           {{ form.gnomad_frequency(class="form-control") }}
         </div>
@@ -461,7 +461,7 @@
           <label class="control-label">Submit</label>
           <button class="btn btn-primary form-control">Filter variants</button>
         </div>
-        <div class="col-1 align-self-end">
+        <div class="col-3 align-self-end">
           <a href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
             case_name=case.display_name, variant_type='clinical',
             gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
