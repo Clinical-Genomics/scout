@@ -70,5 +70,8 @@ def parsed_gene():
 def filter_obj():
     filter_obj_md = MultiDict({
         'variant_type': 'clinical',
-        'region_annotations': ['exonic','splicing']})
+        'region_annotations': ['exonic','splicing'],
+        'filter_display_name': 'clinical-exonic-splicing',
+        'empty_value': '',
+        'save_filter': True})
     return filter_obj_md

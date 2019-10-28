@@ -84,7 +84,14 @@ class FilterHandler(object):
 
     def delete_filter(self, filter_id, institute_id, user_id):
 
-        return
+        filter_obj = self.filter_collection.find_one({'_id': ObjectId(filter_id)})
+
+        LOG.info("User {} deleting filter {} for institute {}.".format(
+            user_id, filter_obj.get('display_name'), institute_id))
+
+        result = self.filter_collection.delete_one({'_id': ObjectId(filter_id)})
+
+        return result
 
     def filters(self, institute_id, category="snv"):
 

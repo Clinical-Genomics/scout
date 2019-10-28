@@ -545,6 +545,12 @@ def test_filter_stash(adapter, institute_obj, case_obj, user_obj, filter_obj):
     # THEN a filter_obj is retireved
     assert retrieved_filter_obj
 
+    user_id = user_obj.get('_id')
+    # WHEN deleting filter
+    result = adapter.delete_filter(filter_id, institute_id, user_id)
+    # THEN no filters are returned
+    filters = adapter.filters(institute_id, category)
+    assert sum(1 for i in filters) == 0
 
 def test_update_default_panels(adapter, institute_obj, case_obj, user_obj, dummypanel_obj):
     adapter.case_collection.insert_one(case_obj)
