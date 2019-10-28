@@ -183,7 +183,7 @@ def clinvar(institute_id, case_name, variant_id):
     form_dict = {}
     # flatten up HPO and OMIM terms lists into string of keys separated by semicolon
     for key, value in request.form.items():
-        if key.startswith('conditions@'):
+        if key.startswith('conditions@') or key.startswith('clin_features@'):
             conditions = request.form.getlist(key) # can be HPO or OMIM conditions
             if conditions:
                 variant_id = key.split('@')[1]
@@ -194,8 +194,12 @@ def clinvar(institute_id, case_name, variant_id):
                     cond_types.append(condition.split('_')[0]) # 'HPO' or 'OMIM'
                     cond_values.append(condition.split('_')[1]) # HPO id or OMIM ID
 
-                form_dict['@'.join(['condition_id_type',variant_id])] = ';'.join(cond_types) # Flattened list
-                form_dict['@'.join(['condition_id_value',variant_id])] = ';'.join(cond_values) # Flattened list
+                if key.startswith('conditions@'): # Filling in 'condition_id_type' and 'condition_id_value' in variant data
+                    form_dict['@'.join(['condition_id_type',variant_id])] = ';'.join(cond_types) # Flattened list
+                    form_dict['@'.join(['condition_id_value',variant_id])] = ';'.join(cond_values) # Flattened list
+                elif key.startswith('clin_features@'): # Filling in 'clin_features' in casedata 
+                    form_dict['@'.join(['clin_features',variant_id])] = ';'.join(cond_values) # Flattened list
+
         else:
             form_dict[key] = value
 
