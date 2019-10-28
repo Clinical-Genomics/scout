@@ -1,4 +1,8 @@
+import logging
 from scout.constants import CLINVAR_HEADER, CASEDATA_HEADER
+
+LOG = logging.getLogger(__name__)
+
 
 def set_submission_objects(form_fields):
     """Creates a list of submission objects (variant and case-data) from the clinvar submission form in blueprints/variants/clinvar.html.

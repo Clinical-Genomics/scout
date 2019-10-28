@@ -6,6 +6,7 @@
 
 {% set pheno_hpos = [] %}
 {% set pheno_features = [] %}
+{% set pheno_omims = [] %}
 
 {% block top_nav %}
   <li class="nav-item">
@@ -57,6 +58,9 @@
         {% do pheno_hpos.append(pheno.phenotype_id) %}
         {% do pheno_features.append(pheno.feature) %}
       {% endfor %}
+      {% for omim_id in case.diagnosis_phenotypes %}
+        {% do pheno_omims.append(omim_id) %}
+      {% endfor %}
       <div class="d-flex justify-content-between">
         <div>
           <input type="checkbox" id="all_vars" name="all_vars" value="all_vars">
@@ -100,7 +104,6 @@
     {% endif %}
     <input type="hidden" name="ref@{{pinned._id}}" value="{{ pinned.reference }}">
     <input type="hidden" name="alt@{{pinned._id}}" value="{{ pinned.alternative }}">
-    <input type="hidden" name="condition_id_type@{{pinned._id}}" value="HPO">
     <br><br>
         <div class="card panel-default">
           <div class="panel-heading">
@@ -301,13 +304,25 @@
                       </td>
                     </tr>
                     <tr>
-                      <td style="width:30%">Condition HPO term(s):<br>(associated with the variant)<br>
+                      <td style="width:30%">Condition HPO term(s):<br>(associated to the variant)</td>
+                      <td>
                         {% for hpo in pheno_hpos %}
-                          <a href="http://compbio.charite.de/hpoweb/showterm?id={{hpo}}" target="_blank"><span class="badge badge-info">{{ hpo }}</span></a><br>
+                          <input type="checkbox" id="conditions@{{pinned._id}}" value="HPO_{{hpo}}" name="conditions@{{pinned._id}}"><a href="http://compbio.charite.de/hpoweb/showterm?id={{hpo}}"
+                            target="_blank" class="text-blue"> {{ hpo }} - {{pheno_features[loop.index -1]}}</a></input><br>
+                        {% else %}
+                          No preselected HPO term available.
                         {% endfor %}
                       </td>
+                    </tr>
+                    <tr>
+                      <td style="width:30%">OMIM diagnoses:<br>(associated to the variant)</td>
                       <td>
-                        <input type="text" name="condition_id_value@{{pinned._id}}" value="{{pheno_hpos|join(';')}}" class="form-control" pattern="^HP:[0-9]+(?:;+HP:[0-9]+)*$" placeholder="HP:12345;HP:678910"/>
+                        {% for omim in pheno_omims %}
+                          <input type="checkbox" id="conditions@{{pinned._id}}" value="OMIM_{{omim}}" name="conditions@{{pinned._id}}"><a href="http://omim.org/entry/{{hpo}}"
+                            target="_blank" class="text-blue"> {{ omim }} </a></input><br>
+                        {% else %}
+                          No preselected OMIM diagnosis available.
+                        {% endfor %}
                       </td>
                     </tr>
                     <tr>
@@ -665,7 +680,7 @@
                             <tr>
                               <td>Testing laboratory</td>
                               <td>
-                                <input type="text" name="testing_lab@{{pinned._id}}" placeholder="(optional)" value="Clinical Genomics - SciLifeLab Solna, Sweden." size=40>
+                                <input type="text" name="testing_lab@{{pinned._id}}" placeholder="(optional)" size=40>
                               </td>
                             </tr>
                             <tr>
