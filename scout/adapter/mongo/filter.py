@@ -60,6 +60,8 @@ class FilterHandler(object):
                 continue
             if element == 'save_filter':
                 continue
+            if element == 'filters':
+                continue
             if element == 'filter_display_name':
                 # filter display_name if given
                 filter_dict['display_name'] = value[0]
