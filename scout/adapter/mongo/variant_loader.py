@@ -338,7 +338,7 @@ class VariantLoader(object):
         Returns:
             object_ids
         """
-        if not len(variants) > 0:
+        if len(variants) == 0:
             return
 
         LOG.debug("Loading variant bulk")
@@ -362,7 +362,23 @@ class VariantLoader(object):
 
         This is the function that loops over the variants, parse them and build the variant
         objects so they are ready to be inserted into the database.
-
+        
+        Args:
+            variants(iterable(cyvcf2.Variant))
+            variant_type(str): ['clinical', 'research']
+            case_obj(dict)
+            individual_positions(dict): How individuals are positioned in vcf
+            rank_treshold(int): Only load variants with a rank score > than this
+            institute_id(str)
+            build(str): Genome build
+            rank_results_header(list): Rank score categories
+            vep_header(list)
+            category(str): ['snv','sv','cancer','str']
+            sample_info(dict): A dictionary with info about samples.
+                               Strictly for cancer to tell which is tumor
+        
+        Returns:
+            nr_inserted(int)
         """
         build = build or '37'
         genes = [gene_obj for gene_obj in self.all_genes(build=build)]
