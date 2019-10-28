@@ -23,7 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added support for LDAP login system
 - Search snv and structural variants by chromosomal coordinates
 - Structural variants can be marked as partial causative if phenotype is available for case.
-- Institute level persistent variant filter settings that can be retrived and used.
+- Institute level persistent variant filter settings that can be retrieved and used.
 
 ### fixed
 - Fixed missing import for variants with comments
