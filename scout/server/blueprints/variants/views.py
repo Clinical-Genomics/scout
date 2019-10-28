@@ -262,7 +262,7 @@ def sv_variants(institute_id, case_name):
         elif bool(request.form.get('load_filter')):
             filter_display_name = request.form.get('filters')
             filter_obj = store.retrieve_filter(filter_display_name)
-            form = FiltersForm(MultiDict(filter_obj))
+            form = SvFiltersForm(MultiDict(filter_obj))
         else:
             form = SvFiltersForm(request.form)
     else:

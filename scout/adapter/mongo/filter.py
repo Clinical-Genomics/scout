@@ -58,9 +58,7 @@ class FilterHandler(object):
         for (element, value) in filter_obj.lists():
             if value == ['']:
                 continue
-            if element == 'save_filter':
-                continue
-            if element == 'filters':
+            if element in ['save_filter', 'filters', 'csrf_token']:
                 continue
             if element == 'filter_display_name':
                 # filter display_name if given
