@@ -367,6 +367,7 @@ def cancer_variants(institute_id, case_name):
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
+    user_obj = store.user(current_user.email)
     if(request.method == "POST"):
         page = int(request.form.get('page', 1))
 
@@ -379,17 +380,17 @@ def cancer_variants(institute_id, case_name):
         elif bool(request.form.get('load_filter')):
             filter_display_name = request.form.get('filters')
             filter_obj = store.retrieve_filter(filter_display_name)
-            form = FiltersForm(MultiDict(filter_obj))
+            form = CancerFiltersForm(MultiDict(filter_obj))
         else:
             form = CancerFiltersForm(request.form)
     else:
         form = CancerFiltersForm(request.args)
         page = int(request.args.get('page', 1))
 
-        # populate filters dropdown
-        available_filters = store.filters(institute_id, category='cancer')
-        form.filters.choices = [(filter.get('_id'), filter.get('display_name'))
-            for filter in available_filters]
+    # populate filters dropdown
+    available_filters = store.filters(institute_id, category='cancer')
+    form.filters.choices = [(filter.get('_id'), filter.get('display_name'))
+        for filter in available_filters]
 
     available_panels = case_obj.get('panels', []) + [
         {'panel_name': 'hpo', 'display_name': 'HPO'}]

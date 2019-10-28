@@ -387,3 +387,99 @@
   </div>
 </div>
 {% endmacro %}
+
+{% macro cancer_filters(form, institute, case) %}
+    {{ form.csrf_token }}
+    {{ form.variant_type() }}
+    <div class="form-group">
+      <div class="row">
+        <div class="col-3">
+          {{ form.gene_panels.label(class="control-label") }}
+          {{ form.gene_panels(class="selectpicker") }}
+        </div>
+        <div class="col-3">
+          {{ form.region_annotations.label(class="control-label") }}
+          {{ form.region_annotations(class="selectpicker") }}
+        </div>
+        <div class="col-3">
+          {{ form.functional_annotations.label(class="control-label") }}
+          {{ form.functional_annotations(class="selectpicker") }}
+        </div>
+        <div class="col-3">
+          {{ form.genetic_models.label(class="control-label") }}
+          {{ form.genetic_models(class="selectpicker") }}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-3">
+          {{ form.hgnc_symbols.label(class="control-label") }}
+          {{ form.hgnc_symbols(class="selectpicker") }}
+        </div>
+        <div class="col-3">
+          {{ form.cadd_score.label(class="control-label") }}
+          {{ form.cadd_score(class="form-control") }}
+        </div>
+        <div class="col-3">
+          {{ form.cadd_inclusive.label(class="control-label") }}
+          <div>{{ form.cadd_inclusive() }}</div>
+        </div>
+        <div class="col-3">
+          {{ form.clinsig.label(class="control-label") }}
+          {{ form.clinsig(class="selectpicker") }}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-3">
+          {{ form.depth.label(class="control-label") }}
+          {{ form.depth(class="form-control") }}
+        </div>
+        <div class="col-3">
+          {{ form.alt_count.label(class="control-label") }}
+          {{ form.alt_count(class="form-control") }}
+        </div>
+        <div class="col-3">
+          {{ form.control_frequency.label(class="control-label") }}
+          {{ form.control_frequency(class="form-control") }}
+        </div>
+        <div class="col-3">
+          {{ form.mvl_tag.label(class="control-label") }}
+          <div>{{ form.mvl_tag() }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-3">
+          {{ form.gnomad_frequency.label(class="control-label") }}
+          {{ form.gnomad_frequency(class="form-control") }}
+        </div>
+        <div class="col-3">
+          <label class="control-label">Submit</label>
+          <button class="btn btn-primary form-control">Filter variants</button>
+        </div>
+        <div class="col-1 align-self-end">
+          <a href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
+            case_name=case.display_name, variant_type='clinical',
+            gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
+            class="btn btn-secondary" style="color: #ffffff !important;">
+            Reset filters
+          </a>
+        </div>
+        <div class="col-2 align-self-end">
+          <input type="hidden" name="filter_display_name" value="">
+          {{ form.save_filter(class="btn btn-secondary",
+              onclick="promptFilterName('"+institute.display_name +"-" + case.display_name+"')")}}
+        </div>
+        <div class="col-2 align-self-end">
+          {{ form.filters(class="selectpicker") }}
+        </div>
+        <div class="col-1 align-self-end">
+          {{ form.load_filter(class="btn btn-secondary") }}
+        </div>
+      </div>
+    </div>
+{% endmacro %}
