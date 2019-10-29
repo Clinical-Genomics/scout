@@ -35,87 +35,89 @@
 
 <div class="card mt-3">
   <div class="card-body">
-    <table id="causatives_table" class="table" cellspacing="0" width="100%">
-      <thead>
-        <tr>
-          <th style="width:5%">Gene</th>
-          <th style="width:10%">Variant Name</th>
-          <th style="width:20%">Change</th>
-          <th style="width:3%">Category</th>
-          <th style="width:3%">Rank score</th>
-          <th style="width:5%">Zygosity</th>
-          <th style="width:3%">Inheritance</th>
-          <th style="width:5%">ACMG</th>
-          <th style="width:5%">Case Name</th>
-          <th style="width:3%">Case Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for _, group in variant_groups.items() %}
-        {% set group_variant = group[0][1] %}
-        {% for case, variant in group %}
-        {% if variant._id in case.causatives %}
-        <tr>
-          <td>
-            <h5 class="mb-1">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</h5>
-          </td>
-          <td><a href="{{ url_for('variant.variant',
-              institute_id=institute._id,
-              case_name=case.display_name,
-              variant_id=variant._id) }}">{{ variant.display_name|truncate(20, True) }}
-            </a>
-          </td>
-          <td><span class="text-muted" style="display: inline-block; margin-left: 10px;">
-              {{ group_variant.reference|truncate(20, True) }} → {{ group_variant.alternative|truncate(20, True) }}
-            </span>
-          </td>
-          <td><span class="badge badge-secondary">{{ variant.category|upper }}</span></td>
-          <td><a href="#"><span class="badge badge-pill badge-secondary">{{ variant.rank_score }}</span></a></td>
-          <td>
-            {% for sample in variant.samples %}
-            {% for ind in case.individuals %}
-            {% if sample.sample_id == ind.individual_id %}
-            {% if ind.phenotype == 2%}
-            <span class="badge badge-danger">{{sample.genotype_call}}</span>
-            {% else %}
-            <span class="badge badge-success">{{sample.genotype_call}}</span>
-            {% endif %}
-            {% endif %}
-            {% endfor %}
-            {% endfor %}
-          </td>
-          <td>{% for model in variant.genetic_models %}
-            <span class="badge badge-info">{{model}}</span>
-            {% endfor %}
-          </td>
-          <td>
-            <a href="#" data-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)"
-              style="text-decoration: none; color: #000;">ACMG:
-              {% if 'acmg_classification' in variant %}
-              <span class="badge badge-{{variant.acmg_classification.color}}">{{variant.acmg_classification.short}}</span>
+    <div>
+      <table id="causatives_table" class="table" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th style="width:5%">Gene</th>
+            <th style="width:10%">Variant Name</th>
+            <th style="width:20%">Change</th>
+            <th style="width:3%">Category</th>
+            <th style="width:3%">Rank score</th>
+            <th style="width:5%">Zygosity</th>
+            <th style="width:3%">Inheritance</th>
+            <th style="width:5%">ACMG</th>
+            <th style="width:5%">Case Name</th>
+            <th style="width:3%">Case Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for _, group in variant_groups.items() %}
+          {% set group_variant = group[0][1] %}
+          {% for case, variant in group %}
+          {% if variant._id in case.causatives %}
+          <tr>
+            <td>
+              <h5 class="mb-1">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</h5>
+            </td>
+            <td><a href="{{ url_for('variant.variant',
+                institute_id=institute._id,
+                case_name=case.display_name,
+                variant_id=variant._id) }}">{{ variant.display_name|truncate(20, True) }}
+              </a>
+            </td>
+            <td><span class="text-muted" style="display: inline-block; margin-left: 10px;">
+                {{ group_variant.reference|truncate(20, True) }} → {{ group_variant.alternative|truncate(20, True) }}
+              </span>
+            </td>
+            <td><span class="badge badge-secondary">{{ variant.category|upper }}</span></td>
+            <td><a href="#"><span class="badge badge-pill badge-secondary">{{ variant.rank_score }}</span></a></td>
+            <td>
+              {% for sample in variant.samples %}
+              {% for ind in case.individuals %}
+              {% if sample.sample_id == ind.individual_id %}
+              {% if ind.phenotype == 2%}
+              <span class="badge badge-danger">{{sample.genotype_call}}</span>
               {% else %}
-              -
+              <span class="badge badge-success">{{sample.genotype_call}}</span>
               {% endif %}
-            </a>
-          </td>
-          <td>
-            <a href="{{ url_for('cases.case',
-                                      institute_id=institute._id,
-                                      case_name=case.display_name) }}">
-              {{ case.display_name }}
-            </a>
-          </td>
-          <td>
-            <span class="badge badge-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
-              {{ case.status }}
-            </span>
-          </td>
-        </tr>
-        {% endif %}
-        {% endfor %}
-        {% endfor %}
-      </tbody>
-    </table>
+              {% endif %}
+              {% endfor %}
+              {% endfor %}
+            </td>
+            <td>{% for model in variant.genetic_models %}
+              <span class="badge badge-info">{{model}}</span>
+              {% endfor %}
+            </td>
+            <td>
+              <a href="#" data-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)"
+                style="text-decoration: none; color: #000;">ACMG:
+                {% if 'acmg_classification' in variant %}
+                <span class="badge badge-{{variant.acmg_classification.color}}">{{variant.acmg_classification.short}}</span>
+                {% else %}
+                -
+                {% endif %}
+              </a>
+            </td>
+            <td>
+              <a href="{{ url_for('cases.case',
+                                        institute_id=institute._id,
+                                        case_name=case.display_name) }}">
+                {{ case.display_name }}
+              </a>
+            </td>
+            <td>
+              <span class="badge badge-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
+                {{ case.status }}
+              </span>
+            </td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 {% endblock %}
@@ -125,16 +127,14 @@
 <script>
   $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
-  });
-</script>
-<script language="JavaScript">
-  $(document).ready(function () {
-    var table = $('#causatives_table').DataTable({
-        dom: 'Bfrtip',
-        paging: false,
-        buttons: ['copy', 'excel']
+
+    $('#causatives_table').dataTable( {
+      paging: false,
+      buttons: ['copy', 'excel'],
+      dom: 'Bfrtip'
     });
   });
+
 </script>
 <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
