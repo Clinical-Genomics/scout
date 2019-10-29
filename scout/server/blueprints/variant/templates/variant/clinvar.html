@@ -581,22 +581,10 @@
                                   {% if sample.display_name == individual.display_name %}
                                     <strong>({{ sample.genotype_call }})</strong><br>
                                     <select name="zygosity@{{pinned._id}}" id="zygosity">
-                                      {% if sample.genotype_call == '1/1' and pinned.chromosome in ['X','Y'] %}
-                                        <option value="hemizygote" selected>hemizygote</option>
-                                        <option value="homozygote">homozygote</option>
-                                        <option value="compound heterozygote">compound heterozygote</option>
-                                        <option value="single heterozygote">single heterozygote</option>
-                                      {% elif sample.genotype_call == '1/1' %}
-                                        <option value="hemizygote">hemizygote</option>
-                                        <option value="homozygote" selected>homozygote</option>
-                                        <option value="compound heterozygote">compound heterozygote</option>
-                                        <option value="single heterozygote">single heterozygote</option>
-                                      {% else %}
-                                        <option value="hemizygote">hemizygote</option>
-                                        <option value="homozygote">homozygote</option>
-                                        <option value="compound heterozygote" selected>compound heterozygote</option>
-                                        <option value="single heterozygote">single heterozygote</option>
-                                      {% endif %}
+                                      <option value="hemizygote" {%if sample.genotype_call == '1/1' and pinned.chromosome in ['X','Y'] %} selected {%endif%}>hemizygote</option>
+                                      <option value="homozygote" {%if sample.genotype_call == '1/1' %} selected {%endif%}>homozygote</option>
+                                      <option value="compound heterozygote" {%if sample.genotype_call != '1/1'%} selected {%endif%}>compound heterozygote</option>
+                                      <option value="single heterozygote">single heterozygote</option>
                                     </select>
                                   {% endif %}
                                 {% endfor %}
