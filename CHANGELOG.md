@@ -45,6 +45,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Next and first buttons order swap
 - Added pagination (and POST capability) to cancer variants.
 - Improves loading speed for variant page
+- Problem with updating variant rank when no variants
 
 ## [4.7.3]
 
