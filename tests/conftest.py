@@ -47,7 +47,7 @@ hpo_phenotype_to_terms_reduced_path, mim2gene_reduced_path, genemap2_reduced_pat
 transcripts38_reduced_path, genes38_reduced_path, exons37_reduced_path, exons37_reduced_path,
  exons38_reduced_path)
 
-from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path,
+from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path, clinical_str_path,
                         clinical_sv_path, ped_path, load_path, panel_path, empty_sv_clinical_path,)
 
 from scout.models.hgnc_map import HgncGene
@@ -812,6 +812,17 @@ def one_sv_variant(request, sv_clinical_file):
 
 
 @pytest.fixture(scope='function')
+def one_str_variant(request, str_clinical_file):
+    LOG.info("Return one parsed STR variant")
+    variant_parser = VCF(str_clinical_file)
+
+    for variant in variant_parser:
+        break
+
+    return variant
+
+
+@pytest.fixture(scope='function')
 def rank_results_header(request, variant_clinical_file):
     LOG.info("Return a VCF parser with one variant")
     variants = VCF(variant_clinical_file)
@@ -824,6 +835,13 @@ def rank_results_header(request, variant_clinical_file):
 def sv_variants(request, sv_clinical_file):
     LOG.info("Return a VCF parser many svs")
     variants = VCF(sv_clinical_file)
+    return variants
+
+
+@pytest.fixture(scope='function')
+def str_variants(request, str_clinical_file):
+    LOG.info("Return a VCF parser many STRs")
+    variants = VCF(str_clinical_file)
     return variants
 
 
@@ -1100,6 +1118,13 @@ def sv_clinical_file(request):
     """Get the path to a variant file"""
     print('')
     return clinical_sv_path
+
+@pytest.fixture(scope='function')
+def str_clinical_file(request):
+    """Get the path to a variant file"""
+    print('')
+    return clinical_str_path
+
 
 @pytest.fixture(scope='function')
 def empty_sv_clinical_file(request):
