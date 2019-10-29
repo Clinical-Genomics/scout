@@ -471,11 +471,9 @@
       <div class="modal-body">
         <div>
           Please name the current filter for saving.
-          {{ form.filter_display_name.label }}
           {{ form.filter_display_name(class="form-control") }}
         </div>
       </div>
-
       <!-- Modal footer -->
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -487,6 +485,7 @@
 {% endmacro %}
 
 {% macro stash_filter_buttons(form, institute, case) %}
+{{ modal_prompt_filter_name(form) }}
 <div class="col-1 align-self-end">
   <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#filterNameModal">Save&nbsp;filter</button>
 </div>

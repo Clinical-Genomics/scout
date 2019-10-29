@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_table %}
-{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, modal_prompt_filter_name %}
+{% from "variants/utils.html" import compounds_table, svs_table, snv_filters %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 
 {% block title %}
@@ -39,7 +39,6 @@
 {% block content_main %}
   <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
     enctype="multipart/form-data" onsubmit="return validateForm()">
-    {{ modal_prompt_filter_name(form) }}
     <div class="container-float">
       <div class="card panel-default" id="accordion">
         <div class="card-header">

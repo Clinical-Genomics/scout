@@ -222,11 +222,6 @@
       return true;
     }
 
-    function promptFilterName(suggestion) {
-      name = prompt("Please give the filter a name:", suggestion);
-      document.forms["filters_form"].elements["filter_display_name"].value = name;
-    }
-
     $('[data-toggle="tooltip"]').tooltip();
     $(function () {
       $('[data-toggle="popover"]').popover({
