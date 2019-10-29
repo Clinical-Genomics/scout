@@ -196,12 +196,12 @@ def parse_variant(variant, case, variant_type='clinical',
     # str normal max - max number of repeats to call an STR variant normal
     str_normal_max = variant.INFO.get('STR_NORMAL_MAX')
     if str_normal_max:
-        parsed_variant['str_normal_max'] = str(str_normal_max)
+        parsed_variant['str_normal_max'] = int(str_normal_max)
 
     # str pathological min - min number of repeats to call an STR variant pathologic
     str_pathologic_min = variant.INFO.get('STR_PATHOLOGIC_MIN')
     if str_pathologic_min:
-        parsed_variant['str_pathologic_min'] = str(str_pathologic_min)
+        parsed_variant['str_pathologic_min'] = int(str_pathologic_min)
         
     ################# Add gene and transcript information #################
     raw_transcripts = []

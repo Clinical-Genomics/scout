@@ -110,8 +110,8 @@ def build_variant(variant, institute_id, gene_to_panels = None,
             str_ref = int, reference copy number
             str_len = int, number of repeats found in case
             str_status = str, this indicates the severity of the expansion level
-            str_normal_max = str, max number of repeats to call an STR variant normal
-            str_pathologic_min = str, min number of repeats to call an STR variant pathologic
+            str_normal_max = int, max number of repeats to call an STR variant normal
+            str_pathologic_min = int, min number of repeats to call an STR variant pathologic
 
             # Callers
             gatk = str, # choices=VARIANT_CALL, default='Not Used'
