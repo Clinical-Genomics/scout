@@ -18,6 +18,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Load all clinvar variants with clinvar Pathogenic, Likely Pathogenic and Conflicting pathogenic
 - Show transcripts with exon numbers for structural variants
 - Case sort order can now be toggled between ascending and descending.
+- Variants can be marked as partial causative if phenotype is available for case.
+- Show a frequency tooltip hover for SV-variants.
+- Added support for LDAP login system
+- Search snv and structural variants by chromosomal coordinates
+- Structural variants can be marked as partial causative if phenotype is available for case.
 
 ### fixed
 - Fixed missing import for variants with comments
@@ -29,7 +34,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Reintroduced missing coverage report
 - Fixed a bug preventing loading samples using the command line
 - Better inheritance models customization for genes in gene panels
-
+- STR variant page back to list button now does its one job.
+- Allows to setup scout without a omim api key
+- Fixed error causing "favicon not found" flash messages
+- Removed flask --version from base cli
+- Request rerun no longer changes case status. Active or archived cases inactivate on upload.
+- Fixed missing tooltip on the cancer variants page
+- Fixed weird Rank cell in variants page
+- Next and first buttons order swap
+- Added pagination (and POST capability) to cancer variants.
+- Improves loading speed for variant page
+- Problem with updating variant rank when no variants
 
 ## [4.7.3]
 

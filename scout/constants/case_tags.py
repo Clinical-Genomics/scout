@@ -25,6 +25,8 @@ VERBS_MAP = {
     "open_research": "opened research mode for",
     "mark_causative": "marked causative for",
     "unmark_causative": "unmarked causative for",
+    "mark_partial_causative": "mark partial causative for",
+    "unmark_partial_causative" : "unmarked partial causative for",
     "manual_rank": "updated manual rank for",
     "add_phenotype": "added HPO term for",
     "remove_phenotype": "removed HPO term for",

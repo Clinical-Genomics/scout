@@ -16,11 +16,14 @@ MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 
-MAIL_USERNAME = 'dummyscoutuser@gmail.com'
-MAIL_PASSWORD = 'scoutPWD01'
-ADMINS = [
-    'dummyscoutuser@gmail.com',
-]
+# connection details for LoqusDB MongoDB database
+# LOQUSDB_SETTINGS = dict(
+#     database='loqusdb',
+# )
+# If not on localhost 27017 one needs to provide uri with
+# connection details for LoqusDB MongoDB database
+#    uri=("mongodb://{}:{}@localhost:{}/loqusdb".format(MONGO_USERNAME, MONGO_PASSWORD, MONGO_PORT))
+
 
 # Chanjo-Report
 REPORT_LANGUAGE = 'en'

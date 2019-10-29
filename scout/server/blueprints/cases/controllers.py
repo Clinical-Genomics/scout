@@ -19,11 +19,10 @@ from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OP
 from scout.export.variant import export_mt_variants
 from scout.server.utils import institute_and_case, user_institutes
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
-from scout.server.blueprints.variants.controllers import variant as variant_decorator
-from scout.server.blueprints.variants.controllers import sv_variant
+from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.parse.matchmaker import hpo_terms, omim_terms, genomic_features, parse_matches
 from scout.utils.matchmaker import matchmaker_request
-from scout.server.blueprints.variants.controllers import get_predictions
+from scout.server.blueprints.variant.utils import predictions
 from scout.server.blueprints.genes.controllers import gene
 
 LOG = logging.getLogger(__name__)
@@ -63,10 +62,10 @@ def cases(store, case_query, limit=100):
         case_obj['analysis_types'] = list(analysis_types)
         case_obj['assignees'] = [store.user(user_email) for user_email in
                                  case_obj.get('assignees', [])]
-        case_groups[case_obj['status']].append(case_obj)
         case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
         case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
         case_obj['display_track'] = TRACKS[case_obj.get('track', 'rare')]
+        case_groups[case_obj['status']].append(case_obj)
 
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
@@ -114,6 +113,16 @@ def case(store, institute_obj, case_obj):
                 case_obj.get('suspects', [])]
     causatives = [store.variant(variant_id) or variant_id for variant_id in
                   case_obj.get('causatives', [])]
+    # check for partial causatives and associated phenotypes
+    partial_causatives = []
+    if case_obj.get('partial_causatives'):
+        for id, values in case_obj['partial_causatives'].items():
+            causative_obj = {
+                'variant' : store.variant(id) or id,
+                'omim_terms' : values.get('diagnosis_phenotypes'),
+                'hpo_terms' : values.get('phenotype_terms')
+            }
+            partial_causatives.append(causative_obj)
 
     # Set of all unique genes in the default gene panels
     distinct_genes = set()
@@ -166,6 +175,7 @@ def case(store, institute_obj, case_obj):
         'events': events,
         'suspects': suspects,
         'causatives': causatives,
+        'partial_causatives' : partial_causatives,
         'collaborators': collab_ids,
         'cohort_tags': COHORT_TAGS,
         'mme_nodes': current_app.mme_nodes, # Get available MatchMaker nodes for matching case
@@ -241,26 +251,17 @@ def case_report_content(store, institute_obj, case_obj):
         decorated_variants = []
         for var_obj in evaluated_variants[var_type]:
         # We decorate the variant with some extra information
-            if var_obj['category'] == 'snv':
-                decorated_info = variant_decorator(
-                        store=store,
-                        institute_obj=institute_obj,
-                        case_obj=case_obj,
-                        variant_id=None,
-                        variant_obj=var_obj,
-                        add_case=False,
-                        add_other=False,
-                        get_overlapping=False
-                    )
-            else:
-                decorated_info = sv_variant(
+            decorated_info = variant_decorator(
                     store=store,
-                    institute_id=institute_obj['_id'],
-                    case_name=case_obj['display_name'],
+                    institute_obj=institute_obj['_id'],
+                    case_obj=case_obj['display_name'],
+                    variant_id=None,
                     variant_obj=var_obj,
                     add_case=False,
-                    get_overlapping=False
-                    )
+                    add_other=False,
+                    get_overlapping=False,
+                    variant_type=var_obj['category']
+                )
             decorated_variants.append(decorated_info['variant'])
         # Add the decorated variants to the case
         data[var_type] = decorated_variants
@@ -446,7 +447,10 @@ def rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
                   html=html, sender=sender, recipients=[recipient],
                   # cc the sender of the email for confirmation
                   cc=[user_obj['email']])
-    mail.send(msg)
+    if recipient:
+        mail.send(msg)
+    else:
+        LOG.error("Cannot send rerun message: no recipient defined in config.")
 
 
 def update_default_panels(store, current_user, institute_id, case_name, panel_ids):
@@ -554,7 +558,7 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
                 variant_obj['hgvs'] = hgvs
 
             # populate variant predictions for display
-            variant_obj.update(get_predictions(variant_genes))
+            variant_obj.update(predictions(variant_genes))
 
         variants.append(variant_obj)
 

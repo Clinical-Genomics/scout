@@ -432,9 +432,9 @@
           <tr>
             <td>#{{loop.index}}</td>
             {% if variant.category == 'snv' %}
-              <td><a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></td>
+              <td><a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></td>
             {% else %}
-              <td><a href="{{ url_for('variants.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></td>
+              <td><a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></td>
             {% endif %}
 	    <td>
 	      {% for gene in variant.genes %}
@@ -514,7 +514,7 @@
                       </table>
                       <br><br>
                     {% elif reason == '7' %} <!-- Inheritance pattern not relevant -->
-                      (<span class="pull-left">
+                      (<span class="float-left">
                       {% for model in variant.genetic_models|sort %}
                         <span class="badge badge-info" title="{{genetic_models[model]}}"> {{model}}</span>
                       {% else %}
@@ -576,7 +576,7 @@
 <div class="card" style="border-width: 5px;">
   <div class="card-header">
     <div class="row">
-      # <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></a>&nbsp;
+      # <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></a>&nbsp;
         <span class="badge badge-pill badge-success">SNV</span>&nbsp;
         {% if variant.sanger_ordered and variant.validation %}
           <span class="badge badge-pill badge-info" title="verif-status">Verification:{{variant.validation}}</span>
@@ -749,10 +749,10 @@
           {% endif %}
           </td>
           <td>
-            <span class="pull-left">{{ variant.cadd_score or '-' }}</strong>
+            <span class="float-left">{{ variant.cadd_score or '-' }}</strong>
           </td>
           <td>
-            <span class="pull-left">
+            <span class="float-left">
               {% for model in variant.genetic_models|sort %}
                 <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
               {% else %}
@@ -853,7 +853,7 @@
 {% macro sv_variant_content(variant,index) %} <!--The entire description of a structural variant, dynamic contentc -->
 <div class="card" style="border-width: 5px;">
   <div class="card-header">
-    # <a href="{{ url_for('variants.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
+    # <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
     &nbsp;<span class="badge badge-pill badge-warning">SV</span>
   </div>
   <div class="card-body">
@@ -870,7 +870,7 @@
       </thead>
       <tbody>
         <tr>
-          <td><span class="badge badge-warning pull-left">{{variant.sub_category|upper}}</span></td>
+          <td><span class="badge badge-warning float-left">{{variant.sub_category|upper}}</span></td>
           <td>{{ variant.length }}</td>
           <td>
             {% if variant.chromosome == variant.end_chrom %}
@@ -983,7 +983,7 @@
           {% endif %}
           </td>
           <td>
-            <span class="pull-left">
+            <span class="float-left">
               {% for model in variant.genetic_models|sort %}
                 <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
               {% else %}

@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
-{% from "variants/utils.html" import compounds_table %}
+{% from "variants/utils.html" import compounds_table, modal_causative %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -10,12 +10,6 @@
 {{ super() }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 {% endblock %}
-
-<script>
-$(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip();
-});
-</script>
 
 {% block top_nav %}
   {{ super() }}
@@ -33,6 +27,10 @@ $(document).ready(function(){
     {% if cancer %}
       <a class="nav-link text-nowrap" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
         {{ variant.variant_type|capitalize }} cancer variants
+      </a>
+    {% elif str %}
+      <a class="nav-link text-nowrap" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
+        {{ variant.variant_type|capitalize }} STR variants
       </a>
     {% else %}
       <a class="nav-link text-nowrap" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
@@ -134,6 +132,7 @@ $(document).ready(function(){
       {{ modal_cancel_sanger() }}
     {% endif %}
 </div>
+{{ modal_causative(case, institute, variant) }}
 {% endblock %}
 
 {% macro sanger_button() %}
@@ -156,7 +155,7 @@ $(document).ready(function(){
   <ul class="list-group">
     <div class="list-group-item">
       <strong>Case {{ case.display_name }}</strong><br>
-      <a href="{{ url_for('variants.variant', institute_id=institute._id,
+      <a href="{{ url_for('variant.variant', institute_id=institute._id,
                           case_name=case.display_name, variant_id=variant._id) }}">
         {{ variant.display_name }}
       </a>
@@ -221,22 +220,28 @@ $(document).ready(function(){
       <form action="{{ url_for('cases.mark_causative',
                                institute_id=institute._id,
                                case_name=case.display_name,
-                               variant_id=variant._id) }}"
+                               variant_id=variant._id,
+                               partial_causative=False) }}"
             method="POST">
         <button name="action" value="DELETE" type="submit" class="btn btn-light navbar-btn" title="Reset causative">
           Reset causative
         </button>
       </form>
-  {% else %}
+  {% elif variant._id in case.partial_causatives %}
     <form action="{{ url_for('cases.mark_causative',
                              institute_id=institute._id,
                              case_name=case.display_name,
-                             variant_id=variant._id) }}"
+                             variant_id=variant._id,
+                             partial_causative=True) }}"
           method="POST">
-      <button name="action" value="ADD" type="submit" class="btn btn-light" title="Mark causative" onclick="return confirm('Are you sure?')">
-        Mark causative
-      </button>
-    </form>
+    <button name="action" value="DELETE" type="submit" class="btn btn-light navbar-btn" title="Reset causative">
+      Reset partial causative
+    </button>
+  </form>
+  {% else %}
+  <button class="btn btn-light navbar-btn" data-toggle="modal" data-target="#causativeModal">
+    Mark causative
+  </button>
   {% endif %}
 {% endmacro %}
 
@@ -248,7 +253,7 @@ $(document).ready(function(){
         <ul class="list-group list-group-flush">
           {% for other_variant in causatives %}
             <li class="list-group-item">
-              <a href="{{ url_for('variants.variant',
+              <a href="{{ url_for('variant.variant',
                                   institute_id=institute._id,
                                   case_name=other_variant.case_display_name,
                                   variant_id=other_variant._id) }}">
@@ -273,7 +278,7 @@ $(document).ready(function(){
           <tr>
             <td>
               Position
-              <span class="pull-right">
+              <span class="float-right">
                 <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
                 {% if variant.is_par %}
                   <span class="badge badge-info">PAR</span>
@@ -282,7 +287,7 @@ $(document).ready(function(){
             </td>
             <td>
               Change
-              <span class="pull-right"><strong>{{ variant.reference }} → {{ variant.alternative }}</strong></span>
+              <span class="float-right"><strong>{{ variant.reference }} → {{ variant.alternative }}</strong></span>
             </td>
           </tr>
         </tbody>
@@ -314,7 +319,7 @@ $(document).ready(function(){
       <ul class="list-group">
         <div class="list-group-item">
           <strong>Gene panels</strong>
-          <ul class="list-inline pull-right">
+          <ul class="list-inline float-right">
             {% for panel_id in variant.panels %}
               <li>
                   <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>
@@ -323,7 +328,7 @@ $(document).ready(function(){
           </ul>
         </div>
       </ul>
-      <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+      <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
         <label class="mt-3">Variant tag</label>
         <div class="row">
           <div class="col-8">
@@ -341,7 +346,7 @@ $(document).ready(function(){
           </div>
         </div>
       </form>
-      <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+      <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
         <label class="mt-3">Dismiss variant</label>
         <div class="row">
           <div class="col-8">
@@ -358,7 +363,7 @@ $(document).ready(function(){
           </div>
         </div>
       </form>
-      <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+      <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
         <label class="mt-3">Mosaic Tags</label>
         <div class="row">
           <div class="col-8">
@@ -377,9 +382,9 @@ $(document).ready(function(){
       </form>
       {{ acmg_form(variant.acmg_classification.code if variant.acmg_classification) }}
       <div class="mt-3">
-        <a href="{{ url_for('variants.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
+        <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
         {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
-          <a href="{{ url_for('variants.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Submit to ClinVar</a>
+          <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Submit to ClinVar</a>
         {% endif %}
         {% if variant.clinvar_clinsig %}
           <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-outline-secondary form-control">Modify clinvar submission</a>
@@ -424,14 +429,14 @@ $(document).ready(function(){
             <td>
               Matches OMIM inhert.
               {% if variant.is_matching_inheritance %}
-                <span class="badge badge-success pull-right">Yes</span>
+                <span class="badge badge-success float-right">Yes</span>
               {% else %}
-                <div class="badge badge-warning pull-right">No</div>
+                <div class="badge badge-warning float-right">No</div>
               {% endif %}
             </td>
             <td>
               Frequency
-              <div class="badge badge-{% if variant.frequency == 'common' %}danger{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %} pull-right">
+              <div class="badge badge-{% if variant.frequency == 'common' %}danger{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %} float-right">
                 {{ variant.frequency }}
               </div>
             </td>
@@ -468,7 +473,7 @@ $(document).ready(function(){
         {% if variant.dbsnp_id %}
           <li class="list-group-item">
             SNPedia
-            <span class="pull-right">
+            <span class="float-right">
               <a target="_blank" href="http://snpedia.com/index.php/{{ variant.dbsnp_id }}">
                 {{ variant.dbsnp_id }}
               </a>
@@ -551,7 +556,7 @@ $(document).ready(function(){
                 </td>
                 <td title="{{ transcript.coding_sequence_name or '' }}">
                   {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
-                  <span class="text-muted pull-right">
+                  <span class="text-muted float-right">
                     {{ (transcript.protein_sequence_name or '')|url_decode }}
                   </span>
                 </td>
@@ -580,7 +585,7 @@ $(document).ready(function(){
                   </td>
                   <td title="{{ transcript.coding_sequence_name or '' }}">
                     {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
-                    <span class="text-muted pull-right">
+                    <span class="text-muted float-right">
                       {{ (transcript.protein_sequence_name or '')|url_decode }}
                     </span>
                   </td>
@@ -604,7 +609,7 @@ $(document).ready(function(){
         {% else %}
           1000G
         {% endif %}
-        <span class="pull-right">
+        <span class="float-right">
           {% if variant.max_thousand_genomes_frequency %}
             {{ variant.max_thousand_genomes_frequency|human_decimal }} <small>(max)</small> |
           {% endif %}
@@ -613,7 +618,7 @@ $(document).ready(function(){
       </li>
       <li class="list-group-item">
         <a title="Exome Aggregation Consortium" target="_blank" href="{{ variant.exac_link }}">ExAC</a>
-        <span class="pull-right">
+        <span class="float-right">
           {% if variant.max_exac_frequency %}
             {{ variant.max_exac_frequency|human_decimal }} <small>(max)</small> |
           {% endif %}
@@ -622,7 +627,7 @@ $(document).ready(function(){
       </li>
       <li class="list-group-item">
         <a title="genome Aggregation Database" target="_blank" href="{{ variant.gnomad_link }}">gnomAD</a>
-        <span class="pull-right">
+        <span class="float-right">
           {% if 'gnomad_frequency' in variant%}
             {% if variant.max_gnomad_frequency %}
               {{ variant.max_gnomad_frequency|human_decimal }}
@@ -678,7 +683,7 @@ $(document).ready(function(){
               <div class="col-9">
                 {% for data in observations['cases'] %}
                   {% if data.variant %}
-                    <a class="ml-3" href="{{ url_for('variants.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+                    <a class="ml-3" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
                   {% else %}
                     <span class="text-muted ml-3">{{ data.case.display_name }}</span>
                   {% endif %}
@@ -714,30 +719,30 @@ $(document).ready(function(){
     <ul class="list-group">
       <li class="list-group-item">
         Sift
-        <span class="pull-right">{{ variant.sift_predictions|join(', ') }}</span>
+        <span class="float-right">{{ variant.sift_predictions|join(', ') }}</span>
       </li>
       <li class="list-group-item">
         <a href="http://genetics.bwh.harvard.edu/pph2/" target="_blank">Polyphen</a>
-        <span class="pull-right">{{ variant.polyphen_predictions|join(', ') }}</span>
+        <span class="float-right">{{ variant.polyphen_predictions|join(', ') }}</span>
       </li>
       <li class="list-group-item">
         SPIDEX
-        <span class="pull-right">{{ variant.spidex_human }}</span>
+        <span class="float-right">{{ variant.spidex_human }}</span>
       </li>
     </ul>
     <div class="panel-heading">Conservation</div>
     <ul class="list-group">
       <li class="list-group-item">
         PHAST
-        <span class="pull-right">{{ variant.phast_conservation|join(', ') or '-' }}</span>
+        <span class="float-right">{{ variant.phast_conservation|join(', ') or '-' }}</span>
       </li>
       <li class="list-group-item">
         GERP
-        <span class="pull-right">{{ variant.gerp_conservation|join(', ') or '-' }}</span>
+        <span class="float-right">{{ variant.gerp_conservation|join(', ') or '-' }}</span>
       </li>
       <li class="list-group-item">
         phyloP
-        <span class="pull-right">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
+        <span class="float-right">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
       </li>
     </ul>
     <div class="panel-heading">Mappability (<a href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
@@ -768,7 +773,7 @@ $(document).ready(function(){
       <ul class="list-group">
         <li class="list-group-item">
           Variant inheritance models
-          <span class="pull-right">
+          <span class="float-right">
             {% for model in variant.genetic_models|sort %}
               <span class="badge badge-info">{{ model }}</span>
             {% else %}
@@ -785,11 +790,11 @@ $(document).ready(function(){
           <tr>
             <td>
               Length
-              <span class="pull-right">{{ variant.azlength }}</span>
+              <span class="float-right">{{ variant.azlength }}</span>
             </td>
             <td>
               Qual
-              <span class="pull-right">{{ variant.azqual }}</span>
+              <span class="float-right">{{ variant.azqual }}</span>
             </td>
           </tr>
         </tbody>
@@ -1002,7 +1007,7 @@ $(document).ready(function(){
           {% for sv_variant in overlapping_svs %}
             <tr>
               <td>
-                <a href="{{url_for('variants.sv_variant', institute_id=institute._id,
+                <a href="{{url_for('variant.sv_variant', institute_id=institute._id,
                                    case_name=case.display_name, variant_id=sv_variant._id)}}">
                   {{ sv_variant.display_name|truncate(20, True) }}
                 </a>
@@ -1177,30 +1182,8 @@ $(document).ready(function(){
   </div>
 {% endmacro %}
 
-<!--
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
--->
-
 {% macro modal_sanger() %}
-  <form action="{{ url_for('variants.verify', institute_id=institute._id,
+  <form action="{{ url_for('variant.verify', institute_id=institute._id,
                            case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=True) }}"
         method="POST">
     <div class="modal fade" id="sangerModal">
@@ -1226,7 +1209,7 @@ $(document).ready(function(){
 {% endmacro %}
 
 {% macro modal_cancel_sanger() %}
-  <form action="{{ url_for('variants.verify', institute_id=institute._id,
+  <form action="{{ url_for('variant.verify', institute_id=institute._id,
                            case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=False) }}"
         method="POST">
     <div class="modal fade" id="cancelSangerModal">
@@ -1293,7 +1276,7 @@ $(document).ready(function(){
 
 {% macro acmg_form(selected=None) %}
   <label class="mt-3">ACMG classification</label>
-  <form action="{{ url_for('variants.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
     <div class="d-flex justify-content-between">
       {% for option in ACMG_OPTIONS %}
         <button class="btn btn-{{ option.color if (option.code == selected or not selected) else 'outline-secondary' }} form-control {{ 'mr-1' if not loop.last }}" name="acmg_classification" value="{{ option.code }}" title="{{ option.label }}">
@@ -1309,7 +1292,7 @@ $(document).ready(function(){
   <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
     <div class="d-flex">
       <span>
-        <a href="{{ url_for('variants.evaluation', evaluation_id=data._id) }}">
+        <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
           {{ data.classification.label }}
         </a>
         <span class="badge badge-info">{{ data.classification.short }}</span>
@@ -1321,7 +1304,7 @@ $(document).ready(function(){
       </span>
     </div>
     <small class="text-muted">
-      <form action="{{ url_for('variants.evaluation', evaluation_id=data._id) }}" method="POST">
+      <form action="{{ url_for('variant.evaluation', evaluation_id=data._id) }}" method="POST">
       {{ data.user_name }} on {{ data.created_at.date() }}
       {% if current_variant %}
         <button class="btn btn-xs btn-link">Delete</button>
@@ -1336,6 +1319,10 @@ $(document).ready(function(){
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
   <script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
     $(function () {
       $('[data-toggle="tooltip"]').tooltip({
         container: 'body'
@@ -1344,6 +1331,18 @@ $(document).ready(function(){
       $('select[multiple]').selectpicker({
         width: '100%'
       });
-    })
+    });
+
+    function validate_causative_form(){
+      var partial_checkbox = document.getElementById("partial_causative");
+      if (partial_checkbox.checked == true){
+        var nOmimTerms = $('#omim_select option:selected').length;
+        var nHpoTerms = $('#hpo_select option:selected').length;
+        if ( nOmimTerms== 0 & nHpoTerms==0){
+          alert('Select at least a phenotype term or diagnosis')
+          return false
+        }
+      }
+    }
   </script>
 {% endblock %}

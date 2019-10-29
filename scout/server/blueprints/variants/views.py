@@ -7,22 +7,18 @@ import datetime
 import zipfile
 import pathlib
 
-from flask import (Blueprint, request, redirect, abort, flash, current_app, url_for, jsonify, Response,
-                    session, send_file)
-from werkzeug.datastructures import Headers, MultiDict
+from flask import (Blueprint, request, redirect, abort, flash, current_app, url_for, Response,
+                   send_file)
+from werkzeug.datastructures import (Headers, MultiDict)
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS
-from scout.constants.acmg import ACMG_CRITERIA
-from scout.constants import ACMG_MAP
-from scout.server.extensions import store, mail, loqusdb
-from scout.server.utils import templated, institute_and_case, public_endpoint
-from scout.utils.acmg import get_acmg
-from scout.parse.clinvar import set_submission_objects
+from scout.server.extensions import store
+from scout.server.utils import (templated, institute_and_case)
 from . import controllers
 from .forms import FiltersForm, SvFiltersForm, StrFiltersForm, CancerFiltersForm, CancerSvFiltersForm
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 variants_bp = Blueprint('variants', __name__, static_folder='static', template_folder='templates')
 
 @variants_bp.route('/<institute_id>/<case_name>/variants', methods=['GET','POST'])
@@ -50,7 +46,7 @@ def variants(institute_id, case_name):
     else:
         clinical_filter_panels = default_panels
 
-    log.debug("Current default panels: {}".format(default_panels))
+    LOG.debug("Current default panels: {}".format(default_panels))
 
     if bool(request.form.get('clinical_filter')):
 
@@ -181,25 +177,6 @@ def variants(institute_id, case_name):
     return dict(institute=institute_obj, case=case_obj, form=form,
                     severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
-
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>')
-@templated('variants/variant.html')
-def variant(institute_id, case_name, variant_id):
-    """Display a specific SNV variant."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    log.debug("Variants view requesting data for variant {}".format(variant_id))
-    data = controllers.variant(store, institute_obj, case_obj, variant_id=variant_id)
-    if data is None:
-        log.warning("An error occurred: variants view requesting data for variant {}".format(variant_id))
-        flash('An error occurred while retrieving variant object', 'danger')
-        return redirect(request.referrer)
-
-    if current_app.config.get('LOQUSDB_SETTINGS'):
-        data['observations'] = controllers.observations(store, loqusdb,
-            case_obj, data['variant'])
-    data['cancer'] = request.args.get('cancer') == 'yes'
-    return dict(institute=institute_obj, case=case_obj, **data)
-
 @variants_bp.route('/<institute_id>/<case_name>/str/variants')
 @templated('variants/str-variants.html')
 def str_variants(institute_id, case_name):
@@ -260,6 +237,8 @@ def sv_variants(institute_id, case_name):
             form = SvFiltersForm(request.form)
     else:
         form = SvFiltersForm(request.args)
+
+    form.variant_type.data = variant_type
 
     available_panels = case_obj.get('panels', []) + [
         {'panel_name': 'hpo', 'display_name': 'HPO'}]
@@ -343,124 +322,27 @@ def sv_variants(institute_id, case_name):
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
                 form=form, severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
+@variants_bp.route('/<institute_id>/<case_name>/cancer/variants', methods=['GET','POST'])
+@templated('variants/cancer-variants.html')
+def cancer_variants(institute_id, case_name):
+    """Show cancer variants overview."""
 
-@variants_bp.route('/<institute_id>/<case_name>/sv/variants/<variant_id>')
-@templated('variants/sv-variant.html')
-def sv_variant(institute_id, case_name, variant_id):
-    """Display a specific structural variant."""
-    data = controllers.sv_variant(store, institute_id, case_name, variant_id)
-    return data
-
-@variants_bp.route('/<institute_id>/<case_name>/str/variants/<variant_id>')
-@templated('variants/str-variant.html')
-def str_variant(institute_id, case_name, variant_id):
-    """Display a specific STR variant."""
-    data = controllers.str_variant(store, institute_id, case_name, variant_id)
-    return data
-
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/update', methods=['POST'])
-def variant_update(institute_id, case_name, variant_id):
-    """Update user-defined information about a variant: manual rank & ACMG."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_obj = store.variant(variant_id)
-    user_obj = store.user(current_user.email)
-    link = request.referrer
 
-    manual_rank = request.form.get('manual_rank')
-    if manual_rank:
-        new_manual_rank = int(manual_rank) if manual_rank != '-1' else None
-        store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj,
-                                 new_manual_rank)
-        if new_manual_rank:
-            flash("updated variant tag: {}".format(new_manual_rank), 'info')
-        else:
-            flash("reset variant tag: {}".format(variant_obj.get('manual_rank', 'NA')), 'info')
-    elif request.form.get('acmg_classification'):
-        new_acmg = request.form['acmg_classification']
-        acmg_classification = variant_obj.get('acmg_classification')
-        # If there already is a classification and the same one is sent again this means that
-        # We want to remove the classification
-        if isinstance(acmg_classification, int) and (new_acmg == ACMG_MAP[acmg_classification]):
-            new_acmg = None
-        print("New acmg", new_acmg)
-        store.submit_evaluation(
-            variant_obj=variant_obj,
-            user_obj=user_obj,
-            institute_obj=institute_obj,
-            case_obj=case_obj,
-            link=link,
-            classification=new_acmg
-        )
-        flash("updated ACMG classification: {}".format(new_acmg), 'info')
-
-    new_dismiss = request.form.getlist('dismiss_variant')
-    if request.form.getlist('dismiss_variant'):
-        store.update_dismiss_variant(institute_obj, case_obj, user_obj, link, variant_obj,
-                                     new_dismiss)
-        if new_dismiss:
-            flash("Dismissed variant: {}".format(new_dismiss), 'info')
-
-    if variant_obj.get('dismiss_variant') and not new_dismiss:
-        if 'dismiss' in request.form:
-            store.update_dismiss_variant(institute_obj, case_obj, user_obj, link, variant_obj,
-                                     new_dismiss)
-            flash("Reset variant dismissal: {}".format(variant_obj.get('dismiss_variant')), 'info')
-        else:
-            log.debug("DO NOT reset variant dismissal: {}".format(variant_obj.get('dismiss_variant')), 'info')
-
-    mosaic_tags = request.form.getlist('mosaic_tags')
-    if mosaic_tags:
-        store.update_mosaic_tags(institute_obj, case_obj, user_obj, link, variant_obj,
-                                     mosaic_tags)
-        if new_dismiss:
-            flash("Added mosaic tags: {}".format(mosaic_tags), 'info')
-
-    if variant_obj.get('mosaic_tags') and not mosaic_tags:
-        if 'mosaic' in request.form:
-            store.update_mosaic_tags(institute_obj, case_obj, user_obj, link, variant_obj,
-                                     mosaic_tags)
-            flash("Reset mosaic tags: {}".format(variant_obj.get('mosaic_tags')), 'info')
-
-    return redirect(request.referrer)
+    if(request.method == "POST"):
+        form = CancerFiltersForm(request.form)
+        page = int(request.form.get('page', 1))
+    else:
+        form = CancerFiltersForm(request.args)
+        page = int(request.args.get('page', 1))
 
 
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/<variant_category>/<order>', methods=['POST'])
-def verify(institute_id, case_name, variant_id, variant_category, order):
-    """Start procedure to validate variant using other techniques."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_obj = store.variant(variant_id)
-    user_obj = store.user(current_user.email)
+    available_panels = case_obj.get('panels', []) + [
+        {'panel_name': 'hpo', 'display_name': 'HPO'}]
 
-    comment = request.form.get('verification_comment')
-
-    try:
-        controllers.variant_verification(store=store, mail=mail, institute_obj=institute_obj, case_obj=case_obj, user_obj=user_obj, comment=comment,
-                           variant_obj=variant_obj, sender=current_app.config['MAIL_USERNAME'], variant_url=request.referrer, order=order, url_builder=url_for)
-    except controllers.MissingVerificationRecipientError:
-        flash('No verification recipients added to institute.', 'danger')
-
-    return redirect(request.referrer)
-
-
-@variants_bp.route('/<institute_id>/<case_name>/<variant_id>/clinvar', methods=['POST', 'GET'])
-@templated('variants/clinvar.html')
-def clinvar(institute_id, case_name, variant_id):
-    """Build a clinVar submission form for a variant."""
-    data = controllers.clinvar_export(store, institute_id, case_name, variant_id)
-    if request.method == 'GET':
-        return data
-    else: #POST
-        form_dict = request.form.to_dict()
-        submission_objects = set_submission_objects(form_dict) # A tuple of submission objects (variants and casedata objects)
-
-        # Add submission data to an open clinvar submission object,
-        # or create a new if no open submission is found in database
-        open_submission = store.get_open_clinvar_submission(current_user.email, institute_id)
-        updated_submission = store.add_to_submission(open_submission['_id'], submission_objects)
-
-        # Redirect to clinvar submissions handling page, and pass it the updated_submission_object
-        return redirect(url_for('cases.clinvar_submissions', institute_id=institute_id))
-
+    panel_choices = [(panel['panel_name'], panel['display_name'])
+                     for panel in available_panels]
+    form.gene_panels.choices = panel_choices
 
 @variants_bp.route('/<institute_id>/<case_name>/cancer/variants')
 @templated('variants/cancer-variants.html')
@@ -640,6 +522,9 @@ def acmg():
     classification = get_acmg(criteria)
     return jsonify(dict(classification=classification))
 
+    variant_type = request.args.get('variant_type', 'clinical')
+    data = controllers.cancer_variants(store, institute_id, case_name, form, page=page)
+    return dict(variant_type=variant_type, **data)
 
 @variants_bp.route('/<institute_id>/<case_name>/upload', methods=['POST'])
 def upload_panel(institute_id, case_name):

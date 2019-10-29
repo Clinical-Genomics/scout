@@ -28,6 +28,23 @@
   </div>
 {% endmacro %}
 
+{% macro frequency_cell_general(variant) %}
+  <div data-toggle="tooltip" data-placement="left" data-html="true" title="
+      <div class='text-left'>
+        {% for freq_name, value in variant.frequencies %}
+          <div>
+            <strong>freq_name</strong>: {{ value|human_decimal}}
+          </div>
+        {% endfor %}
+        <div>
+          <strong>Local (arch.)</strong>: {{ variant.local_obs_old or 0 }} obs.
+        </div>
+      </div>
+    ">
+    {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency else '~' }}
+  </div>
+{% endmacro %}
+
 {% macro frequency_cell(variant) %}
   <div data-toggle="tooltip" data-placement="left" data-html="true" title="
     <div class='text-left'>

@@ -67,14 +67,17 @@ def add_ensembl_info(genes, ensembl_lines):
     ensembl_genes = parse_ensembl_genes(ensembl_lines)
 
     for ensembl_gene in ensembl_genes:
+        if not 'hgnc_id' in ensembl_gene:
+            LOG.debug("Ensembl gene %s is missing hgnc id. Skipping", ensembl_gene['ensembl_gene_id'])
+            continue
         gene_obj = genes.get(ensembl_gene['hgnc_id'])
         if not gene_obj:
             continue
         gene_obj['chromosome'] = ensembl_gene['chrom']
         gene_obj['start'] = ensembl_gene['gene_start']
         gene_obj['end'] = ensembl_gene['gene_end']
-        # ensembl ids can differ between builds. There is one stated in HGNC
-        # that is true for build 38. So we add information from ensembl
+        # ensembl ids can differ between builds. The ensembl gene ids from HGNC are only
+        # true for build 38. So we add correct information from ensembl
         gene_obj['ensembl_gene_id'] = ensembl_gene['ensembl_gene_id']
 
 def add_exac_info(genes, alias_genes, exac_lines):
@@ -161,8 +164,8 @@ def get_correct_ids(hgnc_symbol, alias_genes):
             return set(hgnc_id_info['ids'])
     return hgnc_ids
 
-def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
-               genemap_lines, hpo_lines):
+def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, mim2gene_lines=None, 
+               genemap_lines=None):
     """Gather information from different sources and return a gene dict
 
     Extract information collected from a number of sources and combine them
@@ -203,9 +206,10 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, mim2gene_lines,
 
     add_exac_info(genes, symbol_to_id, exac_lines)
 
-    add_omim_info(genes, symbol_to_id, genemap_lines, mim2gene_lines)
-
     add_incomplete_penetrance(genes, symbol_to_id, hpo_lines)
+    
+    if (mim2gene_lines and genemap_lines):
+        add_omim_info(genes, symbol_to_id, genemap_lines, mim2gene_lines)
 
     return genes
 
