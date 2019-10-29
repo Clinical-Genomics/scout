@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from bson.objectid import ObjectId
+from flask import url_for
 
 import pymongo
 
@@ -72,13 +73,14 @@ class FilterHandler(object):
         subject = institute_obj['display_name']
 
         # link e.g. to the variants view where filter was created
-        variants_target_from_category = {('sv', 'variants.sv_variants'),
-                            ('cancer', 'variants.cancer_variants'),
-                            ('snv', 'variants.variants')}
+        variants_target_from_category = {'sv': 'variants.sv_variants',
+                                         'cancer': 'variants.cancer_variants',
+                                         'snv': 'variants.variants'}
         target = variants_target_from_category.get(category)
 
         case_name = case_obj.get('display_name')
-        link = url_for(target, institute_id=institute_id, case_name=case_name,
+        #filter dict already contains institute_id=institute_id,
+        link = url_for(target, case_name=case_name,
                             **filter_dict)
 
         self.create_event(institute=institute_obj, case=case_obj, user=user_obj,
@@ -101,7 +103,7 @@ class FilterHandler(object):
         filter_obj = self.filter_collection.find_one({'_id': ObjectId(filter_id)})
 
         LOG.info("User {} deleting filter {} for institute {}.".format(
-            user_id, filter_obj.get('display_name'), institute_id))
+                    user_id, filter_obj.get('display_name'), institute_id))
 
         result = self.filter_collection.delete_one({'_id': ObjectId(filter_id)})
 
