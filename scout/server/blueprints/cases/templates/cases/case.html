@@ -140,7 +140,7 @@
     <ul class="list-group">
       {% for variant in other_causatives %}
         <li class="list-group-item">
-          <a href="{{ url_for('variants.variant', institute_id=institute._id,
+          <a href="{{ url_for('variant.variant', institute_id=institute._id,
                               case_name=case.display_name, variant_id=variant._id) }}">
             {{ variant.hgnc_symbols|join(', ') }}
           </a>
@@ -326,13 +326,13 @@
               <div class="col-10">
                 <i class="fa fa-check-circle-o"></i>
 		            {% if variant.category == "snv" %}
-                  <a href="{{ url_for('variants.variant',
+                  <a href="{{ url_for('variant.variant',
                                       institute_id=variant.institute,
                                       case_name=case.display_name,
                                       variant_id=variant._id) }}">
                         {{ variant.hgnc_symbols|join(', ') }}
 		             {% else %}
-        		      <a href="{{ url_for('variants.sv_variant',
+        		      <a href="{{ url_for('variant.sv_variant',
                                             institute_id=variant.institute,
                                             case_name=case.display_name,
                                             variant_id=variant._id) }}">
@@ -369,13 +369,13 @@
               <div class="col-10">
                 <i class="fa fa-check-circle-o"></i>
                 {% if variant.category == "snv" %}
-                  <a href="{{ url_for('variants.variant',
+                  <a href="{{ url_for('variant.variant',
                                       institute_id=variant.institute,
                                       case_name=case.display_name,
                                       variant_id=variant._id) }}">
                         {{ variant.hgnc_symbols|join(', ') }} (partial causative)
 		             {% else %}
-        		      <a href="{{ url_for('variants.sv_variant',
+        		      <a href="{{ url_for('variant.sv_variant',
                                             institute_id=variant.institute,
                                             case_name=case.display_name,
                                             variant_id=variant._id) }}">
@@ -447,13 +447,13 @@
                 <div class="ml-3">
                   <i class="fa fa-bookmark"></i>
                   {% if variant.category == "snv" %}
-                    <a href="{{ url_for('variants.variant',
+                    <a href="{{ url_for('variant.variant',
                                         institute_id=variant.institute,
                                         case_name=case.display_name,
                                         variant_id=variant._id) }}">
                           {{ variant.hgnc_symbols|join(', ') }}
                   {% else %}
-                    <a href="{{ url_for('variants.sv_variant',
+                    <a href="{{ url_for('variant.sv_variant',
                                               institute_id=variant.institute,
                                               case_name=case.display_name,
                                               variant_id=variant._id) }}">
@@ -605,9 +605,9 @@
         {% for var_id, submission_data in case.clinvar_variants.items() %}
           <li>
             {% if submission_data.category == 'snv' %}
-              <a href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.start}}_{{submission_data.ref}}>{{submission_data.alt}}</a> ({{submission_data.clinsig}})
+              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.start}}_{{submission_data.ref}}>{{submission_data.alt}}</a> ({{submission_data.clinsig}})
             {% else %}
-              <a href="{{ url_for('variants.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a> ({{submission_data.clinsig}})
+              <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a> ({{submission_data.clinsig}})
             {% endif %}
           </li>
         {% endfor %}

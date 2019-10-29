@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import logging
 try:
     from urllib.parse import unquote
 except ImportError:
@@ -8,7 +9,6 @@ except ImportError:
 from pprint import pprint as pp
 
 import coloredlogs
-import logging
 from flask import current_app, Flask, redirect, request, url_for
 from flask_babel import Babel
 from flask_login import current_user
@@ -28,8 +28,8 @@ except ImportError:
     LOG.info('chanjo report not installed!')
 
 from . import extensions
-from .blueprints import (alignviewers, public, genes, cases, login, variants, panels, dashboard,
-                         api, phenotypes, institutes)
+from .blueprints import (alignviewers, public, genes, cases, login, variant, variants, panels, 
+                         dashboard, api, phenotypes, institutes)
 
 def create_app(config_file=None, config=None):
     """Flask app factory function."""
@@ -87,13 +87,16 @@ def configure_extensions(app):
     Markdown(app)
 
     if app.config.get('SQLALCHEMY_DATABASE_URI'):
+        LOG.info("Chanjo extension enabled")
         configure_coverage(app)
 
     if app.config.get('LOQUSDB_SETTINGS'):
+        LOG.info("LoqusDB enabled")
         # setup LoqusDB
         extensions.loqusdb.init_app(app)
 
     if app.config.get('LDAP_HOST'):
+        LOG.info("LDAP login enabled")
         # setup connection to server
         extensions.ldap_manager.init_app(app)
 
@@ -103,6 +106,7 @@ def register_blueprints(app):
     app.register_blueprint(genes.genes_bp)
     app.register_blueprint(cases.cases_bp)
     app.register_blueprint(login.login_bp)
+    app.register_blueprint(variant.variant_bp)
     app.register_blueprint(variants.variants_bp)
     app.register_blueprint(panels.panels_bp)
     app.register_blueprint(dashboard.dashboard_bp)
@@ -125,7 +129,8 @@ def register_filters(app):
             str: humanized string of the decimal number
         """
         min_number = 10 ** -ndigits
-
+        if isinstance(number,str):
+            number = None
         if number is None:
             # NaN
             return '-'

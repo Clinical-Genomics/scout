@@ -49,6 +49,7 @@
       {% for _, group in variant_groups.items() %}
       {% set group_variant = group[0][1] %}
       {% for case, variant in group %}
+<<<<<<< HEAD
       {% if variant._id in case.causatives %}
       <tr>
         <td>
@@ -95,6 +96,56 @@
         </td>
         <td>
           <a href="{{ url_for('cases.case',
+=======
+        {% if variant._id in case.causatives %}
+          <div class="list-group-item">
+            <div class="row">
+              <div class="col-xs-8 col-md-2">
+                <a href="{{ url_for('variant.variant',
+                                    institute_id=institute._id,
+                                    case_name=case.display_name,
+                                    variant_id=variant._id) }}">
+                  {{ variant.display_name|truncate(20, True) }}
+                </a>
+              </div>
+              <div class="col-xs-8 col-md-1">
+                <span class="badge badge-secondary">{{ variant.category|upper }}</span>
+              </div>
+              <div class="col-xs-8 col-md-2">
+                <a href="#">Rank score <span class="badge badge-pill badge-secondary">{{ variant.rank_score }}</span></a>
+              </div>
+              <div class="col-xs-8 col-md-2">
+                zygosity:
+                {% for sample in variant.samples %}
+                  {% for ind in case.individuals %}
+                    {% if sample.sample_id == ind.individual_id %}
+                        {% if ind.phenotype == 2%}
+                          <span class="badge badge-danger">{{sample.genotype_call}}</span>
+                        {% else %}
+                          <span class="badge badge-success">{{sample.genotype_call}}</span>
+                        {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                {% endfor %}
+              </div>
+              <div class="col-xs-8 col-md-2">
+                inheritance:
+                {% for model in variant.genetic_models %}
+                  <span class="badge badge-info">{{model}}</span>
+                {% endfor %}
+              </div>
+              <div class="col-xs-8 col-md-1">
+                  <a href="#" data-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)" style="text-decoration: none; color: #000;">ACMG:
+                  {% if 'acmg_classification' in variant %}
+                    <span class="badge badge-{{variant.acmg_classification.color}}">{{variant.acmg_classification.short}}</span>
+                  {% else %}
+                  -
+                  {% endif %}
+                  </a>
+                </div>
+              <div class="col-md-2">
+                <a href="{{ url_for('cases.case',
+>>>>>>> 51c4ef08154c00b18eaf70128ab4d259040761c5
                                     institute_id=institute._id,
                                     case_name=case.display_name) }}">
             {{ case.display_name }}

@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added support for LDAP login system
 - Search snv and structural variants by chromosomal coordinates
 - Structural variants can be marked as partial causative if phenotype is available for case.
+- Show normal and pathologic limits for STRs in the STR variants view.
 
 ### fixed
 - Fixed missing import for variants with comments
@@ -41,7 +42,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Request rerun no longer changes case status. Active or archived cases inactivate on upload.
 - Fixed missing tooltip on the cancer variants page
 - Fixed weird Rank cell in variants page
-
+- Next and first buttons order swap
+- Added pagination (and POST capability) to cancer variants.
+- Improves loading speed for variant page
+- Problem with updating variant rank when no variants
 
 ## [4.7.3]
 
