@@ -38,7 +38,8 @@ def variants(institute_id, case_name):
 
     if(request.method == "POST"):
         # If special filter buttons were selected:
-        form = controllers.populate_filters_form(store, institute_obj, case_obj, category, request.form)
+        form = controllers.populate_filters_form(store, institute_obj, case_obj,
+                                                 user_obj, category, request.form)
     else:
         form = FiltersForm(request.args)
 
@@ -191,7 +192,8 @@ def sv_variants(institute_id, case_name):
 
     user_obj = store.user(current_user.email)
     if(request.method == "POST"):
-        form = controllers.populate_filters_form(store, institute_obj, case_obj, category, request.form)
+        form = controllers.populate_filters_form(store, institute_obj, case_obj,
+                                                 user_obj, category, request.form)
     else:
         form = SvFiltersForm(request.args)
 
@@ -299,7 +301,7 @@ def cancer_variants(institute_id, case_name):
     if(request.method == "POST"):
         page = int(request.form.get('page', 1))
         form = controllers.populate_filters_form(store, institute_obj, case_obj,
-                                     category, request.form)
+                                     user_obj, category, request.form)
     else:
         page = int(request.args.get('page', 1))
         form = CancerFiltersForm(request.args)

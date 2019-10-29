@@ -354,7 +354,8 @@ def upload_panel(store, institute_id, case_name, stream):
             hgnc_symbols.append(raw_symbol)
     return hgnc_symbols
 
-def populate_filters_form(store, institute_obj, case_obj, category, request_form):
+def populate_filters_form(store, institute_obj, case_obj, user_obj,
+                          category, request_form):
     # Update filter settings if Clinical Filter was requested
     clinical_filter_panels = []
 
@@ -418,6 +419,7 @@ def populate_filters_form(store, institute_obj, case_obj, category, request_form
         form = FiltersFormClass(MultiDict(filter_obj))
     elif bool(request_form.get('delete_filter')):
         filter_id = request_form.get('filters')
+        institute_id = institute_obj.get('_id')
         filter_obj = store.delete_filter(filter_id, institute_id, current_user.email)
         form = FiltersFormClass(request_form)
     else:
