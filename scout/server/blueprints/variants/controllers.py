@@ -408,7 +408,7 @@ def populate_filters_form(store, institute_obj, case_obj, category, request_form
 #            form.csrf_token = request.args.get('csrf_token')
     elif bool(request_form.get('save_filter')):
         # The form should be applied and remain set the page after saving
-        form = FiltersFormClass(form)
+        form = FiltersFormClass(request_form)
         # Stash the filter to db to make available for this institute
         filter_obj = request_form
         store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category)
