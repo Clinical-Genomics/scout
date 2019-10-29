@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 
 {% block title %}
-  {{ super() }} - Institutes
+{{ super() }} - Institutes
 {% endblock %}
 
 {% block top_nav %}
@@ -10,33 +10,36 @@
   <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">{{ institute.display_name }} Cases</a>
+  <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">{{ institute.display_name }}
+    Cases</a>
 </li>
 <li class="nav-item active">
   <a class="nav-link" href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All SNVs and INDELs</a>
+  <a class="nav-link"
+    href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All
+    SNVs and INDELs</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
+  <a class="nav-link" href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar
+    submissions</a>
 </li>
 {% endblock %}
 {% block content_main %}
 
-<br>
-<div class="card">
+<div class="card mt-3">
   <br>
   <table id="causatives_table" class="table" cellspacing="0" width="100%">
     <thead>
       <tr>
-        <th style="width:5%">Group</th>
+        <th style="width:5%">Gene</th>
         <th style="width:10%">Variant Name</th>
         <th style="width:20%">Change</th>
-        <th style="width:3%">Cathegory</th>
+        <th style="width:3%">Category</th>
         <th style="width:3%">Rank score</th>
         <th style="width:5%">Zygosity</th>
-        <th style="width:3%">Inharitance</th>
+        <th style="width:3%">Inheritance</th>
         <th style="width:5%">ACMG</th>
         <th style="width:5%">Case Name</th>
         <th style="width:3%">Case Status</th>
@@ -49,7 +52,7 @@
       {% if variant._id in case.causatives %}
       <tr>
         <td>
-          <h5 class="mb-1">{{ variant.hgnc_symbols|join(', ') }}</h5>
+          <h5 class="mb-1">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</h5>
         </td>
         <td><a href="{{ url_for('variants.variant',
             institute_id=institute._id,
@@ -112,40 +115,42 @@
 {% endblock %}
 
 {% block scripts %}
-  {{ super() }}
-  <script>
-    $(document).ready(function () {
-      $('[data-toggle="tooltip"]').tooltip();
-    });
-    $(function () {
-      function getTerms(query, process) {
-        $.get("{{ url_for('genes.api_genes') }}", { query: query }, function (data) {
-          process(data)
-        });
-      }
-      $(".typeahead").typeahead({
-        source: getTerms,
-        minLength: 2,
+{{ super() }}
+<script>
+  $(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+  $(function () {
+    function getTerms(query, process) {
+      $.get("{{ url_for('genes.api_genes') }}", { query: query }, function (data) {
+        process(data)
       });
-    })
-  </script>
-  <script language="JavaScript">
-    $(document).ready(function () {
-      var table = $('#causatives_table').DataTable({
+    }
+    $(".typeahead").typeahead({
+      source: getTerms,
+      minLength: 2,
+    });
+  })
+</script>
+<script language="JavaScript">
+  $(document).ready(function () {
+    var table = $('#causatives_table').DataTable({
+        dom: 'Bf',
+        paging: false,
         lengthChange: false,
         buttons: ['copy', 'excel']
-      });
-
-      table.buttons().container()
-
-        .appendTo("#causatives_table_wrapper .col-md-6:eq(0)");
     });
-  </script>
-  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.bootstrap4.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-  <script src="//cdn.datatables.net/buttons/1.5.1/js/buttons.html5.min.js"></script>
-  <script src="//cdn.datatables.net/buttons/1.5.1/js/buttons.colVis.min.js"></script>
+
+    table.buttons().container()
+
+      .appendTo("#causatives_table_wrapper .col-md-6:eq(0)");
+  });
+</script>
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.bootstrap4.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="//cdn.datatables.net/buttons/1.5.1/js/buttons.html5.min.js"></script>
+<script src="//cdn.datatables.net/buttons/1.5.1/js/buttons.colVis.min.js"></script>
 {% endblock %}
