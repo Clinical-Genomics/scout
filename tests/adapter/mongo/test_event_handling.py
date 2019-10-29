@@ -520,7 +520,7 @@ def test_filter_stash(adapter, institute_obj, case_obj, user_obj, filter_obj):
 
     # WHEN asking for filters
     institute_id = institute_obj.get('_id')
-    category = "snv"
+    category = 'snv'
     filters = adapter.filters(institute_id, category)
 
     # THEN no filters are returned
@@ -529,7 +529,8 @@ def test_filter_stash(adapter, institute_obj, case_obj, user_obj, filter_obj):
     # WHEN no events are yet in the events collection
     assert sum(1 for i in adapter.event_collection.find()) == 0
     # WHEN storing a filter
-    filter_id = adapter.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category)
+    filter_id = adapter.stash_filter(filter_obj, institute_obj, case_obj,
+                                     user_obj, category, link='mock_link')
     # THEN a filter id is returned
     assert filter_id
     # THEN an event can be found in the event collection

@@ -26,7 +26,8 @@ class FilterHandler(object):
         filter_obj.update([('filters', filter_obj.pop('_id', None))])
         return filter_obj
 
-    def stash_filter(self, filter_obj, institute_obj, case_obj, user_obj, category='snv'):
+    def stash_filter(self, filter_obj, institute_obj, case_obj, user_obj,
+                     category='snv', link=None):
         """Store away filter settings for later use.
 
             Arguments:
@@ -73,14 +74,15 @@ class FilterHandler(object):
         subject = institute_obj['display_name']
 
         # link e.g. to the variants view where filter was created
-        variants_target_from_category = {'sv': 'variants.sv_variants',
-                                         'cancer': 'variants.cancer_variants',
-                                         'snv': 'variants.variants'}
-        target = variants_target_from_category.get(category)
+        if link == None:
+            variants_target_from_category = {'sv': 'variants.sv_variants',
+                                            'cancer': 'variants.cancer_variants',
+                                            'snv': 'variants.variants'}
+            target = variants_target_from_category.get(category)
 
-        case_name = case_obj.get('display_name')
-        #filter dict already contains institute_id=institute_id,
-        link = url_for(target, case_name=case_name,
+            case_name = case_obj.get('display_name')
+            #filter dict already contains institute_id=institute_id,
+            link = url_for(target, case_name=case_name,
                             **filter_dict)
 
         self.create_event(institute=institute_obj, case=case_obj, user=user_obj,
