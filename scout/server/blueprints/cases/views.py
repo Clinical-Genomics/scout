@@ -689,7 +689,7 @@ def pin_variant(institute_id, case_name, variant_id):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
-    link = url_for('variants.variant', institute_id=institute_id, case_name=case_name,
+    link = url_for('variant.variant', institute_id=institute_id, case_name=case_name,
                    variant_id=variant_id)
     if request.form['action'] == 'ADD':
         store.pin_variant(institute_obj, case_obj, user_obj, link, variant_obj)
@@ -705,7 +705,7 @@ def mark_validation(institute_id, case_name, variant_id):
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
     validate_type = request.form['type'] or None
-    link = url_for('variants.variant', institute_id=institute_id, case_name=case_name,
+    link = url_for('variant.variant', institute_id=institute_id, case_name=case_name,
                    variant_id=variant_id)
     store.validate(institute_obj, case_obj, user_obj, link, variant_obj, validate_type)
     return redirect(request.referrer or link)
@@ -717,7 +717,7 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
-    link = url_for('variants.variant', institute_id=institute_id, case_name=case_name,
+    link = url_for('variant.variant', institute_id=institute_id, case_name=case_name,
                    variant_id=variant_id)
     if request.form['action'] == 'ADD':
         if 'partial_causative' in request.form:
