@@ -27,67 +27,23 @@ def variants(institute_id, case_name):
     """Display a list of SNV variants."""
     page = int(request.form.get('page', 1))
 
+    category='snv'
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = request.args.get('variant_type', 'clinical')
-
 
     if request.form.get('hpo_clinical_filter'):
         case_obj['hpo_clinical_filter'] = True
 
-    # Update filter settings if Clinical Filter was requested
-    clinical_filter_panels = []
-
-    default_panels = []
-    for panel in case_obj['panels']:
-        if panel.get('is_default'):
-            default_panels.append(panel['panel_name'])
-
-    # The clinical filter button will only
-    if case_obj.get('hpo_clinical_filter'):
-        clinical_filter_panels = ['hpo']
-    else:
-        clinical_filter_panels = default_panels
-
-    if bool(request.form.get('clinical_filter')):
-        # but not if HPO is selected
-        clinical_filter = MultiDict({
-            'variant_type': 'clinical',
-            'region_annotations': ['exonic','splicing'],
-            'functional_annotations': SEVERE_SO_TERMS,
-            'clinsig': [4,5],
-            'clinsig_confident_always_returned': True,
-            'gnomad_frequency': str(institute_obj['frequency_cutoff']),
-            'variant_type': 'clinical',
-            'gene_panels': clinical_filter_panels
-             })
-
     user_obj = store.user(current_user.email)
+
     if(request.method == "POST"):
         # If special filter buttons were selected:
-        if bool(request.form.get('clinical_filter')):
-            form = FiltersForm(clinical_filter)
-            form.csrf_token = request.args.get('csrf_token')
-        elif bool(request.form.get('save_filter')):
-            # The form should be applied and remain set the page after saving
-            form = FiltersForm(request.form)
-            # Stash the filter to db to make available for this institute
-            filter_obj = request.form
-            store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category='snv')
-        elif bool(request.form.get('load_filter')):
-            filter_id = request.form.get('filters')
-            filter_obj = store.retrieve_filter(filter_id)
-            form = FiltersForm(MultiDict(filter_obj))
-        elif bool(request.form.get('delete_filter')):
-            filter_id = request.form.get('filters')
-            filter_obj = store.delete_filter(filter_id, institute_id, current_user.email)
-            form = FiltersForm(request.form)
-        else:
-            form = FiltersForm(request.form)
+        form = controllers.populate_filters_form(store, institute_obj, case_obj, category, request.form)
     else:
         form = FiltersForm(request.args)
 
     # populate filters dropdown
-    available_filters = store.filters(institute_id, category='snv')
+    available_filters = store.filters(institute_id, category)
     form.filters.choices = [(filter.get('_id'), filter.get('display_name'))
         for filter in available_filters]
 
@@ -203,6 +159,7 @@ def str_variants(institute_id, case_name):
     """Display a list of STR variants."""
     page = int(request.args.get('page', 1))
     variant_type = request.args.get('variant_type', 'clinical')
+    category='str'
 
     form = StrFiltersForm(request.args)
 
@@ -211,7 +168,7 @@ def str_variants(institute_id, case_name):
     query = form.data
     query['variant_type'] = variant_type
 
-    variants_query = store.variants(case_obj['_id'], category='str',
+    variants_query = store.variants(case_obj['_id'], category,
         query=query)
     data = controllers.str_variants(store, institute_obj, case_obj,
         variants_query, page)
@@ -224,62 +181,22 @@ def str_variants(institute_id, case_name):
 def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
     page = int(request.form.get('page', 1))
+    category='sv'
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = request.args.get('variant_type', 'clinical')
 
-    # Update filter settings if Clinical Filter was requested
-    clinical_filter_panels = []
-
-    default_panels = []
-    for panel in case_obj['panels']:
-        # legacy default handling - needed?
-        if (panel.get('is_default')) or ('default_panels' in case_obj and panel['panel_id'] in case_obj['default_panels']):
-            default_panels.append(panel['panel_name'])
-
-    if case_obj.get('hpo_clinical_filter'):
-        clinical_filter_panels = ['hpo']
-    else:
-        clinical_filter_panels = default_panels
-
-    if bool(request.form.get('clinical_filter')):
-        clinical_filter = MultiDict({
-            'variant_type': 'clinical',
-            'region_annotations': ['exonic','splicing'],
-            'functional_annotations': SEVERE_SO_TERMS,
-            'thousand_genomes_frequency': str(institute_obj['frequency_cutoff']),
-            'clingen_ngi': 10,
-            'swegen': 10,
-            'size': 100,
-            'gene_panels': default_panels
-             })
+    if request.form.get('hpo_clinical_filter'):
+        case_obj['hpo_clinical_filter'] = True
 
     user_obj = store.user(current_user.email)
     if(request.method == "POST"):
-        if bool(request.form.get('clinical_filter')):
-            form = SvFiltersForm(clinical_filter)
-            form.csrf_token = request.args.get('csrf_token')
-        elif bool(request.form.get('save_filter')):
-            # The form should be applied and remain set the page after saving
-            form = SvFiltersForm(request.form)
-            # Stash the filter to db to make available for this institute
-            filter_obj = request.form
-            store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category='sv')
-        elif bool(request.form.get('load_filter')):
-            filter_id = request.form.get('filters')
-            filter_obj = store.retrieve_filter(filter_id)
-            form = SvFiltersForm(MultiDict(filter_obj))
-        elif bool(request.form.get('delete_filter')):
-            filter_id = request.form.get('filters')
-            filter_obj = store.delete_filter(filter_id, institute_id, current_user.email)
-            form = SvFiltersForm(request.form)
-        else:
-            form = SvFiltersForm(request.form)
+        form = controllers.populate_filters_form(store, institute_obj, case_obj, category, request.form)
     else:
         form = SvFiltersForm(request.args)
 
     # populate filters dropdown
-    available_filters = store.filters(institute_id, category='sv')
+    available_filters = store.filters(institute_id, category)
     form.filters.choices = [(filter.get('_id'), filter.get('display_name'))
         for filter in available_filters]
 
@@ -345,7 +262,7 @@ def sv_variants(institute_id, case_name):
         form.hgnc_symbols.data = list(current_symbols)
 
 
-    variants_query = store.variants(case_obj['_id'], category='sv',
+    variants_query = store.variants(case_obj['_id'], category,
                                     query=form.data)
     data = {}
     # if variants should be exported
@@ -374,35 +291,21 @@ def sv_variants(institute_id, case_name):
 @templated('variants/cancer-variants.html')
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
+    category = 'cancer'
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
     user_obj = store.user(current_user.email)
     if(request.method == "POST"):
         page = int(request.form.get('page', 1))
-
-        if bool(request.form.get('save_filter')):
-            # The form should be applied and remain set the page after saving
-            form = CancerFiltersForm(request.form)
-            # Stash the filter to db to make available for this institute
-            filter_obj = request.form
-            store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category='cancer')
-        elif bool(request.form.get('load_filter')):
-            filter_id = request.form.get('filters')
-            filter_obj = store.retrieve_filter(filter_id)
-            form = CancerFiltersForm(MultiDict(filter_obj))
-        elif bool(request.form.get('delete_filter')):
-            filter_id = request.form.get('filters')
-            filter_obj = store.delete_filter(filter_id, institute_id, current_user.email)
-            form = CancerFiltersForm(request.form)
-        else:
-            form = CancerFiltersForm(request.form)
+        form = controllers.populate_filters_form(store, institute_obj, case_obj,
+                                     category, request.form)
     else:
-        form = CancerFiltersForm(request.args)
         page = int(request.args.get('page', 1))
+        form = CancerFiltersForm(request.args)
 
     # populate filters dropdown
-    available_filters = store.filters(institute_id, category='cancer')
+    available_filters = store.filters(institute_id, category)
     form.filters.choices = [(filter.get('_id'), filter.get('display_name'))
         for filter in available_filters]
 
