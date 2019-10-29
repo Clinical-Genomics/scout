@@ -2,9 +2,6 @@
 import logging
 from bson.objectid import ObjectId
 
-# needed?
-from scout import __version__
-
 import pymongo
 
 LOG = logging.getLogger(__name__)
@@ -16,7 +13,7 @@ class FilterHandler(object):
         """Retrieve a known stored filter object from the db
 
             Arguments:
-                filter_display_id(str)
+                filter_id(str) - a unique id cast to ObjectId
 
             Returns:
                 filter_obj(dict)
@@ -33,17 +30,17 @@ class FilterHandler(object):
 
             Arguments:
                 filter_obj(MultiDict)
-                institute_obj(str)
-                user_obj(str)
-                category(str): in ['cancer', 'snv', 'str', 'sv'].
+                institute_obj(dict)
+                user_obj(dict)
+                case_obj(dict)
+                category(str): in ['cancer', 'snv', 'str', 'sv']
 
             Returns:
-                filter_id(str)
+                filter_id(str) - a unique id that can be cast to ObjectId
         """
-        filter_interface_version = __version__
 
-        LOG.info("Stashing filter for user '%s' and institute %s, version %s",
-            user_obj.get('email'), institute_obj.get('display_name'), filter_interface_version)
+        LOG.info("Stashing filter for user '%s' and institute %s.",
+            user_obj.get('email'), institute_obj.get('display_name'))
 
         LOG.info("Filter object {}".format(filter_obj))
 
@@ -62,6 +59,7 @@ class FilterHandler(object):
                 continue
             if element == 'filter_display_name':
                 # filter display_name if given
+                # will appear as the only element in an array
                 filter_dict['display_name'] = value[0]
                 continue
             filter_dict[element] = value
@@ -72,9 +70,16 @@ class FilterHandler(object):
 
         # log event
         subject = institute_obj['display_name']
-        # clever link - eg url_for load filter?
-        link = "filter/" + str(filter_id)
-        # snv, sv, str..
+
+        # link e.g. to the variants view where filter was created
+        variants_target_from_category = {('sv', 'variants.sv_variants'),
+                            ('cancer', 'variants.cancer_variants'),
+                            ('snv', 'variants.variants')}
+        target = variants_target_from_category.get(category)
+
+        case_name = case_obj.get('display_name')
+        link = url_for(target, institute_id=institute_id, case_name=case_name,
+                            **filter_dict)
 
         self.create_event(institute=institute_obj, case=case_obj, user=user_obj,
             link=link, category='case', verb='filter_stash', subject=subject,
@@ -83,7 +88,16 @@ class FilterHandler(object):
         return filter_id
 
     def delete_filter(self, filter_id, institute_id, user_id):
+        """Delete a filter.
 
+        Arguments:
+            filter_id(str)
+            institute_id(str)
+            user_id(str)
+
+        Returns:
+            result()
+        """
         filter_obj = self.filter_collection.find_one({'_id': ObjectId(filter_id)})
 
         LOG.info("User {} deleting filter {} for institute {}.".format(
@@ -94,7 +108,15 @@ class FilterHandler(object):
         return result
 
     def filters(self, institute_id, category="snv"):
+        """Obtain a cursor for all filters available to an institute in a category.
 
+        Arguments:
+            institute_id(str)
+            category(str): in ['cancer', 'snv', 'str', 'sv']
+
+        Returns:
+            filters(pymongo.Cursor)
+        """
         filters_res = self.filter_collection.find(
             {'institute_id': institute_id, 'category': category})
 

@@ -21,6 +21,16 @@ from .forms import FiltersForm, SvFiltersForm, StrFiltersForm, CancerFiltersForm
 LOG = logging.getLogger(__name__)
 variants_bp = Blueprint('variants', __name__, static_folder='static', template_folder='templates')
 
+@variants_bp.route('/<institute_id>/<case_name>/<category>/stash_filter', methods=['GET','POST'])
+def stash_filter(institute_id, case_name, category):
+
+
+
+    if(category == 'sv'):
+        return redirect(url_for('.sv_variants', institute_id=institute_id, case_name=case_name,
+                            **form.data), code=307)
+
+
 @variants_bp.route('/<institute_id>/<case_name>/variants', methods=['GET','POST'])
 @templated('variants/variants.html')
 def variants(institute_id, case_name):
@@ -41,6 +51,7 @@ def variants(institute_id, case_name):
         if panel.get('is_default'):
             default_panels.append(panel['panel_name'])
 
+    # The clinical filter button will only
     if case_obj.get('hpo_clinical_filter'):
         clinical_filter_panels = ['hpo']
     else:
@@ -72,9 +83,13 @@ def variants(institute_id, case_name):
             filter_obj = request.form
             store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category='snv')
         elif bool(request.form.get('load_filter')):
-            filter_display_name = request.form.get('filters')
-            filter_obj = store.retrieve_filter(filter_display_name)
+            filter_id = request.form.get('filters')
+            filter_obj = store.retrieve_filter(filter_id)
             form = FiltersForm(MultiDict(filter_obj))
+        elif bool(request.form.get('delete_filter')):
+            filter_id = request.form.get('filters')
+            filter_obj = store.delete_filter(filter_id, institute_id, current_user.email)
+            form = FiltersForm(request.form)
         else:
             form = FiltersForm(request.form)
     else:
@@ -260,9 +275,13 @@ def sv_variants(institute_id, case_name):
             filter_obj = request.form
             store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category='sv')
         elif bool(request.form.get('load_filter')):
-            filter_display_name = request.form.get('filters')
-            filter_obj = store.retrieve_filter(filter_display_name)
+            filter_id = request.form.get('filters')
+            filter_obj = store.retrieve_filter(filter_id)
             form = SvFiltersForm(MultiDict(filter_obj))
+        elif bool(request.form.get('delete_filter')):
+            filter_id = request.form.get('filters')
+            filter_obj = store.delete_filter(filter_id, institute_id, current_user.email)
+            form = SvFiltersForm(request.form)
         else:
             form = SvFiltersForm(request.form)
     else:
@@ -378,9 +397,13 @@ def cancer_variants(institute_id, case_name):
             filter_obj = request.form
             store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category='cancer')
         elif bool(request.form.get('load_filter')):
-            filter_display_name = request.form.get('filters')
-            filter_obj = store.retrieve_filter(filter_display_name)
+            filter_id = request.form.get('filters')
+            filter_obj = store.retrieve_filter(filter_id)
             form = CancerFiltersForm(MultiDict(filter_obj))
+        elif bool(request.form.get('delete_filter')):
+            filter_id = request.form.get('filters')
+            filter_obj = store.delete_filter(filter_id, institute_id, current_user.email)
+            form = CancerFiltersForm(request.form)
         else:
             form = CancerFiltersForm(request.form)
     else:
