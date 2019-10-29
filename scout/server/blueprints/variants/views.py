@@ -21,16 +21,6 @@ from .forms import FiltersForm, SvFiltersForm, StrFiltersForm, CancerFiltersForm
 LOG = logging.getLogger(__name__)
 variants_bp = Blueprint('variants', __name__, static_folder='static', template_folder='templates')
 
-@variants_bp.route('/<institute_id>/<case_name>/<category>/stash_filter', methods=['GET','POST'])
-def stash_filter(institute_id, case_name, category):
-
-
-
-    if(category == 'sv'):
-        return redirect(url_for('.sv_variants', institute_id=institute_id, case_name=case_name,
-                            **form.data), code=307)
-
-
 @variants_bp.route('/<institute_id>/<case_name>/variants', methods=['GET','POST'])
 @templated('variants/variants.html')
 def variants(institute_id, case_name):
@@ -39,6 +29,7 @@ def variants(institute_id, case_name):
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = request.args.get('variant_type', 'clinical')
+
 
     if request.form.get('hpo_clinical_filter'):
         case_obj['hpo_clinical_filter'] = True
@@ -109,7 +100,7 @@ def variants(institute_id, case_name):
 
     form.gene_panels.choices = panel_choices
 
-    # update status of case if vistited for the first time
+    # update status of case if visited for the first time
     if case_obj['status'] == 'inactive' and not current_user.is_admin:
         flash('You just activated this case!', 'info')
         user_obj = store.user(current_user.email)
@@ -295,7 +286,7 @@ def sv_variants(institute_id, case_name):
     # redundant?
     form.variant_type.data = variant_type
 
-    # update status of case if vistited for the first time
+    # update status of case if visited for the first time
     if case_obj['status'] == 'inactive' and not current_user.is_admin:
         flash('You just activated this case!', 'info')
         user_obj = store.user(current_user.email)
