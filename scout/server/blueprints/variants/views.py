@@ -123,7 +123,7 @@ def variants(institute_id, case_name):
         current_symbols.update(hpo_symbols)
         form.hgnc_symbols.data = list(current_symbols)
 
-    variants_query = store.variants(case_obj['_id'], query=form.data)
+    variants_query = store.variants(case_obj['_id'], query=form.data, category=category)
     data = {}
 
     if request.form.get('export'):
@@ -168,7 +168,7 @@ def str_variants(institute_id, case_name):
     query = form.data
     query['variant_type'] = variant_type
 
-    variants_query = store.variants(case_obj['_id'], category,
+    variants_query = store.variants(case_obj['_id'], category=category,
         query=query)
     data = controllers.str_variants(store, institute_obj, case_obj,
         variants_query, page)
@@ -262,7 +262,7 @@ def sv_variants(institute_id, case_name):
         form.hgnc_symbols.data = list(current_symbols)
 
 
-    variants_query = store.variants(case_obj['_id'], category,
+    variants_query = store.variants(case_obj['_id'], category=category,
                                     query=form.data)
     data = {}
     # if variants should be exported
