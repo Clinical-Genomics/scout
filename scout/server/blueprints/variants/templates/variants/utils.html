@@ -137,8 +137,9 @@
                   </select>
                 </div>
               </div>
+            </div>
+            <br>
           </div>
-          <br>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             <button name="action" value="ADD" type="submit" class="btn btn-primary" title="Mark causative">
@@ -454,11 +455,40 @@
     </div>
 {% endmacro %}
 
+{% macro modal_prompt_filter_name(form) %}
+<div class="modal fade" id="filterNameModal" tabindex=""-1" role="dialog"
+  aria-hidden="true" aria-labelledby="filterNameModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="filterNameModalLabel">Filter display name</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div>
+          Please name the current filter for saving.
+          {{ form.filter_display_name.label }}
+          {{ form.filter_display_name(class="form-control") }}
+        </div>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        {{ form.save_filter(class="btn btn-secondary") }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
 {% macro stash_filter_buttons(form, institute, case) %}
 <div class="col-1 align-self-end">
-  <input type="hidden" name="filter_display_name" value="">
-  {{ form.save_filter(class="btn btn-secondary",
-      onclick="promptFilterName('"+institute.display_name +"-" + case.display_name+"')")}}
+  <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#filterNameModal">Save&nbsp;filter</button>
 </div>
 <div class="col-2 align-self-end">
   {{ form.filters(class="selectpicker") }}

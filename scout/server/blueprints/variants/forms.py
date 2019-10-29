@@ -4,7 +4,7 @@ import logging
 
 from flask_wtf import FlaskForm
 from wtforms import (BooleanField, DecimalField, Field, TextField, SelectMultipleField,
-                     SelectField, HiddenField, IntegerField, SubmitField, validators)
+                     SelectField, HiddenField, StringField, IntegerField, SubmitField, validators)
 from wtforms.widgets import TextInput
 from flask_wtf.file import FileField
 
@@ -64,7 +64,7 @@ class VariantFiltersForm(FlaskForm):
     gnomad_frequency = BetterDecimalField('gnomadAF', places=2)
 
     filters = SelectField(choices=[])
-    filter_display_name = HiddenField(default='')
+    filter_display_name = StringField(default='')
     save_filter = SubmitField(label='Save filter')
     load_filter = SubmitField(label='Load filter')
     delete_filter = SubmitField(label='Delete filter')
