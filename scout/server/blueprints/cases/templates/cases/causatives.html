@@ -54,7 +54,7 @@
         <td>
           <h5 class="mb-1">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</h5>
         </td>
-        <td><a href="{{ url_for('variants.variant',
+        <td><a href="{{ url_for('variant.variant',
             institute_id=institute._id,
             case_name=case.display_name,
             variant_id=variant._id) }}">{{ variant.display_name|truncate(20, True) }}
@@ -135,14 +135,12 @@
 <script language="JavaScript">
   $(document).ready(function () {
     var table = $('#causatives_table').DataTable({
-        dom: 'Bf',
+        dom: 'Bfrtip',
         paging: false,
         lengthChange: false,
         buttons: ['copy', 'excel']
     });
-
     table.buttons().container()
-
       .appendTo("#causatives_table_wrapper .col-md-6:eq(0)");
   });
 </script>
