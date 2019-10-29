@@ -914,7 +914,7 @@ def callers(variant_obj, category='snv'):
 
 
 def variant_verification(store, mail, institute_obj, case_obj, user_obj, variant_obj, sender, variant_url, order, comment, url_builder=url_for):
-    """Sand a verification email and register the verification in the database
+    """Send a verification email and register the verification in the database
 
         Args:
             store(scout.adapter.MongoAdapter)
@@ -1110,6 +1110,23 @@ def cancer_variants(store, request_args, institute_id, case_name, form):
         variant_type=request_args.get('variant_type', 'clinical'),
     )
     return data
+
+# TODO: DRY it out, it is just like sv_variants
+def cancer_sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
+    """Pre-process list of cancer structural variants."""
+    skip_count = (per_page * max(page - 1, 0))
+    more_variants = True if variants_query.count() > (skip_count + per_page) else False
+
+    genome_build = case_obj.get('genome_build', '37')
+    if genome_build not in ['37','38']:
+        genome_build = '37'
+
+    return {
+        'variants': (parse_variant(store, institute_obj, case_obj, variant, genome_build=genome_build) for variant in
+                     variants_query.skip(skip_count).limit(per_page)),
+        'more_variants': more_variants,
+    }
+
 
 def clinvar_export(store, institute_id, case_name, variant_id):
     """Gather the required data for creating the clinvar submission form

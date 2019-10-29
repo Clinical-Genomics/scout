@@ -164,7 +164,7 @@ class VariantHandler(VariantLoader):
             case_id(str): A string that represents the case
             query(dict): A dictionary with querys for the database
             variant_ids(List[str])
-            category(str): 'sv', 'str', 'snv' or 'cancer'
+            category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
             sort_key: ['variant_rank', 'rank_score', 'position']
@@ -265,7 +265,7 @@ class VariantHandler(VariantLoader):
         Arguments:
             query(dict): A dictionary with querys for the database, including
             variant_type: 'clinical', 'research'
-            category(str): 'sv', 'str', 'snv' or 'cancer'
+            category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
             institute_id: institute ID (required for similarity query)
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
@@ -457,7 +457,7 @@ class VariantHandler(VariantLoader):
             Args:
                 case_id(str): The case id
                 variant_type(str): 'research' or 'clinical'
-                category(str): 'snv', 'sv' or 'cancer'
+                category(str): 'snv', 'sv', 'cancer' or 'cancer_sv'
         """
         category = category or ''
         LOG.info("Deleting old {0} {1} variants for case {2}".format(

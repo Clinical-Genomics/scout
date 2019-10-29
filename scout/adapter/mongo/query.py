@@ -24,7 +24,7 @@ class QueryHandler(object):
 
         Args:
             query(dict): A query dictionary for the database, from a query form.
-            category(str): 'snv', 'sv', 'str' or 'cancer'
+            category(str): 'snv', 'sv', 'str' 'cancer_sv' or 'cancer'
             variant_type(str): 'clinical' or 'research'
 
         Possible query dict keys:

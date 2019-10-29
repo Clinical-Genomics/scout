@@ -59,12 +59,21 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
     adapter.load_variants(case_obj=case_obj, variant_type='clinical',
                           category='snv', chrom=chrom, start=start, end=end)
 
+    # loading germline variants
     vcf_sv_file = case_obj['vcf_files'].get('vcf_sv')
     if vcf_sv_file:
         log.info("Load clinical SV variants for case: {0} region: chr {1}, "
                  "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
         adapter.load_variants(case_obj=case_obj, variant_type='clinical',
                               category='sv', chrom=chrom, start=start, end=end)
+
+    # if there are somatic (cancer) variants:
+    vcf_cancer_sv_file = case_obj['vcf_files'].get('vcf_cancer_sv')
+    if vcf_cancer_sv_file:
+        log.info("Load clinical cancer SV variants for case: {0} region: chr {1}, "
+                 "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
+        adapter.load_variants(case_obj=case_obj, variant_type='clinical',
+                              category='cancer_sv', chrom=chrom, start=start, end=end)
 
     vcf_str_file = case_obj['vcf_files'].get('vcf_str')
     if vcf_str_file: 

@@ -90,8 +90,20 @@ class CancerFiltersForm(FlaskForm):
     mvl_tag = BooleanField('In Managed Variant List')
     gnomad_frequency = BetterDecimalField('gnomadAF', places=2)
 
+class CancerSvFiltersForm(FiltersForm):
+    """Extends FiltersForm for cancer structural variants"""
+    size = TextField('Length')
+    size_shorter = BooleanField('Length shorter than')
+    svtype = SelectMultipleField('SVType', choices=SV_TYPE_CHOICES)
+    decipher = BooleanField('Decipher')
+
+    clingen_ngi = IntegerField('ClinGen NGI obs')
+    swegen = IntegerField('SweGen obs')
+
+    export = SubmitField(label='Filter and export')
+
 class StrFiltersForm(FlaskForm):
-    """docstring for CancerFiltersForm"""
+    """docstring for StrFiltersForm"""
     variant_type = HiddenField(default='clinical')
 
     chrom = TextField('Chromosome')

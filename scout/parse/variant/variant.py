@@ -38,7 +38,7 @@ def parse_variant(variant, case, variant_type='clinical',
         vep_header(list)
         individual_positions(dict): Explain what position each individual has
                                     in vcf
-        category(str): 'snv', 'sv', 'str' or 'cancer'
+        category(str): 'snv', 'sv', 'str', 'cancer' or 'cancer_sv'
 
     Returns:
         parsed_variant(dict): Parsed variant
@@ -138,8 +138,9 @@ def parse_variant(variant, case, variant_type='clinical',
 
     ################# Add gt calls #################
     if individual_positions and case['individuals']:
+        is_cancer = (category == 'cancer' or category == 'cancer_sv')
         parsed_variant['samples'] = parse_genotypes(variant, case['individuals'],
-                                                    individual_positions)
+                                                    individual_positions, is_cancer)
     else:
         parsed_variant['samples'] = []
 
