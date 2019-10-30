@@ -26,7 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show normal and pathologic limits for STRs in the STR variants view.
 - Institute level persistent variant filter settings that can be retrieved and used.
 - export causative variants to Excel
-
+- Add support for ROH, WIG and chromosome PNGs in case-view
 
 ### fixed
 - Fixed missing import for variants with comments
