@@ -512,6 +512,47 @@ def test_update_clinical_filter_hpo(adapter, institute_obj, case_obj, user_obj):
     assert sum(1 for i in adapter.event_collection.find()) == 1
 
 
+def test_filter_stash(adapter, institute_obj, case_obj, user_obj, filter_obj):
+    # GIVEN a case, institute and user in a store
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+
+    # WHEN asking for filters
+    institute_id = institute_obj.get('_id')
+    category = 'snv'
+    filters = adapter.filters(institute_id, category)
+
+    # THEN no filters are returned
+    assert sum(1 for i in filters) == 0
+
+    # WHEN no events are yet in the events collection
+    assert sum(1 for i in adapter.event_collection.find()) == 0
+    # WHEN storing a filter
+    filter_id = adapter.stash_filter(filter_obj, institute_obj, case_obj,
+                                     user_obj, category, link='mock_link')
+    # THEN a filter id is returned
+    assert filter_id
+    # THEN an event can be found in the event collection
+    assert sum(1 for i in adapter.event_collection.find()) > 0
+
+    # WHEN listing filters
+    filters = adapter.filters(institute_id, category)
+    # THEN one filter is returned
+    assert sum(1 for i in filters) == 1
+
+    # WHEN retrieving a stored filter
+    retrieved_filter_obj = adapter.retrieve_filter(filter_id)
+    # THEN a filter_obj is retireved
+    assert retrieved_filter_obj
+
+    user_id = user_obj.get('_id')
+    # WHEN deleting filter
+    result = adapter.delete_filter(filter_id, institute_id, user_id)
+    # THEN no filters are returned
+    filters = adapter.filters(institute_id, category)
+    assert sum(1 for i in filters) == 0
+
 def test_update_default_panels(adapter, institute_obj, case_obj, user_obj, dummypanel_obj):
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)

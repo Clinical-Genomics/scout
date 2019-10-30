@@ -1,8 +1,9 @@
 from copy import deepcopy
 from pprint import pprint as pp
 
-import pytest
+from werkzeug.datastructures import MultiDict
 
+import pytest
 
 @pytest.yield_fixture
 def real_oldcase_database(real_panel_database, scout_config):
@@ -64,3 +65,13 @@ def parsed_gene():
         'build': '37'
     }
     return gene_info
+
+@pytest.yield_fixture
+def filter_obj():
+    filter_obj_md = MultiDict({
+        'variant_type': 'clinical',
+        'region_annotations': ['exonic','splicing'],
+        'filter_display_name': 'clinical-exonic-splicing',
+        'empty_value': '',
+        'save_filter': True})
+    return filter_obj_md
