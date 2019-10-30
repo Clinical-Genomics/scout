@@ -12,10 +12,11 @@ import datetime
 from flask_login import current_user
 from flask import url_for, flash, request
 from flask_mail import Message
+from werkzeug.datastructures import MultiDict
 
 from scout.constants import (
     CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS, ACMG_OPTIONS, DISMISS_VARIANT_OPTIONS,
-    ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN, VERBS_MAP, MOSAICISM_OPTIONS,
+    ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN, VERBS_MAP, MOSAICISM_OPTIONS, SEVERE_SO_TERMS
 )
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
@@ -26,6 +27,9 @@ from scout.server.blueprints.genes.controllers import gene
 from scout.utils.requests import fetch_refseq_version
 
 from scout.server.blueprints.variant.utils import (predictions)
+from .forms import (FiltersForm, SvFiltersForm, StrFiltersForm, CancerFiltersForm,
+                    VariantFiltersForm)
+
 
 LOG = logging.getLogger(__name__)
 
@@ -350,6 +354,78 @@ def upload_panel(store, institute_id, case_name, stream):
             hgnc_symbols.append(raw_symbol)
     return hgnc_symbols
 
+def populate_filters_form(store, institute_obj, case_obj, user_obj,
+                          category, request_form):
+    # Update filter settings if Clinical Filter was requested
+    clinical_filter_panels = []
+
+    default_panels = []
+    for panel in case_obj['panels']:
+        if panel.get('is_default'):
+            default_panels.append(panel['panel_name'])
+
+    # The clinical filter button will only
+    if case_obj.get('hpo_clinical_filter'):
+        clinical_filter_panels = ['hpo']
+    else:
+        clinical_filter_panels = default_panels
+
+    FiltersFormClass = VariantFiltersForm
+    if category == 'snv':
+        FiltersFormClass = FiltersForm
+        clinical_filter = MultiDict({
+            'variant_type': 'clinical',
+            'region_annotations': ['exonic','splicing'],
+            'functional_annotations': SEVERE_SO_TERMS,
+            'clinsig': [4,5],
+            'clinsig_confident_always_returned': True,
+            'gnomad_frequency': str(institute_obj['frequency_cutoff']),
+            'variant_type': 'clinical',
+            'gene_panels': clinical_filter_panels
+         })
+    elif category == 'sv':
+        FiltersFormClass = SvFiltersForm
+        clinical_filter = MultiDict({
+            'variant_type': 'clinical',
+            'region_annotations': ['exonic','splicing'],
+            'functional_annotations': SEVERE_SO_TERMS,
+            'thousand_genomes_frequency': str(institute_obj['frequency_cutoff']),
+            'clingen_ngi': 10,
+            'swegen': 10,
+            'size': 100,
+            'gene_panels': clinical_filter_panels
+         })
+    elif category == 'cancer':
+        FiltersFormClass = CancerFiltersForm
+        clinical_filter = MultiDict({
+            'variant_type': 'clinical',
+            'region_annotations': ['exonic','splicing'],
+            'functional_annotations': SEVERE_SO_TERMS,
+        })
+
+    if bool(request_form.get('clinical_filter')):
+        form = FiltersFormClass(clinical_filter)
+# no longer needed?
+#            form.csrf_token = request.args.get('csrf_token')
+    elif bool(request_form.get('save_filter')):
+        # The form should be applied and remain set the page after saving
+        form = FiltersFormClass(request_form)
+        # Stash the filter to db to make available for this institute
+        filter_obj = request_form
+        store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category)
+    elif bool(request_form.get('load_filter')):
+        filter_id = request_form.get('filters')
+        filter_obj = store.retrieve_filter(filter_id)
+        form = FiltersFormClass(MultiDict(filter_obj))
+    elif bool(request_form.get('delete_filter')):
+        filter_id = request_form.get('filters')
+        institute_id = institute_obj.get('_id')
+        filter_obj = store.delete_filter(filter_id, institute_id, current_user.email)
+        form = FiltersFormClass(request_form)
+    else:
+        form = FiltersFormClass(request_form)
+
+    return form
 
 def verified_excel_file(store, institute_list, temp_excel_dir):
     """Collect all verified variants in a list on institutes and save them to file

@@ -13,7 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved dashboard using Chart.js
 - Ask before inactivating a case where last assigned user leaves it
 - Genes can be manually added to the dynamic gene list directly on the case page
-- Dynanmic gene panels can optionally be used with clinical filter, instead of default gene panel
+- Dynamic gene panels can optionally be used with clinical filter, instead of default gene panel
 - Dynamic gene panels get link out to chanjo-report for coverage report
 - Load all clinvar variants with clinvar Pathogenic, Likely Pathogenic and Conflicting pathogenic
 - Show transcripts with exon numbers for structural variants
@@ -24,7 +24,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Search snv and structural variants by chromosomal coordinates
 - Structural variants can be marked as partial causative if phenotype is available for case.
 - Show normal and pathologic limits for STRs in the STR variants view.
+- Institute level persistent variant filter settings that can be retrieved and used.
 - export causative variants to Excel
+
 
 ### fixed
 - Fixed missing import for variants with comments
