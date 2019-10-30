@@ -9,7 +9,7 @@
     const OFFSET_Y = 30;
     const CHROMOSOMES = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
                          '11', '12', '13', '14', '15', '16', '17', '18',
-                         '19', '20', '21', '22', 'X',' Y'];
+                         '19', '20', '21', '22', 'X', 'Y'];
 
 
     console.log("window: "+$(window).width())
@@ -331,14 +331,14 @@
         // read thouroghly:
         // https://stackoverflow.com/questions/16265123/resize-svg-when-window-is-resized-in-d3-js
 
-        if($(window).width() < 1825){
+        if($(window).width() < WIDTH_BREAKPOINT){
             var roh_svg = document.getElementById("roh_svg")
             roh_svg.setAttribute('width', 1050)
             roh_svg.setAttribute('height', 1250)
             roh_svg.parentNode.replaceChild(roh_svg.cloneNode(false), roh_svg); // clear svg
             draw_tracks('xx')
         }
-        if($(window).width() >= 1825){
+        if($(window).width() >= WIDTH_BREAKPOINT){
             var roh_svg = document.getElementById("roh_svg")
             roh_svg.setAttribute('width', 1500)
             roh_svg.setAttribute('height', 850)
