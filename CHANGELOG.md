@@ -25,6 +25,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Structural variants can be marked as partial causative if phenotype is available for case.
 - Show normal and pathologic limits for STRs in the STR variants view.
 - Institute level persistent variant filter settings that can be retrieved and used.
+- export causative variants to Excel
+
 
 ### fixed
 - Fixed missing import for variants with comments
