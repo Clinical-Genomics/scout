@@ -116,9 +116,9 @@ def case(store, institute_obj, case_obj):
     # check for partial causatives and associated phenotypes
     partial_causatives = []
     if case_obj.get('partial_causatives'):
-        for id, values in case_obj['partial_causatives'].items():
+        for var_id, values in case_obj['partial_causatives'].items():
             causative_obj = {
-                'variant' : store.variant(id) or id,
+                'variant' : store.variant(var_id) or var_id,
                 'omim_terms' : values.get('diagnosis_phenotypes'),
                 'hpo_terms' : values.get('phenotype_terms')
             }
@@ -142,16 +142,15 @@ def case(store, institute_obj, case_obj):
 
     # other collaborators than the owner of the case
     o_collaborators = []
-    for collab_id in case_obj['collaborators']:
+    for collab_id in case_obj.get('collaborators',[]):
         if collab_id != case_obj['owner'] and store.institute(collab_id):
             o_collaborators.append(store.institute(collab_id))
 
     case_obj['o_collaborators'] = [(collab_obj['_id'], collab_obj['display_name']) for
                                    collab_obj in o_collaborators]
 
-    irrelevant_ids = ('cust000', institute_obj['_id'])
     collab_ids = [(collab['_id'], collab['display_name']) for collab in store.institutes() if
-                  (collab['_id'] not in irrelevant_ids) and
+                  (collab['_id'] not in ('cust000', institute_obj['_id'])) and
                   (collab['_id'] not in case_obj['collaborators'])]
 
     events = list(store.events(institute_obj, case=case_obj))
@@ -178,7 +177,6 @@ def case(store, institute_obj, case_obj):
         'partial_causatives' : partial_causatives,
         'collaborators': collab_ids,
         'cohort_tags': COHORT_TAGS,
-        'mme_nodes': current_app.mme_nodes, # Get available MatchMaker nodes for matching case
     }
 
     return data
@@ -222,9 +220,7 @@ def case_report_content(store, institute_obj, case_obj):
     data['genetic_models'] = dict(GENETIC_MODELS)
     data['report_created_at'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    evaluated_variants = {}
-    for vt in variant_types:
-        evaluated_variants[vt] = []
+    evaluated_variants = {vt:[] for vt in variant_types}
     # We collect all causatives and suspected variants
     # These are handeled in separate since they are on case level
     for var_type in ['causatives', 'suspects']:
@@ -244,8 +240,9 @@ def case_report_content(store, institute_obj, case_obj):
             keyword = variant_types[vt]
             # When found we add it to the categpry
             # Eac variant can belong to multiple categories
-            if keyword in var_obj:
-                evaluated_variants[vt].append(var_obj)
+            if keyword not in var_obj:
+                continue
+            evaluated_variants[vt].append(var_obj)
 
     for var_type in evaluated_variants:
         decorated_variants = []
@@ -253,14 +250,17 @@ def case_report_content(store, institute_obj, case_obj):
         # We decorate the variant with some extra information
             decorated_info = variant_decorator(
                     store=store,
-                    institute_obj=institute_obj['_id'],
-                    case_obj=case_obj['display_name'],
+                    institute_id=institute_obj['_id'],
+                    case_name=case_obj['display_name'],
                     variant_id=None,
                     variant_obj=var_obj,
                     add_case=False,
                     add_other=False,
                     get_overlapping=False,
-                    variant_type=var_obj['category']
+                    add_compounds=False,
+                    variant_type=var_obj['category'],
+                    institute_obj=institute_obj,
+                    case_obj=case_obj,
                 )
             decorated_variants.append(decorated_info['variant'])
         # Add the decorated variants to the case
