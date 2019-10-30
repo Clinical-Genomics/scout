@@ -384,7 +384,8 @@
       <div class="mt-3">
         <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
         {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
-          <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Submit to ClinVar</a>
+          <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}"
+            class="btn btn-outline-secondary form-control" target="_blank">Submit to ClinVar</a>
         {% endif %}
         {% if variant.clinvar_clinsig %}
           <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-outline-secondary form-control">Modify clinvar submission</a>
