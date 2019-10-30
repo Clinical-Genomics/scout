@@ -247,7 +247,7 @@
   </div>
 </div>
 <div class="form-group">
-  <div class="row" style="justify-content-center margin-top:20px;">
+  <div class="row d-flex justify-content-between" style="justify-content-center margin-top:20px;">
     <div class="col-1">
       <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name,
         variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
@@ -255,7 +255,9 @@
         Reset&nbsp;filters
       </a>
     </div>
-    {{ stash_filter_buttons(form, institute, case) }}
+    <div class="col-6">
+      {{ stash_filter_buttons(form, institute, case) }}
+    </div>
   </div>
 </div>
 {% endmacro %}
@@ -355,7 +357,7 @@
       {{ form.export(class="btn btn-warning form-control") }}
     </div>
   </div>
-  <div class="row" style="margin-top:20px;">
+  <div class="row d-flex justify-content-between" style="margin-top:20px;">
     <div class="col-1">
       <a href="{{ url_for('variants.sv_variants', institute_id=institute._id,
         case_name=case.display_name, variant_type='clinical',
@@ -364,7 +366,9 @@
         Reset&nbsp;filters
       </a>
     </div>
-    {{ stash_filter_buttons(form, institute, case) }}
+    <div class="col-6">
+      {{ stash_filter_buttons(form, institute, case) }}
+    </div>
   </div>
 </div>
 {% endmacro %}
@@ -398,15 +402,15 @@
           {{ form.hgnc_symbols.label(class="control-label") }}
           {{ form.hgnc_symbols(class="selectpicker") }}
         </div>
-        <div class="col-3">
+        <div class="col-2">
           {{ form.cadd_score.label(class="control-label") }}
           {{ form.cadd_score(class="form-control") }}
         </div>
-        <div class="col-3">
+        <div class="col-2">
           {{ form.cadd_inclusive.label(class="control-label") }}
           <div>{{ form.cadd_inclusive() }}</div>
         </div>
-        <div class="col-3">
+        <div class="5">
           {{ form.clinsig.label(class="control-label") }}
           {{ form.clinsig(class="selectpicker") }}
         </div>
@@ -414,15 +418,15 @@
     </div>
     <div class="form-group">
       <div class="row">
-        <div class="col-3">
+        <div class="col-2">
           {{ form.depth.label(class="control-label") }}
           {{ form.depth(class="form-control") }}
         </div>
-        <div class="col-3">
+        <div class="col-2">
           {{ form.alt_count.label(class="control-label") }}
           {{ form.alt_count(class="form-control") }}
         </div>
-        <div class="col-3">
+        <div class="col-2">
           {{ form.control_frequency.label(class="control-label") }}
           {{ form.control_frequency(class="form-control") }}
         </div>
@@ -430,19 +434,19 @@
           {{ form.mvl_tag.label(class="control-label") }}
           <div>{{ form.mvl_tag() }}</div>
         </div>
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="row">
         <div class="col-2">
           {{ form.gnomad_frequency.label(class="control-label") }}
           {{ form.gnomad_frequency(class="form-control") }}
         </div>
+      </div>
+    </div>
+    <br>
+    <div class="form-group">
+      <div class="row">
         <div class="col-3">
-          <label class="control-label">Submit</label>
           <button class="btn btn-primary form-control">Filter variants</button>
         </div>
-        <div class="col-1 align-self-end">
+        <div class="col-1 align-self-start">
           <a href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
             case_name=case.display_name, variant_type='clinical',
             gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
@@ -450,7 +454,11 @@
             Reset&nbsp;filters
           </a>
         </div>
-        {{ stash_filter_buttons(form, institute, case) }}
+        <div class="col-2">
+        </div>
+        <div class="col-6">
+          {{ stash_filter_buttons(form, institute, case) }}
+        </div>
       </div>
     </div>
 {% endmacro %}
@@ -485,17 +493,16 @@
 {% endmacro %}
 
 {% macro stash_filter_buttons(form, institute, case) %}
-{{ modal_prompt_filter_name(form) }}
-<div class="col-1 align-self-end">
-  <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#filterNameModal">Save&nbsp;filter</button>
-</div>
-<div class="col-2 align-self-end">
-  {{ form.filters(class="selectpicker") }}
-</div>
-<div class="col-1 align-self-end">
-  {{ form.load_filter(class="btn btn-secondary") }}
-</div>
-<div class="col-1 align-self-end">
-  {{ form.delete_filter(class="btn btn-secondary bg-danger", data_toggle="tooltip", data_placement="top", title="Delete selected filter for this institute.") }}
-</div>
+  {{ modal_prompt_filter_name(form) }}
+  <div class="row">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#filterNameModal"><i class="fa fa-star"></i> Save filter</button>
+    {{ modal_prompt_filter_name(form) }}
+    <div class="col-5">
+      {{ form.filters(class="form-control") }}
+    </div>
+    <div class="btn-group" role="group">
+      {{ form.load_filter(class="btn btn-secondary") }}
+      {{ form.delete_filter(class="btn btn-secondary bg-danger", data_toggle="tooltip", data_placement="top", title="Delete selected filter for this institute.") }}
+    </div>
+  </div>
 {% endmacro %}
