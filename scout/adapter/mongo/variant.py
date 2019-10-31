@@ -402,7 +402,7 @@ class VariantHandler(VariantLoader):
         if case_obj:
             filters['case_id'] = case_obj['_id']
             filters['samples'] = { '$elemMatch': {'sample_id': {'$in': affected_ids},
-                                                'genotype_call': RegExp('1')} }
+                                                'genotype_call': {'$regex': '/1/'}} }
         else:
             filters['institute'] = institute_obj['_id']
         if limit_genes:
