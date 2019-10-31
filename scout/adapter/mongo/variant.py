@@ -403,11 +403,12 @@ class VariantHandler(VariantLoader):
         if case_obj:
             filters['case_id'] = case_obj['_id']
             filters['samples'] = { '$elemMatch': {'sample_id': {'$in': affected_ids},
-                                                'genotype_call': {'$regex': '/1/'}} }
+                                                'genotype_call': {'$regex': '1'}} }
         else:
             filters['institute'] = institute_obj['_id']
         if limit_genes:
             filters['genes.hgnc_id'] = {'$in':limit_genes}
+        LOG.debug("Attempting filtered matching causatives query: {}".format(filters))
         return self.variant_collection.find(filters)
 
     def other_causatives(self, case_obj, variant_obj):
