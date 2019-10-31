@@ -396,6 +396,8 @@ class VariantHandler(VariantLoader):
             for subject in case_obj.get('individuals'):
                 if subject.get('phenotype') == 2:
                     affected_ids.append(subject.get('individual_id'))
+            if len(affected_ids) == 0:
+                return []
 
         if len(positional_variant_ids) == 0:
             return []
