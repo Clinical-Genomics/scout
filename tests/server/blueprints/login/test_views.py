@@ -18,7 +18,7 @@ def test_unathorized_login(app, institute_obj, case_obj):
         # And current user should NOT be authenticated
         assert current_user.is_authenticated is False
 
-        # And also when requesting a (known) case page
+        # And also WHEN requesting a (known) case page
         attribute_error = False
         try:
             resp = client.get(url_for('cases.case',
@@ -26,7 +26,7 @@ def test_unathorized_login(app, institute_obj, case_obj):
                               case_name=case_obj['display_name']))
         except AttributeError:
             attribute_error=True
-        # An error is raised
+        # THEN an error is raised
         assert attribute_error
 
 
