@@ -490,11 +490,6 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
 
     variants = []
     for variant_obj in variant_res:
-        # hide other institutes for now
-        if variant_obj['institute'] not in my_institutes:
-            LOG.warning("Institute {} not allowed.".format(variant_obj['institute']))
-            continue
-
         # Populate variant case_display_name
         variant_case_obj = store.case(case_id=variant_obj['case_id'])
         if not variant_case_obj:
@@ -502,6 +497,13 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
             continue
         case_display_name = variant_case_obj.get('display_name')
         variant_obj['case_display_name'] = case_display_name
+
+        # hide other institutes for now
+        other_institutes = set([variant_case_obj.get('owner')])
+        other_institutes.update(set(variant_case_obj.get('collaborators', [])))
+        if my_institutes.isdisjoint(other_institutes):
+            # If the user does not have access to the information we skip it
+            continue
 
         genome_build = variant_case_obj.get('genome_build', '37')
         if genome_build not in ['37','38']:
