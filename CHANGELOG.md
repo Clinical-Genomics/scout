@@ -50,6 +50,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improves loading speed for variant page
 - Problem with updating variant rank when no variants
 - Improved Clinvar submission form
+- Also show collaborative case variants on the All variants view.
 
 
 ## [4.7.3]
