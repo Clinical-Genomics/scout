@@ -51,3 +51,8 @@ VERBS_MAP = {
 }
 
 VERBS = list(VERBS_MAP.keys())
+
+RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/rank_model_-v"
+RANK_MODEL_LINK_POSTFIX = "-.ini"
+SV_RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/svrank_model_-v"
+SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
