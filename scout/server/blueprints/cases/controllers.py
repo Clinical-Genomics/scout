@@ -16,6 +16,8 @@ from flask_login import current_user
 from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP,
                              CANCER_PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
+from scout.constants.case_tags import (RANK_MODEL_LINK_PREFIX, RANK_MODEL_LINK_POSTFIX,
+                                       SV_RANK_MODEL_LINK_PREFIX, SV_RANK_MODEL_LINK_POSTFIX)
 from scout.export.variant import export_mt_variants
 from scout.server.utils import institute_and_case, user_institutes
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
@@ -137,9 +139,15 @@ def case(store, institute_obj, case_obj):
     case_obj['default_genes'] = list(distinct_genes)
     for hpo_term in itertools.chain(case_obj.get('phenotype_groups', []),
                                     case_obj.get('phenotype_terms', [])):
-        hpo_term['hpo_link'] = ("http://compbio.charite.de/hpoweb/showterm?id={}"
+        hpo_term['hpo_link'] = ("http://hpo.jax.org/app/browse/term/{}"
                                 .format(hpo_term['phenotype_id']))
 
+    if case_obj.get('rank_model_version'):
+        case_obj['rank_model_link'] = str(RANK_MODEL_LINK_PREFIX +
+                                      case_obj['rank_model_version'] + RANK_MODEL_LINK_POSTFIX)
+    if case_obj.get('sv_rank_model_version'):
+        case_obj['sv_rank_model_link'] = str(SV_RANK_MODEL_LINK_PREFIX +
+                                         case_obj['sv_rank_model_version'] + SV_RANK_MODEL_LINK_POSTFIX)
     # other collaborators than the owner of the case
     o_collaborators = []
     for collab_id in case_obj.get('collaborators',[]):
@@ -486,14 +494,10 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
     more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
-    my_institutes = list(inst['_id'] for inst in user_institutes(store, current_user))
+    my_institutes = set(inst['_id'] for inst in user_institutes(store, current_user))
 
     variants = []
     for variant_obj in variant_res:
-        # hide other institutes for now
-        if variant_obj['institute'] not in my_institutes:
-            LOG.warning("Institute {} not allowed.".format(variant_obj['institute']))
-            continue
 
         # Populate variant case_display_name
         variant_case_obj = store.case(case_id=variant_obj['case_id'])
@@ -502,6 +506,13 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
             continue
         case_display_name = variant_case_obj.get('display_name')
         variant_obj['case_display_name'] = case_display_name
+
+        # hide other institutes for now
+        other_institutes = set([variant_case_obj.get('owner')])
+        other_institutes.update(set(variant_case_obj.get('collaborators', [])))
+        if my_institutes.isdisjoint(other_institutes):
+            # If the user does not have access to the information we skip it
+            continue
 
         genome_build = variant_case_obj.get('genome_build', '37')
         if genome_build not in ['37','38']:
