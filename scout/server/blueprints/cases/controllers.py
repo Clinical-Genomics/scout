@@ -137,7 +137,7 @@ def case(store, institute_obj, case_obj):
     case_obj['default_genes'] = list(distinct_genes)
     for hpo_term in itertools.chain(case_obj.get('phenotype_groups', []),
                                     case_obj.get('phenotype_terms', [])):
-        hpo_term['hpo_link'] = ("http://compbio.charite.de/hpoweb/showterm?id={}"
+        hpo_term['hpo_link'] = ("http://hpo.jax.org/app/browse/term/{}"
                                 .format(hpo_term['phenotype_id']))
 
     # other collaborators than the owner of the case
