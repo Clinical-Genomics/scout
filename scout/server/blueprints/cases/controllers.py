@@ -486,7 +486,7 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
     more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
-    my_institutes = list(inst['_id'] for inst in user_institutes(store, current_user))
+    my_institutes = set(inst['_id'] for inst in user_institutes(store, current_user))
 
     variants = []
     for variant_obj in variant_res:
