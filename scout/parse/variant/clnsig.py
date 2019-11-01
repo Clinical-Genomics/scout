@@ -42,7 +42,7 @@ def parse_clnsig(variant, transcripts=None):
         return clnsig_accsessions
 
     # There are some versions where clinvar uses integers to represent terms
-    if acc.isdigit():
+    if isinstance(acc, int) or acc.isdigit():
         revstat_groups = []
         if revstat:
             revstat_groups = [rev.lstrip('_') for rev in revstat.split(',')]
