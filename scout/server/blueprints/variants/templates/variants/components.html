@@ -6,9 +6,18 @@
         <div>
           <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
         </div>
-        {% if gene.inheritance%}
+        {% if gene.inheritance %}
           <div>
             <strong>Models</strong>: {{ gene.inheritance|join(',') }}
+          </div>
+        {% endif %}
+        {% if gene.phenotypes %}
+          <div><strong>OMIM disease</strong>
+          {% for disease in gene.phenotypes %}
+            <div>
+                {{ disease.description }}
+            </div>
+          {% endfor %}
           </div>
         {% endif %}
       </div>"
