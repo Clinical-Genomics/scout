@@ -140,7 +140,7 @@ def case(store, institute_obj, case_obj):
                                 .format(hpo_term['phenotype_id']))
 
     rank_model_link_prefix = current_app.config.get('RANK_MODEL_LINK_PREFIX')
-    if case_obj.get('rank_model_version')and rank_model_link_prefix:
+    if case_obj.get('rank_model_version'):
         rank_model_link_postfix = current_app.config.get('RANK_MODEL_LINK_POSTFIX','')
         case_obj['rank_model_link'] = str(rank_model_link_prefix +
                                       case_obj['rank_model_version'] + rank_model_link_postfix)
