@@ -434,7 +434,7 @@
               </div>
               <div class="col-sm-8">
                 {% for hpo in variant_phenotypes.hpo_terms %}
-                  <a class="text-white" target="_blank" href="http://compbio.charite.de/hpoweb/showterm?id={{hpo.phenotype_id}}">
+                  <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.phenotype_id}}">
                     <span class="badge badge-sm badge-info">{{hpo.phenotype_id}}</span>
                   </a>
 
@@ -803,7 +803,7 @@
         </div>
       </form>
     </div>
-    {% set url = 'http://compbio.charite.de/hpoweb/showterm?id=HP:0000018' %}
+    {% set url = 'http://hpo.jax.org/app/browse/term/HP:0000018' %}
     <div class="panel-heading panel-heading-secondary">
       Phenotype terms (<a target="_blank" href="{{ url }}" class="text-white">HPO web</a>)
     </div>

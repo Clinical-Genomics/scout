@@ -1,3 +1,5 @@
+from flask import Flask
+
 from scout.server.blueprints.cases.controllers import (case, cases, case_report_content)
 
 
@@ -30,7 +32,7 @@ def test_case_report_content(adapter, institute_obj, case_obj, variant_obj):
         assert len(data[var_type]) == 0
 
 
-def test_case_controller(adapter):
+def test_cases_controller(adapter):
     ## GIVEN an adapter with a case
     case_obj = {
         'case_id': '1',
@@ -48,7 +50,31 @@ def test_case_controller(adapter):
     assert data['found_cases'] == 1
 
 
-def test_cases_controller(adapter, institute_obj):
+def test_case_controller_rank_model_link(adapter, institute_obj):
+    ## GIVEN an adapter with a case
+    case_obj = {
+        'case_id': '1',
+        'owner': 'cust000',
+        'individuals': [
+            {'analysis_type': 'wgs', 'sex': 1, 'phenotype': 2, 'individual_id': 'ind1'},
+        ],
+        'status': 'inactive',
+        'rank_model_version':'1.3',
+    }
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    fetched_case = adapter.case_collection.find_one()
+    app = Flask(__name__)
+    app.config['RANK_MODEL_LINK_PREFIX'] = 'http://'
+    app.config['RANK_MODEL_LINK_POSTFIX'] = '.ini'
+    ## WHEN fetching a case with the controller
+    with app.app_context():
+        data = case(adapter, institute_obj, fetched_case)
+    ## THEN
+    assert isinstance(data, dict)
+    assert 'rank_model_link' in fetched_case
+
+def test_case_controller(adapter, institute_obj):
     ## GIVEN an adapter with a case
     case_obj = {
         'case_id': '1',
@@ -61,8 +87,11 @@ def test_cases_controller(adapter, institute_obj):
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
     fetched_case = adapter.case_collection.find_one()
+    app = Flask(__name__)
     ## WHEN fetching a case with the controller
-    data = case(adapter, institute_obj, fetched_case)
+    with app.app_context():
+        data = case(adapter, institute_obj, fetched_case)
     ## THEN
     assert isinstance(data, dict)
+    assert 'rank_model_link' not in fetched_case
     

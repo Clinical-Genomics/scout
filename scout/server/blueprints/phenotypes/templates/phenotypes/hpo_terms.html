@@ -32,7 +32,7 @@
                 </thead>
                 {% for pheno in phenotypes %}
                 <tr>
-                  <td><a href="http://compbio.charite.de/hpoweb/showterm?id={{pheno.hpo_id}}" target="_blank">{{ pheno.hpo_id }}</a></td>
+                  <td><a href="http://hpo.jax.org/app/browse/term/{{pheno.hpo_id}}" target="_blank">{{ pheno.hpo_id }}</a></td>
                   <td>{{ pheno.description }}</td>
                   <td>{{pheno.genes|length}}</td>
                 </tr>
