@@ -14,7 +14,6 @@ class UserHandler(object):
     def update_user(self, user_obj):
         """Update an existing user.
 
-
             Args:
                 user_obj(dict)
 
@@ -79,7 +78,7 @@ class UserHandler(object):
                 user_obj(dict)
         """
         LOG.info("Fetching user %s", email)
-        user_obj = self.user_collection.find_one({'_id': email})
+        user_obj = self.user_collection.find_one({'email': email})
 
         return user_obj
 
@@ -94,6 +93,6 @@ class UserHandler(object):
 
         """
         LOG.info("Deleting user %s", email)
-        user_obj = self.user_collection.delete_one({'_id': email})
+        user_obj = self.user_collection.delete_one({'email': email})
 
         return user_obj
