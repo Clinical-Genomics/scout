@@ -57,7 +57,6 @@ def cases(institute_id):
     all_cases = store.cases(collaborator=institute_id, name_query=query,
                         skip_assigned=skip_assigned, is_research=is_research)
 
-    LOG.info(type(all_cases))
     sort_by = request.args.get('sort')
     sort_order = request.args.get('order') or 'asc'
     if sort_by:
@@ -75,6 +74,7 @@ def cases(institute_id):
     data = controllers.cases(store, all_cases, limit)
     data['sort_order'] = sort_order
     data['sort_by'] = sort_by
+    data['nr_cases'] = store.nr_cases(institute_id=institute_id)
 
     sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id, current_user.email)
     if len(sanger_unevaluated)> 0:
