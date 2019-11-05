@@ -390,15 +390,27 @@ class VariantHandler(VariantLoader):
             if other_causative_id in other_case.get('causatives',[]):
                 positional_variant_ids.add(var_event['variant_id'])
 
+        # affected is phenotype == 2; assume
+        affected_ids = []
+        if case_obj:
+            for subject in case_obj.get('individuals'):
+                if subject.get('phenotype') == 2:
+                    affected_ids.append(subject.get('individual_id'))
+            if len(affected_ids) == 0:
+                return []
+
         if len(positional_variant_ids) == 0:
             return []
         filters = {'variant_id': {'$in': list(positional_variant_ids)}}
         if case_obj:
             filters['case_id'] = case_obj['_id']
+            filters['samples'] = { '$elemMatch': {'sample_id': {'$in': affected_ids},
+                                                'genotype_call': {'$regex': '1'}} }
         else:
             filters['institute'] = institute_obj['_id']
         if limit_genes:
             filters['genes.hgnc_id'] = {'$in':limit_genes}
+        LOG.debug("Attempting filtered matching causatives query: {}".format(filters))
         return self.variant_collection.find(filters)
 
     def other_causatives(self, case_obj, variant_obj):
