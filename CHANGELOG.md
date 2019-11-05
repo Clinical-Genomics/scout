@@ -51,6 +51,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Problem with updating variant rank when no variants
 - Improved Clinvar submission form
 - General report crashing when dismissed variant has no valid dismiss code
+- Also show collaborative case variants on the All variants view.
+
 
 
 ## [4.7.3]
