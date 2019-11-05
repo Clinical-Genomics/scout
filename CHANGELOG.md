@@ -50,6 +50,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improves loading speed for variant page
 - Problem with updating variant rank when no variants
 - Improved Clinvar submission form
+- General report crashing when dismissed variant has no valid dismiss code
 - Improved phenotype search using dataTables.js on phenotypes page
 
 
