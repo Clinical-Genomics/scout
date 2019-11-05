@@ -108,14 +108,14 @@
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex w-100 justify-content-start align-items-center">
       <span class="fa fa-barcode fa-fw mr-3"></span>
-      <span class="menu-collapsed">Rank model v. {{ case.rank_model_version }}</span>
+      <span class="menu-collapsed">Rank model v.<a href="{{ case.rank_model_link }}">{{ case.rank_model_version }}</a></span>
   </div>
 </div>
 {% if case.sv_rank_model_version %}
   <div href="#" class="bg-dark list-group-item text-white">
     <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fa fa-barcode fa-fw mr-3"></span>
-        <span class="menu-collapsed">SV rank model v. {{ case.sv_rank_model_version }}</span>
+        <span class="menu-collapsed">SV rank model v.<a href="{{ case.sv_rank_model_link }}">{{ case.sv_rank_model_version }}</a></span>
     </div>
   </div>
 {% endif %}
