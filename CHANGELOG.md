@@ -52,7 +52,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved Clinvar submission form
 - General report crashing when dismissed variant has no valid dismiss code
 - Also show collaborative case variants on the All variants view.
-
+- Improved phenotype search using dataTables.js on phenotypes page
 
 
 ## [4.7.3]
