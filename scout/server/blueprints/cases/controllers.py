@@ -27,7 +27,6 @@ from scout.server.blueprints.genes.controllers import gene
 
 LOG = logging.getLogger(__name__)
 
-
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 
 TRACKS = {
@@ -137,9 +136,19 @@ def case(store, institute_obj, case_obj):
     case_obj['default_genes'] = list(distinct_genes)
     for hpo_term in itertools.chain(case_obj.get('phenotype_groups', []),
                                     case_obj.get('phenotype_terms', [])):
-        hpo_term['hpo_link'] = ("http://compbio.charite.de/hpoweb/showterm?id={}"
+        hpo_term['hpo_link'] = ("http://hpo.jax.org/app/browse/term/{}"
                                 .format(hpo_term['phenotype_id']))
 
+    rank_model_link_prefix = current_app.config.get('RANK_MODEL_LINK_PREFIX')
+    if case_obj.get('rank_model_version'):
+        rank_model_link_postfix = current_app.config.get('RANK_MODEL_LINK_POSTFIX','')
+        case_obj['rank_model_link'] = str(rank_model_link_prefix +
+                                      case_obj['rank_model_version'] + rank_model_link_postfix)
+    sv_rank_model_link_prefix = current_app.config.get('SV_RANK_MODEL_LINK_PREFIX','')
+    if case_obj.get('sv_rank_model_version'):
+        sv_rank_model_link_postfix = current_app.config.get('SV_RANK_MODEL_LINK_POSTFIX','')
+        case_obj['sv_rank_model_link'] = str(sv_rank_model_link_prefix +
+                                         case_obj['sv_rank_model_version'] + sv_rank_model_link_postfix)
     # other collaborators than the owner of the case
     o_collaborators = []
     for collab_id in case_obj.get('collaborators',[]):
