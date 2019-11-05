@@ -73,16 +73,12 @@
      * genome regions- onto the dashboard.
      */
     function draw_tracks(sex){
-        console.log("DRAW TRACKS!!!")
+        console.log("DRAW TRACKS")
         const CYT_HEIGHT = 50 ;
         const CYT_WIDTH = 500 ;
         var roh_imgPath = '/{{institute._id}}/{{case.display_name}}/roh_images/'
         var upd_imgPath = '/{{institute._id}}/{{case.display_name}}/upd_images/'
         var ideo_imgPath = '/{{institute._id}}/{{case.display_name}}/chr_images/'
-
-        console.log("draw roh")
-        console.log(roh_imgPath)
-        console.log( "{{case.chromograph_prefixes.roh}} ")
 
         var roh_svg = document.getElementById("roh_svg");
         var roh_imgObj = new Image();
@@ -182,8 +178,6 @@
             + String(chrom.length + x_offset) + " " + String( y_offset+25)+ " "
 
         path = m + cent_l + b_left + c1 + cent_u + right + c2
-        // console.log("*****")
-        // console.log(path)
 
         // without_cent = start +  b_left + c1 + right + c2
         p1.setAttributeNS(null, 'd', path)
@@ -294,13 +288,16 @@
 
 
 <script>
+
+  var sex
+  
     // Start when window is loaded!
     window.onload=function(){
         console.log("Window is loaded!")
         console.log('{{case.individuals}}')
         var individualsJson = {{case.individuals|tojson}}
         console.log(individualsJson)
-        var sex = getSex(individualsJson)
+        sex = getSex(individualsJson)
         console.log(sex)
 
         // convert 'case' into json, can handle null value
@@ -328,20 +325,20 @@
     window.onresize=function(){
         // read thouroghly:
         // https://stackoverflow.com/questions/16265123/resize-svg-when-window-is-resized-in-d3-js
-        console.log("width '%s' ", $(window).width())
+        console.log("Width '%s' ", $(window).width())
         if($(window).width() < WIDTH_BREAKPOINT){
             var roh_svg = document.getElementById("roh_svg")
             roh_svg.setAttribute('width', 1050)
             roh_svg.setAttribute('height', 1250)
             roh_svg.parentNode.replaceChild(roh_svg.cloneNode(false), roh_svg); // clear svg
-            draw_tracks('xx')
+            draw_tracks(sex)
         }
         if($(window).width() >= WIDTH_BREAKPOINT){
             var roh_svg = document.getElementById("roh_svg")
             roh_svg.setAttribute('width', 1500)
             roh_svg.setAttribute('height', 850)
             roh_svg.parentNode.replaceChild(roh_svg.cloneNode(false), roh_svg); // clear svg
-            draw_tracks('xx')
+            draw_tracks(sex)
         }
 
     }
