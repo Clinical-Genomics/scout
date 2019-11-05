@@ -11,5 +11,5 @@ hpo_bp = Blueprint('phenotypes', __name__, template_folder='templates')
 @templated('phenotypes/hpo_terms.html')
 def hpo_terms():
     """Render search box and view for HPO phenotype terms"""
-    data = controllers.hpo_terms(store= store, limit=100)
+    data = controllers.hpo_terms(store= store)
     return data
