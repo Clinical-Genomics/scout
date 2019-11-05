@@ -2,7 +2,7 @@
 <script>
   // TODO: Handle trisomy
   // TODO: name offset constants better
-    const WIDTH_BREAKPOINT = 1550  // less will remove one column
+    const WIDTH_BREAKPOINT = 1955  // less will remove one column
     const X_OFFSET = 55 // leftside offset whitespace in the PNGs
     const Y_OFFSET = 5  // make room for arrows pointing at the cytoban
     const OFFSET_X = 60;
@@ -73,7 +73,7 @@
      * genome regions- onto the dashboard.
      */
     function draw_tracks(sex){
-        console.log("DRAW TRACKS")
+        console.log("DRAW TRACKS!!!")
         const CYT_HEIGHT = 50 ;
         const CYT_WIDTH = 500 ;
         var roh_imgPath = '/{{institute._id}}/{{case.display_name}}/roh_images/'
@@ -290,8 +290,6 @@
         }
         return false
     }
-
-
 </script>
 
 
@@ -305,7 +303,7 @@
         var sex = getSex(individualsJson)
         console.log(sex)
 
-        // convert to case json makes it possible to handle if null
+        // convert 'case' into json, can handle null value
         var pJ = {{case.chromograph_prefixes|tojson}}
         var iJ = {{case.chromograph_image_files|tojson}}
 
@@ -330,7 +328,7 @@
     window.onresize=function(){
         // read thouroghly:
         // https://stackoverflow.com/questions/16265123/resize-svg-when-window-is-resized-in-d3-js
-
+        console.log("width '%s' ", $(window).width())
         if($(window).width() < WIDTH_BREAKPOINT){
             var roh_svg = document.getElementById("roh_svg")
             roh_svg.setAttribute('width', 1050)
