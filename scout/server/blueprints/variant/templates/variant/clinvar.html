@@ -21,17 +21,17 @@
 {% endfor %}
 
 {% block top_nav %}
-  <li class="nav-item">
+  <li class="nav-item custom-li">
     <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
-  <li class="nav-item">
+  <li class="nav-item custom-li">
     <a class="nav-link" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
       {{ case.display_name }}
     </a>
   </li>
-  <li class="nav-item">
+  <li class="nav-item custom-li">
     {% if cancer %}
       <a class="nav-link" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
         {{ variant.variant_type|capitalize }} cancer variants
@@ -42,7 +42,7 @@
       </a>
     {% endif %}
   </li>
-  <li class="nav-item active">
+  <li class="nav-item custom-li active">
     <p class="navbar-text">{{ variant.display_name|truncate(20, True) }}</p>
   </li>
 {% endblock %}

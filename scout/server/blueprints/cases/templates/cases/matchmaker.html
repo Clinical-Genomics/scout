@@ -6,20 +6,20 @@
 
 {% block top_nav %}
   {{ super() }}
-  <li class="nav-item">
+  <li class="nav-item custom-li">
     <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-  <li class="nav-item">
+  <li class="nav-item custom-li">
     <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
-  <li class="nav-item">
+  <li class="nav-item custom-li">
     <a class="nav-link" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name ) }}">
       {{ case.display_name }}
     </a>
   </li>
-  <li class="nav-item active">
+  <li class="nav-item custom-li active">
     <span class="navbar-text">MatchMaker</span>
   </li>
 {% endblock %}
@@ -37,9 +37,9 @@
       </nav>
       <br>
       <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 1 %}active{% endif %}" data-toggle="tab" onclick="hide_div(1)"><h4>Patient Overview</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 2 %}active{% endif %}" data-toggle="tab" onclick="hide_div(2)"><h4>External Matches</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 3 %}active{% endif %}" data-toggle="tab" onclick="hide_div(3)"><h4>Internal Matches</h4></a></li>
+        <li class="nav-item custom-li"><a href="#" class="nav-link {% if panel == 1 %}active{% endif %}" data-toggle="tab" onclick="hide_div(1)"><h4>Patient Overview</h4></a></li>
+        <li class="nav-item custom-li"><a href="#" class="nav-link {% if panel == 2 %}active{% endif %}" data-toggle="tab" onclick="hide_div(2)"><h4>External Matches</h4></a></li>
+        <li class="nav-item custom-li"><a href="#" class="nav-link {% if panel == 3 %}active{% endif %}" data-toggle="tab" onclick="hide_div(3)"><h4>Internal Matches</h4></a></li>
       </ul>
       <div class="tab-content" id="tabs">
         <div class="tab-pane" id="1">

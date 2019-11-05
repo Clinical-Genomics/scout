@@ -4,9 +4,9 @@
 {% set panel = panel|int %}
   <div class="container-float mt-3">
       <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 1 %}active{% endif %}" data-toggle="tab" onclick="hide_div(1)"><h4>General statistics</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 2 %}active{% endif %}" data-toggle="tab" onclick="hide_div(2)"><h4>Case statistics</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 3 %}active{% endif %}" data-toggle="tab" onclick="hide_div(3)"><h4>Variant statistics</h4></a></li>
+        <li class="nav-item custom-li"><a href="#" class="nav-link {% if panel == 1 %}active{% endif %}" data-toggle="tab" onclick="hide_div(1)"><h4>General statistics</h4></a></li>
+        <li class="nav-item custom-li"><a href="#" class="nav-link {% if panel == 2 %}active{% endif %}" data-toggle="tab" onclick="hide_div(2)"><h4>Case statistics</h4></a></li>
+        <li class="nav-item custom-li"><a href="#" class="nav-link {% if panel == 3 %}active{% endif %}" data-toggle="tab" onclick="hide_div(3)"><h4>Variant statistics</h4></a></li>
       </ul>
     <div class="tab-content" id="tabs">
       <div class="tab-pane" id="1">

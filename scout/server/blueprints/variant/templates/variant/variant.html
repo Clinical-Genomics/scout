@@ -13,17 +13,17 @@
 
 {% block top_nav %}
   {{ super() }}
-  <li class="nav-item">
+  <li class="nav-item custom-li">
     <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
-  <li class="nav-item">
+  <li class="nav-item custom-li">
     <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
       {{ case.display_name }}
     </a>
   </li>
-  <li class="nav-item">
+  <li class="nav-item custom-li">
     {% if cancer %}
       <a class="nav-link text-nowrap" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
         {{ variant.variant_type|capitalize }} cancer variants
@@ -38,7 +38,7 @@
       </a>
     {% endif %}
   </li>
-  <li class="nav-item active">
+  <li class="nav-item custom-li active">
     <p class="navbar-text text-nowrap">{{ variant.display_name|truncate(20, True) }}</p>
   </li>
 {% endblock %}
@@ -46,10 +46,10 @@
 {% block top_nav_right %}
   {% if config['MAIL_USERNAME'] %}
     {# Email setting must be setup #}
-    <li class="nav-item text-nowrap">{{ sanger_button() }}</li>
+    <li class="nav-item custom-li text-nowrap">{{ sanger_button() }}</li>
   {% endif %}
-  <li class="nav-item">{{ pin_button() }}</li>
-  <li class="nav-item text-nowrap">{{ causative_button() }}</li>
+  <li class="nav-item custom-li">{{ pin_button() }}</li>
+  <li class="nav-item custom-li text-nowrap">{{ causative_button() }}</li>
   {{ super() }}
 {% endblock %}
 
@@ -102,9 +102,9 @@
         <div class="card ">
           <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-              <a class="nav-item nav-link active" id="nav-genes-tab" data-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
-              <a class="nav-item nav-link" id="nav-transcripts-tab" data-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
-              <a class="nav-item nav-link" id="nav-proteins-tab" data-toggle="tab" href="#nav-proteins" role="tab" aria-controls="nav-proteins" aria-selected="false">Proteins</a>
+              <a class="nav-item custom-li nav-link active" id="nav-genes-tab" data-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
+              <a class="nav-item custom-li nav-link" id="nav-transcripts-tab" data-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
+              <a class="nav-item custom-li nav-link" id="nav-proteins-tab" data-toggle="tab" href="#nav-proteins" role="tab" aria-controls="nav-proteins" aria-selected="false">Proteins</a>
             </div>
 
           </nav>

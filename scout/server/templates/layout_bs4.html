@@ -26,7 +26,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
-            <li class="nav-item dropdown">
+            <li class="nav-item custom-li dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="fa fa-bars"></span>
               </a>
@@ -48,7 +48,7 @@
           <ul class="navbar-nav navbar-right">
             {% block top_nav_right %}
               {% if current_user.is_authenticated %}
-                <li class="nav-item dropdown">
+                <li class="nav-item custom-li dropdown">
                   <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{ current_user.name }} <span class="caret"></span></a>
                   <ul class="dropdown-menu">
                     <li>

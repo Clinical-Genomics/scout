@@ -6,23 +6,23 @@
 
 {% block top_nav %}
   {{ super() }}
-  <li class="nav-item">
+  <li class="nav-item custom-li">
     <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-  <li class="nav-item">
+  <li class="nav-item custom-li">
     <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute_id) }}">
       {{ institute_id }} Cases
     </a>
   </li>
   {% if config.SHOW_CAUSATIVES %}
-    <li class="nav-item">
+    <li class="nav-item custom-li">
       <a class="nav-link" href="{{ url_for('cases.causatives', institute_id=institute_id) }}">Causatives</a>
     </li>
    {% endif %}
-    <li class="nav-item">
+    <li class="nav-item custom-li">
       <a class="nav-link" href="{{ url_for('cases.gene_variants', institute_id=institute_id, variant_type=['clinical'], rank_score=15) }}">All SNVs and INDELs</a>
     </li>
-  <li class="nav-item active">
+  <li class="nav-item custom-li active">
     <span class="navbar-text">Clinvar submissions</span>
   </li>
 {% endblock %}

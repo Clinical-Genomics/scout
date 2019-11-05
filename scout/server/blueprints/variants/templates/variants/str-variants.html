@@ -9,20 +9,20 @@
 
 {% block top_nav %}
   {{ super() }}
-  <li class="nav-item">
+  <li class="nav-item custom-li">
     <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-  <li class="nav-item">
+  <li class="nav-item custom-li">
     <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
-  <li class="nav-item">
+  <li class="nav-item custom-li">
     <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
       {{ case.display_name }}
     </a>
   </li>
-  <li class="nav-item active">
+  <li class="nav-item custom-li active">
     <span class="navbar-text">{{ form.variant_type.data|capitalize }} STRs</span>
   </li>
 {% endblock %}
@@ -137,7 +137,7 @@
       {% if more_variants %}
         <div class="row">
             <div class="col-6">
-              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">	
+              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
                   First page
               </a>
               </div>
@@ -149,7 +149,7 @@
         </div>
       {% else %}
         <i class="text-muted">No more variants to display</i>
-        <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">	
+        <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
       First page
         </a>
       {% endif %}
