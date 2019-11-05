@@ -313,7 +313,7 @@
                       <td style="width:30%">Condition HPO term(s):<br>(associated to the variant)</td>
                       <td>
                         {% for hpo in pheno_hpos %}
-                          <input type="checkbox" id="conditions@{{pinned._id}}" value="HPO_{{hpo}}" name="conditions@{{pinned._id}}"><a href="http://compbio.charite.de/hpoweb/showterm?id={{hpo}}"
+                          <input type="checkbox" id="conditions@{{pinned._id}}" value="HPO_{{hpo}}" name="conditions@{{pinned._id}}"><a href="http://hpo.jax.org/app/browse/term/{{hpo}}"
                             target="_blank" class="text-blue"> {{ hpo }} - {{pheno_features[loop.index -1]}}</a></input><br>
                         {% else %}
                           No preselected HPO term available.
@@ -663,7 +663,7 @@
                               <td style="width:30%">Clinical features<br>(HPO terms. ONLY if different from variant's HPO terms)</td>
                               <td>
                                 {% for hpo in pheno_hpos %}
-                                  <input type="checkbox" id="clin_features@{{pinned._id}}" value="HPO_{{hpo}}" name="clin_features@{{pinned._id}}"><a href="http://compbio.charite.de/hpoweb/showterm?id={{hpo}}"
+                                  <input type="checkbox" id="clin_features@{{pinned._id}}" value="HPO_{{hpo}}" name="clin_features@{{pinned._id}}"><a href="http://hpo.jax.org/app/browse/term/{{hpo}}"
                                     target="_blank" class="text-blue"> {{ hpo }} - {{pheno_features[loop.index -1]}}</a></input><br>
                                 {% else %}
                                   No preselected HPO term available.
