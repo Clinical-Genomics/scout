@@ -14,7 +14,6 @@ class UserHandler(object):
     def update_user(self, user_obj):
         """Update an existing user.
 
-
             Args:
                 user_obj(dict)
 
@@ -69,17 +68,28 @@ class UserHandler(object):
         res = self.user_collection.find(query)
         return res
 
-    def user(self, email):
+    def user(self, email=None, user_id=None):
         """Fetch a user from the database.
 
             Args:
                 email(str)
+                user_id(str)
 
             Returns:
                 user_obj(dict)
         """
-        LOG.info("Fetching user %s", email)
-        user_obj = self.user_collection.find_one({'_id': email})
+        if not (user_id or email):
+            LOG.warning("No key provided to fetch user")
+            return None
+        query = {}
+        if user_id:
+            LOG.info("Fetching user %s", user_id)
+            query['_id'] = user_id
+        else:
+            LOG.info("Fetching user %s", email)
+            query['email'] = email
+            
+        user_obj = self.user_collection.find_one(query)
 
         return user_obj
 
@@ -94,6 +104,6 @@ class UserHandler(object):
 
         """
         LOG.info("Deleting user %s", email)
-        user_obj = self.user_collection.delete_one({'_id': email})
+        user_obj = self.user_collection.delete_one({'email': email})
 
         return user_obj
