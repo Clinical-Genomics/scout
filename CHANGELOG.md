@@ -28,7 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - export causative variants to Excel
 - Add support for ROH, WIG and chromosome PNGs in case-view
 
-### fixed
+### Fixed
 - Fixed missing import for variants with comments
 - Instructions on how to build docs
 - Keep sanger order + verification when updating/reloading variants
@@ -51,7 +51,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Problem with updating variant rank when no variants
 - Improved Clinvar submission form
 - General report crashing when dismissed variant has no valid dismiss code
-
+- Also show collaborative case variants on the All variants view.
+- Improved phenotype search using dataTables.js on phenotypes page
+- Search and delete users with `email` instead of `_id`
 
 ## [4.7.3]
 
