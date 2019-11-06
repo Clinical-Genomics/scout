@@ -47,18 +47,18 @@ def login():
         session['next_url'] = request.args['next']
 
     user_id = None
+    user_mail = None
     if current_app.config.get('LDAP_HOST') and request.method=='POST':
         form = LDAPLoginForm()
         LOG.info('Validating LDAP user')
-        if form.validate_on_submit():
-            user_id = form.username.data
-        else:
+        if not form.validate_on_submit():
             flash("username-password combination is not valid, plase try again", "warning")
             return redirect(url_for('public.index'))
+        user_id = form.username.data
 
     if current_app.config.get('GOOGLE'):
         if session.get('email'):
-            user_id = session['email']
+            user_mail = session['email']
             session.pop('email')
         else:
             LOG.info('Validating Google user login')
@@ -66,10 +66,10 @@ def login():
             return google.authorize(callback=callback_url)
 
     if request.args.get('email'):  # log in against Scout database
-        user_id = request.args.get('email')
+        user_mail = request.args.get('email')
         LOG.info('Validating user {} against Scout database'.format(user_id))
 
-    user_obj = store.user(user_id)
+    user_obj = store.user(email=user_mail, user_id=user_id)
     if user_obj is None:
         flash("User not whitelisted", 'warning')
         return redirect(url_for('public.index'))
