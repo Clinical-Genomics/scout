@@ -101,6 +101,22 @@ def test_get_users(adapter):
     ## THEN assert that both users are fetched
     assert sum(1 for user in users) == len(institutes) 
 
+def test_get_user_id(adapter):
+    user_info = {
+        'email': 'clark.kent@mail.com',
+        'id': 'clke01',
+        'location': 'here',
+        'name': 'Clark Kent',
+        'institutes': ['test-1'],
+        
+    }
+    user_obj = build_user(user_info)
+    user_obj = adapter.add_user(user_obj)
+    ## WHEN fetching the user with email
+    user = adapter.user(user_id='clke01')
+    
+    ## THEN assert that the user is fetched
+    assert user
 
 def test_get_user_email(adapter):
     user_info = {
