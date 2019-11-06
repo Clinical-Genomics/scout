@@ -21,8 +21,7 @@ def test_delete_user(adapter):
     ## THEN assert that there is only ine user left
     assert sum(1 for user in adapter.users()) == 1
 
-def test_update_user(real_adapter):
-    adapter = real_adapter
+def test_update_user(adapter):
     ## GIVEN an adapter with a user
     user_info = {
         'email': 'clark.kent@mail.com',
