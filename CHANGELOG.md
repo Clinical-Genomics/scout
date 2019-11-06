@@ -54,6 +54,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Also show collaborative case variants on the All variants view.
 - Improved phenotype search using dataTables.js on phenotypes page
 - Search and delete users with `email` instead of `_id`
+- Fixed css styles so that multiselect options will all fit one column
 
 ## [4.7.3]
 
