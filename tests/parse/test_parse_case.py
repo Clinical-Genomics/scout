@@ -41,7 +41,7 @@ def test_parse_case_date(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
-    # THEN the case should have a owner
+    # THEN the case should have an analysis_date
     assert isinstance(scout_config['analysis_date'], datetime)
     assert isinstance(case_data['analysis_date'], datetime)
 
