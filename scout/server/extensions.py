@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
+import copy
+import subprocess
+import json
+
+from subprocess import CalledProcessError
+
 from pymongo.errors import (ConnectionFailure)
 
 from flask_debugtoolbar import DebugToolbarExtension
@@ -31,13 +37,43 @@ from scout.adapter.client import get_connection
 
 LOG = logging.getLogger(__name__)
 
+def execute_command(cmd):
+    """
+        Prints stdout + stderr of command in real-time while being executed
+
+    Args:
+        cmd (list): command sequence
+
+    Yields:
+        line (str): line of output from command
+    """
+    process = subprocess.Popen(cmd,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT,
+                               bufsize=1)
+
+    for line in process.stdout:
+        yield line.decode('utf-8').strip()
+
+    def process_failed(process):
+        """See if process failed by checking returncode"""
+        return process.poll() != 0
+
+    if process_failed(process):
+        raise CalledProcessError(returncode=process.returncode, cmd=cmd)
 
 class LoqusDB():
     def init_app(self, app):
         """Initialize from Flask."""
         LOG.info("Connecting to loqusdb")
+        self.loqusdb_binary = app.config['LOQUSDB_SETTINGS'].get('binary', 'loqusdb')
+        self.loqusdb_config = app.config['LOQUSDB_SETTINGS'].get('config_path')
+        
+        self.base_call = [self.loqusdb_binary]
+        if self.loqusdb_config:
+            self.base_call.extend(['--config', self.loqusdb_config])
         return
-    
+
     def _fetch_variant(self, loqus_id):
         """Query loqusdb for variant information
         
@@ -48,18 +84,30 @@ class LoqusDB():
             res
         """
         res = {}
-        res = {
-            '_id': '1_879537_T_C', 
-            'homozygote': 2, 
-            'hemizygote': 0, 
-            'observations': 2, 
-            'chrom': '1', 
-            'start': 879537, 
-            'end': 879538, 
-            'ref': 'T', 
-            'alt': 'C', 
-            'families': ['recessive_trio', 'help']
-        }
+        variant_call = copy.deepcopy(self.base_call)
+        variant_call.extend([
+            'variants', '--to-json', '--case-count',
+            '--variant-id', loqus_id])
+
+        output = ''
+        try:
+            output = subprocess.check_output(
+                ' '.join(variant_call),
+                shell=True
+            )
+        except CalledProcessError as err:
+            LOG.warning("Something went wrong with loqus")
+            return
+
+        if not output:
+            LOG.info("Could not find information about variant %s", loqus_id)
+            return res
+
+        output = output.decode('utf-8')
+
+
+        res = json.loads(output)
+
         return res
     
     def get_variant(self, variant_info):
@@ -73,8 +121,7 @@ class LoqusDB():
             loqus_variant(dict)
         """
         loqus_variant = self._fetch_variant(variant_info['_id'])
-        loqus_variant['total'] = self._case_count()
-        
+
         return loqus_variant
 
     def _case_count(self):
@@ -83,8 +130,41 @@ class LoqusDB():
         Returns:
             nr_cases(int)
         """
-        nr_cases = 754
+        nr_cases = 0
+        case_call = copy.deepcopy(self.base_call)
+        
+        case_call.extend(['cases', '--count'])
+        output = ''
+        try:
+            output = subprocess.check_output(
+                ' '.join(case_call),
+                shell=True
+            )
+        except CalledProcessError as err:
+            LOG.warning("Something went wrong with loqus")
+            return
+        
+        if not output:
+            LOG.info("Could not find information about loqusdb cases")
+            return nr_cases
+
+        output = output.decode('utf-8')
+
+        try:
+            nr_cases = int(output.strip())
+        except Exception:
+            pass
+        
         return nr_cases
+    
+    def test_loqus(self):
+        """Test if loqus seems to work"""
+        version_call = copy.deepcopy(self.base_call)
+        version_call.extend(['--version'])
+    
+    def __repr__(self):
+        return (f"LoqusDB(binary={self.loqusdb_binary},"
+                f"config={self.loqusdb_config})")
 
 class MongoDB(object):
 
