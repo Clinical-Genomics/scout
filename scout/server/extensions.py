@@ -27,20 +27,64 @@ google = oauth.remote_app('google', app_key='GOOGLE')
 from flask_mail import Mail
 mail = Mail()
 
-from loqusdb.plugins import MongoAdapter as LoqusDBMongoAdapter
 from scout.adapter.client import get_connection
 
 LOG = logging.getLogger(__name__)
 
 
-class LoqusDB(LoqusDBMongoAdapter):
+class LoqusDB():
     def init_app(self, app):
         """Initialize from Flask."""
         LOG.info("Connecting to loqusdb")
-        self.connect(**app.config['LOQUSDB_SETTINGS'])
+        return
+    
+    def _fetch_variant(self, loqus_id):
+        """Query loqusdb for variant information
+        
+        Args:
+            loqus_id(str): The variant id in loqusdb format
+        
+        Returns:
+            res
+        """
+        res = {}
+        res = {
+            '_id': '1_879537_T_C', 
+            'homozygote': 2, 
+            'hemizygote': 0, 
+            'observations': 2, 
+            'chrom': '1', 
+            'start': 879537, 
+            'end': 879538, 
+            'ref': 'T', 
+            'alt': 'C', 
+            'families': ['recessive_trio', 'help']
+        }
+        return res
+    
+    def get_variant(self, variant_info):
+        """Return information for a variant from loqusdb
+        
+        
+        Args:
+            variant_info(dict)
+        
+        Returns:
+            loqus_variant(dict)
+        """
+        loqus_variant = self._fetch_variant(variant_info['_id'])
+        loqus_variant['total'] = self._case_count()
+        
+        return loqus_variant
 
-    def case_count(self):
-        return sum(1 for i in self.db.case.find({}))
+    def _case_count(self):
+        """Return number of cases that the observation is based on
+        
+        Returns:
+            nr_cases(int)
+        """
+        nr_cases = 754
+        return nr_cases
 
 class MongoDB(object):
 

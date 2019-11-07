@@ -205,7 +205,6 @@ def observations(store, loqusdb, case_obj, variant_obj):
     obs_data = loqusdb.get_variant({'_id': composite_id}) or {}
 
     # Add case count even if there where no hit
-    obs_data['total'] = loqusdb.case_count()
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)
         return obs_data
