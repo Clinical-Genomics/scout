@@ -18,7 +18,7 @@ MAIL_USE_SSL = False
 
 # connection details for LoqusDB MongoDB database
 LOQUSDB_SETTINGS = dict(
-    # binary='/Users/mansmagnusson/miniconda3/envs/loqusdb/bin/loqusdb',
+    binary='/Users/mansmagnusson/miniconda3/envs/loqusdb/bin/loqusdb',
     # config_path=<path/to/loqus/config>
     
 )
