@@ -105,7 +105,7 @@ def authorized():
         flash("Access denied: reason={} error={}"
               .format(request.args.get['error_reason'],
                       request.args['error_description']), 'danger')
-        return abort(403)
+        return redirect(url_for('public.index'))
 
     # add token to session, do it before validation to be able to fetch
     # additional data (like email) on the authenticated user
