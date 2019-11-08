@@ -97,8 +97,8 @@ def authorized():
     try:
         oauth_response = google.authorized_response()
     except OAuthException as error:
-        current_app.logger.warning(oauth_response.message)
-        flash("{} - try again!".format(oauth_response.message), 'warning')
+        current_app.logger.warning('Google OAuthException: {}'.format(error))
+        flash("{} - try again!".format(error), 'warning')
         return redirect(url_for('public.index'))
 
     if oauth_response is None:

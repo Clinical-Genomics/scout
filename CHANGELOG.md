@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 ### Fixed
+- Prevent the app from crashing with `AttributeError: 'NoneType' object has no attribute 'message'`
 
 
 
