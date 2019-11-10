@@ -428,6 +428,7 @@ class CaseHandler(object):
             {'file_name': 'vcf_snv', 'variant_type': 'clinical', 'category': 'snv'},
             {'file_name': 'vcf_sv', 'variant_type': 'clinical', 'category': 'sv'},
             {'file_name': 'vcf_cancer', 'variant_type': 'clinical', 'category': 'cancer'},
+            {'file_name': 'vcf_cancer_sv', 'variant_type': 'clinical', 'category': 'cancer_sv'},
             {'file_name': 'vcf_str', 'variant_type': 'clinical', 'category': 'str'}
         ]
 

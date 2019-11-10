@@ -40,7 +40,7 @@ def get_sub_category(alt_len, ref_len, category, svtype=None):
             subcategory = 'snv'
         else:
             subcategory = 'indel'
-    elif category == 'sv':
+    elif category in ('sv','cancer_sv'):
         subcategory = svtype
 
     return subcategory
@@ -96,7 +96,7 @@ def get_end(pos, alt, category, snvend=None, svend=None, svlen=None):
         end = snvend
 
     # With SVs we have to be a bit more careful
-    elif category == 'sv':
+    elif category in ('sv','cancer_sv'):
         # The END field from INFO usually works fine
         end = svend
 

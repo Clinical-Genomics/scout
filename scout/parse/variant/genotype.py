@@ -20,23 +20,24 @@ Uses 'DV' to describe number of paired ends that supports the event and
 
 GENOTYPE_MAP = {0: '0', 1: '1', -1:'.'}
 
-def parse_genotypes(variant, individuals, individual_positions):
+def parse_genotypes(variant, individuals, individual_positions, is_cancer=False):
     """Parse the genotype calls for a variant
 
         Args:
             variant(cyvcf2.Variant)
             individuals: List[dict]
             individual_positions(dict)
+            is_cancer: set to True if the VCF contains somatic mutations and there is no genotype field (genotype will be set to ./.)
         Returns:
             genotypes(list(dict)): A list of genotypes
     """
     genotypes = []
     for ind in individuals:
         pos = individual_positions[ind['individual_id']]
-        genotypes.append(parse_genotype(variant, ind, pos))
+        genotypes.append(parse_genotype(variant, ind, pos, is_cancer))
     return genotypes
 
-def parse_genotype(variant, ind, pos):
+def parse_genotype(variant, ind, pos, is_cancer=False):
     """Get the genotype information in the proper format
 
     Sv specific format fields:
@@ -85,8 +86,14 @@ def parse_genotype(variant, ind, pos):
     gt_call['display_name'] = ind['display_name']
 
     # Fill the object with the relevant information:
-    genotype = variant.genotypes[pos]
-
+    genotype = [0,0,False]  # kind of empty genotype - default for cancer
+    if is_cancer:
+      gt_call['genotype_call'] = './.'
+    else:
+      genotype = variant.genotypes[pos]
+      gt_call['genotype_call'] = '/'.join([GENOTYPE_MAP[ref_call],
+                                         GENOTYPE_MAP[alt_call]])
+  
     ref_call = genotype[0]
     alt_call = genotype[1]
 
