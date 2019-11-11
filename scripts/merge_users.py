@@ -39,9 +39,10 @@ LOG = logging.getLogger(__name__)
 @click.option('-h', '--host', help="Specify the host for the mongo database.")
 @click.option('-c', '--config', type=click.Path(exists=True),
               help="Specify the path to a config file with database info.")
+@click.option('-L', '--live', is_flag=True, help='live run - use with extreme caution')
 @click.version_option(__version__)
 @click.pass_context
-def merge_users(context, mongodb, username, password, authdb, host, port, loglevel, config):
+def merge_users(context, mongodb, username, password, authdb, host, port, loglevel, config, live):
     """scout: manage interactions with a scout instance."""
     coloredlogs.install(level=loglevel)
 
@@ -64,8 +65,11 @@ def merge_users(context, mongodb, username, password, authdb, host, port, loglev
     mongo_config['authdb'] = authdb or cli_config.get('authdb') or mongo_config['mongodb']
     mongo_config['omim_api_key'] = cli_config.get('omim_api_key')
 
+
     # always dryrun for now
     dryrun = True
+    if live:
+        dryrun = False
 
     LOG.info("Setting database name to %s", mongo_config['mongodb'])
     LOG.debug("Setting host to %s", mongo_config['host'])
@@ -239,30 +243,32 @@ def merge_users(context, mongodb, username, password, authdb, host, port, loglev
                     }
                 )
                 clinvar_submission_requests.append(operation)
+    else:
+        LOG.info('No ObjectId ID user IDs found - nothing to do.')
 
     # if everything worked out ok with dryrun, and after getting this far on a live run,
     # bulk write all proposed changes.
     if event_requests:
         LOG.info('event requests to execute: {}'.format(event_requests))
         if not dryrun:
-            adapter.event_collection.bulk_write(event_requests, ordered=False)
+            result = adapter.event_collection.bulk_write(event_requests, ordered=False)
 
     if acmg_requests:
         LOG.info('acmg requests to execute: {}'.format(acmg_requests))
         if not dryrun:
-            adapter.acmg_collection.bulk_write(acmg_requests, ordered=False)
+            result = adapter.acmg_collection.bulk_write(acmg_requests, ordered=False)
             LOG.info("Modified {} ACMG.".format(result.modified_count))
 
     if clinvar_requests:
-        LOG.info('clinvar requests to execute: {}'.format(event_requests))
+        LOG.info('clinvar requests to execute: {}'.format(clinvar_requests))
         if not dryrun:
-            result = adapter.clinvar_collection.bulk_write(event_requests, ordered=False)
+            result = adapter.clinvar_collection.bulk_write(clinvar_requests, ordered=False)
             LOG.info("Modified {} ClinVar.".format(result.modified_count))
 
     if clinvar_submission_requests:
         LOG.info('clinvar sub requests to execute: {}'.format(clinvar_submission_requests))
         if not dryrun:
-            result = adapter.clinvar_submission_collection.bulk_write(requests, ordered=False)
+            result = adapter.clinvar_submission_collection.bulk_write(clinvar_submission_requests, ordered=False)
             LOG.info("Modified {} ClinVar submissions.".format(result.modified_count))
 
     # now delete oi user, and actually update/create alt user
@@ -270,9 +276,8 @@ def merge_users(context, mongodb, username, password, authdb, host, port, loglev
         LOG.info('user requests to execute: {}'.format(user_requests))
         if not dryrun:
             result = adapter.user_collection.bulk_write(user_requests, ordered=False)
-            LOG.info("Modified {} users.".format(result.modified_count))
-            LOG.info("Created {} users.".format(result.created_count))
-            LOG.info("Deleted {} users.".format(resutl.deleted_count))
+            LOG.info("Modified users with the following: {}".format(result.bulk_api_result))
+
 
 if __name__ == '__main__':
     merge_users()
