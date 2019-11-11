@@ -6,6 +6,8 @@ import coloredlogs
 import yaml
 import pymongo
 
+import copy
+
 from pprint import pprint as pp
 
 # Adapter stuff
@@ -244,7 +246,7 @@ def merge_users(context, mongodb, username, password, authdb, host, port, loglev
                 )
                 clinvar_submission_requests.append(operation)
     else:
-        LOG.info('No ObjectId ID user IDs found - nothing to do.')
+        LOG.info('No ObjectId ID user IDs found - nothing more to do.')
 
     # if everything worked out ok with dryrun, and after getting this far on a live run,
     # bulk write all proposed changes.
