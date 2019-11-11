@@ -961,7 +961,7 @@ def verification_email_body(case_name, url, display_name, category, subcategory,
     return html
 
 
-def cancer_variants(store, request_args, institute_id, case_name, form):
+def cancer_variants(store, request_args, institute_id, case_name, form, page=1, per_page=50):
     """Fetch data related to cancer variants for a case."""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
