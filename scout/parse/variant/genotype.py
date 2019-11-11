@@ -90,16 +90,12 @@ def parse_genotype(variant, ind, pos, is_cancer=False):
     if is_cancer:
       gt_call['genotype_call'] = './.'
     else:
+      ref_call = genotype[0]
+      alt_call = genotype[1]
       genotype = variant.genotypes[pos]
       gt_call['genotype_call'] = '/'.join([GENOTYPE_MAP[ref_call],
                                          GENOTYPE_MAP[alt_call]])
   
-    ref_call = genotype[0]
-    alt_call = genotype[1]
-
-    gt_call['genotype_call'] = '/'.join([GENOTYPE_MAP[ref_call],
-                                         GENOTYPE_MAP[alt_call]])
-
     paired_end_alt = None
     paired_end_ref = None
     split_read_alt = None

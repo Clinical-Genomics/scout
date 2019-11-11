@@ -323,6 +323,128 @@ def cancer_variants(institute_id, case_name):
     data = controllers.cancer_variants(store, institute_id, case_name, form, page=page)
     return dict(variant_type=variant_type, **data)
 
+@variants_bp.route('/<institute_id>/<case_name>/cancer/sv-variants',
+                   methods=['GET','POST'])
+@templated('variants/cancer-sv-variants.html')
+def cancer_sv_variants(institute_id, case_name):
+    """Display a list of cancer structural variants."""
+    page = int(request.form.get('page', 1))
+
+    variant_type = request.args.get('variant_type', 'clinical')
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    form = SvFiltersForm(request.form)
+
+    default_panels = []
+    for panel in case_obj['panels']:
+        if (panel.get('is_default') and panel['is_default'] is True) or ('default_panels' in case_obj and panel['panel_id'] in case_obj['default_panels']):
+            default_panels.append(panel['panel_name'])
+
+    request.form.get('gene_panels')
+    if bool(request.form.get('clinical_filter')):
+        clinical_filter = MultiDict({
+            'variant_type': 'clinical',
+            'region_annotations': ['exonic','splicing'],
+            'functional_annotations': SEVERE_SO_TERMS,
+            'thousand_genomes_frequency': str(institute_obj['frequency_cutoff']),
+            'clingen_ngi': 10,
+            'swegen': 10,
+            'size': 100,
+            'gene_panels': default_panels
+             })
+
+    if(request.method == "POST"):
+        if bool(request.form.get('clinical_filter')):
+            form = SvFiltersForm(clinical_filter)
+            form.csrf_token = request.args.get('csrf_token')
+        else:
+            form = SvFiltersForm(request.form)
+    else:
+        form = SvFiltersForm(request.args)
+
+    available_panels = case_obj.get('panels', []) + [
+        {'panel_name': 'hpo', 'display_name': 'HPO'}]
+
+    panel_choices = [(panel['panel_name'], panel['display_name'])
+                     for panel in available_panels]
+    form.gene_panels.choices = panel_choices
+
+    # check if supplied gene symbols exist
+    hgnc_symbols = []
+    non_clinical_symbols = []
+    not_found_symbols = []
+    not_found_ids = []
+    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
+        is_clinical = form.data.get('variant_type', 'clinical') == 'clinical'
+        clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+        for hgnc_symbol in form.hgnc_symbols.data:
+            if hgnc_symbol.isdigit():
+                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
+                if hgnc_gene is None:
+                    not_found_ids.append(hgnc_symbol)
+                else:
+                    hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
+            elif sum(1 for i in store.hgnc_genes(hgnc_symbol)) == 0:
+                  not_found_symbols.append(hgnc_symbol)
+            elif is_clinical and (hgnc_symbol not in clinical_symbols):
+                 non_clinical_symbols.append(hgnc_symbol)
+            else:
+                hgnc_symbols.append(hgnc_symbol)
+
+    if (not_found_ids):
+        flash("HGNC id not found: {}".format(", ".join(not_found_ids)), 'warning')
+    if (not_found_symbols):
+        flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), 'warning')
+    if (non_clinical_symbols):
+        flash("Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)), 'warning')
+    form.hgnc_symbols.data = hgnc_symbols
+
+
+    # handle HPO gene list separately
+    if 'hpo' in form.data['gene_panels']:
+        hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
+                               case_obj['dynamic_gene_list']))
+
+        current_symbols = set(hgnc_symbols)
+        current_symbols.update(hpo_symbols)
+        form.hgnc_symbols.data = list(current_symbols)
+
+
+    # update status of case if vistited for the first time
+    if case_obj['status'] == 'inactive' and not current_user.is_admin:
+        flash('You just activated this case!', 'info')
+        user_obj = store.user(current_user.email)
+        case_link = url_for('cases.case', institute_id=institute_obj['_id'],
+                            case_name=case_obj['display_name'])
+        store.update_status(institute_obj, case_obj, user_obj, 'active', case_link)
+
+    variants_query = store.variants(case_obj['_id'], category='cancer_sv',
+                                    query=form.data)
+    data = {}
+    # if variants should be exported
+    if request.form.get('export'):
+        document_header = controllers.variants_export_header(case_obj)
+        export_lines = []
+        # Return max 500 variants
+        export_lines = controllers.variant_export_lines(store, case_obj, variants_query.limit(500))
+
+        def generate(header, lines):
+            yield header + '\n'
+            for line in lines:
+                yield line + '\n'
+
+        headers = Headers()
+        headers.add('Content-Disposition','attachment', filename=str(case_obj['display_name'])+'-filtered_cancer_sv-variants.csv')
+        return Response(generate(",".join(document_header), export_lines), mimetype='text/csv', headers=headers) # return a csv with the exported variants
+
+    else:
+        data = controllers.cancer_sv_variants(store, institute_obj, case_obj,
+                                       variants_query, page)
+
+    return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
+                form=form, severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
+
 @variants_bp.route('/<institute_id>/<case_name>/upload', methods=['POST'])
 def upload_panel(institute_id, case_name):
     """Parse gene panel file and fill in HGNC symbols for filter."""
