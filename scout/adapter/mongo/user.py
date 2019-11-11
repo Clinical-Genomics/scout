@@ -82,18 +82,25 @@ class UserHandler(object):
             LOG.warning("No key provided to fetch user")
             return None
         query = {}
+        user_obj = None
         if user_id:
             LOG.info("Fetching user %s", user_id)
             query['_id'] = user_id
+            user_obj = self.user_collection.find_one(query)
         else:
             LOG.info("Fetching user %s", email)
+            # prefer users that share _id and email
             query = {
-                '$or' : [
+                '$and' : [
                     {'_id': email},
                     {'email': email}
                 ]
             }
-        user_obj = self.user_collection.find_one(query)
+            user_obj = self.user_collection.find_one(query)
+            if user_obj is None:
+                # but do fetch them by email if that doesn't hold up
+                query = { 'email': email }
+                user_obj = self.user_collection.find_one(query)
 
         return user_obj
 
