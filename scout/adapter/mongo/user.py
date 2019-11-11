@@ -87,8 +87,12 @@ class UserHandler(object):
             query['_id'] = user_id
         else:
             LOG.info("Fetching user %s", email)
-            query['email'] = email
-            
+            query = {
+                '$or' : [
+                    {'_id': email},
+                    {'email': email}
+                ]
+            }
         user_obj = self.user_collection.find_one(query)
 
         return user_obj
