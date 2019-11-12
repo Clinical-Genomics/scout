@@ -436,16 +436,14 @@
             {% else %}
               <td><a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></td>
             {% endif %}
-	    <td>
-	      {% for gene in variant.genes %}
-          <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}</a> <span class="badge badge-secondary">{{gene.region_annotation}}</span><br>
-	      {% endfor %}
-
-	    </td>
+	          <td>
+	             {% for gene in variant.genes %}
+                <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}</a> <span class="badge badge-secondary">{{gene.region_annotation}}</span><br>
+               {% endfor %}
+            </td>
       <td>
-      {% for reason in variant.dismiss_variant %}
+      {% for reason in variant.dismiss_variant if not reason == "Select a tag"  %}
         <ul>
-          {% if reason is number %}
             <li>{{dismissed_options[reason|int]['description']}}
               {% if reason == '2' and variant.category == 'snv'%} <!--variant dismissed as too common in public databases-->
                 <table class="table-borderless table-sm">
@@ -560,7 +558,6 @@
                   <br><br>
                 {% endif %}
                 </li>
-              {% endif %}
             </ul>
           {% endfor %}
           </td>

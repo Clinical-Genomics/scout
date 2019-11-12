@@ -113,10 +113,10 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
 
     config_data['delivery_report'] = delivery_report if delivery_report else config_data.get('delivery_report')
 
-    config_data['rank_model_version'] = config_data.get('rank_model_version')
+    config_data['rank_model_version'] = str(config_data.get('rank_model_version', ''))
     config_data['rank_score_threshold'] = config_data.get('rank_score_threshold', 0)
 
-    config_data['sv_rank_model_version'] = config_data.get('sv_rank_model_version')
+    config_data['sv_rank_model_version'] = str(config_data.get('sv_rank_model_version', ''))
 
     config_data['track'] = config_data.get('track', 'rare')
     if config_data['vcf_cancer'] or config_data['vcf_cancer_sv']:
@@ -333,9 +333,9 @@ def parse_case(config):
         'case_id': config['family'],
         'display_name': config.get('family_name', config['family']),
         'genome_build': config.get('human_genome_build'),
-        'rank_model_version': config.get('rank_model_version'),
+        'rank_model_version': str(config.get('rank_model_version', '')),
         'rank_score_threshold': config.get('rank_score_threshold', 0),
-        'sv_rank_model_version': config.get('sv_rank_model_version'),
+        'sv_rank_model_version': str(config.get('sv_rank_model_version', '')),
         'analysis_date': config.get('analysis_date'),
         'individuals': individuals,
         'vcf_files': {

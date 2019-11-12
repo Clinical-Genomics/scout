@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 
+- Fixed a problem when rank model version was saved as floats and not strings
+- Fixed a problem with displaying dismiss variant reasons on the general report
 
 ## [4.8.1]
 
