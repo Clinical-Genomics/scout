@@ -501,8 +501,9 @@
       {{ form.filters(class="form-control") }}
     </div>
     <div class="btn-group col-4" role="group">
-      {{ form.load_filter(class="btn btn-secondary") }}
-      {{ form.delete_filter(class="btn btn-secondary bg-danger", data_toggle="tooltip", data_placement="top", title="Delete selected filter for this institute.") }}
+      {{ form.load_filter(class="btn btn-secondary", disabled=form.filters.choices|length==0) }}
+      {{ form.delete_filter(class="btn btn-secondary bg-danger", data_toggle="tooltip", data_placement="top",
+        title="Delete selected filter for this institute.", disabled=form.filters.choices|length==0) }}
     </div>
   </div>
 {% endmacro %}

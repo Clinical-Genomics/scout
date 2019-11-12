@@ -97,15 +97,15 @@ def authorized():
     try:
         oauth_response = google.authorized_response()
     except OAuthException as error:
-        current_app.logger.warning(oauth_response.message)
-        flash("{} - try again!".format(oauth_response.message), 'warning')
+        current_app.logger.warning('Google OAuthException: {}'.format(error))
+        flash("{} - try again!".format(error), 'warning')
         return redirect(url_for('public.index'))
 
     if oauth_response is None:
         flash("Access denied: reason={} error={}"
               .format(request.args.get['error_reason'],
                       request.args['error_description']), 'danger')
-        return abort(403)
+        return redirect(url_for('public.index'))
 
     # add token to session, do it before validation to be able to fetch
     # additional data (like email) on the authenticated user

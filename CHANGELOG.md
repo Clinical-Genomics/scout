@@ -11,6 +11,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 
 
+## [4.8.1]
+
+### Added
+
+### Fixed
+- Prevent login fail for users with id defined by ObjectId and not email
+- Prevent the app from crashing with `AttributeError: 'NoneType' object has no attribute 'message'`
+
 
 ## [4.8.0]
 
@@ -62,6 +70,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved phenotype search using dataTables.js on phenotypes page
 - Search and delete users with `email` instead of `_id`
 - Fixed css styles so that multiselect options will all fit one column
+
 
 ## [4.7.3]
 

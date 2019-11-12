@@ -11,7 +11,7 @@ class LoginUser(UserMixin):
             setattr(self, key, value)
 
     def get_id(self):
-        return self._id
+        return self.email
 
     @property
     def is_admin(self):
