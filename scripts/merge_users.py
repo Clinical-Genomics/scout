@@ -1,4 +1,16 @@
 # -*- coding: utf-8 -*-
+"""
+merge_users.py
+
+Migrate old accounts with user_id as objectId to new accounts with _id as emails.
+If a user has another account with the same email, info from the old account is
+merged into the proper one.
+
+Collection documents that refer to the old user_id are updated to point to the new
+one, including cases, events, acmg, clinvar and clinvar_submissions.
+
+Default operation is by dryrun. Add the --live flag to acutally perform changes.
+"""
 import logging
 
 import click
@@ -101,11 +113,13 @@ def merge_users(context, mongodb, username, password, authdb, host, port, loglev
     mongo_config['client'] = client
     adapter = MongoAdapter(database)
 
+    ## First, create all operation requests that would be needed in a live run.
     user_requests = []
     event_requests = []
     acmg_requests = []
     clinvar_requests = []
     clinvar_submission_requests = []
+    case_requests = []
 
     for oi_user_obj in adapter.user_collection.find({'_id': {'$type':'objectId'}}):
         if not oi_user_obj.get('email'):
@@ -125,18 +139,18 @@ def merge_users(context, mongodb, username, password, authdb, host, port, loglev
         else:
             LOG.info("alt user: {}".format(alt_user_obj))
             merged_institutes = set()
-            merged_institutes.update(alt_user_obj.get('institutes') + oi_user_obj.get('institutes'))
+            merged_institutes.update(alt_user_obj.get('institutes', []) + oi_user_obj.get('institutes', []))
             LOG.info('merged institutes: {}'.format(merged_institutes))
             alt_user_obj['institutes'] = list(merged_institutes)
 
             merged_roles = set()
-            merged_roles.update(alt_user_obj.get('roles') + oi_user_obj.get('roles'))
+            merged_roles.update(alt_user_obj.get('roles', []) + oi_user_obj.get('roles',[]))
             LOG.info('merged roles: {}'.format(merged_roles))
             alt_user_obj['roles'] = list(merged_roles)
 
             created_at = oi_user_obj.get('created_at')
             alt_created_at = alt_user_obj.get('created_at')
-            if (alt_created_at and alt_created_at < created_at):
+            if ((alt_created_at and created_at) and alt_created_at < created_at):
                 created_at = alt_created_at
 
             if created_at:
@@ -144,7 +158,7 @@ def merge_users(context, mongodb, username, password, authdb, host, port, loglev
 
             accessed_at = alt_user_obj.get('accessed_at')
             oi_accessed_at = oi_user_obj.get('accessed_at')
-            if (oi_accessed_at and oi_accessed_at > accessed_at):
+            if (oi_accessed_at and accesed_at) and oi_accessed_at > accessed_at):
                 accessed_at = oi_accessed_at
 
             if accessed_at:
@@ -233,7 +247,6 @@ def merge_users(context, mongodb, username, password, authdb, host, port, loglev
         oi_user_clinvars = adapter.clinvar_submission_collection.find({'user_id': ObjectId(str(oi_user_id))})
         if oi_user_clinvars.count()>0:
             LOG.info('=== ClinVar submission ===')
-            requests = []
             for clinvars in oi_user_clinvars:
                 LOG.info('acmg: {}'.format(clinvars))
                 operation = pymongo.UpdateOne(
@@ -245,8 +258,31 @@ def merge_users(context, mongodb, username, password, authdb, host, port, loglev
                     }
                 )
                 clinvar_submission_requests.append(operation)
+
+        ###
+        ### cases
+        ###
+        oi_user_cases = adapter.case_collection.find({'assignee': ObjectId(str(oi_user_id))})
+        if oi_user_cases.count()>0:
+            LOG.info('=== Case assignees ===')
+            for case in oi_user_cases:
+
+                LOG.info('case {} assignees: {}'.format(case['_id'], case['assignees']))
+                operation = pymongo.UpdateOne(
+                    {'_id':case.get('_id'), 'assignees': ObjectId(str(oi_user_id))},
+                    {
+                        '$set': {
+                            'assignees.$': oi_user_email
+                            }
+                    }
+                )
+                case_requests.append(operation)
+
+
     else:
         LOG.info('No ObjectId ID user IDs found - nothing more to do.')
+
+
 
     # if everything worked out ok with dryrun, and after getting this far on a live run,
     # bulk write all proposed changes.
@@ -272,6 +308,12 @@ def merge_users(context, mongodb, username, password, authdb, host, port, loglev
         if not dryrun:
             result = adapter.clinvar_submission_collection.bulk_write(clinvar_submission_requests, ordered=False)
             LOG.info("Modified {} ClinVar submissions.".format(result.modified_count))
+
+    if case_requests:
+        LOG.info('case requests to execute: {}'.format(case_requests))
+        if not dryrun:
+            result = adapter.case_collection.bulk_write(case_requests, ordered=False)
+            LOG.info("Modified {} case submissions.".format(result.modified_count))
 
     # now delete oi user, and actually update/create alt user
     if user_requests:
