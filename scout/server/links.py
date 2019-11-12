@@ -146,13 +146,15 @@ def vega(vega_id):
 
     return link.format(vega_id)
 
-def ucsc(ucsc_id, build=37):
-    link = "https://genome.ucsc.edu/cgi-bin/hgGene?db=hg{0}&hgg_chrom=chr10&hgg_gene={0}"
+def ucsc(ucsc_id):
+    
+    link = ("http://genome.cse.ucsc.edu/cgi-bin/hgGene?org=Human&hgg_chrom=none&hgg_type=knownGene"\
+            "&hgg_gene={}")
 
     if not ucsc_id:
         return None
 
-    return link.format(build,ucsc_id)
+    return link.format(ucsc_id)
 
 def add_tx_links(tx_obj, build=37):
     try:
