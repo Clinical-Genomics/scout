@@ -202,13 +202,17 @@ def observations(store, loqusdb, case_obj, variant_obj):
     var_type = variant_obj.get('variant_type', 'clinical')
 
     composite_id = ("{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt))
-    obs_data = loqusdb.get_variant({'_id': composite_id}) or {}
+    variant_query = {
+        '_id': composite_id,
+        'chrom': chrom,
+        'end_chrom': variant_obj.get('end_chrom', chrom),
+        'pos': pos,
+        'end': variant_obj['end'],
+        'variant_type': variant_obj.get('sub_category', '').upper(),
+        'category': variant_obj['category'],
+    }
+    obs_data = loqusdb.get_variant(variant_query) or {}
 
-    # Add case count even if there where no hit
-    if not obs_data:
-        LOG.debug("Could not find any observations for %s", composite_id)
-        return obs_data
-    
     user_institutes_ids = set([inst['_id'] for inst in user_institutes(store, current_user)])
 
     obs_data['cases'] = []

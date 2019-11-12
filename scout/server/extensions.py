@@ -74,21 +74,28 @@ class LoqusDB():
             self.base_call.extend(['--config', self.loqusdb_config])
         return
 
-    def _fetch_variant(self, loqus_id):
+    def _fetch_variant(self, variant_info):
         """Query loqusdb for variant information
         
         Args:
-            loqus_id(str): The variant id in loqusdb format
+            variant_info(dict): The variant id in loqusdb format
         
         Returns:
             res
         """
+        loqus_id = variant_info['_id']
         res = {}
         variant_call = copy.deepcopy(self.base_call)
         variant_call.extend([
             'variants', '--to-json', '--case-count',
             '--variant-id', loqus_id])
-
+        # If sv we need some more info
+        if variant_info.get('category', 'snv') in ['sv']:
+            variant_call.extend([
+                '-t', 'sv', '-c', variant_info['chrom'], '-s', str(variant_info['pos']),
+                '-e' , str(variant_info['end']), '--end-chromosome', variant_info['end_chrom'],
+                '--sv-type', variant_info['variant_type']
+            ])
         output = ''
         try:
             output = subprocess.check_output(
@@ -120,7 +127,7 @@ class LoqusDB():
         Returns:
             loqus_variant(dict)
         """
-        loqus_variant = self._fetch_variant(variant_info['_id'])
+        loqus_variant = self._fetch_variant(variant_info)
 
         return loqus_variant
 
