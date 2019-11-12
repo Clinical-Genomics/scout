@@ -158,7 +158,7 @@ def merge_users(context, mongodb, username, password, authdb, host, port, loglev
 
             accessed_at = alt_user_obj.get('accessed_at')
             oi_accessed_at = oi_user_obj.get('accessed_at')
-            if (oi_accessed_at and accesed_at) and oi_accessed_at > accessed_at):
+            if (oi_accessed_at and accessed_at) and oi_accessed_at > accessed_at:
                 accessed_at = oi_accessed_at
 
             if accessed_at:
@@ -262,11 +262,11 @@ def merge_users(context, mongodb, username, password, authdb, host, port, loglev
         ###
         ### cases
         ###
-        oi_user_cases = adapter.case_collection.find({'assignee': ObjectId(str(oi_user_id))})
+        LOG.info('searching for cases assigned to user id {}'.format(oi_user_id))
+        oi_user_cases = adapter.case_collection.find({'assignees': ObjectId(str(oi_user_id))})
         if oi_user_cases.count()>0:
             LOG.info('=== Case assignees ===')
             for case in oi_user_cases:
-
                 LOG.info('case {} assignees: {}'.format(case['_id'], case['assignees']))
                 operation = pymongo.UpdateOne(
                     {'_id':case.get('_id'), 'assignees': ObjectId(str(oi_user_id))},
