@@ -142,13 +142,23 @@ def case(store, institute_obj, case_obj):
     rank_model_link_prefix = current_app.config.get('RANK_MODEL_LINK_PREFIX')
     if case_obj.get('rank_model_version'):
         rank_model_link_postfix = current_app.config.get('RANK_MODEL_LINK_POSTFIX','')
-        case_obj['rank_model_link'] = str(rank_model_link_prefix +
-                                      case_obj['rank_model_version'] + rank_model_link_postfix)
+        case_obj['rank_model_link'] = ''.join(
+            [
+                rank_model_link_prefix, 
+                str(case_obj['rank_model_version']), 
+                rank_model_link_postfix
+            ]
+        )
     sv_rank_model_link_prefix = current_app.config.get('SV_RANK_MODEL_LINK_PREFIX','')
     if case_obj.get('sv_rank_model_version'):
         sv_rank_model_link_postfix = current_app.config.get('SV_RANK_MODEL_LINK_POSTFIX','')
-        case_obj['sv_rank_model_link'] = str(sv_rank_model_link_prefix +
-                                         case_obj['sv_rank_model_version'] + sv_rank_model_link_postfix)
+        case_obj['sv_rank_model_link'] = ''.join(
+            [
+                sv_rank_model_link_prefix, 
+                str(case_obj['sv_rank_model_version']), 
+                sv_rank_model_link_postfix)
+            ]
+        )
     # other collaborators than the owner of the case
     o_collaborators = []
     for collab_id in case_obj.get('collaborators',[]):
