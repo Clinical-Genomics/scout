@@ -14,7 +14,6 @@ coloredlogs
 query_phenomizer
 Flask-Babel
 livereload
-mongo_adapter
 python-dateutil
 pymongo<3.7
 pathlib

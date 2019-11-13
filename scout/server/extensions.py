@@ -47,36 +47,43 @@ def execute_command(cmd):
     Yields:
         line (str): line of output from command
     """
-    process = subprocess.Popen(cmd,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT,
-                               bufsize=1)
+    output = ''
+    try:
+        output = subprocess.check_output(
+            ' '.join(cmd),
+            shell=True
+        )
+    except CalledProcessError as err:
+        LOG.warning("Something went wrong with loqus")
+        raise err
 
-    for line in process.stdout:
-        yield line.decode('utf-8').strip()
 
-    def process_failed(process):
-        """See if process failed by checking returncode"""
-        return process.poll() != 0
-
-    if process_failed(process):
-        raise CalledProcessError(returncode=process.returncode, cmd=cmd)
+    if not output:
+        return output
+    
+    output = output.decode('utf-8')
+    return output
 
 class LoqusDB():
     def init_app(self, app):
         """Initialize from Flask."""
         LOG.info("Connecting to loqusdb")
         self.loqusdb_binary = app.config['LOQUSDB_SETTINGS'].get('binary', 'loqusdb')
+        LOG.info("Use loqusdb: %s", self.loqusdb_binary)
         self.loqusdb_config = app.config['LOQUSDB_SETTINGS'].get('config_path')
+        if self.loqusdb_config:
+            LOG.info("Use loqusdb config file %s", self.loqusdb_config)
         
         self.base_call = [self.loqusdb_binary]
         if self.loqusdb_config:
             self.base_call.extend(['--config', self.loqusdb_config])
+        
+        self.version = self._version()
         return
 
     def _fetch_variant(self, variant_info):
         """Query loqusdb for variant information
-        
+
         Args:
             variant_info(dict): The variant id in loqusdb format
         
@@ -87,7 +94,7 @@ class LoqusDB():
         res = {}
         variant_call = copy.deepcopy(self.base_call)
         variant_call.extend([
-            'variants', '--to-json', '--case-count',
+            'variants', '--to-json',
             '--variant-id', loqus_id])
         # If sv we need some more info
         if variant_info.get('category', 'snv') in ['sv']:
@@ -96,24 +103,24 @@ class LoqusDB():
                 '-e' , str(variant_info['end']), '--end-chromosome', variant_info['end_chrom'],
                 '--sv-type', variant_info['variant_type']
             ])
+        
+        if self.version > 2.4:
+            variant_call.extend(['--case-count'])
+
         output = ''
         try:
-            output = subprocess.check_output(
-                ' '.join(variant_call),
-                shell=True
-            )
+            output = execute_command(variant_call)
         except CalledProcessError as err:
             LOG.warning("Something went wrong with loqus")
             return
-
+        
         if not output:
-            LOG.info("Could not find information about variant %s", loqus_id)
             return res
 
-        output = output.decode('utf-8')
-
-
         res = json.loads(output)
+        
+        if self.version < 2.5:
+            res['total'] = self._case_count()
 
         return res
     
@@ -143,10 +150,7 @@ class LoqusDB():
         case_call.extend(['cases', '--count'])
         output = ''
         try:
-            output = subprocess.check_output(
-                ' '.join(case_call),
-                shell=True
-            )
+            output = execute_command(case_call)
         except CalledProcessError as err:
             LOG.warning("Something went wrong with loqus")
             return
@@ -155,8 +159,6 @@ class LoqusDB():
             LOG.info("Could not find information about loqusdb cases")
             return nr_cases
 
-        output = output.decode('utf-8')
-
         try:
             nr_cases = int(output.strip())
         except Exception:
@@ -164,10 +166,21 @@ class LoqusDB():
         
         return nr_cases
     
-    def test_loqus(self):
-        """Test if loqus seems to work"""
+    def _version(self):
+        """Test if loqus version"""
         version_call = copy.deepcopy(self.base_call)
         version_call.extend(['--version'])
+        loqus_version = 0.0
+
+        try:
+            output = execute_command(version_call)
+        except CalledProcessError as err:
+            LOG.warning("Something went wrong with loqus")
+            return
+        version = output.rstrip().split(' ')[-1]
+        if version:
+            return float(version)
+        return loqus_version
     
     def __repr__(self):
         return (f"LoqusDB(binary={self.loqusdb_binary},"

@@ -3,6 +3,7 @@
 # testing
 pytest==3.8
 pytest-flask==0.11
+pytest-mock
 pytest-cov
 mongomock<=3.12
 python-coveralls
