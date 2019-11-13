@@ -65,6 +65,17 @@ def execute_command(cmd):
     return output
 
 class LoqusDB():
+    
+    def __init__(self, loqusdb_binary=None, loqusdb_config=None, version=None):
+        """Initialise from args"""
+        self.loqusdb_binary = loqusdb_binary
+        self.loqusdb_config = loqusdb_config
+        self.version = version or 0.0
+        
+        self.base_call = [self.loqusdb_binary]
+        if self.loqusdb_config:
+            self.base_call.extend(['--config', self.loqusdb_config])
+
     def init_app(self, app):
         """Initialize from Flask."""
         LOG.info("Connecting to loqusdb")
