@@ -39,7 +39,6 @@ class LoqusdbMock():
     
 # -*- coding: utf-8 -*-
 
-
 class MockMail:
     _send_was_called = False
     _message = None
