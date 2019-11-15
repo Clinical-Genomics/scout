@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 
+- Same case evaluations are no longer shown as gray previous evaluations on the variants page
 - Bug when ordering sanger
 
 ## [4.8.2]
