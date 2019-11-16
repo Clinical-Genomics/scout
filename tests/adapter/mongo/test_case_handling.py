@@ -385,6 +385,29 @@ def test_update_dynamic_gene_list(gene_database, case_obj):
     # THEN a the gene list will contain a gene
     assert len(adapter.case(case_obj['_id'])['dynamic_gene_list']) == 1
 
+def test_update_dynamic_gene_list_with_bad_dict_entry(gene_database, case_obj)
+
+    # GIVEN an populated gene database,
+    adapter = gene_database
+
+    # GIVEN an **incorrectly** assigned dict instead of list as dynamic panel
+    case_obj['dynamic_gene_list'] = {}
+
+    # GIVEN a case with an empty dynamic_gene_list
+    adapter.case_collection.insert_one(case_obj)
+    assert adapter.case_collection.find_one()
+    assert len(adapter.case(case_obj['_id'])['dynamic_gene_list']) == 0
+
+    # GIVEN a gene with a gene symobl
+    gene_obj = gene_database.hgnc_collection.find_one({'build': '37'})
+    assert gene_obj
+    hgnc_symbol = gene_obj.get('hgnc_symbol')
+    assert hgnc_symbol
+
+    # WHEN updating dynamic gene list with gene
+    adapter.update_dynamic_gene_list(case_obj, hgnc_symbols=[hgnc_symbol])
+    # THEN a the gene list will contain a gene
+    assert len(adapter.case(case_obj['_id'])['dynamic_gene_list']) == 1
 
 def test_update_case_individuals(adapter, case_obj):
     # GIVEN an empty database (no cases)
@@ -433,8 +456,6 @@ def test_archive_unarchive_case(adapter, case_obj, institute_obj, user_obj):
     assert res['status'] == 'active'
     # and user becomes assignee
     assert user_obj['email'] in res['assignees']
-
-
 
 def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
 
