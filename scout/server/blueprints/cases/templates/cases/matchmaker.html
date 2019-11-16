@@ -137,13 +137,16 @@
             <div id="div_{{match_obj.match_oid}}" class="collapse" aria-labelledby="heading_{{match_obj.match_oid}}" data-parent="#accordionExample">
               <div class="card-body">
                 {% for match_result in match_obj.patients %}
-                   <table class="table table-condensed">
+                   <table class="table table-condensed table-sm">
                      <thead>
                        <tr>
                          <th scope="col">Score</th>
                          <th scope="col">Patient ID</th>
                          <th scope="col">MME node</th>
                          <th scope="col">Contact</th>
+                         <th scope="col">Email</th>
+                         <th scope="col">Institution</th>
+                         <th scope="col">Link</th>
                        </tr>
                      </thead>
                      <tbody>
@@ -151,12 +154,10 @@
                          <td><span class="badge badge-primary badge-pill">{{match_result.score.patient|round(4)}}</badge></td>
                          <td><strong>{{match_result.patient_id}}</strong></td>
                          <td>{{match_result.node.label}}</td>
-                         <td>{{match_result.patient.contact.name}}
-                           {% if match_result.patient.contact.institution %}
-                             <br>{{match_result.patient.contact.institution}}
-                           {% endif %}
-                           <br>{{match_result.patient.contact.href}}
-                         </td>
+                         <td>{{match_result.patient.contact.name}}</td>
+                         <td>{{match_result.patient.contact.email or '-'}}</td>
+                         <td>{{match_result.patient.contact.institution or '-'}}</td>
+                         <td>{{match_result.patient.contact.href}}</td>
                        </tr>
                      </tbody>
                    </table>
