@@ -100,16 +100,20 @@ class StrFiltersForm(FlaskForm):
     gene_panels = SelectMultipleField(choices=[])
     repids = TagListField()
 
-class SvFiltersForm(FiltersForm):
+class SvFiltersForm(VariantFiltersForm):
     """Extends FiltersForm for structural variants"""
-    variant_type = HiddenField(default='clinical')
     size = TextField('Length')
     size_shorter = BooleanField('Length shorter than')
     svtype = SelectMultipleField('SVType', choices=SV_TYPE_CHOICES)
+
     decipher = BooleanField('Decipher')
+    clingen_ngi = IntegerField('ClinGen NGI obs')
+    swegen = IntegerField('SweGen obs')
+
     chrom = TextField('Chromosome', [validators.Optional()])
     start = IntegerField('Start position', [validators.Optional(), IntegerField])
     end = IntegerField('End position', [validators.Optional(), IntegerField])
-    clingen_ngi = IntegerField('ClinGen NGI obs')
-    swegen = IntegerField('SweGen obs')
+
+    filter_variants = SubmitField(label='Filter variants')
+    clinical_filter = SubmitField(label='Clinical filter')
     export = SubmitField(label='Filter and export')

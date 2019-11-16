@@ -33,6 +33,7 @@
 
 {% block content_main %}
 <form>
+  {{ variant_type }}
   <div class="card mt-3">
     <table class="table table-bordered table-hover">
       <thead>
@@ -137,7 +138,7 @@
       {% if more_variants %}
         <div class="row">
             <div class="col-6">
-              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">	
+              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
                   First page
               </a>
               </div>
@@ -149,7 +150,7 @@
         </div>
       {% else %}
         <i class="text-muted">No more variants to display</i>
-        <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">	
+        <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
       First page
         </a>
       {% endif %}

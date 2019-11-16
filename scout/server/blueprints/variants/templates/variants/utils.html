@@ -153,6 +153,7 @@
 {% endmacro %}
 
 {% macro snv_filters(form, institute, case)%}
+<input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
 <div class="form-group">
   <div class="row">
     <div class="col-4">
@@ -250,7 +251,7 @@
   <div class="row justify-content-between" style="margin-top:20px;">
     <div class="col-6 text-left">
       <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name,
-        variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
+        variant_type=form.variant_type.data, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
         class="btn btn-secondary" style="color: #ffffff !important;">
         Reset&nbsp;filters
       </a>
@@ -447,7 +448,7 @@
         </div>
         <div class="col-1 align-self-start">
           <a href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
-            case_name=case.display_name, variant_type='clinical',
+            case_name=case.display_name, variant_type=form.variant_type.data,
             gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
             class="btn btn-secondary" style="color: #ffffff !important;">
             Reset&nbsp;filters
