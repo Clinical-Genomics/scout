@@ -54,9 +54,10 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         for evaluation_obj in store.get_evaluations(variant_obj):
             classification = evaluation_obj['classification']
             # Only show pathogenic/likely pathogenic from other cases on variants page
-            if evaluation_obj['case_id'] != case_obj['_id']:
-                if not classification in ['pathogenic', 'likely_pathogenic']:
-                    continue
+            if evaluation_obj['case_id'] == case_obj['_id']:
+                continue
+            if not classification in ['pathogenic', 'likely_pathogenic']:
+                continue
             # Convert the classification int to readable string
             evaluation_obj['classification'] = ACMG_COMPLETE_MAP.get(classification)
             evaluations.append(evaluation_obj)
