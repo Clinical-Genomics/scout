@@ -385,7 +385,7 @@ def test_update_dynamic_gene_list(gene_database, case_obj):
     # THEN a the gene list will contain a gene
     assert len(adapter.case(case_obj['_id'])['dynamic_gene_list']) == 1
 
-def test_update_dynamic_gene_list_with_bad_dict_entry(gene_database, case_obj)
+def test_update_dynamic_gene_list_with_bad_dict_entry(gene_database, case_obj):
 
     # GIVEN an populated gene database,
     adapter = gene_database
