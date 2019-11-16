@@ -252,7 +252,7 @@ class CaseHandler(object):
         Args:
             collaborator(str): If collaborator should be considered
         """
-        query = query or {}
+        query = {}
 
         if institute_id:
             LOG.debug("Use collaborator {0}".format(institute_id))

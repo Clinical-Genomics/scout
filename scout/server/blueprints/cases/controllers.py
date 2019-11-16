@@ -34,7 +34,7 @@ TRACKS = {
     'cancer': 'Cancer',
 }
 
-def cases(store, case_query, prioritized_cases_query=prioritized_cases_query, limit=100):
+def cases(store, case_query, prioritized_cases_query=None, limit=100):
     """Preprocess case objects.
 
     Add the necessary information to display the 'cases' view
@@ -66,20 +66,22 @@ def cases(store, case_query, prioritized_cases_query=prioritized_cases_query, li
         case_obj['display_track'] = TRACKS[case_obj.get('track', 'rare')]
         case_groups[case_obj['status']].append(case_obj)
 
-    extra_prioritized = 0
-    for case_obj in prioritized_cases_query:
-        any(group_obj.display_id for group_obj in case_groups[case_obj['status']]
-            continue
-        else:
-            case_obj['analysis_types'] = list(analysis_types)
-            case_obj['assignees'] = [store.user(user_email) for user_email in
-                                     case_obj.get('assignees', [])]
-            case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
-            case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
-            case_obj['display_track'] = TRACKS[case_obj.get('track', 'rare')]
-            case_groups[case_obj['status']].append(case_obj)
-            extra_prioritized += 1
-    nr_cases += extra_prioritized
+    if prioritized_cases_query:
+        extra_prioritized = 0
+        for case_obj in prioritized_cases_query:
+            if any(group_obj.get('display_name') == case_obj.get('display_name')
+                for group_obj in case_groups[case_obj['status']]):
+                    continue
+            else:
+                case_obj['analysis_types'] = list(analysis_types)
+                case_obj['assignees'] = [store.user(user_email) for user_email in
+                                        case_obj.get('assignees', [])]
+                case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
+                case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
+                case_obj['display_track'] = TRACKS[case_obj.get('track', 'rare')]
+                case_groups[case_obj['status']].append(case_obj)
+                extra_prioritized += 1
+        nr_cases += extra_prioritized
 
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],

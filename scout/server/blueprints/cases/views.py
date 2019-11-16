@@ -72,7 +72,7 @@ def cases(institute_id):
 
     LOG.debug("Prepare all cases")
 
-    prioritized_cases = store.prioritized_cases(collaborator=institute_id)
+    prioritized_cases = store.prioritized_cases(institute_id=institute_id)
 
     data = controllers.cases(store, all_cases, prioritized_cases, limit)
     data['sort_order'] = sort_order
