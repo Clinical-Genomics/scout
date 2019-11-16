@@ -71,7 +71,10 @@ def cases(institute_id):
             all_cases.sort('status', pymongo_sort)
 
     LOG.debug("Prepare all cases")
-    data = controllers.cases(store, all_cases, limit)
+
+    prioritized_cases = store.prioritized_cases(collaborator=institute_id)
+
+    data = controllers.cases(store, all_cases, prioritized_cases, limit)
     data['sort_order'] = sort_order
     data['sort_by'] = sort_by
     data['nr_cases'] = store.nr_cases(institute_id=institute_id)

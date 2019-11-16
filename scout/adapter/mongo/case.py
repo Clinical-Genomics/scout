@@ -246,6 +246,22 @@ class CaseHandler(object):
         else:
             return self.case_collection.find(query).sort('updated_at', -1)
 
+    def prioritized_cases(self, institute_id=None):
+        """Fetches any prioritized cases from the backend.
+
+        Args:
+            collaborator(str): If collaborator should be considered
+        """
+        query = query or {}
+
+        if institute_id:
+            LOG.debug("Use collaborator {0}".format(institute_id))
+            query['collaborators'] = institute_id
+
+        query['status'] = 'prioritized'
+
+        return self.case_collection.find(query).sort('updated_at', -1)
+
     def nr_cases(self, institute_id=None):
         """Return the number of cases
 
