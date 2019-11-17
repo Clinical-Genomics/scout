@@ -177,6 +177,8 @@
                          <td style="width: 35%">
                            {% for feature in match_result.patient.features %}
                              <span data-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="badge badge-info">{{feature.label}}({{feature.id}})</span>
+                           {% else %}
+                            -
                            {% endfor %}
                          </td>
                          <td style="width: 15%">
@@ -184,6 +186,8 @@
                              <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim.id[4:]}}">
                                <span class="badge badge-sm badge-secondary">{{omim.id}}</span>
                              </a>
+                           {% else %}
+                            -
                            {% endfor %}
                          </td>
                        </tr>
