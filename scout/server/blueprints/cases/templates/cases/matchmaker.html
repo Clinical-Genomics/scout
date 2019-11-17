@@ -180,7 +180,7 @@
                              <br>{{match_result.patient.contact.institution}}
                            {% endif %}
                            {% if match_result.patient.contact.email %}
-                             <br>{{match_result.patient.contact.email}}
+                             <br>{{match_result.patient.contact.email|replace("mailto:","")}}
                            {% endif %}
                          </td>
                          <td style="width: 35%">
