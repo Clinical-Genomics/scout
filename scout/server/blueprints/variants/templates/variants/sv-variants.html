@@ -85,14 +85,14 @@
 {% endblock %}
 
 {% macro cell_rank(variant) %}
-  <a class="variants-row-item flex-small layout"
+  <a
      href="{{ url_for('variant.sv_variant', institute_id=institute._id,
                       case_name=case.display_name, variant_id=variant._id) }}">
     {{ variant.variant_rank }}
   </a>
   {% set comment_count = variant.comments.count() %}
   {% if variant.manual_rank %}
-    <span class="badge float-right" title="Manual rank">{{ variant.manual_rank }}</span>
+    <span class="badge badge-primary" data-toggle="tooltip" data-placement="right" title="Manual rank: {{ manual_rank_options[variant.manual_rank].description }}">{{  manual_rank_options[variant.manual_rank]['label'] }}</span>
   {% endif %}
 
   {% if comment_count > 0 %}
@@ -123,15 +123,15 @@
   {% else %}
   <tr>
   {% endif %}
-    <td>
+    <td class="text-left">
       {{ cell_rank(variant) }}
     </td>
-    <td>{{ variant.rank_score|int }}</td>
+    <td class="text-right">{{ variant.rank_score|int }}</td>
     <td>{{ variant.sub_category|upper }}</td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
     <td>{{ variant.position }}</td>
     <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
-    <td>{{ variant.length }}</td>
+    <td class="text-right">{{ variant.length }}</td>
     <td>
       {% if 'region_annotations' in variant %}
         {% for annotation in variant.region_annotations[:3] %}

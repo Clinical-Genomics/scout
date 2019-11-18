@@ -4,18 +4,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## []
+## [x.x.x]
 
 ### Added
 - Improved MatchMaker pages
 
 ### Fixed
+- Manual rank variant tags could be saved in a "Select a tag"-state, a problem in the variants view.
+- Same case evaluations are no longer shown as gray previous evaluations on the variants page
 
 
 ## [4.8.3]
 
+### Added
+
 ### Fixed
-- Same case evaluations are no longer shown as gray previous evaluations on the variants page
 - Bug when ordering sanger
 
 
