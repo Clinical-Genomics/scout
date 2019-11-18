@@ -226,7 +226,7 @@ def verify(institute_id, case_name, variant_id, variant_category, order):
             institute_id=institute_id,
             case_name=case_name,
             comment=comment,
-            variant_obj=variant_id,
+            variant_id=variant_id,
             sender=current_app.config.get('MAIL_USERNAME'),
             variant_url=request.referrer,
             order=order,
