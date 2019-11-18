@@ -92,7 +92,7 @@
   </a>
   {% set comment_count = variant.comments.count() %}
   {% if variant.manual_rank %}
-    <span class="badge badge-primary" title="Manual rank">{{ variant.manual_rank }}</span>
+    <span class="badge badge-primary" data-toggle="tooltip" data-placement="right" title="Manual rank: {{ manual_rank_options[variant.manual_rank].description }}">{{  manual_rank_options[variant.manual_rank]['label'] }}</span>
   {% endif %}
 
   {% if comment_count > 0 %}
@@ -123,15 +123,15 @@
   {% else %}
   <tr>
   {% endif %}
-    <td class="d-flex justify-content-between align-items-center">
+    <td class="text-left">
       {{ cell_rank(variant) }}
     </td>
-    <td>{{ variant.rank_score|int }}</td>
+    <td class="text-right">{{ variant.rank_score|int }}</td>
     <td>{{ variant.sub_category|upper }}</td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
     <td>{{ variant.position }}</td>
     <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
-    <td>{{ variant.length }}</td>
+    <td class="text-right">{{ variant.length }}</td>
     <td>
       {% if 'region_annotations' in variant %}
         {% for annotation in variant.region_annotations[:3] %}
