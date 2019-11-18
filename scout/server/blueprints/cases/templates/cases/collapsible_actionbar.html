@@ -52,9 +52,9 @@
       </a>
     {% endif %}
     {% if config.SQLALCHEMY_DATABASE_URI %}
-      <form method="POST" id="coverage_form" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}" target="_blank">
+      <form method="POST" id="coverage_form" target="_blank" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
         <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
-        <a target="_blank" href="javascript:;" onclick="document.getElementById('coverage_form').submit();" class="list-group-item list-group-item-action bg-dark text-white">
+        <a href="javascript:;" onclick="document.getElementById('coverage_form').submit();" class="list-group-item list-group-item-action bg-dark text-white">
             <span class="menu-collapsed">Coverage report</span>
         </a>
       </form>
@@ -108,14 +108,14 @@
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex w-100 justify-content-start align-items-center">
       <span class="fa fa-barcode fa-fw mr-3"></span>
-      <span class="menu-collapsed">Rank model v. {{ case.rank_model_version }}</span>
+      <span class="menu-collapsed">Rank model v.<a href="{{ case.rank_model_link }}">{{ case.rank_model_version }}</a></span>
   </div>
 </div>
 {% if case.sv_rank_model_version %}
   <div href="#" class="bg-dark list-group-item text-white">
     <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fa fa-barcode fa-fw mr-3"></span>
-        <span class="menu-collapsed">SV rank model v. {{ case.sv_rank_model_version }}</span>
+        <span class="menu-collapsed">SV rank model v.<a href="{{ case.sv_rank_model_link }}">{{ case.sv_rank_model_version }}</a></span>
     </div>
   </div>
 {% endif %}

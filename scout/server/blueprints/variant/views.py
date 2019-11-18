@@ -9,10 +9,10 @@ from scout.server.extensions import (store, loqusdb)
 from scout.server.blueprints.variant.controllers import variant as variant_controller
 from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
 from scout.server.blueprints.variant.controllers import variant_acmg as acmg_controller
-from scout.server.blueprints.variant.controllers import (observations, variant_acmg_post, 
+from scout.server.blueprints.variant.controllers import (observations, variant_acmg_post,
                                                          clinvar_export)
 
-from scout.server.blueprints.variant.verification_controllers import (variant_verification, 
+from scout.server.blueprints.variant.verification_controllers import (variant_verification,
 MissingVerificationRecipientError)
 
 from scout.parse.clinvar import set_submission_objects
@@ -38,7 +38,7 @@ def variant(institute_id, case_name, variant_id):
     if current_app.config.get('LOQUSDB_SETTINGS'):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
         data['observations'] = observations(store, loqusdb, data['case'], data['variant'])
-    
+
     data['cancer'] = request.args.get('cancer') == 'yes'
     data['str'] = request.args.get('str') == 'yes'
     return data
@@ -47,7 +47,7 @@ def variant(institute_id, case_name, variant_id):
 @templated('variant/sv-variant.html')
 def sv_variant(institute_id, case_name, variant_id):
     """Display a specific structural variant."""
-    data = variant_controller(store, institute_id, case_name, variant_id, add_other=False, 
+    data = variant_controller(store, institute_id, case_name, variant_id, add_other=False,
                                variant_type='sv')
     return data
 
@@ -66,7 +66,7 @@ def variant_acmg(institute_id, case_name, variant_id):
     if request.method == 'GET':
         data = acmg_controller(store, institute_id, case_name, variant_id)
         return data
-    
+
     criteria = []
     criteria_terms = request.form.getlist('criteria')
     for term in criteria_terms:
@@ -172,6 +172,7 @@ def acmg():
     classification = get_acmg(criteria)
     return jsonify(dict(classification=classification))
 
+
 @variant_bp.route('/<institute_id>/<case_name>/<variant_id>/clinvar', methods=['POST', 'GET'])
 @templated('variant/clinvar.html')
 def clinvar(institute_id, case_name, variant_id):
@@ -180,9 +181,31 @@ def clinvar(institute_id, case_name, variant_id):
     if request.method == 'GET':
         return data
     #POST
-    form_dict = request.form.to_dict()
+    form_dict = {}
+    # flatten up HPO and OMIM terms lists into string of keys separated by semicolon
+    for key, value in request.form.items():
+        if key.startswith('conditions@') or key.startswith('clin_features@'):
+            conditions = request.form.getlist(key) # can be HPO or OMIM conditions
+            if conditions:
+                variant_id = key.split('@')[1]
+                cond_types = []
+                cond_values = []
+
+                for condition in conditions:
+                    cond_types.append(condition.split('_')[0]) # 'HPO' or 'OMIM'
+                    cond_values.append(condition.split('_')[1]) # HPO id or OMIM ID
+
+                if key.startswith('conditions@'): # Filling in 'condition_id_type' and 'condition_id_value' in variant data
+                    form_dict['@'.join(['condition_id_type',variant_id])] = ';'.join(cond_types) # Flattened list
+                    form_dict['@'.join(['condition_id_value',variant_id])] = ';'.join(cond_values) # Flattened list
+                elif key.startswith('clin_features@'): # Filling in 'clin_features' in casedata
+                    form_dict['@'.join(['clin_features',variant_id])] = ';'.join(cond_values) # Flattened list
+
+        else:
+            form_dict[key] = value
+
     # A tuple of submission objects (variants and casedata objects):
-    submission_objects = set_submission_objects(form_dict) 
+    submission_objects = set_submission_objects(form_dict)
 
     # Add submission data to an open clinvar submission object,
     # or create a new if no open submission is found in database
@@ -198,17 +221,17 @@ def verify(institute_id, case_name, variant_id, variant_category, order):
     comment = request.form.get('verification_comment')
 
     try:
-        controllers.variant_verification(
-                                    store=store, 
-                                    institute_id=institute_id, 
-                                    case_name=case_name, 
-                                    comment=comment,
-                                    variant_obj=variant_id, 
-                                    sender=current_app.config.get('MAIL_USERNAME'), 
-                                    variant_url=request.referrer, 
-                                    order=order, 
-                                    url_builder=url_for
-                                )
+        variant_verification(
+            store=store,
+            institute_id=institute_id,
+            case_name=case_name,
+            comment=comment,
+            variant_id=variant_id,
+            sender=current_app.config.get('MAIL_USERNAME'),
+            variant_url=request.referrer,
+            order=order,
+            url_builder=url_for
+        )
     except MissingVerificationRecipientError:
         flash('No verification recipients added to institute.', 'danger')
 

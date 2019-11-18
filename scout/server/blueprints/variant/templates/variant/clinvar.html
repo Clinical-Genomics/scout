@@ -6,6 +6,19 @@
 
 {% set pheno_hpos = [] %}
 {% set pheno_features = [] %}
+{% set pheno_omims = [] %}
+
+{% for pheno in case.phenotype_terms if not pheno.phenotype_id in pheno_hpos %}
+  {% do pheno_hpos.append(pheno.phenotype_id) %}
+  {% do pheno_features.append(pheno.feature) %}
+{% endfor %}
+{% for pheno in case.phenotype_groups if not pheno.phenotype_id in pheno_hpos %}
+  {% do pheno_hpos.append(pheno.phenotype_id) %}
+  {% do pheno_features.append(pheno.feature) %}
+{% endfor %}
+{% for omim_id in case.diagnosis_phenotypes %}
+  {% do pheno_omims.append(omim_id) %}
+{% endfor %}
 
 {% block top_nav %}
   <li class="nav-item">
@@ -45,45 +58,35 @@
     The form present on this page mirrors the fields on the Clinvar submission spreadsheets. After collecting all the required fields for submitting one or more variants to Clinvar, the info is subsequently processed into comma separated files, ready to be uploaded in the submission process.<br>
     Link to the official Clinvar <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#sub_info" target="_blank">documentation</a>.
   <br><br>
-  <form action="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST" id="clivar_form">
-    <input type="hidden" name="main_var" value="{{ variant._id }}">
-    <input type="hidden" name="case_id" value="{{ case._id }}">
-    {% if 'phenotype_groups' in case and case.phenotype_groups|length >0 or 'phenotype_terms' in case and case.phenotype_terms|length >0 %}
-      {% for pheno in case.phenotype_terms if not pheno.phenotype_id in pheno_hpos %}
-        {% do pheno_hpos.append(pheno.phenotype_id) %}
-        {% do pheno_features.append(pheno.feature) %}
-      {% endfor %}
-      {% for pheno in case.phenotype_groups if not pheno.phenotype_id in pheno_hpos %}
-        {% do pheno_hpos.append(pheno.phenotype_id) %}
-        {% do pheno_features.append(pheno.feature) %}
-      {% endfor %}
-      <div class="d-flex justify-content-between">
-        <div>
-          <input type="checkbox" id="all_vars" name="all_vars" value="all_vars">
-          <label for="submit_all">Submit all pinned variants for this case</label>
-        </div>
-        <br>
-      </div>
-      <div class="row">
-        {{ panel_variant('main_var') }}
-      </div>
-      <div class="row" id="other_vars" style="display: none">
-        {{ panel_variant('other_vars') }}
-      </div>
-      <div class="col-xs-6 col-sm-6 col-md-12">
-        <div class="form-group text-center">
-          <button class="btn btn-lg btn-info" data-toggle="modal" value="submit">Add variants to Clinvar submission</button>
-        </div>
-      </div>
-  </form>
+    {% if pheno_hpos|length >0 or pheno_omims|length >0 %}
+      <form action="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST" id="clivar_form">
+        <input type="hidden" name="main_var" value="{{ variant._id }}">
+        <input type="hidden" name="case_id" value="{{ case._id }}">
+          <div class="d-flex justify-content-between">
+            <div>
+              <input type="checkbox" id="all_vars" name="all_vars" value="all_vars">
+              <label for="submit_all">Submit all pinned variants for this case</label>
+            </div>
+            <br>
+          </div>
+          <div class="row">
+            {{ panel_variant('main_var') }}
+          </div>
+          <div class="row" id="other_vars" style="display: none">
+            {{ panel_variant('other_vars') }}
+          </div>
+          <div class="col-xs-6 col-sm-6 col-md-12">
+            <div class="form-group text-center">
+              <button class="btn btn-lg btn-info" data-toggle="modal" value="submit">Add variants to Clinvar submission</button>
+            </div>
+          </div>
+      </form>
 {% else %}
     Can't submit to clinvar without specifying at least a phenotype for this case! <a class="btn btn-default" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
       Back to case
     </a>
   {% endif %}
 </div>
-
-
 {% endblock %}
 
 <!--This panel returns one table for each pinned vat to include in the submission.-->
@@ -100,7 +103,6 @@
     {% endif %}
     <input type="hidden" name="ref@{{pinned._id}}" value="{{ pinned.reference }}">
     <input type="hidden" name="alt@{{pinned._id}}" value="{{ pinned.alternative }}">
-    <input type="hidden" name="condition_id_type@{{pinned._id}}" value="HPO">
     <br><br>
         <div class="card panel-default">
           <div class="panel-heading">
@@ -234,9 +236,10 @@
                       </td>
                     </tr>
                     {% if pinned.dbsnp_id and pinned.category == 'snv'%}
+                    {% set dbsnp_id = pinned.dbsnp_id.split(':')[0] %} <!-- sometimes snps look like this rs65544478:some_stuff -->
                       <tr>
                         <td>var. identifier</td>
-                        <td><input type="text" id="Variation identifiers_{{pinned._id}}" name="variations_ids@{{pinned._id}}" value="{{pinned.dbsnp_id}}" size=14 pattern="rs[0-9]+"></td>
+                        <td><input type="text" id="Variation identifiers_{{pinned._id}}" name="variations_ids@{{pinned._id}}" value="{{dbsnp_id}}" size=14 pattern="rs[0-9]+"></td>
                       </tr>
                     {% endif %}
                     <tr>
@@ -252,13 +255,19 @@
                       </td>
                     </tr>
                     <tr>
-                      <td>Date last evaluated</td>
-                      <td><input type="text" id="Date last evaluated_{{pinned._id}}" name="last_evaluated@{{pinned._id}}" placeholder="yyyy-mm-dd" value="{{today}}" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))" ></td>
+                      <td>Comment on clinical significance</td>
+                      <td>
+                        <textarea name="clinsig_comment@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                      </td>
                     </tr>
                   </table>
                 </td>
                 <td>
                   <table class="table table-fixed">
+                    <tr>
+                      <td>Date last evaluated</td>
+                      <td><input type="text" id="Date last evaluated_{{pinned._id}}" name="last_evaluated@{{pinned._id}}" placeholder="yyyy-mm-dd" value="{{today}}" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))" ></td>
+                    </tr>
                     <tr>
                       <td>Functional consequence:<br>(based on experimental evidence, leave blank if unsure)</td>
                       <td>
@@ -301,13 +310,25 @@
                       </td>
                     </tr>
                     <tr>
-                      <td style="width:30%">Condition HPO term(s):<br>(associated with the variant)<br>
+                      <td style="width:30%">Condition HPO term(s):<br>(associated to the variant)</td>
+                      <td>
                         {% for hpo in pheno_hpos %}
-                          <a href="http://compbio.charite.de/hpoweb/showterm?id={{hpo}}" target="_blank"><span class="badge badge-info">{{ hpo }}</span></a><br>
+                          <input type="checkbox" id="conditions@{{pinned._id}}" value="HPO_{{hpo}}" name="conditions@{{pinned._id}}"><a href="http://hpo.jax.org/app/browse/term/{{hpo}}"
+                            target="_blank" class="text-blue"> {{ hpo }} - {{pheno_features[loop.index -1]}}</a></input><br>
+                        {% else %}
+                          No preselected HPO term available.
                         {% endfor %}
                       </td>
+                    </tr>
+                    <tr>
+                      <td style="width:30%">OMIM diagnoses:<br>(associated to the variant)</td>
                       <td>
-                        <input type="text" name="condition_id_value@{{pinned._id}}" value="{{pheno_hpos|join(';')}}" class="form-control" pattern="^HP:[0-9]+(?:;+HP:[0-9]+)*$" placeholder="HP:12345;HP:678910"/>
+                        {% for omim in pheno_omims %}
+                          <input type="checkbox" id="conditions@{{pinned._id}}" value="OMIM_{{omim}}" name="conditions@{{pinned._id}}"><a href="http://omim.org/entry/{{omim}}"
+                            target="_blank" class="text-blue"> {{ omim }} </a></input><br>
+                        {% else %}
+                          No preselected OMIM diagnosis available.
+                        {% endfor %}
                       </td>
                     </tr>
                     <tr>
@@ -560,15 +581,10 @@
                                   {% if sample.display_name == individual.display_name %}
                                     <strong>({{ sample.genotype_call }})</strong><br>
                                     <select name="zygosity@{{pinned._id}}" id="zygosity">
-                                      {% if sample.genotype_call == '1/1' %}
-                                        <option value="homozygote" selected>homozygote</option>
-                                        <option value="single heterozygote">single heterozygote</option>
-                                      {% else %}
-                                        <option value="single heterozygote" selected>single heterozygote</option>
-                                        <option value="compound heterozygote">compound heterozygote</option>
-                                        <option value="hemizygote">hemizygote</option>
-                                        <option value="homozygote">homozygote</option>
-                                      {% endif %}
+                                      <option value="hemizygote" {%if sample.genotype_call == '1/1' and pinned.chromosome in ['X','Y'] %} selected {%endif%}>hemizygote</option>
+                                      <option value="homozygote" {%if sample.genotype_call == '1/1' %} selected {%endif%}>homozygote</option>
+                                      <option value="compound heterozygote" {%if sample.genotype_call != '1/1'%} selected {%endif%}>compound heterozygote</option>
+                                      <option value="single heterozygote">single heterozygote</option>
                                     </select>
                                   {% endif %}
                                 {% endfor %}
@@ -644,28 +660,20 @@
                         <td>
                           <table class="table table-fixed">
                             <tr>
-                              <td style="width:30%">Subject phenotypes<br>(HPO terms. ONLY if different from variant's HPO terms)</td>
+                              <td style="width:30%">Clinical features<br>(HPO terms. ONLY if different from variant's HPO terms)</td>
                               <td>
-                                <textarea id="clin_features" name="clin_features@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40">
-                                </textarea>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>Comments on clinical features</td>
-                              <td>
-                                <textarea name="clin_features_comment@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>Evidence citations</td>
-                              <td>
-                                <textarea name="evidence_cit@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40"></textarea>
+                                {% for hpo in pheno_hpos %}
+                                  <input type="checkbox" id="clin_features@{{pinned._id}}" value="HPO_{{hpo}}" name="clin_features@{{pinned._id}}"><a href="http://hpo.jax.org/app/browse/term/{{hpo}}"
+                                    target="_blank" class="text-blue"> {{ hpo }} - {{pheno_features[loop.index -1]}}</a></input><br>
+                                {% else %}
+                                  No preselected HPO term available.
+                                {% endfor %}
                               </td>
                             </tr>
                             <tr>
                               <td>Testing laboratory</td>
                               <td>
-                                <input type="text" name="testing_lab@{{pinned._id}}" placeholder="(optional)" value="Clinical Genomics - SciLifeLab Solna, Sweden." size=40>
+                                <input type="text" name="testing_lab@{{pinned._id}}" placeholder="(optional)" size=40>
                               </td>
                             </tr>
                             <tr>
@@ -741,8 +749,6 @@
           }
         }
     }
-
-    $('textarea#clin_features').html($('textarea#clin_features').html().trim());
 
     $('#all_vars').change(function() {
       if(this.checked) {
