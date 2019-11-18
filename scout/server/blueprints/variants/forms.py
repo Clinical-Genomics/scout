@@ -50,6 +50,7 @@ class BetterDecimalField(DecimalField):
 
 class VariantFiltersForm(FlaskForm):
     variant_type = HiddenField(default='clinical')
+    
     gene_panels = SelectMultipleField(choices=[])
     hgnc_symbols = TagListField('HGNC Symbols/Ids (case sensitive)')
 
