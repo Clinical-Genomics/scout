@@ -221,17 +221,17 @@ def verify(institute_id, case_name, variant_id, variant_category, order):
     comment = request.form.get('verification_comment')
 
     try:
-        controllers.variant_verification(
-                                    store=store,
-                                    institute_id=institute_id,
-                                    case_name=case_name,
-                                    comment=comment,
-                                    variant_obj=variant_id,
-                                    sender=current_app.config.get('MAIL_USERNAME'),
-                                    variant_url=request.referrer,
-                                    order=order,
-                                    url_builder=url_for
-                                )
+        variant_verification(
+            store=store,
+            institute_id=institute_id,
+            case_name=case_name,
+            comment=comment,
+            variant_id=variant_id,
+            sender=current_app.config.get('MAIL_USERNAME'),
+            variant_url=request.referrer,
+            order=order,
+            url_builder=url_for
+        )
     except MissingVerificationRecipientError:
         flash('No verification recipients added to institute.', 'danger')
 
