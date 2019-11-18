@@ -15,22 +15,22 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.8.3]
 
 ### Fixed
-
 - Same case evaluations are no longer shown as gray previous evaluations on the variants page
 - Bug when ordering sanger
+
 
 ## [4.8.2]
 
 ### Added
 
 ### Fixed
-
 - Avoid opening extra tab for coverage report
 - Fixed a problem when rank model version was saved as floats and not strings
 - Fixed a problem with displaying dismiss variant reasons on the general report
 - Disable load and delete filter buttons if there are no saved filters
 - Fix problem with missing verifications
 - Remove duplicate users and merge their data and activity
+
 
 ## [4.8.1]
 
