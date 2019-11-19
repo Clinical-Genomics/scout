@@ -7,19 +7,19 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+- Improved MatchMaker pages, including visible patient contacts email address
 
 ### Fixed
-
-- Stay on research pages, even if reset, next first buttons are pressed..
 - Manual rank variant tags could be saved in a "Select a tag"-state, a problem in the variants view.
 - Same case evaluations are no longer shown as gray previous evaluations on the variants page
+- Stay on research pages, even if reset, next first buttons are pressed..
+
 
 ## [4.8.3]
 
 ### Added
 
 ### Fixed
-
 - Bug when ordering sanger
 
 
@@ -28,13 +28,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 ### Fixed
-
 - Avoid opening extra tab for coverage report
 - Fixed a problem when rank model version was saved as floats and not strings
 - Fixed a problem with displaying dismiss variant reasons on the general report
 - Disable load and delete filter buttons if there are no saved filters
 - Fix problem with missing verifications
 - Remove duplicate users and merge their data and activity
+
 
 ## [4.8.1]
 
