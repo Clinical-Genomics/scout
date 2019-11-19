@@ -155,7 +155,7 @@ def case(store, institute_obj, case_obj):
         case_obj['sv_rank_model_link'] = ''.join(
             [
                 sv_rank_model_link_prefix,
-                str(case_obj['sv_rank_model_version']),
+                str(case_obj['sv_rank_model_version']), 
                 sv_rank_model_link_postfix
             ]
         )
