@@ -34,22 +34,19 @@ TRACKS = {
     'cancer': 'Cancer',
 }
 
-def cases(store, case_query, limit=100, sort_by=None, sort_order=None):
+def cases(store, case_query, limit=100):
     """Preprocess case objects.
 
     Add the necessary information to display the 'cases' view
 
     Args:
         store(adapter.MongoAdapter)
-        case_query(list)
+        case_query(pymongo.Cursor)
         limit(int): Maximum number of cases to display
-        sort_by(str): 'analysis_date', 'track' or 'status'
-        sort_order(str): 'asc' or 'desc'
 
     Returns:
         data(dict): includes the cases, how many there are and the limit.
     """
-    reverse = True
 
     case_groups = {status: [] for status in CASE_STATUSES}
     nr_cases = 0
@@ -68,15 +65,6 @@ def cases(store, case_query, limit=100, sort_by=None, sort_order=None):
         case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
         case_obj['display_track'] = TRACKS[case_obj.get('track', 'rare')]
         case_groups[case_obj['status']].append(case_obj)
-
-    if sort_by: # sort according to user preference
-        if sort_order == 'asc':
-            reverse = False
-        if sort_by == 'track':
-            sort_by = 'display_track'
-        for status in case_groups:
-            # sort list of cases in custom order
-            case_groups[status] = sorted(case_groups[status], key = lambda k: k[sort_by], reverse=reverse)
 
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],

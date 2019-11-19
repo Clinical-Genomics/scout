@@ -54,17 +54,29 @@ def cases(institute_id):
 
     skip_assigned = request.args.get('skip_assigned')
     is_research = request.args.get('is_research')
-    all_cases = store.cases(collaborator=institute_id, name_query=query,
-                        skip_assigned=skip_assigned, is_research=is_research)
+    all_cases = list(store.cases(collaborator=institute_id, name_query=query,
+                        skip_assigned=skip_assigned, is_research=is_research))
+
+    prioritized_cases = [case for case in all_cases if case.get('status','') == 'prioritized']
+    for case in all_cases:
+        if not case in prioritized_cases:
+            prioritized_cases.append(case)
 
     sort_by = request.args.get('sort')
     sort_order = request.args.get('order') or 'asc'
-
-    status_order = {'prioritized':0, 'inactive':1, 'active':2, 'archived':3, 'solved':4 }
-    cases_by_status = sorted( list(all_cases), key = lambda k: status_order[k['status']] )
+    if sort_by:
+        pymongo_sort = pymongo.ASCENDING
+        if sort_order == 'desc':
+            pymongo_sort = pymongo.DESCENDING
+        if sort_by == 'analysis_date':
+            all_cases.sort('analysis_date', pymongo_sort)
+        elif sort_by == 'track':
+            all_cases.sort('track', pymongo_sort)
+        elif sort_by == 'status':
+            all_cases.sort('status', pymongo_sort)
 
     LOG.debug("Prepare all cases")
-    data = controllers.cases(store, cases_by_status, limit, sort_by, sort_order)
+    data = controllers.cases(store, prioritized_cases, limit)
     data['sort_order'] = sort_order
     data['sort_by'] = sort_by
     data['nr_cases'] = store.nr_cases(institute_id=institute_id)
