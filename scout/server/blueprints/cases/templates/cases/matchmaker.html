@@ -213,9 +213,9 @@
                                     <a class="text-white" target="_blank" href="https://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={{g_feat.gene.id}}">
                                       <span class="badge badge-sm badge-secondary">{{g_feat.gene.id}}</span>
                                     </a>,
-                                    <strong>Variant:</strong>{{g_feat.variant|replace("'", "")}},
-                                    <strong>Type:</strong>{{g_feat.type|replace("'", "")}},
-                                    <strong>zygosity:</strong>{{g_feat.zygosity}}
+                                    <strong>Variant:</strong>{{g_feat.variant|replace("'", "") or '-'}},
+                                    <strong>Type:</strong>{{g_feat.type|replace("'", "") or '-'}},
+                                    <strong>zygosity:</strong>{{g_feat.zygosity or '-'}}
                                   </div>
                                 </div>
                               {% endfor %}
