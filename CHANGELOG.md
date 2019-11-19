@@ -7,11 +7,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
-- Improved MatchMaker pages
+- Improved MatchMaker pages, including visible patient contacts email address
 
 ### Fixed
 - Manual rank variant tags could be saved in a "Select a tag"-state, a problem in the variants view.
 - Same case evaluations are no longer shown as gray previous evaluations on the variants page
+- Stay on research pages, even if reset, next first buttons are pressed..
 
 
 ## [4.8.3]

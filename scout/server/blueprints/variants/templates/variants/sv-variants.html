@@ -28,7 +28,7 @@
     </a>
   </li>
   <li class="nav-item active">
-    <span class="navbar-text">{{ variant_type|capitalize }}  Structural variants</span>
+    <span class="navbar-text">{{ form.variant_type.data|capitalize }}  Structural variants</span>
   </li>
 {% endblock %}
 
@@ -177,7 +177,7 @@
         </div>
        <div>
           <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value={{ page + 1 }}>Next page</button>
-         </div>
+       </div>
     </div>
     {% else %}
       <i class="text-muted">No more variants to display</i>
