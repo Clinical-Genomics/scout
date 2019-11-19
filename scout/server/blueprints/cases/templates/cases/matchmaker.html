@@ -203,7 +203,7 @@
                        <!-- Display candidate genes for matches -->
                        {% if match_result.patient.genomicFeatures%}
                          <tr class="{{ loop.cycle('odd', 'even') }}">
-                           <td style="width: 20%"><strong>Candidate genes/variants:</strong></td>
+                           <td style="width: 20%"><strong>Gene/Variants:</strong></td>
                            <td colspan="5">
                               {% for g_feat in match_result.patient.genomicFeatures %}
                                 <div class="row">
