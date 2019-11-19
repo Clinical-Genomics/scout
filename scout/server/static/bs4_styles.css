@@ -114,7 +114,7 @@
 	margin-bottom: 0;
 }
 
-ul li {
+li.nav-item {
   font-size: 16px;
   display: inline-block;
   padding: 5px 15px;
@@ -124,6 +124,10 @@ ul li {
 a:visited {
 	/* purple */
 	color: #551A8B;
+}
+
+.odd {
+   background-color: #f2f2f2;
 }
 
 /* Introduce small space in between list elements */

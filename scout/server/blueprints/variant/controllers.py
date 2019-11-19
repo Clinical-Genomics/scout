@@ -21,7 +21,8 @@ from .utils import (end_position, default_panels, frequency, callers, evaluation
 LOG = logging.getLogger(__name__)
 
 def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, add_case=True,
-            add_other=True, get_overlapping=True, add_compounds=True, variant_type=None):
+            add_other=True, get_overlapping=True, add_compounds=True, variant_type=None,
+            case_obj=None, institute_obj=None):
     """Pre-process a single variant for the detailed variant view.
 
     Adds information from case and institute that is not present on the variant
@@ -29,14 +30,16 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
 
     Args:
         store(scout.adapter.MongoAdapter)
-        institute_obj(scout.models.Institute)
-        case_obj(scout.models.Case)
+        institute_id(str)
+        case_name(str)
         variant_id(str)
         variant_obj(dict)
         add_case(bool): If info about files case should be added
         add_other(bool): If information about other causatives should be added
         get_overlapping(bool): If overlapping variants should be collected
         variant_type(str): in ['snv', 'str', 'sv', 'cancer']
+        institute_obj(scout.models.Institute)
+        case_obj(scout.models.Case)
 
     Returns:
         variant_info(dict): {
@@ -51,7 +54,8 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
         }
 
     """
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    if not (institute_obj and case_obj):
+        institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     # If the variant is already collected we skip this part
     if not variant_obj:
         # NOTE this will query with variant_id == document_id, not the variant_id.

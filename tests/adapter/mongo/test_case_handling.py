@@ -56,6 +56,15 @@ def test_get_cases(adapter, case_obj):
     assert sum(1 for i in result) == 1
 
 
+def test_nr_cases(adapter, case_obj):
+    ## GIVEN an empty database (no cases)
+    ## WHEN adding one case to the case collection
+    adapter.case_collection.insert_one(case_obj)
+    ## THEN the function nr_cases should return number of cases = 1
+    result = adapter.nr_cases(institute_id=case_obj['owner'])
+    assert result == 1
+
+
 def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
     adapter = real_adapter
 

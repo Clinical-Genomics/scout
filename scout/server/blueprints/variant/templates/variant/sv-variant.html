@@ -79,7 +79,7 @@
                   <div class="row">
                     <div class="col-8">
                       <select name="manual_rank" class="form-control ml-3">
-                        <option>Select a tag</option>
+                        <option value="-1">Select a tag...</option>
                         {% for rank, data in manual_rank_options.items() %}
                           <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
                             {{ data.label }}
@@ -198,7 +198,8 @@
   	        Type <div class="float-right">{{ variant.sub_category|upper }}</div>
   	      </li>
           {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
-            <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control">Submit to ClinVar</a>
+            <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}"
+              class="btn btn-default form-control" target="_blank">Submit to ClinVar</a>
           {% endif %}
           {% if variant.clinvar_clinsig%}
             <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-default form-control">Modify clinvar submission</a>
