@@ -51,11 +51,14 @@
                         <label for="checkbox-{{ criterion_code }}"></label>
                       </div>
                     </div>
-                    <div id="comment-{{ criterion_code }}" class="collapse {{ 'in' if evaluation and evaluation.criteria.get(criterion_code).comment }} mt-2">
+                    <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (evaluation and evaluation.criteria.get(criterion_code).comment) }} mt-2">
                       <div class="form-group">
-                        <textarea class="form-control" name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ evaluation.criteria.get(criterion_code).comment if evaluation and evaluation.criteria.get(criterion_code).comment }}</textarea>
+                        <textarea {{ 'disabled' if evaluation and evaluation.criteria.get(criterion_code).comment }} class="form-control"
+                          name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ evaluation.criteria.get(criterion_code).comment if evaluation and evaluation.criteria.get(criterion_code).comment }}</textarea>
                       </div>
-                      <input type="url" class="form-control" name="link-{{ criterion_code }}" placeholder="Supporting link (optional)" value="{{ evaluation.criteria.get(criterion_code).link if evaluation and evaluation.criteria.get(criterion_code).link }}">
+                      <input type="url" {{ 'disabled' if evaluation and evaluation.criteria.get(criterion_code).comment }}
+                        class="form-control" name="link-{{ criterion_code }}" placeholder="Supporting link (optional)"
+                        value="{{ evaluation.criteria.get(criterion_code).link if evaluation and evaluation.criteria.get(criterion_code).link }}">
                     </div>
                   </div>
                 {% endfor %}
