@@ -951,7 +951,7 @@
   <div class="card panel-default">
     <div class="panel-heading">Gene panels</div>
     <div class="table-responsive fixed-panel">
-      <table id="panel-table" class="table sortable">
+      <table id="panel-table" class="table tablesorter">
         <thead>
           <tr>
             <th>Panel</th>
@@ -1009,8 +1009,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
-<link rel="stylesheet" href="https://drvic10k.github.io/bootstrap-sortable/Contents/bootstrap-sortable.css" />
-<script src="https://drvic10k.github.io/bootstrap-sortable/Scripts/bootstrap-sortable.js"></script>
+<script src="https://mottie.github.io/tablesorter/js/jquery.tablesorter.js"></script>
+
+<script>
+    $(function() {
+    $("#panel-table").tablesorter({ sortList: [[0,0]]})
+  })
+</script>
 
 <script>
 $(function () {
