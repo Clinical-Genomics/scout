@@ -72,6 +72,8 @@ def cases(store, case_query, limit=100, sort_by=None, sort_order=None):
     if sort_by: # sort according to user preference
         if sort_order == 'asc':
             reverse = False
+        if sort_by == 'track':
+            sort_by = 'display_track'
         for status in case_groups:
             # sort list of cases in custom order
             case_groups[status] = sorted(case_groups[status], key = lambda k: k[sort_by], reverse=reverse)
