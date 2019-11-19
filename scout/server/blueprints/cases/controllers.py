@@ -3,6 +3,7 @@ import os
 import itertools
 import requests
 import datetime
+import pymongo
 
 import logging
 
@@ -34,23 +35,26 @@ TRACKS = {
     'cancer': 'Cancer',
 }
 
-def cases(store, case_query, limit=100):
+def cases(store, case_query, limit=100, sort_by=None, sort_order=None):
     """Preprocess case objects.
 
     Add the necessary information to display the 'cases' view
 
     Args:
         store(adapter.MongoAdapter)
-        case_query(pymongo.Cursor)
+        case_query(list)
         limit(int): Maximum number of cases to display
+        sort_by(str): 'analysis_date', 'track' or 'status'
+        sort_order(str): 'asc' or 'desc'
 
     Returns:
         data(dict): includes the cases, how many there are and the limit.
     """
+    reverse = True
 
     case_groups = {status: [] for status in CASE_STATUSES}
     nr_cases = 0
-    for nr_cases, case_obj in enumerate(case_query.limit(limit),1):
+    for nr_cases, case_obj in enumerate(case_query[:limit],1):
 
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
         LOG.debug("Analysis types found in %s: %s", case_obj['_id'], ','.join(analysis_types))
@@ -65,6 +69,13 @@ def cases(store, case_query, limit=100):
         case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
         case_obj['display_track'] = TRACKS[case_obj.get('track', 'rare')]
         case_groups[case_obj['status']].append(case_obj)
+
+    if sort_by: # sort according to user preference
+        if sort_order == 'asc':
+            reverse = True
+        for status in case_groups:
+            # sort list of cases in custom order
+            case_groups[status] = sorted(case_groups[status], key = lambda k: k[sort_by], reverse=reverse)
 
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
@@ -144,8 +155,8 @@ def case(store, institute_obj, case_obj):
         rank_model_link_postfix = current_app.config.get('RANK_MODEL_LINK_POSTFIX','')
         case_obj['rank_model_link'] = ''.join(
             [
-                rank_model_link_prefix, 
-                str(case_obj['rank_model_version']), 
+                rank_model_link_prefix,
+                str(case_obj['rank_model_version']),
                 rank_model_link_postfix
             ]
         )
@@ -154,8 +165,8 @@ def case(store, institute_obj, case_obj):
         sv_rank_model_link_postfix = current_app.config.get('SV_RANK_MODEL_LINK_POSTFIX','')
         case_obj['sv_rank_model_link'] = ''.join(
             [
-                sv_rank_model_link_prefix, 
-                str(case_obj['sv_rank_model_version']), 
+                sv_rank_model_link_prefix,
+                str(case_obj['sv_rank_model_version']),
                 sv_rank_model_link_postfix
             ]
         )
