@@ -4,19 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [4.8.?]
-
-### Added
-- Sort to Gene Panel table on case view.
-
-### Fixed
-
-
 ## [x.x.x]
 
 ### Added
 - Improved MatchMaker pages, including visible patient contacts email address
 - New badges for the github repo
+- Sort gene panel list on case view.
 
 ### Fixed
 - Manual rank variant tags could be saved in a "Select a tag"-state, a problem in the variants view.
