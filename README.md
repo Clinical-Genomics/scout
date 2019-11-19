@@ -8,6 +8,10 @@
 [![Build Status][travis-img]][travis-url]
 [![PyPI Version][pypi-img]][pypi-url]
 [![Coverage Status](https://coveralls.io/repos/github/Clinical-Genomics/scout/badge.svg?branch=master)](https://coveralls.io/github/Clinical-Genomics/scout?branch=master)
+[![GitHub issues-closed][closed-issues-img]][closed-issues-url]
+[![Average time to resolve an issue][ismaintained-resolve-img]][ismaintained-resolve-url]
+[![Percentage of issues still open][ismaintained-open-rate-img]][ismaintained-open-rate-url]
+[![GitHub commits](https://img.shields.io/github/commits-since/Clinical-Genomics/scout/v4.8.0.svg)](https://GitHub.com/Clinical-Genomics/scout/commit/)
 
 ## What is Scout?
 
@@ -177,3 +181,9 @@ More info on how to contribute to the project and a description of the Scout bra
 [travis-url]: https://travis-ci.org/Clinical-Genomics/scout
 [pypi-img]: https://img.shields.io/pypi/v/scout-browser.svg?style=flat-square
 [pypi-url]: https://pypi.python.org/pypi/scout-browser/
+[ismaintained-resolve-img]: http://isitmaintained.com/badge/resolution/Clinical-Genomics/scout.svg
+[ismaintained-resolve-url]: http://isitmaintained.com/project/Clinical-Genomics/scout
+[ismaintained-open-rate-img]: http://isitmaintained.com/badge/open/Clinical-Genomics/scout.svg
+[ismaintained-open-rate-url]: http://isitmaintained.com/project/Clinical-Genomics/scout
+[closed-issues-img]: https://img.shields.io/github/issues-closed/Clinical-Genomics/scout.svg
+[closed-issues-url]: https://GitHub.com/Clinical-Genomics/scout/issues?q=is%3Aissue+is%3Aclosed
