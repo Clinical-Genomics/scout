@@ -3,26 +3,27 @@
 from scout.commands import cli
 from scout.server.extensions import store
 
-def test_load_institute(mock_app, institute_obj):
+def test_load_institute(empty_mock_app):
     """Testing the load institute cli command"""
 
+    ## GIVEN an empty database and some institute information
+    mock_app = empty_mock_app
     runner = mock_app.test_cli_runner()
     assert runner
+    ins_id = "cust000"
+    display_name = "A special name"
 
-    # One institute is preloaded into populated database
-    assert sum(1 for i in store.institute_collection.find()) == 1
+    assert sum(1 for i in store.institute_collection.find()) == 0
 
-    # remove it
-    store.institute_collection.find_one_and_delete({'_id':institute_obj['_id']})
-    assert store.institute_collection.find_one() is None
+    ## WHEN loading the institute into the database
+    result =  runner.invoke(cli, ['load', 'institute', '-i', ins_id, '-d', display_name])
 
-    # and re-load it using the CLI command:
-    result =  runner.invoke(cli, ['load', 'institute',
-        '-i', institute_obj['_id'], '-d', institute_obj['display_name'],
-        '-s', institute_obj['sanger_recipients']])
-
-    # CLI command should be exit with no errors
+    ## THEN assert command exits without errors
     assert result.exit_code == 0
-
-    # and institute should be in database
+    
+    ## THEN assert logging is correct
+    assert 'Adding institute with internal_id: {0} and display_name: {1}'.format(
+            ins_id,display_name) in result.output
+    
+    ## THEN assert institute is added
     assert sum(1 for i in store.institute_collection.find()) == 1
