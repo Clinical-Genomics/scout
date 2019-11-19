@@ -3,7 +3,6 @@ import os
 import itertools
 import requests
 import datetime
-import pymongo
 
 import logging
 
