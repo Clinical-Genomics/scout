@@ -657,7 +657,7 @@
                     <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</a></li>
                   {% endif %}
                   {% for node in mme_nodes %}
-                    <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">External node-> {{node.description}}</a></li>
+                    <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</a></li>
                   {% endfor %}
                 </ul>
               </div>
