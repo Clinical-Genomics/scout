@@ -27,7 +27,7 @@
 {% block content_main %}
 {% set panel = panel|int %}
 <div class="container-float">
-  <div class="card mt-3">
+  <div class="card">
     <div class="card-body">
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -35,11 +35,10 @@
           <li class="breadcrumb-item">Last updated: <strong>{{case.mme_submission.updated_at.strftime('%Y-%m-%d %H:%M')}}</strong></li>
         </ol>
       </nav>
-      <br>
       <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 1 %}active{% endif %}" data-toggle="tab" onclick="hide_div(1)"><h4>Patient Overview</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 2 %}active{% endif %}" data-toggle="tab" onclick="hide_div(2)"><h4>External Matches</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 3 %}active{% endif %}" data-toggle="tab" onclick="hide_div(3)"><h4>Internal Matches</h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == 1 %}active{% endif %}" data-toggle="tab" onclick="hide_div(1)"><h4>Patient Overview <i class="fa fa-id-card-o" aria-hidden="true"></i></h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == 2 %}active{% endif %}" data-toggle="tab" onclick="hide_div(2)"><h4>Global matches <i class="fa fa-globe" aria-hidden="true"></i></h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == 3 %}active{% endif %}" data-toggle="tab" onclick="hide_div(3)"><h4>Local matches <i class="fa fa-hospital-o" aria-hidden="true"></i></h4></a></li>
       </ul>
       <div class="tab-content" id="tabs">
         <div class="tab-pane" id="1">
@@ -57,67 +56,78 @@
 </div>
 {% endblock %}
 
-
 {% macro patient_data() %}
-<br>
-<div class="ml-3">
-  <p>Features (HPO terms):
-    {% for hpo in case.mme_submission.features %}
-      <span class="badge badge-primary">{{hpo.id}}</span>
-    {% endfor %}
-  </p>
-  <p>Disorders (OMIM terms):
-    {% for omim in case.mme_submission.disorders %}
-      <span class="badge badge-info">{{omim.id}}</span>
-    {% endfor %}
-  </p>
-  <p>Submitted patients:
+<div class="ml-3 mt-3">
+  <div class="row">
+    <div class="col">
+      <h5>Patients</h5>
+      {% for patient in case.mme_submission.patients %}
+        <ul class="list-group">
+          <li class="list-group-item">Patient id: <strong>{{patient.id}}</strong></li>
+          <li class="list-group-item">Patient label: <strong>{{patient.label}}</strong></li>
+          <li class="list-group-item">Sex: <strong>{{patient.sex}}</strong></li>
+        </ul>
+      {% endfor %}
+    </div>
+    <div class="col">
+      <h5>Phenotype features (HPO terms)</h5>
+        {% for hpo in case.mme_submission.features %}
+          <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.id}}">
+            <span class="badge badge-sm badge-info">{{hpo.id}}</span>
+          </a>
+        {% endfor %}
+    </div>
+    <div class="col">
+      <h5>Diagnoses (OMIM terms)</h5>
+      {% for omim in case.mme_submission.disorders %}
+        <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim.id[4:]}}">
+          <span class="badge badge-sm badge-secondary">{{omim.id}}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  <br>
+  <div>
+    <h5>Candidate genes/variants</h5>
     {% for patient in case.mme_submission.patients %}
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">Patient id: <strong>{{patient.id}}</strong></li>
-        <li class="list-group-item">Patient label: <strong>{{patient.label}}</strong></li>
-        <li class="list-group-item">Sex: <strong>{{patient.sex}}</strong></li>
-        <div class="list-group-item">genomic features:<br>
-            <div class="row">
-            {% for g_feat in patient.genomicFeatures %}
-              <div class="card">
-                  <div class="card-body">
-                    {% for key, value in g_feat.items() %}
-                      {% if key == 'gene' %}
-                        {{key}}:&nbsp;<span class="badge badge-secondary">{{value.id}}</span>
-                        <hr>
-                      {% elif key == 'variant' %}
-                        {% for ikey, item in value.items() %}
-                          {{ikey}}:<strong>{{item}}</strong><br>
-                        {% endfor %}
-                      {% elif key == 'type' %} <!-- this will be variant effect -->
-                        {{key}}:<strong>{{value.label}}</strong>
-                        <br>
-                      {% else %} <!-- this will be zygosity -->
-                        {{key}}:<strong>{{value}}</strong>
-                        {% if value == 1 %}
-                          (heteroz. or hemiz. if on X in males)
-                        {% elif value == 2 %}
-                          (homozygous)
-                        {% endif %}
-                      {% endif %}
+      <div class="row">
+        {% for g_feat in patient.genomicFeatures %}
+          <div class="col">
+            <ul class="list-group">
+              {% for key, value in g_feat.items() %}
+                <li class="list-group-item py-2">
+                  {% if key == 'gene' %}
+                    <span class="badge badge-secondary">{{value.id}}</span>
+                  {% elif key == 'variant' %}
+                    {% for ikey, item in value.items() %}
+                      {{ikey}}:<strong>{{item}}</strong><br>
                     {% endfor %}
-                  </div>
-              </div>
-            {% endfor %}
-            </div>
-        </div>
-      </ul>
+                  {% elif key == 'type' %} <!-- this will be variant effect -->
+                    {{key}}:<strong>{{value.label}}</strong>
+                    <br>
+                  {% else %} <!-- this will be zygosity -->
+                    {{key}}:<strong>{{value}}</strong>
+                    {% if value == 1 %}
+                      (heteroz. or hemiz. if on X in males)
+                    {% elif value == 2 %}
+                      (homozygous)
+                    {% endif %}
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+      {% endfor %}
+      </div>
     {% endfor %}
-  </p>
+  </div>
 </div>
 {% endmacro %}
 
 {% macro show_matches(type) %}
 <!-- show matches of the selected type from the most recent -->
-<br>
 {% set matching_patients = [] %}
-  <div class="m-3">
+  <div class="m-3 mt-3">
   {% for patient, match_objs in matches.items() %}
     <div class="panel-group">
     {% set p_name = patient.split('.') %}
@@ -136,94 +146,87 @@
             </div>
             <div id="div_{{match_obj.match_oid}}" class="collapse" aria-labelledby="heading_{{match_obj.match_oid}}" data-parent="#accordionExample">
               <div class="card-body">
-                {% for match_result in match_obj.patients %}
-                   <table class="table table-condensed">
-                     <thead>
-                       <tr>
-                         <th scope="col">Score</th>
-                         <th scope="col">Patient ID</th>
-                         <th scope="col">MME node</th>
-                         <th scope="col">Contact</th>
-                       </tr>
-                     </thead>
-                     <tbody>
-                       <tr>
-                         <td><span class="badge badge-primary badge-pill">{{match_result.score.patient|round(4)}}</badge></td>
-                         <td><strong>{{match_result.patient_id}}</strong></td>
-                         <td>{{match_result.node.label}}</td>
-                         <td>{{match_result.patient.contact.name}}
+                <table class="table table-sm table-borderless">
+                  <thead>
+                    <tr>
+                      <th scope="col" style="width: 5%">Score</th>
+                      <th scope="col" style="width: 10%">Node</th>
+                      <th scope="col" style="width: 15%">ID</th>
+                      <th scope="col" style="width: 20%">Contact</th>
+                      <th scope="col" style="width: 35%">Phenotypes</th>
+                      <th scope="col" style="width: 15%">Diagnoses</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for match_result in match_obj.patients %}
+                       <tr class="{{ loop.cycle('odd', 'even') }}">
+                         <td style="width: 5%"><span class="badge badge-primary badge-pill">{{match_result.score.patient|round(4)}}</badge></td>
+                         <td style="width: 10%">{{match_result.node.label}}</td>
+                         <td style="width: 15%">
+                           {% if "http" in match_result.patient_id %}
+                            <a href="{{match_result.patient_id}}" target="_blank">link</a>
+                           {% else %}
+                            <strong>{{match_result.patient_id}}</strong></td>
+                           {% endif %}
+                         <td style="width: 20%">
+                           {{match_result.patient.contact.name}}<br>
+                           {% if "http" in match_result.patient.contact.href %}
+                            <a href="{{match_result.patient.contact.href}}" target="_blank">contact link</a>
+                           {% else %}
+                            {{match_result.patient.contact.href}}
+                           {% endif %}
                            {% if match_result.patient.contact.institution %}
                              <br>{{match_result.patient.contact.institution}}
                            {% endif %}
-                           <br>{{match_result.patient.contact.href}}
+                           {% if match_result.patient.contact.email %}
+                             <br>{{match_result.patient.contact.email|replace("mailto:","")}}
+                           {% endif %}
                          </td>
-                       </tr>
-                     </tbody>
-                   </table>
-                   <table class="table table-condensed">
-                     <thead>
-                       <tr>
-                         <th style="width: 30%">Diagnoses</th>
-                         <th style="width: 30%">Features</th>
-                         <th style="width: 40%">Genomic Features</th>
-                       </tr>
-                     </thead>
-                     <tbody>
-                       <tr>
-                         <td>
-                           {% for omim in match_result.patient.disorders %}
-                             <span data-toggle="tooltip" title="{{omim.label or 'description not available'}}" class="badge badge-info">{{omim.id}}</span>
-                           {% endfor %}
-                         </td>
-                         <td>
+                         <td style="width: 35%">
                            {% for feature in match_result.patient.features %}
-                             <span data-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="badge badge-primary">{{feature.label}}({{feature.id}})</span>
+                             <span data-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="badge badge-info">{{feature.label}}({{feature.id}})</span>
+                           {% else %}
+                            -
                            {% endfor %}
                          </td>
-                         <td>
-                           <div class="card-columns">
-                           {% for g_feat in match_result.patient.genomicFeatures %}
-                            {% if g_feat %}
-
-                                <div class="card w-100">
-                                  <div class="card-body">
-                                    {% for key, value in g_feat.items() %}
-                                      {% if key == 'gene' %} <!-- genomic feature gene-->
-                                        {{key}}:&nbsp;<span class="badge badge-secondary">{{value.id}}</span>
-                                        <hr>
-                                      {% elif key == 'variant' %} <!-- genomic feature variant-->
-                                        {% for ikey, item in value.items() %}
-                                          {% if not ikey == 'shareVariantLevelData' %}
-                                            {{ikey}}:<strong>{{item}}</strong><br>
-                                          {% endif %}
-                                        {% endfor %}
-                                      {% elif key == 'zygosity' %} <!-- genomic feature zygosity-->
-                                        {{key}}:<strong>{{value}}</strong>
-                                        {% if value == 1 %}
-                                          (heteroz. or hemiz. if on X in males)
-                                        {% elif value == 2 %}
-                                          (homozygous)
-                                        {% endif %}
-                                      {% else %} <!-- genomic feature type-->
-                                        {{key}}:<strong>{{value.label}}</strong>
-                                        <br>
-                                      {% endif %}
-                                    {% endfor %}
+                         <td style="width: 15%">
+                           {% for omim in match_result.patient.disorders %}
+                             <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim.id[4:]}}">
+                               <span class="badge badge-sm badge-secondary">{{omim.id}}</span>
+                             </a>
+                           {% else %}
+                            -
+                           {% endfor %}
+                         </td>
+                       </tr>
+                       <!-- Display candidate genes for matches -->
+                       {% if match_result.patient.genomicFeatures%}
+                         <tr class="{{ loop.cycle('odd', 'even') }}">
+                           <td style="width: 20%"><strong>Gene/Variants:</strong></td>
+                           <td colspan="5">
+                              {% for g_feat in match_result.patient.genomicFeatures %}
+                                <div class="row">
+                                  <div>{{loop.index}}</div>
+                                  <div class="col"><!--gene info-->
+                                    <strong>{{ g_feat.gene._geneName}}</strong>
+                                    <a class="text-white" target="_blank" href="https://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={{g_feat.gene.id}}">
+                                      <span class="badge badge-sm badge-secondary">{{g_feat.gene.id}}</span>
+                                    </a>,
+                                    <strong>Variant:</strong>{{g_feat.variant|replace("'", "") or '-'}},
+                                    <strong>Type:</strong>{{g_feat.type|replace("'", "") or '-'}},
+                                    <strong>zygosity:</strong>{{g_feat.zygosity or '-'}}
                                   </div>
                                 </div>
-
-                            {% endif %}
-                           {% endfor %}
-                           </div>
-                          </div> <!--end of card body -->
-                         </td>
-                       </tr>
-                     </tbody>
-                   </table>
-                   <br>
-                   <br>
-                   <hr>
-                {% endfor %} <!-- end of for patient in match_obj.patients -->
+                              {% endfor %}
+                            </div>
+                         </tr>
+                        {% else %}
+                          No gene/variant info available
+                        {% endif %}
+                    {% endfor %} <!-- end of for patient in match_obj.patients -->
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

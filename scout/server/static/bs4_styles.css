@@ -126,6 +126,10 @@ a:visited {
 	color: #551A8B;
 }
 
+.odd {
+   background-color: #f2f2f2;
+}
+
 /* Introduce small space in between list elements */
 body {
 	background-color: var(--bg-color);
