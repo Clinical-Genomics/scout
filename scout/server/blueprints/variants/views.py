@@ -42,6 +42,8 @@ def variants(institute_id, case_name):
                                                  user_obj, category, request.form)
     else:
         form = FiltersForm(request.args)
+        # set form variant data type the first time around
+        form.variant_type.data = variant_type
 
     # populate filters dropdown
     available_filters = store.filters(institute_id, category)
@@ -196,14 +198,15 @@ def sv_variants(institute_id, case_name):
                                                  user_obj, category, request.form)
     else:
         form = SvFiltersForm(request.args)
+        # set form variant data type the first time around
+        form.variant_type.data = variant_type
+
 
     # populate filters dropdown
     available_filters = store.filters(institute_id, category)
     form.filters.choices = [(filter.get('_id'), filter.get('display_name'))
         for filter in available_filters]
 
-    # redundant?
-    form.variant_type.data = variant_type
 
     # update status of case if visited for the first time
     if case_obj['status'] == 'inactive' and not current_user.is_admin:
