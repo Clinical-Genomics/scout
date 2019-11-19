@@ -200,17 +200,17 @@ DISMISS_VARIANT_OPTIONS = {
         'description':
         'In a gene where mainly other types of variation (e.g. repeat expansion) are established as pathologic.',
         'evidence': ['type']
-        }
+        },
     44: {
         'label': 'Possible Germline',
         'description': 'Variant is possibly a germline event.',
         'evidence': []
-        }
+        },
     45: {
         'label': 'Low count normal',
         'description': 'If normal sample exists, variant has too few reads in normal sample "AD".',
         'evidence': []
-        }
+        },
     46: {
         'label': 'Low count tumor',
         'description': 'Variant has too few reads in tumor sample. "AD"',
