@@ -152,7 +152,6 @@ def variants(institute_id, case_name):
                         headers=headers)
 
     data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
-
     return dict(institute=institute_obj, case=case_obj, form=form, manual_rank_options=MANUAL_RANK_OPTIONS,
                     severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
