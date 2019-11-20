@@ -497,15 +497,17 @@ class VariantHandler(VariantLoader):
         """
         #This is the category of the variants that we want to collect
         category = 'snv' if variant_obj['category'] == 'sv' else 'sv'
+        variant_type = variant_obj.get('variant_type', 'clinical')
+        hgnc_ids = variant_obj['hgnc_ids']
 
         query = {
             '$and': [
                 {'case_id': variant_obj['case_id']},
                 {'category': category},
-                {'hgnc_ids' : { '$in' : variant_obj['hgnc_ids']}}
+                {'variant_type': variant_type},
+                {'hgnc_ids' : { '$in' : hgnc_ids}}
             ]
         }
-
         sort_key = [('rank_score', pymongo.DESCENDING)]
         # We collect the 30 most severe overlapping variants
         variants = self.variant_collection.find(query).sort(sort_key).limit(30)
