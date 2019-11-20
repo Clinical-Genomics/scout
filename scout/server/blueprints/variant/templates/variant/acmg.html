@@ -35,11 +35,19 @@
         {% for category, criteria_group in CRITERIA.items() %}
           <div class="flex-1 {{ 'mr-3' if not loop.last }}">
             <h4>Evidence of {{ category }}</h4>
-
             {% for evidence, criteria in criteria_group.items() %}
               <ul class="list-group mt-3">
                 <li class="list-group-item">{{ evidence }}</li>
                 {% for criterion_code, criterion in criteria.items() %}
+
+                  {% if evaluation and evaluation.criteria.get(criterion_code).comment %}
+                    {% set comment = evaluation.criteria.get(criterion_code).comment %}
+                  {% endif %}
+                  {% if evaluation and evaluation and evaluation.criteria.get(criterion_code).links %}
+                    {% set link = evaluation.criteria.get(criterion_code).links[0] %}
+                    {{ link }}
+                  {% endif %}
+
                   <div class="list-group-item">
                     <div class="d-flex justify-content-between">
                       <div data-toggle="tooltip" data-placement="top" title="{{ criterion.description }}">
@@ -51,14 +59,13 @@
                         <label for="checkbox-{{ criterion_code }}"></label>
                       </div>
                     </div>
-                    <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (evaluation and evaluation.criteria.get(criterion_code).comment) }} mt-2">
+                    <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not comment }} mt-2">
                       <div class="form-group">
-                        <textarea {{ 'disabled' if evaluation and evaluation.criteria.get(criterion_code).comment }} class="form-control"
-                          name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ evaluation.criteria.get(criterion_code).comment if evaluation and evaluation.criteria.get(criterion_code).comment }}</textarea>
+                        <textarea {{ 'disabled' if comment }} class="form-control"
+                          name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ comment }}</textarea>
                       </div>
-                      <input type="url" {{ 'disabled' if evaluation and evaluation.criteria.get(criterion_code).comment }}
-                        class="form-control" name="link-{{ criterion_code }}" placeholder="Supporting link (optional)"
-                        value="{{ evaluation.criteria.get(criterion_code).link if evaluation and evaluation.criteria.get(criterion_code).link }}">
+                      <input type="url" {{ 'disabled' if link or comment }} class="form-control" name="link-{{ criterion_code }}"
+                        placeholder="{{ link or 'Supporting link (optional)' }}" value="">
                     </div>
                   </div>
                 {% endfor %}
