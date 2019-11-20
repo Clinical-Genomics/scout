@@ -42,7 +42,7 @@ def cases(store, case_query, prioritized_cases_query=None, limit=100):
     Args:
         store(adapter.MongoAdapter)
         case_query(pymongo.Cursor)
-        priritized_cases_query(pymongo.Cursor)
+        prioritized_cases_query(pymongo.Cursor)
         limit(int): Maximum number of cases to display
 
     Returns:
@@ -50,8 +50,9 @@ def cases(store, case_query, prioritized_cases_query=None, limit=100):
     """
     case_groups = {status: [] for status in CASE_STATUSES}
     nr_cases = 0
-    for nr_cases, case_obj in enumerate(case_query.limit(limit),1):
 
+    # local function to add info to case obj
+    def populate_case_obj(case_obj):
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
         LOG.debug("Analysis types found in %s: %s", case_obj['_id'], ','.join(analysis_types))
         if len(analysis_types) > 1:
@@ -60,10 +61,14 @@ def cases(store, case_query, prioritized_cases_query=None, limit=100):
 
         case_obj['analysis_types'] = list(analysis_types)
         case_obj['assignees'] = [store.user(user_email) for user_email in
-                                 case_obj.get('assignees', [])]
+                                     case_obj.get('assignees', [])]
         case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
         case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
         case_obj['display_track'] = TRACKS[case_obj.get('track', 'rare')]
+        return case_obj
+
+    for nr_cases, case_obj in enumerate(case_query.limit(limit),1):
+        case_obj = populate_case_obj(case_obj)
         case_groups[case_obj['status']].append(case_obj)
 
     if prioritized_cases_query:
@@ -73,14 +78,9 @@ def cases(store, case_query, prioritized_cases_query=None, limit=100):
                 for group_obj in case_groups[case_obj['status']]):
                     continue
             else:
-                case_obj['analysis_types'] = list(analysis_types)
-                case_obj['assignees'] = [store.user(user_email) for user_email in
-                                        case_obj.get('assignees', [])]
-                case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
-                case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
-                case_obj['display_track'] = TRACKS[case_obj.get('track', 'rare')]
-                case_groups[case_obj['status']].append(case_obj)
                 extra_prioritized += 1
+                case_obj = populate_case_obj(case_obj)
+                case_groups[case_obj['status']].append(case_obj)
         nr_cases += extra_prioritized
 
     data = {
