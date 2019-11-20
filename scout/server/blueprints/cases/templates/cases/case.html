@@ -976,7 +976,9 @@
 {% macro genepanels_table() %}
   <div class="card panel-default">
     <div class="panel-heading">Gene panels</div>
-    <div class="table-responsive fixed-panel">
+    <section class="container">
+        <div class="overflow-auto" style=" max-height: 200px;">
+          <div class="table-responsive fixed-panel overflow-auto">
       <table id="panel-table" class="table">
         <thead>
           <tr>
@@ -1007,6 +1009,7 @@
         </tbody>
       </table>
     </div>
+        </div>
     <div class="card-body">
       <form action="{{ url_for('cases.default_panels', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
         <div class="form-group">
@@ -1036,21 +1039,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
 <script src="https://mottie.github.io/tablesorter/js/jquery.tablesorter.js"></script>
-<!--script>
+<script>
     $(function() {
     $("#panel-table").tablesorter({ sortList: [[0,0]]})
   })
-</script-->
-
-<script>
-$(document).ready(function() {
-    $('#panel-table').DataTable( {
-        "scrollY":        "200px",
-        "scrollCollapse": true,
-        "paging":         false
-    } );
-} );
 </script>
+
 
 <script>
 $(function () {
