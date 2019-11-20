@@ -59,6 +59,8 @@ def cases(institute_id):
 
     prioritized_cases = [case for case in all_cases if case.get('status','') == 'prioritized']
     for case in all_cases:
+        if len(prioritized_cases) == limit:
+            break
         if not case in prioritized_cases:
             prioritized_cases.append(case)
 
