@@ -1005,7 +1005,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for sv_variant in overlapping_svs %}
+          {% for sv_variant in overlapping_vars %}
             <tr>
               <td>
                 <a href="{{url_for('variant.sv_variant', institute_id=institute._id,
@@ -1244,6 +1244,7 @@
           <a href="{{ gene.ensembl_link }}" class="btn btn-outline-secondary" target="_blank">Ensembl</a>
           <a href="{{ gene.hpa_link }}" class="btn btn-outline-secondary" target="_blank">HPA</a>
           <a href="{{ gene.string_link }}" class="btn btn-outline-secondary" target="_blank">STRING</a>
+          <a href="{{ gene.genemania_link }}" class="btn btn-outline-secondary" target="_blank">GENEMANIA</a>
           <a href="{{ variant.ucsc_link }}" class="btn btn-outline-secondary" target="_blank">UCSC</a>
           {% if gene.entrez_link %}
             <a href="{{ gene.entrez_link }}" class="btn btn-outline-secondary" target="_blank">Entrez</a>
