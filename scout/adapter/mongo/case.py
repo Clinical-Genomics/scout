@@ -284,15 +284,16 @@ class CaseHandler(object):
             case (dict): The case that should be updated
             hgnc_symbols (iterable): A list of hgnc_symbols
             hgnc_ids (iterable): A list of hgnc_ids
+            phenotype_id(list): optionally add phenotype_ids used to generate list
+            add_only(bool): set by eg ADDGENE to add genes, and NOT reset previous dynamic_gene_list
 
         Returns:
             updated_case(dict)
         """
         dynamic_gene_list = []
         if add_only:
-            dynamic_gene_list_doc  = self.case_collection.find_one({ '_id': case['_id'] },
-                { 'dynamic_gene_list': 1, '_id': 0 })
-            dynamic_gene_list = list(dynamic_gene_list_doc.get('dynamic_gene_list', []))
+            dynamic_gene_list  = list( self.case_collection.find_one({ '_id': case['_id'] },
+                { 'dynamic_gene_list': 1, '_id': 0 }).get('dynamic_gene_list', []))
 
             LOG.debug("Add selected: current dynamic gene list: {}".format(dynamic_gene_list))
 
