@@ -53,6 +53,13 @@ def add_gene_links(gene_obj, build=37):
     gene_obj['vega_link'] = vega(gene_obj.get('vega_id'))
     # Add links that use ucsc link
     gene_obj['ucsc_link'] = ucsc(gene_obj.get('ucsc_id'))
+    gene_obj['genemania_link'] = genemania(hgnc_symbol)
+
+def genemania(hgnc_symbol):
+    link = "https://genemania.org/search/homo-sapiens/{}/"
+    if not hgnc_symbol:
+        return None
+    return link.format(hgnc_symbol)
 
 def genenames(hgnc_id):
     link = "https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=HGNC:{}"
