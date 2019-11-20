@@ -43,7 +43,7 @@
                   {% if evaluation and evaluation.criteria.get(criterion_code).comment %}
                     {% set comment = evaluation.criteria.get(criterion_code).comment %}
                   {% endif %}
-                  {% if evaluation and evaluation and evaluation.criteria.get(criterion_code).links %}
+                  {% if evaluation and evaluation.criteria.get(criterion_code).links %}
                     {% set link = evaluation.criteria.get(criterion_code).links[0] %}
                     {{ link }}
                   {% endif %}
