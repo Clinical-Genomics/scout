@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved MatchMaker pages, including visible patient contacts email address
 - New badges for the github repo
 - Links to [GENEMANIA](genemania.org)
+- Sort gene panel list on case view.
 
 ### Fixed
 - Manual rank variant tags could be saved in a "Select a tag"-state, a problem in the variants view.
