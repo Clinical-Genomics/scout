@@ -7,6 +7,11 @@
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
 {% endblock %}
 
+{% block css %}
+{{ super() }}
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+{% endblock %}
+
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item">
@@ -972,7 +977,7 @@
   <div class="card panel-default">
     <div class="panel-heading">Gene panels</div>
     <div class="table-responsive fixed-panel">
-      <table id="panel-table" class="table tablesorter">
+      <table id="panel-table" class="table">
         <thead>
           <tr>
             <th>Panel</th>
@@ -1031,11 +1036,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
 <script src="https://mottie.github.io/tablesorter/js/jquery.tablesorter.js"></script>
-
-<script>
+<!--script>
     $(function() {
     $("#panel-table").tablesorter({ sortList: [[0,0]]})
   })
+</script-->
+
+<script>
+$(document).ready(function() {
+    $('#panel-table').DataTable( {
+        "scrollY":        "200px",
+        "scrollCollapse": true,
+        "paging":         false
+    } );
+} );
 </script>
 
 <script>
