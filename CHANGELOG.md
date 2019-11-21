@@ -11,12 +11,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - New badges for the github repo
 - Links to [GENEMANIA](genemania.org)
 - Sort gene panel list on case view.
+- More automatic tests
 
 ### Fixed
 - Manual rank variant tags could be saved in a "Select a tag"-state, a problem in the variants view.
 - Same case evaluations are no longer shown as gray previous evaluations on the variants page
 - Stay on research pages, even if reset, next first buttons are pressed..
 - Overlapping variants will now be visible on variant page again
+- Fix missing classification comments and links in evaluations page
 
 
 ## [4.8.3]
