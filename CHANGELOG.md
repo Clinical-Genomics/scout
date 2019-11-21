@@ -30,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Stay on research pages, even if reset, next first buttons are pressed..
 - Overlapping variants will now be visible on variant page again
 - Fix missing classification comments and links in evaluations page
+- All prioritized cases are shown on cases page
 
 
 ## [4.8.3]
