@@ -45,7 +45,6 @@
                   {% endif %}
                   {% if evaluation and evaluation.criteria.get(criterion_code).links %}
                     {% set link = evaluation.criteria.get(criterion_code).links[0] %}
-                    {{ link }}
                   {% endif %}
 
                   <div class="list-group-item">
@@ -59,7 +58,7 @@
                         <label for="checkbox-{{ criterion_code }}"></label>
                       </div>
                     </div>
-                    <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not comment }} mt-2">
+                    <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link) }} mt-2">
                       <div class="form-group">
                         <textarea {{ 'disabled' if comment }} class="form-control"
                           name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ comment }}</textarea>
