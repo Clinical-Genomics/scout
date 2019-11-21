@@ -23,6 +23,9 @@ def test_cases(adapter, case_obj, institute_obj):
     prio_cases = adapter.prioritized_cases(institute_id=institute_obj['_id'])
     assert len(list(prio_cases)) == 1
 
+    all_cases = adapter.cases(collaborator=institute_obj['_id'])
+    prio_cases = adapter.prioritized_cases(institute_id=institute_obj['_id'])
+
     # WHEN the cases controller is invoked
     data = cases(store=adapter, case_query=all_cases,
         prioritized_cases_query=prio_cases,limit=1)
