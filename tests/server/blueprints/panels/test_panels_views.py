@@ -70,6 +70,25 @@ def test_panel_modify_genes(client, real_panel_database):
     assert panel_obj['pending'][0]['action'] == 'delete'
     assert panel_obj['pending'][0]['hgnc_id'] == a_gene['hgnc_id']
 
+    # WHEN removing that gene using the client
+    new_version = panel_obj['version'] + 1
+    data = urlencode({
+        'action' : 'submit',
+        'version': new_version})
+
+    resp = client.post(url_for('panels.panel_update', panel_id=panel_obj['_id']),
+        data=data,
+        content_type="application/x-www-form-urlencoded"
+    )
+
+    # THEN the new panel object should have the correct new version
+    new_panel_obj = adapter.gene_panel(panel_obj['panel_name'])
+    assert new_panel_obj['version'] == new_version
+
+    # needs a real app context due to user check. Repeat with app?
+    #resp = client.get(url_for('panels.panels'))
+    #assert new_version in str(resp.data)
+
     # remove gene from panel object using adapter:
     panel_obj['genes'] = panel_obj['genes'][1:]
     updated_panel = adapter.update_panel(panel_obj)
