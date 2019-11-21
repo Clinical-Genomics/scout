@@ -8,7 +8,7 @@ def test_cases(adapter, case_obj, institute_obj):
 
     # GIVEN a non prioritized case
     case = case_obj
-    assert not case['status'] == 'prioritized'
+    assert case['status'] == 'inactive'
     adapter.case_collection.insert_one(case)
 
     # GIVEN a priotized case
@@ -16,8 +16,6 @@ def test_cases(adapter, case_obj, institute_obj):
     case2['_id'] = 'internal_id2'
     case2['status'] = 'prioritized'
     adapter.case_collection.insert_one(case2)
-
-    assert adapter.case_collection.find().count() == 2
 
     all_cases = adapter.cases(collaborator=institute_obj['_id'])
     assert len(list(all_cases)) == 2
@@ -30,7 +28,7 @@ def test_cases(adapter, case_obj, institute_obj):
         prioritized_cases_query=prio_cases,limit=1)
 
     # THEN 2 cases should be returned
-    assert len(data) == 2
+    assert data['found_cases'] == 2
 
 
 def test_case_report_content(adapter, institute_obj, case_obj, variant_obj):
