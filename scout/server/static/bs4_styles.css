@@ -14,6 +14,8 @@
     background-color: #f7bebc;
 }
 
+
+
 .container {
 	margin-top: 10px;
 	width: 100%;
@@ -29,6 +31,9 @@
   margin-top: 10px;
   width: 100%;
 }
+
+table.dataTable {margin-bottom: 0rem}
+
 
 /* dismiss table row */
 .dismiss {
@@ -89,6 +94,7 @@
 
 .card {
   border-radius: 15px;
+  padding-bottom: 10px;
 }
 
 .card-title {
@@ -111,7 +117,7 @@
 }
 
 .popover-content > table {
-	margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 li.nav-item {
