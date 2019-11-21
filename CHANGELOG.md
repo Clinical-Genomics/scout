@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Same case evaluations are no longer shown as gray previous evaluations on the variants page
 - Stay on research pages, even if reset, next first buttons are pressed..
 - Overlapping variants will now be visible on variant page again
+- Fix missing classification comments and links in evaluations page
 
 
 ## [4.8.3]
