@@ -9,7 +9,7 @@
 
 {% block css %}
 {{ super() }}
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
 {% endblock %}
 
 {% block top_nav %}
@@ -976,9 +976,7 @@
 {% macro genepanels_table() %}
   <div class="card panel-default">
     <div class="panel-heading">Gene panels</div>
-    <section class="container">
-        <div class="overflow-auto" style=" max-height: 200px;">
-          <div class="table-responsive fixed-panel overflow-auto">
+          <div class="table-responsive fixed-panel">
       <table id="panel-table" class="table">
         <thead>
           <tr>
@@ -1038,11 +1036,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
-<script src="https://mottie.github.io/tablesorter/js/jquery.tablesorter.js"></script>
+<script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+
 <script>
-    $(function() {
-    $("#panel-table").tablesorter({ sortList: [[0,0]]})
-  })
+ $('#panel-table').DataTable({
+    scrollY: 350,
+    scrollCollapse: true,
+    paging: false,
+    searching: false,
+    ordering: true,
+    info: false
+    });
 </script>
 
 
