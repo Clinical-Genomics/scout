@@ -55,6 +55,18 @@ def test_get_cases(adapter, case_obj):
     ## THEN we should get the correct case
     assert sum(1 for i in result) == 1
 
+def test_get_prioritized_cases(adapter, case_obj, institute_obj):
+    ## GIVEN an empty database (no cases)
+    assert adapter.case_collection.find_one() is None
+    # WHEN inserting a prioritized case
+    case_obj['status']='prioritized'
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN retrieving prioritized casese for the institute
+    result = adapter.prioritized_cases(institute_id=institute_obj['_id'])
+
+    # THEN one prioritized case is returned
+    assert sum(1 for i in result) == 1
 
 def test_nr_cases(adapter, case_obj):
     ## GIVEN an empty database (no cases)
