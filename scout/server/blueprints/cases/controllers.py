@@ -81,6 +81,7 @@ def cases(store, case_query, prioritized_cases_query=None, limit=100):
                 extra_prioritized += 1
                 case_obj = populate_case_obj(case_obj)
                 case_groups[case_obj['status']].append(case_obj)
+        # extra prioritized cases are potentially shown in addition to the case query limit
         nr_cases += extra_prioritized
 
     data = {
