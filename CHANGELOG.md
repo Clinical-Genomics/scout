@@ -7,6 +7,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+
+
+### Fixed
+
+
+
+## [4.9.0]
+
+### Added
 - Improved MatchMaker pages, including visible patient contacts email address
 - New badges for the github repo
 - Links to [GENEMANIA](genemania.org)
