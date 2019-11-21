@@ -34,6 +34,9 @@
 
 table.dataTable {margin-bottom: 0rem}
 
+.dataTables_scrollBody {    
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;}
 
 /* dismiss table row */
 .dismiss {
@@ -94,7 +97,6 @@ table.dataTable {margin-bottom: 0rem}
 
 .card {
   border-radius: 15px;
-  padding-bottom: 10px;
 }
 
 .card-title {
