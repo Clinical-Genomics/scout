@@ -114,6 +114,11 @@ table.dataTable {margin-bottom: 0rem}
   font-size: 0;
 }
 
+.list-scroll  {
+  overflow: scroll;
+  max-height: 430px;
+}
+
 .popover {
 	max-width: none;
 }

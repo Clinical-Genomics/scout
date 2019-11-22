@@ -939,7 +939,7 @@
         </form>
       {% endif %}
     </div>
-    <ul class="list-group fixed-panel">
+    <ul class="list-group fixed-panel list-scroll">
       {% for hpo_gene in case.dynamic_gene_list %}
         <li class="list-group-item" title="{{ hpo_gene.description }}">
           {{ hpo_gene.hgnc_symbol }}
@@ -1007,7 +1007,6 @@
         </tbody>
       </table>
     </div>
-        </div>
     <div class="card-body">
       <form action="{{ url_for('cases.default_panels', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
         <div class="form-group">
