@@ -72,7 +72,6 @@ def parse_genemap2(lines):
     LOG.info("Parsing the omim genemap2")
     header = []
     for i,line in enumerate(lines):
-        LOG.info('LINE IS ----------->{}-{}'.format(i, line))
         line = line.rstrip()
         if line.startswith('#'):
             if i < 10:
