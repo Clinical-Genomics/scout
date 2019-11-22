@@ -8,10 +8,59 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 
+
+### Fixed
+
+
+
+## [4.9.0]
+
+### Added
+- Improved MatchMaker pages, including visible patient contacts email address
+- New badges for the github repo
+- Links to [GENEMANIA](genemania.org)
+- Sort gene panel list on case view.
+- More automatic tests
+
+### Fixed
+- Fix error when a gene is added to an empty dynamic gene panel
+- Fix crash when attempting to add genes on incorrect format to dynamic gene panel
+- Manual rank variant tags could be saved in a "Select a tag"-state, a problem in the variants view.
+- Same case evaluations are no longer shown as gray previous evaluations on the variants page
+- Stay on research pages, even if reset, next first buttons are pressed..
+- Overlapping variants will now be visible on variant page again
+- Fix missing classification comments and links in evaluations page
+- All prioritized cases are shown on cases page
+
+
+## [4.8.3]
+
+### Added
+
+### Fixed
+- Bug when ordering sanger
+
+
+## [4.8.2]
+
+### Added
+
+### Fixed
+- Avoid opening extra tab for coverage report
+- Fixed a problem when rank model version was saved as floats and not strings
+- Fixed a problem with displaying dismiss variant reasons on the general report
+- Disable load and delete filter buttons if there are no saved filters
+- Fix problem with missing verifications
+- Remove duplicate users and merge their data and activity
+
+
+## [4.8.1]
+
+### Added
+
 ### Fixed
 - Prevent login fail for users with id defined by ObjectId and not email
 - Prevent the app from crashing with `AttributeError: 'NoneType' object has no attribute 'message'`
-
 
 
 ## [4.8.0]
@@ -64,6 +113,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved phenotype search using dataTables.js on phenotypes page
 - Search and delete users with `email` instead of `_id`
 - Fixed css styles so that multiselect options will all fit one column
+
 
 ## [4.7.3]
 

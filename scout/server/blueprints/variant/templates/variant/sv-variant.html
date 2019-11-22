@@ -79,7 +79,7 @@
                   <div class="row">
                     <div class="col-8">
                       <select name="manual_rank" class="form-control ml-3">
-                        <option>Select a tag</option>
+                        <option value="-1">Select a tag...</option>
                         {% for rank, data in manual_rank_options.items() %}
                           <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
                             {{ data.label }}
@@ -230,7 +230,7 @@
 
   <div class="row">
     <div class="col-md-12">
-      {{ overlapping(overlapping_snvs, variant.rank_score) }}
+      {{ overlapping(overlapping_vars, variant.rank_score) }}
     </div>
   </div>
 

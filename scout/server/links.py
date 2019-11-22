@@ -22,10 +22,14 @@ def add_gene_links(gene_obj, build=37):
     gene_obj['hgnc_link'] = genenames(hgnc_id)
     gene_obj['omim_link'] = omim(hgnc_id)
     # Add links that use ensembl_id
-    if not 'ensembl_id' in gene_obj:
-        ensembl_id = gene_obj.get('common',{}).get('ensembl_id')
-    else:
-        ensembl_id = gene_obj['ensembl_id']
+    ensembl_id = gene_obj.get('common',{}).get('ensembl_id')
+    if not ensembl_id:
+        ensembl_id = gene_obj.get('ensembl_id')
+
+    hgnc_symbol = gene_obj.get('common',{}).get('hgnc_symbol')
+    if not hgnc_symbol:
+        hgnc_symbol = gene_obj.get('hgnc_symbol')
+
     ensembl_37_link = ensembl(ensembl_id, build=37)
     ensembl_38_link = ensembl(ensembl_id, build=38)
     gene_obj['ensembl_37_link'] = ensembl_37_link
@@ -44,11 +48,18 @@ def add_gene_links(gene_obj, build=37):
     # Add links that use omim id
     gene_obj['omim_link'] = omim(gene_obj.get('omim_id'))
     # Add links that use hgnc_symbol
-    gene_obj['ppaint_link'] = ppaint(gene_obj['hgnc_symbol'])
+    gene_obj['ppaint_link'] = ppaint(hgnc_symbol)
     # Add links that use vega_id
     gene_obj['vega_link'] = vega(gene_obj.get('vega_id'))
     # Add links that use ucsc link
     gene_obj['ucsc_link'] = ucsc(gene_obj.get('ucsc_id'))
+    gene_obj['genemania_link'] = genemania(hgnc_symbol)
+
+def genemania(hgnc_symbol):
+    link = "https://genemania.org/search/homo-sapiens/{}/"
+    if not hgnc_symbol:
+        return None
+    return link.format(hgnc_symbol)
 
 def genenames(hgnc_id):
     link = "https://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=HGNC:{}"
@@ -142,13 +153,15 @@ def vega(vega_id):
 
     return link.format(vega_id)
 
-def ucsc(ucsc_id, build=37):
-    link = "https://genome.ucsc.edu/cgi-bin/hgGene?db=hg{0}&hgg_chrom=chr10&hgg_gene={0}"
+def ucsc(ucsc_id):
+    
+    link = ("http://genome.cse.ucsc.edu/cgi-bin/hgGene?org=Human&hgg_chrom=none&hgg_type=knownGene"\
+            "&hgg_gene={}")
 
     if not ucsc_id:
         return None
 
-    return link.format(build,ucsc_id)
+    return link.format(ucsc_id)
 
 def add_tx_links(tx_obj, build=37):
     try:

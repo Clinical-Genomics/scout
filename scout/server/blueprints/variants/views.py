@@ -12,7 +12,7 @@ from flask import (Blueprint, request, redirect, abort, flash, current_app, url_
 from werkzeug.datastructures import (Headers, MultiDict)
 from flask_login import current_user
 
-from scout.constants import SEVERE_SO_TERMS
+from scout.constants import SEVERE_SO_TERMS, MANUAL_RANK_OPTIONS
 from scout.server.extensions import store
 from scout.server.utils import (templated, institute_and_case)
 from . import controllers
@@ -42,6 +42,8 @@ def variants(institute_id, case_name):
                                                  user_obj, category, request.form)
     else:
         form = FiltersForm(request.args)
+        # set form variant data type the first time around
+        form.variant_type.data = variant_type
 
     # populate filters dropdown
     available_filters = store.filters(institute_id, category)
@@ -150,8 +152,7 @@ def variants(institute_id, case_name):
                         headers=headers)
 
     data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
-
-    return dict(institute=institute_obj, case=case_obj, form=form,
+    return dict(institute=institute_obj, case=case_obj, form=form, manual_rank_options=MANUAL_RANK_OPTIONS,
                     severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
 @variants_bp.route('/<institute_id>/<case_name>/str/variants')
@@ -196,14 +197,15 @@ def sv_variants(institute_id, case_name):
                                                  user_obj, category, request.form)
     else:
         form = SvFiltersForm(request.args)
+        # set form variant data type the first time around
+        form.variant_type.data = variant_type
+
 
     # populate filters dropdown
     available_filters = store.filters(institute_id, category)
     form.filters.choices = [(filter.get('_id'), filter.get('display_name'))
         for filter in available_filters]
 
-    # redundant?
-    form.variant_type.data = variant_type
 
     # update status of case if visited for the first time
     if case_obj['status'] == 'inactive' and not current_user.is_admin:
@@ -287,7 +289,7 @@ def sv_variants(institute_id, case_name):
                                        variants_query, page)
 
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
-                form=form, severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
+                form=form, severe_so_terms=SEVERE_SO_TERMS, manual_rank_options=MANUAL_RANK_OPTIONS, page=page, **data)
 
 @variants_bp.route('/<institute_id>/<case_name>/cancer/variants', methods=['GET','POST'])
 @templated('variants/cancer-variants.html')

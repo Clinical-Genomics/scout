@@ -657,7 +657,7 @@
                     <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</a></li>
                   {% endif %}
                   {% for node in mme_nodes %}
-                    <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">External node-> {{node.description}}</a></li>
+                    <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</a></li>
                   {% endfor %}
                 </ul>
               </div>
@@ -877,7 +877,7 @@
       <div class="card-body">
         <div class="form-inline">
           <div class="form-group col-8">
-            <input name="genes" class="typeahead_gene form-control" data-provide="typeahead" autocomplete="off" placeholder="Search...">
+            <input name="genes" pattern="^[0-9]+\s*\|\s*.*" class="typeahead_gene form-control" data-provide="typeahead" autocomplete="off" placeholder="Search...">
           </div>
           <div class="form-group col-4">
             <button class="btn btn-secondary form-control" type="submit" name="action" value="ADDGENE">Add gene</button>
@@ -972,7 +972,7 @@
   <div class="card panel-default">
     <div class="panel-heading">Gene panels</div>
     <div class="table-responsive fixed-panel">
-      <table id="panel-table" class="table">
+      <table id="panel-table" class="table tablesorter">
         <thead>
           <tr>
             <th>Panel</th>
@@ -1030,6 +1030,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+<script src="https://mottie.github.io/tablesorter/js/jquery.tablesorter.js"></script>
+
+<script>
+    $(function() {
+    $("#panel-table").tablesorter({ sortList: [[0,0]]})
+  })
+</script>
+
 <script>
 $(function () {
       function getTerms(query, process) {
