@@ -15,7 +15,8 @@ from flask_login import current_user
 
 from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP,
                              CANCER_PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
-from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
+from scout.constants.variant_tags import (MANUAL_RANK_OPTIONS, CANCER_TIER_OPTIONS,
+                             DISMISS_VARIANT_OPTIONS, GENETIC_MODELS)
 from scout.export.variant import export_mt_variants
 from scout.server.utils import institute_and_case, user_institutes
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
