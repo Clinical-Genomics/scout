@@ -1,6 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
-{% from "variants/utils.html" import cancer_filters %}
+{% from "variants/utils.html" import cancer_filters, tier_cell %}
+
 
 {% block title %}
   {{ variant_type|capitalize }} cancer variants
@@ -124,39 +125,6 @@
   {% endif %}
 {% endmacro %}
 
-{% macro tier_cell(variant) %}
-  {% if variant.cancer_tier %}
-    {% if variant.cancer_tier == '1A' %}
-      {% set label_class = 'danger' %}
-    {% elif variant.cancer_tier == '1B' %}
-      {% set label_class = 'danger' %}
-    {% elif variant.cancer_tier == '2A' %}
-      {% set label_class = 'warning' %}
-    {% elif variant.cancer_tier == '2B' %}
-      {% set label_class = 'warning' %}
-    {% elif variant.cancer_tier == '3' %}
-      {% set label_class = 'info' %}
-    {% elif variant.cancer_tier == '4' %}
-      {% set label_class = 'default' %}
-    {% endif %}
-    <div class="badge badge-{{ label_class }}">{{ variant.cancer_tier }}</div>
-  {% endif %}
-
-  {% if variant.manual_rank %}
-    {% if variant.manual_rank == 1 %}
-      {% set label_class = 'default' %}
-    {% elif variant.manual_rank == 2 %}
-      {% set label_class = 'info' %}
-    {% elif variant.manual_rank == 3 %}
-      {% set label_class = 'primary' %}
-    {% elif variant.manual_rank == 4 %}
-      {% set label_class = 'warning' %}
-    {% elif variant.manual_rank == 5 %}
-      {% set label_class = 'danger' %}
-    {% endif %}
-    <div class="badge badge-{{ label_class }}">{{ variant.manual_rank }}</div>
-  {% endif %}
-{% endmacro %}
 
 {% macro score_cell(variant) %}
   {% if variant.rank_score %}

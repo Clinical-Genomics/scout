@@ -2,6 +2,7 @@
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal %}
 {% from "utils.html" import comments_panel, activity_panel %}
 {% from "cases/case_ideograms.html" import case_ideograms %}
+{% from "variants/utils.html" import tier_cell %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
@@ -486,8 +487,8 @@
                   <span class="badge badge-default">Verification ordered</span>
                 {% elif variant.sanger_ordered %}
                   <span class="badge badge-success">Validated</span>
-                {% elif variant.manual_rank %}
-                  <span class="badge badge-default">{{ variant.manual_rank }}</span>
+                {% elif variant.manual_rank or variant.cancer_tier %}
+                  {{ tier_cell(variant) }}
                 {% endif %}
                 {% if variant.mosaic_tags %}
                   <span class="badge badge-info">mosaic</span>

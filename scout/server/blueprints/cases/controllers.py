@@ -253,6 +253,7 @@ def case_report_content(store, institute_obj, case_obj):
     data['comments'] = store.events(institute_obj, case=case_obj, comments=True)
 
     data['manual_rank_options'] = MANUAL_RANK_OPTIONS
+    data['cancer_tier_options'] = CANCER_TIER_OPTIONS
     data['dismissed_options'] = DISMISS_VARIANT_OPTIONS
     data['genetic_models'] = dict(GENETIC_MODELS)
     data['report_created_at'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")

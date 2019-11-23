@@ -289,7 +289,7 @@ def sv_variants(institute_id, case_name):
                                        variants_query, page)
 
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
-                form=form, severe_so_terms=SEVERE_SO_TERMS, manual_rank_options=MANUAL_RANK_OPTIONS, page=page, **data)
+                form=form, severe_so_terms=SEVERE_SO_TERMS, cancer_tier_options=CANCER_TIER_OPTIONS, manual_rank_options=MANUAL_RANK_OPTIONS, page=page, **data)
 
 @variants_bp.route('/<institute_id>/<case_name>/cancer/variants', methods=['GET','POST'])
 @templated('variants/cancer-variants.html')

@@ -6,15 +6,16 @@ from flask import url_for
 from flask_login import current_user
 
 from scout.server.utils import (institute_and_case, variant_case, user_institutes)
-from scout.constants import (CALLERS, MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, VERBS_MAP, 
-                             ACMG_MAP, MOSAICISM_OPTIONS, ACMG_OPTIONS, ACMG_COMPLETE_MAP, 
-                             ACMG_CRITERIA)
+from scout.constants import (CALLERS, MANUAL_RANK_OPTIONS, CANCER_TIER_OPTIONS,
+                            DISMISS_VARIANT_OPTIONS, VERBS_MAP, ACMG_MAP,
+                            MOSAICISM_OPTIONS, ACMG_OPTIONS, ACMG_COMPLETE_MAP,
+                            ACMG_CRITERIA)
 
 from scout.server.links import (ensembl, get_variant_links)
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.requests import fetch_refseq_version
 
-from .utils import (end_position, default_panels, frequency, callers, evaluation, 
+from .utils import (end_position, default_panels, frequency, callers, evaluation,
                     is_affected, predictions, sv_frequencies, add_gene_info, clinsig_human)
 
 
@@ -48,6 +49,7 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
             'events': <list(events)>,
             'overlapping_svs': <list(overlapping svs)>,
             'manual_rank_options': MANUAL_RANK_OPTIONS,
+            'cancer_tier_options': CANCER_TIER_OPTIONS,
             'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
             'ACMG_OPTIONS': ACMG_OPTIONS,
             'evaluations': <list(evaluations)>,
@@ -81,7 +83,7 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     events = store.events(institute_obj, case=case_obj, variant_id=variant_id)
     for event in events:
         event['verb'] = VERBS_MAP[event['verb']]
-    
+
     # Comments are not on case level so these needs to be fetched on their own
     variant_obj['comments'] = store.events(institute_obj, case=case_obj,
                                            variant_id=variant_id, comments=True)
@@ -89,7 +91,7 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     # Adds information about other causative variants
     other_causatives = []
     if add_other:
-        other_causatives = [causative for causative in 
+        other_causatives = [causative for causative in
                             store.other_causatives(case_obj, variant_obj)]
 
     # Gather display information for the genes
@@ -107,7 +109,7 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     # Gather display information for the compounds
         for compound_obj in compounds:
             compound_obj.update(predictions(compound_obj.get('genes', [])))
-        
+
         variant_obj['compounds'] = sorted(variant_obj['compounds'],
                                           key=lambda compound: -compound['combined_score'])
 
@@ -123,10 +125,10 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     # Format clinvar information
     variant_obj['clinsig_human'] = (clinsig_human(variant_obj) if variant_obj.get('clnsig')
                                     else None)
-    
+
     # Add display information about callers
     variant_obj['callers'] = callers(variant_obj, category=variant_type)
-    
+
     # Convert affection status to strings for the template
     is_affected(variant_obj, case_obj)
 
@@ -140,7 +142,7 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     if isinstance(classification, int):
         acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
         variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
-    
+
     evaluations = []
     for evaluation_obj in store.get_evaluations(variant_obj):
         evaluation(store, evaluation_obj)
@@ -166,6 +168,7 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
         'events': events,
         'overlapping_vars': overlapping_vars,
         'manual_rank_options': MANUAL_RANK_OPTIONS,
+        'cancer_tier_options': CANCER_TIER_OPTIONS,
         'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
         'mosaic_variant_options': MOSAICISM_OPTIONS,
         'ACMG_OPTIONS': ACMG_OPTIONS,
@@ -174,23 +177,23 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
 
 def observations(store, loqusdb, case_obj, variant_obj):
     """Query observations for a variant.
-    
+
     Check if variant_obj have been observed before ni the loqusdb instance.
     If not return {}
-    
+
     We need to add links to the variant in other cases where the variant has been observed.
     First we need to make sure that the user has access to these cases. The user_institute_ids holds
     information about what institutes the user has access to.
-    
+
     Loop over the case ids from loqusdb and check if they exist in the scout instance.
     Also make sure that we do not link to the observation that is the current variant.
-    
+
     Args:
         store (scout.adapter.MongoAdapter)
         loqusdb (scout.server.extensions.LoqusDB)
         case_obj (scout.models.Case)
         variant_obj (scout.models.Variant)
-    
+
     Returns:
         obs_data(dict)
     """
@@ -209,7 +212,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)
         return obs_data
-    
+
     user_institutes_ids = set([inst['_id'] for inst in user_institutes(store, current_user)])
 
     obs_data['cases'] = []
@@ -225,7 +228,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
             continue
         other_institutes = set([other_case.get('owner')])
         other_institutes.update(set(other_case.get('collaborators', [])))
-        
+
         if user_institutes_ids.isdisjoint(other_institutes):
             # If the user does not have access to the information we skip it
             continue
@@ -237,13 +240,13 @@ def observations(store, loqusdb, case_obj, variant_obj):
 
 def variant_acmg(store, institute_id, case_name, variant_id):
     """Collect data relevant for rendering ACMG classification form.
-    
+
     Args:
         store(scout.adapter.MongoAdapter)
         institute_id(str): institute_obj['_id']
         case_name(str): case_obj['display_name']
         variant_id(str): variant_obj['document_id']
-    
+
     Returns:
         data(dict): Things for the template
     """
@@ -255,7 +258,7 @@ def variant_acmg(store, institute_id, case_name, variant_id):
 
 def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, criteria):
     """Calculate an ACMG classification based on a list of criteria.
-    
+
     Args:
         store(scout.adapter.MongoAdapter)
         institute_id(str): institute_obj['_id']
@@ -263,10 +266,10 @@ def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, cr
         variant_id(str): variant_obj['document_id']
         user_mail(str)
         criteris()
-    
+
     Returns:
         data(dict): Things for the template
-        
+
     """
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
@@ -293,7 +296,7 @@ def clinvar_export(store, institute_id, case_name, variant_id):
             variant_id(str): variant._id
 
         Returns:
-            data(dict): all the required data (case and variant level) to pre-fill in fields 
+            data(dict): all the required data (case and variant level) to pre-fill in fields
                         in the clinvar submission form
 
     """
