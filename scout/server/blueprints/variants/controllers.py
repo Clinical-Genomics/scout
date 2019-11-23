@@ -16,7 +16,7 @@ from werkzeug.datastructures import MultiDict
 
 from scout.constants import (
     CLINSIG_MAP, ACMG_MAP, ACMG_OPTIONS, ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN,
-    VERBS_MAP, MOSAICISM_OPTIONS, SEVERE_SO_TERMS
+    VERBS_MAP, MOSAICISM_OPTIONS, SEVERE_SO_TERMS, MANUAL_RANK_OPTIONS, CANCER_TIER_OPTIONS
 )
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
@@ -309,6 +309,8 @@ def cancer_variants(store, institute_id, case_name, form, page=1):
         case=case_obj,
         variants=(parse_variant(store, institute_obj, case_obj, variant, update=True) for
                   variant in variant_res),
+        manual_rank_options=MANUAL_RANK_OPTIONS,
+        cancer_tier_options=CANCER_TIER_OPTIONS,
         form=form,
     )
     return data
