@@ -15,6 +15,8 @@ samples:
     sex: male
     expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
+    bam_path: /Users/Mikael/Work/genomes/HG00096.mapped.ILLUMINA.bwa.GBR.low_coverage.20101123.bam
+    wig_file: /Users/Mikael/Work/scout_dev2/scout/scout/demo/test.bw
     vcf2cytosure: scout/demo/ADM1059A2.dummy.cgh
 
   - analysis_type: wes
@@ -27,6 +29,8 @@ samples:
     sex: male
     expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
+    bam_path: /Users/Mikael/Work/genomes/HG00096.mapped.ILLUMINA.bwa.GBR.low_coverage.20101123.bam
+    wig_file: scout/demo/test.bw
     vcf2cytosure: scout/demo/ADM1059A1.dummy.cgh
 
   - analysis_type: wes
@@ -38,7 +42,9 @@ samples:
     phenotype: unaffected
     sex: female
     expected_coverage: 30
-    mt_bam: scout/demo/reduced_mt.bam
+    mt_bam: /Users/Mikael/Work/genomes/HG00096.mapped.ILLUMINA.bwa.GBR.low_coverage.20101123.bam
+    bam_path: /Users/Mikael/Work/genomes/HG00096.mapped.ILLUMINA.bwa.GBR.low_coverage.20101123.bam
+    wig_file: scout/demo/test.bw
     vcf2cytosure: scout/demo/ADM1059A3.dummy.cgh
 
 vcf_snv: scout/demo/643594.clinical.vcf.gz

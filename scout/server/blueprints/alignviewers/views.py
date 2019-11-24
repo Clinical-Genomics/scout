@@ -43,7 +43,9 @@ def igv():
     samples = request.args.getlist('sample')
     bam_files = request.args.getlist('bam')
     bai_files = request.args.getlist('bai')
-    LOG.debug('loading the following tracks: %s', bam_files)
+    wig_files = request.args.getlist('wig')
+    LOG.debug('loading the following BAM tracks: %s', bam_files)
+    LOG.debug('loading the following WIG tracks: %s', wig_files)
 
     display_obj={}
 
@@ -88,7 +90,7 @@ def igv():
     }
 
     sample_tracks = []
-
+    wig_tracks = []
     counter = 0
     for sample in samples:
         # some samples might not have an associated bam file, take care if this
@@ -97,10 +99,13 @@ def igv():
                                    'indexURL' : bai_files[counter],
                                    'height' : 700
                                    })
-        counter += 1
+            wig_tracks.append({'name': 'Coverage', 'url': wig_files[counter],
+                               'min': 0.0, 'max': 30.0})
+            counter += 1
 
     display_obj['sample_tracks'] = sample_tracks
-
+    display_obj['wig_tracks'] = wig_tracks
+    
     if request.args.get('center_guide'):
         display_obj['display_center_guide'] = True
     else:

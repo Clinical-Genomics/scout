@@ -123,16 +123,21 @@ def case_append_bam(case_obj):
     case_obj['bai_files'] = []
     case_obj['mt_bais'] = []
     case_obj['sample_names'] = []
-
+    case_obj['wig_file'] = []
+    case_obj['wig_dummy'] = []                # XXX: add dummy to duck a crash
+    
     bam_files = [
         ('bam_file','bam_files', 'bai_files'),
-        ('mt_bam', 'mt_bams', 'mt_bais')
+        ('mt_bam', 'mt_bams', 'mt_bais'),
+        ('wig_file', 'wig_file', 'wig_dummy') # XXX: add dummy to duck a crash
+                                              # TODO: refactor algorithm below
     ]
 
     for individual in case_obj['individuals']:
         case_obj['sample_names'].append(individual.get('display_name'))
         for bam in bam_files:
             bam_path = individual.get(bam[0])
+            LOG.debug("%s: ", bam_path)
             if not (bam_path and os.path.exists(bam_path)):
                 LOG.debug("%s: no bam file found", individual['individual_id'])
                 continue

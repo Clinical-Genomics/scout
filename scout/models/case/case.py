@@ -22,6 +22,7 @@ individual = dict(
     mother=str,  # Individual id of mother
     capture_kits=list,  # List of names of capture kits
     bam_file=str,  # Path to bam file
+    wig_file=str,  # Path to wig file
     vcf2cytosure=str, # Path to CGH file
     analysis_type=str,  # choices=ANALYSIS_TYPES
     confirmed_sex=bool,  # True or False. None if no check has been done

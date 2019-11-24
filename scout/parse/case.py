@@ -252,6 +252,7 @@ def parse_individual(sample):
     ind_info['predicted_ancestry'] = sample.get('predicted_ancestry')
 
     ind_info['bam_file'] = sample.get('bam_path',sample.get('bam_file'))
+    ind_info['wig_file'] = sample.get('wig_path',sample.get('wig_file'))
 
     ind_info['mt_bam'] = sample.get('mt_bam')
     ind_info['analysis_type'] = sample.get('analysis_type')

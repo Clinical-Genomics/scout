@@ -69,6 +69,17 @@
                         height: "{{track.height}}"
                       },
                       {% endfor %}
+
+                      {% for wtrack in wig_tracks %}
+                      {
+                        type: "wig",
+                        name: '{{ wtrack.name }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=wtrack.url) }}',
+                        color: "rgb(110, 40, 150)",
+                        sourceType: 'file',
+                      },
+                      {% endfor %}
+
                     ]
                 };
 
