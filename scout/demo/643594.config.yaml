@@ -15,7 +15,7 @@ samples:
     sex: male
     expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
-    wig_file: scout/demo/test.bw
+    wig_file: scout/demo/output.wig
     vcf2cytosure: scout/demo/ADM1059A2.dummy.cgh
 
   - analysis_type: wes
@@ -28,7 +28,7 @@ samples:
     sex: male
     expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
-    wig_file: scout/demo/test.bw
+    wig_file: scout/demo/output.wig
     vcf2cytosure: scout/demo/ADM1059A1.dummy.cgh
 
   - analysis_type: wes
@@ -41,7 +41,7 @@ samples:
     sex: female
     expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
-    wig_file: scout/demo/test.bw
+    wig_file: scout/demo/output.wig
     vcf2cytosure: scout/demo/ADM1059A3.dummy.cgh
 
 vcf_snv: scout/demo/643594.clinical.vcf.gz

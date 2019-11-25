@@ -2,7 +2,7 @@
 import logging
 import os.path
 
-from flask import (abort, Blueprint, render_template, request, current_app, flash)
+from flask import (abort, Blueprint, render_template, send_file, request, current_app, flash)
 
 from .partial import send_file_partial
 
@@ -23,6 +23,13 @@ def remote_static():
 
     new_resp = send_file_partial(file_path)
     return new_resp
+
+@alignviewers_bp.route('/remote/static/unindexed', methods=['OPTIONS', 'GET'])
+def unindexed_remote_static():
+    file_path = request.args.get('file')
+    base_name = os.path.basename(file_path)
+    resp = send_file(file_path, attachment_filename=base_name)
+    return resp
 
 @alignviewers_bp.route('/igv')
 def igv():
@@ -101,8 +108,8 @@ def igv():
                                    })
         if wig_files:
             wig_tracks.append({'name': 'Coverage', 'url': wig_files[counter],
-                               'min': 0.0, 'max': 30.0})
-            counter += 1
+                                'min': 0.0, 'max': 30.0})
+        counter += 1
 
     display_obj['sample_tracks'] = sample_tracks
     if wig_tracks:
