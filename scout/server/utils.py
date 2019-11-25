@@ -40,13 +40,14 @@ def institute_and_case(store, institute_id, case_name=None):
         flash("Can't find institute: {}".format(institute_id), 'warning')
         return abort(404)
 
+
     if case_name:
-        if case_name:
-            case_obj = store.case(institute_id=institute_id, display_name=case_name)
-            if case_obj is None:
-                return abort(404)
+        case_obj = store.case(institute_id=institute_id, display_name=case_name)
+        if case_obj is None:
+            return abort(404)
 
     # validate that user has access to the institute
+
     if not current_user.is_admin:
         if institute_id not in current_user.institutes:
             if not case_name or not any(inst_id in case_obj['collaborators'] for inst_id in
@@ -95,9 +96,9 @@ def variant_case(store, case_obj, variant_obj):
 
         if (crom and starts and ends):
             vcf_path = store.get_region_vcf(
-                case_obj, 
-                chrom=chrom, 
-                start=min(starts), 
+                case_obj,
+                chrom=chrom,
+                start=min(starts),
                 end=max(ends)
             )
 
@@ -109,7 +110,7 @@ def variant_case(store, case_obj, variant_obj):
 def case_append_bam(case_obj):
     """Deconvolute information about files to case_obj.
 
-    This function prepares the bam files in a certain way so that they are easily accessed in the 
+    This function prepares the bam files in a certain way so that they are easily accessed in the
     templates.
 
     Loops over the the individuals and gather bam files, indexes and sample display names in lists
@@ -124,7 +125,7 @@ def case_append_bam(case_obj):
     case_obj['sample_names'] = []
 
     bam_files = [
-        ('bam_file','bam_files', 'bai_files'), 
+        ('bam_file','bam_files', 'bai_files'),
         ('mt_bam', 'mt_bams', 'mt_bais')
     ]
 
@@ -140,12 +141,12 @@ def case_append_bam(case_obj):
 
 def find_bai_file(bam_file):
     """Find out BAI file by extension given the BAM file.
-    
+
     Index files wither ends with filename.bam.bai or filename.bai
-    
+
     Args:
         bam_file(str): The path to a bam file
-    
+
     Returns:
         bai_file(str): Path to index file
     """

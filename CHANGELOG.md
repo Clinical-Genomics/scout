@@ -7,15 +7,30 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+
+
+### Fixed
+- Fixed update OMIM command bug due to change in the header of the genemap2 file
+
+
+## [4.9.0]
+
+### Added
 - Improved MatchMaker pages, including visible patient contacts email address
 - New badges for the github repo
 - Links to [GENEMANIA](genemania.org)
 - Sort gene panel list on case view.
+- More automatic tests
 
 ### Fixed
+- Fix error when a gene is added to an empty dynamic gene panel
+- Fix crash when attempting to add genes on incorrect format to dynamic gene panel
 - Manual rank variant tags could be saved in a "Select a tag"-state, a problem in the variants view.
 - Same case evaluations are no longer shown as gray previous evaluations on the variants page
 - Stay on research pages, even if reset, next first buttons are pressed..
+- Overlapping variants will now be visible on variant page again
+- Fix missing classification comments and links in evaluations page
+- All prioritized cases are shown on cases page
 
 
 ## [4.8.3]

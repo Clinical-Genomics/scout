@@ -529,7 +529,7 @@
       to a transcript that is canonical according to HGNC">
       Transcript overview
     </div>
-    <table class="table table-bordered table-hover table-sm">
+    <table id="transcript_overview_table" class="table table-bordered table-hover table-sm">
       <thead>
         <tr>
           <th>Gene</th>
@@ -1005,7 +1005,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for sv_variant in overlapping_svs %}
+          {% for sv_variant in overlapping_vars %}
             <tr>
               <td>
                 <a href="{{url_for('variant.sv_variant', institute_id=institute._id,
@@ -1320,7 +1320,20 @@
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+  <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
   <script>
+    if (document.getElementById('transcript_overview_table').rows.length > 5) {
+      $('#transcript_overview_table').DataTable({
+        scrollY: 350,
+        scrollCollapse: true,
+        paging: false,
+        searching: false,
+        ordering: true,
+        info: false
+      });
+    }
+
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
