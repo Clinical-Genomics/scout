@@ -83,7 +83,7 @@ def variant_case(store, case_obj, variant_obj):
         variant_obj(scout.models.Variant)
     """
 
-    case_append_bam(case_obj)
+    case_append_index(case_obj)
 
     try:
         chrom = None
@@ -110,10 +110,10 @@ def variant_case(store, case_obj, variant_obj):
 def case_append_bam(case_obj):
     """Deconvolute information about files to case_obj.
 
-    This function prepares the bam files in a certain way so that they are easily accessed in the
+    This function prepares the bam/cram files in a certain way so that they are easily accessed in the
     templates.
 
-    Loops over the the individuals and gather bam files, indexes and sample display names in lists
+    Loops over the the individuals and gather bam/cram files, indexes and sample display names in lists
 
     Args:
         case_obj(scout.models.Case)
@@ -134,29 +134,31 @@ def case_append_bam(case_obj):
         for bam in bam_files:
             bam_path = individual.get(bam[0])
             if not (bam_path and os.path.exists(bam_path)):
-                LOG.debug("%s: no bam file found", individual['individual_id'])
+                LOG.debug("%s: no bam/cram file found", individual['individual_id'])
                 continue
             case_obj[bam[1]].append(bam_path) # either bam_files or mt_bams
-            case_obj[bam[2]].append(find_bai_file(bam_path)) # either bai_files or mt_bais
+            case_obj[bam[2]].append(find_index(bam_path)) # either bai_files or mt_bais
 
-def find_bai_file(bam_file):
+
+def find_index(align_file):
     """Find out BAI file by extension given the BAM file.
 
-    Index files wither ends with filename.bam.bai or filename.bai
+    Index files wither ends with filename.bam.bai or filename.bai /
+    In case of cram alignments the index is named filename.cram.crai or filename.crai
 
     Args:
-        bam_file(str): The path to a bam file
+        align_file(str): The path to a bam/cram file
 
     Returns:
-        bai_file(str): Path to index file
+        index_file(str): Path to index file
     """
-    bai_file = None
+    index_file = None
     if bam_file.endswith('cram'):
-        bai_file = bam_file.replace('.cram', '.crai')
-        if not os.path.exists(bai_file):
-            bai_file = "{}.crai".format(bam_file)
+        index_file = bam_file.replace('.cram', '.crai')
+        if not os.path.exists(index_file):
+            index_file = "{}.crai".format(bam_file)
     else:
-        bai_file = bam_file.replace('.bam', '.bai')
-        if not os.path.exists(bai_file):
-            bai_file = "{}.bai".format(bam_file)
-    return bai_file
+        index_file = bam_file.replace('.bam', '.bai')
+        if not os.path.exists(index_file):
+            index_file = "{}.bai".format(bam_file)
+    return index_file
