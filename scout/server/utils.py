@@ -154,7 +154,7 @@ def find_bai_file(bam_file):
     if bam_file.endswith('cram'):
         bai_file = bam_file.replace('.cram', '.crai')
         if not os.path.exists(bai_file):
-            bai_file = "{}.crai".format(bai_file)
+            bai_file = "{}.crai".format(bam_file)
     else:
         bai_file = bam_file.replace('.bam', '.bai')
         if not os.path.exists(bai_file):
