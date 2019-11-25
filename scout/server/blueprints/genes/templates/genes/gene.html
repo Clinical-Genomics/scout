@@ -208,7 +208,7 @@
 {% macro transcripts(gene) %}
   <div class="panel panel-default">
     <div class="panel-heading">Transcripts</div>
-    <ul class="list-group">
+    <ul class="list-group list-scroll">
       {% for transcript in gene.transcripts %}
         <li class="list-group-item {{ 'list-group-item-info' if transcript.is_primary }}">
             <a target="_blank" href={{ transcript.ensembl_link }} target="_blank"> {{ transcript.ensembl_transcript_id }}</a>
