@@ -14,7 +14,16 @@
     background-color: #f7bebc;
 }
 
-
+.btn-custom-select {
+  color: white;
+  background-color: white;
+  width: 100%;
+  color: #495057;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: .40rem;
+  margin-bottom: 1rem;
+}
 
 .container {
 	margin-top: 10px;

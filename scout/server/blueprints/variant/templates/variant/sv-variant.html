@@ -100,8 +100,7 @@
                   <label class="ml-3">Dismiss variant</label>
                   <div class="row">
                     <div class="col-8 d-flex">
-                      <select multiple="multiple" name="dismiss_variant" id="dismiss_variant" class="ml-3 selectpicker">
-                        <option>Select a tag</option>
+                        <select multiple class="selectpicker ml-3" title="Select chategories..." data-style="btn-custom-select" name="dismiss_variant" id="dismiss_variant" >
                         {% for rank, data in dismiss_variant_options.items() %}
                           <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
                             {{ data.label }}
@@ -657,6 +656,8 @@
 
 
 
+
+
   <script>
     if (document.getElementById('overlapping_snvs_table').rows.length > 5) {
       $('#overlapping_snvs_table').DataTable({
@@ -680,7 +681,6 @@
       });
     }
   </script>
-
 
      
 
