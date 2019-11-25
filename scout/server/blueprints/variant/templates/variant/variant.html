@@ -1323,9 +1323,8 @@
   <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 
   <script>
-
     if (document.getElementById('transcript_overview_table').rows.length > 5) {
-      $('#overlapping_snvs_table').DataTable({
+      $('#transcript_overview_table').DataTable({
         scrollY: 350,
         scrollCollapse: true,
         paging: false,
@@ -1334,7 +1333,6 @@
         info: false
       });
     }
-
 
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
