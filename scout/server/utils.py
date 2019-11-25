@@ -150,8 +150,13 @@ def find_bai_file(bam_file):
     Returns:
         bai_file(str): Path to index file
     """
-    bai_file = bam_file.replace('.bam', '.bai')
-    if not os.path.exists(bai_file):
-        # try the other convention
-        bai_file = "{}.bai".format(bam_file)
+    bai_file = None
+    if bam_file.endswith('cram'):
+        bai_file = bam_file.replace('.cram', '.crai')
+        if not os.path.exists(bai_file):
+            bai_file = "{}.crai".format(bai_file)
+    else:
+        bai_file = bam_file.replace('.bam', '.bai')
+        if not os.path.exists(bai_file):
+            bai_file = "{}.bai".format(bam_file)
     return bai_file
