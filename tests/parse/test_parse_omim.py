@@ -1,4 +1,4 @@
-from scout.parse.omim import (parse_omim_line, parse_genemap2, parse_mim_titles, 
+from scout.parse.omim import (parse_omim_line, parse_genemap2, parse_mim_titles,
                               parse_mim2gene, get_mim_phenotypes)
 
 GENEMAP_LINES = [
@@ -7,7 +7,7 @@ GENEMAP_LINES = [
     "# Generated: 2017-02-02\n",
     "# See end of file for additional documentation on specific fields\n",
     "# Chromosome\tGenomic Position Start\tGenomic Position End\tCyto"\
-    " Location\tComputed Cyto Location\tMim Number\tGene Symbols\tGene Name"\
+    " Location\tComputed Cyto Location\tMIM Number\tGene Symbols\tGene Name"\
     "\tApproved Symbol\tEntrez Gene ID\tEnsembl Gene ID\tComments\t"\
     "Phenotypes\tMouse Gene Symbol/ID\n",
     "chr1\t1232248\t1235040\t1p36.33\t\t615291\tB3GALT6, SEMDJL1, EDSP2\t"\
@@ -38,14 +38,14 @@ def test_parse_omim_line():
     line = '1\t2\t3'
     ## WHEN parsing the omim line
     res = parse_omim_line(line, header)
-    
+
     ## THEN assert a dict was built by the header and the line
     assert res['a'] == '1'
     assert res['b'] == '2'
     assert res['c'] == '3'
 
 def test_parse_genemap():
-    
+
     for res in parse_genemap2(GENEMAP_LINES):
         assert res['Chromosome'] == 'chr1'
         assert res['mim_number'] == 615291
@@ -58,18 +58,18 @@ def test_parse_genemap():
 def test_parse_genemap_file(genemap_handle):
     for i,res in enumerate(parse_genemap2(genemap_handle)):
         assert 'mim_number' in res
-    
+
     assert i > 0
 
 def test_parse_mim2gene():
     ## GIVEN some lines from a mim2gene file
     mim2gene_info = parse_mim2gene(MIM2GENE_LINES)
-    
+
     ## WHEN parsing the lines
     first_entry = next(mim2gene_info)
-    
+
     ## ASSERT that they are correctly parsed
-    
+
     # First entry is a gene so it should have a hgnc symbol
     assert first_entry['mim_number'] == 615291
     assert first_entry['entry_type'] == 'gene'
@@ -83,15 +83,15 @@ def test_parse_mim2gene_file(mim2gene_handle):
 
 def test_get_mim_phenotypes():
     ## GIVEN a small testdata set
-    
+
     # This will return a dictionary with mim number as keys and
     # phenotypes as values
-    
+
     ## WHEN parsing the phenotypes
     phenotypes = get_mim_phenotypes(genemap_lines=GENEMAP_LINES)
 
     ## THEN assert they where parsed in a correct way
-    
+
     # There was only one line in GENEMAP_LINES that have two phenotypes
     # so we expect that there should be two phenotypes
 
@@ -104,9 +104,8 @@ def test_get_mim_phenotypes():
 
 def test_get_mim_phenotypes_file(genemap_handle):
     phenotypes = get_mim_phenotypes(genemap_lines=genemap_handle)
-    
+
     for i, mim_nr in enumerate(phenotypes):
         assert phenotypes[mim_nr]['mim_number']
 
     assert i > 0
-        

@@ -34,7 +34,7 @@ TRACKS = {
     'cancer': 'Cancer',
 }
 
-def cases(store, case_query, limit=100):
+def cases(store, case_query, prioritized_cases_query=None, limit=100):
     """Preprocess case objects.
 
     Add the necessary information to display the 'cases' view
@@ -42,16 +42,17 @@ def cases(store, case_query, limit=100):
     Args:
         store(adapter.MongoAdapter)
         case_query(pymongo.Cursor)
+        prioritized_cases_query(pymongo.Cursor)
         limit(int): Maximum number of cases to display
 
     Returns:
         data(dict): includes the cases, how many there are and the limit.
     """
-
     case_groups = {status: [] for status in CASE_STATUSES}
     nr_cases = 0
-    for nr_cases, case_obj in enumerate(case_query.limit(limit),1):
 
+    # local function to add info to case obj
+    def populate_case_obj(case_obj):
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
         LOG.debug("Analysis types found in %s: %s", case_obj['_id'], ','.join(analysis_types))
         if len(analysis_types) > 1:
@@ -60,11 +61,28 @@ def cases(store, case_query, limit=100):
 
         case_obj['analysis_types'] = list(analysis_types)
         case_obj['assignees'] = [store.user(user_email) for user_email in
-                                 case_obj.get('assignees', [])]
+                                     case_obj.get('assignees', [])]
         case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
         case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
         case_obj['display_track'] = TRACKS[case_obj.get('track', 'rare')]
+        return case_obj
+
+    for nr_cases, case_obj in enumerate(case_query.limit(limit),1):
+        case_obj = populate_case_obj(case_obj)
         case_groups[case_obj['status']].append(case_obj)
+
+    if prioritized_cases_query:
+        extra_prioritized = 0
+        for case_obj in prioritized_cases_query:
+            if any(group_obj.get('display_name') == case_obj.get('display_name')
+                for group_obj in case_groups[case_obj['status']]):
+                    continue
+            else:
+                extra_prioritized += 1
+                case_obj = populate_case_obj(case_obj)
+                case_groups[case_obj['status']].append(case_obj)
+        # extra prioritized cases are potentially shown in addition to the case query limit
+        nr_cases += extra_prioritized
 
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
@@ -144,8 +162,8 @@ def case(store, institute_obj, case_obj):
         rank_model_link_postfix = current_app.config.get('RANK_MODEL_LINK_POSTFIX','')
         case_obj['rank_model_link'] = ''.join(
             [
-                rank_model_link_prefix, 
-                str(case_obj['rank_model_version']), 
+                rank_model_link_prefix,
+                str(case_obj['rank_model_version']),
                 rank_model_link_postfix
             ]
         )
@@ -154,8 +172,8 @@ def case(store, institute_obj, case_obj):
         sv_rank_model_link_postfix = current_app.config.get('SV_RANK_MODEL_LINK_POSTFIX','')
         case_obj['sv_rank_model_link'] = ''.join(
             [
-                sv_rank_model_link_prefix, 
-                str(case_obj['sv_rank_model_version']), 
+                sv_rank_model_link_prefix,
+                str(case_obj['sv_rank_model_version']),
                 sv_rank_model_link_postfix
             ]
         )
