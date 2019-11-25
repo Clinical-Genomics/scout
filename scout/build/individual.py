@@ -66,7 +66,7 @@ def build_individual(ind):
         raise(PedigreeError("Unknown phenotype: %s" % phenotype))
 
     # Fix absolute path for individual bam files (takes care of incomplete path for demo files)
-    ind_files = ('bam_file', 'mt_bam', 'vcf2cytosure')
+    ind_files = ['bam_file', 'mt_bam', 'vcf2cytosure', 'wig_file']
     for ind_file in ind_files:
         file_path = ind.get(ind_file)
         if file_path and os.path.exists(file_path):
@@ -80,8 +80,8 @@ def build_individual(ind):
     ind_obj['confirmed_sex'] = ind.get('confirmed_sex')
     ind_obj['confirmed_parent'] = ind.get('confirmed_parent')
     ind_obj['predicted_ancestry'] = ind.get('predicted_ancestry')
-    ind_obj['wig_file'] = ind.get('wig_file')
-    
+
+
     # Check if the analysis type is ok
     # Can be anyone of ('wgs', 'wes', 'mixed', 'unknown')
     analysis_type = ind.get('analysis_type', 'unknown')

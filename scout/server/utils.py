@@ -123,15 +123,13 @@ def case_append_bam(case_obj):
     case_obj['bai_files'] = []
     case_obj['mt_bais'] = []
     case_obj['sample_names'] = []
-    case_obj['wig_file'] = []
+    case_obj['wig_files'] = []
     case_obj['wig_dummy'] = []                # XXX: add dummy to duck a crash
-    
+
     bam_files = [
         ('bam_file','bam_files', 'bai_files'),
         ('mt_bam', 'mt_bams', 'mt_bais'),
-        ('wig_file', 'wig_file', 'wig_dummy') # XXX: add dummy to duck a crash
-                                              # TODO: refactor algorithm below
-    ]
+        ('wig_file', 'wig_files', 'no_index')]
 
     for individual in case_obj['individuals']:
         case_obj['sample_names'].append(individual.get('display_name'))
@@ -142,7 +140,8 @@ def case_append_bam(case_obj):
                 LOG.debug("%s: no bam file found", individual['individual_id'])
                 continue
             case_obj[bam[1]].append(bam_path) # either bam_files or mt_bams
-            case_obj[bam[2]].append(find_bai_file(bam_path)) # either bai_files or mt_bais
+            if not bam[2] == 'no_index':
+                case_obj[bam[2]].append(find_bai_file(bam_path)) # either bai_files or mt_bais
 
 def find_bai_file(bam_file):
     """Find out BAI file by extension given the BAM file.
