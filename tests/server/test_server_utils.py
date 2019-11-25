@@ -1,5 +1,5 @@
 from scout.server.links import get_variant_links
-from scout server.utils import find_index
+from scout.server.utils import find_index
 
 def test_get_variant_links(variant_obj):
     ## GIVEN a variant object without links
