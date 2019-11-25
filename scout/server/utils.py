@@ -153,12 +153,12 @@ def find_index(align_file):
         index_file(str): Path to index file
     """
     index_file = None
-    if bam_file.endswith('cram'):
-        index_file = bam_file.replace('.cram', '.crai')
+    if align_file.endswith('cram'):
+        index_file = align_file.replace('.cram', '.crai')
         if not os.path.exists(index_file):
-            index_file = "{}.crai".format(bam_file)
+            index_file = "{}.crai".format(align_file)
     else:
-        index_file = bam_file.replace('.bam', '.bai')
+        index_file = align_file.replace('.bam', '.bai')
         if not os.path.exists(index_file):
-            index_file = "{}.bai".format(bam_file)
+            index_file = "{}.bai".format(align_file)
     return index_file
