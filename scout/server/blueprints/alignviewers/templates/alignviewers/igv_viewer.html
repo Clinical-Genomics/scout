@@ -62,7 +62,7 @@
                       {% for track in sample_tracks %}
                       {
                         name: "{{ track.name }}",
-                        type: "alignment"
+                        type: "alignment",
                         url: "{{ url_for('alignviewers.remote_static', file=track.url) }}",
                         indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL) }}",
                         sourceType: "file",
