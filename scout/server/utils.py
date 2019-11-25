@@ -83,7 +83,7 @@ def variant_case(store, case_obj, variant_obj):
         variant_obj(scout.models.Variant)
     """
 
-    case_append_index(case_obj)
+    case_append_alignments(case_obj)
 
     try:
         chrom = None
