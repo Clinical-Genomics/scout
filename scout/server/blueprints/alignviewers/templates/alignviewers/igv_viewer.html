@@ -25,7 +25,7 @@
             src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
 
     <!-- IGV JS-->
-     <script type="text/javascript" src="https://igv.org/web/release/2.3.0-rc1/dist/igv.min.js"></script>
+     <script type="text/javascript" src="https://igv.org/web/snapshot/dist/igv.min.js"></script>
 </head>
 <body>
 <div class="container-fluid" id="igvDiv" style="padding:5px; border:1px solid lightgray"></div>
@@ -66,6 +66,7 @@
                         indexURL: '{{ url_for("alignviewers.remote_static", file=track.indexURL) }}',
                         sourceType: "file",
                         {% if track.url.endswith('.cram') %}
+
                           format: "cram",
                         {% endif %}
                         type: "alignment",
