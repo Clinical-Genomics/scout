@@ -99,13 +99,15 @@ def igv():
                                    'indexURL' : bai_files[counter],
                                    'height' : 700
                                    })
+        if wig_files:
             wig_tracks.append({'name': 'Coverage', 'url': wig_files[counter],
                                'min': 0.0, 'max': 30.0})
             counter += 1
 
     display_obj['sample_tracks'] = sample_tracks
-    display_obj['wig_tracks'] = wig_tracks
-    
+    if wig_tracks:
+        display_obj['wig_tracks'] = wig_tracks
+
     if request.args.get('center_guide'):
         display_obj['display_center_guide'] = True
     else:
