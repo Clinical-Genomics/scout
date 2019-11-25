@@ -177,7 +177,7 @@ def build_case(case_data, adapter):
 
     case_obj['panels'] = panels
 
-    case_obj['dynamic_gene_list'] = {}
+    case_obj['dynamic_gene_list'] = []
 
     # Meta data
     genome_build = case_data.get('genome_build', '37')

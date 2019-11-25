@@ -71,7 +71,10 @@ def cases(institute_id):
             all_cases.sort('status', pymongo_sort)
 
     LOG.debug("Prepare all cases")
-    data = controllers.cases(store, all_cases, limit)
+
+    prioritized_cases = store.prioritized_cases(institute_id=institute_id)
+
+    data = controllers.cases(store, all_cases, prioritized_cases, limit)
     data['sort_order'] = sort_order
     data['sort_by'] = sort_by
     data['nr_cases'] = store.nr_cases(institute_id=institute_id)
@@ -579,8 +582,12 @@ def phenotypes_actions(institute_id, case_name):
             # avoid empty lists
             if raw_symbol:
                 # take the first nubmer before |, and remove any space.
-                hgnc_symbol_split = raw_symbol.split('|', 1)[0]
-                hgnc_symbol = int(hgnc_symbol_split.replace(' ', ''))
+                try:
+                    hgnc_symbol_split = raw_symbol.split('|', 1)[0]
+                    hgnc_symbol = int(hgnc_symbol_split.replace(' ', ''))
+                except ValueError:
+                    flash("Provided gene info could not be parsed! "
+                          "Please allow autocompletion to finish.", 'warning')
             LOG.debug("Parsed HGNC symbol {}".format(hgnc_symbol))
             store.update_dynamic_gene_list(case_obj, hgnc_ids=[hgnc_symbol], add_only=True)
 
@@ -590,8 +597,12 @@ def phenotypes_actions(institute_id, case_name):
             LOG.debug("raw gene list: {}".format(raw_symbols))
             # avoid empty lists
             if raw_symbols:
-                hgnc_symbols.update(raw_symbol.split(' ', 1)[0] for raw_symbol in
+                try:
+                    hgnc_symbols.update(raw_symbol.split(' ', 1)[0] for raw_symbol in
                                     raw_symbols.split('|'))
+                except ValueError:
+                    flash("Provided gene info could not be parsed! "
+                          "Please allow autocompletion to finish.", 'warning')
             LOG.debug("HGNC symbols {}".format(hgnc_symbols))
         store.update_dynamic_gene_list(case_obj, hgnc_symbols=hgnc_symbols)
 
