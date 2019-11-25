@@ -107,7 +107,7 @@ def variant_case(store, case_obj, variant_obj):
     except (SyntaxError, Exception):
         LOG.warning("skip VCF region for alignment view")
 
-def case_append_bam(case_obj):
+def case_append_alignments(case_obj):
     """Deconvolute information about files to case_obj.
 
     This function prepares the bam/cram files in a certain way so that they are easily accessed in the
