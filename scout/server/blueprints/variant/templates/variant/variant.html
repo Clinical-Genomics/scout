@@ -363,6 +363,7 @@
           </div>
         </div>
       </form>
+      {% if not cancer %}
       <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
         <label class="mt-3">Mosaic Tags</label>
         <div class="row">
@@ -380,6 +381,7 @@
           </div>
         </div>
       </form>
+      {% endif %}
       {{ acmg_form(variant.acmg_classification.code if variant.acmg_classification) }}
       <div class="mt-3">
         <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
