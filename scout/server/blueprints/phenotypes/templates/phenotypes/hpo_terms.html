@@ -58,8 +58,11 @@
         paging: false,
         dom: 'fBrtip',
         buttons: [
-            'copyHtml5',
-            'excelHtml5',
+          {
+            extend: 'excelHtml5',
+            title: 'scout_phenotypes'
+          },
+          'copyHtml5'
         ]
     } );
 } );
