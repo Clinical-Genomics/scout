@@ -59,6 +59,19 @@
                             order: Number.MIN_VALUE,
                             visibilityWindow: 300000000
                       },
+                      {% for wtrack in wig_tracks %}
+                      {
+                        type: "wig",
+                        name: '{{ wtrack.name }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=wtrack.url) }}',
+                        format: 'bigwig',
+                        {# indexURL: '{{ url_for("alignviewers.remote_static", file=wtrack.url)  }}', #}
+                        {# color: "rgb(110, 40, 150)",#}
+                        {# min: '{{ wtrack.min }}', #}
+                        {# max: '{{ wtrack.max }}', #}
+                        sourceType: 'file'
+                      },
+                      {% endfor %}
                       {% for track in sample_tracks %}
                       {
                         name: '{{ track.name }}',
@@ -69,19 +82,6 @@
                         height: "{{track.height}}"
                       },
                       {% endfor %}
-
-                      {% for wtrack in wig_tracks %}
-                      {
-                        type: "wig",
-                        name: '{{ wtrack.name }}',
-                        url: '{{ url_for("alignviewers.unindexed_remote_static", file=wtrack.url) }}',
-                        color: "rgb(110, 40, 150)",
-                        min: '{{ wtrack.min }}',
-                        min: '{{ wtrack.max }}',
-                        sourceType: 'file'
-                      },
-                      {% endfor %}
-
                     ]
                 };
 

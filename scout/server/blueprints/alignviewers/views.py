@@ -18,6 +18,7 @@ def remote_static():
     file_path = request.args.get('file')
 
     range_header = request.headers.get('Range', None)
+
     if not range_header and file_path.endswith('.bam'):
         return abort(500)
 
@@ -107,7 +108,7 @@ def igv():
                                    'height' : 700
                                    })
         if wig_files:
-            wig_tracks.append({'name': 'Coverage', 'url': wig_files[counter],
+            wig_tracks.append({'name': 'Coverage '+sample, 'url': wig_files[counter],
                                 'min': 0.0, 'max': 30.0})
         counter += 1
 
