@@ -17,7 +17,7 @@ fixes issue with unaligned table headers that comes with hidden Datatables
 ## [x.x.x]
 
 ### Added
-
+- Rank score model in causatives page
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
