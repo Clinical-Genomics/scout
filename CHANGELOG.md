@@ -14,7 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
-
+- Rank score model in causatives page
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
