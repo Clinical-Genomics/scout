@@ -8,7 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Fixed
-- Remooved Mosaic Tag from Cancer variants
+- Removed Mosaic Tag from Cancer variants
 
 
 ## [x.x.x]
