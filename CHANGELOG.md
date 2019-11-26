@@ -4,6 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
+## [x.x.x]
+
+### Added
+Adds scroll for the trancript tab 
+
+### Fixed
+fixes issue with unaligned table headers that comes with hidden Datatables
+
+
 ## [x.x.x]
 
 ### Added
