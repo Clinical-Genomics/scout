@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
+## [x.x.x]
+
+### Fixed
+- Removed Mosaic Tag from Cancer variants
+
+
 ## [x.x.x]
 
 ### Added
