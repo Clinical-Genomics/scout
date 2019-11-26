@@ -66,11 +66,7 @@
                         url: "{{ url_for('alignviewers.remote_static', file=track.url) }}",
                         indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL) }}",
                         sourceType: "file",
-                        {% if track.url.endswith('.cram') %}
-                          format: "cram",
-                        {% else %}
-                          format: "bam",
-                        {% endif %}
+                        format: "{{ track.format }}",
                         height: "{{track.height}}"
                       },
                       {% endfor %}
