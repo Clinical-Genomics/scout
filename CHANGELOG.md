@@ -39,6 +39,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Bug when ordering sanger
+- Improved scrolling over long list of genes/transcripts
 
 
 ## [4.8.2]
