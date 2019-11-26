@@ -4,10 +4,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
+## [x.x.x]
+
+### Fixed
+- Removed Mosaic Tag from Cancer variants
+
+
 ## [x.x.x]
 
 ### Added
-- Exportable HPO terms from phanotypes page
+- Rank score model in causatives page
+- Exportable HPO terms from phenotypes page
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
