@@ -91,7 +91,7 @@ def igv():
     counter = 0
     for sample in samples:
         # some samples might not have an associated bam file, take care if this
-        if bam_files[counter] and bai_files[counter]:
+        if bam_files.get(counter) and bai_files.get(counter):
             sample_tracks.append({
                 'name' : sample,
                 'url' : bam_files[counter],
