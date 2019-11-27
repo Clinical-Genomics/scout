@@ -62,7 +62,7 @@ class CaseHandler(object):
               has_causatives=False, reruns=False, finished=False,
               research_requested=False, is_research=False, status=None,
               phenotype_terms=False, pinned=False, cohort=False, name_query=None,
-              yield_query=False):
+              yield_query=False, solved_since=None):
         """Fetches all cases from the backend.
 
         Args:
@@ -82,6 +82,7 @@ class CaseHandler(object):
                              part of inds or part of synopsis
             yield_query(bool): If true, only return mongo query dict for use in
                                 compound querying.
+            solved_since(int): Max number of days since case was given causatives
 
         Returns:
             Cases ordered by date.
@@ -236,6 +237,22 @@ class CaseHandler(object):
                     {'display_name': {'$regex': name_query}},
                     {'individuals.display_name': {'$regex': name_query}},
                 ]
+
+        if solved_since:
+            days_datetime = datetime.datetime.now() - datetime.timedelta(days=solved_since)
+            # Look up 'mark_causative' events added since specified number days ago
+            event_query = {
+                'category': 'case',
+                'verb': 'mark_causative',
+                'created_at': {'$gte': days_datetime}
+                }
+            recent_events = self.event_collection.find(event_query)
+            solved_cases = set()
+            # Find what cases these events concern
+            for event in recent_events:
+                solved_cases.add(event['case'])
+            solved_cases = list(solved_cases)
+            query['_id'] = {'$in': solved_cases}
 
         if yield_query:
             return query
