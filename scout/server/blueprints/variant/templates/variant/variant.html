@@ -1068,7 +1068,7 @@
 
 {% macro transcripts_panel() %}
   <div class="card panel-default table-responsive fixed-panel">
-    <table class="table table-bordered card-sm">
+    <table id="transcripts_panel_table" class="table table-bordered card-sm">
       <thead>
         <tr>
           <th>Gene</th>
@@ -1124,7 +1124,7 @@
 
 {% macro proteins_panel() %}
   <div class="panel panel-default table-responsive">
-    <table class="table table-bordered">
+    <table id="proteins_panel_table" class="table table-bordered">
       <thead>
         <tr>
           <th>Gene</th>
@@ -1323,16 +1323,28 @@
   <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 
   <script>
-    if (document.getElementById('transcript_overview_table').rows.length > 5) {
-      $('#transcript_overview_table').DataTable({
+    function set_scrolly_table(table_id) {
+    if (document.getElementById(table_id).rows.length > 5) {
+      $('#' + table_id).DataTable({
         scrollY: 350,
+        stripeClasses: [],
         scrollCollapse: true,
         paging: false,
         searching: false,
         ordering: true,
-        info: false
-      });
+        info: false})
+      }
     }
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+      $($.fn.dataTable.tables(true)).DataTable()
+      .columns.adjust()
+    });
+
+    set_scrolly_table('transcript_overview_table')
+    set_scrolly_table('proteins_panel_table')
+    set_scrolly_table('transcripts_panel_table')
+
 
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
@@ -1343,7 +1355,7 @@
         container: 'body'
       });
 
-      $('select[multiple]').selectpicker({
+    $('select[multiple]').selectpicker({
         width: '100%'
       });
     });
