@@ -4,14 +4,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [x.x.x]
 
 ### Added
 - Rank score model in causatives page
-- Cancer: AMP guideline tiers
+- Exportable HPO terms from phenotypes page
+- AMP guideline tiers for cancer variants
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
+- Removed Mosaic Tag from Cancer variants
 
 
 ## [4.9.0]
