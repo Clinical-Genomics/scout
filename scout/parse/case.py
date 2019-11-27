@@ -14,8 +14,33 @@ from scout.constants import (PHENOTYPE_MAP, SEX_MAP, REV_SEX_MAP,
 from scout.parse.peddy import (parse_peddy_ped, parse_peddy_ped_check,
                                parse_peddy_sex_check)
 
-log = logging.getLogger(__name__)
+from scout.utils.date import get_date
 
+LOG = logging.getLogger(__name__)
+
+def get_correct_date(date_info):
+    """Convert dateinfo to correct date
+    
+    Args:
+        dateinfo: Something that represents a date
+    
+    Returns:
+        correct_date(datetime.datetime)
+    """
+    if isinstance(date_info, datetime.datetime):
+        return date_info
+
+    if isinstance(date_info, str):
+        try:
+            correct_date = get_date(date_info)
+        except ValueError as err:
+            LOG.warning('Analysis date is on wrong format')
+            LOG.info('Setting analysis date to todays date')
+            correct_date = datetime.datetime.now()
+        return correct_date
+
+    LOG.info('Setting analysis date to todays date')
+    return datetime.datetime.now()
 
 def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
                     vcf_sv=None, vcf_cancer=None, vcf_str=None, peddy_ped=None,
@@ -43,8 +68,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     """
     config_data = copy.deepcopy(config) or {}
     # Default the analysis date to now if not specified in load config
-    if 'analysis_date' not in config_data:
-        config_data['analysis_date'] = datetime.datetime.now()
+    config_data['analysis_date'] = get_correct_date(config_data.get('analysis_date'))
 
     # If the family information is in a ped file we nned to parse that
     if ped:
@@ -81,16 +105,16 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     config_data['vcf_snv'] = vcf_snv if vcf_snv else config_data.get('vcf_snv')
     config_data['vcf_sv'] = vcf_sv if vcf_sv else config_data.get('vcf_sv')
     config_data['vcf_str'] = vcf_str if vcf_str else config_data.get('vcf_str')
-    log.debug("Config vcf_str set to {0}".format(config_data['vcf_str']))
+    LOG.debug("Config vcf_str set to {0}".format(config_data['vcf_str']))
 
     config_data['vcf_cancer'] = vcf_cancer if vcf_cancer else config_data.get('vcf_cancer')
 
     config_data['delivery_report'] = delivery_report if delivery_report else config_data.get('delivery_report')
 
-    config_data['rank_model_version'] = config_data.get('rank_model_version')
+    config_data['rank_model_version'] = str(config_data.get('rank_model_version', ''))
     config_data['rank_score_threshold'] = config_data.get('rank_score_threshold', 0)
 
-    config_data['sv_rank_model_version'] = config_data.get('sv_rank_model_version')
+    config_data['sv_rank_model_version'] = str(config_data.get('sv_rank_model_version', ''))
 
     config_data['track'] = config_data.get('track', 'rare')
     if config_data['vcf_cancer']:
@@ -100,7 +124,11 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
 
 
 def add_peddy_information(config_data):
-    """Add information from peddy outfiles to the individuals"""
+    """Add information from peddy outfiles to the individuals
+    
+    Args:
+        config_data(dict)
+    """
     ped_info = {}
     ped_check = {}
     sex_check = {}
@@ -144,18 +172,20 @@ def add_peddy_information(config_data):
         # Check if peddy har confirmed parental relations
         for parent in ['mother', 'father']:
             # If we are looking at individual with parents
-            if ind[parent] != '0':
-                # Check if the child/parent pair is in peddy data
-                for pair in ped_check:
-                    if (ind_id in pair and ind[parent] in pair):
-                        # If there is a parent error we mark that
-                        if ped_check[pair]['parent_error']:
-                            analysis_inds[ind[parent]]['confirmed_parent'] = False
-                        else:
-                            # Else if parent confirmation has not been done
-                            if 'confirmed_parent' not in analysis_inds[ind[parent]]:
-                                # Set confirmatio to True
-                                analysis_inds[ind[parent]]['confirmed_parent'] = True
+            if ind[parent] == '0':
+                continue
+            # Check if the child/parent pair is in peddy data
+            for pair in ped_check:
+                if not (ind_id in pair and ind[parent] in pair):
+                    continue
+                # If there is a parent error we mark that
+                if ped_check[pair]['parent_error']:
+                    analysis_inds[ind[parent]]['confirmed_parent'] = False
+                    continue
+                # Else if parent confirmation has not been done
+                if 'confirmed_parent' not in analysis_inds[ind[parent]]:
+                    # Set confirmatio to True
+                    analysis_inds[ind[parent]]['confirmed_parent'] = True
 
 def parse_individual(sample):
     """Parse individual information
@@ -194,7 +224,7 @@ def parse_individual(sample):
         raise PedigreeError("Sample %s is missing 'sex'" % sample_id)
     sex = sample['sex']
     if sex not in REV_SEX_MAP:
-        log.warning("'sex' is only allowed to have values from {}"
+        LOG.warning("'sex' is only allowed to have values from {}"
                     .format(', '.join(list(REV_SEX_MAP.keys()))))
         raise PedigreeError("Individual %s has wrong formated sex" % sample_id)
 
@@ -204,7 +234,7 @@ def parse_individual(sample):
                             % sample_id)
     phenotype = sample['phenotype']
     if phenotype not in REV_PHENOTYPE_MAP:
-        log.warning("'phenotype' is only allowed to have values from {}"
+        LOG.warning("'phenotype' is only allowed to have values from {}"
                     .format(', '.join(list(REV_PHENOTYPE_MAP.keys()))))
         raise PedigreeError("Individual %s has wrong formated phenotype" % sample_id)
 
@@ -301,10 +331,10 @@ def parse_case(config):
         'case_id': config['family'],
         'display_name': config.get('family_name', config['family']),
         'genome_build': config.get('human_genome_build'),
-        'rank_model_version': config.get('rank_model_version'),
+        'rank_model_version': str(config.get('rank_model_version', '')),
         'rank_score_threshold': config.get('rank_score_threshold', 0),
-        'sv_rank_model_version': config.get('sv_rank_model_version'),
-        'analysis_date': config['analysis_date'],
+        'sv_rank_model_version': str(config.get('sv_rank_model_version', '')),
+        'analysis_date': config.get('analysis_date'),
         'individuals': individuals,
         'vcf_files': {
             'vcf_snv': config.get('vcf_snv'),
@@ -324,6 +354,8 @@ def parse_case(config):
         'delivery_report': config.get('delivery_report'),
         'multiqc': config.get('multiqc'),
         'track': config.get('track', 'rare'),
+        'chromograph_image_files': config.get('chromograph_image_files'),
+        'chromograph_prefixes': config.get('chromograph_prefixes')
     }
 
     # add the pedigree figure, this is a xml file which is dumped in the db
@@ -336,6 +368,8 @@ def parse_case(config):
 
     if (case_data['vcf_files']['vcf_cancer'] or case_data['vcf_files']['vcf_cancer_research']):
         case_data['track'] = 'cancer'
+    
+    case_data['analysis_date'] = get_correct_date(case_data.get('analysis_date'))
 
     return case_data
 

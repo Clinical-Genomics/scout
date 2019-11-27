@@ -20,7 +20,7 @@ class InstituteHandler(object):
                 institute_obj(Institute)
         """
         internal_id = institute_obj['internal_id']
-        display_name = institute_obj['internal_id']
+        display_name = institute_obj['display_name']
 
         # Check if institute already exists
         if self.institute(institute_id=internal_id):
@@ -28,8 +28,7 @@ class InstituteHandler(object):
                                  .format(display_name))
 
         LOG.info("Adding institute with internal_id: {0} and "
-                    "display_name: {1}".format(internal_id,
-                                               display_name))
+                    "display_name: {1}".format(internal_id, display_name))
 
         insert_info = self.institute_collection.insert_one(institute_obj)
         ##TODO check if insert info was ok

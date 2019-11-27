@@ -177,7 +177,7 @@ def build_case(case_data, adapter):
 
     case_obj['panels'] = panels
 
-    case_obj['dynamic_gene_list'] = {}
+    case_obj['dynamic_gene_list'] = []
 
     # Meta data
     genome_build = case_data.get('genome_build', '37')
@@ -218,6 +218,9 @@ def build_case(case_data, adapter):
 
     # Files
     case_obj['madeline_info'] = case_data.get('madeline_info')
+    case_obj['chromograph_image_files'] = case_data.get('chromograph_image_files')
+    case_obj['chromograph_prefixes'] = case_data.get('chromograph_prefixes')
+
     if 'multiqc' in case_data:
         case_obj['multiqc'] = case_data.get('multiqc')
     case_obj['vcf_files'] = case_data.get('vcf_files', {})

@@ -24,6 +24,7 @@ CLINVAR_HEADER = {
     'condition_id_value' : 'Condition ID value',
     'condition_comment' : 'Condition comment',
     'clinsig' : 'Clinical significance',
+    'clinsig_comment' : 'Comment on clinical significance',
     'last_evaluated' : 'Date last evaluated',
     'variant_comment' : 'Comment on variant',
     'assertion_method' : 'Assertion method',
@@ -44,7 +45,6 @@ CASEDATA_HEADER = {
     'is_affected' : 'Affected status',
     'sv_analysis_method' : 'Structural variant method/analysis type',
     'clin_features' : 'Clinical features',
-    'clin_features_comment' : 'Comment on clinical features',
     'tissue' : 'Tissue',
     'sex' : 'Sex',
     'age' : 'Age',
@@ -56,7 +56,6 @@ CASEDATA_HEADER = {
     'zygosity' : 'Zygosity',
     'co_occurr_gene' : 'Co-occurrences, same gene',
     'co_occurr_other' : 'Co-occurrence, other genes',
-    'evidence_cit' : 'Evidence citations',
     'platform_type' : 'Platform type',
     'platform_name' : 'Platform name',
     'method' : 'Method',
@@ -102,4 +101,3 @@ REVSTAT_TERMS = {
     'practice_guideline',
     'reviewed_by_expert_panel'
 }
-

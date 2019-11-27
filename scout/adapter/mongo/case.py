@@ -246,6 +246,22 @@ class CaseHandler(object):
         else:
             return self.case_collection.find(query).sort('updated_at', -1)
 
+    def prioritized_cases(self, institute_id=None):
+        """Fetches any prioritized cases from the backend.
+
+        Args:
+            collaborator(str): If collaborator should be considered
+        """
+        query = {}
+
+        if institute_id:
+            LOG.debug("Use collaborator {0}".format(institute_id))
+            query['collaborators'] = institute_id
+
+        query['status'] = 'prioritized'
+
+        return self.case_collection.find(query).sort('updated_at', -1)
+
     def nr_cases(self, institute_id=None):
         """Return the number of cases
 
@@ -284,14 +300,17 @@ class CaseHandler(object):
             case (dict): The case that should be updated
             hgnc_symbols (iterable): A list of hgnc_symbols
             hgnc_ids (iterable): A list of hgnc_ids
+            phenotype_id(list): optionally add phenotype_ids used to generate list
+            add_only(bool): set by eg ADDGENE to add genes, and NOT reset previous dynamic_gene_list
 
         Returns:
             updated_case(dict)
         """
         dynamic_gene_list = []
         if add_only:
-            dynamic_gene_list  = self.case_collection.find_one({ '_id': case['_id'] },
-                { 'dynamic_gene_list': 1, '_id': 0 })['dynamic_gene_list']
+            dynamic_gene_list  = list( self.case_collection.find_one({ '_id': case['_id'] },
+                { 'dynamic_gene_list': 1, '_id': 0 }).get('dynamic_gene_list', []))
+
             LOG.debug("Add selected: current dynamic gene list: {}".format(dynamic_gene_list))
 
         res = []
@@ -543,6 +562,8 @@ class CaseHandler(object):
                     'rank_model_version': case_obj.get('rank_model_version'),
                     'sv_rank_model_version': case_obj.get('sv_rank_model_version'),
                     'madeline_info': case_obj.get('madeline_info'),
+                    'chromograph_image_files': case_obj.get('chromograph_image_files'),
+                    'chromograph_prefixes': case_obj.get('chromograph_prefixes'),
                     'vcf_files': case_obj.get('vcf_files'),
                     'has_svvariants': case_obj.get('has_svvariants'),
                     'has_strvariants': case_obj.get('has_strvariants'),

@@ -14,6 +14,17 @@
     background-color: #f7bebc;
 }
 
+.btn-custom-select {
+  color: white;
+  background-color: white;
+  width: 100%;
+  color: #495057;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: .40rem;
+  margin-bottom: 1rem;
+}
+
 .container {
 	margin-top: 10px;
 	width: 100%;
@@ -29,6 +40,12 @@
   margin-top: 10px;
   width: 100%;
 }
+
+table.dataTable {margin-bottom: 0rem}
+
+.dataTables_scrollBody {    
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;}
 
 /* dismiss table row */
 .dismiss {
@@ -106,15 +123,20 @@
   font-size: 0;
 }
 
+.list-scroll  {
+  overflow: scroll;
+  max-height: 430px;
+}
+
 .popover {
 	max-width: none;
 }
 
 .popover-content > table {
-	margin-bottom: 0;
+  margin-bottom: 0;
 }
 
-ul li {
+li.nav-item {
   font-size: 16px;
   display: inline-block;
   padding: 5px 15px;
@@ -124,6 +146,10 @@ ul li {
 a:visited {
 	/* purple */
 	color: #551A8B;
+}
+
+.odd {
+   background-color: #f2f2f2;
 }
 
 /* Introduce small space in between list elements */

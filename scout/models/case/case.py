@@ -74,6 +74,9 @@ case = dict(
 
     madeline_info=str,  # madeline info is a full xml file
 
+    chromograph_image_files=str,  # path to dir
+    chromograph_prefixes=list,  # path to dir
+
     delivery_report=str,  # delivery report is a path to html file
 
     vcf_files=dict,  # A dictionary with vcf files

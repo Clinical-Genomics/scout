@@ -39,13 +39,15 @@
         <tr>
           <th style="width:8%" title="Rank position">Rank</th>
           <th style="width:8%" title="Repeat ID">Repeat locus</th>
-          <th style="width:15%" title="Repeat unit">Reference repeat unit</th>
+          <th style="width:12%" title="Repeat unit">Reference repeat unit</th>
           <th style="width:8%" title="ALT">Estimated size</th>
           <th style="width:8%" title="ReferenceSize">Reference size</th>
-          <th style="width:10%"title="Status">Status</th>
-          <th style="width:18%" title="GT">Genotype</th>
-          <th style="width:8%" title="Chromosome">Chr.</th>
-          <th style="width:17%" title="Position">Position</th>
+          <th style="width:10%" title="Status">Status</th>
+          <th style="width:8%" title="Max normal">Max normal</th>
+          <th style="width:8%" title="Min pathologic">Min pathologic</th>
+          <th style="width:14%" title="GT">Genotype</th>
+          <th style="width:6%" title="Chromosome">Chr.</th>
+          <th style="width:10%" title="Position">Position</th>
         </tr>
       </thead>
       <tbody>
@@ -55,9 +57,9 @@
           {% elif variant.str_status == 'normal' %}
               <tr class="bg-success">
           {% elif variant.str_status == 'full_mutation' %}
-              <tr class="bg-warning">
+              <tr class="bg-danger">
           {% elif variant.str_status == 'pre_mutation' %}
-              <tr style="background-color: #ffff66;">
+              <tr class="bg-warning">
 	        {% else %}
 	            <tr>
 	        {% endif %}
@@ -67,6 +69,8 @@
             <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
             <td class="text-right">{{ variant.str_ref }}</td>
             <td>{{ variant.str_status }}</td>
+            <td>{{ variant.str_normal_max }}</td>
+            <td>{{ variant.str_pathologic_min }}</td>
             <td>{% for sample in variant.samples %}
                   {% if sample.genotype_call != "./." %}
                     <div class="float-left">{{ sample.display_name }}</div>
@@ -133,7 +137,7 @@
       {% if more_variants %}
         <div class="row">
             <div class="col-6">
-              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">	
+              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
                   First page
               </a>
               </div>
@@ -145,7 +149,7 @@
         </div>
       {% else %}
         <i class="text-muted">No more variants to display</i>
-        <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">	
+        <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
       First page
         </a>
       {% endif %}

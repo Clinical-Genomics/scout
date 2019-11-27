@@ -87,41 +87,41 @@ SPIDEX_LEVELS = (
 
 MANUAL_RANK_OPTIONS = {
     8: {
-        'label': 'known pathogenic',
+        'label': 'Known pathogenic',
         'description': 'Previously known pathogenic in Clinvar Hgmd literature etc',
     },
     7: {
-        'label': 'pathogenic',
+        'label': 'Pathogenic',
         'description': ("Novel mutation but overlapping phenotype with known pathogenic, "
                         "no further experimental validation needed"),
     },
     6: {
-        'label': 'novel validated pathogenic',
+        'label': 'Novel validated pathogenic',
         'description': 'Novel mutation and validated experimentally',
     },
     5: {
-        'label': 'pathogenic partial phenotype',
+        'label': 'Pathogenic partial phenotype',
         'description': ("Pathogenic variant explains part of patients phenotype, but "
                         "not all symptoms"),
     },
     4: {
-        'label': 'likely pathogenic',
+        'label': 'Likely pathogenic',
         'description': 'Experimental validation required to prove causality',
     },
     3: {
-        'label': 'possibly pathogenic',
+        'label': 'Possibly pathogenic',
         'description': 'Uncertain significance, but cannot disregard yet',
     },
     2: {
-        'label': 'likely benign',
+        'label': 'Likely benign',
         'description': 'Uncertain significance, but can discard',
     },
     1: {
-        'label': 'benign',
+        'label': 'Benign',
         'description': 'Does not cause phenotype',
     },
     0: {
-        'label': 'other',
+        'label': 'Other',
         'description': 'Phenotype not related to disease',
     },
 }

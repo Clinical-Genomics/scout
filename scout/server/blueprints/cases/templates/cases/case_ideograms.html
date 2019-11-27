@@ -1,0 +1,346 @@
+{% macro case_ideograms(institute, case) %}
+<script>
+  // TODO: Handle trisomy
+  // TODO: name offset constants better
+    const WIDTH_BREAKPOINT = 1955  // less will remove one column
+    const X_OFFSET = 55 // leftside offset whitespace in the PNGs
+    const Y_OFFSET = 5  // make room for arrows pointing at the cytoban
+    const OFFSET_X = 60;
+    const OFFSET_Y = 30;
+    const CHROMOSOMES = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
+                         '11', '12', '13', '14', '15', '16', '17', '18',
+                         '19', '20', '21', '22', 'X', 'Y'];
+
+
+    console.log("window: "+$(window).width())
+    console.log("breakpoint: "+WIDTH_BREAKPOINT)
+    // Ideogram measurements used for cropping to a nice picture
+    const CHROMSPECS_LIST =
+          [{name: '1', length: 482, cent_start: 245, cent_length: 13 },
+           {name: '2', length: 470, cent_start: 185, cent_length: 13 },
+           {name: '3', length: 387, cent_start: 180, cent_length: 13 },
+           {name: '4', length: 372, cent_start: 105, cent_length: 13 },
+           {name: '5', length: 353, cent_start: 105, cent_length: 10 },
+           {name: '6', length: 336, cent_start: 121, cent_length: 13 },
+           {name: '7', length: 313, cent_start: 125, cent_length: 13 },
+           {name: '8', length: 290, cent_start: 100, cent_length: 8 },
+           {name: '9', length: 280, cent_start: 103, cent_length: 8 },
+           {name: '10', length: 270, cent_start: 90, cent_length: 10 },
+           {name: '11', length: 267, cent_start: 115, cent_length: 10 },
+           {name: '12', length: 265, cent_start: 80, cent_length: 13 },
+           {name: '13', length: 232, cent_start: 47, cent_length: 8 },
+           {name: '14', length: 217, cent_start: 47, cent_length: 8 },
+           {name: '15', length: 207, cent_start: 47, cent_length: 8 },
+           {name: '16', length: 184, cent_start: 82, cent_length: 8 },
+           {name: '17', length: 167, cent_start: 57, cent_length: 8 },
+           {name: '18', length: 162, cent_start: 46, cent_length: 8 },
+           {name: '19', length: 127, cent_start: 64, cent_length: 8 },
+           {name: '20', length: 132, cent_start: 64, cent_length: 8 },
+           {name: '21', length: 107, cent_start: 38, cent_length: 8 },
+           {name: '22', length: 114, cent_start: 42, cent_length: 8 },
+           {name: 'X', length: 305, cent_start: 127, cent_length: 8 },
+           {name: 'Y', length: 127, cent_start: 39, cent_length: 4 }]
+
+
+    function make_names(prefix){
+        var names = [];
+        for (var i = 0; i < CHROMOSOMES.length; i++){
+            j = i+1  // off by one
+            console.log(prefix+j+".png");
+            names[i] = prefix+j+".png";
+        }
+        return names;
+    }
+
+    // Draw ROH call pictures -coverage- and UPD pictures -color coded
+    // genome regions- onto the dashboard.
+    //
+    //
+    // Return a list of names,
+    // [p]
+    function make_names(prefix){
+        var names = [];
+        for (var i = 0; i < CHROMOSOMES.length; i++){
+            id = CHROMOSOMES[i];
+            names[i] = prefix+id+".png";
+        }
+        return names;
+    }
+
+
+    /*
+     * Draw ROH call pictures -coverage- and UPD pictures -color coded
+     * genome regions- onto the dashboard.
+     */
+    function draw_tracks(sex){
+        console.log("DRAW TRACKS")
+        const CYT_HEIGHT = 50 ;
+        const CYT_WIDTH = 500 ;
+        var roh_imgPath = '/{{institute._id}}/{{case.display_name}}/roh_images/'
+        var upd_imgPath = '/{{institute._id}}/{{case.display_name}}/upd_images/'
+        var ideo_imgPath = '/{{institute._id}}/{{case.display_name}}/chr_images/'
+
+        var roh_svg = document.getElementById("roh_svg");
+        var roh_imgObj = new Image();
+        var upd_imgObj = new Image();
+        var roh_images = make_names("{{case.chromograph_prefixes.roh}}");
+        var upd_images = make_names("{{case.chromograph_prefixes.upd}}");
+        var ideo_images = make_names("{{case.chromograph_prefixes.chr}}");
+        var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
+        var chromspecs_list
+
+        if(sex=='xy'){
+            chromspecs_list = CHROMSPECS_LIST
+        }
+        else{
+            chromspecs_list = CHROMSPECS_LIST.slice(0, CHROMSPECS_LIST.length-2) //drops last elem
+        }
+
+
+        for(i = 0; i< chromspecs_list.length; i++){
+            roh_imgObj.src = roh_imgPath + roh_images[i]
+            upd_imgObj.src = upd_imgPath + upd_images[i]
+            x_pos = i % number_of_columns == 0? 0 : CYT_WIDTH * (i% number_of_columns) + OFFSET_X
+            y_pos =  Math.floor( i/number_of_columns ) * 100;
+
+            var g = document.createElementNS('http://www.w3.org/2000/svg','g');
+            var ideo_image = make_svgimage(ideo_imgPath + ideo_images[i],
+                                          x_pos,
+                                          y_pos,
+                                          "25px", "500px", );
+
+            var upd_image = make_svgimage(upd_imgPath + upd_images[i],
+                                          x_pos,
+                                          y_pos + 30,
+                                          "25px", "500px", );
+
+            var roh_image = make_svgimage(roh_imgPath + roh_images[i],
+                                          x_pos + 17,  // compensate for image pixel start
+                                          y_pos + 55 , // place below UPD
+                                          "25px", "500px", );
+
+
+            var t = chromosome_text(CHROMOSOMES[i], x_pos, y_pos+17);
+            var clipPath = make_clipPath(CHROMSPECS_LIST[i], x_pos, y_pos)
+            ideo_image.setAttributeNS(null, 'clip-path', "url(#clip-chr"+CHROMSPECS_LIST[i].name +")")
+
+            g.appendChild(roh_image);
+            g.appendChild(upd_image);
+            g.appendChild(ideo_image);
+            g.appendChild(clipPath);
+            g.appendChild(t);
+
+            roh_svg.append(g)
+        }
+    }
+
+
+    function chromosome_text(text, x, y){
+        var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        t.setAttributeNS(null, 'x', x+5);
+        t.setAttributeNS(null, 'y', y);
+        t.appendChild( document.createTextNode(text) );
+        return t;
+    }
+
+
+    function make_clipPath(chrom, x_offset, y_offset){
+        const c = 10
+        var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        var clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+        clipPath.setAttributeNS(null, 'id', "clip-chr"+chrom.name)
+        var p1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        var centromere = {x: chrom.cent_start + x_offset,
+                          y: y_offset,
+                          length: chrom.cent_length,}
+        var m = "M " + String(chrom.length + x_offset) + " " + String( 25 + y_offset) + " " // path start
+
+        var start_l = {x: chrom.cent_start + chrom.cent_length +5 +5 + x_offset,
+                       y: 0 + 25 + y_offset,
+                       length: chrom.cent_length }
+
+        var start_u = {x: chrom.cent_start + x_offset,
+                       y: y_offset,
+                       length: chrom.cent_length}
+
+        var r = 10
+        var cent_l = calc_centromere_lower(start_l)
+        var b_left = "L " + " " + String( 30 + x_offset) + " " + String(y_offset + 25) + " "
+        var c1 = "C " + " " + String(30 - r + x_offset) + " " + String(25 + y_offset) + " "
+            + String(30 - r + x_offset) + " " + String(y_offset) + " "
+            + String(30 + x_offset) + " " + String( y_offset) + " "
+
+        var cent_u = calc_centromere_upper(start_u)
+        var right = "L " + String(chrom.length + x_offset) + " " + String(y_offset) + " "
+
+        var c2 = "C " + " " + String(chrom.length + r + x_offset) + " " + String(y_offset) + " "
+            + String(chrom.length + r + x_offset) + " " + String(y_offset+25) + " "
+            + String(chrom.length + x_offset) + " " + String( y_offset+25)+ " "
+
+        path = m + cent_l + b_left + c1 + cent_u + right + c2
+
+        // without_cent = start +  b_left + c1 + right + c2
+        p1.setAttributeNS(null, 'd', path)
+        // p1.setAttributeNS(null, 'd', "M 470 25 L 60 25 C 50 25 50 0 60 0 L 470 0 C 510 0 510 25 470 25");
+
+        clipPath.append(p1)
+        defs.append(clipPath)
+        return clipPath
+    }
+
+
+
+
+    function calc_centromere_upper(pos){
+        // Upper waist of centromere
+        // ------(L1)      (L4)------
+        //          \_____/
+        //       (L2)      (L3)
+        var l1 = "L " + String(pos['x']) + " " + String(pos['y']) + " ";
+        var l2 = "L " + String(pos['x']+5) + " " + String(pos['y']+3) + " ";
+        var l3 = "L " + String(pos['x']+5+pos.length) + " " + String(pos['y']+3) + " ";
+        var l4 = "L " + String(pos['x']+5+pos.length+5) + " " + String(pos['y']) + " ";
+        // console.log("upper centromere: %s ", l1 + l2 + l3 + l4);
+        return l1 + l2 + l3 + l4
+    }
+
+
+
+    function calc_centromere_lower(pos){
+        // Lower waist of centromere
+        //       (L3)-----(L2)
+        //        /         \
+        // ----(L4)         (L1)-----
+        var l1 = "L " + String(pos['x']) + " " + String(pos['y']) + " ";
+        var l2 = "L " + String(pos['x']-5) + " " + String(pos['y']-3) + " ";
+        var l3 = "L " + String(pos['x']-5-pos.length) + " " + String(pos['y']-3) + " ";
+        var l4 = "L " + String(pos['x']-5-pos.length-5) + " " + String(pos['y']) + " ";
+        // console.log("lower centromere: %s ", l1 + l2 + l3 + l4);
+        return l1 + l2 + l3 + l4
+    }
+
+
+
+
+    function make_svgimage(src, x, y, height, width){
+        var svgimg = document.createElementNS('http://www.w3.org/2000/svg','image');
+        svgimg.setAttributeNS('http://www.w3.org/1999/xlink','href', src);
+        svgimg.setAttributeNS(null, 'x', String(x));
+        svgimg.setAttributeNS(null, 'y', String(y));
+        svgimg.setAttributeNS(null, 'height', String(height));
+        svgimg.setAttributeNS(null, 'width', String(width));
+
+        // svgimg.setAttributeNS(null, 'clip-path', "url(#left)");
+       return svgimg;
+   }
+
+
+    // x_cyt: upper x coordinate of corresponding cytoband
+    // y_cyt: upper y coordinate of corresponding cytoband
+    //
+    //
+    //  (a_x, a_y) --------- (b_x, b_y)
+    //          \              /
+    //           \            /
+    //            \          /
+    //             (c_x, c_y)
+    //
+    function make_polygon(x_cyt, y_cyt, pos, link, ) {
+        const POLY_WIDTH = 10
+        var a = document.createElementNS('http://www.w3.org/2000/svg','a');
+        a.setAttribute('href', link)
+        var poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+        var ax = String( x_cyt+pos+ X_OFFSET)
+        var ay = String( y_cyt -10 )
+        var bx = String( x_cyt+pos+POLY_WIDTH +X_OFFSET)
+        var by = String( y_cyt -10 )
+        var cx = String( x_cyt+pos+ Math.floor(POLY_WIDTH/2) + X_OFFSET )
+        var cy = String( y_cyt+Y_OFFSET )
+
+        poly.setAttributeNS(null,'points', ax + ',' + ay + ' ' + bx + ',' + by + ' ' + cx + ',' + cy );
+        poly.setAttributeNS(null,'style', "fill:red;stroke:crimson;stroke-width:1");
+        a.appendChild(poly)
+        return a;
+    }
+
+   function urlExists(url){
+       var http = new XMLHttpRequest();
+       http.open('HEAD', url, false);
+       http.send();
+       return http.status!=404;
+   }
+
+
+  function getSex(individuals){
+        for (var i=0; i<individuals.length; i++){
+            if(individuals[i].phenotype == 2){
+                if(individuals[i].sex == 1){
+                    return 'xy'
+                }
+                if(individuals[i].sex == 2){
+                    return 'xx'
+                }
+            }
+        }
+        return false
+    }
+</script>
+
+
+<script>
+
+  var sex
+  
+    // Start when window is loaded!
+    window.onload=function(){
+        console.log("Window is loaded!")
+        console.log('{{case.individuals}}')
+        var individualsJson = {{case.individuals|tojson}}
+        console.log(individualsJson)
+        sex = getSex(individualsJson)
+        console.log(sex)
+
+        // convert 'case' into json, can handle null value
+        var pJ = {{case.chromograph_prefixes|tojson}}
+        var iJ = {{case.chromograph_image_files|tojson}}
+
+        // testFile is a cytoband image, if configured correctly it should
+        // exist -images are drawn -otherwise the panel is hidden
+        var testFile =  '/{{institute._id}}/{{case.display_name}}/chr_images/cytoband.txt.chr1.png'
+        console.log("testfile: " +testFile)
+        if(urlExists(testFile) && pJ != null && iJ != null){
+            console.log("Draw images")
+            draw_tracks(sex)
+        }
+        else{
+            console.log("*** Not drawing ROH/Ideograms/UPDs")
+            console.log("Check testfile '%s' ", urlExists(testFile))
+            console.log("Check for chromograph_prefixes: '%s'", pJ != null)
+            console.log("Check for chromograph_image_files: '%s'", iJ != null)
+            document.getElementById('rohPanel').style.display = 'none';             // Hide div
+        }
+    }
+
+
+    window.onresize=function(){
+        // read thouroghly:
+        // https://stackoverflow.com/questions/16265123/resize-svg-when-window-is-resized-in-d3-js
+        console.log("Width '%s' ", $(window).width())
+        if($(window).width() < WIDTH_BREAKPOINT){
+            var roh_svg = document.getElementById("roh_svg")
+            roh_svg.setAttribute('width', 1050)
+            roh_svg.setAttribute('height', 1250)
+            roh_svg.parentNode.replaceChild(roh_svg.cloneNode(false), roh_svg); // clear svg
+            draw_tracks(sex)
+        }
+        if($(window).width() >= WIDTH_BREAKPOINT){
+            var roh_svg = document.getElementById("roh_svg")
+            roh_svg.setAttribute('width', 1500)
+            roh_svg.setAttribute('height', 850)
+            roh_svg.parentNode.replaceChild(roh_svg.cloneNode(false), roh_svg); // clear svg
+            draw_tracks(sex)
+        }
+
+    }
+</script>
+{%endmacro%}

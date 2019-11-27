@@ -1,5 +1,6 @@
 import pytest
 
+from datetime import datetime
 from pprint import pprint as pp
 from scout.parse.case import (parse_case, parse_ped, parse_individuals,
                               parse_individual, parse_case_data,
@@ -7,7 +8,45 @@ from scout.parse.case import (parse_case, parse_ped, parse_individuals,
 from scout.exceptions import PedigreeError
 from scout.constants import REV_SEX_MAP
 
-def test_parse_case(scout_config):
+
+def test_parse_case_no_date(scout_config):
+    # GIVEN a load config without a date
+    scout_config.pop('analysis_date')
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the todays date should have been set
+    assert 'analysis_date' not in scout_config
+    assert isinstance(case_data['analysis_date'], datetime)
+
+def test_parse_case_wrong_date_string(scout_config):
+    # GIVEN you load info thats not a date
+    scout_config['analysis_date'] = 'not a date'
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the todays date should have been set
+    assert isinstance(scout_config['analysis_date'], str)
+    assert isinstance(case_data['analysis_date'], datetime)
+
+def test_parse_case_date_string(scout_config):
+    # GIVEN a load config with date string
+    # WHEN case is parsed
+    scout_config['analysis_date'] = '2019-11-05'
+    case_data = parse_case(scout_config)
+    # THEN the case should have a datetime object
+    assert isinstance(scout_config['analysis_date'], str)
+    assert isinstance(case_data['analysis_date'], datetime)
+
+
+def test_parse_case_date(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case should have an analysis_date
+    assert isinstance(scout_config['analysis_date'], datetime)
+    assert isinstance(case_data['analysis_date'], datetime)
+
+
+def test_parse_case_owner(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
@@ -70,7 +109,23 @@ def test_parse_case_rank_model_version(scout_config):
     # THEN the case should have the same rank model version like the config
     assert case_data['rank_model_version'] == scout_config['rank_model_version']
 
+    
+def test_parse_case_chromograph_prefixes(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case a correct chromograph_prefixes
+    assert case_data['chromograph_prefixes']
 
+
+def test_parse_case_madeline(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case a correct chromograph_image_files
+    assert case_data['chromograph_image_files']
+
+    
 def test_parse_case_vcf_files(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed

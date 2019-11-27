@@ -1,9 +1,15 @@
 {% extends "layout_bs4.html" %}
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal %}
 {% from "utils.html" import comments_panel, activity_panel %}
+{% from "cases/case_ideograms.html" import case_ideograms %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+  
 {% endblock %}
 
 {% block top_nav %}
@@ -57,6 +63,11 @@
             </div> <!-- end of <div class="col-xs-12 col-md-4"> -->
           {% endif %}
         </div> <!-- <div class="row" -->
+        <div class="row">
+          <div class="col-sm-12">{{ roh_panel() }}</div>
+        </div>
+
+
         <div class="row">
           <div class="col-xs-12 col-md-6">{{ synopsis_panel() }}</div>
           <div class="col-xs-12 col-md-6">
@@ -288,6 +299,21 @@
   </div>
 {% endmacro %}
 
+{% macro roh_panel() %}
+  {% if case.chromograph_prefixes %}
+  <div class="d-flex p-2 ">
+    <div class="card panel-default" id="rohPanel">
+      <div class="panel-heading">Ideogram, UPD, ROH</div>
+      <br>
+      <div class="panel-body">
+        <svg id="roh_svg" width="1500" height="1250"></svg>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+{% endmacro %}
+
+
 {% macro modal_synopsis() %}
   <form action="{{ url_for('cases.case_synopsis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
     <div class="modal fade" id="edit-synopsis" role="dialog">
@@ -413,7 +439,7 @@
               </div>
               <div class="col-sm-8">
                 {% for hpo in variant_phenotypes.hpo_terms %}
-                  <a class="text-white" target="_blank" href="http://compbio.charite.de/hpoweb/showterm?id={{hpo.phenotype_id}}">
+                  <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.phenotype_id}}">
                     <span class="badge badge-sm badge-info">{{hpo.phenotype_id}}</span>
                   </a>
 
@@ -636,7 +662,7 @@
                     <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</a></li>
                   {% endif %}
                   {% for node in mme_nodes %}
-                    <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">External node-> {{node.description}}</a></li>
+                    <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</a></li>
                   {% endfor %}
                 </ul>
               </div>
@@ -782,7 +808,7 @@
         </div>
       </form>
     </div>
-    {% set url = 'http://compbio.charite.de/hpoweb/showterm?id=HP:0000018' %}
+    {% set url = 'http://hpo.jax.org/app/browse/term/HP:0000018' %}
     <div class="panel-heading panel-heading-secondary">
       Phenotype terms (<a target="_blank" href="{{ url }}" class="text-white">HPO web</a>)
     </div>
@@ -856,7 +882,7 @@
       <div class="card-body">
         <div class="form-inline">
           <div class="form-group col-8">
-            <input name="genes" class="typeahead_gene form-control" data-provide="typeahead" autocomplete="off" placeholder="Search...">
+            <input name="genes" pattern="^[0-9]+\s*\|\s*.*" class="typeahead_gene form-control" data-provide="typeahead" autocomplete="off" placeholder="Search...">
           </div>
           <div class="form-group col-4">
             <button class="btn btn-secondary form-control" type="submit" name="action" value="ADDGENE">Add gene</button>
@@ -913,7 +939,7 @@
         </form>
       {% endif %}
     </div>
-    <ul class="list-group fixed-panel">
+    <ul class="list-group fixed-panel list-scroll">
       {% for hpo_gene in case.dynamic_gene_list %}
         <li class="list-group-item" title="{{ hpo_gene.description }}">
           {{ hpo_gene.hgnc_symbol }}
@@ -950,8 +976,8 @@
 {% macro genepanels_table() %}
   <div class="card panel-default">
     <div class="panel-heading">Gene panels</div>
-    <div class="table-responsive fixed-panel">
-      <table id="panel-table" class="table">
+          <div class="table-responsive fixed-panel">
+      <table id="panel-table" class="table" style="width:100%">
         <thead>
           <tr>
             <th>Panel</th>
@@ -1009,6 +1035,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+<script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+
+<script>
+ $('#panel-table').DataTable({
+    scrollY: 350,
+    scrollCollapse: true,
+    paging: false,
+    searching: false,
+    ordering: true,
+    info: false
+        });
+</script>
+
+
 <script>
 $(function () {
       function getTerms(query, process) {
@@ -1073,4 +1114,9 @@ $('[data-toggle=sidebar-collapse]').click(function() {
   SidebarCollapse();
 });
 </script>
+
+{% if case.chromograph_prefixes %}
+  {{ case_ideograms(institute, case) }}
+{% endif %}
+
 {% endblock %}

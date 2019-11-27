@@ -18,7 +18,7 @@ from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 from dateutil.parser import parse as parse_date
-from scout.constants import CLINVAR_HEADER, CASEDATA_HEADER, ACMG_MAP, ACMG_COMPLETE_MAP
+from scout.constants import (CLINVAR_HEADER, CASEDATA_HEADER, ACMG_MAP, ACMG_COMPLETE_MAP)
 from scout.server.extensions import store, mail
 from scout.server.utils import (templated, institute_and_case, user_institutes)
 from . import controllers
@@ -57,7 +57,6 @@ def cases(institute_id):
     all_cases = store.cases(collaborator=institute_id, name_query=query,
                         skip_assigned=skip_assigned, is_research=is_research)
 
-    LOG.info(type(all_cases))
     sort_by = request.args.get('sort')
     sort_order = request.args.get('order') or 'asc'
     if sort_by:
@@ -72,9 +71,13 @@ def cases(institute_id):
             all_cases.sort('status', pymongo_sort)
 
     LOG.debug("Prepare all cases")
-    data = controllers.cases(store, all_cases, limit)
+
+    prioritized_cases = store.prioritized_cases(institute_id=institute_id)
+
+    data = controllers.cases(store, all_cases, prioritized_cases, limit)
     data['sort_order'] = sort_order
     data['sort_by'] = sort_by
+    data['nr_cases'] = store.nr_cases(institute_id=institute_id)
 
     sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id, current_user.email)
     if len(sanger_unevaluated)> 0:
@@ -90,7 +93,7 @@ def case(institute_id, case_name):
     """Display one case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case(store, institute_obj, case_obj)
-    return dict(institute=institute_obj, case=case_obj, **data)
+    return dict(institute=institute_obj, case=case_obj, mme_nodes= current_app.mme_nodes, **data)
 
 
 @cases_bp.route('/<institute_id>/clinvar_submissions', methods=['GET','POST'])
@@ -579,8 +582,12 @@ def phenotypes_actions(institute_id, case_name):
             # avoid empty lists
             if raw_symbol:
                 # take the first nubmer before |, and remove any space.
-                hgnc_symbol_split = raw_symbol.split('|', 1)[0]
-                hgnc_symbol = int(hgnc_symbol_split.replace(' ', ''))
+                try:
+                    hgnc_symbol_split = raw_symbol.split('|', 1)[0]
+                    hgnc_symbol = int(hgnc_symbol_split.replace(' ', ''))
+                except ValueError:
+                    flash("Provided gene info could not be parsed! "
+                          "Please allow autocompletion to finish.", 'warning')
             LOG.debug("Parsed HGNC symbol {}".format(hgnc_symbol))
             store.update_dynamic_gene_list(case_obj, hgnc_ids=[hgnc_symbol], add_only=True)
 
@@ -590,8 +597,12 @@ def phenotypes_actions(institute_id, case_name):
             LOG.debug("raw gene list: {}".format(raw_symbols))
             # avoid empty lists
             if raw_symbols:
-                hgnc_symbols.update(raw_symbol.split(' ', 1)[0] for raw_symbol in
+                try:
+                    hgnc_symbols.update(raw_symbol.split(' ', 1)[0] for raw_symbol in
                                     raw_symbols.split('|'))
+                except ValueError:
+                    flash("Provided gene info could not be parsed! "
+                          "Please allow autocompletion to finish.", 'warning')
             LOG.debug("HGNC symbols {}".format(hgnc_symbols))
         store.update_dynamic_gene_list(case_obj, hgnc_symbols=hgnc_symbols)
 
@@ -863,3 +874,31 @@ def multiqc(institute_id, case_name):
     out_dir = os.path.abspath(os.path.dirname(data['case']['multiqc']))
     filename = os.path.basename(data['case']['multiqc'])
     return send_from_directory(out_dir, filename)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/roh_images/<image>')
+def host_roh_image(institute_id, case_name, image):
+    """Generate ROH image file paths"""
+    return host_image_aux(institute_id, case_name, image, 'roh_images')
+
+
+@cases_bp.route('/<institute_id>/<case_name>/upd_images/<image>')
+def host_upd_image(institute_id, case_name, image):
+    """Generate UPD image file paths"""
+    return host_image_aux(institute_id, case_name, image, 'upd_images')
+
+
+@cases_bp.route('/<institute_id>/<case_name>/chr_images/<image>')
+def host_chr_image(institute_id, case_name, image):
+    """Generate CHR image file paths"""
+    return host_image_aux(institute_id, case_name, image, 'chr_images')
+
+
+def host_image_aux(institute_id, case_name, image, imgstr):
+    """Auxilary function for generate absolute file paths"""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    chr_path = case_obj.get('chromograph_image_files')
+    abs_path = os.path.abspath(chr_path)
+    img_path = abs_path +"/" + imgstr
+    LOG.debug("Attempting to send {}/{}" .format(img_path, image))
+    return send_from_directory(img_path, image)
