@@ -157,7 +157,7 @@ def test_unmark_partial_causative(adapter, institute_obj, case_obj, user_obj, va
 
     ## THEN assert that two more events was created
     assert sum(1 for i in adapter.event_collection.find()) == 4
-    
+
 
 def test_order_verification(adapter, institute_obj, case_obj, user_obj, variant_obj):
 
@@ -274,6 +274,80 @@ def test_dismiss_variant(adapter, institute_obj, case_obj, user_obj, variant_obj
 
     # THEN the variant should be dismissed
     assert updated_variant.get('dismiss_variant') == dismiss_reason
+
+
+def test_update_cancer_tier(adapter, institute_obj, case_obj, user_obj, variant_obj):
+
+    # GIVEN a variant db with at least one variant, and no events
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.variant_collection.insert_one(variant_obj)
+
+    assert sum(1 for i in adapter.variant_collection.find()) > 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
+
+    variant = adapter.variant_collection.find_one()
+
+    assert variant.get('cancer_tier') == None
+
+    # WHEN upating cancer tier
+    link = 'testUpdateCancerTier'
+
+    cancer_tier = '1A'
+
+    updated_variant = adapter.update_cancer_tier(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        variant=variant,
+        cancer_tier=cancer_tier,
+    )
+
+    # THEN an event should be created
+    event_obj = adapter.event_collection.find_one()
+    assert event_obj['verb'] == 'cancer_tier'
+
+    # THEN the variant should be given the appropriate tier
+    assert updated_variant.get('cancer_tier') == cancer_tier
+
+def test_update_manual_rank(adapter, institute_obj, case_obj, user_obj, variant_obj):
+
+    # GIVEN a variant db with at least one variant, and no events
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.variant_collection.insert_one(variant_obj)
+
+    assert sum(1 for i in adapter.variant_collection.find()) > 0
+    assert sum(1 for i in adapter.event_collection.find()) == 0
+
+    variant = adapter.variant_collection.find_one()
+
+    assert variant.get('manual_rank') == None
+
+    # WHEN upating cancer tier
+    link = 'testUpdateManualRank'
+
+    manual_rank = '1'
+
+    updated_variant = adapter.update_manual_rank(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        variant=variant,
+        manual_rank=manual_rank,
+    )
+
+    # THEN an event should be created
+    event_obj = adapter.event_collection.find_one()
+    assert event_obj['verb'] == 'manual_rank'
+
+    # THEN the variant should be given the appropriate rank
+    assert updated_variant.get('manual_rank') == manual_rank
+
 
 def test_sanger_ordered(adapter, institute_obj, case_obj, user_obj, variant_obj):
     """Test function that retrieved all variants ordered by institute, user or case"""
