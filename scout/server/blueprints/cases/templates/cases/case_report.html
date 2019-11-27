@@ -361,6 +361,8 @@
           {% do printed_vars.append(variant['_id']) %}
           {% if variant.category == 'snv' %}
             {{ sn_variant_content(variant, loop.index) }}
+          {% elif variant.category == 'cancer' %}
+            {{ sn_variant_content(variant, loop.index) }}
           {% else %}
             {{ sv_variant_content(variant, loop.index) }}
           {% endif %}
@@ -369,10 +371,22 @@
         {% endif %}
         <br>
       {% endfor %}
-    {% else %}
+    {% endif %}
+    {% if tier_detailed %}
+      {% for variant in tier_detailed|sort(attribute='variant_rank') %}
+        {% if variant['_id'] not in printed_vars %}
+          {% do printed_vars.append(variant['_id']) %}
+          {{ sn_variant_content(variant, loop.index) }}
+        {% else %}
+          {% do duplicated_variants.append(variant['_id']) %}
+        {% endif %}
+        <br>
+      {% endfor %}
+    {% endif %}
+    {% if not (tagged_detailed or tier_detailed) %}
       No tagged variants for this case
     {% endif %}
-    {% if tagged_detailed and duplicated_variants|length == tagged_detailed|length %}
+    {% if (tagged_detailed or tier_detailed) and duplicated_variants|length == (tagged_detailed|length+tier_detailed|length) %}
       All tagged variants are already described in the previous views
     {% endif %}
   </div>
@@ -743,8 +757,12 @@
           <td>
           {% if variant.manual_rank %}
             <span class="badge badge-pill badge-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
-          {% else %}
-          -
+          {% endif %}
+          {% if variant.cancer_tier %}
+            <span class="badge badge-pill badge-secondary" title="Tier">{{ cancer_tier_options[variant.cancer_tier]['label'] }}</span>
+          {% endif %}
+          {% if not (variant.manual_rank or variant.cancer_tier) %}
+            -
           {% endif %}
           </td>
           <td>
@@ -977,8 +995,12 @@
           <td>
           {% if variant.manual_rank %}
             <span class="badge badge-pill badge-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
-          {% else %}
-          -
+          {% endif %}
+          {% if variant.cancer_tier %}
+            <span class="badge badge-pill badge-secondary" title="Tier">{{ cancer_rank_options[variant.cancer_tier]['label'] }}</span>
+          {% endif %}
+          {% if not (variant.manual_rank or variant.cancer_tier) %}
+            -
           {% endif %}
           </td>
           <td>
