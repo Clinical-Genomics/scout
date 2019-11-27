@@ -45,16 +45,17 @@
       </li>
     </ul>
     <span class="navbar-text">
-      <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}"><button class="btn btn-sm btn-outline-secondary" type="button">Download PDF</button></a>
+      <button class="btn btn-sm btn-outline-secondary" type="button" onclick="save_pdf()">Download PDF</button>
     </span>
   </div>
 </nav>
 
 	{% block content_main %}
-	<div class="container">
+	<div id="container" class="container">
 	  <h4>Scout case analysis report</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
 		{{ phenotype_panel() }}
-		{{ gene_panels_panel() }}
+		{{ gene_panels_panel()}}
+		{{ causatives_panel()}}
 		<br>
 		<a href="http://www.clinicalgenomics.se/scout/" target="_blank">http://www.clinicalgenomics.se/scout/</a>
 	</div>
@@ -246,3 +247,59 @@
   </div>
 </div>
 {% endmacro %}
+
+{% macro causatives_panel() %}
+<div class="card border-success mb-3" style="border-width: 5px;">
+  <div class="card-header bg-success text-white">
+    <a name="causative_variants"><strong>Causative Variants</strong></a>
+  </div>
+  <div class="card-body">
+    {% if causatives_detailed %}
+      {% for causative in causatives_detailed|sort(attribute='variant_rank') %}
+        {% do printed_vars.append(causative['_id']) %}
+        {% if causative.category == 'snv' %}
+					{{causative.display_name}}
+
+          {{ sn_variant_content(causative, loop.index) }}
+        {% else %}
+          {{  'hello' }}
+        {% endif %}
+        <br>
+      {% endfor %}
+    {% else %}
+      No causative variants available for this case
+    {% endif %}
+  </div>
+</div>
+{% endmacro%}
+
+
+
+
+{% macro sn_variant_content(variant, index) %} <!--The entire description of a single nucleotide variant, dynamic content -->
+<div style="border-width: 3px;">
+
+		{{variant.display_name}}
+
+</div>
+{% endmacro %}
+
+
+{% block scripts %}
+	{{ super() }}
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+	<script>
+		function save_pdf(){
+			var doc = new jsPDF();
+			doc.fromHTML($('#').get(0), 30,20,{
+								 'width':500,
+
+			});
+			doc.addPage();
+
+			doc.fromHTML($('#container').get(0), 30,20,{'width':500,});
+			doc.save('Devis-Facture.pdf');
+		}
+
+	</script>
+{% endblock %}
