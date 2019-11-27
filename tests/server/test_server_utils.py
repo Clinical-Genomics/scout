@@ -64,33 +64,3 @@ def test_find_index_cram_crai(case_obj):
             # THEN the find_index funtion should return the correct index file
             index = find_index(cram_file)
             assert index.endswith('cram.crai')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # Test get index for a bam file:
-    #alignment = "test.bam"
-    #index = find_index(alignment)
-    #assert index == "test.bam.bai"
-
-    # assert get index for a cram file
-    #alignment = "test.cram"
-    #index = find_index(alignment)
-    #assert index == "test.cram.crai"
