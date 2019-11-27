@@ -85,6 +85,32 @@ SPIDEX_LEVELS = (
     'high'
 )
 
+CANCER_TIER_OPTIONS = {
+    '1A': {'label': 'Tier IA',
+           'description': "Strong Clinical Significance. Biomarkers in FDA or guidlines that "
+                          "predict response, resistance to therapy, diagnosis or prognosis "
+                          "to specific tumor type."},
+    '1B': {'label': 'Tier IB',
+           'description': "Potential Clinical Significance Biomarkers in well-powered, concenus "
+                          "affirmed studies that predict response, resistance to therapy, "
+                          "diagnostic or prognostic significance to specific tumor type."},
+    '2C': {'label': 'Tier IIC',
+           'description': "Biomarkers in FDA or guidlines that "
+                          "predict response, resistance to therapy,"
+                          "to a different tumor type; are diagnostic or prognostic for "
+                          "multiple small studies; or serve as study inclusion criteria."},
+    '2D': {'label': 'Tier IID',
+           'description': "Biomarkers that show plausible therapeutic significance based on "
+                          "preclinical studies, may assist diagnosis or prognosis based on "
+                          "small reports."},
+    '3': {'label': 'Tier III',
+           'description': "Variant of Unknown Clinical Significance-"
+                          "Not observed in the population, nor in tumor databases."
+                          "No convincing published evidence of cancer association."},
+    '4': {'label': 'Tier IV',
+            'description': "Observed at high frequency in the population. No published evidence."}
+}
+
 MANUAL_RANK_OPTIONS = {
     8: {
         'label': 'Known pathogenic',
