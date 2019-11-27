@@ -515,11 +515,11 @@ class VariantHandler(VariantLoader):
         return variants
 
     def evaluated_variants(self, case_id):
-        """Returns variants that has been evaluated
+        """Returns variants that have been evaluated
 
         Return all variants, snvs/indels and svs from case case_id
-        which have a entry for 'acmg_classification', 'manual_rank', 'dismiss_variant'
-        or if they are commented.
+        which have a entry for 'acmg_classification', 'manual_rank', 'dismiss_variant',
+        'cancer_tier' or if they are commented.
 
         Args:
             case_id(str)
@@ -535,6 +535,7 @@ class VariantHandler(VariantLoader):
                     '$or': [
                         {'acmg_classification': {'$exists': True}},
                         {'manual_rank': {'$exists': True}},
+                        {'cancer_tier': {'$exists': True}},
                         {'dismiss_variant': {'$exists': True}},
                     ]
                 }

@@ -12,7 +12,7 @@ from flask import (Blueprint, request, redirect, abort, flash, current_app, url_
 from werkzeug.datastructures import (Headers, MultiDict)
 from flask_login import current_user
 
-from scout.constants import SEVERE_SO_TERMS, MANUAL_RANK_OPTIONS
+from scout.constants import SEVERE_SO_TERMS, MANUAL_RANK_OPTIONS, CANCER_TIER_OPTIONS
 from scout.server.extensions import store
 from scout.server.utils import (templated, institute_and_case)
 from . import controllers
@@ -153,7 +153,7 @@ def variants(institute_id, case_name):
 
     data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
     return dict(institute=institute_obj, case=case_obj, form=form, manual_rank_options=MANUAL_RANK_OPTIONS,
-                    severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
+                    cancer_tier_options=CANCER_TIER_OPTIONS, severe_so_terms=SEVERE_SO_TERMS, page=page, **data)
 
 @variants_bp.route('/<institute_id>/<case_name>/str/variants')
 @templated('variants/str-variants.html')
@@ -289,7 +289,7 @@ def sv_variants(institute_id, case_name):
                                        variants_query, page)
 
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
-                form=form, severe_so_terms=SEVERE_SO_TERMS, manual_rank_options=MANUAL_RANK_OPTIONS, page=page, **data)
+                form=form, severe_so_terms=SEVERE_SO_TERMS, cancer_tier_options=CANCER_TIER_OPTIONS, manual_rank_options=MANUAL_RANK_OPTIONS, page=page, **data)
 
 @variants_bp.route('/<institute_id>/<case_name>/cancer/variants', methods=['GET','POST'])
 @templated('variants/cancer-variants.html')

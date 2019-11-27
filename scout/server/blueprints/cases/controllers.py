@@ -15,7 +15,8 @@ from flask_login import current_user
 
 from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP,
                              CANCER_PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
-from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
+from scout.constants.variant_tags import (MANUAL_RANK_OPTIONS, CANCER_TIER_OPTIONS,
+                             DISMISS_VARIANT_OPTIONS, GENETIC_MODELS)
 from scout.export.variant import export_mt_variants
 from scout.server.utils import institute_and_case, user_institutes
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
@@ -236,6 +237,7 @@ def case_report_content(store, institute_obj, case_obj):
         'suspects_detailed': 'suspects',
         'classified_detailed': 'acmg_classification',
         'tagged_detailed': 'manual_rank',
+        'tier_detailed': 'cancer_tier',
         'dismissed_detailed': 'dismiss_variant',
         'commented_detailed': 'is_commented',
     }
@@ -253,6 +255,7 @@ def case_report_content(store, institute_obj, case_obj):
     data['comments'] = store.events(institute_obj, case=case_obj, comments=True)
 
     data['manual_rank_options'] = MANUAL_RANK_OPTIONS
+    data['cancer_tier_options'] = CANCER_TIER_OPTIONS
     data['dismissed_options'] = DISMISS_VARIANT_OPTIONS
     data['genetic_models'] = dict(GENETIC_MODELS)
     data['report_created_at'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
