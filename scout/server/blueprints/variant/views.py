@@ -90,6 +90,7 @@ def variant_update(institute_id, case_name, variant_id):
     link = request.referrer
 
     manual_rank = request.form.get('manual_rank')
+    cancer_tier = request.form.get('cancer_tier')
     if manual_rank:
         try:
             new_manual_rank = int(manual_rank) if manual_rank != '-1' else None
@@ -104,6 +105,20 @@ def variant_update(institute_id, case_name, variant_id):
             flash("updated variant tag: {}".format(new_manual_rank), 'info')
         else:
             flash("reset variant tag: {}".format(variant_obj.get('manual_rank', 'NA')), 'info')
+    elif cancer_tier:
+        try:
+            new_cancer_tier = cancer_tier if cancer_tier != '-1' else None
+        except:
+            LOG.warning("Attempt to update cancer tier with invalid value {}".format(cancer_tier))
+            cancer_tier = '-1'
+            new_cancer_tier = '-1'
+
+        store.update_cancer_tier(institute_obj, case_obj, user_obj, link, variant_obj,
+                                 new_cancer_tier)
+        if new_cancer_tier:
+            flash("updated variant tag: {}".format(new_cancer_tier), 'info')
+        else:
+            flash("reset variant tag: {}".format(variant_obj.get('cancer_tier', 'NA')), 'info')
     elif request.form.get('acmg_classification'):
         new_acmg = request.form['acmg_classification']
         acmg_classification = variant_obj.get('acmg_classification')
