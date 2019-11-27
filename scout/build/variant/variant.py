@@ -103,7 +103,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
             spidex = float,
 
             missing_data = bool, # default False
-            
+
             # STR specific information
             str_repid = str, repeat id generally corresponds to gene symbol
             str_ru = str, used e g in PanelApp naming of STRs
@@ -122,9 +122,11 @@ def build_variant(variant, institute_id, gene_to_panels = None,
             phast_conservation = list, # list of str, choices=CONSERVATION
             gerp_conservation = list, # list of str, choices=CONSERVATION
             phylop_conservation = list, # list of str, choices=CONSERVATION
+
             # Database options:
             gene_lists = list,
             manual_rank = int, # choices=[0, 1, 2, 3, 4, 5]
+            cancer_tier = str # choices=['1A', '1B', '2A', '2B', '3', '4']
             dismiss_variant = list,
 
             acmg_evaluation = str, # choices=ACMG_TERMS
@@ -205,7 +207,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
     if 'str_pathologic_min' in variant:
         variant_obj['str_pathologic_min'] = variant['str_pathologic_min']
-        
+
     gt_types = []
     for sample in variant.get('samples', []):
         gt_call = build_genotype(sample)

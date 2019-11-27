@@ -1,6 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
-{% from "variants/utils.html" import cancer_filters %}
+{% from "variants/utils.html" import cancer_filters, tier_cell %}
+
 
 {% block title %}
   {{ variant_type|capitalize }} cancer variants
@@ -72,7 +73,7 @@
               {% endfor %}
               </a>
             </td>
-            <td>{{ tier_cell(variant) }}</td>
+            <td>{{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}</td>
             <td>{{ score_cell(variant) }}</td>
             <td>{{ gene_cell(variant) }}</td>
             <td>{{ position_cell(variant) }}</td>
@@ -124,22 +125,6 @@
   {% endif %}
 {% endmacro %}
 
-{% macro tier_cell(variant) %}
-  {% if variant.manual_rank %}
-    {% if variant.manual_rank == 1 %}
-      {% set label_class = 'default' %}
-    {% elif variant.manual_rank == 2 %}
-      {% set label_class = 'info' %}
-    {% elif variant.manual_rank == 3 %}
-      {% set label_class = 'primary' %}
-    {% elif variant.manual_rank == 4 %}
-      {% set label_class = 'warning' %}
-    {% elif variant.manual_rank == 5 %}
-      {% set label_class = 'danger' %}
-    {% endif %}
-    <div class="badge badge-{{ label_class }}">{{ variant.manual_rank }}</div>
-  {% endif %}
-{% endmacro %}
 
 {% macro score_cell(variant) %}
   {% if variant.rank_score %}
