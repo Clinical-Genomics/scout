@@ -45,7 +45,7 @@
       </li>
     </ul>
     <span class="navbar-text">
-      <button class="btn btn-sm btn-outline-secondary" type="button" onclick="save_pdf()">Download PDF</button>
+      <button class="btn btn-sm btn-outline-secondary btn-download">Download PDF</button>
     </span>
   </div>
 </nav>
@@ -289,17 +289,8 @@
 	{{ super() }}
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
 	<script>
-		function save_pdf(){
-			var doc = new jsPDF();
-			doc.fromHTML($('#').get(0), 30,20,{
-								 'width':500,
-
-			});
-			doc.addPage();
-
-			doc.fromHTML($('#container').get(0), 30,20,{'width':500,});
-			doc.save('Devis-Facture.pdf');
-		}
-
+    $('.btn-download').click(function () {
+        alert("here");
+    });
 	</script>
 {% endblock %}
