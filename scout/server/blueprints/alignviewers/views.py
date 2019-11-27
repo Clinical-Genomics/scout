@@ -101,7 +101,6 @@ def igv():
             })
         else:
             flash('Missing alignment track/index for individual {}!'.format(sample), 'danger')
-            return redirect(request.referrer)
         counter += 1
 
     display_obj['sample_tracks'] = sample_tracks
