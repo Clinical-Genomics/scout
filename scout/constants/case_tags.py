@@ -28,6 +28,7 @@ VERBS_MAP = {
     "mark_partial_causative": "mark partial causative for",
     "unmark_partial_causative" : "unmarked partial causative for",
     "manual_rank": "updated manual rank for",
+    "cancer_tier": "updated cancer tier for",
     "add_phenotype": "added HPO term for",
     "remove_phenotype": "removed HPO term for",
     "add_case": "added case",
