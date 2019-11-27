@@ -72,7 +72,14 @@
               </span>
             </td>
             <td><span class="badge badge-secondary">{{ variant.category|upper }}</span></td>
-            <td><a href="#"><span class="badge badge-pill badge-secondary">{{ variant.rank_score }}</span></a></td>
+            <td><a href="#"><span class="badge badge-pill badge-secondary">
+              {{ variant.rank_score }}
+              {% if variant.category == 'sv' %}
+                (v. {{case.sv_rank_model_version or 'na'}})
+              {% else %}
+                (v. {{case.rank_model_version or 'na'}})
+              {% endif %}
+            </span></a></td>
             <td>
               {% for sample in variant.samples %}
               {% for ind in case.individuals %}
