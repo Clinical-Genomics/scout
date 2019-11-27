@@ -91,7 +91,7 @@ def igv():
     counter = 0
     for sample in samples:
         # some samples might not have an associated bam file, take care if this
-        if bam_files[counter]:
+        if bam_files[counter] and bai_files[counter]:
             sample_tracks.append({
                 'name' : sample,
                 'url' : bam_files[counter],
@@ -99,6 +99,9 @@ def igv():
                 'indexURL' : bai_files[counter],
                 'height' : 700
             })
+        else:
+            flash('Missing alignment track/index for individual {}!'.format(sample), 'danger')
+            return redirect(request.referrer)
         counter += 1
 
     display_obj['sample_tracks'] = sample_tracks
