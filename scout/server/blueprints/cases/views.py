@@ -443,7 +443,7 @@ def case_synopsis(institute_id, case_name):
 
 
 @cases_bp.route('/<institute_id>/<case_name>/case_report', methods=['GET'])
-@templated('cases/case_report.html')
+@templated('cases/case_report2.html')
 def case_report(institute_id, case_name):
     """Visualize case report"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
