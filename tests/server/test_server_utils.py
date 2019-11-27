@@ -1,4 +1,3 @@
-import os
 import tempfile
 from scout.server.links import get_variant_links
 from scout.server.utils import find_index
