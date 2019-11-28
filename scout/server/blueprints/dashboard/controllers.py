@@ -208,9 +208,7 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
 
     total_cases = 0
     for total_cases,case in enumerate(cases,1):
-        # If only looking at one institute we need to save the case ids
-        if institute_id:
-            case_ids.add(case['_id'])
+        case_ids.add(case['_id'])
         if case.get('phenotype_terms'):
             phenotype_cases += 1
         if case.get('causatives'):
