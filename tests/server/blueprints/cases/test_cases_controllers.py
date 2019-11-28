@@ -53,6 +53,7 @@ def test_case_report_content(adapter, institute_obj, case_obj, variant_obj):
         'suspects_detailed': 'suspects',
         'classified_detailed': 'acmg_classification',
         'tagged_detailed': 'manual_rank',
+        'tier_detailed': 'cancer_tier',
         'dismissed_detailed': 'dismiss_variant',
         'commented_detailed': 'is_commented',
     }
