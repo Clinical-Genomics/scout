@@ -82,7 +82,7 @@ class CaseHandler(object):
                              part of inds or part of synopsis
             yield_query(bool): If true, only return mongo query dict for use in
                                 compound querying.
-            within_days(int): timespan (in days) for latest event on case 
+            within_days(int): timespan (in days) for latest event on case
 
         Returns:
             Cases ordered by date.
@@ -240,7 +240,11 @@ class CaseHandler(object):
 
         if within_days:
             verbs = []
-            if finished or has_causatives:
+
+            if has_causatives:
+                verbs.append('mark_causative')
+            if finished:
+                verbs.append('archive')
                 verbs.append('mark_causative')
             if reruns:
                 verbs.append('rerun')
