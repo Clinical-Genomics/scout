@@ -45,7 +45,7 @@
       </li>
     </ul>
     <span class="navbar-text">
-      <button class="btn btn-sm btn-outline-secondary btn-download">Download PDF</button>
+      <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}"><button class="btn btn-sm btn-outline-secondary" type="button">Download PDF</button></a>
     </span>
   </div>
 </nav>
@@ -283,14 +283,3 @@
 
 </div>
 {% endmacro %}
-
-
-{% block scripts %}
-	{{ super() }}
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
-	<script>
-    $('.btn-download').click(function () {
-        alert("here");
-    });
-	</script>
-{% endblock %}
