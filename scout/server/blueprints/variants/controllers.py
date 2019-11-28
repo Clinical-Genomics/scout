@@ -90,6 +90,8 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
     }
 
 def get_manual_assessments(variant_obj):
+    """Return manual assessments ready for display. """
+
     ## display manual input of interest: classified, commented, tagged or dismissed.
     assessment_keywords = [
         'manual_rank',

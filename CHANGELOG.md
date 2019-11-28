@@ -11,7 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Rank score model in causatives page
 - Exportable HPO terms from phenotypes page
 - AMP guideline tiers for cancer variants
-- Adds scroll for the trancript tab 
+- Adds scroll for the trancript tab
+- Shadow clinical assessments also on research variants display
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
