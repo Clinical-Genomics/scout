@@ -89,6 +89,36 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         'more_variants': more_variants,
     }
 
+
+def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
+    """Pre-process list of SV variants."""
+    skip_count = (per_page * max(page - 1, 0))
+    more_variants = True if variants_query.count() > (skip_count + per_page) else False
+
+    genome_build = case_obj.get('genome_build', '37')
+    if genome_build not in ['37','38']:
+        genome_build = '37'
+
+    variants = []
+
+    for variant in variants_query.skip(skip_count).limit(per_page)):
+        # show previous classifications for research variants
+        if variant_obj['variant_type'] == 'research':
+            # get variant by simple_id. That will really just return the first variant found -
+            # but mostly that would be clinical.. Its a start.
+            clinical_var_obj = store.variant(case_id=case_obj['_id'],
+                                simple_id =variant_obj['simple_id'], variant_type='clinical')
+            # Get all previous ACMG evalautions of the variant
+            variant_obj['clinical_assessments'] = get_manual_assessments(clinical_var_obj)
+
+        variants.append(parse_variant(store, institute_obj, case_obj, variant, genome_build=genome_build))
+
+    return {
+        'variants': variants,
+        'more_variants': more_variants,
+    }
+
+
 def get_manual_assessments(variant_obj):
     """Return manual assessments ready for display. """
 
@@ -154,21 +184,6 @@ def get_manual_assessments(variant_obj):
 
     return assessments
 
-
-def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
-    """Pre-process list of SV variants."""
-    skip_count = (per_page * max(page - 1, 0))
-    more_variants = True if variants_query.count() > (skip_count + per_page) else False
-
-    genome_build = case_obj.get('genome_build', '37')
-    if genome_build not in ['37','38']:
-        genome_build = '37'
-
-    return {
-        'variants': (parse_variant(store, institute_obj, case_obj, variant, genome_build=genome_build) for variant in
-                     variants_query.skip(skip_count).limit(per_page)),
-        'more_variants': more_variants,
-    }
 
 def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of STR variants."""
