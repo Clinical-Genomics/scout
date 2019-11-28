@@ -443,7 +443,7 @@ def case_synopsis(institute_id, case_name):
 
 
 @cases_bp.route('/<institute_id>/<case_name>/case_report', methods=['GET'])
-@templated('cases/case_report2.html')
+@templated('cases/case_report.html')
 def case_report(institute_id, case_name):
     """Visualize case report"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -467,7 +467,7 @@ def pdf_case_report(institute_id, case_name):
         with open(os.path.join(cases_bp.static_folder, 'madeline.svg'), 'w') as temp_madeline:
             temp_madeline.write(case_obj['madeline_info'])
 
-    html_report = render_template('cases/case_report2.html', institute=institute_obj, case=case_obj, format='pdf', **data)
+    html_report = render_template('cases/case_report.html', institute=institute_obj, case=case_obj, format='pdf', **data)
     return render_pdf(HTML(string=html_report), download_filename=case_obj['display_name']+'_'+datetime.datetime.now().strftime("%Y-%m-%d")+'_scout.pdf')
 
 
