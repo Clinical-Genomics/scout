@@ -50,24 +50,22 @@
   </div>
 </nav>
 
-	{% block content_main %}
-	<div id="container" class="container">
-	  <h4>Scout case analysis report</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
-		{{ phenotype_panel() }}
-		{{ gene_panels_panel()}}
-		{{ causatives_panel()}}
-    {{ pinned_panel() }}
-    {{ classified_panel() }}
-    {{ tagged_panel() }}
-    {{ commented_panel() }}
-    {{ dismissed_panel() }}
-    [END OF VARIANT REPORT]<br><br>
-    {% if coverage_report %}
-      {{ coverage_report|safe }}<br>
-    {% endif %}
-		<a href="http://www.clinicalgenomics.se/scout/" target="_blank">http://www.clinicalgenomics.se/scout/</a>
-	</div>
-	{% endblock %} <!--end of block content_main -->
+<div id="container" class="container">
+  <h4>Scout case analysis report</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
+	 {{ phenotype_panel() }}
+   {{ gene_panels_panel()}}
+   {{ causatives_panel()}}
+   {{ pinned_panel() }}
+   {{ classified_panel() }}
+   {{ tagged_panel() }}
+   {{ commented_panel() }}
+   {{ dismissed_panel() }}
+   [END OF VARIANT REPORT]<br><br>
+   {% if coverage_report %}
+    {{ coverage_report|safe }}<br>
+   {% endif %}
+   <a href="http://www.clinicalgenomics.se/scout/" target="_blank">http://www.clinicalgenomics.se/scout/</a>
+</div>
 {% endblock %} <!-- end of block body -->
 
 {% macro phenotype_panel() %}
@@ -417,10 +415,6 @@
 </div>
 {% endmacro %}
 
-
-
-
-
 {% macro sn_variant_content(variant, index) %} <!--The entire description of a single nucleotide variant, dynamic content -->
   <div class="card" style="border-width: 5px;">
     <div class="card-header">
@@ -703,7 +697,7 @@
   </div>
   {% endmacro %}
 
-  {% macro dismissed_panel() %}
+{% macro dismissed_panel() %}
   <div class="card border-danger mb-3" style="border-width: 5px;">
     <div class="card-header bg-danger text-black">
       <a name="dismissed_variants"><strong>Dismissed Variants</strong></a>
