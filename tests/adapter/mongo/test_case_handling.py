@@ -609,11 +609,11 @@ def test_get_cases_solved_since(real_adapter, case_obj, user_obj, institute_obj,
 
     # WHEN querying for cases solved within 1 day
     # THEN no case are found
-    assert len([case for case in adapter.cases(solved_since=1)]) == 0
+    assert len([case for case in adapter.cases(within_days=1)]) == 0
 
     # GIVEN a marked causative
     adapter.mark_causative(institute_obj, case_obj, user_obj, 'link', variant_obj)
 
     # WHEN querying for cases solved within 1 day
     # THEN one case is found
-    assert len([case for case in adapter.cases(solved_since=1)]) == 1
+    assert len([case for case in adapter.cases(finished=True, within_days=1)]) == 1

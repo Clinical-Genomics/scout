@@ -148,7 +148,7 @@ def test_export_cases(mock_app, case_obj):
 
     # Case that have had causatives marked within 1 day
     result = runner.invoke(cli, ['export', 'cases',
-        '--solved-since', '1'
+        '--within-days', '1'
         ])
     assert result.exit_code == 0
     assert "INFO No cases could be found" in result.output

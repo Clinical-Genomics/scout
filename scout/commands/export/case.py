@@ -46,13 +46,13 @@ LOG = logging.getLogger(__name__)
               type=click.Choice(CASE_STATUSES),
               help='Specify what status to look for'
 )
-@click.option('--solved-since',
+@click.option('--within-days',
               type=int,
-              help='Days since marked causatives')
+              help='Days since event related to case')
 @json_option
 @with_appcontext
 def cases(case_id, institute, reruns, finished, causatives, research_requested,
-          is_research, status, solved_since, json):
+          is_research, status, within_days, json):
     """Interact with cases existing in the database."""
     adapter = store
 
@@ -69,7 +69,7 @@ def cases(case_id, institute, reruns, finished, causatives, research_requested,
                            finished=finished, has_causatives=causatives,
                            research_requested=research_requested,
                            is_research=is_research, status=status,
-                           solved_since=solved_since)
+                           within_days=within_days)
         models = [case_obj for case_obj in models]
         if len(models) == 0:
             LOG.info("No cases could be found")
