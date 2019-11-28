@@ -601,3 +601,19 @@ def test_get_cases_cohort(real_adapter, case_obj, user_obj):
     result = adapter.cases(name_query="cohort:{}".format(cohort_name))
     # THEN we should get the case returned
     assert sum(1 for i in result) == 1
+
+def test_get_cases_solved_since(real_adapter, case_obj, user_obj, institute_obj, variant_obj):
+    adapter = real_adapter
+    # GIVEN an empty database (no cases)
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN querying for cases solved within 1 day
+    # THEN no case are found
+    assert len([case for case in adapter.cases(solved_since=1)]) == 0
+
+    # GIVEN a marked causative
+    adapter.mark_causative(institute_obj, case_obj, user_obj, 'link', variant_obj)
+
+    # WHEN querying for cases solved within 1 day
+    # THEN one case is found
+    assert len([case for case in adapter.cases(solved_since=1)]) == 1
