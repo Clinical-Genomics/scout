@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import tempfile
+import pytest
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from scout.utils import ensembl_rest_clients as eracs
