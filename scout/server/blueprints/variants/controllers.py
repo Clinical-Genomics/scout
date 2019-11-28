@@ -106,7 +106,8 @@ def get_manual_assessments(variant_obj):
 
     for assessment_type in assessment_keywords:
         assessment = {}
-        if variant_obj.get(assessment_type):
+        if variant_obj.get(assessment_type) != None:
+            LOG.info('Assessment type {}: {}'.format(assessment_type, variant_obj))
             if assessment_type == 'manual_rank':
                 manual_rank = variant_obj[assessment_type]
                 LOG.info('Assessement type {}: {}'.format(assessment_type, manual_rank))
