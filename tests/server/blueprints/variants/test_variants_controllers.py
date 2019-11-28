@@ -1,5 +1,76 @@
-from scout.server.blueprints.variants.controllers import (variants_export_header, 
-                                                          variant_export_lines)
+import copy
+import logging
+
+from scout.server.blueprints.variants.controllers import (variants_export_header,
+                                                          variant_export_lines, variants)
+
+LOG = logging.getLogger(__name__)
+
+def test_variants_research_no_shadow_clinical_assessments(real_variant_database, institute_obj, case_obj):
+    # GIVEN a db with variants,
+    adapter = real_variant_database
+    case_id = case_obj['_id']
+
+    # GIVEN a clinical variant from one case
+    variant_clinical = adapter.variant_collection.find_one({'case_id': case_id, 'variant_type': 'clinical'})
+
+    # GIVEN a copy of that variant marked research
+    variant_research = copy.deepcopy(variant_clinical)
+    variant_research['_id'] = 'research_version'
+    variant_research['variant_type'] = 'research'
+    adapter.variant_collection.insert_one(variant_research)
+
+    # WHEN filtering for that variant in research
+    variants_query = {'variant_type': 'research'}
+    variants_query_res = adapter.variants(case_obj['_id'], query=variants_query,
+                                            category=variant_clinical['category'])
+
+    res = variants(adapter, institute_obj, case_obj, variants_query_res)
+    res_variants = res['variants']
+
+    LOG.debug('Variants: {}'.format(res_variants))
+    # THEN it is returned
+    assert any([variant['_id'] == variant_research['_id'] for variant in res_variants])
+
+    # THEN no previous annotations are reported back for the reseach case..
+    assert not any([variant.get('clinical_assessments') for variant in res_variants])
+
+def test_variants_research_shadow_clinical_assessments(real_variant_database, institute_obj, case_obj):
+    # GIVEN a db with variants,
+    adapter = real_variant_database
+    case_id = case_obj['_id']
+
+    # GIVEN a clinical variant from one case
+    variant_clinical = adapter.variant_collection.find_one({'case_id': case_id, 'variant_type': 'clinical'})
+
+    # GIVEN a copy of that variant marked research
+    variant_research = copy.deepcopy(variant_clinical)
+    variant_research['_id'] = 'research_version'
+    variant_research['variant_type'] = 'research'
+    adapter.variant_collection.insert_one(variant_research)
+
+    # WHEN updating the manual assessments of the clinical variant
+    adapter.variant_collection.update_one({'_id': variant_clinical['_id']},
+        {'$set' : {
+                    'manual_rank': 2,
+                    'mosaic_tags': [ "1" ],
+                    'dismiss_variant': [ "2", "3" ],
+                    'acmg_classification': 0
+        }})
+
+    # WHEN filtering for that variant in research
+    variants_query = {'variant_type': 'research'}
+    variants_query_res = adapter.variants(case_obj['_id'], query=variants_query,
+                                            category=variant_clinical['category'])
+
+    res = variants(adapter, institute_obj, case_obj, variants_query_res)
+    res_variants = res['variants']
+
+    # THEN it is returned
+    assert any([variant['_id'] == variant_research['_id'] for variant in res_variants])
+
+    # THEN previous annotations are reported back for the reseach case.
+    assert any([variant.get('clinical_assessments') for variant in res_variants])
 
 def test_variant_csv_export(real_variant_database, case_obj):
     adapter = real_variant_database
