@@ -101,7 +101,7 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
 
     variants = []
 
-    for variant in variants_query.skip(skip_count).limit(per_page)):
+    for variant_obj in variants_query.skip(skip_count).limit(per_page):
         # show previous classifications for research variants
         if variant_obj['variant_type'] == 'research':
             # get variant by simple_id. That will really just return the first variant found -
@@ -111,7 +111,7 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
             # Get all previous ACMG evalautions of the variant
             variant_obj['clinical_assessments'] = get_manual_assessments(clinical_var_obj)
 
-        variants.append(parse_variant(store, institute_obj, case_obj, variant, genome_build=genome_build))
+        variants.append(parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build))
 
     return {
         'variants': variants,
