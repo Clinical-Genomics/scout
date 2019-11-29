@@ -1,9 +1,12 @@
 #!/bin/bash
 
-SCOUT_CONFIG="/scout/vault/flask.config.py" \
+SCOUT_CONFIG=$CONF_FILE \
 gunicorn \
    --workers=4 \
    --bind=$HOST:$PORT \
-   --keyfile="/scout/vault/key.pem" \
-   --certfile="/scout/vault/cert.pem" \
+   --keyfile=$KEY_FILE \
+   --certfile=$CERT_FILE \
    scout.server.auto:app
+
+#scout --port $MONGO_PORT --host $MONGO_HOST --demo serve
+
