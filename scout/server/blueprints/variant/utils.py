@@ -461,3 +461,40 @@ def callers(variant_obj, category='snv'):
             calls.add((caller['name'], variant_obj[caller['id']]))
 
     return list(calls)
+
+def rank_chart():
+    return {
+    'max': 20,
+    'min': -5,
+    'categories': [
+        {
+            'name': 'Inheritance',
+            'score': 3,
+            'drilldown': [
+                ['AR_hom',  2], ['AD_dn',1]
+            ]
+        },
+        {
+            'name': 'Allele Frequency',
+            'score': 2,
+            'drilldown': [
+                ['thousand_g', 1], ['gnomAD', 1]
+            ]
+        },
+        {
+            'name': 'Splicing',
+            'score': 5,
+            'drilldown': [
+               ['spidex',  5 ]
+            ]
+        },
+        {
+            'name': 'Protein prediction',
+            'score': 4,
+            'drilldown': [
+                ['CADD',  3], ['SIFT', 1 ]
+            ]
+        },
+    ]
+}
+
