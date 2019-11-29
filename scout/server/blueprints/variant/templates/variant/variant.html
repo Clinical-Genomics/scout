@@ -1328,36 +1328,27 @@
   <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/modules/data.js"></script>
-  <script src="https://code.highcharts.com/modules/drilldown.js"></script>
 
 
   <script> 
   var series = []
-  var drilldown = []
-
-  {% for cat in rank_chart.categories %}
-    var name = {{ cat.name| tojson}}
+  {% for cat in variant.rank_score_results %}
+    var name = {{cat.category|tojson}}
     series.push({
       name: name,
-      y: {{ cat.score | tojson }},
-      drilldown: name
-      })
-    drilldown.push({
-      name: name,
-      id: name,
-      data: {{ cat.drilldown | tojson }}
+      y: {{cat.score|tojson}}
       })
   {% endfor %}
 
-Highcharts.chart('rank_pie_chart', {
+  Highcharts.chart('rank_pie_chart', {
     chart: {
         type: 'pie'
     },
     title: {
-        text: "Rank {{ variant.variant_rank }}, Rank Score {{ variant.rank_score }}, CADD score {{ variant.cadd_score or '-' }}"
+        text: "Rank {{ variant.variant_rank }}"
     },
     subtitle: {
-        text: "Maximum/minimum rank score: {{rank_chart.max}}/{{rank_chart.min}}"
+        text: "Rank Score {{ variant.rank_score }}, CADD score {{ variant.cadd_score or '-' }}"
     },
     plotOptions: {
         series: {
@@ -1373,14 +1364,11 @@ Highcharts.chart('rank_pie_chart', {
     },
     series: [
         {
-            name: "Categories",
+            name: "Rank Score Category",
             colorByPoint: true,
             data: series
         }
-    ],
-    drilldown: {
-            series: drilldown
-        }
+    ]
     }
 );
   </script>

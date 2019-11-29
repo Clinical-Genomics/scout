@@ -16,7 +16,7 @@ from scout.parse.variant.ids import parse_document_id
 from scout.utils.requests import fetch_refseq_version
 
 from .utils import (end_position, default_panels, frequency, callers, evaluation,
-                    is_affected, predictions, sv_frequencies, add_gene_info, clinsig_human, rank_chart)
+                    is_affected, predictions, sv_frequencies, add_gene_info, clinsig_human)
 
 
 LOG = logging.getLogger(__name__)
@@ -160,12 +160,7 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
             overlapping_vars.append(var)
     variant_obj['end_chrom'] = variant_obj.get('end_chrom', variant_obj['chromosome'])
 
-
-    
-
-
     return {
-        'rank_chart' : rank_chart(),
         'institute': institute_obj,
         'case': case_obj,
         'variant': variant_obj,
