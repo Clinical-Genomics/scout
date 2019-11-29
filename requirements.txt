@@ -25,10 +25,7 @@ xlsxwriter
 click<7.0
 requests-oauthlib<1.2.0
 oauthlib<3.0.0
-scout-browser==4.4.1
 pyopenssl
-#Cython
-#numpy
 
 # unclear
 Flask-Login
