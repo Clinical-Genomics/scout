@@ -428,7 +428,29 @@
   <div class="card mt-3 panel-default">
       <div class="panel-heading">Summary</div>
     <div class="card-body">
+      {% if variant.get('rank_score_results') != None %}
+     "Debug string!!!!"
       <div id="rank_pie_chart" style="margin-bottom: 10px"></div>
+      {% else %}
+      <table class="table table-bordered table-fixed table-sm">	      <div id="rank_pie_chart" style="margin-bottom: 10px"></div>
+        <tbody>	
+          <tr>	
+            <td>	
+              Rank	
+              <span><strong>{{ variant.variant_rank }}</strong></span>	
+            </td>	
+            <td>	
+              Rank score	
+              <span><strong>{{ variant.rank_score }}</strong></span>	
+            </td>	
+            <td>	
+              CADD score	
+              <span><strong>{{ variant.cadd_score or '-' }}</strong></span>	
+            </td>	
+          </tr>	
+        </tbody>	
+      </table>
+      {% endif %}
       <table class="table table-bordered table-fixed table-sm">
         <tbody class="border-top">
           <tr>
@@ -1339,6 +1361,7 @@
       y: {{cat.score|tojson}}
       })
   {% endfor %}
+
 
   Highcharts.chart('rank_pie_chart', {
     chart: {
