@@ -11,12 +11,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Rank score model in causatives page
 - Exportable HPO terms from phenotypes page
 - AMP guideline tiers for cancer variants
-- Adds scroll for the trancript tab 
+- Adds scroll for the trancript tab
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
 - Removed Mosaic Tag from Cancer variants
 - Fixes issue with unaligned table headers that comes with hidden Datatables
+- Layout in general report PDF export
 
 
 ## [4.9.0]
