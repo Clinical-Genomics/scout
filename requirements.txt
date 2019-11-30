@@ -19,7 +19,7 @@ mongo_adapter
 python-dateutil
 pymongo<3.7
 pathlib
-WeasyPrint>=0.42.3
+WeasyPrint==0.42.3
 xlsxwriter
 click<7.0
 requests-oauthlib<1.2.0
