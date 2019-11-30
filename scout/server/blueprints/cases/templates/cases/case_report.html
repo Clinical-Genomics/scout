@@ -10,7 +10,7 @@
 {% block body %}
 <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
   <!-- Brand and toggle get grouped for better mobile display -->
-  <a class="navbar-brand"><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">Case {{case.display_name}}</a>
+  <a class="nav-link" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">Case {{case.display_name}}</a>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,181 +50,180 @@
   </div>
 </nav>
 
-{% block content_main %}
-<div class="container">
+<div id="container" class="container">
   <h4>Scout case analysis report</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
-  {{ phenotype_panel() }}<br>
-  {{ gene_panels_panel() }}<br>
-  {{ causatives_panel() }}<br>
-  {{ pinned_panel() }}<br>
-  {{ classified_panel() }}<br>
-  {{ tagged_panel() }}<br>
-  {{ commented_panel() }}<br>
-  {{ dismissed_panel() }}
-  [END OF VARIANT REPORT]<br><br>
-  {% if coverage_report %}
+	 {{ phenotype_panel() }}
+   {{ gene_panels_panel()}}
+   {{ causatives_panel()}}
+   {{ pinned_panel() }}
+   {{ classified_panel() }}
+   {{ tagged_panel() }}
+   {{ commented_panel() }}
+   {{ dismissed_panel() }}
+   [END OF VARIANT REPORT]<br><br>
+   {% if coverage_report %}
     {{ coverage_report|safe }}<br>
-  {% endif %}
-  <a href="http://www.clinicalgenomics.se/scout/" target="_blank">http://www.clinicalgenomics.se/scout/</a>
+   {% endif %}
+   <a href="http://www.clinicalgenomics.se/scout/" target="_blank">http://www.clinicalgenomics.se/scout/</a>
 </div>
-{% endblock %}
-
-{% endblock %} <!--end of body-->
+{% endblock %} <!-- end of block body -->
 
 {% macro phenotype_panel() %}
-<a name="phenotype"/>
-<div class="card mb-3" style="border-width: 5px;">
-  <div class="card-header">
-    <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><strong>Case {{ case.display_name }}</a> - Phenotype Overview</strong>
-  </div>
-  <div class="card-body">
-    <table class="table table-sm">
-      <tr>
-        <td>
-          {% if case.madeline_info and case.individuals|length > 1 %}
-            {% if format == 'html' %}
-              {{ case.madeline_info|safe }}
-            {% else %}
-              <object data="{{url_for('cases.static', filename='madeline.svg')}}"/>
-            {% endif %}
-          {% else %}
-            <p>Single sample family. No pedigree available.</p>
-          {% endif %}
-        </td>
-        <td>
-          <table class="table table-sm">
-            <tr>
-              <td>Case created: <strong>{{case.created_at.strftime('%Y-%m-%d')}}</strong></td>
-              <td>Last updated: <strong>{{case.updated_at.strftime('%Y-%m-%d')}}</strong></td>
-            </tr>
-          </table>
-          <br>
-          <table class="table table-sm">
-            <thead>
-              <tr>
-                <th>Sample</th>
-                <th>Sex</th>
-                <th>Affected</th>
-                <th>Sequencing</th>
-                <th>Ancestry (pred.)</th>
-                <th>Parenthood</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for ind in case.individuals %}
-                <tr {% if ind.phenotype == 2 %} class="table-danger" {% endif %}>
-                  <td>{{ ind.display_name }}</td>
-                  <td>
-                    {{ ind.sex_human }}
-                    {% if ind.confirmed_sex %}
-                      <span class="glyphicon glyphicon-ok"></span>
-                    {% endif %}
-                  </td>
-                  <td>
-                  {% if ind.phenotype==2 %} <!--for later use-->
-                    {% do affected.append(ind.display_name) %}
-                    <span class="badge badge-pill badge-danger" title="Affected">YES</span>
-                  {% else %}
-                    <span class="badge badge-pill badge-secondary" title="Not affected">NO</span>
-                  {% endif %}
-                  </td>
-                  <td>{{ ind.analysis_type|upper }}</td>
-                  <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
-                  <td>
-                    {% if ind.confirmed_parent == True %}
-                      <span class="glyphicon glyphicon-ok text-success"></span>
-                    {% elif ind.confirmed_parent == False %}
-                      <span class="glyphicon glyphicon-remove text-danger"></span>
-                    {% else %}
-                      N/A
-                    {% endif %}
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </td>
-      </tr>
-      <tr>
-        <td>Case status: <strong>
-          {% if 'solved' in case.status%}
-            <font color="green">{{case.status.upper()}}</font>
-          {% else %}
-            {{case.status.upper()}}
-          {% endif %}
-          </strong><br><br>
-        </td>
-      </tr>
-      <tr>
-        <td style="width:50%">
-          {% if case.synopsis %}
-            <strong>Synopsis:</strong>
-            {{ case.synopsis|markdown }}
-          {% endif %}
-        </td>
-        <td>
-          <strong>Associated phenotypes:</strong><br>
-          {% if case.phenotype_terms %}
-            <ul>
-              {% for pheno in case.phenotype_terms %}
-                <li>
-                {{pheno.feature}} - (<a href="{{pheno.hpo_link}}" target="_blank">{{pheno.phenotype_id}})</a>
-                </li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            No phenotype terms associated.
-          {% endif %}
-        </td>
-      </tr>
-      {% if comments.count() %}
-        <tr>
-          <td colspan=2>
-            <table id="panel-table" class="table table-sm" style="background-color: transparent">
-              <thead>
-                <tr>
-                  <td><strong>Case-related comments</strong></td>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <table id="panel-table" class="table table-sm" style="background-color: transparent">
-                    {% for comment in comments %}
-                      <tr>
-                        <td width="20%">{{comment.created_at.strftime('%Y-%m-%d')}}</td>
-                        <td width="20%">{{comment.user_name}}:</td>
-                        <td><strong>{{ comment.content }}</strong></td>
-                      </tr>
-                    {% endfor %}
-                    </table>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </td>
-        </tr>
-      {% else %}
-        <tr>
-          <td colspan=2>
-            <table id="panel-table" class="table table-sm" style="background-color: transparent">
-              <tr>
-                <td>No comments left for this case.</td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      {% endif %}
-    </table>
-  </div>
-</div>
-{% endmacro%}
+	<div class="card mb-3" style="border-width: 5px;">
+	  <div class="card-header">
+	    <a name="phenotype" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><strong>Case {{ case.display_name }}</a> - Phenotype Overview</strong>
+	  </div>
+	  <div class="card-body">
+	    <table class="table table-sm">
+	      <tr>
+	        <td>
+	          {% if case.madeline_info and case.individuals|length > 1 %}
+	            {% if format == 'html' %}
+	              {{ case.madeline_info|safe }}
+	            {% else %}
+	              <object data="{{url_for('cases.static', filename='madeline.svg')}}"/>
+	            {% endif %}
+	          {% else %}
+	            <p>Single sample family. No pedigree available.</p>
+	          {% endif %}
+	        </td>
+	        <td>
+	          <table class="table table-sm">
+	            <tr>
+	              <td>Case created: <strong>{{case.created_at.strftime('%Y-%m-%d')}}</strong></td>
+	              <td>Last updated: <strong>{{case.updated_at.strftime('%Y-%m-%d')}}</strong></td>
+	            </tr>
+	          </table>
+	          <br>
+	          <table class="table table-sm">
+	            <thead>
+	              <tr>
+	                <th>Sample</th>
+	                <th>Sex</th>
+	                <th>Affected</th>
+	                <th>Sequencing</th>
+	                <th>Ancestry (pred.)</th>
+	                <th>Parenthood</th>
+	              </tr>
+	            </thead>
+	            <tbody>
+	              {% for ind in case.individuals %}
+	                <tr {% if ind.phenotype == 2 %} class="table-danger" {% endif %}>
+	                  <td>{{ ind.display_name }}</td>
+	                  <td>
+                      {% if ind.sex_human in ['female','male'] %}
+                        <i class="fa fa-{{ind.sex_human}}" aria-hidden="true"></i>
+                      {% else %}
+                        n.a.
+                      {% endif %}
+	                    {% if ind.confirmed_sex %}
+	                      <i class="fa fa-check"></i>
+	                    {% endif %}
+	                  </td>
+	                  <td>
+	                  {% if ind.phenotype==2 %} <!--for later use-->
+	                    {% do affected.append(ind.display_name) %}
+	                    <span class="badge badge-pill badge-danger" title="Affected">YES</span>
+	                  {% else %}
+	                    <span class="badge badge-pill badge-secondary" title="Not affected">NO</span>
+	                  {% endif %}
+	                  </td>
+	                  <td>{{ ind.analysis_type|upper }}</td>
+	                  <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
+	                  <td>
+	                    {% if ind.confirmed_parent == True %}
+	                      <i class="fa fa-check"></i>
+	                    {% elif ind.confirmed_parent == False %}
+	                      <i class="fa fa-exclamation-circle"></i>
+	                    {% else %}
+	                      N/A
+	                    {% endif %}
+	                  </td>
+	                </tr>
+	              {% endfor %}
+	            </tbody>
+	          </table>
+	        </td>
+	      </tr>
+	      <tr>
+	        <td>Case status: <strong>
+	          {% if 'solved' in case.status%}
+	            <font color="green">{{case.status.upper()}}</font>
+	          {% else %}
+	            {{case.status.upper()}}
+	          {% endif %}
+	          </strong><br><br>
+	        </td>
+	      </tr>
+	      <tr>
+	        <td style="width:50%">
+	          {% if case.synopsis %}
+	            <strong>Synopsis:</strong>
+	            {{ case.synopsis|markdown }}
+	          {% endif %}
+	        </td>
+	        <td>
+	          <strong>Associated phenotypes:</strong><br>
+	          {% if case.phenotype_terms %}
+	            <ul>
+	              {% for pheno in case.phenotype_terms %}
+	                <li>
+	                {{pheno.feature}} - (<a href="{{pheno.hpo_link}}" target="_blank">{{pheno.phenotype_id}})</a>
+	                </li>
+	              {% endfor %}
+	            </ul>
+	          {% else %}
+	            No phenotype terms associated.
+	          {% endif %}
+	        </td>
+	      </tr>
+	      {% if comments.count() %}
+	        <tr>
+	          <td colspan=2>
+	            <table id="panel-table" class="table table-sm" style="background-color: transparent">
+	              <thead>
+	                <tr>
+	                  <td><strong>Case-related comments</strong></td>
+	                </tr>
+	              </thead>
+	              <tbody>
+	                <tr>
+	                  <td>
+	                    <table id="panel-table" class="table table-sm" style="background-color: transparent">
+	                    {% for comment in comments %}
+	                      <tr>
+	                        <td width="20%">{{comment.created_at.strftime('%Y-%m-%d')}}</td>
+	                        <td width="20%">{{comment.user_name}}:</td>
+	                        <td><strong>{{ comment.content }}</strong></td>
+	                      </tr>
+	                    {% endfor %}
+	                    </table>
+	                  </td>
+	                </tr>
+	              </tbody>
+	            </table>
+	          </td>
+	        </tr>
+	      {% else %}
+	        <tr>
+	          <td colspan=2>
+	            <table id="panel-table" class="table table-sm" style="background-color: transparent">
+	              <tr>
+	                <td>No comments left for this case.</td>
+	              </tr>
+	            </table>
+	          </td>
+	        </tr>
+	      {% endif %}
+	    </table>
+	  </div>
+	</div>
+{% endmacro %}
 
 {% macro gene_panels_panel() %}
-<a name="gene_panels"/>
 <div class="card mb-3" style="border-width: 5px;">
   <div class="card-header">
-    <strong>Default gene panels</strong>
+    <a name="gene_panels"><strong>Default gene panels</strong></a>
   </div>
   <div class="card-body">
     <table id="panel-table" class="table table-sm">
@@ -257,13 +256,12 @@
     </table>
   </div>
 </div>
-{% endmacro%}
+{% endmacro %}
 
 {% macro causatives_panel() %}
 <div class="card border-success mb-3" style="border-width: 5px;">
   <div class="card-header bg-success text-white">
-    <a name="causative_variants"/ >
-    <strong>Causative Variants</strong>
+    <a name="causative_variants"><strong>Causative Variants</strong></a>
   </div>
   <div class="card-body">
     {% if causatives_detailed %}
@@ -284,10 +282,9 @@
 {% endmacro%}
 
 {% macro pinned_panel() %}
-<a name="pinned_variants"/>
 <div class="card border-info mb-3" style="border-width: 5px;">
   <div class="card-header bg-info text-white">
-    <strong>Pinned Variants</strong>
+    <a name="pinned_variants"><strong>Pinned Variants</strong></a>
   </div>
   <div class="card-body">
     {% set duplicated_variants = [] %}
@@ -316,10 +313,9 @@
 {% endmacro %}
 
 {% macro classified_panel() %}
-<a name="acmg_variants"/>
 <div class="card border-warning mb-3" style="border-width: 5px;">
   <div class="card-header bg-warning text-black">
-    <strong>Other ACMG-classified Variants</strong>
+    <a name="acmg_variants"><strong>Other ACMG-classified Variants</strong></a>
   </div>
   <div class="card-body">
     {% set duplicated_variants = [] %}
@@ -348,10 +344,9 @@
 {% endmacro %}
 
 {% macro tagged_panel() %}
-<a name="manual_ranked_variants"/>
 <div class="card border-warning mb-3" style="border-width: 5px;">
   <div class="card-header bg-warning text-black">
-    <strong>Other Manual Ranked (Tagged) Variants</strong>
+    <a name="manual_ranked_variants"><strong>Other Manual Ranked (Tagged) Variants</strong></a>
   </div>
   <div class="card-body">
     {% set duplicated_variants = [] %}
@@ -394,10 +389,9 @@
 {% endmacro %}
 
 {% macro commented_panel() %}
-<a name="commented_variants"/>
 <div class="card border-warning mb-3" style="border-width: 5px;">
   <div class="card-header bg-warning text-black">
-    <strong>Other Commented Variants</strong>
+    <a name="commented_variants"><strong>Other Commented Variants</strong></a>
   </div>
   <div class="card-body">
     {% set duplicated_variants = [] %}
@@ -425,444 +419,669 @@
 </div>
 {% endmacro %}
 
-{% macro dismissed_panel() %}
-<a name="dismissed_variants"/>
-<div class="card border-danger mb-3" style="border-width: 5px;">
-  <div class="card-header bg-danger text-black">
-    <strong>Dismissed Variants</strong>
-  </div>
-  <div class="card-body">
-    {% if dismissed_detailed %}
-      <table class="table table-striped table-sm" style="background-color: transparent">
-        <thead>
-          <tr>
-              <td width="5%"></td>
-              <td width="25%"><strong>Variant name</strong></td>
-	            <td width="25%"><strong>Genes</strong></td>
-              <td width="45%"><strong>Dismissed description</strong></td>
-          </tr>
-        </thead>
-        {% for variant in dismissed_detailed|sort(attribute='variant_rank') %}
-          <tr>
-            <td>#{{loop.index}}</td>
-            {% if variant.category == 'snv' %}
-              <td><a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></td>
-            {% else %}
-              <td><a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></td>
-            {% endif %}
-	          <td>
-	             {% for gene in variant.genes %}
-                <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}</a> <span class="badge badge-secondary">{{gene.region_annotation}}</span><br>
-               {% endfor %}
-            </td>
-      <td>
-      {% for reason in variant.dismiss_variant if not reason == "Select a tag"  %}
-        <ul>
-            <li>{{dismissed_options[reason|int]['description']}}
-              {% if reason == '2' and variant.category == 'snv'%} <!--variant dismissed as too common in public databases-->
-                <table class="table-borderless table-sm">
-                  <thead>
-                    <tr style="background-color: transparent">
-                      <th>Frequency
-                        {% if variant.frequency == 'common' %}
-                          <span class="badge badge-danger">{{variant.frequency}}</span>
-                        {% elif variant.frequency == 'uncommon' %}
-                          <span class="badge badge-warning">{{variant.frequency}}</span>
-                        {% else %}
-                          <span class="badge badge-success">{{variant.frequency}}</span>
-                        {% endif %}
-                      </th>
-                      <th>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr style="background-color: transparent">
-                      <td>
-                        {% if variant.dbsnp_id %}
-                          <a href="{{ variant.thousandg_link }}" target="_blank">1000G</a>
-                        {% else %}
-                          1000G
-                        {% endif %}
-                      </td>
-                      <td>
-                        {% if variant.max_thousand_genomes_frequency %}
-                          {{ variant.max_thousand_genomes_frequency|human_decimal }} <small>(max)</small> |
-                        {% endif %}
-                        {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}
-                        {% if not variant.max_thousand_genomes_frequency and not variant.thousand_genomes_frequency %}
-                          <span class="text-muted">Not annotated</span>
-                        {% endif %}
-                      </td>
-                    </tr>
-                    <tr style="background-color: transparent">
-                      <td><a title="Exome Aggregation Consortium" target="_blank" href="{{ variant.exac_link }}">ExAC</a></td>
-                      <td>
-                        {% if variant.max_exac_frequency %}
-                          {{ variant.max_exac_frequency|human_decimal }} <small>(max)</small> |
-                        {% endif %}
-                        {{ variant.exac_frequency|human_decimal if variant.exac_frequency }}
-                        {% if not variant.max_exac_frequency and not variant.exac_frequency %}
-                          <span class="text-muted">Not annotated</span>
-                        {% endif %}
-                      </td>
-                    </tr>
-                    <tr style="background-color: transparent">
-                      <td><a title="genome Aggregation Database" target="_blank" href="{{ variant.gnomad_link }}">gnomAD</a></td>
-                      <td>
-                        {% if 'gnomad_frequency' in variant%}
-                          {% if variant.max_gnomad_frequency %}
-                            {{ variant.max_gnomad_frequency|human_decimal }}
-                            <small>(max)</small> |
-                          {% endif %}
-                          {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency }}
-                        {% else %}
-                          <span class="text-muted">Not annotated</span>
-                        {% endif %}
-                      </td>
-                      <td>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-                <br><br>
-                {% elif reason == '7' %} <!-- Inheritance pattern not relevant -->
-                  (<span class="float-left">
-                  {% for model in variant.genetic_models|sort %}
-                    <span class="badge badge-info" title="{{genetic_models[model]}}"> {{model}}</span>
-                  {% else %}
-                    <span class="badge badge-warning">No models followed</span>
-                  {% endfor %})
-                  <br><br>
-
-                {% elif reason== '23' %} <!-- inherited from unaffected -->
-                  <br>
-                  <table id="panel-table" class="table-borderless table-sm" >
-                    <thead>
-                      <tr style="background-color: transparent">
-                        <th rowspan="2">Sample</th>
-                          <th rowspan="2">Genotype (GT)</th>
-                          <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
-                          <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality</th>
-                        </tr>
-                        <tr style="background-color: transparent">
-                          <th>Ref.</th>
-                          <th>Alt.</th>
-                        </tr>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for sample in variant.samples %}
-                        <tr style="background-color: transparent" {% if sample.display_name in affected %} class="table-danger" {% endif %}>
-                          <td>{{ sample.display_name }}</td>
-                          <td class="text-center">{{ sample.genotype_call }}</td>
-                          {% if sample.allele_depths %}
-                              {% for number in sample.allele_depths %}
-                                <td class="text-center">{{ number }}</td>
-                              {% endfor %}
-                          {% else %}
-                              <td class="text-center"><small>N/A</small></td>
-                              <td class="text-center"><small>N/A</small></td>
-                          {% endif %}
-                          <td class="text-center">{{ sample.genotype_quality }}</td>
-                        </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                  <br><br>
-                {% endif %}
-                </li>
-            </ul>
-          {% endfor %}
-          </td>
-        </tr>
-      {% endfor %}
-      </table>
-    {% else %}
-      No dismissed variants for this case
-    {% endif %}
-  </div>
-</div>
-{% endmacro %}
-
-{% macro sn_variant_content(variant, index) %} <!--The entire description of a single nucleotide variant, dynamic contentc -->
-<div class="card" style="border-width: 5px;">
-  <div class="card-header">
-    <div class="row">
-      # <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></a>&nbsp;
-        <span class="badge badge-pill badge-success">SNV</span>&nbsp;
-        {% if variant.sanger_ordered and variant.validation %}
-          <span class="badge badge-pill badge-info" title="verif-status">Verification:{{variant.validation}}</span>
-        {% elif variant.sanger_ordered %}
-          <span class="badge badge-info" title="sanger-status">Verification ordered</span>
-        {% endif %}
+{% macro sn_variant_content(variant, index) %} <!--The entire description of a single nucleotide variant, dynamic content -->
+  <div class="card" style="border-width: 5px;">
+    <div class="card-header">
+      <div class="row">
+        # <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></a>&nbsp;
+          <span class="badge badge-pill badge-success">SNV</span>&nbsp;
+          {% if variant.sanger_ordered and variant.validation %}
+            <span class="badge badge-pill badge-info" title="verif-status">Verification:{{variant.validation}}</span>
+          {% elif variant.sanger_ordered %}
+            <span class="badge badge-info" title="sanger-status">Verification ordered</span>
+          {% endif %}
+      </div>
     </div>
-  </div>
-  <div class="card-body">
-    <table id="panel-table" class="table table-sm">
-      <thead>
-        <tr>
-          <th>Coordinates</th>
-          <th>Cytoband</th>
-          <th>nucl. change</th>
-          <th>dbsnp id</th>
-          <th>Gene panels</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}</td>
-          {% if variant.cytoband_start and variant.cytoband_end %}
-            <td>{{variant.cytoband_start}}-{{variant.cytoband_end}}</td>
-          {% else %}
-            <td>-</td>
-          {% endif %}
-          <td>{{variant.reference}} → {{variant.alternative}}</td>
-          <td>
-            {% if variant.dbsnp_id %}
-              {{variant.dbsnp_id}}
-            {% else %}
-              -
-            {% endif %}
-          </td>
-          <td>
-            {% for panel_id in variant.panels %}
-              <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a>
-            {% endfor %}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <table class="table table-sm">
-      <tr>
-        <td style="width=45%">
-          <table id="panel-table" class="table table-bordered table-sm" style="background-color: transparent">
-            <thead>
-              <tr>
-                <th rowspan="2">Sample</th>
-                  <th rowspan="2">Genotype (GT)</th>
-                  <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
-                  <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
-                </tr>
-                <tr>
-                  <th>Reference</th>
-                  <th>Alternative</th>
-                </tr>
-              </tr>
-            </thead>
-            <tbody>
-              {% for sample in variant.samples %}
-                <tr {% if sample.display_name in affected %} class="table-danger" {% endif%}>
-                  <td>{{ sample.display_name }}</td>
-                  <td class="text-center">{{ sample.genotype_call }}</td>
-                  {% if sample.allele_depths %}
-                      {% for number in sample.allele_depths %}
-                        <td class="text-right">{{ number }}</td>
-                      {% endfor %}
-                  {% else %}
-                      <td class="text-right"><small>N/A</small></td>
-                      <td class="text-right"><small>N/A</small></td>
-                  {% endif %}
-                  <td class="text-right">{{ sample.genotype_quality }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </td>
-        <td style="width:3%"></td>
-        <td>
-          <table id="panel-table" class="table table-sm" style="background-color: transparent">
-            <thead>
-              <tr>
-                <th>Frequency
-                  {% if variant.frequency == 'common' %}
-                    <span class="badge badge-danger">{{variant.frequency}}</span>
-                  {% elif variant.frequency == 'uncommon' %}
-                    <span class="badge badge-warning">{{variant.frequency}}</span>
-                  {% else %}
-                    <span class="badge badge-success">{{variant.frequency}}</span>
-                  {% endif %}
-                </th>
-                <th>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  {% if variant.dbsnp_id %}
-                    <a href="{{ variant.thousandg_link }}" target="_blank">1000G</a>
-                  {% else %}
-                    1000G
-                  {% endif %}
-                </td>
-                <td>
-                  {% if variant.max_thousand_genomes_frequency %}
-                    {{ variant.max_thousand_genomes_frequency|human_decimal }} <small>(max)</small> |
-                  {% endif %}
-                  {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}
-                  {% if not variant.max_thousand_genomes_frequency and not variant.thousand_genomes_frequency %}
-                    <span class="text-muted">Not annotated</span>
-                  {% endif %}
-                </td>
-              </tr>
-              <tr>
-                <td><a title="Exome Aggregation Consortium" target="_blank" href="{{ variant.exac_link }}">ExAC</a></td>
-                <td>
-                  {% if variant.max_exac_frequency %}
-                    {{ variant.max_exac_frequency|human_decimal }} <small>(max)</small> |
-                  {% endif %}
-                  {{ variant.exac_frequency|human_decimal if variant.exac_frequency }}
-                  {% if not variant.max_exac_frequency and not variant.exac_frequency %}
-                    <span class="text-muted">Not annotated</span>
-                  {% endif %}
-                </td>
-              </tr>
-              <tr>
-                <td><a title="genome Aggregation Database" target="_blank" href="{{ variant.gnomad_link }}">gnomAD</a></td>
-                <td>
-                  {% if 'gnomad_frequency' in variant%}
-                    {% if variant.max_gnomad_frequency %}
-                      {{ variant.max_gnomad_frequency|human_decimal }}
-                      <small>(max)</small> |
-                    {% endif %}
-                    {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency }}
-                  {% else %}
-                    <span class="text-muted">Not annotated</span>
-                  {% endif %}
-                </td>
-                <td>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-      </tr>
-    </table>
-    <table id="panel-table" class="table table-sm" style="background-color: transparent">
-      <thead>
-        <tr>
-          <th>Scout Rank</th>
-          <th>Scout score</th>
-          <th>Manual rank</th>
-          <th>CADD score</th>
-          <th>Inheritance models</th>
-          <th>ACMG classification</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{{variant.variant_rank}}</td>
-          <td>{{variant.rank_score}}</td>
-          <td>
-          {% if variant.manual_rank %}
-            <span class="badge badge-pill badge-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
-          {% endif %}
-          {% if variant.cancer_tier %}
-            <span class="badge badge-pill badge-secondary" title="Tier">{{ cancer_tier_options[variant.cancer_tier]['label'] }}</span>
-          {% endif %}
-          {% if not (variant.manual_rank or variant.cancer_tier) %}
-            -
-          {% endif %}
-          </td>
-          <td>
-            <span class="float-left">{{ variant.cadd_score or '-' }}</strong>
-          </td>
-          <td>
-            <span class="float-left">
-              {% for model in variant.genetic_models|sort %}
-                <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
-              {% else %}
-                <span class="badge badge-warning">No models followed</span>
-              {% endfor %}
-            </span>
-          </td>
-          <td>
-            {% if variant.acmg_classification %}
-              <span class="badge badge-pill badge-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['code'] }}</span>
-            {% else %}
-              -
-            {% endif %}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <table id="panel-table" class="table table-sm" style="background-color: transparent">
-      <thead>
-        <tr>
-          <th>Affected gene(s)</th>
-          <th>Description</th>
-          <th>Region annotation</th>
-          <th>Transcript - HGVS - Protein</th>
-          <th>OMIM phenotypes [inheritance]</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for gene in variant.genes %}
-          <tr>
-            <td>
-              <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-              {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-              </a>
-            </td>
-            <td>{{gene.description|title}}</td>
-            <td>{{gene.region_annotation}}</td>
-            <td>
-              {% set n_primary_transcripts = [] %}
-              <ul>
-              {% for transcript in gene.primary_transcripts %}
-                {% do n_primary_transcripts.append(gene.primary_transcripts|length) %}
-                {% if loop.index <= 5 or transcript.is_canonical or transcript.is_disease_associated %} <!--Do not print too many transcript, but include the canonical-->
-                  <li>{{transcript.refseq_id}} - {{ (transcript.coding_sequence_name or '')|truncate(20, True) }} - {{ (transcript.protein_sequence_name or '')|url_decode }}
-                  {% if transcript.is_canonical %}
-                    <span class="badge badge-pill badge-secondary" title="canonical">C</span>
-                  {% endif %}
-                  {% if transcript.is_disease_associated %}
-                    <span class="badge badge-pill badge-danger" title="disease_associated">D</span>
-                  {% endif %}
-                  </li>
-                {% endif %}
-              {% endfor %}
-              </ul>
-              {% if n_primary_transcripts|sum > 5 %}
-              .. other transcripts available for this variant are not shown.<br><br>
-              {% endif %}
-            </td>
-            <td>
-              <ul>
-              {% for disease_term in gene.disease_terms %}
-                <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
-              {% endfor %}
-            </ul>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% if variant.comments.count() %}
-      <table id="panel-table" class="table table-sm" style="background-color: transparent">
+    <div class="card-body">
+      <table id="panel-table" class="table table-sm">
         <thead>
           <tr>
-            <td><strong>Variant-related comments</strong></td>
+            <th>Coordinates</th>
+            <th>Cytoband</th>
+            <th>nucl. change</th>
+            <th>dbsnp id</th>
+            <th>Gene panels</th>
           </tr>
         </thead>
         <tbody>
           <tr>
+            <td>chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}</td>
+            {% if variant.cytoband_start and variant.cytoband_end %}
+              <td>{{variant.cytoband_start}}-{{variant.cytoband_end}}</td>
+            {% else %}
+              <td>-</td>
+            {% endif %}
+            <td>{{variant.reference}} → {{variant.alternative}}</td>
             <td>
-              <table id="panel-table" class="table table-sm" style="background-color: transparent">
-              {% for comment in variant.comments %}
-                <tr>
-                  <td width="20%">{{comment.created_at.strftime('%Y-%m-%d')}}</td>
-                  <td width="20%">{{comment.user_name}}:</td>
-                  <td><strong>{{ comment.content }}</strong></td>
-                </tr>
+              {% if variant.dbsnp_id %}
+                {{variant.dbsnp_id}}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>
+              {% for panel_id in variant.panels %}
+                <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a>
               {% endfor %}
-              </table>
             </td>
           </tr>
         </tbody>
       </table>
-    {% endif %}
+      <table class="table table-sm">
+        <tr>
+          <td style="width=45%">
+            <table id="panel-table" class="table table-bordered table-sm" style="background-color: transparent">
+              <thead>
+                <tr>
+                  <th rowspan="2">Sample</th>
+                    <th rowspan="2">Genotype (GT)</th>
+                    <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
+                    <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+                  </tr>
+                  <tr>
+                    <th>Reference</th>
+                    <th>Alternative</th>
+                  </tr>
+                </tr>
+              </thead>
+              <tbody>
+                {% for sample in variant.samples %}
+                  <tr {% if sample.display_name in affected %} class="table-danger" {% endif%}>
+                    <td>{{ sample.display_name }}</td>
+                    <td class="text-center">{{ sample.genotype_call }}</td>
+                    {% if sample.allele_depths %}
+                        {% for number in sample.allele_depths %}
+                          <td class="text-right">{{ number }}</td>
+                        {% endfor %}
+                    {% else %}
+                        <td class="text-right"><small>N/A</small></td>
+                        <td class="text-right"><small>N/A</small></td>
+                    {% endif %}
+                    <td class="text-right">{{ sample.genotype_quality }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </td>
+          <td style="width:3%"></td>
+          <td>
+            <table id="panel-table" class="table table-sm" style="background-color: transparent">
+              <thead>
+                <tr>
+                  <th>Frequency
+                    {% if variant.frequency == 'common' %}
+                      <span class="badge badge-danger">{{variant.frequency}}</span>
+                    {% elif variant.frequency == 'uncommon' %}
+                      <span class="badge badge-warning">{{variant.frequency}}</span>
+                    {% else %}
+                      <span class="badge badge-success">{{variant.frequency}}</span>
+                    {% endif %}
+                  </th>
+                  <th>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    {% if variant.dbsnp_id %}
+                      <a href="{{ variant.thousandg_link }}" target="_blank">1000G</a>
+                    {% else %}
+                      1000G
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if variant.max_thousand_genomes_frequency %}
+                      {{ variant.max_thousand_genomes_frequency|human_decimal }} <small>(max)</small> |
+                    {% endif %}
+                    {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}
+                    {% if not variant.max_thousand_genomes_frequency and not variant.thousand_genomes_frequency %}
+                      <span class="text-muted">Not annotated</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                <tr>
+                  <td><a title="Exome Aggregation Consortium" target="_blank" href="{{ variant.exac_link }}">ExAC</a></td>
+                  <td>
+                    {% if variant.max_exac_frequency %}
+                      {{ variant.max_exac_frequency|human_decimal }} <small>(max)</small> |
+                    {% endif %}
+                    {{ variant.exac_frequency|human_decimal if variant.exac_frequency }}
+                    {% if not variant.max_exac_frequency and not variant.exac_frequency %}
+                      <span class="text-muted">Not annotated</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                <tr>
+                  <td><a title="genome Aggregation Database" target="_blank" href="{{ variant.gnomad_link }}">gnomAD</a></td>
+                  <td>
+                    {% if 'gnomad_frequency' in variant%}
+                      {% if variant.max_gnomad_frequency %}
+                        {{ variant.max_gnomad_frequency|human_decimal }}
+                        <small>(max)</small> |
+                      {% endif %}
+                      {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency }}
+                    {% else %}
+                      <span class="text-muted">Not annotated</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <table id="panel-table" class="table table-sm" style="background-color: transparent">
+        <thead>
+          <tr>
+            <th>Scout Rank</th>
+            <th>Scout score</th>
+            <th>Manual rank</th>
+            <th>CADD score</th>
+            <th>Inheritance models</th>
+            <th>ACMG classification</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{variant.variant_rank}}</td>
+            <td>{{variant.rank_score}}</td>
+            <td>
+            {% if variant.manual_rank %}
+              <span class="badge badge-pill badge-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
+            {% endif %}
+            {% if variant.cancer_tier %}
+              <span class="badge badge-pill badge-secondary" title="Tier">{{ cancer_tier_options[variant.cancer_tier]['label'] }}</span>
+            {% endif %}
+            {% if not (variant.manual_rank or variant.cancer_tier) %}
+              -
+            {% endif %}
+            </td>
+            <td>
+              <span class="float-left">{{ variant.cadd_score or '-' }}</strong>
+            </td>
+            <td>
+              <span class="float-left">
+                {% for model in variant.genetic_models|sort %}
+                  <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+                {% else %}
+                  <span class="badge badge-warning">No models followed</span>
+                {% endfor %}
+              </span>
+            </td>
+            <td>
+              {% if variant.acmg_classification %}
+                <span class="badge badge-pill badge-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['code'] }}</span>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table id="panel-table" class="table table-sm" style="background-color: transparent">
+        <thead>
+          <tr>
+            <th>Affected gene(s)</th>
+            <th>Description</th>
+            <th>Region annotation</th>
+            <th>Transcript - HGVS - Protein</th>
+            <th>OMIM phenotypes [inheritance]</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for gene in variant.genes %}
+            <tr>
+              <td>
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                </a>
+              </td>
+              <td>{{gene.description|title}}</td>
+              <td>{{gene.region_annotation}}</td>
+              <td>
+                {% set n_primary_transcripts = [] %}
+                <ul>
+                {% for transcript in gene.primary_transcripts %}
+                  {% do n_primary_transcripts.append(gene.primary_transcripts|length) %}
+                  {% if loop.index <= 5 or transcript.is_canonical or transcript.is_disease_associated %} <!--Do not print too many transcript, but include the canonical-->
+                    <li>{{transcript.refseq_id}} - {{ (transcript.coding_sequence_name or '')|truncate(20, True) }} - {{ (transcript.protein_sequence_name or '')|url_decode }}
+                    {% if transcript.is_canonical %}
+                      <span class="badge badge-pill badge-secondary" title="canonical">C</span>
+                    {% endif %}
+                    {% if transcript.is_disease_associated %}
+                      <span class="badge badge-pill badge-danger" title="disease_associated">D</span>
+                    {% endif %}
+                    </li>
+                  {% endif %}
+                {% endfor %}
+                </ul>
+                {% if n_primary_transcripts|sum > 5 %}
+                .. other transcripts available for this variant are not shown.<br><br>
+                {% endif %}
+              </td>
+              <td>
+                <ul>
+                {% for disease_term in gene.disease_terms %}
+                  <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
+                {% endfor %}
+              </ul>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if variant.comments.count() %}
+        <table id="panel-table" class="table table-sm" style="background-color: transparent">
+          <thead>
+            <tr>
+              <td><strong>Variant-related comments</strong></td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <table id="panel-table" class="table table-sm" style="background-color: transparent">
+                {% for comment in variant.comments %}
+                  <tr>
+                    <td width="20%">{{comment.created_at.strftime('%Y-%m-%d')}}</td>
+                    <td width="20%">{{comment.user_name}}:</td>
+                    <td><strong>{{ comment.content }}</strong></td>
+                  </tr>
+                {% endfor %}
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
+  </div>
+  {% endmacro %}
+
+{% macro dismissed_panel() %}
+  <div class="card border-danger mb-3" style="border-width: 5px;">
+    <div class="card-header bg-danger text-black">
+      <a name="dismissed_variants"><strong>Dismissed Variants</strong></a>
+    </div>
+    <div class="card-body">
+      {% if dismissed_detailed %}
+        <table class="table table-striped table-sm" style="background-color: transparent">
+          <thead>
+            <tr>
+                <td width="5%"></td>
+                <td width="25%"><strong>Variant name</strong></td>
+  	            <td width="25%"><strong>Genes</strong></td>
+                <td width="45%"><strong>Dismissed description</strong></td>
+            </tr>
+          </thead>
+          {% for variant in dismissed_detailed|sort(attribute='variant_rank') %}
+            <tr>
+              <td width="5%">#{{loop.index}}</td>
+              {% if variant.category == 'snv' %}
+                <td width="25%"><a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></a></td>
+              {% else %}
+                <td width="25%"><a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a></td>
+              {% endif %}
+  	          <td width="25%">
+  	             {% for gene in variant.genes %}
+                  <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}</a><br>
+                  <span class="badge badge-secondary">{{gene.region_annotation}}</span>
+                 {% endfor %}
+              </td>
+          <td>
+            <ul>
+              {% for reason in variant.dismiss_variant if not reason == "Select a tag"  %}
+                <li>{{dismissed_options[reason|int]['description']}}
+                  {% if reason == '2' and variant.category == 'snv'%} <!--variant dismissed as too common in public databases-->
+                    <table class="table-borderless table-sm">
+                      <thead>
+                        <tr style="background-color: transparent">
+                          <th>Frequency
+                            {% if variant.frequency == 'common' %}
+                              <span class="badge badge-danger">{{variant.frequency}}</span>
+                            {% elif variant.frequency == 'uncommon' %}
+                              <span class="badge badge-warning">{{variant.frequency}}</span>
+                            {% else %}
+                              <span class="badge badge-success">{{variant.frequency}}</span>
+                            {% endif %}
+                          </th>
+                          <th>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr style="background-color: transparent">
+                          <td>
+                            {% if variant.dbsnp_id %}
+                              <a href="{{ variant.thousandg_link }}" target="_blank">1000G</a>
+                            {% else %}
+                              1000G
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if variant.max_thousand_genomes_frequency %}
+                              {{ variant.max_thousand_genomes_frequency|human_decimal }} <small>(max)</small> |
+                            {% endif %}
+                            {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}
+                            {% if not variant.max_thousand_genomes_frequency and not variant.thousand_genomes_frequency %}
+                              <span class="text-muted">Not annotated</span>
+                            {% endif %}
+                          </td>
+                        </tr>
+                        <tr style="background-color: transparent">
+                          <td><a title="Exome Aggregation Consortium" target="_blank" href="{{ variant.exac_link }}">ExAC</a></td>
+                          <td>
+                            {% if variant.max_exac_frequency %}
+                              {{ variant.max_exac_frequency|human_decimal }} <small>(max)</small> |
+                            {% endif %}
+                            {{ variant.exac_frequency|human_decimal if variant.exac_frequency }}
+                            {% if not variant.max_exac_frequency and not variant.exac_frequency %}
+                              <span class="text-muted">Not annotated</span>
+                            {% endif %}
+                          </td>
+                        </tr>
+                        <tr style="background-color: transparent">
+                          <td><a title="genome Aggregation Database" target="_blank" href="{{ variant.gnomad_link }}">gnomAD</a></td>
+                          <td>
+                            {% if 'gnomad_frequency' in variant%}
+                              {% if variant.max_gnomad_frequency %}
+                                {{ variant.max_gnomad_frequency|human_decimal }}
+                                <small>(max)</small> |
+                              {% endif %}
+                              {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency }}
+                            {% else %}
+                              <span class="text-muted">Not annotated</span>
+                            {% endif %}
+                          </td>
+                          <td>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  {% elif reason == '7' %} <!-- Inheritance pattern not relevant -->
+                  <br>
+                    ({% for model in variant.genetic_models|sort %}
+                      <span class="badge badge-info" title="{{genetic_models[model]}}">{{model}}</span>
+                    {% else %}
+                      No models followed
+                    {% endfor %})
+                    <br>
+                  {% elif reason== '23' %} <!-- inherited from unaffected -->
+                    <table id="panel-table" class="table-borderless table-sm" >
+                      <thead>
+                        <tr style="background-color: transparent">
+                          <th rowspan="2">Sample</th>
+                            <th rowspan="2">Genotype (GT)</th>
+                            <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
+                            <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality</th>
+                          </tr>
+                          <tr style="background-color: transparent">
+                            <th>Ref.</th>
+                            <th>Alt.</th>
+                          </tr>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for sample in variant.samples %}
+                          <tr style="background-color: transparent" {% if sample.display_name in affected %} class="table-danger" {% endif %}>
+                            <td>{{ sample.display_name }}</td>
+                            <td class="text-center">{{ sample.genotype_call }}</td>
+                            {% if sample.allele_depths %}
+                                {% for number in sample.allele_depths %}
+                                  <td class="text-center">{{ number }}</td>
+                                {% endfor %}
+                            {% else %}
+                                <td class="text-center"><small>N/A</small></td>
+                                <td class="text-center"><small>N/A</small></td>
+                            {% endif %}
+                            <td class="text-center">{{ sample.genotype_quality }}</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </td>
+      </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    No dismissed variants for this case
+  {% endif %}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro sv_variant_content(variant,index) %} <!--The entire description of a structural variant, dynamic contentc -->
+  <div class="card" style="border-width: 5px;">
+    <div class="card-header">
+      # <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
+      &nbsp;<span class="badge badge-pill badge-warning">SV</span>
+    </div>
+    <div class="card-body">
+      <table id="panel-table" class="table table-sm" style="background-color: transparent">
+        <thead>
+          <tr>
+            <th>Variant type</th>
+            <th>length</td>
+            <th>Coordinates</th>
+            <th>Cytoband</th>
+            <th>Gene panels</th>
+            <th>Callers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-warning float-left">{{variant.sub_category|upper}}</span></td>
+            <td>{{ variant.length }}</td>
+            <td>
+              {% if variant.chromosome == variant.end_chrom %}
+                chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}
+              {% else %}
+                chr{{variant.chromosome}}:{{variant.position}}/{{'chr'+variant.end_chrom}}:{{variant.end}}
+              {% endif %}
+            </td>
+            {% if variant.cytoband_start and variant.cytoband_end %}
+              <td>{{variant.cytoband_start}}-{{variant.cytoband_end}}</td>
+            {% else %}
+              <td>-</td>
+            {% endif %}
+            <td>
+              {% for panel_id in variant.panels %}
+                <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank">{{ panel_id }}</a><br>
+              {% endfor %}
+            </td>
+            <td>
+              {% if variant.callers %}
+                {% for caller,call in variant.callers|sort %}
+                  <span class="badge badge-secondary">{{ caller+':'+call }}</span>
+                {% endfor %}
+              {% else %}
+              -
+              {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table id="panel-table" class="table table-sm" style="background-color: transparent">
+        <tr>
+          <td>
+            <table id="panel-table" class="table table-bordered table-sm" style="background-color: transparent">
+              <thead>
+                <tr>
+                  <th rowspan="2">Sample</th>
+                    <th rowspan="2">Genotype (GT)</th>
+                    <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
+                    <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+                  </tr>
+                  <tr>
+                    <th>Reference</th>
+                    <th>Alternative</th>
+                  </tr>
+                </tr>
+              </thead>
+              <tbody>
+                {% for sample in variant.samples %}
+                  <tr {% if sample.display_name in affected %} class="table-danger" {% endif %}>
+                    <td>{{ sample.display_name }}</td>
+                    <td class="text-center">{{ sample.genotype_call }}</td>
+                    {% if sample.allele_depths %}
+                        {% for number in sample.allele_depths %}
+                          <td class="text-right">{{ number }}</td>
+                        {% endfor %}
+                    {% else %}
+                        <td class="text-right"><small>N/A</small></td>
+                        <td class="text-right"><small>N/A</small></td>
+                    {% endif %}
+                    <td class="text-right">{{ sample.genotype_quality }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </td>
+          <td style="width:3%"></td>
+          <td>
+            <table id="panel-table" class="table table-sm" style="background-color: transparent">
+              <thead>
+                <th colspan=2>Frequencies</th>
+              </thead>
+              <tbody>
+                {% for freq_name, value in variant.frequencies %}
+                  <tr>
+                    <td>{{ freq_name }}</td>
+                    <td>
+                      {% if value %}
+                        <span class="badge badge-secondary">{{ value|human_decimal }}</span>
+                      {% else %}
+                        <span class="text-muted">Not annotated</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <table id="panel-table" class="table table-sm" style="background-color: transparent">
+        <thead>
+          <tr>
+            <th>Scout Rank</th>
+            <th>Scout score</th>
+            <th>Manual rank</th>
+            <th>Inheritance models</th>
+            <th>ACMG classification</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{variant.variant_rank}}</td>
+            <td>{{variant.rank_score}}</td>
+            <td>
+            {% if variant.manual_rank %}
+              <span class="badge badge-pill badge-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
+            {% endif %}
+            {% if variant.cancer_tier %}
+              <span class="badge badge-pill badge-secondary" title="Tier">{{ cancer_rank_options[variant.cancer_tier]['label'] }}</span>
+            {% endif %}
+            {% if not (variant.manual_rank or variant.cancer_tier) %}
+              -
+            {% endif %}
+            </td>
+            <td>
+              <span class="float-left">
+                {% for model in variant.genetic_models|sort %}
+                  <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+                {% else %}
+                  <span class="badge badge-warning">No models followed</span>
+                {% endfor %}
+              </span>
+            </td>
+            <td>
+              {% if variant.acmg_classification %}
+                <span class="badge badge-pill badge-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['code'] }}</span>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table id="panel-table" class="table table-sm" style="background-color: transparent">
+        <thead>
+          <tr>
+            <th>Affected gene(s)</th>
+            <th>Description</th>
+            <th>Region annotation</th>
+            <th>Transcript - HGVS - Protein</th>
+            <th>OMIM phenotypes [inheritance]</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for gene in variant.genes %}
+            <tr>
+              <td>
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                </a>
+              </td>
+              <td>{{gene.description|title}}</td>
+              <td>{{gene.region_annotation}}</td>
+              <td>
+                {% set n_primary_transcripts = [] %}
+                <ul>
+                {% for transcript in gene.primary_transcripts %}
+                  {% do n_primary_transcripts.append(gene.primary_transcripts|length) %}
+                  {% if loop.index <= 5 or transcript.is_canonical %} <!--Do not print too many transcript, but include the canonical-->
+                    <li>{{transcript.refseq_id}} - {{ (transcript.coding_sequence_name or '')|truncate(20, True) }} - {{ (transcript.protein_sequence_name or '')|url_decode }}
+                    {% if transcript.is_canonical %}
+                      <span class="badge badge-pill badge-secondary" title="canonical">C</span>
+                    {% endif %}
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+                {% if n_primary_transcripts|sum > 5 %}
+                .. other transcripts available for this variant are not shown.<br><br>
+                {% endif %}
+              </td>
+              <td>
+                <ul>
+                {% for disease_term in gene.disease_terms %}
+                  <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
+                {% endfor %}
+                </ul>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if variant.comments.count() %}
+        <br>
+        <table id="panel-table" class="table table-sm" style="background-color: transparent">
+          <thead>
+            <tr>
+              <td colspan=3><strong>Variant-related comments</strong></td>
+            </tr>
+          </thead>
+          <tbody>
+            {% for comment in variant.comments %}
+              <tr>
+                <td width="20%">{{comment.created_at.strftime('%Y-%m-%d')}}</td>
+                <td width="20%">{{comment.user_name}}:</td>
+                <td><strong>{{ comment.content }}</strong></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
   </div>
 </div>
 {% endmacro %}
@@ -1094,6 +1313,7 @@
   </div>
 </div>
 {% endmacro %}
+
 
 {% block scripts %}
 {{ super() }}
