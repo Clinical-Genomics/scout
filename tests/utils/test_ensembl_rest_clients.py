@@ -92,7 +92,6 @@ def test_test_query_biomart_38_xml():
     xml = """<?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE Query>
     <Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.6" completionStamp = "1">
-
     	<Dataset name = "hsapiens_gene_ensembl" interface = "default" >
     		<Filter name = "ensembl_gene_id" value = "ENSG00000115091"/>
     		<Attribute name = "hgnc_symbol" />
