@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
 - Removed Mosaic Tag from Cancer variants
 - Fixes issue with unaligned table headers that comes with hidden Datatables
+- Layout in general report PDF export
 
 
 ## [4.9.0]
