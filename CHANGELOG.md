@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed Mosaic Tag from Cancer variants
 - Fixes issue with unaligned table headers that comes with hidden Datatables
 - Layout in general report PDF export
+- Included Font Awesome availability in general report 
 
 
 ## [4.9.0]
