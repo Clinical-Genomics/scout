@@ -62,7 +62,7 @@ class CaseHandler(object):
               has_causatives=False, reruns=False, finished=False,
               research_requested=False, is_research=False, status=None,
               phenotype_terms=False, pinned=False, cohort=False, name_query=None,
-              yield_query=False):
+              yield_query=False, within_days=None):
         """Fetches all cases from the backend.
 
         Args:
@@ -82,6 +82,7 @@ class CaseHandler(object):
                              part of inds or part of synopsis
             yield_query(bool): If true, only return mongo query dict for use in
                                 compound querying.
+            within_days(int): timespan (in days) for latest event on case
 
         Returns:
             Cases ordered by date.
@@ -236,6 +237,34 @@ class CaseHandler(object):
                     {'display_name': {'$regex': name_query}},
                     {'individuals.display_name': {'$regex': name_query}},
                 ]
+
+        if within_days:
+            verbs = []
+
+            if has_causatives:
+                verbs.append('mark_causative')
+            if finished:
+                verbs.append('archive')
+                verbs.append('mark_causative')
+            if reruns:
+                verbs.append('rerun')
+            if research_requested:
+                verbs.append('open_research')
+
+            days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
+            # Look up 'mark_causative' events added since specified number days ago
+            event_query = {
+                'category': 'case',
+                'verb': {'$in': verbs},
+                'created_at': {'$gte': days_datetime}
+                }
+            recent_events = self.event_collection.find(event_query)
+            recent_cases = set()
+            # Find what cases these events concern
+            for event in recent_events:
+                recent_cases.add(event['case'])
+            recent_cases = list(recent_cases)
+            query['_id'] = {'$in': recent_cases}
 
         if yield_query:
             return query
