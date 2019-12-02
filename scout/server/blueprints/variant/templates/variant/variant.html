@@ -1349,51 +1349,20 @@
   <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/modules/data.js"></script>
+  <script src="{{ url_for('variant.static', filename='charts.js') }}"></script>
 
-
-  <script> 
-  var series = []
-  {% for cat in variant.rank_score_results %}
-    var name = {{cat.category|tojson}}
-    series.push({
-      name: name,
-      y: {{cat.score|tojson}}
-      })
-  {% endfor %}
-
-  {% if variant.rank_score_results %}
-  Highcharts.chart('rank_pie_chart', {
-    chart: {
-        type: 'pie'
-    },
-    title: {
-        text: "Rank {{ variant.variant_rank }}"
-    },
-    subtitle: {
-        text: "Rank Score {{ variant.rank_score }}, CADD score {{ variant.cadd_score or '-' }}"
-    },
-    plotOptions: {
-        series: {
-            dataLabels: {
-                enabled: true,
-                format: '{point.name}: score {point.y}'
-            }
-        }
-    },
-    tooltip: {
-        headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>Score {point.y}</b><br/>'
-    },
-    series: [
-        {
-            name: "Rank Score Category",
-            colorByPoint: true,
-            data: series
-        }
-    ]
-    }
-);
-{% endif %}
+  <script>
+    {% if variant.rank_score_results %}
+      var series = []
+      {% for cat in variant.rank_score_results %}
+        var name = {{cat.category|tojson}}
+        series.push({
+          name: name,
+          y: {{cat.score|tojson}}
+          })
+      {% endfor %}
+      pieChart(series, {{ variant.variant_rank }}, {{ variant.rank_score }}, {{ variant.cadd_score or '-' }})
+    {% endif %}
   </script>
 
   <script>
