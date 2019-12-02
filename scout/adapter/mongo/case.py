@@ -259,12 +259,12 @@ class CaseHandler(object):
                 'created_at': {'$gte': days_datetime}
                 }
             recent_events = self.event_collection.find(event_query)
-            solved_cases = set()
+            recent_cases = set()
             # Find what cases these events concern
             for event in recent_events:
-                solved_cases.add(event['case'])
-            solved_cases = list(solved_cases)
-            query['_id'] = {'$in': solved_cases}
+                recent_cases.add(event['case'])
+            recent_cases = list(recent_cases)
+            query['_id'] = {'$in': recent_cases}
 
         if yield_query:
             return query
