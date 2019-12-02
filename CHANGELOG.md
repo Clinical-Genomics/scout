@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [x.x.x]
+
+### Fixed
+- Fixed issue on the case statistics view. The validation bars didn't show up when all institutes were selected. Now they do.
 
 ## [x.x.x]
 
