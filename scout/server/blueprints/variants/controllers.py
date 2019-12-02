@@ -51,9 +51,7 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         variant_obj['overlapping'] = overlapping_svs or None
 
         # show previous classifications for research variants,
-        is_research = False
-        if variant_obj['variant_type'] == 'research':
-            is_research = True
+        is_research = variant_obj['variant_type'] == 'research'
 
         # Get all previous ACMG evalautions of the variant
         evaluations = []
@@ -61,9 +59,11 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
             classification = evaluation_obj['classification']
             # Only show pathogenic/likely pathogenic from other cases on variants page
             if evaluation_obj['case_id'] == case_obj['_id']:
+                # research cases will have have previous evaluation shown regardless
                 if not is_research:
                     continue
             if not classification in ['pathogenic', 'likely_pathogenic']:
+                # research cases will have have previous evaluation shown regardless
                 if not is_research:
                     continue
             # Convert the classification int to readable string
@@ -73,8 +73,7 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
 
         # Show previous classifications from the clinical side for research
         if is_research:
-            # get variant by simple_id. That will really just return the first variant found -
-            # but mostly that would be clinical.. Its a start.
+            # get variant by simple_id.
             clinical_var_obj = store.variant(case_id=case_obj['_id'],
                                 simple_id =variant_obj['simple_id'], variant_type='clinical')
             # Get all previous ACMG evalautions of the variant
