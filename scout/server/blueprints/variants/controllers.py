@@ -22,7 +22,7 @@ from scout.constants import (
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
-from scout.server.utils import (institute_and_case, user_institutes, case_append_bam, variant_case)
+from scout.server.utils import (institute_and_case, user_institutes, case_append_alignments, variant_case)
 from scout.server.links import (add_gene_links, ensembl, add_tx_links)
 from scout.server.blueprints.genes.controllers import gene
 from scout.utils.requests import fetch_refseq_version
@@ -190,7 +190,7 @@ def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_pag
     # Nothing unique to STRs on this level. Inheritance? yep, you will want it.
 
     # case bam_files for quick access to alignment view.
-    case_append_bam(case_obj)
+    case_append_alignments(case_obj)
 
     return variants(store, institute_obj, case_obj, variants_query, page, per_page)
 
