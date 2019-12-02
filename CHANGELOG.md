@@ -11,7 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Rank score model in causatives page
 - Exportable HPO terms from phenotypes page
 - AMP guideline tiers for cancer variants
-- Adds scroll for the trancript tab 
+- Adds scroll for the trancript tab
+- Added CLI option to query cases on time since case event was added
 - Support for CRAM alignment files
 
 ### Fixed
