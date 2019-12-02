@@ -10,7 +10,7 @@
 
 {% block css %}
 {{ super() }}
-  
+
 {% endblock %}
 
 {% block top_nav %}
@@ -493,7 +493,7 @@
                 {% elif variant.sanger_ordered %}
                   <span class="badge badge-success">Validated</span>
                 {% elif variant.manual_rank or variant.cancer_tier %}
-                  {{ tier_cell(variant) }}
+                  {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
                 {% endif %}
                 {% if variant.mosaic_tags %}
                   <span class="badge badge-info">mosaic</span>
