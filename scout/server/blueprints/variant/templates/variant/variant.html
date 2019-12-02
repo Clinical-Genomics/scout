@@ -429,7 +429,6 @@
       <div class="panel-heading">Summary</div>
     <div class="card-body">
       {% if variant.get('rank_score_results') != None %}
-     "Debug string!!!!"
       <div id="rank_pie_chart" style="margin-bottom: 10px"></div>
       {% else %}
       <table class="table table-bordered table-fixed table-sm">	      <div id="rank_pie_chart" style="margin-bottom: 10px"></div>
@@ -1362,7 +1361,7 @@
       })
   {% endfor %}
 
-
+  {% if variant.rank_score_results %}
   Highcharts.chart('rank_pie_chart', {
     chart: {
         type: 'pie'
@@ -1394,6 +1393,7 @@
     ]
     }
 );
+{% endif %}
   </script>
 
   <script>
