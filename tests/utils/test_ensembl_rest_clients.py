@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-import pytest
 import tempfile
 import pytest
 from urllib.error import HTTPError
