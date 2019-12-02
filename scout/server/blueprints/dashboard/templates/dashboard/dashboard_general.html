@@ -198,13 +198,15 @@
 
     //create analysis type chart ===> general stats
     createChart(document.getElementById("ngsType").getContext('2d'), analysisTypeData( {{analysis_types|safe }} ))
+
+    {% if cases|length >0 %}
     //create cases types chart
     createChart(document.getElementById("casesType").getContext('2d'), casesType( {{cases[1:]|safe}} ))
-    //create pedigree info chart
-    createChart(document.getElementById("pedigreeTypes").getContext('2d'), pedigreeTypes( {{pedigree|safe}} ))
-
     // create cases detailed stats chart ===> case stats
     createChart(document.getElementById("cases-bar-horiz").getContext('2d'), casesDetailed( {{overview|safe}}, {{cases[0].count}} ))
+    {% endif %}
+    //create pedigree info chart
+    createChart(document.getElementById("pedigreeTypes").getContext('2d'), pedigreeTypes( {{pedigree|safe}} ))
 
     // create variants detailed stats chart ===> variants stats
     createChart(document.getElementById("var-validations").getContext('2d'), varValidations( {{variants|safe }}))
