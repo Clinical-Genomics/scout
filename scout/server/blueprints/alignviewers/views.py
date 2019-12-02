@@ -18,7 +18,7 @@ def remote_static():
     file_path = request.args.get('file')
 
     range_header = request.headers.get('Range', None)
-    if not range_header and file_path.endswith('.bam'):
+    if not range_header and (file_path.endswith('.bam') or file_path.endswith('.cram')):
         return abort(500)
 
     new_resp = send_file_partial(file_path)
@@ -88,15 +88,19 @@ def igv():
     }
 
     sample_tracks = []
-
     counter = 0
     for sample in samples:
         # some samples might not have an associated bam file, take care if this
-        if bam_files[counter]:
-            sample_tracks.append({ 'name' : sample, 'url' : bam_files[counter],
-                                   'indexURL' : bai_files[counter],
-                                   'height' : 700
-                                   })
+        if bam_files.get(counter) and bai_files.get(counter):
+            sample_tracks.append({
+                'name' : sample,
+                'url' : bam_files[counter],
+                'format': bam_files[counter].split(".")[-1], # "bam" or "cram"
+                'indexURL' : bai_files[counter],
+                'height' : 700
+            })
+        else:
+            flash('Missing alignment track/index for individual {}!'.format(sample), 'danger')
         counter += 1
 
     display_obj['sample_tracks'] = sample_tracks

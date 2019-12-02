@@ -13,6 +13,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - AMP guideline tiers for cancer variants
 - Adds scroll for the trancript tab
 - Added CLI option to query cases on time since case event was added
+- Shadow clinical assessments also on research variants display
+- Support for CRAM alignment files
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file

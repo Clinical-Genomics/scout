@@ -215,6 +215,8 @@ def case(store, institute_obj, case_obj):
         'partial_causatives' : partial_causatives,
         'collaborators': collab_ids,
         'cohort_tags': COHORT_TAGS,
+        'manual_rank_options': MANUAL_RANK_OPTIONS,
+        'cancer_tier_options': CANCER_TIER_OPTIONS
     }
 
     return data
