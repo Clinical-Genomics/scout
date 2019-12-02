@@ -654,8 +654,8 @@ def status(institute_id, case_name):
     status = request.form.get('status', case_obj['status'])
     link = url_for('.case', institute_id=institute_id, case_name=case_name)
 
-    if status == 'archive':
-        store.archive_case(institute_obj, case_obj, user_obj, status, link)
+    if status == 'archived':
+        store.archive_case(institute_obj, case_obj, user_obj, link)
     else:
         store.update_status(institute_obj, case_obj, user_obj, status, link)
 
