@@ -1,15 +1,18 @@
 # -*- coding: UTF-8 -*-
+import pytest
 import tempfile
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from scout.utils import ensembl_rest_clients as eracs
 
+@pytest.mark.skip(reason="Ensembl rest API server might be down")
 def test_ping_ensemble_37():
     """Test ping ensembl server containing human build 37"""
     client = eracs.EnsemblRestApiClient()
     data = client.ping_server()
     assert data == {'ping':1}
 
+@pytest.mark.skip(reason="Ensembl rest API server might be down")
 def test_ping_ensemble_38():
     """Test ping ensembl server containing human build 38"""
     client = eracs.EnsemblRestApiClient(build='38')
@@ -40,6 +43,7 @@ def test_send_request_wrong_url():
     data = client.send_request(url)
     assert type(data) == HTTPError
 
+@pytest.mark.skip(reason="Ensembl rest API server might be down")
 def test_use_api():
     """Test the use_api method of the EnsemblRestClient"""
 
