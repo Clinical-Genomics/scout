@@ -4,10 +4,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [x.x.x]
-
-### Fixed
-- Fixed issue on the case statistics view. The validation bars didn't show up when all institutes were selected. Now they do.
 
 ## [x.x.x]
 
@@ -23,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed Mosaic Tag from Cancer variants
 - Fixes issue with unaligned table headers that comes with hidden Datatables
 - Layout in general report PDF export
+- Fixed issue on the case statistics view. The validation bars didn't show up when all institutes were selected. Now they do.
 
 
 ## [4.9.0]
