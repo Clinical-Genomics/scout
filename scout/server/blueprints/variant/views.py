@@ -21,7 +21,8 @@ from scout.constants import ACMG_MAP, ACMG_CRITERIA
 
 LOG = logging.getLogger(__name__)
 
-variant_bp = Blueprint('variant', __name__, static_folder='static', template_folder='templates')
+variant_bp = Blueprint('variant', __name__, static_folder='static', template_folder='templates'
+, static_url_path='/variant/static')
 
 @variant_bp.route('/<institute_id>/<case_name>/<variant_id>')
 @templated('variant/variant.html')
