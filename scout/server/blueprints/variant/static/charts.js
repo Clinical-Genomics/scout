@@ -45,16 +45,6 @@ function barChart(series, rank, score, cadd) {
         subtitle: {
             text: `Rank Score ${score}, CADD score ${cadd}`
         },
-        xAxis: {
-            labels: {
-                enabled: false
-            }
-        },
-        yAxis: {
-            labels: {
-                enabled: false
-            }
-        },
         legend: {
             enabled: false
         },
