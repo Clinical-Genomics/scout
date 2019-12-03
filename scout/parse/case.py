@@ -4,7 +4,7 @@ import datetime
 
 from pprint import pprint as pp
 
-from path import Path
+from pathlib import Path
 from ped_parser import FamilyParser
 
 from scout.exceptions import (PedigreeError, ConfigError)
@@ -20,10 +20,10 @@ LOG = logging.getLogger(__name__)
 
 def get_correct_date(date_info):
     """Convert dateinfo to correct date
-    
+
     Args:
         dateinfo: Something that represents a date
-    
+
     Returns:
         correct_date(datetime.datetime)
     """
@@ -125,7 +125,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
 
 def add_peddy_information(config_data):
     """Add information from peddy outfiles to the individuals
-    
+
     Args:
         config_data(dict)
     """
@@ -369,7 +369,7 @@ def parse_case(config):
 
     if (case_data['vcf_files']['vcf_cancer'] or case_data['vcf_files']['vcf_cancer_research']):
         case_data['track'] = 'cancer'
-    
+
     case_data['analysis_date'] = get_correct_date(case_data.get('analysis_date'))
 
     return case_data
