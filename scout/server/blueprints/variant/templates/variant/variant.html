@@ -429,9 +429,10 @@
       <div class="panel-heading">Summary</div>
     <div class="card-body">
       {% if variant.get('rank_score_results') != None %}
-      <div id="rank_pie_chart" style="margin-bottom: 10px"></div>
+      <div id="rank_pie_chart" style="height: 200px; margin-bottom: 10px"></div>
+      <div id="rank_bar_chart" style="height: 150px; margin-bottom: 10px"></div>
       {% else %}
-      <table class="table table-bordered table-fixed table-sm">	      <div id="rank_pie_chart" style="margin-bottom: 10px"></div>
+      <table class="table table-bordered table-fixed table-sm">	      
         <tbody>	
           <tr>	
             <td>	
@@ -1364,6 +1365,23 @@
       pieChart(series, {{ variant.variant_rank }}, {{ variant.rank_score }}, {{ variant.cadd_score or '-' }})
     {% endif %}
   </script>
+
+<script>
+  {% if variant.rank_score_results %}
+    var series = []
+    {% for cat in variant.rank_score_results %}
+      var name = {{cat.category|tojson}}
+      series.push({
+        name: name,
+        data: [{{cat.score|tojson}}]
+        })
+    {% endfor %}
+    barChart(series, {{ variant.variant_rank }}, {{ variant.rank_score }}, {{ variant.cadd_score or '-' }})
+  {% endif %}
+  console.log(series)
+</script>
+
+
 
   <script>
     function set_scrolly_table(table_id) {

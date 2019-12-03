@@ -32,3 +32,38 @@ Highcharts.chart('rank_pie_chart', {
     }
   );
 }
+
+function barChart(series, rank, score, cadd) {
+
+    Highcharts.chart('rank_bar_chart', {
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: `Rank ${rank}`
+        },
+        subtitle: {
+            text: `Rank Score ${score}, CADD score ${cadd}`
+        },
+        xAxis: {
+            labels: {
+                enabled: false
+            }
+        },
+        yAxis: {
+            labels: {
+                enabled: false
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        plotOptions: {
+            series: {
+                stacking: 'normal'
+            }
+        },
+        series: series
+    });
+
+    }
