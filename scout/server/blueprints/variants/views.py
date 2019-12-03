@@ -171,7 +171,7 @@ def str_variants(institute_id, case_name):
     query['variant_type'] = variant_type
 
     variants_query = store.variants(case_obj['_id'], category=category,
-        query=query)
+        query=query, sort_key='position')
     data = controllers.str_variants(store, institute_obj, case_obj,
         variants_query, page)
     return dict(institute=institute_obj, case=case_obj,
