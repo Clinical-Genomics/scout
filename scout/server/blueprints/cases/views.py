@@ -779,7 +779,14 @@ def delivery_report(institute_id, case_name):
 
     out_dir = os.path.dirname(delivery_report)
     filename = os.path.basename(delivery_report)
+
+    format = request.args.get('format','html')
+    if format == 'pdf':
+        html_report = send_from_directory(out_dir, filename)
+        return render_pdf(HTML(string=html_report), download_filename=case_obj['display_name']+'_'+datetime.datetime.now().strftime("%Y-%m-%d")+'_scout_delivery.pdf')
+
     return send_from_directory(out_dir, filename)
+
 
 @cases_bp.route('/<institute_id>/<case_name>/share', methods=['POST'])
 def share(institute_id, case_name):
