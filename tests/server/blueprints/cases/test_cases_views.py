@@ -2,29 +2,8 @@
 from flask import url_for, current_app
 from flask_login import current_user
 
+from scout.demo import delivery_report_path
 from scout.server.extensions import store
-
-
-def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
-
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for('auto_login'))
-        assert resp.status_code == 200
-
-        # AND the case has a delivery report
-        assert case_obj.get('delivery_report')
-
-        # WHEN accessing the delivery report page
-        resp = client.get(url_for('cases.delivery_report',
-                                  institute_id=institute_obj['internal_id'],
-                                  case_name=case_obj['display_name']))
-        # THEN it should return a page
-        assert resp.status_code == 200
-
-
 
 def test_cases(app, institute_obj):
     # GIVEN an initialized app
@@ -435,3 +414,54 @@ def test_status(app, institute_obj, case_obj, user_obj):
                                 case_name=case_obj['display_name'], params=request_data))
 
         assert resp.status_code == 302 # page should be redirected
+
+
+def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for('auto_login'))
+        assert resp.status_code == 200
+
+        # AND the case has a delivery report
+        store.case_collection.update_one(
+            {'_id' : case_obj['_id']},
+            {'$set' : {'delivery_report': delivery_report_path} }
+        )
+
+        # WHEN accessing the delivery report page
+        resp = client.get(url_for('cases.delivery_report',
+                                  institute_id=institute_obj['internal_id'],
+                                  case_name=case_obj['display_name']))
+
+        # THEN the endpoint should return the delivery report HTML page
+        assert 'Leveransrapport Clinical Genomics' in str(resp.data)
+
+
+def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for('auto_login'))
+        assert resp.status_code == 200
+
+        # AND the case has a delivery report
+        store.case_collection.update_one(
+            {'_id' : case_obj['_id']},
+            {'$set' : {'delivery_report': delivery_report_path} }
+        )
+
+        # WHEN accessing the delivery report page with the format=pdf param
+        resp = client.get(url_for('cases.delivery_report',
+                                  institute_id=institute_obj['internal_id'],
+                                  case_name=case_obj['display_name'],
+                                  format='pdf'))
+
+        # a successful response should be returned
+        assert resp.status_code == 200
+        # and it should contain a pdf file, not HTML code
+        assert resp.mimetype == 'application/pdf'
