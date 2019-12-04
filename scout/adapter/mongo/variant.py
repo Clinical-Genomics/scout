@@ -192,9 +192,7 @@ class VariantHandler(VariantLoader):
         if sort_key == 'rank_score':
             sorting = [('rank_score', pymongo.DESCENDING)]
         if sort_key == 'position':
-            if category == 'str':
-                sorting = [('chromosome', pymongo.ASCENDING)]
-            sorting.append(('position', pymongo.ASCENDING))
+            sorting = [('position', pymongo.ASCENDING)]
 
         result = self.variant_collection.find(
             mongo_query,
