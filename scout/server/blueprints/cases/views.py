@@ -784,7 +784,7 @@ def delivery_report(institute_id, case_name):
             source_code = html_file.read()
             return render_pdf(HTML(string=source_code), download_filename=case_obj['display_name']+'_'+datetime.datetime.now().strftime("%Y-%m-%d")+'_scout_delivery.pdf')
         except Exception as ex:
-            flash('An error occurred while downloading file {}'.format(delivery_report), 'error')
+            flash('An error occurred while download {} -- {}'.format(delivery_report, ex), 'warning')
 
     out_dir = os.path.dirname(delivery_report)
     filename = os.path.basename(delivery_report)
