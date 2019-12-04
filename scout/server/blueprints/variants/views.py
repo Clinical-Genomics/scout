@@ -6,6 +6,7 @@ import logging
 import datetime
 import zipfile
 import pathlib
+import pymongo
 
 from flask import (Blueprint, request, redirect, abort, flash, current_app, url_for, Response,
                    send_file)
@@ -170,8 +171,8 @@ def str_variants(institute_id, case_name):
     query = form.data
     query['variant_type'] = variant_type
 
-    variants_query = store.variants(case_obj['_id'], category=category,
-        query=query)
+    variants_query = store.variants(case_obj['_id'], category=category, query=query).sort([('str_repid', pymongo.ASCENDING),
+        ('chromosome', pymongo.ASCENDING),('position', pymongo.ASCENDING)])
     data = controllers.str_variants(store, institute_obj, case_obj,
         variants_query, page)
     return dict(institute=institute_obj, case=case_obj,

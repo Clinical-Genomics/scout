@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added CLI option to query cases on time since case event was added
 - Shadow clinical assessments also on research variants display
 - Support for CRAM alignment files
+- Improved str variants view : sorting by locus, grouped by allele.
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
@@ -22,6 +23,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixes issue with unaligned table headers that comes with hidden Datatables
 - Layout in general report PDF export
 - Fixed issue on the case statistics view. The validation bars didn't show up when all institutes were selected. Now they do.
+- Included Font Awesome availability in general report
+- Fixed missing path import by importing pathlib.Path
 
 
 ## [4.9.0]
