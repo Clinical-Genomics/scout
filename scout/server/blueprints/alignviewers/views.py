@@ -97,8 +97,6 @@ def igv():
             'indexURL' : bai_files[counter],
             'height' : 700
         })
-        else:
-            flash('Missing alignment track/index for individual {}!'.format(sample), 'danger')
         counter += 1
 
     display_obj['sample_tracks'] = sample_tracks
