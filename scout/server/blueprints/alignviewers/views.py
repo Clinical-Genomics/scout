@@ -111,17 +111,13 @@ def igv():
                                 'min': 0.0, 'max': 30.0})
     counter = 0
     for sample in samples:
-        # some samples might not have an associated bam file, take care if this
-        if bam_files.get(counter) and bai_files.get(counter):
-            sample_tracks.append({
-                'name' : sample,
-                'url' : bam_files[counter],
-                'format': bam_files[counter].split(".")[-1], # "bam" or "cram"
-                'indexURL' : bai_files[counter],
-                'height' : 700
-            })
-        else:
-            flash('Missing alignment track/index for individual {}!'.format(sample), 'danger')
+        sample_tracks.append({
+            'name' : sample,
+            'url' : bam_files[counter],
+            'format': bam_files[counter].split(".")[-1], # "bam" or "cram"
+            'indexURL' : bai_files[counter],
+            'height' : 700
+        })
         counter += 1
 
     display_obj['sample_tracks'] = sample_tracks

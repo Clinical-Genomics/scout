@@ -37,7 +37,7 @@
     <table class="table table-bordered table-hover">
       <thead>
         <tr>
-          <th style="width:8%" title="Rank position">Rank</th>
+          <th style="width:8%" title="Index">Index</th>
           <th style="width:8%" title="Repeat ID">Repeat locus</th>
           <th style="width:12%" title="Repeat unit">Reference repeat unit</th>
           <th style="width:8%" title="ALT">Estimated size</th>
@@ -51,7 +51,12 @@
         </tr>
       </thead>
       <tbody>
+        {% set ns = namespace(allele0='') %}
         {% for variant in variants %}
+          {% if variant.chromosome + variant.position|string != ns.allele0 %}
+            <tr style="height:10px;"></tr>
+          {% endif %}
+          {% set ns.allele0 = variant.chromosome + variant.position|string %}
           {% if variant.dismiss_variant %}
               <tr class="dismiss">
           {% elif variant.str_status == 'normal' %}
@@ -82,7 +87,7 @@
             <td>
               {{ variant.position }}
               {% if case.bam_files %}
-                <a class="btn btn-default btn-sm float-right" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, wig=case.wig_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
+                <a class="btn btn-outline-secondary btn-sm float-right" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
               {% endif %}
             </td>
         </tr>
@@ -170,10 +175,6 @@
 
       $('table').stickyTableHeaders({
         fixedOffset: $(".navbar-fixed-top")
-      });
-
-      $('select[multiple]').multiselect({
-        buttonWidth: '100%'
       });
     })
 
