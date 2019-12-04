@@ -777,13 +777,17 @@ def delivery_report(institute_id, case_name):
     else:
         delivery_report = case_obj['delivery_report']
 
-    out_dir = os.path.dirname(delivery_report)
-    filename = os.path.basename(delivery_report)
-
     format = request.args.get('format','html')
     if format == 'pdf':
-        html_report = send_from_directory(out_dir, filename)
-        return render_pdf(HTML(string=html_report), download_filename=case_obj['display_name']+'_'+datetime.datetime.now().strftime("%Y-%m-%d")+'_scout_delivery.pdf')
+        try: # file could not be available
+            html_file = open(delivery_report, 'r')
+            source_code = html_file.read()
+            return render_pdf(HTML(string=source_code), download_filename=case_obj['display_name']+'_'+datetime.datetime.now().strftime("%Y-%m-%d")+'_scout_delivery.pdf')
+        except Exception as ex:
+            flash('An error occurred while downloading file {}'.format(delivery_report), 'error')
+
+    out_dir = os.path.dirname(delivery_report)
+    filename = os.path.basename(delivery_report)
 
     return send_from_directory(out_dir, filename)
 
