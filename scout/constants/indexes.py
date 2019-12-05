@@ -78,7 +78,24 @@ INDEXES = {
             background=True,
             sparse=True,
             ),
-
+        IndexModel([
+            ('case_id', ASCENDING),
+            ('category', ASCENDING),
+            ('variant_type', ASCENDING),
+            ('panels', ASCENDING),
+            ('variant_rank', ASCENDING),],
+            name="caseid_category_varianttype_panels_variantrank",
+            background=True
+            ),
+        IndexModel([('variant_id', ASCENDING)],
+            name="variantid",
+            background=True
+            ),
+        IndexModel([('case_id', ASCENDING),
+                    ('variant_id', ASCENDING)],
+            name="caseid_variantid",
+            background=True
+            )
     ],
     'hpo_term': [
         IndexModel([
@@ -98,6 +115,18 @@ INDEXES = {
             ('verb', ASCENDING),
             ],
             name="category_verb",
+            ),
+        IndexModel([
+            ('institute', ASCENDING),
+            ('verb', ASCENDING),
+            ],
+            name="institute_verb",
+            ),
+        IndexModel([
+            ('verb', ASCENDING),
+            ('institute', ASCENDING),
+            ],
+            name="verb_institute",
             ),
         IndexModel([
             ('variant_id', ASCENDING),
@@ -122,17 +151,33 @@ INDEXES = {
             background=True,
             ),
     ],
-    'hpo_term': [
-        IndexModel([
-            ('hpo_number', ASCENDING)],
-            name="number",
-            background=True,
-            ),
+    'gene_panel': [
+        IndexModel([('genes.hgnc_id'), name="genes_hgncid"]),
+        IndexModel([('panel_name', ASCENDING),
+            ('version', DESCENDING)],
+            name="panelname_version")
     ],
     'case': [
         IndexModel([
+            ('collaborators', ASCENDING)],
+            name="collaborators",
+            background=True
+            ),
+        IndexModel([
+            ('collaborators', ASCENDING),
+            ('updated_at', ASCENDING)], # updated_at DESCENDING?
+            name="collaborators",
+            background=True
+            ),
+        IndexModel([
             ('synopsis', TEXT)],
             default_language='english',
-            name="synopsis_text"),
+            name="synopsis_text"
+            ),
+        IndexModel([
+            ('updated_at', ASCENDING)], # updated_at DESCENDING - if at all?
+            name="updatedat",
+            background=True
+        )
     ],
 }
