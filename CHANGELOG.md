@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Shadow clinical assessments also on research variants display
 - Support for CRAM alignment files
 - Improved str variants view : sorting by locus, grouped by allele.
+- Delivery report PDF export
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file

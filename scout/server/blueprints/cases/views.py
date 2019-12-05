@@ -7,6 +7,7 @@ import pymongo
 import zipfile
 import io
 import pathlib
+import re
 
 import logging
 
@@ -777,9 +778,22 @@ def delivery_report(institute_id, case_name):
     else:
         delivery_report = case_obj['delivery_report']
 
+    format = request.args.get('format','html')
+    if format == 'pdf':
+        try: # file could not be available
+            html_file = open(delivery_report, 'r')
+            source_code = html_file.read()
+            # remove image, since it is problematic to render it in the PDF version
+            source_code=re.sub('<img class=.*?alt="SWEDAC logo">','',source_code, flags=re.DOTALL)
+            return render_pdf(HTML(string=source_code), download_filename=case_obj['display_name']+'_'+datetime.datetime.now().strftime("%Y-%m-%d")+'_scout_delivery.pdf')
+        except Exception as ex:
+            flash('An error occurred while downloading delivery report {} -- {}'.format(delivery_report, ex), 'warning')
+
     out_dir = os.path.dirname(delivery_report)
     filename = os.path.basename(delivery_report)
+
     return send_from_directory(out_dir, filename)
+
 
 @cases_bp.route('/<institute_id>/<case_name>/share', methods=['POST'])
 def share(institute_id, case_name):
