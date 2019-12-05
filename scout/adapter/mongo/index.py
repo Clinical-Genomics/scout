@@ -70,7 +70,7 @@ class IndexHandler(object):
                     nr_updated += 1
                     LOG.info("Adding index : %s" % index_name)
                     try:
-                        self.db[collection_name].create_indexes(indexes)
+                        self.db[collection_name].create_indexes(index)
                     except pymongo_errors.OperationFailure as op_failure:
                         LOG.warning('An Operation Failure occurred while updating Scout indexes: {}'.format(op_failure))
                     except Exception as ex:
