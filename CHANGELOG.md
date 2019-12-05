@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed issue on the case statistics view. The validation bars didn't show up when all institutes were selected. Now they do.
 - Included Font Awesome availability in general report
 - Fixed missing path import by importing pathlib.Path
+- Hadle index inconsistencies in the update index functions
 
 
 ## [4.9.0]
