@@ -60,20 +60,21 @@ class IndexHandler(object):
         """
         LOG.info("Updating indexes...")
         nr_updated = 0
-        try:
-            for collection_name in INDEXES:
-                existing_indexes = self.indexes(collection_name)
-                indexes = INDEXES[collection_name]
-                for index in indexes:
-                    index_name = index.document.get('name')
-                    if index_name not in existing_indexes:
-                        nr_updated += 1
-                        LOG.info("Adding index : %s" % index_name)
+
+        for collection_name in INDEXES:
+            existing_indexes = self.indexes(collection_name)
+            indexes = INDEXES[collection_name]
+            for index in indexes:
+                index_name = index.document.get('name')
+                if index_name not in existing_indexes:
+                    nr_updated += 1
+                    LOG.info("Adding index : %s" % index_name)
+                    try:
                         self.db[collection_name].create_indexes(indexes)
-        except pymongo_errors.OperationFailure as op_failure:
-            LOG.warning('An Operation Failure occurred while updating Scout indexes: {}'.format(op_failure))
-        except Exception as ex:
-            LOG.warning('An error occurred while updating Scout indexes: {}'.format(ex))
+                    except pymongo_errors.OperationFailure as op_failure:
+                        LOG.warning('An Operation Failure occurred while updating Scout indexes: {}'.format(op_failure))
+                    except Exception as ex:
+                        LOG.warning('An error occurred while updating Scout indexes: {}'.format(ex))
 
         if nr_updated == 0:
             LOG.info("All indexes in place")
