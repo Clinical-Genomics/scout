@@ -4,7 +4,7 @@ import logging
 from pprint import pprint as pp
 
 from scout.parse.hgnc import parse_hgnc_genes
-from scout.parse.ensembl import (parse_ensembl_transcripts, parse_ensembl_exons, 
+from scout.parse.ensembl import (parse_ensembl_transcripts, parse_ensembl_exons,
                                  parse_ensembl_genes)
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hpo import get_incomplete_penetrance_genes
@@ -56,19 +56,19 @@ def genes_by_alias(hgnc_genes):
 
 def add_ensembl_info(genes, ensembl_lines):
     """Add the coordinates from ensembl
-    
+
     Args:
         genes(dict): Dictionary with all genes
         ensembl_lines(iteable): Iteable with raw ensembl info
     """
-    
+
     LOG.info("Adding ensembl coordinates")
     # Parse and add the ensembl gene info
     ensembl_genes = parse_ensembl_genes(ensembl_lines)
 
     for ensembl_gene in ensembl_genes:
         if not 'hgnc_id' in ensembl_gene:
-            LOG.debug("Ensembl gene %s is missing hgnc id. Skipping", ensembl_gene['ensembl_gene_id'])
+            LOG.debug("Ensembl gene %s is missing hgnc id. Skipping", ensembl_gene.get('ensembl_gene_id'))
             continue
         gene_obj = genes.get(ensembl_gene['hgnc_id'])
         if not gene_obj:
@@ -82,32 +82,32 @@ def add_ensembl_info(genes, ensembl_lines):
 
 def add_exac_info(genes, alias_genes, exac_lines):
     """Add information from the exac genes
-    
+
     Currently we only add the pLi score on gene level
-    
+
     The exac resource only use HGNC symbol to identify genes so we need
     our alias mapping.
-    
+
     Args:
         genes(dict): Dictionary with all genes
         alias_genes(dict): Genes mapped to all aliases
         ensembl_lines(iteable): Iteable with raw ensembl info
-        
+
     """
     LOG.info("Add exac pli scores")
     for exac_gene in parse_exac_genes(exac_lines):
         hgnc_symbol = exac_gene['hgnc_symbol'].upper()
         pli_score = exac_gene['pli_score']
-        
+
         for hgnc_id in get_correct_ids(hgnc_symbol, alias_genes):
             genes[hgnc_id]['pli_score'] = pli_score
 
 def add_omim_info(genes, alias_genes, genemap_lines, mim2gene_lines):
     """Add omim information
-    
+
     We collect information on what phenotypes that are associated with a gene,
     what inheritance models that are associated and the correct omim id.
-    
+
     Args:
         genes(dict): Dictionary with all genes
         alias_genes(dict): Genes mapped to all aliases
@@ -117,11 +117,11 @@ def add_omim_info(genes, alias_genes, genemap_lines, mim2gene_lines):
     """
     LOG.info("Add omim info")
     omim_genes = get_mim_genes(genemap_lines, mim2gene_lines)
-    
+
     for hgnc_symbol in omim_genes:
         omim_info = omim_genes[hgnc_symbol]
         inheritance = omim_info.get('inheritance', set())
-        
+
         for hgnc_id in get_correct_ids(hgnc_symbol, alias_genes):
             gene_info = genes[hgnc_id]
 
@@ -141,16 +141,16 @@ def add_incomplete_penetrance(genes, alias_genes, hpo_lines):
 
 def get_correct_ids(hgnc_symbol, alias_genes):
     """Try to get the correct gene based on hgnc_symbol
-    
+
     The HGNC symbol is unfortunately not a persistent gene identifier.
-    Many of the resources that are used by Scout only provides the hgnc symbol to 
+    Many of the resources that are used by Scout only provides the hgnc symbol to
     identify a gene. We need a way to guess what gene is pointed at.
-    
+
     Args:
         hgnc_symbol(str): The symbol used by a resource
         alias_genes(dict): A dictionary with all the alias symbols (including the current symbol)
                            for all genes
-    
+
     Returns:
         hgnc_ids(iterable(int)): Hopefully only one but a symbol could map to several ids
     """
@@ -164,7 +164,7 @@ def get_correct_ids(hgnc_symbol, alias_genes):
             return set(hgnc_id_info['ids'])
     return hgnc_ids
 
-def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, mim2gene_lines=None, 
+def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, mim2gene_lines=None,
                genemap_lines=None):
     """Gather information from different sources and return a gene dict
 
@@ -207,9 +207,8 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, mim2gene_lines=
     add_exac_info(genes, symbol_to_id, exac_lines)
 
     add_incomplete_penetrance(genes, symbol_to_id, hpo_lines)
-    
+
     if (mim2gene_lines and genemap_lines):
         add_omim_info(genes, symbol_to_id, genemap_lines, mim2gene_lines)
 
     return genes
-
