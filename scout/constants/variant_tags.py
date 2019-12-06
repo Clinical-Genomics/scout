@@ -254,6 +254,5 @@ MOSAICISM_OPTIONS = {
         'label': 'Not evident in parental reads',
         'description': 'Variant was inspected for mosaicism, but not seen in reads from parental samples.',
         'evidence': ['allele_count']
-        },
-    }
-}
+        }
+}    
