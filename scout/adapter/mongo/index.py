@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import pymongo.errors as pymongo_errors
 
 from scout.constants import INDEXES
 
@@ -9,16 +10,16 @@ class IndexHandler(object):
 
     def indexes(self, collection=None):
         """Return a list with the current indexes
-        
+
         Skip the mandatory _id_ indexes
-        
+
         Args:
             collection(str)
 
         Returns:
             indexes(list)
         """
-        
+
         indexes = []
 
         for collection_name in self.collections():
@@ -53,12 +54,13 @@ class IndexHandler(object):
 
     def update_indexes(self):
         """Update the indexes
-        
+
         If there are any indexes that are not added to the database, add those.
 
         """
         LOG.info("Updating indexes...")
         nr_updated = 0
+
         for collection_name in INDEXES:
             existing_indexes = self.indexes(collection_name)
             indexes = INDEXES[collection_name]
@@ -67,14 +69,19 @@ class IndexHandler(object):
                 if index_name not in existing_indexes:
                     nr_updated += 1
                     LOG.info("Adding index : %s" % index_name)
-                    self.db[collection_name].create_indexes(indexes)
+                    try:
+                        self.db[collection_name].create_indexes([index])
+                    except pymongo_errors.OperationFailure as op_failure:
+                        LOG.warning('An Operation Failure occurred while updating Scout indexes: {}'.format(op_failure))
+                    except Exception as ex:
+                        LOG.warning('An error occurred while updating Scout indexes: {}'.format(ex))
+
         if nr_updated == 0:
             LOG.info("All indexes in place")
-    
+
     def drop_indexes(self):
         """Delete all indexes for the database"""
         LOG.warning("Dropping all indexe")
         for collection_name in INDEXES:
             LOG.warning("Dropping all indexes for collection name %s", collection_name)
             self.db[collection_name].drop_indexes()
-

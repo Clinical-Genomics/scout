@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Shadow clinical assessments also on research variants display
 - Support for CRAM alignment files
 - Improved str variants view : sorting by locus, grouped by allele.
+- Delivery report PDF export
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
@@ -25,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed issue on the case statistics view. The validation bars didn't show up when all institutes were selected. Now they do.
 - Included Font Awesome availability in general report
 - Fixed missing path import by importing pathlib.Path
+- Hadle index inconsistencies in the update index functions
 
 
 ## [4.9.0]
