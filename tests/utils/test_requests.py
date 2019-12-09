@@ -26,6 +26,8 @@ def test_get_request():
     assert '<!DOCTYPE html>' in decoded_resp
 
 
+@pytest.mark.skipif(TRAVIS,
+                    reason="https://eutils.ncbi.nlm.nih.gov/entrez/eutils/ is down at the moment")
 def test_fetch_refseq_version():
     """Test eutils service from entrez that retrieves refseq version"""
 
