@@ -67,5 +67,6 @@ RD_TISSUE_TYPE = {
     10 : 'skin',
     11 : 'tissue (FFPE)',
     12 : 'tissue (fresh frozen)',
-    13 : 'other'
+    13 : 'other',
+    14 : 'unknown'
 }
