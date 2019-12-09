@@ -434,6 +434,19 @@ def gene_variants(institute_id):
     return dict(institute=institute_obj, form=form, page=page, **data)
 
 
+@cases_bp.route('/<institute_id>/<case_name>/individuals', methods=['POST'])
+def update_individual(institute_id, case_name):
+    """Update individual data (age and/or Tissue type) for a case"""
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    ind_id = request.form.get('update_ind')
+    age = request.form.get('_'.join(['age',ind_id]))
+    tissue = request.form.get('_'.join(['tissue',ind_id]))
+    controllers.update_individuals(store, institute_obj, case_obj, user_obj, ind_id, age, tissue)
+    return redirect(request.referrer)
+
+
 @cases_bp.route('/<institute_id>/<case_name>/synopsis', methods=['POST'])
 def case_synopsis(institute_id, case_name):
     """Update (PUT) synopsis of a specific case."""
