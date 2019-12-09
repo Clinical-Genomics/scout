@@ -441,7 +441,6 @@ def update_individual(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     ind_id = request.form.get('update_ind')
-    LOG.info('--------------->{}'.format(ind_id))
     age = request.form.get('_'.join(['age',ind_id]))
     tissue = request.form.get('_'.join(['tissue',ind_id]))
     controllers.update_individuals(store, institute_obj, case_obj, user_obj, ind_id, age, tissue)

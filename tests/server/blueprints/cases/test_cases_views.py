@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import json
 from flask import url_for, current_app
 from flask_login import current_user
-from urllib.parse import urlencode
 
 from scout.demo import delivery_report_path
 from scout.server.extensions import store
