@@ -20,4 +20,4 @@ EXPOSE 443
 
 RUN chmod +x /scout/docker-entrypoint.sh
 
-CMD ["/scout/docker/docker-entrypoint.sh"]
+CMD ["/scout/docker-entrypoint.sh"]
