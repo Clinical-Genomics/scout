@@ -15,19 +15,18 @@ from flask_login import current_user
 
 from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP,
                              CANCER_PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
-from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
+from scout.constants.variant_tags import (MANUAL_RANK_OPTIONS, CANCER_TIER_OPTIONS,
+                             DISMISS_VARIANT_OPTIONS, GENETIC_MODELS)
 from scout.export.variant import export_mt_variants
 from scout.server.utils import institute_and_case, user_institutes
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
-from scout.server.blueprints.variants.controllers import variant as variant_decorator
-from scout.server.blueprints.variants.controllers import sv_variant
+from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.parse.matchmaker import hpo_terms, omim_terms, genomic_features, parse_matches
 from scout.utils.matchmaker import matchmaker_request
-from scout.server.blueprints.variants.controllers import get_predictions
+from scout.server.blueprints.variant.utils import predictions
 from scout.server.blueprints.genes.controllers import gene
 
 LOG = logging.getLogger(__name__)
-
 
 STATUS_MAP = {'solved': 'bg-success', 'archived': 'bg-warning'}
 
@@ -36,7 +35,7 @@ TRACKS = {
     'cancer': 'Cancer',
 }
 
-def cases(store, case_query, limit=100):
+def cases(store, case_query, prioritized_cases_query=None, limit=100):
     """Preprocess case objects.
 
     Add the necessary information to display the 'cases' view
@@ -44,16 +43,17 @@ def cases(store, case_query, limit=100):
     Args:
         store(adapter.MongoAdapter)
         case_query(pymongo.Cursor)
+        prioritized_cases_query(pymongo.Cursor)
         limit(int): Maximum number of cases to display
 
     Returns:
         data(dict): includes the cases, how many there are and the limit.
     """
-
     case_groups = {status: [] for status in CASE_STATUSES}
     nr_cases = 0
-    for nr_cases, case_obj in enumerate(case_query.limit(limit),1):
 
+    # local function to add info to case obj
+    def populate_case_obj(case_obj):
         analysis_types = set(ind['analysis_type'] for ind in case_obj['individuals'])
         LOG.debug("Analysis types found in %s: %s", case_obj['_id'], ','.join(analysis_types))
         if len(analysis_types) > 1:
@@ -62,11 +62,28 @@ def cases(store, case_query, limit=100):
 
         case_obj['analysis_types'] = list(analysis_types)
         case_obj['assignees'] = [store.user(user_email) for user_email in
-                                 case_obj.get('assignees', [])]
-        case_groups[case_obj['status']].append(case_obj)
+                                     case_obj.get('assignees', [])]
         case_obj['is_rerun'] = len(case_obj.get('analyses', [])) > 0
         case_obj['clinvar_variants'] = store.case_to_clinVars(case_obj['_id'])
         case_obj['display_track'] = TRACKS[case_obj.get('track', 'rare')]
+        return case_obj
+
+    for nr_cases, case_obj in enumerate(case_query.limit(limit),1):
+        case_obj = populate_case_obj(case_obj)
+        case_groups[case_obj['status']].append(case_obj)
+
+    if prioritized_cases_query:
+        extra_prioritized = 0
+        for case_obj in prioritized_cases_query:
+            if any(group_obj.get('display_name') == case_obj.get('display_name')
+                for group_obj in case_groups[case_obj['status']]):
+                    continue
+            else:
+                extra_prioritized += 1
+                case_obj = populate_case_obj(case_obj)
+                case_groups[case_obj['status']].append(case_obj)
+        # extra prioritized cases are potentially shown in addition to the case query limit
+        nr_cases += extra_prioritized
 
     data = {
         'cases': [(status, case_groups[status]) for status in CASE_STATUSES],
@@ -114,6 +131,16 @@ def case(store, institute_obj, case_obj):
                 case_obj.get('suspects', [])]
     causatives = [store.variant(variant_id) or variant_id for variant_id in
                   case_obj.get('causatives', [])]
+    # check for partial causatives and associated phenotypes
+    partial_causatives = []
+    if case_obj.get('partial_causatives'):
+        for var_id, values in case_obj['partial_causatives'].items():
+            causative_obj = {
+                'variant' : store.variant(var_id) or var_id,
+                'omim_terms' : values.get('diagnosis_phenotypes'),
+                'hpo_terms' : values.get('phenotype_terms')
+            }
+            partial_causatives.append(causative_obj)
 
     # Set of all unique genes in the default gene panels
     distinct_genes = set()
@@ -128,21 +155,40 @@ def case(store, institute_obj, case_obj):
     case_obj['default_genes'] = list(distinct_genes)
     for hpo_term in itertools.chain(case_obj.get('phenotype_groups', []),
                                     case_obj.get('phenotype_terms', [])):
-        hpo_term['hpo_link'] = ("http://compbio.charite.de/hpoweb/showterm?id={}"
+        hpo_term['hpo_link'] = ("http://hpo.jax.org/app/browse/term/{}"
                                 .format(hpo_term['phenotype_id']))
 
+    rank_model_link_prefix = current_app.config.get('RANK_MODEL_LINK_PREFIX')
+    if case_obj.get('rank_model_version'):
+        rank_model_link_postfix = current_app.config.get('RANK_MODEL_LINK_POSTFIX','')
+        case_obj['rank_model_link'] = ''.join(
+            [
+                rank_model_link_prefix,
+                str(case_obj['rank_model_version']),
+                rank_model_link_postfix
+            ]
+        )
+    sv_rank_model_link_prefix = current_app.config.get('SV_RANK_MODEL_LINK_PREFIX','')
+    if case_obj.get('sv_rank_model_version'):
+        sv_rank_model_link_postfix = current_app.config.get('SV_RANK_MODEL_LINK_POSTFIX','')
+        case_obj['sv_rank_model_link'] = ''.join(
+            [
+                sv_rank_model_link_prefix,
+                str(case_obj['sv_rank_model_version']),
+                sv_rank_model_link_postfix
+            ]
+        )
     # other collaborators than the owner of the case
     o_collaborators = []
-    for collab_id in case_obj['collaborators']:
+    for collab_id in case_obj.get('collaborators',[]):
         if collab_id != case_obj['owner'] and store.institute(collab_id):
             o_collaborators.append(store.institute(collab_id))
 
     case_obj['o_collaborators'] = [(collab_obj['_id'], collab_obj['display_name']) for
                                    collab_obj in o_collaborators]
 
-    irrelevant_ids = ('cust000', institute_obj['_id'])
     collab_ids = [(collab['_id'], collab['display_name']) for collab in store.institutes() if
-                  (collab['_id'] not in irrelevant_ids) and
+                  (collab['_id'] not in ('cust000', institute_obj['_id'])) and
                   (collab['_id'] not in case_obj['collaborators'])]
 
     events = list(store.events(institute_obj, case=case_obj))
@@ -166,9 +212,11 @@ def case(store, institute_obj, case_obj):
         'events': events,
         'suspects': suspects,
         'causatives': causatives,
+        'partial_causatives' : partial_causatives,
         'collaborators': collab_ids,
         'cohort_tags': COHORT_TAGS,
-        'mme_nodes': current_app.mme_nodes, # Get available MatchMaker nodes for matching case
+        'manual_rank_options': MANUAL_RANK_OPTIONS,
+        'cancer_tier_options': CANCER_TIER_OPTIONS
     }
 
     return data
@@ -191,6 +239,7 @@ def case_report_content(store, institute_obj, case_obj):
         'suspects_detailed': 'suspects',
         'classified_detailed': 'acmg_classification',
         'tagged_detailed': 'manual_rank',
+        'tier_detailed': 'cancer_tier',
         'dismissed_detailed': 'dismiss_variant',
         'commented_detailed': 'is_commented',
     }
@@ -208,13 +257,12 @@ def case_report_content(store, institute_obj, case_obj):
     data['comments'] = store.events(institute_obj, case=case_obj, comments=True)
 
     data['manual_rank_options'] = MANUAL_RANK_OPTIONS
+    data['cancer_tier_options'] = CANCER_TIER_OPTIONS
     data['dismissed_options'] = DISMISS_VARIANT_OPTIONS
     data['genetic_models'] = dict(GENETIC_MODELS)
     data['report_created_at'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    evaluated_variants = {}
-    for vt in variant_types:
-        evaluated_variants[vt] = []
+    evaluated_variants = {vt:[] for vt in variant_types}
     # We collect all causatives and suspected variants
     # These are handeled in separate since they are on case level
     for var_type in ['causatives', 'suspects']:
@@ -234,33 +282,28 @@ def case_report_content(store, institute_obj, case_obj):
             keyword = variant_types[vt]
             # When found we add it to the categpry
             # Eac variant can belong to multiple categories
-            if keyword in var_obj:
-                evaluated_variants[vt].append(var_obj)
+            if keyword not in var_obj:
+                continue
+            evaluated_variants[vt].append(var_obj)
 
     for var_type in evaluated_variants:
         decorated_variants = []
         for var_obj in evaluated_variants[var_type]:
         # We decorate the variant with some extra information
-            if var_obj['category'] == 'snv':
-                decorated_info = variant_decorator(
-                        store=store,
-                        institute_obj=institute_obj,
-                        case_obj=case_obj,
-                        variant_id=None,
-                        variant_obj=var_obj,
-                        add_case=False,
-                        add_other=False,
-                        get_overlapping=False
-                    )
-            else:
-                decorated_info = sv_variant(
+            decorated_info = variant_decorator(
                     store=store,
                     institute_id=institute_obj['_id'],
                     case_name=case_obj['display_name'],
+                    variant_id=None,
                     variant_obj=var_obj,
                     add_case=False,
-                    get_overlapping=False
-                    )
+                    add_other=False,
+                    get_overlapping=False,
+                    add_compounds=False,
+                    variant_type=var_obj['category'],
+                    institute_obj=institute_obj,
+                    case_obj=case_obj,
+                )
             decorated_variants.append(decorated_info['variant'])
         # Add the decorated variants to the case
         data[var_type] = decorated_variants
@@ -446,7 +489,10 @@ def rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
                   html=html, sender=sender, recipients=[recipient],
                   # cc the sender of the email for confirmation
                   cc=[user_obj['email']])
-    mail.send(msg)
+    if recipient:
+        mail.send(msg)
+    else:
+        LOG.error("Cannot send rerun message: no recipient defined in config.")
 
 
 def update_default_panels(store, current_user, institute_id, case_name, panel_ids):
@@ -457,6 +503,12 @@ def update_default_panels(store, current_user, institute_id, case_name, panel_id
     panel_objs = [store.panel(panel_id) for panel_id in panel_ids]
     store.update_default_panels(institute_obj, case_obj, user_obj, link, panel_objs)
 
+def update_clinical_filter_hpo(store, current_user, institute_id, case_name, hpo_clinical_filter):
+    """Update HPO clinical filter use for a case."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    link = url_for('cases.case', institute_id=institute_id, case_name=case_name)
+    store.update_clinical_filter_hpo(institute_obj, case_obj, user_obj, link, hpo_clinical_filter)
 
 def vcf2cytosure(store, institute_id, case_name, individual_id):
     """vcf2cytosure CGH file for inidividual."""
@@ -476,15 +528,10 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
     more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
-    my_institutes = list(inst['_id'] for inst in user_institutes(store, current_user))
+    my_institutes = set(inst['_id'] for inst in user_institutes(store, current_user))
 
     variants = []
     for variant_obj in variant_res:
-        # hide other institutes for now
-        if variant_obj['institute'] not in my_institutes:
-            LOG.warning("Institute {} not allowed.".format(variant_obj['institute']))
-            continue
-
         # Populate variant case_display_name
         variant_case_obj = store.case(case_id=variant_obj['case_id'])
         if not variant_case_obj:
@@ -492,6 +539,13 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
             continue
         case_display_name = variant_case_obj.get('display_name')
         variant_obj['case_display_name'] = case_display_name
+
+        # hide other institutes for now
+        other_institutes = set([variant_case_obj.get('owner')])
+        other_institutes.update(set(variant_case_obj.get('collaborators', [])))
+        if my_institutes.isdisjoint(other_institutes):
+            # If the user does not have access to the information we skip it
+            continue
 
         genome_build = variant_case_obj.get('genome_build', '37')
         if genome_build not in ['37','38']:
@@ -548,7 +602,7 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
                 variant_obj['hgvs'] = hgvs
 
             # populate variant predictions for display
-            variant_obj.update(get_predictions(variant_genes))
+            variant_obj.update(predictions(variant_genes))
 
         variants.append(variant_obj)
 

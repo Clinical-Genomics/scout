@@ -15,8 +15,6 @@ from cyvcf2 import VCF
 from intervaltree import IntervalTree
 
 # Local modules
-from scout.parse.variant.headers import (parse_rank_results_header,
-                                         parse_vep_header)
 from scout.parse.variant.rank_score import parse_rank_score
 
 from scout.parse.variant import parse_variant
@@ -222,7 +220,8 @@ class VariantHandler(VariantLoader):
 
         return self.variant_collection.find(query)
 
-    def variant(self, document_id=None, gene_panels=None, case_id=None, simple_id=None):
+    def variant(self, document_id=None, gene_panels=None, case_id=None,
+                simple_id=None, variant_type='clinical'):
         """Returns the specified variant.
 
            Arguments:
@@ -230,6 +229,7 @@ class VariantHandler(VariantLoader):
                gene_panels(List[GenePanel])
                case_id (str): case id (will search with "variant_id")
                simple_id (str): a variant simple_id (example: 1_161184089_G_GTA)
+               variant_type(str): 'research' or 'clinical' - default 'clinical'
 
            Returns:
                variant_object(Variant): A odm variant object
@@ -243,6 +243,7 @@ class VariantHandler(VariantLoader):
             # search for a variant in a case by its simple_id
             query['case_id'] = case_id
             query['simple_id'] = simple_id
+            query['variant_type'] = variant_type
         else:
             # search with a unique id
             query['_id'] = document_id
@@ -392,15 +393,27 @@ class VariantHandler(VariantLoader):
             if other_causative_id in other_case.get('causatives',[]):
                 positional_variant_ids.add(var_event['variant_id'])
 
+        # affected is phenotype == 2; assume
+        affected_ids = []
+        if case_obj:
+            for subject in case_obj.get('individuals'):
+                if subject.get('phenotype') == 2:
+                    affected_ids.append(subject.get('individual_id'))
+            if len(affected_ids) == 0:
+                return []
+
         if len(positional_variant_ids) == 0:
             return []
         filters = {'variant_id': {'$in': list(positional_variant_ids)}}
         if case_obj:
             filters['case_id'] = case_obj['_id']
+            filters['samples'] = { '$elemMatch': {'sample_id': {'$in': affected_ids},
+                                                'genotype_call': {'$regex': '1'}} }
         else:
             filters['institute'] = institute_obj['_id']
         if limit_genes:
             filters['genes.hgnc_id'] = {'$in':limit_genes}
+        LOG.debug("Attempting filtered matching causatives query: {}".format(filters))
         return self.variant_collection.find(filters)
 
     def other_causatives(self, case_obj, variant_obj):
@@ -487,15 +500,17 @@ class VariantHandler(VariantLoader):
         """
         #This is the category of the variants that we want to collect
         category = 'snv' if variant_obj['category'] == 'sv' else 'sv'
+        variant_type = variant_obj.get('variant_type', 'clinical')
+        hgnc_ids = variant_obj['hgnc_ids']
 
         query = {
             '$and': [
                 {'case_id': variant_obj['case_id']},
                 {'category': category},
-                {'hgnc_ids' : { '$in' : variant_obj['hgnc_ids']}}
+                {'variant_type': variant_type},
+                {'hgnc_ids' : { '$in' : hgnc_ids}}
             ]
         }
-
         sort_key = [('rank_score', pymongo.DESCENDING)]
         # We collect the 30 most severe overlapping variants
         variants = self.variant_collection.find(query).sort(sort_key).limit(30)
@@ -503,11 +518,11 @@ class VariantHandler(VariantLoader):
         return variants
 
     def evaluated_variants(self, case_id):
-        """Returns variants that has been evaluated
+        """Returns variants that have been evaluated
 
         Return all variants, snvs/indels and svs from case case_id
-        which have a entry for 'acmg_classification', 'manual_rank', 'dismiss_variant'
-        or if they are commented.
+        which have a entry for 'acmg_classification', 'manual_rank', 'dismiss_variant',
+        'cancer_tier' or if they are commented.
 
         Args:
             case_id(str)
@@ -523,6 +538,7 @@ class VariantHandler(VariantLoader):
                     '$or': [
                         {'acmg_classification': {'$exists': True}},
                         {'manual_rank': {'$exists': True}},
+                        {'cancer_tier': {'$exists': True}},
                         {'dismiss_variant': {'$exists': True}},
                     ]
                 }

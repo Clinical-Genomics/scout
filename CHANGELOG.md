@@ -4,12 +4,145 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [4.x.x]
+
+## [x.x.x]
+
+### Added
+- Rank score model in causatives page
+- Exportable HPO terms from phenotypes page
+- AMP guideline tiers for cancer variants
+- Adds scroll for the trancript tab
+- Added CLI option to query cases on time since case event was added
+- Shadow clinical assessments also on research variants display
+- Support for CRAM alignment files
+- Improved str variants view : sorting by locus, grouped by allele.
+- Delivery report PDF export
+- New mosaicism tag option
+
+### Fixed
+- Fixed update OMIM command bug due to change in the header of the genemap2 file
+- Removed Mosaic Tag from Cancer variants
+- Fixes issue with unaligned table headers that comes with hidden Datatables
+- Layout in general report PDF export
+- Fixed issue on the case statistics view. The validation bars didn't show up when all institutes were selected. Now they do.
+- Included Font Awesome availability in general report
+- Fixed missing path import by importing pathlib.Path
+- Hadle index inconsistencies in the update index functions
+
+
+## [4.9.0]
+
+### Added
+- Improved MatchMaker pages, including visible patient contacts email address
+- New badges for the github repo
+- Links to [GENEMANIA](genemania.org)
+- Sort gene panel list on case view.
+- More automatic tests
+
+### Fixed
+- Fix error when a gene is added to an empty dynamic gene panel
+- Fix crash when attempting to add genes on incorrect format to dynamic gene panel
+- Manual rank variant tags could be saved in a "Select a tag"-state, a problem in the variants view.
+- Same case evaluations are no longer shown as gray previous evaluations on the variants page
+- Stay on research pages, even if reset, next first buttons are pressed..
+- Overlapping variants will now be visible on variant page again
+- Fix missing classification comments and links in evaluations page
+- All prioritized cases are shown on cases page
+
+
+## [4.8.3]
 
 ### Added
 
 ### Fixed
+- Bug when ordering sanger
+- Improved scrolling over long list of genes/transcripts
 
+
+## [4.8.2]
+
+### Added
+
+### Fixed
+- Avoid opening extra tab for coverage report
+- Fixed a problem when rank model version was saved as floats and not strings
+- Fixed a problem with displaying dismiss variant reasons on the general report
+- Disable load and delete filter buttons if there are no saved filters
+- Fix problem with missing verifications
+- Remove duplicate users and merge their data and activity
+
+
+## [4.8.1]
+
+### Added
+
+### Fixed
+- Prevent login fail for users with id defined by ObjectId and not email
+- Prevent the app from crashing with `AttributeError: 'NoneType' object has no attribute 'message'`
+
+
+## [4.8.0]
+
+### Added
+- Updated Scout to use Bootstrap 4.3
+- New looks for Scout
+- Improved dashboard using Chart.js
+- Ask before inactivating a case where last assigned user leaves it
+- Genes can be manually added to the dynamic gene list directly on the case page
+- Dynamic gene panels can optionally be used with clinical filter, instead of default gene panel
+- Dynamic gene panels get link out to chanjo-report for coverage report
+- Load all clinvar variants with clinvar Pathogenic, Likely Pathogenic and Conflicting pathogenic
+- Show transcripts with exon numbers for structural variants
+- Case sort order can now be toggled between ascending and descending.
+- Variants can be marked as partial causative if phenotype is available for case.
+- Show a frequency tooltip hover for SV-variants.
+- Added support for LDAP login system
+- Search snv and structural variants by chromosomal coordinates
+- Structural variants can be marked as partial causative if phenotype is available for case.
+- Show normal and pathologic limits for STRs in the STR variants view.
+- Institute level persistent variant filter settings that can be retrieved and used.
+- export causative variants to Excel
+- Add support for ROH, WIG and chromosome PNGs in case-view
+
+### Fixed
+- Fixed missing import for variants with comments
+- Instructions on how to build docs
+- Keep sanger order + verification when updating/reloading variants
+- Fixed and moved broken filter actions (HPO gene panel and reset filter)
+- Fixed string conversion to number
+- UCSC links for structural variants are now separated per breakpoint (and whole variant where applicable)
+- Reintroduced missing coverage report
+- Fixed a bug preventing loading samples using the command line
+- Better inheritance models customization for genes in gene panels
+- STR variant page back to list button now does its one job.
+- Allows to setup scout without a omim api key
+- Fixed error causing "favicon not found" flash messages
+- Removed flask --version from base cli
+- Request rerun no longer changes case status. Active or archived cases inactivate on upload.
+- Fixed missing tooltip on the cancer variants page
+- Fixed weird Rank cell in variants page
+- Next and first buttons order swap
+- Added pagination (and POST capability) to cancer variants.
+- Improves loading speed for variant page
+- Problem with updating variant rank when no variants
+- Improved Clinvar submission form
+- General report crashing when dismissed variant has no valid dismiss code
+- Also show collaborative case variants on the All variants view.
+- Improved phenotype search using dataTables.js on phenotypes page
+- Search and delete users with `email` instead of `_id`
+- Fixed css styles so that multiselect options will all fit one column
+
+
+## [4.7.3]
+
+### Added
+- RankScore can be used with VCFs for vcf_cancer files
+
+### Fixed
+- Fix issue with STR view next page button not doing its one job.
+
+### Deleted
+- Removed pileup as a bam viewing option. This is replaced by IGV
 
 
 ## [4.7.2]
@@ -22,7 +155,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed searches for cases with a gene with variants pinned or marked causative.
 - Load variant pages faster after fixing other causatives query
 - Fixed mitochondrial report bug for variants without genes
-
 
 ## [4.7.1]
 

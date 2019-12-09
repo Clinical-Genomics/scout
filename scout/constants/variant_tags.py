@@ -85,43 +85,69 @@ SPIDEX_LEVELS = (
     'high'
 )
 
+CANCER_TIER_OPTIONS = {
+    '1A': {'label': 'Tier IA',
+           'description': "Strong Clinical Significance. Biomarkers in FDA or guidlines that "
+                          "predict response, resistance to therapy, diagnosis or prognosis "
+                          "to specific tumor type."},
+    '1B': {'label': 'Tier IB',
+           'description': "Potential Clinical Significance Biomarkers in well-powered, concenus "
+                          "affirmed studies that predict response, resistance to therapy, "
+                          "diagnostic or prognostic significance to specific tumor type."},
+    '2C': {'label': 'Tier IIC',
+           'description': "Biomarkers in FDA or guidlines that "
+                          "predict response, resistance to therapy,"
+                          "to a different tumor type; are diagnostic or prognostic for "
+                          "multiple small studies; or serve as study inclusion criteria."},
+    '2D': {'label': 'Tier IID',
+           'description': "Biomarkers that show plausible therapeutic significance based on "
+                          "preclinical studies, may assist diagnosis or prognosis based on "
+                          "small reports."},
+    '3': {'label': 'Tier III',
+           'description': "Variant of Unknown Clinical Significance-"
+                          "Not observed in the population, nor in tumor databases."
+                          "No convincing published evidence of cancer association."},
+    '4': {'label': 'Tier IV',
+            'description': "Observed at high frequency in the population. No published evidence."}
+}
+
 MANUAL_RANK_OPTIONS = {
     8: {
-        'label': 'known pathogenic',
+        'label': 'Known pathogenic',
         'description': 'Previously known pathogenic in Clinvar Hgmd literature etc',
     },
     7: {
-        'label': 'pathogenic',
+        'label': 'Pathogenic',
         'description': ("Novel mutation but overlapping phenotype with known pathogenic, "
                         "no further experimental validation needed"),
     },
     6: {
-        'label': 'novel validated pathogenic',
+        'label': 'Novel validated pathogenic',
         'description': 'Novel mutation and validated experimentally',
     },
     5: {
-        'label': 'pathogenic partial phenotype',
+        'label': 'Pathogenic partial phenotype',
         'description': ("Pathogenic variant explains part of patients phenotype, but "
                         "not all symptoms"),
     },
     4: {
-        'label': 'likely pathogenic',
+        'label': 'Likely pathogenic',
         'description': 'Experimental validation required to prove causality',
     },
     3: {
-        'label': 'possibly pathogenic',
+        'label': 'Possibly pathogenic',
         'description': 'Uncertain significance, but cannot disregard yet',
     },
     2: {
-        'label': 'likely benign',
+        'label': 'Likely benign',
         'description': 'Uncertain significance, but can discard',
     },
     1: {
-        'label': 'benign',
+        'label': 'Benign',
         'description': 'Does not cause phenotype',
     },
     0: {
-        'label': 'other',
+        'label': 'Other',
         'description': 'Phenotype not related to disease',
     },
 }
@@ -176,7 +202,7 @@ DISMISS_VARIANT_OPTIONS = {
     29: {
         'label': 'Technical issues',
         'description': 'Technical issues - likely false positive.',
-        'evidence': ['GT', 'pileup']
+        'evidence': ['GT', 'IGV']
         },
     31: {
         'label': 'No protein function',
@@ -224,4 +250,9 @@ MOSAICISM_OPTIONS = {
         'description': 'Variant is confirmed to be mosaic in a affected sample.',
         'evidence': ['allele_count']
         },
-}
+    5: {
+        'label': 'Not evident in parental reads',
+        'description': 'Variant was inspected for mosaicism, but not seen in reads from parental samples.',
+        'evidence': ['allele_count']
+        }
+}    

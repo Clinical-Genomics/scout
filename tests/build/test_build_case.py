@@ -37,6 +37,9 @@ def test_build_case(parsed_case, adapter, institute_obj, dummypanel_obj):
     assert case_obj['sv_rank_model_version'] == parsed_case['sv_rank_model_version']
 
     assert case_obj['madeline_info'] == parsed_case['madeline_info']
+    assert case_obj['chromograph_image_files'] == parsed_case['chromograph_image_files']
+    assert case_obj['chromograph_prefixes'] == parsed_case['chromograph_prefixes']
+    
 
     assert case_obj['delivery_report'] == parsed_case['delivery_report']
 

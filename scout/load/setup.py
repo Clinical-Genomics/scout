@@ -80,16 +80,18 @@ def setup_scout(adapter, institute_id='cust000', user_name='Clark Kent',
     adapter.add_user(user_obj)
 
     ### Get the mim information ###
-
+    mim2gene_lines = None
+    genemap_lines = None
     if not demo:
         # Fetch the mim files
-        try:
-            mim_files = fetch_mim_files(api_key, mim2genes=True, morbidmap=True, genemap2=True)
-        except Exception as err:
-            LOG.warning(err)
-            raise err
-        mim2gene_lines = mim_files['mim2genes']
-        genemap_lines = mim_files['genemap2']
+        if api_key:
+            try:
+                mim_files = fetch_mim_files(api_key, mim2genes=True, morbidmap=True, genemap2=True)
+            except Exception as err:
+                LOG.warning(err)
+                raise err
+            mim2gene_lines = mim_files['mim2genes']
+            genemap_lines = mim_files['genemap2']
 
         # Fetch the genes to hpo information
         hpo_gene_lines = fetch_hpo_genes()
@@ -97,7 +99,6 @@ def setup_scout(adapter, institute_id='cust000', user_name='Clark Kent',
         hgnc_lines = fetch_hgnc()
         # Fetch the latest exac pli score information
         exac_lines = fetch_exac_constraint()
-
 
     else:
         mim2gene_lines = [line for line in get_file_handle(mim2gene_reduced_path)]

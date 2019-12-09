@@ -1,4 +1,5 @@
 import logging
+import os
 
 from pprint import pprint as pp
 
@@ -10,7 +11,8 @@ from scout.server.extensions import store
 
 from .controllers import get_dashboard_info
 
-blueprint = Blueprint('dashboard', __name__, template_folder='templates')
+blueprint = Blueprint('dashboard', __name__, template_folder='templates',
+    static_folder='static', static_url_path='/dashboard/static')
 
 LOG = logging.getLogger(__name__)
 

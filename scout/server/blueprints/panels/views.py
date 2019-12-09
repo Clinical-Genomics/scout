@@ -11,7 +11,7 @@ from scout.server.utils import templated, user_institutes
 from .forms import PanelGeneForm
 from . import controllers
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 panels_bp = Blueprint('panels', __name__, template_folder='templates')
 
 
@@ -119,7 +119,7 @@ def panel(panel_id):
                 return redirect(url_for('.gene_edit', panel_id=panel_id,
                                         hgnc_id=hgnc_id))
         elif action == 'delete':
-            log.debug("marking gene to be deleted: %s", hgnc_id)
+            LOG.debug("marking gene to be deleted: %s", hgnc_id)
             panel_obj = store.add_pending(panel_obj, gene_obj, action='delete')
 
     data = controllers.panel(store, panel_obj)
@@ -164,18 +164,22 @@ def gene_edit(panel_id, hgnc_id):
             refseq_id = transcript.get('refseq_id')
             transcript_choices.append((refseq_id, refseq_id))
     form.disease_associated_transcripts.choices = transcript_choices
-
     if form.validate_on_submit():
         action = 'edit' if panel_gene else 'add'
         info_data = form.data.copy()
         if 'csrf_token' in info_data:
             del info_data['csrf_token']
+        if 'custom_inheritance_models' in info_data:
+            info_data['custom_inheritance_models'] = info_data['custom_inheritance_models'].split(',')
+
         store.add_pending(panel_obj, hgnc_gene, action=action, info=info_data)
         return redirect(url_for('.panel', panel_id=panel_id))
 
     if panel_gene:
+        form.custom_inheritance_models.data = ', '.join(panel_gene.get('custom_inheritance_models',[]))
         for field_key in ['disease_associated_transcripts', 'reduced_penetrance',
-                          'mosaicism', 'inheritance_models', 'database_entry_version', 'comment']:
+                          'mosaicism', 'inheritance_models', 'custom_inheritance_models',
+                          'database_entry_version', 'comment']:
             form_field = getattr(form, field_key)
             if not form_field.data:
                 panel_value = panel_gene.get(field_key)

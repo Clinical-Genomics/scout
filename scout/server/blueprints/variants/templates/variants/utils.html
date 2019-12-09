@@ -1,5 +1,7 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
 {% macro compounds_table(institute, case, compounds) %}
-  <table class='table table-bordered table-hover table-condensed'>
+  <table class='table table-condensed table-bordered table-sm'>
     <thead>
       <tr>
         <th>Variant</th>
@@ -16,7 +18,7 @@
             {% if compound.not_loaded %}
               {{ compound.display_name }} <small>(not loaded)</small>
             {% else %}
-              <a href='{{ url_for("variants.variant",
+              <a href='{{ url_for("variant.variant",
                                  institute_id=institute._id,
                                  case_name=case.display_name,
                                  variant_id=compound.variant) }}'>
@@ -56,7 +58,7 @@
       {% for sv in overlapping %}
         <tr>
           <td>
-              <a href='{{ url_for("variants.sv_variant",
+              <a href='{{ url_for("variant.sv_variant",
                                  institute_id=institute._id,
                                  case_name=case.display_name,
                                  variant_id=sv._id) }}'>
@@ -70,4 +72,477 @@
       {% endfor %}
     </tbody>
   </table>
+{% endmacro %}
+
+{% macro modal_causative(case, institute, variant) %}
+<div class="modal fade" id="causativeModal" tabindex="-1" role="dialog" aria-labelledby="causativeLabel"
+  aria-hidden="true" onsubmit="return validate_causative_form();">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+           <h5 class="modal-title" id="causativeLabel">Mark variant as causative</h5>
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+           </button>
+        </div>
+        <form action="{{ url_for('cases.mark_causative', institute_id=institute._id, case_name=case.display_name,
+           variant_id=variant._id, partial_causative=False) }}" method="POST">
+          <div class="modal-body">
+            <div class="row">
+              <div class="col d-flex">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div data-placement="top">
+                      Variant explains phenotype partially (partial causative)&nbsp;&nbsp;
+                    </div>
+                    <br>
+                    <br>
+                    <div>
+                      <input type="checkbox" class="ios8-switch" id="partial_causative" name="partial_causative"
+                        data-toggle='collapse' data-target='#partial_phenotypes'
+                          {% if case.phenotype_terms|length == 0 and diagnosis_phenotypes|length == 0 %}
+                            disabled
+                          {% endif %}>
+                      <label for="partial_causative"></label>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            {% if case.phenotype_terms|length == 0 and diagnosis_phenotypes|length == 0 %}
+              <h5 class="text-danger small">Assign at least an OMIM diagnosis or a HPO phenotype term to this case to mark this variant as partial causative</h5>
+            {% endif %}
+            <div id="partial_phenotypes" class="collapse mt-2">
+              <h6><strong>Associated phenotype</strong></h6>
+              <!-- A partial causative variant is resposible for a specific phenotype. Make sure phenotype is specified -->
+              <div class="row ml-3">
+                <div class="col-4">
+                  <!-- Phenotype could be specified using OMIM -->
+                  <h6>Diagnosis phenotype (OMIM):</h6>
+                  <select multiple="multiple" name="omim_select" id="omim_select" class="selectpicker">
+                    {% for omim_id in case.diagnosis_phenotypes %}
+                      <option value="{{omim_id}}">
+                        {{ omim_id }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-8">
+                  <!-- Phenotype could also be specified by HPO terms -->
+                  <h6>Phenotype terms (HPO):</h6>
+                  <select multiple="multiple" name="hpo_select" id="hpo_select" class="selectpicker">
+                    {% for hpo_term in case.phenotype_terms %}
+                      <option value="{{hpo_term.feature}}_{{hpo_term.phenotype_id}}">
+                        {{hpo_term.feature}} ({{ hpo_term.phenotype_id }})
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <br>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button name="action" value="ADD" type="submit" class="btn btn-primary" title="Mark causative">
+              Mark causative
+            </button>
+          </div>
+        </form>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro snv_filters(form, institute, case)%}
+<input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
+<div class="form-group">
+  <div class="row">
+    <div class="col-4">
+      {{ form.gene_panels.label}}
+      {{ form.gene_panels(class="selectpicker") }}
+    </div>
+    <div class="col-2">
+      {{ form.symbol_file.label(class="control-label", data_toggle="tooltip", data_placement="left", title="Load an HGNC gene symbol list file; a text file with one gene symbol starting each row. Extra columns separated with tab are ignored. Comment rows starting with # are ignored.") }}
+      {{ form.symbol_file(class="form-control-file") }}
+    </div>
+    <div class="col-2">
+      {{ form.region_annotations.label(class="control-label") }}
+      {{ form.region_annotations(class="selectpicker") }}
+    </div>
+    <div class="col-2">
+      {{ form.functional_annotations.label(class="control-label") }}
+      {{ form.functional_annotations(class="selectpicker") }}
+    </div>
+    <div class="col-2">
+      {{ form.genetic_models.label(class="control-label") }}
+      {{ form.genetic_models(class="selectpicker") }}
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="row">
+    <div class="col-3">
+      {{ form.hgnc_symbols.label(class="control-label") }}
+      {{ form.hgnc_symbols(class="form-control") }}
+    </div>
+    <div class="col-1 align-self-end">
+      <div class="btn-group d-flex">
+        <a class="btn btn-outline-secondary btn-sm " href="{{ url_for('variants.variants', institute_id=institute._id,
+          case_name=case.display_name, variant_type=form.variant_type.data,
+          gene_panels=['hpo']) }}">HPO gene list</a>
+      </div>
+    </div>
+    <div class="col-1">
+      {{ form.cadd_score.label(class="control-label") }}
+      {{ form.cadd_score(class="form-control") }}
+    </div>
+    <div class="col-1">
+      {{ form.cadd_inclusive.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Include empty CADD") }}
+      <div>{{ form.cadd_inclusive() }}</div>
+    </div>
+    <div class="col-2">
+      {{ form.spidex_human.label(class="control-label") }}
+      {{ form.spidex_human(class="selectpicker") }}
+    </div>
+    <div class="col-2">
+      {{ form.clinsig.label(class="control-label") }}
+      {{ form.clinsig(class="selectpicker") }}
+    </div>
+    <div class="col-2">
+      {{ form.clinsig_confident_always_returned.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Always show selected CLINSIG entries with trusted revision status levels.") }}
+      <div>{{ form.clinsig_confident_always_returned() }}</div>
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="row">
+    <div class="col-2">
+      {{ form.gnomad_frequency.label(class="control-label") }}
+      {{ form.gnomad_frequency(class="form-control") }}
+    </div>
+    <div class="col-2">
+      {{ form.local_obs.label(class="control-label") }}
+      {{ form.local_obs(class="form-control") }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.chrom) }}
+    </div>
+    <div class="col-3">
+      {{ wtf.form_field(form.start) }}
+    </div>
+    <div class="col-3">
+      {{ wtf.form_field(form.end) }}
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="row justify-content-between" style="margin-top:20px;">
+      <div class="col-4">
+        {{ form.filter_variants(class="btn btn-primary form-control") }}
+      </div>
+      <div class="col-4">
+         {{ form.clinical_filter(class="btn btn-outline-secondary form-control") }}
+      </div>
+      <div class="col-4">
+        {{ form.export(class="btn btn-warning form-control") }}
+      </div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="row justify-content-between" style="margin-top:20px;">
+    <div class="col-6 text-left">
+      <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name,
+        variant_type=form.variant_type.data, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
+        class="btn btn-secondary" style="color: #ffffff !important;">
+        Reset&nbsp;filters
+      </a>
+    </div>
+    <div class="col-6">
+      {{ stash_filter_buttons(form, institute, case) }}
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro sv_filters(form, institute, case) %}
+<input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
+<div class="form-group">
+  <div class="row">
+    <div class="col-4">
+      {{ form.gene_panels.label(class="control-label") }}
+      {{ form.gene_panels(class="selectpicker") }}
+    </div>
+    <div class="col-2">
+      {{ form.svtype.label(class="control-label") }}
+      {{ form.svtype(class="form-control selectpicker") }}
+    </div>
+    <div class="col-2">
+      {{ form.region_annotations.label(class="control-label") }}
+      {{ form.region_annotations(class="selectpicker") }}
+    </div>
+    <div class="col-2">
+      {{ form.functional_annotations.label(class="control-label") }}
+      {{ form.functional_annotations(class="selectpicker") }}
+    </div>
+    <div class="col-2">
+      {{ form.genetic_models.label(class="control-label") }}
+      {{ form.genetic_models(class="selectpicker") }}
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="row">
+    <div class="col-3">
+      {{ form.hgnc_symbols.label(class="control-label") }}
+      {{ form.hgnc_symbols(class="form-control") }}
+    </div>
+    <div class="col-1 align-self-end">
+        <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('variants.sv_variants', institute_id=institute._id,
+          case_name=case.display_name, variant_type=form.variant_type.data,
+          gene_panels=['hpo']) }}">HPO gene list</a>
+    </div>
+    <div class="col-2">
+      {{ form.size.label(class="control-label") }}
+      {{ form.size(class="form-control", type="number") }}
+    </div>
+    <div class="col-2">
+      {{ form.size_shorter.label(class="control-label") }}
+      <div>{{ form.size_shorter() }}</div>
+    </div>
+    <div class="col-2">
+      {{ form.decipher.label(class="control-label") }}
+      <div>{{ form.decipher() }}</div>
+    </div>
+    <div class="col-2">
+      {{ form.clinsig.label(class="control-label") }}
+      {{ form.clinsig(class="selectpicker") }}
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="row">
+    <div class="col-2">
+      {{ form.gnomad_frequency.label(class="control-label") }}
+      {{ form.gnomad_frequency(class="form-control") }}
+    </div>
+    <div class="col-2">
+       {{ form.clingen_ngi.label(class="control-label") }}
+       {{ form.clingen_ngi(class="form-control") }}
+    </div>
+    <div class="col-2">
+      {{ form.swegen.label(class="control-label") }}
+      {{ form.swegen(class="form-control") }}
+    </div>
+    <div class="col-2">
+      {{ form.chrom.label(class="control-label") }}
+      {{ form.chrom(class="form-control") }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.start) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.end) }}
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="row">
+    <div class="col-4">
+      {{ form.filter_variants(class="btn btn-primary form-control") }}
+    </div>
+    <div class="col-4">
+      {{ form.clinical_filter(class="btn btn-outline-secondary form-control ") }}
+    </div>
+    <div class="col-4">
+      {{ form.export(class="btn btn-warning form-control") }}
+    </div>
+  </div>
+  <div class="row justify-content-between" style="margin-top:20px;">
+    <div class="col-1">
+      <a href="{{ url_for('variants.sv_variants', institute_id=institute._id,
+        case_name=case.display_name, variant_type=form.variant_type.data,
+        gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
+        class="btn btn-secondary" style="color: #ffffff !important;">
+        Reset&nbsp;filters
+      </a>
+    </div>
+    <div class="col-6">
+      {{ stash_filter_buttons(form, institute, case) }}
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro cancer_filters(form, institute, case) %}
+    {{ form.csrf_token }}
+    {{ form.variant_type() }}
+    <div class="form-group">
+      <div class="row">
+        <div class="col-2">
+          {{ form.gene_panels.label(class="control-label") }}
+          {{ form.gene_panels(class="selectpicker") }}
+        </div>
+        <div class="col-2">
+          {{ form.region_annotations.label(class="control-label") }}
+          {{ form.region_annotations(class="selectpicker") }}
+        </div>
+        <div class="col-2">
+          {{ form.functional_annotations.label(class="control-label") }}
+          {{ form.functional_annotations(class="selectpicker") }}
+        </div>
+        <div class="col-2">
+          {{ form.genetic_models.label(class="control-label") }}
+          {{ form.genetic_models(class="selectpicker") }}
+        </div>
+        <div class="col-2">
+          {{ form.clinsig.label(class="control-label") }}
+          {{ form.clinsig(class="selectpicker") }}
+        </div>
+        <div class="col-2">
+          {{ form.mvl_tag.label(class="control-label") }}
+          <div>{{ form.mvl_tag() }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-3">
+          {{ form.hgnc_symbols.label(class="control-label") }}
+          {{ form.hgnc_symbols(class="form-control") }}
+        </div>
+        <div class="col-1">
+          {{ form.cadd_score.label(class="control-label") }}
+          {{ form.cadd_score(class="form-control") }}
+        </div>
+        <div class="col-2">
+          {{ form.cadd_inclusive.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Include empty CADD") }}
+          <div>{{ form.cadd_inclusive() }}</div>
+        </div>
+        <div class="col-1">
+          {{ form.gnomad_frequency.label(class="control-label") }}
+          {{ form.gnomad_frequency(class="form-control") }}
+        </div>
+        <div class="col-1">
+          {{ form.depth.label(class="control-label") }}
+          {{ form.depth(class="form-control") }}
+        </div>
+        <div class="col-2">
+          {{ form.alt_count.label(class="control-label") }}
+          {{ form.alt_count(class="form-control") }}
+        </div>
+        <div class="col-2">
+          {{ form.control_frequency.label(class="control-label") }}
+          {{ form.control_frequency(class="form-control") }}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+
+            </div>
+    </div>
+    <br>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-3">
+          <button class="btn btn-primary form-control">Filter variants</button>
+        </div>
+        <div class="col-1 align-self-start">
+          <a href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
+            case_name=case.display_name, variant_type=form.variant_type.data,
+            gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
+            class="btn btn-secondary" style="color: #ffffff !important;">
+            Reset&nbsp;filters
+          </a>
+        </div>
+        <div class="col-2">
+        </div>
+        <div class="col-6">
+          {{ stash_filter_buttons(form, institute, case) }}
+        </div>
+      </div>
+    </div>
+{% endmacro %}
+
+{% macro modal_prompt_filter_name(form) %}
+<div class="modal fade" id="filterNameModal" tabindex=""-1" role="dialog"
+  aria-hidden="true" aria-labelledby="filterNameModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="filterNameModalLabel">Filter display name</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div>
+          Please name the current filter for saving.
+          {{ form.filter_display_name(class="form-control") }}
+        </div>
+      </div>
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        {{ form.save_filter(class="btn btn-secondary") }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro stash_filter_buttons(form, institute, case) %}
+  <div class="row">
+    <div class="col-4 text-right">
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#filterNameModal"><i class="fa fa-star"></i> Save filter</button>
+    </div>
+    {{ modal_prompt_filter_name(form) }}
+    <div class="col-4">
+      {{ form.filters(class="form-control") }}
+    </div>
+    <div class="btn-group col-4" role="group">
+      {{ form.load_filter(class="btn btn-secondary", disabled=form.filters.choices|length==0) }}
+      {{ form.delete_filter(class="btn btn-secondary bg-danger", data_toggle="tooltip", data_placement="top",
+        title="Delete selected filter for this institute.", disabled=form.filters.choices|length==0) }}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro tier_cell(variant, manual_rank_options, cancer_tier_options) %}
+  {% if variant.cancer_tier %}
+    {% if variant.cancer_tier == '1A' %}
+      {% set label_class = 'danger' %}
+    {% elif variant.cancer_tier == '1B' %}
+      {% set label_class = 'danger' %}
+    {% elif variant.cancer_tier == '2A' %}
+      {% set label_class = 'warning' %}
+    {% elif variant.cancer_tier == '2B' %}
+      {% set label_class = 'warning' %}
+    {% elif variant.cancer_tier == '3' %}
+      {% set label_class = 'primary' %}
+    {% elif variant.cancer_tier == '4' %}
+      {% set label_class = 'default' %}
+    {% endif %}
+    <span class="badge badge-{{ label_class }}" data-toggle="tooltip" data-placement="right"
+      title="Tier: {{ cancer_tier_options[variant.cancer_tier].description }}">
+      {{ cancer_tier_options[variant.cancer_tier].label }}</span>
+  {% endif %}
+
+  {% if variant.manual_rank %}
+    {% if variant.manual_rank == 1 %}
+      {% set label_class = 'default' %}
+    {% elif variant.manual_rank == 2 %}
+      {% set label_class = 'info' %}
+    {% elif variant.manual_rank == 3 %}
+      {% set label_class = 'primary' %}
+    {% elif variant.manual_rank == 4 %}
+      {% set label_class = 'warning' %}
+    {% elif variant.manual_rank == 5 %}
+      {% set label_class = 'danger' %}
+    {% endif %}
+    <span class="badge badge-{{ label_class }}" data-toggle="tooltip" data-placement="right"
+      title="Manual rank: {{ manual_rank_options[variant.manual_rank].description }}">
+      {{ manual_rank_options[variant.manual_rank].label }}</span>
+  {% endif %}
 {% endmacro %}

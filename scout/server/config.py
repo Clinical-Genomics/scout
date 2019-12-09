@@ -2,7 +2,7 @@
 SECRET_KEY = 'this is not secret...'
 REMEMBER_COOKIE_NAME = 'scout_remember_me'
 
-MONGO_DBNAME = 'scoutTest'
+MONGO_DBNAME = 'scout'
 
 BOOTSTRAP_SERVE_LOCAL = True
 TEMPLATES_AUTO_RELOAD = True
@@ -16,6 +16,15 @@ MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 
+# connection details for LoqusDB MongoDB database
+# LOQUSDB_SETTINGS = dict(
+#     database='loqusdb',
+# )
+# If not on localhost 27017 one needs to provide uri with
+# connection details for LoqusDB MongoDB database
+#    uri=("mongodb://{}:{}@localhost:{}/loqusdb".format(MONGO_USERNAME, MONGO_PASSWORD, MONGO_PORT))
+
+
 # Chanjo-Report
 REPORT_LANGUAGE = 'en'
 ACCEPT_LANGUAGES = ['en', 'sv']
@@ -25,3 +34,10 @@ SHOW_CAUSATIVES = True
 
 # OMIM API KEY: Required for downloading definitions from OMIM (https://www.omim.org/api)
 #OMIM_API_KEY = 'valid_omim_api_key'
+
+# Rank model links
+
+RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/rank_model_-v"
+RANK_MODEL_LINK_POSTFIX = "-.ini"
+SV_RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/svrank_model_-v"
+SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
