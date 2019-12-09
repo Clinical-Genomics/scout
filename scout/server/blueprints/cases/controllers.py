@@ -446,11 +446,10 @@ def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissu
     case_individuals = case_obj.get('individuals')
     for subject in case_individuals:
         if subject['individual_id'] == ind:
-            subject['age'] = age
+            subject['age'] = round(float(age), 1)
             subject['tissue_type'] = tissue
 
     case_obj['individuals'] = case_individuals
-    LOG.info('---------------> INDIVIDUALS: {}'.format(case_individuals))
     store.update_case(case_obj)
 
 
