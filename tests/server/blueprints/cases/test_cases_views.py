@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+import json
 from flask import url_for, current_app
 from flask_login import current_user
+from urllib.parse import urlencode
 
 from scout.demo import delivery_report_path
 from scout.server.extensions import store
@@ -114,6 +116,45 @@ def test_case(app, case_obj, institute_obj):
 
             # THEN it should return a page
             assert resp.status_code == 200
+
+
+def test_update_individual(app, user_obj, institute_obj, case_obj):
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+
+    # And a case individual with no age or tissue type:
+    case_obj = store.case_collection.find_one()
+    assert case_obj['individuals'][0].get('age') is None
+    case_obj['individuals'][0]['tissue_type'] is None
+
+    with app.test_client() as client:
+
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for('auto_login'))
+        assert resp.status_code == 200
+
+        # WHEN posting a request with info for updating one of the case samples:
+        ind_id = case_obj['individuals'][0]['individual_id']
+        form_data = {
+            'update_ind' : ind_id,
+            '_'.join(['age', ind_id]) : '2.5',
+            '_'.join(['tissue', ind_id]) : 'muscle'
+        }
+
+        resp = client.post(url_for('cases.update_individual',
+                                  institute_id=institute_obj['internal_id'],
+                                  case_name=case_obj['display_name']
+                                  ), data= form_data)
+
+        # THEN the returned HTML page should redirect
+        assert resp.status_code == 302
+
+        # And the case obj should have been updated:
+        updated_case = store.case_collection.find_one({'_id':case_obj['_id']})
+        updated_ind = updated_case['individuals'][0]
+        assert updated_ind['individual_id'] == ind_id
+        assert updated_ind['age'] == 2.5
+        assert updated_ind['tissue_type'] == 'muscle'
 
 
 def test_case_synopsis(app, institute_obj, case_obj):
