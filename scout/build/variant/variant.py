@@ -314,6 +314,9 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     if variant.get('azqual'):
         variant_obj['azqual'] = variant['azqual']
 
+    if variant.get('custom'):
+        variant_obj['custom'] = variant['custom']
+        
     ##### Add the frequencies #####
     frequencies = variant.get('frequencies', {})
     if frequencies.get('thousand_g'):
