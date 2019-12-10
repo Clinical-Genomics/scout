@@ -206,6 +206,30 @@
           {% endif %}
         </ul>
       </div>
+      {% if variant.custom %}
+      <div class="card mt-1 pt-2">
+	<table class="table table-bordered table-sm">
+          <thead>
+            <th>Custom annotation</th>
+            <th>Value</th>
+          </thead>
+          <tbody>
+            {% for pair in variant.custom %}
+            <tr>
+              <td>
+		{{ pair[0] }}
+              </td>
+              <td>
+		{{ pair[1] }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+	</table>
+      </div>
+      {% endif %}
+
+
     </div>
   </div>
 
