@@ -31,13 +31,12 @@ flask_ldap3_login
 Flask-Login
 
 # Parsing
-cyvcf2==0.9.0
+cyvcf2<0.10.0
 PyYaml>=5.1
 ped_parser
 
 # extras
 intervaltree==3.0.2
-certifi
 
 # chanjo-report
 python-dateutil
