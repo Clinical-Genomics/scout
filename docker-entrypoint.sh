@@ -8,5 +8,4 @@ gunicorn \
    --certfile=$CERT_FILE \
    scout.server.auto:app
 
-#scout --port $MONGO_PORT --host $MONGO_HOST --demo serve
 
