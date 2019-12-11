@@ -62,7 +62,7 @@ class CaseHandler(object):
               has_causatives=False, reruns=False, finished=False,
               research_requested=False, is_research=False, status=None,
               phenotype_terms=False, pinned=False, cohort=False, name_query=None,
-              yield_query=False):
+              yield_query=False, within_days=None):
         """Fetches all cases from the backend.
 
         Args:
@@ -82,6 +82,7 @@ class CaseHandler(object):
                              part of inds or part of synopsis
             yield_query(bool): If true, only return mongo query dict for use in
                                 compound querying.
+            within_days(int): timespan (in days) for latest event on case
 
         Returns:
             Cases ordered by date.
@@ -237,6 +238,34 @@ class CaseHandler(object):
                     {'individuals.display_name': {'$regex': name_query}},
                 ]
 
+        if within_days:
+            verbs = []
+
+            if has_causatives:
+                verbs.append('mark_causative')
+            if finished:
+                verbs.append('archive')
+                verbs.append('mark_causative')
+            if reruns:
+                verbs.append('rerun')
+            if research_requested:
+                verbs.append('open_research')
+
+            days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
+            # Look up 'mark_causative' events added since specified number days ago
+            event_query = {
+                'category': 'case',
+                'verb': {'$in': verbs},
+                'created_at': {'$gte': days_datetime}
+                }
+            recent_events = self.event_collection.find(event_query)
+            recent_cases = set()
+            # Find what cases these events concern
+            for event in recent_events:
+                recent_cases.add(event['case'])
+            recent_cases = list(recent_cases)
+            query['_id'] = {'$in': recent_cases}
+
         if yield_query:
             return query
 
@@ -245,6 +274,22 @@ class CaseHandler(object):
             return self.case_collection.find(query)
         else:
             return self.case_collection.find(query).sort('updated_at', -1)
+
+    def prioritized_cases(self, institute_id=None):
+        """Fetches any prioritized cases from the backend.
+
+        Args:
+            collaborator(str): If collaborator should be considered
+        """
+        query = {}
+
+        if institute_id:
+            LOG.debug("Use collaborator {0}".format(institute_id))
+            query['collaborators'] = institute_id
+
+        query['status'] = 'prioritized'
+
+        return self.case_collection.find(query).sort('updated_at', -1)
 
     def nr_cases(self, institute_id=None):
         """Return the number of cases
@@ -269,7 +314,7 @@ class CaseHandler(object):
 
 
     def update_dynamic_gene_list(self, case, hgnc_symbols=None, hgnc_ids=None,
-                                 phenotype_ids=None, build='37'):
+                                 phenotype_ids=None, build='37', add_only=False):
         """Update the dynamic gene list for a case
 
         Adds a list of dictionaries to case['dynamic_gene_list'] that looks like
@@ -284,23 +329,32 @@ class CaseHandler(object):
             case (dict): The case that should be updated
             hgnc_symbols (iterable): A list of hgnc_symbols
             hgnc_ids (iterable): A list of hgnc_ids
+            phenotype_id(list): optionally add phenotype_ids used to generate list
+            add_only(bool): set by eg ADDGENE to add genes, and NOT reset previous dynamic_gene_list
 
         Returns:
             updated_case(dict)
         """
         dynamic_gene_list = []
+        if add_only:
+            dynamic_gene_list  = list( self.case_collection.find_one({ '_id': case['_id'] },
+                { 'dynamic_gene_list': 1, '_id': 0 }).get('dynamic_gene_list', []))
+
+            LOG.debug("Add selected: current dynamic gene list: {}".format(dynamic_gene_list))
+
         res = []
         if hgnc_ids:
-            LOG.info("Fetching genes by hgnc id")
+            LOG.info("Fetching genes by hgnc id: {}".format(hgnc_ids))
             res = self.hgnc_collection.find({'hgnc_id': {'$in': hgnc_ids}, 'build': build})
         elif hgnc_symbols:
             LOG.info("Fetching genes by hgnc symbols")
-            res = []
             for symbol in hgnc_symbols:
-                for gene_obj in self.gene_by_alias(symbol=symbol, build=build):
+                those_genes = self.gene_by_alias(symbol=symbol, build=build)
+                for gene_obj in those_genes:
                     res.append(gene_obj)
 
         for gene_obj in res:
+            LOG.debug("Appending gene {}".format(gene_obj['hgnc_symbol']))
             dynamic_gene_list.append(
                 {
                     'hgnc_symbol': gene_obj['hgnc_symbol'],
@@ -405,6 +459,9 @@ class CaseHandler(object):
         # Check if case exists with old case id
         old_caseid = '-'.join([case_obj['owner'], case_obj['display_name']])
         old_case = self.case(old_caseid)
+        # This is to keep sanger order and validation status
+        old_sanger_variants = self.case_sanger_variants(case_obj['_id'])
+
         if old_case:
             LOG.info("Update case id for existing case: %s -> %s", old_caseid, case_obj['_id'])
             self.update_caseid(old_case, case_obj['_id'])
@@ -441,7 +498,7 @@ class CaseHandler(object):
                     case_obj=case_obj,
                     variant_type=variant_type,
                     category=category,
-                    rank_threshold=case_obj.get('rank_score_threshold', 0),
+                    rank_threshold=case_obj.get('rank_score_threshold', 5),
                 )
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
@@ -449,6 +506,10 @@ class CaseHandler(object):
 
         if existing_case and update:
             self.update_case(case_obj)
+
+            # update Sanger status for the new inserted variants
+            self.update_case_sanger_variants(institute_obj,case_obj, old_sanger_variants)
+
         else:
             LOG.info('Loading case %s into database', case_obj['display_name'])
             self._add_case(case_obj)
@@ -502,6 +563,12 @@ class CaseHandler(object):
         old_case = self.case_collection.find_one(
             {'_id': case_obj['_id']}
         )
+
+        # if case is updated and was archived or active - make it inactive
+        updated_status = old_case.get('status')
+        if old_case.get('status') in ['archived', 'active']:
+            updated_status = 'inactive'
+
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case_obj['_id']},
             {
@@ -524,6 +591,8 @@ class CaseHandler(object):
                     'rank_model_version': case_obj.get('rank_model_version'),
                     'sv_rank_model_version': case_obj.get('sv_rank_model_version'),
                     'madeline_info': case_obj.get('madeline_info'),
+                    'chromograph_image_files': case_obj.get('chromograph_image_files'),
+                    'chromograph_prefixes': case_obj.get('chromograph_prefixes'),
                     'vcf_files': case_obj.get('vcf_files'),
                     'has_svvariants': case_obj.get('has_svvariants'),
                     'has_strvariants': case_obj.get('has_strvariants'),
@@ -531,7 +600,7 @@ class CaseHandler(object):
                     'research_requested': case_obj.get('research_requested', False),
                     'multiqc': case_obj.get('multiqc'),
                     'mme_submission': case_obj.get('mme_submission'),
-                    'status': old_case.get('status') if  old_case.get('status') != 'archived' else 'inactive'
+                    'status': updated_status
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER
@@ -617,6 +686,137 @@ class CaseHandler(object):
         # delete the old case
         self.case_collection.find_one_and_delete({'_id': case_obj['_id']})
         return new_case
+
+    def case_sanger_variants(self, case_id):
+        """Get all variants with verification ordered or
+            already verified for a case.
+
+        Accepts:
+            case_id(str): a case _id
+
+        Returns:
+            case_verif_variants(dict): a dictionary like this: {
+                'sanger_verified' : [list of vars],
+                'sanger_ordered' : [list of vars]
+            }
+        """
+        case_verif_variants = {
+            'sanger_verified' : [],
+            'sanger_ordered' : []
+        }
+
+        # Add the verified variants
+        LOG.info("Fetching all sanger variants and all validated variants")
+        results = {
+            'sanger_verified' : self.validated(case_id=case_id),
+            'sanger_ordered' : self.sanger_ordered(case_id=case_id)
+        }
+
+        for category in results:
+            res = results[category]
+            if not res:
+                continue
+            for var_id in res[0]['vars']:
+                variant_obj = self.variant(case_id=case_id, document_id=var_id)
+                if not variant_obj:
+                    continue
+                case_verif_variants[category].append(variant_obj)
+
+        LOG.info("Nr variants with sanger verification found: %s",
+                 len(case_verif_variants['sanger_verified']))
+        LOG.info("Nr variants with sanger ordered found: %s",
+                 len(case_verif_variants['sanger_ordered']))
+
+        return case_verif_variants
+
+    def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
+        """Update existing variants for a case according to a previous
+            verification status.
+
+            Accepts:
+                institute_obj(dict): an institute object
+                case_obj(dict): a case object
+
+            Returns:
+                updated_variants(dict): a dictionary like this: {
+                    'updated_verified' : [list of variant ids],
+                    'updated_ordered' : [list of variant ids]
+                }
+
+        """
+        LOG.debug('Updating verification status for variants in case:{}'.format(case_obj['_id']))
+
+        updated_variants = {
+            'updated_verified' : [],
+            'updated_ordered' : []
+        }
+        # update verification status for verified variants of a case
+        for category in case_verif_variants:
+            variants = case_verif_variants[category]
+            verb = 'sanger'
+            if category == 'sanger_verified':
+                verb = 'validate'
+
+            for old_var in variants:
+                # new var display name should be the same as old display name:
+                display_name = old_var['display_name']
+                # check if variant still exists
+                new_var = self.variant_collection.find_one({
+                    'case_id' : case_obj['_id'],
+                    'display_name': display_name }
+                )
+
+                if new_var is None: # if variant doesn't exist any more
+                    continue
+
+                # create a link to the new variant for the events
+                link="/{0}/{1}/{2}".format(
+                    new_var['institute'], case_obj['display_name'],new_var['_id']
+                )
+
+                old_event = self.event_collection.find_one({
+                    'case' : case_obj['_id'],
+                    'verb' : verb,
+                    'variant_id': old_var['variant_id']
+                })
+
+                if old_event is None:
+                    continue
+
+                user_obj = self.user(old_event['user_id'])
+
+                if category == 'sanger_verified':
+                    # if a new variant coresponds to the old and
+                    # there exist a verification event for the old one
+                    # validate new variant as well:
+                    updated_var = self.validate(
+                        institute=institute_obj,
+                        case=case_obj,
+                        user=user_obj,
+                        link=link,
+                        variant=new_var,
+                        validate_type=old_var.get('validation')
+                    )
+                    if updated_var:
+                        updated_variants['updated_verified'].append(updated_var['_id'])
+
+                else:
+                    # old variant had Sanger validation ordered
+                    # check old event to collect user_obj that ordered the verification:
+                    # set sanger ordered status for the new variant as well:
+                    updated_var = self.order_verification(
+                        institute=institute_obj,
+                        case=case_obj,
+                        user=user_obj,
+                        link=link,
+                        variant=new_var
+                    )
+                    if updated_var:
+                        updated_variants['updated_ordered'].append(updated_var['_id'])
+
+        n_status_updated = len(updated_variants['updated_verified'])+len(updated_variants['updated_ordered'])
+        LOG.info('Verification status updated for {} variants'.format(n_status_updated))
+        return updated_variants
 
 
 def get_variantid(variant_obj, family_id):

@@ -1,40 +1,122 @@
-from scout.server.blueprints.variants.controllers import variant_verification, variants_export_header, variant_export_lines
+import copy
+import logging
 
-def url_for(param, institute_id, case_name, variant_id):
-    pass
+from scout.server.blueprints.variants.controllers import (variants_export_header,
+                                                          variant_export_lines,
+                                                          variants, sv_variants)
 
+LOG = logging.getLogger(__name__)
 
-def test_sanger_mail_sent(mock_mail, real_variant_database, institute_obj, case_obj, user_obj,
-                          mock_sender, mock_comment):
+def test_variants_research_no_shadow_clinical_assessments(real_variant_database, institute_obj, case_obj):
+    # GIVEN a db with variants,
     adapter = real_variant_database
-    ## GIVEN we have a variant the we want to order sanger for
-    variant_obj = adapter.variant_collection.find_one()
-    variant_obj['hgnc_symbols'] = ''
-    variant_obj['panels'] = ''
+    case_id = case_obj['_id']
 
-    ## WHEN calling variant_verification method with order==True
-    variant_verification(adapter, mock_mail, institute_obj, case_obj, user_obj, variant_obj, mock_sender, 'complete_variant_url', True, mock_comment, url_builder=url_for)
+    # GIVEN a clinical variant from one case
+    variant_clinical = adapter.variant_collection.find_one({'case_id': case_id, 'variant_type': 'clinical'})
 
-    ## THEN the supplied mail objects send method should have been called
-    assert mock_mail._send_was_called
-    ## THEN the supplied mail objects send method should have received a message object
-    assert mock_mail._message
+    # GIVEN a copy of that variant marked research
+    variant_research = copy.deepcopy(variant_clinical)
+    variant_research['_id'] = 'research_version'
+    variant_research['variant_type'] = 'research'
+    adapter.variant_collection.insert_one(variant_research)
 
-def test_cancel_sanger_mail_sent(mock_mail, real_variant_database, institute_obj, case_obj, user_obj,
-                                  mock_sender, mock_comment):
+    # WHEN filtering for that variant in research
+    variants_query = {'variant_type': 'research'}
+    variants_query_res = adapter.variants(case_obj['_id'], query=variants_query,
+                                            category=variant_clinical['category'])
+
+    res = variants(adapter, institute_obj, case_obj, variants_query_res)
+    res_variants = res['variants']
+
+    LOG.debug('Variants: {}'.format(res_variants))
+    # THEN it is returned
+    assert any([variant['_id'] == variant_research['_id'] for variant in res_variants])
+
+    # THEN no previous annotations are reported back for the reseach case..
+    assert not any([variant.get('clinical_assessments') for variant in res_variants])
+
+def test_variants_research_shadow_clinical_assessments(real_variant_database, institute_obj, case_obj):
+    # GIVEN a db with variants,
     adapter = real_variant_database
-    ## GIVEN we have a variant the we want to order sanger for
-    variant_obj = adapter.variant_collection.find_one()
-    variant_obj['hgnc_symbols'] = ''
-    variant_obj['panels'] = ''
+    case_id = case_obj['_id']
 
-    ## WHEN calling variant_verification method with order==False
-    variant_verification(adapter, mock_mail, institute_obj, case_obj, user_obj, variant_obj, mock_sender, 'complete_variant_url', False, mock_comment, url_builder=url_for)
+    # GIVEN a clinical variant from one case
+    variant_clinical = adapter.variant_collection.find_one({'case_id': case_id, 'variant_type': 'clinical'})
 
-    ## THEN the supplied mail objects send method should have been called
-    assert mock_mail._send_was_called
-    ## THEN the supplied mail objects send method should have received a message object
-    assert mock_mail._message
+    # GIVEN a copy of that variant marked research
+    variant_research = copy.deepcopy(variant_clinical)
+    variant_research['_id'] = 'research_version'
+    variant_research['variant_type'] = 'research'
+    adapter.variant_collection.insert_one(variant_research)
+
+    # WHEN updating the manual assessments of the clinical variant
+    adapter.variant_collection.update_one({'_id': variant_clinical['_id']},
+        {'$set' : {
+                    'manual_rank': 2,
+                    'mosaic_tags': [ "1" ],
+                    'dismiss_variant': [ "2", "3" ],
+                    'acmg_classification': 0
+        }})
+
+    # WHEN filtering for that variant in research
+    variants_query = {'variant_type': 'research'}
+    variants_query_res = adapter.variants(case_obj['_id'], query=variants_query,
+                                            category=variant_clinical['category'])
+
+    res = variants(adapter, institute_obj, case_obj, variants_query_res)
+    res_variants = res['variants']
+
+    # THEN it is returned
+    assert any([variant['_id'] == variant_research['_id'] for variant in res_variants])
+
+    # THEN previous annotations are reported back for the reseach case.
+    assert any([variant.get('clinical_assessments') for variant in res_variants])
+
+def test_sv_variants_research_shadow_clinical_assessments(real_variant_database, institute_obj, case_obj):
+    # GIVEN a db with variants,
+    adapter = real_variant_database
+    case_id = case_obj['_id']
+
+    # GIVEN a clinical variant from one case
+    variant_clinical = adapter.variant_collection.find_one({'case_id': case_id, 'variant_type': 'clinical'})
+    # GIVEN the variant is an SV
+    adapter.variant_collection.update_one({'_id': variant_clinical['_id']},
+        {'$set' : {'category': 'sv', 'sub_category': 'dup'}})
+
+    # GIVEN a copy of that variant marked research
+    variant_research = copy.deepcopy(variant_clinical)
+    variant_research['_id'] = 'research_version'
+    variant_research['variant_type'] = 'research'
+    variant_research['category'] = 'sv'
+    variant_research['sub_category']: 'dup'
+    adapter.variant_collection.insert_one(variant_research)
+
+    # WHEN updating the manual assessments of the clinical variant
+    adapter.variant_collection.update_one({'_id': variant_clinical['_id']},
+        {'$set' : {
+                    'manual_rank': 2,
+                    'mosaic_tags': [ "1" ],
+                    'dismiss_variant': [ "2", "3" ]
+        }})
+
+    # WHEN filtering for that variant in research
+    variants_query = {'variant_type': 'research'}
+    variants_query_res = adapter.variants(case_obj['_id'], query=variants_query,
+                                            category='sv')
+    assert variants_query_res
+
+    res = sv_variants(adapter, institute_obj, case_obj, variants_query_res)
+    res_variants = res['variants']
+
+    LOG.debug('Variants: {}'.format(res_variants))
+
+    # THEN it is returned
+    assert any([variant['_id'] == variant_research['_id'] for variant in res_variants])
+
+    # THEN previous annotations are reported back for the reseach case.
+    assert any([variant.get('clinical_assessments') for variant in res_variants])
+
 
 def test_variant_csv_export(real_variant_database, case_obj):
     adapter = real_variant_database

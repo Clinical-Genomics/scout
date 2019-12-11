@@ -25,7 +25,10 @@ VERBS_MAP = {
     "open_research": "opened research mode for",
     "mark_causative": "marked causative for",
     "unmark_causative": "unmarked causative for",
+    "mark_partial_causative": "mark partial causative for",
+    "unmark_partial_causative" : "unmarked partial causative for",
     "manual_rank": "updated manual rank for",
+    "cancer_tier": "updated cancer tier for",
     "add_phenotype": "added HPO term for",
     "remove_phenotype": "removed HPO term for",
     "add_case": "added case",
@@ -42,8 +45,10 @@ VERBS_MAP = {
     "dismiss_variant": "Dismissed variant for",
     "mosaic_tags": "Updated mosaic tags for",
     "update_default_panels": "updated default panels for",
+    "update_clinical_filter_hpo": "updated clinical filter HPO status for",
     "mme_add": "Exported to MatchMaker patient",
     "mme_remove": "Removed from MatchMaker patient",
+    "filter_stash": "stored a filter for "
 }
 
 VERBS = list(VERBS_MAP.keys())

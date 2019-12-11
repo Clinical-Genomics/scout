@@ -51,10 +51,18 @@ def test_load_variants(real_populated_database, case_obj, variant_clinical_file)
     # THEN assert the variant is loaded
 
     assert sum(1 for i in adapter.variant_collection.find()) > 0
-
+    pathogenic_categories = set(['pathogenic', 'likely_pathogenic', 
+                            'conflicting_interpretations_of_pathogenecity', 4, 5])
     for variant in adapter.variant_collection.find():
-        if variant['chromosome'] != 'MT':
-            assert variant['rank_score'] >= rank_threshold
+        pathogenic = False
+        for annotation in variant.get('clnsig',[]):
+            if annotation['value'] in pathogenic_categories:
+                pathogenic = True
+        if variant['chromosome'] == 'MT':
+            continue
+        if pathogenic:
+            continue
+        assert variant['rank_score'] >= rank_threshold
         assert variant['category'] == 'snv'
         assert variant['variant_rank']
 
@@ -140,8 +148,6 @@ def test_load_mitochondrie(real_populated_database, case_obj, variant_clinical_f
     for variant in adapter.variant_collection.find():
         if variant['chromosome'] == 'MT':
             mt_variants_found += 1
-        else:
-            assert variant['rank_score'] >= rank_threshold
 
     assert mt_variants == mt_variants_found
 

@@ -27,6 +27,16 @@ def test_parse_small_sv(one_sv_variant, case_obj):
     assert parsed_variant['position'] == int(one_sv_variant.POS)
 
 
+def test_parse_small_str(one_str_variant, case_obj):
+    parsed_variant = parse_variant(one_str_variant, case_obj, category='str')
+
+    assert parsed_variant['category'] == 'str'
+    assert parsed_variant['str_status'] == one_str_variant.INFO['STR_STATUS']
+    assert parsed_variant['str_normal_max'] == one_str_variant.INFO['STR_NORMAL_MAX']
+    assert parsed_variant['str_pathologic_min'] == one_str_variant.INFO['STR_PATHOLOGIC_MIN']
+    assert parsed_variant['position'] == int(one_str_variant.POS)
+
+
 def test_parse_many_snvs(variants, case_obj):
     """docstring for test_parse_all_variants"""
 
@@ -41,6 +51,19 @@ def test_parse_many_svs(sv_variants, case_obj):
     for variant in sv_variants:
         try:
             parsed_variant = parse_variant(variant, case_obj)
+        except VcfError:
+            for info in variant['info_dict']:
+                print(info, variant['info'])
+            assert False
+        assert parsed_variant['chromosome'] == variant.CHROM
+
+
+def test_parse_many_strs(str_variants, case_obj):
+    """docstring for test_parse_many_strs"""
+
+    for variant in str_variants:
+        try:
+            parsed_variant = parse_variant(variant, case_obj, category='str')
         except VcfError:
             for info in variant['info_dict']:
                 print(info, variant['info'])

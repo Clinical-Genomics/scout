@@ -5,17 +5,16 @@
 {% endblock %}
 
 {% block top_nav %}
-  <li class="active">
-    <p class="navbar-text">Genes</p>
+  <li class="nav-item active">
+    <span class="navbar-text">Genes</span>
   </li>
 {% endblock %}
 
 {% block content_main %}
   {{ super() }}
 
-  <div class="row">
-    <div class="col-md-12">
-      <div class="panel panel-default">
+<div class="container-float">
+    <div class="card panel-default w-100 mt-3 justify-content-center">
         <div class="panel-heading">Genes</div>
         <table class="table table-bordered">
           <thead>
@@ -31,7 +30,6 @@
           {% endfor %}
           </tbody>
         </table>
-      </div>
     </div>
-  </div>
+</div>
 {% endblock %}

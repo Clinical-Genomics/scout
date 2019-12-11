@@ -55,6 +55,27 @@ def test_get_cases(adapter, case_obj):
     ## THEN we should get the correct case
     assert sum(1 for i in result) == 1
 
+def test_get_prioritized_cases(adapter, case_obj, institute_obj):
+    ## GIVEN an empty database (no cases)
+    assert adapter.case_collection.find_one() is None
+    # WHEN inserting a prioritized case
+    case_obj['status']='prioritized'
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN retrieving prioritized casese for the institute
+    result = adapter.prioritized_cases(institute_id=institute_obj['_id'])
+
+    # THEN one prioritized case is returned
+    assert sum(1 for i in result) == 1
+
+def test_nr_cases(adapter, case_obj):
+    ## GIVEN an empty database (no cases)
+    ## WHEN adding one case to the case collection
+    adapter.case_collection.insert_one(case_obj)
+    ## THEN the function nr_cases should return number of cases = 1
+    result = adapter.nr_cases(institute_id=case_obj['owner'])
+    assert result == 1
+
 
 def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
     adapter = real_adapter
@@ -356,6 +377,49 @@ def test_update_case_collaborators(adapter, case_obj):
     # THEN assert all collaborators where added
     assert set(res['collaborators']) == set([coll_1, coll_2, coll_3])
 
+def test_update_dynamic_gene_list(gene_database, case_obj):
+    # GIVEN an populated gene database,
+    adapter = gene_database
+
+    # GIVEN a case with an empty dynamic_gene_list
+    adapter.case_collection.insert_one(case_obj)
+    assert adapter.case_collection.find_one()
+    assert len(adapter.case(case_obj['_id'])['dynamic_gene_list']) == 0
+
+    # GIVEN a gene with a gene symobl
+    gene_obj = gene_database.hgnc_collection.find_one({'build': '37'})
+    assert gene_obj
+    hgnc_symbol = gene_obj.get('hgnc_symbol')
+    assert hgnc_symbol
+
+    # WHEN updating dynamic gene list with gene
+    adapter.update_dynamic_gene_list(case_obj, hgnc_symbols=[hgnc_symbol])
+    # THEN a the gene list will contain a gene
+    assert len(adapter.case(case_obj['_id'])['dynamic_gene_list']) == 1
+
+def test_update_dynamic_gene_list_with_bad_dict_entry(gene_database, case_obj):
+
+    # GIVEN an populated gene database,
+    adapter = gene_database
+
+    # GIVEN an **incorrectly** assigned dict instead of list as dynamic panel
+    case_obj['dynamic_gene_list'] = {}
+
+    # GIVEN a case with an empty dynamic_gene_list
+    adapter.case_collection.insert_one(case_obj)
+    assert adapter.case_collection.find_one()
+    assert len(adapter.case(case_obj['_id'])['dynamic_gene_list']) == 0
+
+    # GIVEN a gene with a gene symobl
+    gene_obj = gene_database.hgnc_collection.find_one({'build': '37'})
+    assert gene_obj
+    hgnc_symbol = gene_obj.get('hgnc_symbol')
+    assert hgnc_symbol
+
+    # WHEN updating dynamic gene list with gene
+    adapter.update_dynamic_gene_list(case_obj, hgnc_symbols=[hgnc_symbol])
+    # THEN a the gene list will contain a gene
+    assert len(adapter.case(case_obj['_id'])['dynamic_gene_list']) == 1
 
 def test_update_case_individuals(adapter, case_obj):
     # GIVEN an empty database (no cases)
@@ -382,7 +446,7 @@ def test_update_case_individuals(adapter, case_obj):
 def test_archive_unarchive_case(adapter, case_obj, institute_obj, user_obj):
     ## GIVEN an empty adapter
     assert adapter.case_collection.find_one() is None
-    
+
     ## WHEN inserting case, user and institute
     adapter.case_collection.insert_one(case_obj)
     adapter.user_collection.insert_one(user_obj)
@@ -405,15 +469,12 @@ def test_archive_unarchive_case(adapter, case_obj, institute_obj, user_obj):
     # and user becomes assignee
     assert user_obj['email'] in res['assignees']
 
-
-
 def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
 
     # GIVEN an empty database (no cases)
     assert sum(1 for i in adapter.cases()) == 0
     adapter.case_collection.insert_one(case_obj)
     assert sum(1 for i in adapter.cases()) == 1
-    logger.info("Testing to update case")
 
     res = adapter.case(case_obj['_id'])
     assert res['status'] == 'inactive'
@@ -427,11 +488,10 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
     # request rerun for test case
     adapter.request_rerun(institute_obj, res, user_obj, 'blank')
     res = adapter.case(case_obj['_id'])
-
+    # THEN rerun_requested is flagged
     assert res['rerun_requested'] == True
-
-    # Make sure case is not archived
-    assert res['status'] == 'inactive'
+    # Make sure case is still archived
+    assert res['status'] == 'archived'
 
     # Make sure user becomes assignee of the case
     assert user_obj['email'] in res['assignees']
@@ -440,6 +500,12 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
     with pytest.raises(ValueError):
         adapter.request_rerun(institute_obj, res, user_obj, 'blank')
 
+    # and WHEN updating the case agagin
+    res = adapter.update_case(case_obj)
+
+    # THEN it is inactivated
+    res = adapter.case(case_obj['_id'])
+    assert res['status'] == 'inactive'
 
 def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
     adapter = hpo_database
@@ -535,3 +601,19 @@ def test_get_cases_cohort(real_adapter, case_obj, user_obj):
     result = adapter.cases(name_query="cohort:{}".format(cohort_name))
     # THEN we should get the case returned
     assert sum(1 for i in result) == 1
+
+def test_get_cases_solved_since(real_adapter, case_obj, user_obj, institute_obj, variant_obj):
+    adapter = real_adapter
+    # GIVEN an empty database (no cases)
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN querying for cases solved within 1 day
+    # THEN no case are found
+    assert len([case for case in adapter.cases(within_days=1)]) == 0
+
+    # GIVEN a marked causative
+    adapter.mark_causative(institute_obj, case_obj, user_obj, 'link', variant_obj)
+
+    # WHEN querying for cases solved within 1 day
+    # THEN one case is found
+    assert len([case for case in adapter.cases(finished=True, within_days=1)]) == 1

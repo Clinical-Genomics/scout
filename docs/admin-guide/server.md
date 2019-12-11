@@ -35,6 +35,8 @@ REPORT_LANGUAGE = 'sv'
 MAIL_USERNAME = 'paul.anderson@gmail.com'
 MAIL_PASSWORD = 'mySecretPassw0rd'
 
+TICKET_SYSTEM_EMAIL = 'support@sekvens.nu'
+
 # emails to send error log message to
 ADMINS = ['robin.andeer@scilifelab.se']
 
@@ -53,11 +55,6 @@ GOOGLE = dict(
     access_token_url='https://accounts.google.com/o/oauth2/token',
     access_token_method='POST'
 )
-
-# Use local files for the genome viewer pileup.js
-PILEUP_GENOME = '/path/to/local/pileup_refs/hg19.2bit'
-PILEUP_EXONS = '/path/to/local/pileup_refs/ensGene.bb'
-
 
 # enable the phenomizer service which links HPO phenotype terms to diseases/genes
 PHENOMIZER_USERNAME = 'phenoUser'

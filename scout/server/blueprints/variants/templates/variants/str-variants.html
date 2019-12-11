@@ -1,7 +1,7 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 {% from "variants/utils.html" import compounds_table %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
-{% from "utils.html" import flash_messages, comments_table %}
+{% from "utils.html" import comments_table %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - STR variants
@@ -9,20 +9,20 @@
 
 {% block top_nav %}
   {{ super() }}
-  <li>
-    <a href="{{ url_for('cases.index') }}">Institutes</a>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-  <li>
-    <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
-  <li>
-    <a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
       {{ case.display_name }}
     </a>
   </li>
-  <li class="active">
+  <li class="nav-item active">
     <span class="navbar-text">{{ form.variant_type.data|capitalize }} STRs</span>
   </li>
 {% endblock %}
@@ -31,36 +31,40 @@
   {{ super() }}
 {% endblock %}
 
-{% block content %}
+{% block content_main %}
 <form>
-  <div class="container-fluid main">
-    {{ flash_messages() }}
-  </div>
-  <div class="table-responsive">
+  <div class="card mt-3">
     <table class="table table-bordered table-hover">
       <thead>
         <tr>
-          <th class="col-xs-1" title="Rank position">Rank</th>
-          <th class="col-xs-1" title="Repeat ID">Repeat locus</th>
-          <th class="col-xs-2" title="Repeat unit">Reference repeat unit</th>
-          <th class="col-xs-1" title="ALT">Estimated size</th>
-          <th class="col-xs-1" title="ReferenceSize">Reference size</th>
-          <th class="col-xs-1" title="Status">Status</th>
-          <th class="col-xs-2" title="GT">Genotype</th>
-          <th class="col-xs-1" title="Chromosome">Chr.</th>
-          <th class="col-xs-2" title="Position">Position</th>
+          <th style="width:8%" title="Index">Index</th>
+          <th style="width:8%" title="Repeat ID">Repeat locus</th>
+          <th style="width:12%" title="Repeat unit">Reference repeat unit</th>
+          <th style="width:8%" title="ALT">Estimated size</th>
+          <th style="width:8%" title="ReferenceSize">Reference size</th>
+          <th style="width:10%" title="Status">Status</th>
+          <th style="width:8%" title="Max normal">Max normal</th>
+          <th style="width:8%" title="Min pathologic">Min pathologic</th>
+          <th style="width:14%" title="GT">Genotype</th>
+          <th style="width:6%" title="Chromosome">Chr.</th>
+          <th style="width:10%" title="Position">Position</th>
         </tr>
       </thead>
       <tbody>
+        {% set ns = namespace(allele0='') %}
         {% for variant in variants %}
+          {% if variant.chromosome + variant.position|string != ns.allele0 %}
+            <tr style="height:10px;"></tr>
+          {% endif %}
+          {% set ns.allele0 = variant.chromosome + variant.position|string %}
           {% if variant.dismiss_variant %}
               <tr class="dismiss">
           {% elif variant.str_status == 'normal' %}
               <tr class="bg-success">
           {% elif variant.str_status == 'full_mutation' %}
-              <tr class="bg-warning">
+              <tr class="bg-danger">
           {% elif variant.str_status == 'pre_mutation' %}
-              <tr class="medium">
+              <tr class="bg-warning">
 	        {% else %}
 	            <tr>
 	        {% endif %}
@@ -70,10 +74,12 @@
             <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
             <td class="text-right">{{ variant.str_ref }}</td>
             <td>{{ variant.str_status }}</td>
+            <td>{{ variant.str_normal_max }}</td>
+            <td>{{ variant.str_pathologic_min }}</td>
             <td>{% for sample in variant.samples %}
                   {% if sample.genotype_call != "./." %}
-                    <div class="pull-left">{{ sample.display_name }}</div>
-                    <div class="pull-right">{{ sample.genotype_call }}</div><br>
+                    <div class="float-left">{{ sample.display_name }}</div>
+                    <div class="float-right">{{ sample.genotype_call }}</div><br>
                   {% endif %}
                 {% endfor %}
             </td>
@@ -81,7 +87,7 @@
             <td>
               {{ variant.position }}
               {% if case.bam_files %}
-                <a class="btn btn-default btn-sm pull-right" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
+                <a class="btn btn-outline-secondary btn-sm float-right" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
               {% endif %}
             </td>
         </tr>
@@ -94,26 +100,26 @@
         {% endfor %}
       </tbody>
     </table>
-
-    {{ footer() }}
   </div>
+  <br>
+  {{ footer() }}
 </form>
 {% endblock %}
 
 {% macro cell_rank(variant) %}
   <a class="variants-row-item flex-small layout"
-     href="{{ url_for('variants.variant', institute_id=institute._id, case_name=case.display_name,
-                      variant_id=variant._id) }}">
+     href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
+                      variant_id=variant._id, str='yes') }}">
     {{ variant.variant_rank }}
   </a>
   {% set comment_count = variant.comments.count() %}
   {% if variant.manual_rank %}
-    <span class="badge pull-right" title="Manual rank">{{ variant.manual_rank }}</span>
+    <span class="badge float-right" title="Manual rank">{{ variant.manual_rank }}</span>
   {% endif %}
   {% if comment_count > 0 %}
     {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
     <a href="#"
-       class="badge pull-right"
+       class="badge float-right"
        data-toggle="popover"
        data-placement="right"
        data-html="true"
@@ -134,11 +140,23 @@
   <div class="container-fluid">
     <div class="form-group text-center">
       {% if more_variants %}
-        <a class="btn btn-default" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
-          Next page
-        </a>
+        <div class="row">
+            <div class="col-6">
+              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+                  First page
+              </a>
+              </div>
+              <div class="col-6">
+                <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
+                  Next page
+                </a>
+              </div>
+        </div>
       {% else %}
         <i class="text-muted">No more variants to display</i>
+        <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+      First page
+        </a>
       {% endif %}
     </div>
   </div>
@@ -148,7 +166,6 @@
   {{ super() }}
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
   <script>
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
@@ -159,30 +176,7 @@
       $('table').stickyTableHeaders({
         fixedOffset: $(".navbar-fixed-top")
       });
-
-      $('select[multiple]').multiselect({
-        buttonWidth: '100%'
-      });
     })
-
-    function add_export(){
-      var the_form = document.forms['filters_form'];
-      var hidden_export = document.createElement('input');
-
-      hidden_export.type = 'hidden';
-      hidden_export.name = 'export';
-      hidden_export.value = 'True';
-      hidden_export.id = 'export';
-      the_form.appendChild(hidden_export);
-      the_form.submit();
-    }
-
-    function remove_export(){
-      var the_form = document.forms['filters_form'];
-      var hidden_export = document.getElementById('export');
-      the_form.removeChild(hidden_export);
-      the_form.submit();
-    }
 
   </script>
 {% endblock %}

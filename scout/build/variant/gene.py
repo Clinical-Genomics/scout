@@ -57,6 +57,8 @@ def build_gene(gene, hgncid_to_gene=None):
 
         if hgnc_gene.get('inheritance_models'):
             gene_obj['inheritance'] = hgnc_gene['inheritance_models']
+        if hgnc_gene.get('phenotypes'):
+            gene_obj['phenotypes'] = hgnc_gene['phenotypes']
 
     transcripts = []
     for transcript in gene['transcripts']:

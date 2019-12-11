@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout_bs4.html" %}
 
 {% block title %}
   {{ super() }} - Institutes
@@ -7,32 +7,27 @@
 {% block top_nav %}
   {{ super() }}
 
-  <li class="active">
-    <span class="navbar-text">Institutes</span>
+  <li class="nav-item active">
+    <a class="nav-link" href="#">Institutes</a>
   </li>
+
 {% endblock %}
 
 {% block content_main %}
-  {% for institute, case_count in institutes %}
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <div class="row">
-          <div class="col-xs-8">
-            <h3 class="panel-title">
-              <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
-                {{ institute.display_name }}
-              </a>
+  <div class="container-fluid" style="margin-top:20px">
+    <ul class="list-group">
+      {% for institute, case_count in institutes %}
+        <li class="list-group-item align-items-center">
+          <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+            {{ institute.display_name }}
+          </a>
+          {% if current_user.is_admin %}
+            <span class="text-muted">({{ institute._id }})</span>
+          {% endif %}
+            <span class="badge badge-secondary badge-pill float-right">{{ case_count }} cases </span>
+        </li>
+      {% endfor %}
 
-              {% if current_user.is_admin %}
-                <span class="text-muted">({{ institute._id }})</span>
-              {% endif %}
-            </h3>
-          </div>
-          <div class="col-xs-4">
-            <span class="badge pull-right">{{ case_count }} cases</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  {% endfor %}
+    </ul>
+  </div>
 {% endblock %}

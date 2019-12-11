@@ -18,50 +18,11 @@ def remote_static():
     file_path = request.args.get('file')
 
     range_header = request.headers.get('Range', None)
-    if not range_header and file_path.endswith('.bam'):
+    if not range_header and (file_path.endswith('.bam') or file_path.endswith('.cram')):
         return abort(500)
 
     new_resp = send_file_partial(file_path)
     return new_resp
-
-
-@alignviewers_bp.route('/pileup')
-def pileup():
-    """Visualize BAM alignments."""
-    vcf_file = request.args.get('vcf')
-    bam_files = request.args.getlist('bam')
-    bai_files = request.args.getlist('bai')
-    samples = request.args.getlist('sample')
-    alignments = [{'bam': bam, 'bai': bai, 'sample': sample}
-                  for bam, bai, sample in zip(bam_files, bai_files, samples)]
-
-    position = {
-        'contig': request.args['contig'],
-        'start': request.args['start'],
-        'stop': request.args['stop']
-    }
-
-    genome = current_app.config.get('PILEUP_GENOME')
-    if genome:
-        if not os.path.isfile(genome):
-            flash("The pilup genome path ({}) provided does not exist".format(genome))
-            genome = None
-    LOG.debug("Use pileup genome %s", genome)
-
-    exons = current_app.config.get('PILEUP_EXONS')
-    if exons:
-        if not os.path.isfile(exons):
-            flash("The pilup exons path ({}) provided does not exist".format(exons))
-            genome = None
-    LOG.debug("Use pileup exons %s", exons)
-
-    LOG.debug("View alignment for positions Chrom:{0}, Start:{1}, End: {2}".format(
-              position['contig'], position['start'], position['stop']))
-    LOG.debug("Use alignment files {}".format(alignments))
-
-    return render_template('alignviewers/pileup.html', alignments=alignments,
-                           position=position, vcf_file=vcf_file,
-                           genome=genome, exons=exons)
 
 @alignviewers_bp.route('/igv')
 def igv():
@@ -127,15 +88,15 @@ def igv():
     }
 
     sample_tracks = []
-
     counter = 0
     for sample in samples:
-        # some samples might not have an associated bam file, take care if this
-        if bam_files[counter]:
-            sample_tracks.append({ 'name' : sample, 'url' : bam_files[counter],
-                                   'indexURL' : bai_files[counter],
-                                   'height' : 700
-                                   })
+        sample_tracks.append({
+            'name' : sample,
+            'url' : bam_files[counter],
+            'format': bam_files[counter].split(".")[-1], # "bam" or "cram"
+            'indexURL' : bai_files[counter],
+            'height' : 700
+        })
         counter += 1
 
     display_obj['sample_tracks'] = sample_tracks

@@ -24,6 +24,7 @@ CLINVAR_HEADER = {
     'condition_id_value' : 'Condition ID value',
     'condition_comment' : 'Condition comment',
     'clinsig' : 'Clinical significance',
+    'clinsig_comment' : 'Comment on clinical significance',
     'last_evaluated' : 'Date last evaluated',
     'variant_comment' : 'Comment on variant',
     'assertion_method' : 'Assertion method',
@@ -44,7 +45,6 @@ CASEDATA_HEADER = {
     'is_affected' : 'Affected status',
     'sv_analysis_method' : 'Structural variant method/analysis type',
     'clin_features' : 'Clinical features',
-    'clin_features_comment' : 'Comment on clinical features',
     'tissue' : 'Tissue',
     'sex' : 'Sex',
     'age' : 'Age',
@@ -56,7 +56,6 @@ CASEDATA_HEADER = {
     'zygosity' : 'Zygosity',
     'co_occurr_gene' : 'Co-occurrences, same gene',
     'co_occurr_other' : 'Co-occurrence, other genes',
-    'evidence_cit' : 'Evidence citations',
     'platform_type' : 'Platform type',
     'platform_name' : 'Platform name',
     'method' : 'Method',
@@ -64,4 +63,41 @@ CASEDATA_HEADER = {
     'method_cit' : 'Method citations',
     'testing_lab' : 'Testing laboratory',
     'reported_at' : 'Date variant was reported to submitter'
+}
+
+CLNSIG_TERMS = {
+    'affects',
+    'benign',
+    'benign/likely_benign',
+    'conflicting_interpretations_of_pathogenicity',
+    'likely_benign',
+    'likely_pathogenic',
+    'pathogenic',
+    'pathogenic/likely_pathogenic',
+    'uncertain_significance',
+    'affects',
+    'association',
+    'drug_response',
+    'other',
+    'protective',
+    'risk_factor',
+    'association',
+    'association_not_found',
+    'drug_response',
+    'not_provided',
+    'other',
+    'protective',
+    'risk_factor'
+}
+
+REVSTAT_TERMS = {
+    'conflicting_interpretations',
+    'multiple_submitters',
+    'no_conflicts',
+    'single_submitter',
+    'criteria_provided',
+    'no_assertion_criteria_provided',
+    'no_assertion_provided',
+    'practice_guideline',
+    'reviewed_by_expert_panel'
 }

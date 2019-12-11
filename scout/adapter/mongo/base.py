@@ -44,13 +44,14 @@ from .acmg import ACMGHandler
 from .index import IndexHandler
 from .clinvar import ClinVarHandler
 from .matchmaker import MMEHandler
+from .filter import FilterHandler
 
 log = logging.getLogger(__name__)
 
 class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
                    HpoHandler, PanelHandler, QueryHandler, VariantHandler,
                    UserHandler, ACMGHandler, IndexHandler, ClinVarHandler,
-                   MMEHandler, TranscriptHandler):
+                   MMEHandler, TranscriptHandler, FilterHandler):
 
     """Adapter for cummunication with a mongo database."""
 
@@ -84,6 +85,7 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         self.clinvar_submission_collection = database.clinvar_submission
         self.exon_collection = database.exon
         self.transcript_collection = database.transcript
+        self.filter_collection = database.filter
 
     def collections(self):
         """Return all collection names

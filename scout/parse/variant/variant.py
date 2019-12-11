@@ -130,6 +130,7 @@ def parse_variant(variant, case, variant_type='clinical',
 
     ################# Add rank score #################
     # The rank score is central for displaying variants in scout.
+    # Use RankScore for somatic variations also
 
     rank_score = parse_rank_score(variant.INFO.get('RankScore', ''), genmod_key)
     parsed_variant['rank_score'] = rank_score or 0
@@ -192,6 +193,16 @@ def parse_variant(variant, case, variant_type='clinical',
     if str_status:
         parsed_variant['str_status'] = str(str_status)
 
+    # str normal max - max number of repeats to call an STR variant normal
+    str_normal_max = variant.INFO.get('STR_NORMAL_MAX')
+    if str_normal_max:
+        parsed_variant['str_normal_max'] = int(str_normal_max)
+
+    # str pathological min - min number of repeats to call an STR variant pathologic
+    str_pathologic_min = variant.INFO.get('STR_PATHOLOGIC_MIN')
+    if str_pathologic_min:
+        parsed_variant['str_pathologic_min'] = int(str_pathologic_min)
+        
     ################# Add gene and transcript information #################
     raw_transcripts = []
     if vep_header:
@@ -234,16 +245,7 @@ def parse_variant(variant, case, variant_type='clinical',
     parsed_variant['hgnc_ids'] = list(hgnc_ids)
 
     ################# Add clinsig prediction #################
-    if variant.INFO.get('CLNACC'):
-        acc = variant.INFO.get('CLNACC')
-    else:
-        acc = variant.INFO.get('CLNVID')
-    clnsig_predictions = parse_clnsig(
-        acc=acc,
-        sig=variant.INFO.get('CLNSIG'),
-        revstat=variant.INFO.get('CLNREVSTAT'),
-        transcripts=parsed_transcripts
-        )
+    clnsig_predictions = parse_clnsig(variant, transcripts=parsed_transcripts)
 
     if clnsig_predictions:
         parsed_variant['clnsig'] = clnsig_predictions
