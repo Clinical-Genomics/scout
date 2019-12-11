@@ -4,7 +4,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [x.x.x]
+
+### Added
+- Rank score model in causatives page
+- Exportable HPO terms from phenotypes page
+- AMP guideline tiers for cancer variants
+- Adds scroll for the trancript tab
+- Added CLI option to query cases on time since case event was added
+- Shadow clinical assessments also on research variants display
+- Support for CRAM alignment files
+- Improved str variants view : sorting by locus, grouped by allele.
+- Delivery report PDF export
+- New mosaicism tag option
+
+### Fixed
+- Fixed update OMIM command bug due to change in the header of the genemap2 file
+- Removed Mosaic Tag from Cancer variants
+- Fixes issue with unaligned table headers that comes with hidden Datatables
+- Layout in general report PDF export
+- Fixed issue on the case statistics view. The validation bars didn't show up when all institutes were selected. Now they do.
+- Included Font Awesome availability in general report
+- Fixed missing path import by importing pathlib.Path
+- Hadle index inconsistencies in the update index functions
+
+
+## [4.9.0]
 
 ### Added
 - Improved MatchMaker pages, including visible patient contacts email address
@@ -14,11 +40,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - More automatic tests
 
 ### Fixed
+- Fix error when a gene is added to an empty dynamic gene panel
+- Fix crash when attempting to add genes on incorrect format to dynamic gene panel
 - Manual rank variant tags could be saved in a "Select a tag"-state, a problem in the variants view.
 - Same case evaluations are no longer shown as gray previous evaluations on the variants page
 - Stay on research pages, even if reset, next first buttons are pressed..
 - Overlapping variants will now be visible on variant page again
 - Fix missing classification comments and links in evaluations page
+- All prioritized cases are shown on cases page
 
 
 ## [4.8.3]
@@ -27,6 +56,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Bug when ordering sanger
+- Improved scrolling over long list of genes/transcripts
 
 
 ## [4.8.2]

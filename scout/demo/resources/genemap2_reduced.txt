@@ -1,7 +1,7 @@
 # Copyright (c) 1966-2018 Johns Hopkins University. Use of this file adheres to the terms specified at https://omim.org/help/agreement.
 # Generated: 2018-04-24
 # See end of file for additional documentation on specific fields
-# Chromosome	Genomic Position Start	Genomic Position End	Cyto Location	Computed Cyto Location	Mim Number	Gene Symbols	Gene Name	Approved Symbol	Entrez Gene ID	Ensembl Gene ID	Comments	Phenotypes	Mouse Gene Symbol/ID
+# Chromosome	Genomic Position Start	Genomic Position End	Cyto Location	Computed Cyto Location	MIM Number	Gene Symbols	Gene Name	Approved Symbol	Entrez Gene ID	Ensembl Gene ID	Comments	Phenotypes	Mouse Gene Symbol/ID
 chr1	1232248	1235040	1p36.3	1p36.33	615291	B3GALT6, SEMDJL1, EDSSPD2	UDP-Gal:beta-Gal beta-1,3-galactosyltransferase polypeptide 6	B3GALT6	126792	ENSG00000176022		Ehlers-Danlos syndrome, spondylodysplastic type, 2, 615349 (3), Autosomal recessive; Spondyloepimetaphyseal dysplasia with joint laxity, type 1, with or without fractures, 271640 (3), Autosomal recessive	B3galt6 (MGI:2152819)
 chr1	28329001	28335966	1p35.3	1p35.3	612384	MED18	Mediator complex subunit 18	MED18	54797	ENSG00000130772			Med18 (MGI:1914469)
 chr1	35557791	35566778	1p34.3	1p34.3	608458	NCDN, KIAA0607	Neurochondrin	NCDN	23154	ENSG00000020129			Ncdn (MGI:1347351)

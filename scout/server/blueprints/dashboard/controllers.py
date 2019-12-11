@@ -73,7 +73,7 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
     total_cases = general_info['total_cases']
     sliced_case_ids = general_sliced_info['case_ids']
     verified_query = {
-        'verb' : 'validate',
+        'verb' : { '$in' : ['validate', 'sanger']},
     }
     if institute_id: # filter by institute if users wishes so
         verified_query['institute'] =  institute_id
@@ -91,7 +91,6 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
     for validate_event in list(validate_events):
         case_id = validate_event.get('case')
         var_obj = adapter.variant(case_id=case_id, document_id=validate_event['variant_id'])
-
         if var_obj: # Don't take into account variants which have been removed from db
             var_valid_orders += 1
             if case_id in sliced_case_ids:
@@ -209,9 +208,7 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
 
     total_cases = 0
     for total_cases,case in enumerate(cases,1):
-        # If only looking at one institute we need to save the case ids
-        if institute_id:
-            case_ids.add(case['_id'])
+        case_ids.add(case['_id'])
         if case.get('phenotype_terms'):
             phenotype_cases += 1
         if case.get('causatives'):

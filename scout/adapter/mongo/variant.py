@@ -220,7 +220,8 @@ class VariantHandler(VariantLoader):
 
         return self.variant_collection.find(query)
 
-    def variant(self, document_id=None, gene_panels=None, case_id=None, simple_id=None):
+    def variant(self, document_id=None, gene_panels=None, case_id=None,
+                simple_id=None, variant_type='clinical'):
         """Returns the specified variant.
 
            Arguments:
@@ -228,6 +229,7 @@ class VariantHandler(VariantLoader):
                gene_panels(List[GenePanel])
                case_id (str): case id (will search with "variant_id")
                simple_id (str): a variant simple_id (example: 1_161184089_G_GTA)
+               variant_type(str): 'research' or 'clinical' - default 'clinical'
 
            Returns:
                variant_object(Variant): A odm variant object
@@ -241,6 +243,7 @@ class VariantHandler(VariantLoader):
             # search for a variant in a case by its simple_id
             query['case_id'] = case_id
             query['simple_id'] = simple_id
+            query['variant_type'] = variant_type
         else:
             # search with a unique id
             query['_id'] = document_id
@@ -515,11 +518,11 @@ class VariantHandler(VariantLoader):
         return variants
 
     def evaluated_variants(self, case_id):
-        """Returns variants that has been evaluated
+        """Returns variants that have been evaluated
 
         Return all variants, snvs/indels and svs from case case_id
-        which have a entry for 'acmg_classification', 'manual_rank', 'dismiss_variant'
-        or if they are commented.
+        which have a entry for 'acmg_classification', 'manual_rank', 'dismiss_variant',
+        'cancer_tier' or if they are commented.
 
         Args:
             case_id(str)
@@ -535,6 +538,7 @@ class VariantHandler(VariantLoader):
                     '$or': [
                         {'acmg_classification': {'$exists': True}},
                         {'manual_rank': {'$exists': True}},
+                        {'cancer_tier': {'$exists': True}},
                         {'dismiss_variant': {'$exists': True}},
                     ]
                 }

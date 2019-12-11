@@ -2,9 +2,15 @@
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal %}
 {% from "utils.html" import comments_panel, activity_panel %}
 {% from "cases/case_ideograms.html" import case_ideograms %}
+{% from "variants/utils.html" import tier_cell %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+
 {% endblock %}
 
 {% block top_nav %}
@@ -486,8 +492,8 @@
                   <span class="badge badge-default">Verification ordered</span>
                 {% elif variant.sanger_ordered %}
                   <span class="badge badge-success">Validated</span>
-                {% elif variant.manual_rank %}
-                  <span class="badge badge-default">{{ variant.manual_rank }}</span>
+                {% elif variant.manual_rank or variant.cancer_tier %}
+                  {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
                 {% endif %}
                 {% if variant.mosaic_tags %}
                   <span class="badge badge-info">mosaic</span>
@@ -934,7 +940,7 @@
         </form>
       {% endif %}
     </div>
-    <ul class="list-group fixed-panel">
+    <ul class="list-group fixed-panel list-scroll">
       {% for hpo_gene in case.dynamic_gene_list %}
         <li class="list-group-item" title="{{ hpo_gene.description }}">
           {{ hpo_gene.hgnc_symbol }}
@@ -971,8 +977,8 @@
 {% macro genepanels_table() %}
   <div class="card panel-default">
     <div class="panel-heading">Gene panels</div>
-    <div class="table-responsive fixed-panel">
-      <table id="panel-table" class="table tablesorter">
+          <div class="table-responsive fixed-panel">
+      <table id="panel-table" class="table" style="width:100%">
         <thead>
           <tr>
             <th>Panel</th>
@@ -1030,13 +1036,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
-<script src="https://mottie.github.io/tablesorter/js/jquery.tablesorter.js"></script>
+<script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
 
 <script>
-    $(function() {
-    $("#panel-table").tablesorter({ sortList: [[0,0]]})
-  })
+ $('#panel-table').DataTable({
+    scrollY: 350,
+    scrollCollapse: true,
+    paging: false,
+    searching: false,
+    ordering: true,
+    info: false
+        });
 </script>
+
 
 <script>
 $(function () {
