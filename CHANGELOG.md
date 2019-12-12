@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Delivery report PDF export
 - New mosaicism tag option
 - Add or modify individuals' age or tissue type from case page
+- Remove dependency of loqusdb by utilising the CLI
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
@@ -183,7 +184,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation for loading/updating exons
 - Showing SV variant annotations: SV cgh frequencies, gnomad-SV, local SV frequencies
 - Showing transcripts mapping score in segmental duplications
-- Handle requests to Ensembl Rest API  
+- Handle requests to Ensembl Rest API
 - Handle requests to Ensembl Rest Biomart
 - STR variants view now displays GT and IGV link.
 - Description field for gene panels
