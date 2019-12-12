@@ -7,7 +7,6 @@ from .users import users
 from .institutes import institutes
 from .diseases import diseases
 from .hpo import hpo
-from .whitelist import whitelist
 from .aliases import aliases
 from .individuals import individuals
 from .index import index
@@ -36,7 +35,6 @@ view.add_command(users)
 view.add_command(institutes)
 view.add_command(diseases)
 view.add_command(hpo)
-view.add_command(whitelist)
 view.add_command(aliases)
 view.add_command(individuals)
 view.add_command(index)
