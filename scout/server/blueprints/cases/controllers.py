@@ -15,7 +15,8 @@ from flask_login import current_user
 
 from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP,
                              CANCER_PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
-from scout.constants.variant_tags import MANUAL_RANK_OPTIONS, DISMISS_VARIANT_OPTIONS, GENETIC_MODELS
+from scout.constants.variant_tags import (MANUAL_RANK_OPTIONS, CANCER_TIER_OPTIONS,
+                             DISMISS_VARIANT_OPTIONS, GENETIC_MODELS)
 from scout.export.variant import export_mt_variants
 from scout.server.utils import institute_and_case, user_institutes
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
@@ -214,6 +215,8 @@ def case(store, institute_obj, case_obj):
         'partial_causatives' : partial_causatives,
         'collaborators': collab_ids,
         'cohort_tags': COHORT_TAGS,
+        'manual_rank_options': MANUAL_RANK_OPTIONS,
+        'cancer_tier_options': CANCER_TIER_OPTIONS
     }
 
     return data
@@ -236,6 +239,7 @@ def case_report_content(store, institute_obj, case_obj):
         'suspects_detailed': 'suspects',
         'classified_detailed': 'acmg_classification',
         'tagged_detailed': 'manual_rank',
+        'tier_detailed': 'cancer_tier',
         'dismissed_detailed': 'dismiss_variant',
         'commented_detailed': 'is_commented',
     }
@@ -253,6 +257,7 @@ def case_report_content(store, institute_obj, case_obj):
     data['comments'] = store.events(institute_obj, case=case_obj, comments=True)
 
     data['manual_rank_options'] = MANUAL_RANK_OPTIONS
+    data['cancer_tier_options'] = CANCER_TIER_OPTIONS
     data['dismissed_options'] = DISMISS_VARIANT_OPTIONS
     data['genetic_models'] = dict(GENETIC_MODELS)
     data['report_created_at'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -433,6 +438,27 @@ def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
                        case_name=case_obj['display_name'])
         store.update_synopsis(institute_obj, case_obj, user_obj, link,
                               content=new_synopsis)
+
+
+def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissue):
+    """Handle update of individual data (age and/or Tissue type) for a case"""
+
+    case_individuals = case_obj.get('individuals')
+    for subject in case_individuals:
+        if subject['individual_id'] == ind:
+            subject['age'] = round(float(age), 1)
+            subject['tissue_type'] = tissue
+
+    case_obj['individuals'] = case_individuals
+    # update case with new individual data
+    store.update_case(case_obj)
+
+    # create an associated event
+    link = url_for('cases.case', institute_id=institute_obj['_id'],
+                   case_name=case_obj['display_name'])
+    store.create_event(institute=institute_obj, case=case_obj, user=user_obj,
+        link=link, category='case', verb='update_individual', subject=case_obj['display_name'])
+
 
 
 def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):

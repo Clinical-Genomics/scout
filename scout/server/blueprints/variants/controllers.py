@@ -15,13 +15,14 @@ from flask_mail import Message
 from werkzeug.datastructures import MultiDict
 
 from scout.constants import (
-    CLINSIG_MAP, ACMG_MAP, MANUAL_RANK_OPTIONS, ACMG_OPTIONS, DISMISS_VARIANT_OPTIONS,
-    ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN, VERBS_MAP, MOSAICISM_OPTIONS, SEVERE_SO_TERMS
+    CLINSIG_MAP, ACMG_MAP, ACMG_OPTIONS, ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN,
+    VERBS_MAP, MOSAICISM_OPTIONS, SEVERE_SO_TERMS, MANUAL_RANK_OPTIONS, CANCER_TIER_OPTIONS,
+    DISMISS_VARIANT_OPTIONS
 )
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
-from scout.server.utils import (institute_and_case, user_institutes, case_append_bam, variant_case)
+from scout.server.utils import (institute_and_case, user_institutes, case_append_alignments, variant_case)
 from scout.server.links import (add_gene_links, ensembl, add_tx_links)
 from scout.server.blueprints.genes.controllers import gene
 from scout.utils.requests import fetch_refseq_version
@@ -49,27 +50,44 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         overlapping_svs = [sv for sv in store.overlapping(variant_obj)]
         variant_obj['overlapping'] = overlapping_svs or None
 
+        # show previous classifications for research variants,
+        is_research = variant_obj['variant_type'] == 'research'
+
         # Get all previous ACMG evalautions of the variant
         evaluations = []
         for evaluation_obj in store.get_evaluations(variant_obj):
             classification = evaluation_obj['classification']
             # Only show pathogenic/likely pathogenic from other cases on variants page
             if evaluation_obj['case_id'] == case_obj['_id']:
-                continue
+                # research cases will have have previous evaluation shown regardless
+                if not is_research:
+                    continue
             if not classification in ['pathogenic', 'likely_pathogenic']:
-                continue
+                # research cases will have have previous evaluation shown regardless
+                if not is_research:
+                    continue
             # Convert the classification int to readable string
             evaluation_obj['classification'] = ACMG_COMPLETE_MAP.get(classification)
             evaluations.append(evaluation_obj)
         variant_obj['evaluations'] = evaluations
 
+        # Show previous classifications from the clinical side for research
+        if is_research:
+            # get variant by simple_id.
+            clinical_var_obj = store.variant(case_id=case_obj['_id'],
+                                simple_id =variant_obj['simple_id'], variant_type='clinical')
+            # Get all previous ACMG evalautions of the variant
+            variant_obj['clinical_assessments'] = get_manual_assessments(clinical_var_obj)
+
         variants.append(parse_variant(store, institute_obj, case_obj, variant_obj,
                         update=True, genome_build=genome_build))
+
 
     return {
         'variants': variants,
         'more_variants': more_variants,
     }
+
 
 def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of SV variants."""
@@ -80,11 +98,91 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
     if genome_build not in ['37','38']:
         genome_build = '37'
 
+    variants = []
+
+    for variant_obj in variants_query.skip(skip_count).limit(per_page):
+        # show previous classifications for research variants
+        if variant_obj['variant_type'] == 'research':
+            # get variant by simple_id. That will really just return the first variant found -
+            # but mostly that would be clinical.. Its a start.
+            clinical_var_obj = store.variant(case_id=case_obj['_id'],
+                                simple_id =variant_obj['simple_id'], variant_type='clinical')
+            # Get all previous ACMG evalautions of the variant
+            variant_obj['clinical_assessments'] = get_manual_assessments(clinical_var_obj)
+
+        variants.append(parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build))
+
     return {
-        'variants': (parse_variant(store, institute_obj, case_obj, variant, genome_build=genome_build) for variant in
-                     variants_query.skip(skip_count).limit(per_page)),
+        'variants': variants,
         'more_variants': more_variants,
     }
+
+
+def get_manual_assessments(variant_obj):
+    """Return manual assessments ready for display. """
+
+    ## display manual input of interest: classified, commented, tagged or dismissed.
+    assessment_keywords = [
+        'manual_rank',
+        'cancer_tier',
+        'acmg_classification',
+        'dismiss_variant',
+        'mosaic_tags',
+    ]
+
+    assessments = []
+
+    for assessment_type in assessment_keywords:
+        assessment = {}
+        if variant_obj.get(assessment_type) != None:
+            if assessment_type == 'manual_rank':
+                manual_rank = variant_obj[assessment_type]
+                LOG.info('Assessement type {}: {}'.format(assessment_type, manual_rank))
+                assessment['title'] = "Clinical manual rank: {}".format(
+                                    MANUAL_RANK_OPTIONS[manual_rank]['description'])
+                assessment['label'] = MANUAL_RANK_OPTIONS[manual_rank]['label']
+
+            if assessment_type == 'cancer_tier':
+                cancer_tier = variant_obj[assessment_type]
+                assessment['title'] = "Clinical cancer tier: {}".format(
+                                    CANCER_TIER_OPTIONS[cancer_tier]['description'])
+                assessment['label'] = CANCER_TIER_OPTIONS[cancer_tier]['label']
+
+            if assessment_type == 'acmg_classification':
+                classification = variant_obj[assessment_type]
+                LOG.info('Assessment type {}: {}'.format(assessment_type, classification))
+                if isinstance(classification, int):
+                    acmg_code = ACMG_MAP[classification]
+                    classification = ACMG_COMPLETE_MAP[acmg_code]
+
+                assessment['title'] = "Clinical ACMG: {}".format(
+                        classification['label'])
+                assessment['label'] = classification['short']
+
+            if assessment_type == 'dismiss_variant':
+                assessment['label'] = "Dismissed"
+                assessment['title'] = "Dismissed clinically:"
+                for reason in variant_obj[assessment_type]:
+                    if not isinstance(reason, int):
+                        reason = int(reason)
+                    assessment['title'] += " {} - {}".format(
+                            DISMISS_VARIANT_OPTIONS[reason]['label'],
+                            DISMISS_VARIANT_OPTIONS[reason]['description'])
+
+            if assessment_type == 'mosaic_tags':
+                assessment['label'] = "Mosaicism"
+                assessment['title'] = "Mosaicism clinically:"
+                for reason in variant_obj[assessment_type]:
+                    if not isinstance(reason, int):
+                        reason = int(reason)
+                    assessment['title'] += " {} - {}".format(
+                            MOSAICISM_OPTIONS[reason]['label'],
+                            MOSAICISM_OPTIONS[reason]['description'])
+
+            assessments.append(assessment)
+
+    return assessments
+
 
 def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of STR variants."""
@@ -92,7 +190,7 @@ def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_pag
     # Nothing unique to STRs on this level. Inheritance? yep, you will want it.
 
     # case bam_files for quick access to alignment view.
-    case_append_bam(case_obj)
+    case_append_alignments(case_obj)
 
     return variants(store, institute_obj, case_obj, variants_query, page, per_page)
 
@@ -309,6 +407,8 @@ def cancer_variants(store, institute_id, case_name, form, page=1):
         case=case_obj,
         variants=(parse_variant(store, institute_obj, case_obj, variant, update=True) for
                   variant in variant_res),
+        manual_rank_options=MANUAL_RANK_OPTIONS,
+        cancer_tier_options=CANCER_TIER_OPTIONS,
         form=form,
     )
     return data

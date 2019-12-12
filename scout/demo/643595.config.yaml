@@ -16,6 +16,7 @@ samples:
     expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/ADM1059A2.dummy.cgh
+    tissue_type: blood
 
   - analysis_type: wes
     sample_id: ADM1059A1
@@ -28,6 +29,7 @@ samples:
     expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/ADM1059A1.dummy.cgh
+    tissue_type: blood
 
   - analysis_type: wes
     sample_id: ADM1059A3
@@ -40,6 +42,7 @@ samples:
     expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/ADM1059A3.dummy.cgh
+    tissue_type: blood
 
 vcf_snv: scout/demo/643595.clinical.vcf.gz
 

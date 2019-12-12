@@ -1,7 +1,9 @@
 {% extends "layout_bs4.html" %}
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal %}
 {% from "utils.html" import comments_panel, activity_panel %}
+{% from "cases/utils.html" import individuals_table %}
 {% from "cases/case_ideograms.html" import case_ideograms %}
+{% from "variants/utils.html" import tier_cell %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
@@ -9,7 +11,7 @@
 
 {% block css %}
 {{ super() }}
-  
+
 {% endblock %}
 
 {% block top_nav %}
@@ -51,29 +53,29 @@
       </div>
       <div class="row">
           {% if case.track == 'cancer' %}
-            <div class="col-xs-12 col-md-8">{{ cancer_individuals_table() }}</div>
+            <div class="col-xs-12 col-md-12">{{ cancer_individuals_table() }}</div>
           {% else %}
-            <div class="col-xs-12 col-md-8">{{ individuals_table() }}</div>
-            <div class="col-xs-12 col-md-4">
-              {% if case.madeline_info and case.individuals|length > 1 %}
-                {{ pedigree_panel() }}
-              {% else %}
-                <p>No pedigree picture available.</p>
-              {% endif %}
-            </div> <!-- end of <div class="col-xs-12 col-md-4"> -->
+            <div class="col-xs-12 col-md-12">{{ individuals_table(case, institute, tissue_types) }}</div>
           {% endif %}
         </div> <!-- <div class="row" -->
         <div class="row">
           <div class="col-sm-12">{{ roh_panel() }}</div>
         </div>
 
-
         <div class="row">
-          <div class="col-xs-12 col-md-6">{{ synopsis_panel() }}</div>
-          <div class="col-xs-12 col-md-6">
+          <div class="col-md-4">
+            {% if case.madeline_info and case.individuals|length > 1 %}
+              {{ pedigree_panel() }}
+            {% else %}
+              <p>No pedigree picture available.</p>
+            {% endif %}
+          </div>
+          <div class="col-md-8">
+            {{ synopsis_panel() }}
             {{ comments_panel(institute, case, current_user, comments) }}
           </div>
         </div> <!-- end of   <div class="row"> -->
+
         <div class="row">
           <div class="col-xs-12 col-md-6">{{ cohort_panel() }}</div>
           <div class="col-xs-12 col-md-6">{{ diagnosis_panel() }}</div>
@@ -160,73 +162,6 @@
         <li class="list-group-item">No matching causative variants.</li>
       {% endfor %}
     </ul>
-  </div>
-{% endmacro %}
-
-{% macro individuals_table() %}
-  <div class="card panel-default">
-    <div class="panel-heading">Individuals</div>
-    <div class="table-responsive">
-      <table class="table table-sm">
-        <thead>
-          <tr>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
-             title="Display name of sample">Sample</th>
-            <th class="col-xs-1" title="Sample sex">Sex</th>
-            <th class="col-xs-1" title="Phenotype of sample">Phenotype</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
-             title="Type of sequencing (e.g wes, wgs)">Sequencing</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
-             title="Ancestry prediction from peddy">Ancestry (pred.)</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
-             title="If parenthood is confirmed by peddy">Parenthood</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
-             title="Downloadable CytoSure file ">CGH</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
-             title="Tissue origin for the sample">Tissue</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for ind in case.individuals %}
-            <tr {% if ind.phenotype_human == 'affected' %} class="bg-danger-light" {% endif %}>
-              <td>{{ ind.display_name }}</td>
-              <td>
-                {% if ind.sex_human in ['female','male'] %}
-                  <i class="fa fa-{{ind.sex_human}}" aria-hidden="true"></i>
-                {% else %}
-                  {{ind.sex_human}}
-                {% endif %}
-                {% if ind.confirmed_sex %}
-                  <i class="fa fa-check"></i>
-                {% endif %}
-              </td>
-              <td>{{ ind.phenotype_human }}</td>
-              <td>{{ ind.analysis_type|upper }}</td>
-              <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
-              <td>
-                {% if ind.confirmed_parent == True %}
-                  <i class="fa fa-check"></i>
-                {% elif ind.confirmed_parent == False %}
-                  <i class="fa fa-exclamation-circle"></i>
-                {% else %}
-                  N/A
-                {% endif %}
-              </td>
-              <td>
-                {% if ind.vcf2cytosure %}
-                <a href="{{ url_for('cases.vcf2cytosure', institute_id=institute._id,
-                      case_name=case.display_name, individual_id=ind.individual_id) }}" class="btn">
-                  <i class="fa fa-download"></i>
-                </a>
-                {% else %}
-                  N/A
-                {% endif %}
-                <td>{{ ind.tissue_type or 'unknown' }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
   </div>
 {% endmacro %}
 
@@ -491,8 +426,8 @@
                   <span class="badge badge-default">Verification ordered</span>
                 {% elif variant.sanger_ordered %}
                   <span class="badge badge-success">Validated</span>
-                {% elif variant.manual_rank %}
-                  <span class="badge badge-default">{{ variant.manual_rank }}</span>
+                {% elif variant.manual_rank or variant.cancer_tier %}
+                  {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
                 {% endif %}
                 {% if variant.mosaic_tags %}
                   <span class="badge badge-info">mosaic</span>

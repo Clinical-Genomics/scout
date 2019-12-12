@@ -64,7 +64,7 @@
 
             <div class="list-group-item">
               Gene panels
-              <ul class="list-inline float-right">
+              <ul class="list-inline float-right list-scroll">
                 {% for panel_id in variant.panels %}
                   <li>
                     <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>
@@ -471,8 +471,9 @@
 {% endmacro %}
 
 {% macro transcripts_panel() %}
-  <div class="card panel-default table-responsive fixed-panel">
-    <table class="table table-bordered card-sm">
+<div class="card panel-default">
+  <div class="table-responsive">
+    <table id="transcripts_table" class="table table-bordered">
       <thead>
         <tr>
           <th>Gene</th>
@@ -520,6 +521,7 @@
       </tbody>
     </table>
   </div>
+</div>
 {% endmacro %}
 
 {% macro ext_links(variant) %}
@@ -695,26 +697,25 @@
   <script>
     function set_scrolly_table(table_id) {
     if (document.getElementById(table_id).rows.length > 5) {
-      console.log('hoho')
       $('#' + table_id).DataTable({
         scrollY: 350,
+        stripeClasses: [],
         scrollCollapse: true,
         paging: false,
         searching: false,
         ordering: true,
-        info: false
-      });
-    }}
+        info: false})
+      }
+    }
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+      $($.fn.dataTable.tables(true)).DataTable()
+      .columns.adjust()
+    });
 
     set_scrolly_table('genes_table')
+    set_scrolly_table('transcripts_table')
     set_scrolly_table('overlapping_snvs_table')
-
-  
-    $(function () {
-      $('select[multiple]').selectpicker({
-        width: '100%'
-      });
-    })
 
     function validate_causative_form(){
       var partial_checkbox = document.getElementById("partial_causative");

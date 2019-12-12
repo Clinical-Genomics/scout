@@ -131,6 +131,15 @@
       </span>
     {% endfor %}
   {% endif %}
+  {% if form.variant_type.data == 'research' %}
+    {% if variant.clinical_assessments %}
+      {% for assessment in variant.clinical_assessments %}
+        <span class="badge badge-secondary" data-toggle="tooltip" data-placement="right"
+            title="{{ assessment.title }}">
+            {{ assessment.label }}</span>
+      {% endfor %}
+    {% endif %}
+  {% endif %}
 
   {% if comment_count > 0 %}
     {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
