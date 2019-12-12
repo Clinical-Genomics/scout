@@ -32,6 +32,7 @@ VERBS_MAP = {
     "remove_phenotype": "removed HPO term for",
     "add_case": "added case",
     "update_case": "updated case",
+    "update_individual": "updated individuals for",
     "check_case": "marked case as",
     "share": "shared case with",
     "unshare": "revoked access for",
@@ -53,7 +54,7 @@ VERBS_MAP = {
 VERBS = list(VERBS_MAP.keys())
 
 # Tissue types for rare disease samples and controls
-RD_TISSUE_TYPE = {
+SAMPLE_SOURCE = {
     0 : 'blood',
     1 : 'bone marrow',
     2 : 'buccal swab',

@@ -148,12 +148,16 @@ def test_update_individual(app, user_obj, institute_obj, case_obj):
         # THEN the returned HTML page should redirect
         assert resp.status_code == 302
 
-        # And the case obj should have been updated:
+        # Then case obj should have been updated:
         updated_case = store.case_collection.find_one({'_id':case_obj['_id']})
         updated_ind = updated_case['individuals'][0]
         assert updated_ind['individual_id'] == ind_id
         assert updated_ind['age'] == 2.5
         assert updated_ind['tissue_type'] == 'muscle'
+
+        # And an associated event should have been created in the database
+        assert store.event_collection.find_one({'case':updated_case['_id'], 'verb': 'update_individual'})
+
 
 
 def test_case_synopsis(app, institute_obj, case_obj):

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from scout.constants import RD_TISSUE_TYPE
+from scout.constants import SAMPLE_SOURCE
 from flask import get_template_attribute
 
 def test_update_individuals_table(app, case_obj, institute_obj):
@@ -10,7 +10,7 @@ def test_update_individuals_table(app, case_obj, institute_obj):
         macro = get_template_attribute('cases/utils.html', 'individuals_table')
 
         # and passing to it the required parameters
-        html = macro(case_obj, institute_obj, RD_TISSUE_TYPE)
+        html = macro(case_obj, institute_obj, SAMPLE_SOURCE)
 
         # THEN the macro should contain the expected html code
         assert '<div class="panel-heading">Individuals</div>' in html
