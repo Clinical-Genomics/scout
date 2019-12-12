@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved str variants view : sorting by locus, grouped by allele.
 - Delivery report PDF export
 - New mosaicism tag option
+- Add or modify individuals' age or tissue type from case page
 - Included primary reference transcript in general report
 
 ### Fixed
