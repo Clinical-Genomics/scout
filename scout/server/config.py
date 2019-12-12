@@ -41,9 +41,3 @@ RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/b
 RANK_MODEL_LINK_POSTFIX = "-.ini"
 SV_RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/svrank_model_-v"
 SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
-
-
-#MatchMaker related parameters
-MME_ACCEPTS = 'application/vnd.ga4gh.matchmaker.v1.0+json'
-MME_URL = 'http://localhost:9020'
-MME_TOKEN = 'test_token' #this should be the same of when you created the client in step 2
