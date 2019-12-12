@@ -8,7 +8,6 @@ PHENOTYPE_MAP = {1: 'unaffected', 2: 'affected', 0: 'unknown', -9: 'unknown'}
 CANCER_PHENOTYPE_MAP = {1: 'normal', 2: 'tumor', 0: 'unknown', -9: 'unknown'}
 REV_PHENOTYPE_MAP = {value: key for key, value in PHENOTYPE_MAP.items()}
 
-
 CASE_STATUSES = ("prioritized", "inactive", "active", "solved", "archived")
 
 VERBS_MAP = {
@@ -33,6 +32,7 @@ VERBS_MAP = {
     "remove_phenotype": "removed HPO term for",
     "add_case": "added case",
     "update_case": "updated case",
+    "update_individual": "updated individuals for",
     "check_case": "marked case as",
     "share": "shared case with",
     "unshare": "revoked access for",
@@ -52,3 +52,22 @@ VERBS_MAP = {
 }
 
 VERBS = list(VERBS_MAP.keys())
+
+# Tissue types for rare disease samples and controls
+SAMPLE_SOURCE = {
+    0 : 'blood',
+    1 : 'bone marrow',
+    2 : 'buccal swab',
+    3 : 'cell line',
+    4 : 'cell-free DNA',
+    5 : 'cytology (FFPE)',
+    6 : 'cytology (not fixed/fresh)',
+    7 : 'muscle',
+    8 : 'nail',
+    9 : 'saliva',
+    10 : 'skin',
+    11 : 'tissue (FFPE)',
+    12 : 'tissue (fresh frozen)',
+    13 : 'other',
+    14 : 'unknown'
+}
