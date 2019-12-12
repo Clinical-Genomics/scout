@@ -3,6 +3,7 @@ from flask import url_for, current_app
 from flask_login import current_user
 
 from scout.demo import delivery_report_path
+from scout.server.blueprints.cases import controllers
 from scout.server.extensions import store
 
 def test_cases(app, institute_obj):
@@ -114,6 +115,49 @@ def test_case(app, case_obj, institute_obj):
 
             # THEN it should return a page
             assert resp.status_code == 200
+
+
+def test_update_individual(app, user_obj, institute_obj, case_obj):
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+
+    # And a case individual with no age or tissue type:
+    case_obj = store.case_collection.find_one()
+    assert case_obj['individuals'][0].get('age') is None
+    case_obj['individuals'][0]['tissue_type'] is None
+
+    with app.test_client() as client:
+
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for('auto_login'))
+        assert resp.status_code == 200
+
+        # WHEN posting a request with info for updating one of the case samples:
+        ind_id = case_obj['individuals'][0]['individual_id']
+        form_data = {
+            'update_ind' : ind_id,
+            '_'.join(['age', ind_id]) : '2.5',
+            '_'.join(['tissue', ind_id]) : 'muscle'
+        }
+
+        resp = client.post(url_for('cases.update_individual',
+                                  institute_id=institute_obj['internal_id'],
+                                  case_name=case_obj['display_name']
+                                  ), data= form_data)
+
+        # THEN the returned HTML page should redirect
+        assert resp.status_code == 302
+
+        # Then case obj should have been updated:
+        updated_case = store.case_collection.find_one({'_id':case_obj['_id']})
+        updated_ind = updated_case['individuals'][0]
+        assert updated_ind['individual_id'] == ind_id
+        assert updated_ind['age'] == 2.5
+        assert updated_ind['tissue_type'] == 'muscle'
+
+        # And an associated event should have been created in the database
+        assert store.event_collection.find_one({'case':updated_case['_id'], 'verb': 'update_individual'})
+
 
 
 def test_case_synopsis(app, institute_obj, case_obj):
@@ -305,24 +349,36 @@ def test_matchmaker_add(app, institute_obj, case_obj):
         assert resp.status_code == 302
 
 
-def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission):
+def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission,
+    user_obj, monkeypatch):
+
+    # Given a case object with a MME submission
+    case_obj['mme_submission'] = mme_submission
+    store.update_case(case_obj)
+
+    res = store.case_collection.find({'mme_submission':{'$exists' : True}})
+    assert sum(1 for i in res) == 1
+
+    # Monkeypatch response with MME matches
+    def mock_matches(*args, **kwargs):
+        return {
+            'institute' : institute_obj,
+            'case' : case_obj,
+            'matches' : {}
+        }
+    monkeypatch.setattr(controllers, 'mme_matches', mock_matches)
+
     # GIVEN an initialized app
-    # GIVEN a valid user and institute
+    # GIVEN a valid institute and a user with mme_submitter role
+    store.user_collection.update_one(
+        {'_id': user_obj['_id']},
+        {'$set': {'roles':['mme_submitter']}}
+    )
 
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for('auto_login'))
         assert resp.status_code == 200
-
-        # add MME submission to case object
-        store.case_collection.find_one_and_update(
-            {'_id' : case_obj['_id']},
-            {'$set' : {
-                'mme_submission' : mme_submission
-            }}
-        )
-        res = store.case_collection.find({'mme_submission':{'$exists' : True}})
-        assert sum(1 for i in res) == 1
 
         # Given mock MME connection parameters
         current_app.config['MME_URL'] = 'http://fakey_mme_url:fakey_port'
@@ -331,37 +387,48 @@ def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission):
         # WHEN accessing the case page
         resp = client.get(url_for('cases.matchmaker_matches',
                                 institute_id=institute_obj['internal_id'],
-                                case_name=case_obj['display_name']))
+                                case_name=case_obj['display_name'],
+                            ))
 
-        # page will redirect because controllers.mme_matches
-        # will not be able to contact a MME server
-        assert resp.status_code == 302
+        # Then a successful response should be generated
+        assert resp.status_code == 200
 
 
-def test_matchmaker_match(app, institute_obj, case_obj, mme_submission):
+def test_matchmaker_match(app, institute_obj, case_obj, mme_submission, user_obj,
+    monkeypatch):
+
+    # Given a case object with a MME submission
+    case_obj['mme_submission'] = mme_submission
+    store.update_case(case_obj)
+
+    res = store.case_collection.find({'mme_submission':{'$exists' : True}})
+    assert sum(1 for i in res) == 1
+
+    # Monkeypatch response with MME match
+    def mock_match(*args, **kwargs):
+        return [{'status_code':200}]
+    monkeypatch.setattr(controllers, 'mme_match', mock_match)
+
     # GIVEN an initialized app
-    # GIVEN a valid user and institute
-
+    # GIVEN a valid institute and a user with mme_submitter role
+    store.user_collection.update_one(
+        {'_id': user_obj['_id']},
+        {'$set': {'roles':['mme_submitter']}}
+    )
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for('auto_login'))
         assert resp.status_code == 200
 
-        # add MME submission to case object
-        store.case_collection.find_one_and_update(
-            {'_id' : case_obj['_id']},
-            {'$set' : {
-                'mme_submission' : mme_submission
-            }}
-        )
-        res = store.case_collection.find({'mme_submission':{'$exists' : True}})
-        assert sum(1 for i in res) == 1
+        # Given mock MME connection parameters
+        current_app.config['MME_URL'] = 'http://fakey_mme_url:fakey_port'
+        current_app.config['MME_TOKEN'] = 'test_token'
 
-        # WHEN accessing the case page
+        # WHEN sending a POST request to match a patient
         resp = client.post(url_for('cases.matchmaker_match',
                                 institute_id=institute_obj['internal_id'],
                                 case_name=case_obj['display_name'],
-                                target='mock_node_id' ))
+                                target='mock_node_id'))
         # page redirects in the views anyway, so it will return a 302 code
         assert resp.status_code == 302
 
