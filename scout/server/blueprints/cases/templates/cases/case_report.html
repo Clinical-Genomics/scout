@@ -653,7 +653,7 @@
                   {% endfor %}
 
                   {% do n_primary_transcripts.append(gene.primary_transcripts|length) %}
-                  {% if loop.index <= 5 or transcript.is_canonical or transcript.is_disease_associated or hgnc_prim.primary %} <!--Do not print too many transcript, but include the canonical-->
+                  {% if loop.index <= 5 or transcript.is_canonical or transcript.is_disease_associated or hgnc_prim.primary %} <!--Do not print too many transcripts, but include the canonical-->
                     <li>{{transcript.refseq_id}} - {{ (transcript.coding_sequence_name or '')|truncate(20, True) }} - {{ (transcript.protein_sequence_name or '')|url_decode }}
                     {% if transcript.is_canonical %}
                       <span class="badge badge-pill badge-secondary" title="canonical">C</span>
