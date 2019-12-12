@@ -19,7 +19,7 @@ from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 from dateutil.parser import parse as parse_date
-from scout.constants import (CLINVAR_HEADER, CASEDATA_HEADER, ACMG_MAP, ACMG_COMPLETE_MAP)
+from scout.constants import (CLINVAR_HEADER, CASEDATA_HEADER, ACMG_MAP, ACMG_COMPLETE_MAP, SAMPLE_SOURCE)
 from scout.server.extensions import store, mail
 from scout.server.utils import (templated, institute_and_case, user_institutes)
 from . import controllers
@@ -94,7 +94,8 @@ def case(institute_id, case_name):
     """Display one case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case(store, institute_obj, case_obj)
-    return dict(institute=institute_obj, case=case_obj, mme_nodes= current_app.mme_nodes, **data)
+    return dict(institute=institute_obj, case=case_obj, mme_nodes= current_app.mme_nodes,
+        tissue_types=SAMPLE_SOURCE ,**data)
 
 
 @cases_bp.route('/<institute_id>/clinvar_submissions', methods=['GET','POST'])
@@ -431,6 +432,19 @@ def gene_variants(institute_id):
         data = controllers.gene_variants(store, variants_query, institute_id, page)
 
     return dict(institute=institute_obj, form=form, page=page, **data)
+
+
+@cases_bp.route('/<institute_id>/<case_name>/individuals', methods=['POST'])
+def update_individual(institute_id, case_name):
+    """Update individual data (age and/or Tissue type) for a case"""
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    ind_id = request.form.get('update_ind')
+    age = request.form.get('_'.join(['age',ind_id]))
+    tissue = request.form.get('_'.join(['tissue',ind_id]))
+    controllers.update_individuals(store, institute_obj, case_obj, user_obj, ind_id, age, tissue)
+    return redirect(request.referrer)
 
 
 @cases_bp.route('/<institute_id>/<case_name>/synopsis', methods=['POST'])

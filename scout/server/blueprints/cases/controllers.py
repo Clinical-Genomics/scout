@@ -440,6 +440,27 @@ def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
                               content=new_synopsis)
 
 
+def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissue):
+    """Handle update of individual data (age and/or Tissue type) for a case"""
+
+    case_individuals = case_obj.get('individuals')
+    for subject in case_individuals:
+        if subject['individual_id'] == ind:
+            subject['age'] = round(float(age), 1)
+            subject['tissue_type'] = tissue
+
+    case_obj['individuals'] = case_individuals
+    # update case with new individual data
+    store.update_case(case_obj)
+
+    # create an associated event
+    link = url_for('cases.case', institute_id=institute_obj['_id'],
+                   case_name=case_obj['display_name'])
+    store.create_event(institute=institute_obj, case=case_obj, user=user_obj,
+        link=link, category='case', verb='update_individual', subject=case_obj['display_name'])
+
+
+
 def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
     """Return the list of HGNC symbols that match annotated HPO terms.
 
