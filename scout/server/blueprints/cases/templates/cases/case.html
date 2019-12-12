@@ -5,6 +5,8 @@
 {% from "cases/case_ideograms.html" import case_ideograms %}
 {% from "variants/utils.html" import tier_cell %}
 
+{% set pinned_svs = namespace(found=false) %} <!-- used later in MatchMaler submit form -->
+
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
 {% endblock %}
@@ -394,7 +396,7 @@
     </ul>
 
     <div data-toggle='tooltip' class="panel-heading panel-heading-secondary"
-         title="Displays all variants that has been pinned for this case">
+         title="Displays all variants that have been pinned for this case">
       Pinned variants
     </div>
 
@@ -414,6 +416,7 @@
                                         variant_id=variant._id) }}">
                           {{ variant.hgnc_symbols|join(', ') }}
                   {% else %}
+                    {% set pinned_svs.found = true %} <!-- used later in MatchMaler submit form -->
                     <a href="{{ url_for('variant.sv_variant',
                                               institute_id=variant.institute,
                                               case_name=case.display_name,
@@ -606,10 +609,11 @@
           </div>
         </p>
       {% else %} <!-- display option to submit case to MatchMaker -->
-        <p>This case is not yet in MatchMaker!&nbsp;<a href="#mme_form" data-toggle="collapse">Submission form</a></p>
+        <p>This case is not yet in MatchMaker!&nbsp;<a href="#mme_form" data-toggle="collapse">Submit pinned variants</a></p>
       {% endif %}
-      <form id="mme_submit" method="POST" action="{{ url_for('cases.matchmaker_add', institute_id=institute._id, case_name=case.display_name )}}" >
-          <div id="mme_form" class="collapse w-75">
+      <form id="mme_submit" method="POST" action="{{ url_for('cases.matchmaker_add', institute_id=institute._id, case_name=case.display_name )}}"
+        {% if pinned_svs.found %} onsubmit="mmeFormWarning()" {% endif %}>
+          <div id="mme_form" class="collapse w-100">
             <div class="d-flex justify-content-center">
               <ul class="list-group">
                 <li class="list-group-item">
@@ -669,14 +673,16 @@
                 </li>
               </ul>
             </div>
+            <br>
             <div>
               <br>
-              <button class="btn btn-outline-secondary mx-auto d-block" data-toggle="modal" type="submit">
-                {% if case.mme_submission %}
-                  Update case in MatchMaker
-                {% else %}
-                  Share to MatchMaker
-                {% endif %}</button>
+              <button class="btn btn-outline-secondary form-control" type="submit">
+              {% if case.mme_submission %}
+                Update case in MatchMaker
+              {% else %}
+                Share to MatchMaker
+              {% endif %}
+            </button>
             </div>
           </div>
         </form>
@@ -687,7 +693,6 @@
 </div>
 {% endmacro %}
 
-
 {% macro modal_mme_delete() %}
   <form id="mme_delete" method="POST" action="{{ url_for('cases.matchmaker_delete', institute_id=institute._id, case_name=case.display_name )}}">
     <!-- Button trigger modal -->
@@ -695,7 +700,7 @@
     Remove case from MatchMaker
     </button>
     <!-- Modal -->
-    <div class="modal fade" id="mme_delete_confirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="mme_delete_confirm" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-body">
@@ -982,10 +987,7 @@
     ordering: true,
     info: false
         });
-</script>
 
-
-<script>
 $(function () {
       function getTerms(query, process) {
         $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
@@ -1048,6 +1050,10 @@ $('#collapse-icon').addClass('fa-angle-double-left');
 $('[data-toggle=sidebar-collapse]').click(function() {
   SidebarCollapse();
 });
+
+function mmeFormWarning() {
+  confirm("One or more variants you are trying to submit appear to be a structural variant. Scout will try to submit variant's genefor SV variants which contain one gene instead!");
+};
 </script>
 
 {% if case.chromograph_prefixes %}
