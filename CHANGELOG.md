@@ -29,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Included Font Awesome availability in general report
 - Fixed missing path import by importing pathlib.Path
 - Hadle index inconsistencies in the update index functions
+- Removed unused whitelist collection-related code
 
 
 ## [4.9.0]
