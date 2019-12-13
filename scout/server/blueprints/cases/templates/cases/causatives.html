@@ -37,15 +37,15 @@
 
 <div class="card mt-3">
   <div class="card-body">
-      <table id="causatives_table" class="table display nowrap" cellspacing="0" width="100%">
+      <table id="causatives_table" class="table display table-sm" cellspacing="0" width="100%">
         <thead>
           <tr>
             <th style="width:5%">Gene</th>
             <th style="width:10%">Variant Name</th>
             <th style="width:20%">Change</th>
             <th style="width:3%">Category</th>
-            <th style="width:3%">Rank score</th>
-            <th style="width:5%">Zygosity</th>
+            <th style="width:3%" data-toggle='tooltip' data-container='body' title="score(model version)">Rank score</th>
+            <th style="width:5%" data-toggle='tooltip' data-container='body' title="ref/alt-GQ">Zygosity</th>
             <th style="width:3%">Inheritance</th>
             <th style="width:5%">ACMG</th>
             <th style="width:5%">Case Name</th>
@@ -81,17 +81,14 @@
               {% endif %}
             </span></a></td>
             <td>
-              {% for sample in variant.samples %}
-              {% for ind in case.individuals %}
-              {% if sample.sample_id == ind.individual_id %}
-              {% if ind.phenotype == 2%}
-              <span class="badge badge-danger">{{sample.genotype_call}}</span>
-              {% else %}
-              <span class="badge badge-success">{{sample.genotype_call}}</span>
-              {% endif %}
-              {% endif %}
-              {% endfor %}
-              {% endfor %}
+              {%- for sample in variant.samples -%}
+                {%- for ind in case.individuals -%}
+                  {%- if sample.sample_id == ind.individual_id -%}
+                    {% set allele_depths = ['ref depth', sample.allele_depths[0]]|join(":") + ' - ' + ['alt depth', sample.allele_depths[1]]|join(":") %}
+                    <span data-toggle='tooltip' data-container='body' title="{{allele_depths}}" class="badge badge-{{'danger' if ind.phenotype == 2 else 'success' }}">{{sample.genotype_call}} GQ:{{sample.genotype_quality}}</span>
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endfor -%}
             </td>
             <td>{% for model in variant.genetic_models %}
               <span class="badge badge-info">{{model}}</span>
