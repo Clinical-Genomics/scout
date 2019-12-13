@@ -13,7 +13,7 @@ from scout.constants import (CALLERS, MANUAL_RANK_OPTIONS, CANCER_TIER_OPTIONS,
 
 from scout.server.links import (ensembl, get_variant_links)
 from scout.parse.variant.ids import parse_document_id
-from scout.utils.requests import fetch_refseq_version
+from scout.utils.scout_requests import fetch_refseq_version
 
 from .utils import (end_position, default_panels, frequency, callers, evaluation,
                     is_affected, predictions, sv_frequencies, add_gene_info, clinsig_human)

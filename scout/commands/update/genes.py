@@ -26,7 +26,7 @@ from scout.load import (load_hgnc_genes, load_transcripts, load_exons)
 from scout.server.extensions import store
 from scout.utils.link import link_genes
 from scout.utils.handle import get_file_handle
-from scout.utils.requests import (fetch_mim_files, fetch_hpo_genes, fetch_hgnc, fetch_ensembl_genes,
+from scout.utils.scout_requests import (fetch_mim_files, fetch_hpo_genes, fetch_hgnc, fetch_ensembl_genes,
                                   fetch_exac_constraint, fetch_ensembl_transcripts)
 
 LOG = logging.getLogger(__name__)

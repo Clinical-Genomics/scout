@@ -4,7 +4,7 @@ from pprint import pprint as pp
 
 from click import progressbar
 
-from scout.utils.requests import fetch_ensembl_transcripts
+from scout.utils.scout_requests import fetch_ensembl_transcripts
 from scout.parse.ensembl import parse_transcripts
 from scout.build.genes.transcript import build_transcript
 
@@ -63,7 +63,7 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
         for tx_data in bar:
 
             #################### Get the correct refseq identifier ####################
-            # We need to decide one refseq identifier for each transcript, if there are any to 
+            # We need to decide one refseq identifier for each transcript, if there are any to
             # choose from. The algorithm is as follows:
             # If there is ONE mrna this is choosen
             # If there are several mrna the one that is in 'primary_transcripts' is choosen
@@ -88,7 +88,7 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
                         refseq_identifier = refseq_id
                         tx_data['is_primary'] = True
                         nr_primary_transcripts += 1
-                    
+
                     if not refseq_identifier:
                         refseq_identifier = refseq_id
 

@@ -9,13 +9,13 @@ from flask.cli import with_appcontext
 from scout.load import (load_exons)
 
 from scout.utils.handle import get_file_handle
-from scout.utils.requests import (fetch_ensembl_exons)
+from scout.utils.scout_requests import (fetch_ensembl_exons)
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
 @click.command('exons', short_help='Load exons')
-@click.option('-e','--exons-file', 
+@click.option('-e','--exons-file',
     type=click.Path(exists=True),
     help="Path to file with ensembl exons"
 )
@@ -56,7 +56,7 @@ def exons(build, exons_file):
         # LOG.info("Try to fetch one chromosome at the time")
         LOG.info("Please download a mart dump manually, see instructions in user guide for admins")
         return
-        
+
 
     adapter.update_indexes()
 

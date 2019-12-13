@@ -17,7 +17,7 @@ from flask.cli import with_appcontext, current_app
 from scout.load.hpo import load_disease_terms
 from scout.utils.handle import get_file_handle
 
-from scout.utils.requests import fetch_mim_files
+from scout.utils.scout_requests import fetch_mim_files
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)

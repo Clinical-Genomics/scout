@@ -12,8 +12,8 @@ from pprint import pprint as pp
 import click
 import coloredlogs
 
-from scout.utils.requests import (fetch_hgnc, fetch_mim_files, fetch_exac_constraint, 
-fetch_ensembl_genes, fetch_ensembl_transcripts, fetch_ensembl_exons, fetch_hpo_files, 
+from scout.utils.scout_requests import (fetch_hgnc, fetch_mim_files, fetch_exac_constraint, 
+fetch_ensembl_genes, fetch_ensembl_transcripts, fetch_ensembl_exons, fetch_hpo_files,
 fetch_hpo_genes, fetch_hpo_terms,)
 
 from scout.parse.hgnc import parse_hgnc_line
@@ -21,7 +21,7 @@ from scout.parse.omim import parse_genemap2, parse_mim2gene
 from scout.parse.exac import parse_exac_genes
 from scout.parse.ensembl import (parse_ensembl_genes,parse_ensembl_exons,parse_ensembl_transcripts)
 
-from scout.demo.resources import (hgnc_reduced_path, genemap2_reduced_path, mim2gene_reduced_path, exac_reduced_path, 
+from scout.demo.resources import (hgnc_reduced_path, genemap2_reduced_path, mim2gene_reduced_path, exac_reduced_path,
 genes37_reduced_path, genes38_reduced_path, transcripts37_reduced_path, transcripts38_reduced_path,
 hpogenes_reduced_path, hpoterms_reduced_path, hpo_phenotype_to_terms_reduced_path)
 
@@ -30,7 +30,7 @@ LOG = logging.getLogger(__name__)
 
 def get_reduced_hpo_terms(hpo_terms):
     """Return a reduced version of the hpo terms
-    
+
     Args:
         hpo_terms(set(str)): Set of choosen terms that should be included
 
@@ -38,18 +38,18 @@ def get_reduced_hpo_terms(hpo_terms):
         hpo_line: A line with hpo information
     """
     hpo_lines = fetch_hpo_terms()
-    
+
     begining = True
-    
+
     term_lines = []
     # We want to keep the header lines
     keep = True
-    
+
     nr_terms = 0
     nr_kept = 0
 
     for line in hpo_lines:
-        
+
         # When we encounter a new term we yield all lines of the previous term
         if line.startswith('[Term]'):
             nr_terms += 1
@@ -60,26 +60,26 @@ def get_reduced_hpo_terms(hpo_terms):
 
             keep = False
             term_lines = []
-        
+
         elif line.startswith('id'):
             hpo_id = line[4:]
             if hpo_id in hpo_terms:
                 keep = True
-        
+
         term_lines.append(line)
-        
+
 
     if keep:
         for hpo_line in term_lines:
             yield hpo_line
-    
+
     LOG.info("Nr of terms in file %s", nr_terms)
     LOG.info("Nr of terms kept: %s", nr_kept)
-        
+
 
 def remove_file(path):
     """Check if a file exists and remove it if so
-    
+
     Args:
         path(str)
     """
@@ -93,24 +93,24 @@ def remove_file(path):
 
 def generate_hgnc(genes):
     """Generate lines from a file with reduced hgnc information
-    
+
     Args:
         genes(dict): A dictionary with hgnc_id as key and hgnc_symbol as value
         outpath(str): Defaults to hgnc_reduced_path
-    
+
     Yields:
         print_line(str): Lines from the reduced file
     """
     LOG.info("Generating new hgnc reduced file")
     # fetch the latest hgnc file here
-    hgnc_gene_lines = fetch_hgnc() 
+    hgnc_gene_lines = fetch_hgnc()
 
     header = None
     genes_found = 0
-    
+
     # Loop over all hgnc gene lines
     for i,line in enumerate(hgnc_gene_lines):
-        
+
         line = line.rstrip()
         # Skip lines that are empty
         if not len(line) > 0:
@@ -130,12 +130,12 @@ def generate_hgnc(genes):
         if hgnc_id in genes:
             genes_found += 1
             yield line
-    
+
     LOG.info("Number of genes printed to file: %s", genes_found)
 
 def generate_genemap2(genes, api_key):
     """Generate a reduced file with omim genemap2 information
-    
+
     Args:
         genes(dict): A dictionary with hgnc_symbol as key and hgnc_id as value
         api_key(str)
@@ -143,17 +143,17 @@ def generate_genemap2(genes, api_key):
     Yields:
         print_line(str): Lines from the reduced file
     """
-    
+
     mim_files = fetch_mim_files(api_key, genemap2=True)
     genemap2_lines = mim_files['genemap2']
-    
+
     # Yield the header lines
     for line in genemap2_lines:
         if line.startswith('#'):
             yield line
         else:
             break
-    
+
     for gene_info in parse_genemap2(genemap2_lines):
         hgnc_symbol = gene_info.get('hgnc_symbol')
         if not hgnc_symbol:
@@ -163,7 +163,7 @@ def generate_genemap2(genes, api_key):
 
 def generate_mim2genes(genes, api_key):
     """Generate a reduced file with omim mim2gene information
-    
+
     Args:
         genes(dict): A dictionary with hgnc_symbol as key and hgnc_id as value
         api_key(str)
@@ -171,16 +171,16 @@ def generate_mim2genes(genes, api_key):
     Yields:
         print_line(str): Lines from the reduced file
     """
-    
+
     mim_files = fetch_mim_files(api_key, mim2genes=True)
     mim2gene_lines = mim_files['mim2genes']
-    
+
     for line in mim2gene_lines:
         if line.startswith('#'):
             yield line
         else:
             break
-    
+
     for gene_info in parse_mim2gene(mim2gene_lines):
         hgnc_symbol = gene_info.get('hgnc_symbol')
         if not hgnc_symbol:
@@ -190,7 +190,7 @@ def generate_mim2genes(genes, api_key):
 
 def generate_exac_genes(genes):
     """Generate a reduced file with omim mim2gene information
-    
+
     Args:
         genes(dict): A dictionary with hgnc_symbol as key and hgnc_id as value
         outpath(str)
@@ -201,7 +201,7 @@ def generate_exac_genes(genes):
     exac_lines = fetch_exac_constraint()
 
     yield(exac_lines[0])
-    
+
     for gene_info in parse_exac_genes(exac_lines):
         hgnc_symbol = gene_info.get('hgnc_symbol')
         if not hgnc_symbol:
@@ -216,7 +216,7 @@ def generate_ensembl_genes(genes, silent=False, build=None):
         genes(dict): A dictionary with hgnc_symbol as key and hgnc_id as value
         silent(bool): If genes should be written to file or not
         build(str): What build to use. Defaults to 37
-    
+
     Yields:
         print_line(str):  Lines from the reduced file
     """
@@ -228,7 +228,7 @@ def generate_ensembl_genes(genes, silent=False, build=None):
                       'Gene stable ID', 'HGNC symbol', 'HGNC ID']
 
     yield '\t'.join(ensembl_header)
-    
+
     ensembl_genes = fetch_ensembl_genes(build=build)
 
     nr_genes = 0
@@ -249,32 +249,32 @@ def generate_ensembl_genes(genes, silent=False, build=None):
             ]
             yield '\t'.join(print_line)
             nr_genes += 1
-    
+
     LOG.info("Nr genes collected for build %s: %s", build,nr_genes)
 
 def generate_ensembl_transcripts(ensembl_genes, build=None):
     """Generate a file with reduced ensembl gene information
-    
+
     Args:
         genes(dict): A dictionary with ensembl_id as key and hgnc_id as value
         build(str): What build to use. Defaults to 37
-    
+
     Yields:
         print_line(str):  Lines from the reduced file
-    
+
     """
     build = build or '37'
-    
+
     ensembl_transcripts = fetch_ensembl_transcripts(build=build)
-        
-    ensembl_header = ['Chromosome/scaffold name', 'Gene stable ID', 
-                   'Transcript stable ID', 'Transcript start (bp)', 
+
+    ensembl_header = ['Chromosome/scaffold name', 'Gene stable ID',
+                   'Transcript stable ID', 'Transcript start (bp)',
                    'Transcript end (bp)', 'RefSeq mRNA ID',
                    'RefSeq mRNA predicted ID', 'RefSeq ncRNA ID']
-        
-        
+
+
     yield '\t'.join(ensembl_header)
-        
+
     for tx_info in parse_ensembl_transcripts(ensembl_transcripts):
         ens_gene_id = tx_info['ensembl_gene_id']
         if ens_gene_id in ensembl_genes:
@@ -292,16 +292,16 @@ def generate_ensembl_transcripts(ensembl_genes, build=None):
 
 def generate_hpo_genes(genes):
     """Generate the lines from a reduced hpo genes file
-    
+
     Args:
         genes(dict): A map from hgnc_symbol to hgnc_id
-    
+
     Yields:
         line(str): Lines from hpo with connection to genes
     """
     hpo_lines = fetch_hpo_genes()
     nr_terms = 0
-    
+
     for i,line in enumerate(hpo_lines):
         line = line.rstrip()
         if not len(line) > 1:
@@ -313,23 +313,23 @@ def generate_hpo_genes(genes):
 
         splitted_line = line.split('\t')
         hgnc_symbol = splitted_line[1]
-        
+
         if hgnc_symbol in genes:
             nr_terms
             yield line
 
 def generate_hpo_terms(genes):
     """Generate the lines from a reduced hpo terms file
-    
+
     Args:
         genes(dict): A map from hgnc_symbol to hgnc_id
-    
+
     Yields:
         line(str): Lines from hpo with connection to genes
     """
     hpo_lines = fetch_hpo_genes()
     nr_terms = 0
-    
+
     for i,line in enumerate(hpo_lines):
         line = line.rstrip()
         if not len(line) > 1:
@@ -341,7 +341,7 @@ def generate_hpo_terms(genes):
 
         splitted_line = line.split('\t')
         hgnc_symbol = splitted_line[1]
-        
+
         if hgnc_symbol in genes:
             nr_terms
             yield line
@@ -349,19 +349,19 @@ def generate_hpo_terms(genes):
 def generate_hpo_files(genes):
     """Generate files with hpo reduced information"""
     hpo_files = fetch_hpo_files(hpogenes=True, hpoterms=True, phenotype_to_terms=True, hpodisease=False)
-    
+
     file_names = {
         'hpogenes': hpogenes_reduced_path,
         'hpoterms': hpoterms_reduced_path,
         'phenotype_to_terms': hpo_phenotype_to_terms_reduced_path
     }
-    
+
     for name in file_names:
         hpo_lines = hpo_files[name]
         out_path = file_names[name]
         outfile = open(out_path, 'w')
         LOG.info('Writing file %s', out_path)
-        
+
         for i,line in enumerate(hpo_lines):
             line = line.rstrip()
             if not len(line) > 1:
@@ -376,14 +376,14 @@ def generate_hpo_files(genes):
                 hgnc_symbol = splitted_line[3]
             elif name == 'phenotype_to_terms':
                 hgnc_symbol = splitted_line[1]
-            
+
             if hgnc_symbol in genes:
                 outfile.write(line+'\n')
         LOG.info("File ready")
 
 def read_panel_file(lines):
     """Read a file with gene ids and names.
-    
+
     A file with genes. First column hgnc id, secon column hgnc symbol
     """
     genes = {}
@@ -396,7 +396,7 @@ def read_panel_file(lines):
         hgnc_id = int(line[0])
         hgnc_symbol = line[1]
         genes[hgnc_symbol] = hgnc_id
-    
+
     return genes
 
 @click.group()
@@ -423,13 +423,13 @@ def exons(ctx, genes, build, exons, chromosome):
     if chromosome:
         chromosome = [chromosome]
     ensg_to_hgncid = {}
-    
+
     for gene_info in parse_ensembl_genes(genes):
         ensgid = gene_info['ensembl_gene_id']
         hgncid = gene_info['hgnc_id']
 
         ensg_to_hgncid[ensgid] = hgncid
-    
+
     for i, line in enumerate(fetch_ensembl_exons(build=build, chromosomes=chromosome)):
         if i == 0:
             header = line.rstrip().split('\t')
@@ -441,9 +441,9 @@ def exons(ctx, genes, build, exons, chromosome):
         if not gene_id in ensg_to_hgncid:
             continue
         click.echo(line)
-        
-        
-        
+
+
+
 
 
 
