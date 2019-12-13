@@ -375,7 +375,6 @@ class VariantEventHandler(object):
         )
         return updated_case
 
-
     def mark_causative(self, institute, case, user, link, variant, partial_causative=False):
         """Create an event for marking a variant causative.
 
@@ -559,8 +558,56 @@ class VariantEventHandler(object):
 
         return updated_case
 
-    def update_manual_rank(self, institute, case, user, link, variant,
-                           manual_rank):
+    def update_cancer_tier(self, institute, case, user, link, variant, cancer_tier):
+        """Create an event for updating the manual rank of a variant
+
+          This function will create a event and update the cancer tier
+          of the variant.
+
+        Arguments:
+            institute (dict): A Institute object
+            case (dict): Case object
+            user (dict): A User object
+            link (str): The url to be used in the event
+            variant (dict): A variant object
+            cancer_tier (str): The new cancer tier
+
+        Return:
+            updated_variant
+
+        """
+        LOG.info("Creating event for updating cancer tier for "
+                    "variant {0}".format(variant['display_name']))
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category='variant',
+            verb='cancer_tier',
+            variant=variant,
+            subject=variant['display_name'],
+        )
+
+        if cancer_tier:
+            LOG.info("Setting cancer tier to {0} for variant {1}"
+                        .format(cancer_tier, variant['display_name']))
+            action = '$set'
+        else:
+            LOG.info("Reset cancer tier from {0} for variant {1}"
+                        .format(variant.get('cancer_tier', 'NA'), variant['display_name']))
+            action = '$unset'
+
+        updated_variant = self.variant_collection.find_one_and_update(
+            {'_id': variant['_id']},
+            {action: {'cancer_tier': cancer_tier}},
+            return_document=pymongo.ReturnDocument.AFTER
+        )
+        LOG.debug("Variant updated")
+        return updated_variant
+
+    def update_manual_rank(self, institute, case, user, link, variant, manual_rank):
         """Create an event for updating the manual rank of a variant
 
           This function will create a event and update the manual rank

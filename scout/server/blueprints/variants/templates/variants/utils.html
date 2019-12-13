@@ -508,3 +508,41 @@
     </div>
   </div>
 {% endmacro %}
+
+{% macro tier_cell(variant, manual_rank_options, cancer_tier_options) %}
+  {% if variant.cancer_tier %}
+    {% if variant.cancer_tier == '1A' %}
+      {% set label_class = 'danger' %}
+    {% elif variant.cancer_tier == '1B' %}
+      {% set label_class = 'danger' %}
+    {% elif variant.cancer_tier == '2A' %}
+      {% set label_class = 'warning' %}
+    {% elif variant.cancer_tier == '2B' %}
+      {% set label_class = 'warning' %}
+    {% elif variant.cancer_tier == '3' %}
+      {% set label_class = 'primary' %}
+    {% elif variant.cancer_tier == '4' %}
+      {% set label_class = 'default' %}
+    {% endif %}
+    <span class="badge badge-{{ label_class }}" data-toggle="tooltip" data-placement="right"
+      title="Tier: {{ cancer_tier_options[variant.cancer_tier].description }}">
+      {{ cancer_tier_options[variant.cancer_tier].label }}</span>
+  {% endif %}
+
+  {% if variant.manual_rank %}
+    {% if variant.manual_rank == 1 %}
+      {% set label_class = 'default' %}
+    {% elif variant.manual_rank == 2 %}
+      {% set label_class = 'info' %}
+    {% elif variant.manual_rank == 3 %}
+      {% set label_class = 'primary' %}
+    {% elif variant.manual_rank == 4 %}
+      {% set label_class = 'warning' %}
+    {% elif variant.manual_rank == 5 %}
+      {% set label_class = 'danger' %}
+    {% endif %}
+    <span class="badge badge-{{ label_class }}" data-toggle="tooltip" data-placement="right"
+      title="Manual rank: {{ manual_rank_options[variant.manual_rank].description }}">
+      {{ manual_rank_options[variant.manual_rank].label }}</span>
+  {% endif %}
+{% endmacro %}

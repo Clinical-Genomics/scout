@@ -7,6 +7,7 @@ import pymongo
 import zipfile
 import io
 import pathlib
+import re
 
 import logging
 
@@ -18,7 +19,7 @@ from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 from dateutil.parser import parse as parse_date
-from scout.constants import (CLINVAR_HEADER, CASEDATA_HEADER, ACMG_MAP, ACMG_COMPLETE_MAP)
+from scout.constants import (CLINVAR_HEADER, CASEDATA_HEADER, ACMG_MAP, ACMG_COMPLETE_MAP, SAMPLE_SOURCE)
 from scout.server.extensions import store, mail
 from scout.server.utils import (templated, institute_and_case, user_institutes)
 from . import controllers
@@ -71,7 +72,10 @@ def cases(institute_id):
             all_cases.sort('status', pymongo_sort)
 
     LOG.debug("Prepare all cases")
-    data = controllers.cases(store, all_cases, limit)
+
+    prioritized_cases = store.prioritized_cases(institute_id=institute_id)
+
+    data = controllers.cases(store, all_cases, prioritized_cases, limit)
     data['sort_order'] = sort_order
     data['sort_by'] = sort_by
     data['nr_cases'] = store.nr_cases(institute_id=institute_id)
@@ -90,7 +94,8 @@ def case(institute_id, case_name):
     """Display one case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case(store, institute_obj, case_obj)
-    return dict(institute=institute_obj, case=case_obj, mme_nodes= current_app.mme_nodes, **data)
+    return dict(institute=institute_obj, case=case_obj, mme_nodes= current_app.mme_nodes,
+        tissue_types=SAMPLE_SOURCE ,**data)
 
 
 @cases_bp.route('/<institute_id>/clinvar_submissions', methods=['GET','POST'])
@@ -429,6 +434,19 @@ def gene_variants(institute_id):
     return dict(institute=institute_obj, form=form, page=page, **data)
 
 
+@cases_bp.route('/<institute_id>/<case_name>/individuals', methods=['POST'])
+def update_individual(institute_id, case_name):
+    """Update individual data (age and/or Tissue type) for a case"""
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    ind_id = request.form.get('update_ind')
+    age = request.form.get('_'.join(['age',ind_id]))
+    tissue = request.form.get('_'.join(['tissue',ind_id]))
+    controllers.update_individuals(store, institute_obj, case_obj, user_obj, ind_id, age, tissue)
+    return redirect(request.referrer)
+
+
 @cases_bp.route('/<institute_id>/<case_name>/synopsis', methods=['POST'])
 def case_synopsis(institute_id, case_name):
     """Update (PUT) synopsis of a specific case."""
@@ -651,8 +669,8 @@ def status(institute_id, case_name):
     status = request.form.get('status', case_obj['status'])
     link = url_for('.case', institute_id=institute_id, case_name=case_name)
 
-    if status == 'archive':
-        store.archive_case(institute_obj, case_obj, user_obj, status, link)
+    if status == 'archived':
+        store.archive_case(institute_obj, case_obj, user_obj, link)
     else:
         store.update_status(institute_obj, case_obj, user_obj, status, link)
 
@@ -774,9 +792,22 @@ def delivery_report(institute_id, case_name):
     else:
         delivery_report = case_obj['delivery_report']
 
+    format = request.args.get('format','html')
+    if format == 'pdf':
+        try: # file could not be available
+            html_file = open(delivery_report, 'r')
+            source_code = html_file.read()
+            # remove image, since it is problematic to render it in the PDF version
+            source_code=re.sub('<img class=.*?alt="SWEDAC logo">','',source_code, flags=re.DOTALL)
+            return render_pdf(HTML(string=source_code), download_filename=case_obj['display_name']+'_'+datetime.datetime.now().strftime("%Y-%m-%d")+'_scout_delivery.pdf')
+        except Exception as ex:
+            flash('An error occurred while downloading delivery report {} -- {}'.format(delivery_report, ex), 'warning')
+
     out_dir = os.path.dirname(delivery_report)
     filename = os.path.basename(delivery_report)
+
     return send_from_directory(out_dir, filename)
+
 
 @cases_bp.route('/<institute_id>/<case_name>/share', methods=['POST'])
 def share(institute_id, case_name):

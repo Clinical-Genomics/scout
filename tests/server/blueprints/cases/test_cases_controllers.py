@@ -1,6 +1,37 @@
+import copy
 from flask import Flask
 
 from scout.server.blueprints.cases.controllers import (case, cases, case_report_content)
+
+
+def test_cases(adapter, case_obj, institute_obj):
+
+    # GIVEN a non prioritized case
+    case = case_obj
+    assert case['status'] == 'inactive'
+    adapter.case_collection.insert_one(case)
+
+    # GIVEN a priotized case
+    case2 = copy.deepcopy(case)
+    case2['_id'] = 'internal_id2'
+    case2['status'] = 'prioritized'
+    adapter.case_collection.insert_one(case2)
+
+    all_cases = adapter.cases(collaborator=institute_obj['_id'])
+    assert len(list(all_cases)) == 2
+
+    prio_cases = adapter.prioritized_cases(institute_id=institute_obj['_id'])
+    assert len(list(prio_cases)) == 1
+
+    all_cases = adapter.cases(collaborator=institute_obj['_id'])
+    prio_cases = adapter.prioritized_cases(institute_id=institute_obj['_id'])
+
+    # WHEN the cases controller is invoked
+    data = cases(store=adapter, case_query=all_cases,
+        prioritized_cases_query=prio_cases,limit=1)
+
+    # THEN 2 cases should be returned
+    assert data['found_cases'] == 2
 
 
 def test_case_report_content(adapter, institute_obj, case_obj, variant_obj):
@@ -11,7 +42,7 @@ def test_case_report_content(adapter, institute_obj, case_obj, variant_obj):
     case_obj = adapter.case_collection.find_one()
     institute_obj = adapter.institute_collection.find_one()
     var_obj = adapter.variant_collection.find_one({'case_id': case_obj['_id']})
-    assert var_obj    
+    assert var_obj
     case_obj['causatives'] = [var_obj['_id']]
     ## WHEN fetching a case with the controller
     data = case_report_content(adapter, institute_obj, case_obj)
@@ -22,6 +53,7 @@ def test_case_report_content(adapter, institute_obj, case_obj, variant_obj):
         'suspects_detailed': 'suspects',
         'classified_detailed': 'acmg_classification',
         'tagged_detailed': 'manual_rank',
+        'tier_detailed': 'cancer_tier',
         'dismissed_detailed': 'dismiss_variant',
         'commented_detailed': 'is_commented',
     }
@@ -94,4 +126,3 @@ def test_case_controller(adapter, institute_obj):
     ## THEN
     assert isinstance(data, dict)
     assert 'rank_model_link' not in fetched_case
-    
