@@ -95,8 +95,7 @@ def genomic_features(store, case_obj, sample_name, genes_only):
         build = 'GRCh'+build
 
     individual_pinned_snvs = list(store.sample_variants( variants=case_obj.get('suspects'),
-        sample_name=sample_name
-
+        sample_name=sample_name))
 
     # if genes_only is True don't add duplicated genes
     gene_set = set()
