@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import pymongo
 from scout.parse.matchmaker import parse_matches, genomic_features
 
 def test_genomic_features_sv_variant(gene_database, case_obj, parsed_sv_variant):
