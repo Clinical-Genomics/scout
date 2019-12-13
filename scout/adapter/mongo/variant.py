@@ -648,13 +648,13 @@ class VariantHandler(VariantLoader):
         return file_name
 
 
-    def sample_variants(self, variants, sample_name, category = 'snv'):
+    def sample_variants(self, variants, sample_name, category = None):
         """Given a list of variants get variant objects found in a specific patient
 
         Args:
             variants(list): a list of variant ids
             sample_name(str): a sample display name
-            category(str): 'snv', 'sv' ..
+            category(str): None, 'snv', 'sv'
 
         Returns:
             result(iterable(Variant))
@@ -665,12 +665,13 @@ class VariantHandler(VariantLoader):
         query = {
             '$and': [
                 {'_id' : { '$in' : variants}},
-                {'category' : category},
                 {'samples': {
                     '$elemMatch': { 'display_name' : sample_name, 'genotype_call': { '$regex' : has_allele } }
                 }}
             ]
         }
+        if category:
+            query['category'] = category
 
         result = self.variant_collection.find(query)
         return result
