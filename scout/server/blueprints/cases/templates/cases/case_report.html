@@ -646,11 +646,10 @@
                 {% set hgnc_prim = namespace(primary=None) %}
                 <ul>
                 {% for transcript in gene.primary_transcripts %}
+                  {% set hgnc_prim.primary = None %}
                   {% for refseq_id in transcript.refseq_identifiers %}
                     {% if refseq_id in gene.common.primary_transcripts %}
                       {% set hgnc_prim.primary = refseq_id %}
-                    {% else %}
-                      {% set hgnc_prim.primary = None %}
                     {% endif %}
                   {% endfor %}
                   {% do n_primary_transcripts.append(gene.primary_transcripts|length) %}
