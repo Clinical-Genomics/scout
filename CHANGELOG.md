@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Delivery report PDF export
 - New mosaicism tag option
 - Add or modify individuals' age or tissue type from case page
+- Display GC and allele depth in causatives table.
 - Remove dependency of loqusdb by utilising the CLI
 
 ### Fixed
