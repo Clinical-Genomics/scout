@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Links to [GENEMANIA](genemania.org)
 - Sort gene panel list on case view.
 - More automatic tests
+- Allow loading of custom annotations in VCF using the SCOUT_CUSTOM info tag.
 
 ### Fixed
 - Manual rank variant tags could be saved in a "Select a tag"-state, a problem in the variants view.

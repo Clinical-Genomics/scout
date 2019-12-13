@@ -48,7 +48,8 @@ transcripts38_reduced_path, genes38_reduced_path, exons37_reduced_path, exons37_
  exons38_reduced_path)
 
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path, clinical_str_path,
-                        clinical_sv_path, ped_path, load_path, panel_path, empty_sv_clinical_path,)
+                        clinical_sv_path, ped_path, load_path, panel_path, empty_sv_clinical_path,
+                        customannotation_snv_path)
 
 from scout.models.hgnc_map import HgncGene
 
@@ -801,6 +802,17 @@ def one_variant(request, variant_clinical_file):
 
 
 @pytest.fixture(scope='function')
+def one_variant_customannotation(request, customannotation_snv_file):
+    LOG.info("Return one parsed variant with custom annotations")
+    variant_parser = VCF(customannotation_snv_file)
+
+    for variant in variant_parser:
+        break
+
+    return variant
+
+
+@pytest.fixture(scope='function')
 def one_sv_variant(request, sv_clinical_file):
     LOG.info("Return one parsed SV variant")
     variant_parser = VCF(sv_clinical_file)
@@ -1132,6 +1144,11 @@ def empty_sv_clinical_file(request):
     print('')
     return empty_sv_clinical_path
 
+@pytest.fixture(scope='function')
+def customannotation_snv_file(request):
+    """Get the path to a variant file with custom annotations"""
+    print('')
+    return customannotation_snv_path
 
 @pytest.fixture(scope='function')
 def ped_file(request):
