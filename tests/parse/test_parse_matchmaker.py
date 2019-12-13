@@ -32,6 +32,27 @@ def test_genomic_features_sv_variant(gene_database, case_obj, parsed_sv_variant)
     assert g_features[0].get('variant') is None
 
 
+def test_genomic_features_sv_many_genes(gene_database, case_obj, parsed_sv_variant):
+    """ Test parsing genomic features for a case with a pinned snv variant """
+
+    adapter = gene_database
+
+    # GIVEN a SV variant hitting more than 3 genes
+    parsed_sv_variant['hgnc_ids'] == [3337, 1711, 1226, 9405]
+
+    adapter.variant_collection.insert_one(parsed_sv_variant)
+
+    # WHEN a case has the above variant pinned
+    case_obj['suspects'] = [parsed_sv_variant['_id']]
+    adapter.case_collection.insert_one(case_obj)
+
+    # AND the genomic_features parser is called:
+    g_features = genomic_features(adapter, case_obj,
+        case_obj['individuals'][0]['display_name'], False)
+
+    # Then the returned genomic feature should be an empty array
+    assert len(g_features) == 0
+
 
 def test_parse_matches(case_obj, match_objs):
     """ tests that a list of MatchMaker matches returned by the server is interpreted
