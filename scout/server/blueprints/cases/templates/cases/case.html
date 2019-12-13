@@ -5,7 +5,7 @@
 {% from "cases/case_ideograms.html" import case_ideograms %}
 {% from "variants/utils.html" import tier_cell %}
 
-{% set pinned_svs = namespace(found=false) %} <!-- used later in MatchMaler submit form -->
+{% set pinned_svs = namespace(found=false) %} <!-- used later in MatchMaker submit form -->
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
@@ -416,7 +416,7 @@
                                         variant_id=variant._id) }}">
                           {{ variant.hgnc_symbols|join(', ') }}
                   {% else %}
-                    {% set pinned_svs.found = true %} <!-- used later in MatchMaler submit form -->
+                    {% set pinned_svs.found = true %} <!-- used later in MatchMaker submit form -->
                     <a href="{{ url_for('variant.sv_variant',
                                               institute_id=variant.institute,
                                               case_name=case.display_name,
