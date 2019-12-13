@@ -81,14 +81,14 @@
               {% endif %}
             </span></a></td>
             <td>
-              {% for sample in variant.samples %}
-                {% for ind in case.individuals %}
-                  {% if sample.sample_id == ind.individual_id %}
+              {%- for sample in variant.samples -%}
+                {%- for ind in case.individuals -%}
+                  {%- if sample.sample_id == ind.individual_id -%}
                     {% set allele_depths = ['ref depth', sample.allele_depths[0]]|join(":") + ' - ' + ['alt depth', sample.allele_depths[1]]|join(":") %}
                     <span data-toggle='tooltip' data-container='body' title="{{allele_depths}}" class="badge badge-{{'danger' if ind.phenotype == 2 else 'success' }}">{{sample.genotype_call}} GQ:{{sample.genotype_quality}}</span>
-                  {% endif %}
-                {% endfor %}
-              {% endfor %}
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endfor -%}
             </td>
             <td>{% for model in variant.genetic_models %}
               <span class="badge badge-info">{{model}}</span>
