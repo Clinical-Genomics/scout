@@ -23,7 +23,7 @@ def test_genomic_features_sv_variant(gene_database, case_obj, parsed_sv_variant)
     case_obj['suspects'] = [parsed_sv_variant['_id']]
     adapter.case_collection.insert_one(case_obj)
 
-    # AND the genomic_features parses is called:
+    # AND the genomic_features parser is called:
     g_features = genomic_features(adapter, case_obj,
         case_obj['individuals'][0]['display_name'], False)
 
