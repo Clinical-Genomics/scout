@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Delivery report PDF export
 - New mosaicism tag option
 - Add or modify individuals' age or tissue type from case page
+- Display GC and allele depth in causatives table.
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
