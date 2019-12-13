@@ -39,6 +39,12 @@ def test_genomic_features_sv_many_genes(gene_database, case_obj, parsed_sv_varia
 
     # GIVEN a SV variant hitting more than 3 genes
     parsed_sv_variant['hgnc_ids'] == [3337, 1711, 1226, 9405]
+    # In the proband individual
+    parsed_sv_variant['samples'] = [{
+        'sample_id' : case_obj['individuals'][0]['individual_id'],
+        'display_name' : case_obj['individuals'][0]['display_name'],
+        'genotype_call' : "0/1"
+    }]
 
     adapter.variant_collection.insert_one(parsed_sv_variant)
 
