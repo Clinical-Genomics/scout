@@ -50,10 +50,18 @@ def igv():
     samples = request.args.getlist('sample')
     bam_files = request.args.getlist('bam')
     bai_files = request.args.getlist('bai')
-    wig_files = request.args.getlist('wig')
+    rhocall_bed_files = request.args.getlist('rhocall_bed')
+    rhocall_wig_files = request.args.getlist('rhocall_wig')
+    tiddit_coverage_files = request.args.getlist('tiddit_coverage_wig')
+    updregion_files = request.args.getlist('upd_regions_bed')
+    updsites_files = request.args.getlist('upd_sites_bed')
+    LOG.debug('samples: %s', samples)
     LOG.debug('loading the following BAM tracks: %s', bam_files)
-    LOG.debug('loading the following WIG tracks: %s', wig_files)
-
+    LOG.debug('loading the following rhocall BED tracks: %s', rhocall_bed_files)
+    LOG.debug('loading the following rhocall WIG tracks: %s', rhocall_wig_files)
+    LOG.debug('loading the following tiddit_coverage tracks: %s', tiddit_coverage_files)
+    LOG.debug('loading the following upd sites tracks: %s', updregion_files)
+    LOG.debug('loading the following upd region tracks: %s', updsites_files)
     display_obj={}
 
     # Add chromosome build info to the track object
@@ -96,9 +104,13 @@ def igv():
         'displayMode' : 'EXPANDED'
     }
 
+    # Init upcoming igv-tracks
     sample_tracks = []
     wig_tracks = []
+
+    upd_regions_bed_tracks, upd_sites_bed_tracks = [], []
     counter = 0
+    
     for sample in samples:
         # some samples might not have an associated bam file, take care if this
         if bam_files[counter]:
@@ -106,9 +118,7 @@ def igv():
                                    'indexURL' : bai_files[counter],
                                    'height' : 700
                                    })
-        if wig_files:
-            wig_tracks.append({'name': 'Coverage '+sample, 'url': wig_files[counter],
-                                'min': 0.0, 'max': 30.0})
+                   
     counter = 0
     for sample in samples:
         sample_tracks.append({
@@ -120,13 +130,47 @@ def igv():
         })
         counter += 1
 
-    display_obj['sample_tracks'] = sample_tracks
-    if wig_tracks:
-        display_obj['wig_tracks'] = wig_tracks
 
+    rhocall_wig_tracks = make_tracks('Rhocall Wig', rhocall_wig_files)
+    tiddit_wig_tracks = make_tracks('Tiddit Wig', rhocall_wig_files)
+    rhocall_bed_tracks = make_tracks('Rhocall Bed', rhocall_bed_files)
+    updregion_tracks = make_tracks('upd region', updregion_files)
+    updsites_tracks = make_tracks('upd sites', updsites_files)
+      
+    display_obj['sample_tracks'] = sample_tracks
+
+    LOG.debug('wig tracks %s', rhocall_wig_tracks)
+    
+    if rhocall_wig_files:
+        display_obj['rhocall_wig_tracks'] = rhocall_wig_tracks
+    if rhocall_bed_files:
+        LOG.debug('BED BED')
+        display_obj['rhocall_bed_tracks'] = rhocall_bed_tracks
+    if tiddit_coverage_files:
+        display_obj['tiddit_wig_tracks'] = tiddit_wig_tracks
+    if updregion_files:
+        display_obj['updregion_tracks'] = updregion_tracks
+    if updsites_files:
+        display_obj['updsites_tracks'] = updsites_tracks
+        
     if request.args.get('center_guide'):
         display_obj['display_center_guide'] = True
     else:
         display_obj['display_center_guide'] = False
 
     return render_template('alignviewers/igv_viewer.html', locus=locus, **display_obj )
+
+
+
+def make_tracks(name, files):
+    l = []
+    counter = 0
+    for r in files:
+        l.append({'name': name,
+                  'url': files[counter],
+                  'min': 0.0,
+                  'max': 30.0})
+        counter += 1
+    return l
+
+

@@ -1,3 +1,4 @@
+
 import logging
 import os
 
@@ -66,7 +67,9 @@ def build_individual(ind):
         raise(PedigreeError("Unknown phenotype: %s" % phenotype))
 
     # Fix absolute path for individual bam files (takes care of incomplete path for demo files)
-    ind_files = ['bam_file', 'mt_bam', 'vcf2cytosure', 'wig_file']
+    ind_files = ['bam_file', 'mt_bam', 'vcf2cytosure', 'wig_file', 'rhocall_bed',
+                 'rhocall_wig', 'tiddit_coverage_wig', 'upd_regions_bed', 'upd_sites_bed']
+
     for ind_file in ind_files:
         file_path = ind.get(ind_file)
         if file_path and os.path.exists(file_path):
@@ -104,3 +107,7 @@ def build_individual(ind):
     ind_obj['tissue_type'] = ind.get('tissue_type', 'unknown')
 
     return ind_obj
+
+
+
+

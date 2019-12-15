@@ -63,3 +63,15 @@ def test_find_index_cram_crai(case_obj):
             # THEN the find_index function should return the correct index file
             index = find_index(cram_file)
             assert index.endswith('cram.crai')
+
+
+
+def test_append_safe():
+    ## GIVEN a simple dict 
+
+    ## WHEN calling append_safe() on a empty 
+
+    ## THEN list.append exception is caught in try/except and
+    ## program execution continues
+
+            

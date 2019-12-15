@@ -134,10 +134,10 @@
               {{ variant.chromosome }}:{{ variant.position }}
               {% if variant.chromosome == "MT" and case.mt_bams %}
                 - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, wig=case.wig_files, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">IGV viewer</a>
+                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, rhocall_bed=case.rhocall_beds, rhocall_wig=case.rhocall_wigs, tiddit_coverage_wig=tiddit_coverage_wigs, upd_regions_bed=case.upd_regions_beds, upd_sites_bed=case.upd_sites_beds, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">IGV viewer</a>
               {% elif case.bam_files %}
                 - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, wig=case.wig_files, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">IGV</a>
+                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, wig=case.wig_files, rhocall_bed=case.rhocall_beds, rhocall_wig=case.rhocall_wigs, tiddit_coverage_wig=tiddit_coverage_wigs, upd_regions_bed=case.upd_regions_beds, upd_sites_bed=case.upd_sites_beds, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">IGV</a>
               {% else %}
                 - BAM file(s) missing
               {% endif %}
@@ -150,10 +150,10 @@
               {{ variant.end_chrom }}:{{ variant.end }}
               {% if variant.end_chrom == "MT" and case.mt_bams %}
                 - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, wig=case.wig_files, contig=variant.end_chrom, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">IGV viewer</a>
+                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, rhocall_bed=case.rhocall_beds, rhocall_wig=case.rhocall_wigs, tiddit_coverage_wig=tiddit_coverage_wigs, upd_regions_bed=case.upd_regions_beds, upd_sites_bed=case.upd_sites_beds, contig=variant.end_chrom, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">IGV viewer</a>
               {% elif case.bam_files %}
                 - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, wig=case.wig_files, sample=case.sample_names, build=case.genome_build, contig=variant.end_chrom, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">IGV</a>
+                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, rhocall_bed=case.rhocall_beds, rhocall_wig=case.rhocall_wigs, tiddit_coverage_wig=tiddit_coverage_wigs, upd_regions_bed=case.upd_regions_beds, upd_sites_bed=case.upd_sites_beds, sample=case.sample_names, build=case.genome_build, contig=variant.end_chrom, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">IGV</a>
               {% else %}
                 - BAM file(s) missing
               {% endif %}
@@ -178,10 +178,10 @@
               {{ variant.length }}
               {% if variant.chromosome == "MT" and case.mt_bams %}
                 - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, wig=case.wig_files, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500)) }}" target="_blank">IGV viewer</a>
+                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, rhocall_bed=case.rhocall_beds, rhocall_wig=case.rhocall_wigs, tiddit_coverage_wig=tiddit_coverage_wigs, upd_regions_bed=case.upd_regions_beds, upd_sites_bed=case.upd_sites_beds, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500)) }}" target="_blank">IGV viewer</a>
               {% elif case.bam_files and variant.chromosome == variant.end_chrom %}
                 - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, wig=case.wig_files, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500)) }}" target="_blank">IGV</a>
+                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, rhocall_bed=case.rhocall_beds, rhocall_wig=case.rhocall_wigs, tiddit_coverage_wig=tiddit_coverage_wigs, upd_regions_bed=case.upd_regions_beds, upd_sites_bed=case.upd_sites_beds, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500)) }}" target="_blank">IGV</a>
               {% elif case.bam_files %}
                 - Complex rearrangement: check breakpoint alignments.
               {% else %}
