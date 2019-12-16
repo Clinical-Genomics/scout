@@ -172,7 +172,7 @@
                          <td style="width: 20%">
                            {{match_result.patient.contact.name}}<br>
                            {% if "http" in match_result.patient.contact.href %}
-                            <a href="{{match_result.patient.contact.href}}" target="_blank">contact link</a>
+                            <a href="{{match_result.patient.contact.href}}" target="_blank">details</a>
                            {% else %}
                             {{match_result.patient.contact.href}}
                            {% endif %}
