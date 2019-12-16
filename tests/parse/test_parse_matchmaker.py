@@ -2,7 +2,7 @@
 from scout.parse.matchmaker import parse_matches, genomic_features
 
 def test_genomic_features_sv_variant(gene_database, case_obj, parsed_sv_variant):
-    """ Test parsing genomic features for a case with a pinned snv variant """
+    """ Test parsing genomic features for a case with one sv variant """
 
     adapter = gene_database
 
@@ -33,7 +33,7 @@ def test_genomic_features_sv_variant(gene_database, case_obj, parsed_sv_variant)
 
 
 def test_genomic_features_sv_many_genes(gene_database, case_obj, parsed_sv_variant):
-    """ Test parsing genomic features for a case with a pinned snv variant """
+    """ Test parsing genomic features for a case with a sv variant hitting more than 3 genes """
 
     adapter = gene_database
 
