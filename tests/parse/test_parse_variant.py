@@ -80,3 +80,8 @@ def test_parse_cadd(variants, case_obj):
             parsed_variant = parse_variant(variant, case_obj)
             # THEN make sure that the cadd score is parsed correct
             assert parsed_variant['cadd_score'] == cadd_score
+
+def test_parse_customannotation(one_variant_customannotation,case_obj):
+    """Test parsing of custom annotations"""
+    parsed_variant = parse_variant(one_variant_customannotation, case_obj)
+    assert parsed_variant['custom'] == [ ['key1','val1'], ['key2','val2'] ]
