@@ -63,14 +63,10 @@
             </li>
 
             <div class="list-group-item">
-              Gene panels
-              <ul class="list-inline float-right list-scroll">
-                {% for panel_id in variant.panels %}
-                  <li>
-                    <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>
-                  </li>
-                {% endfor %}
-              </ul>
+              <strong>Gene panels:</strong><br>
+              {% for panel_id in variant.panels %}
+                <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>&nbsp;&nbsp;
+              {% endfor %}
             </div>
             <div class="list-group mt-3">
               <div>
