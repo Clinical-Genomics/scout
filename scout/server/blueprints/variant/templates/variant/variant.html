@@ -533,6 +533,28 @@
           </tr>
         </tbody>
       </table>
+
+      {% if variant.custom %}
+      <table class="table table-bordered table-sm">
+	<thead>
+	  <th>Custom annotation</th>
+	  <th>Value</th>
+	</thead>
+	<tbody>
+	  {% for pair in variant.custom %}
+	  <tr>
+	    <td>
+	      {{ pair[0] }}
+	    </td>
+	    <td>
+	      {{ pair[1] }}
+	    </td>
+	  </tr>
+	  {% endfor %}
+	</tbody>
+      </table>
+      {% endif %}
+      
     </div> <!-- end of card body -->
   </div> <!--  end of card div -->
 {% endmacro %}
