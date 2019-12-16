@@ -65,8 +65,8 @@
           </div>
         {% endif %}
       </div>
-      <div class="col-md-2 col-sm-2">
-      <select name="institute" id="institute" onchange="this.form.submit()">
+      <div class="col-md-4 col-sm-2">
+      <select name="institute" class="form-control" id="institute" onchange="this.form.submit()">
         {% for inst in institutes %}
           {% if inst.display_name == 'All institutes' and query and not current_user.is_admin %}
             <option value="{{ inst._id }}" disabled>{{ inst.display_name }}</option>
