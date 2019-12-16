@@ -203,6 +203,12 @@ def parse_variant(variant, case, variant_type='clinical',
     str_pathologic_min = variant.INFO.get('STR_PATHOLOGIC_MIN')
     if str_pathologic_min:
         parsed_variant['str_pathologic_min'] = int(str_pathologic_min)
+
+
+    ################# Add custom info ##################
+    scout_custom_data = variant.INFO.get('SCOUT_CUSTOM')
+    if scout_custom_data:
+        parsed_variant['custom'] = parse_custom_data(scout_custom_data)
         
     ################# Add gene and transcript information #################
     raw_transcripts = []
@@ -298,3 +304,18 @@ def parse_variant(variant, case, variant_type='clinical',
         parsed_variant['mvl_tag'] = True
 
     return parsed_variant
+
+
+def parse_custom_data(custom_str):
+    """Parse SCOUT_CUSTOM info field
+    
+    Input: "key1|val1,key2|val2"
+    Output: [ ["key1","val1"], ["key2", "val2"] ]
+
+    """
+
+    pair_list = []
+    for pair in custom_str.split(','):
+        pair_list.append( pair.split('|') )
+
+    return pair_list
