@@ -30,7 +30,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Included Font Awesome availability in general report
 - Fixed missing path import by importing pathlib.Path
 - Hadle index inconsistencies in the update index functions
-- Cards backround is bit more dark
+- Fixed layout problems
+- Cards backround is bit darker
 
 
 ## [4.9.0]
