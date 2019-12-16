@@ -166,7 +166,7 @@
             {{ variant.hgnc_symbols[:2]|join(', ') }} [...] {{ variant.hgnc_symbols[-2:]|join(', ') }}
           {% else %}
             {% for symbol in variant.hgnc_symbols %}
-              <div>{{ symbol }}</div>
+              <div>{{ symbol }}</div>&nbsp;&nbsp;
             {% endfor %}
           {% endif %}
         </div>

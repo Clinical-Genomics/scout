@@ -318,14 +318,10 @@
       </div>
       <ul class="list-group">
         <div class="list-group-item">
-          <strong>Gene panels</strong>
-          <ul class="list-inline float-right">
-            {% for panel_id in variant.panels %}
-              <li>
-                  <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>
-              </li>
-            {% endfor %}
-          </ul>
+          <strong>Gene panels:</strong><br>
+          {% for panel_id in variant.panels %}
+            <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>&nbsp;&nbsp;
+          {% endfor %}
         </div>
       </ul>
       <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
@@ -554,7 +550,7 @@
 	</tbody>
       </table>
       {% endif %}
-      
+
     </div> <!-- end of card body -->
   </div> <!--  end of card div -->
 {% endmacro %}
