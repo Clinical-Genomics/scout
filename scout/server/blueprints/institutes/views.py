@@ -12,7 +12,6 @@ log = logging.getLogger(__name__)
 
 blueprint = Blueprint('overview', __name__, template_folder='templates')
 
-
 @blueprint.route('/overview')
 def institutes():
     """Display a list of all user institutes."""
@@ -40,3 +39,9 @@ def institutes():
     data = dict(institutes=institutes)
     return render_template(
         'overview/institutes.html', **data)
+
+
+@blueprint.route('/overview/edit/<institute_id>')
+def institute(institute_id):
+    """ Edit institute data """
+    return 'HI BITCHES'
