@@ -1,8 +1,14 @@
 {% extends "layout_bs4.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 {% from "overview/utils.html" import users_table%}
 
 {% block title %}
   {{ super() }} - Institutes
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 {% endblock %}
 
 {% block top_nav %}
@@ -13,11 +19,50 @@
     </a>
   </li>
   <li class="nav-item active">
-    <p class="navbar-text text-nowrap">{{ institute_obj.display_name }}</p>
+    <p class="navbar-text text-nowrap">{{ institute.display_name }}</p>
   </li>
 {% endblock %}
 
 {% block content_main %}
+<div class="container">
+  <form  action="{{ url_for('overview.institute', institute_id=institute.internal_id) }}" method="POST">
+    <div class="card mt-3">
+      <div style="padding: 0;" class="card-body mt-3 ml-3 mr-3" >
+        <h5 class="header">Institute Settings</h5>
+        <form method="POST" action="/">
+          <div class="form-row mt-3 d-flex justify-content-between">
+            <div class="form-group col-md-4">
+              {{ wtf.form_field(form.coverage_cutoff, class='form-control', placeholder='default=10') }}
+            </div>
+            <div class="form-group col-md-4">
+              {{ wtf.form_field(form.snvs_rank_threshold, class='form-control', placeholder='default=0') }}
+            </div>
+            <div class="form-group col-md-4">
+              {{ wtf.form_field(form.svs_rank_threshold, class='form-control', placeholder='default=0') }}
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-between">
+            <div class="col-md-6 selectpicker">
+              {{ wtf.form_field(form.pheno_groups, class='form-control') }}
+            </div>
+            <div class="col-md-6 selectpicker">
+              {{ wtf.form_field(form.cohorts, class='form-control') }}
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-center">
+            <div class="col-md-12 selectpicker">
+              {{ wtf.form_field(form.partner_institutes, class='form-control') }}
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-center">
+            <div class="form-group">
+              {{ form.submit }}
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </form>
   <hr>
   <div class="card">
     <div style="padding: 0;" class="card-body mt-3 ml-3" >
@@ -25,4 +70,18 @@
     </div>
     {{ users_table(users) }}
   </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+  <script>
+    $(function () {
+      $('select[multiple]').selectpicker({
+          width: '100%'
+        });
+    });
+  </script>
+
 {% endblock %}

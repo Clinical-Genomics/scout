@@ -7,6 +7,7 @@ from flask_login import current_user
 from scout.constants import PHENOTYPE_GROUPS
 from scout.server.extensions import store
 from scout.server.utils import user_institutes, templated
+from .forms import InstituteForm
 
 LOG = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ def institutes():
 
 
 @blueprint.route('/overview/edit/<institute_id>', methods=['GET','POST'])
-@templated('/overview/institute.html')
+#@templated('/overview/institute.html')
 def institute(institute_id):
     """ Edit institute data """
 
@@ -54,8 +55,9 @@ def institute(institute_id):
     if request.method == 'POST':
         LOG.info('----------> UPDATING INSTITUTE!!!!')
 
-    data = {
-        'institute_obj' : store.institute(institute_id),
-        'users' : store.users(institute_id)
-    }
-    return data
+    form = InstituteForm()
+
+    institute_obj = store.institute(institute_id)
+    users = store.users(institute_id)
+
+    return render_template('/overview/institute.html', form=form, institute=institute_obj, users=users)
