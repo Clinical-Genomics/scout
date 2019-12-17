@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from flask import (Blueprint, render_template)
+from flask import (Blueprint, render_template, flash, redirect, request)
 from flask_login import current_user
 
 from scout.constants import PHENOTYPE_GROUPS
 from scout.server.extensions import store
-from scout.server.utils import user_institutes
+from scout.server.utils import user_institutes, templated
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 blueprint = Blueprint('overview', __name__, template_folder='templates')
 
@@ -41,7 +41,21 @@ def institutes():
         'overview/institutes.html', **data)
 
 
-@blueprint.route('/overview/edit/<institute_id>')
+@blueprint.route('/overview/edit/<institute_id>', methods=['GET','POST'])
+@templated('/overview/institute.html')
 def institute(institute_id):
     """ Edit institute data """
-    return 'HI BITCHES'
+
+    if institute_id not in current_user.institutes or not current_user.is_admin:
+        flash("Current user doesn't have the permission to modify this institute", 'warning')
+        return redirect(request.referrer)
+
+    # if institute is to be updated
+    if request.method == 'POST':
+        LOG.info('----------> UPDATING INSTITUTE!!!!')
+
+    data = {
+        'institute_obj' : store.institute(institute_id),
+        'users' : store.users(institute_id)
+    }
+    return data

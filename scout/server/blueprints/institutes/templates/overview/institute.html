@@ -1,0 +1,28 @@
+{% extends "layout_bs4.html" %}
+{% from "overview/utils.html" import users_table%}
+
+{% block title %}
+  {{ super() }} - Institutes
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.institutes') }}">
+      institutes
+    </a>
+  </li>
+  <li class="nav-item active">
+    <p class="navbar-text text-nowrap">{{ institute_obj.display_name }}</p>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+  <hr>
+  <div class="card">
+    <div style="padding: 0;" class="card-body mt-3 ml-3" >
+      <h5 class="header">Institute users</h5>
+    </div>
+    {{ users_table(users) }}
+  </div>
+{% endblock %}
