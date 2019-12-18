@@ -33,7 +33,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed missing path import by importing pathlib.Path
 - Handle index inconsistencies in the update index functions
 - Fixed layout problems
-- Cards backround is bit darker
+- Slightly darker page background
 
 
 ## [4.9.0]
