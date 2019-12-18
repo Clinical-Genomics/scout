@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add or modify individuals' age or tissue type from case page
 - Display GC and allele depth in causatives table.
 - Included primary reference transcript in general report
+- Included partial causative variants in general report
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
