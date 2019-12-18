@@ -654,16 +654,26 @@
               <td>{{gene.region_annotation}}</td>
               <td>
                 {% set n_primary_transcripts = [] %}
+                {% set hgnc_prim = namespace(primary=None) %}
                 <ul>
                 {% for transcript in gene.primary_transcripts %}
+                  {% set hgnc_prim.primary = None %}
+                  {% for refseq_id in transcript.refseq_identifiers %}
+                    {% if refseq_id in gene.common.primary_transcripts %}
+                      {% set hgnc_prim.primary = refseq_id %}
+                    {% endif %}
+                  {% endfor %}
                   {% do n_primary_transcripts.append(gene.primary_transcripts|length) %}
-                  {% if loop.index <= 5 or transcript.is_canonical or transcript.is_disease_associated %} <!--Do not print too many transcript, but include the canonical-->
+                  {% if loop.index <= 5 or transcript.is_canonical or transcript.is_disease_associated or hgnc_prim.primary %} <!--Do not print too many transcripts, but include the canonical-->
                     <li>{{transcript.refseq_id}} - {{ (transcript.coding_sequence_name or '')|truncate(20, True) }} - {{ (transcript.protein_sequence_name or '')|url_decode }}
                     {% if transcript.is_canonical %}
                       <span class="badge badge-pill badge-secondary" title="canonical">C</span>
                     {% endif %}
                     {% if transcript.is_disease_associated %}
                       <span class="badge badge-pill badge-danger" title="disease_associated">D</span>
+                    {% endif %}
+                    {% if hgnc_prim.primary %}
+                      <span class="badge badge-pill badge-info" title="primary_ref_transcript">hgnc primary:{{hgnc_prim.primary}}</span>
                     {% endif %}
                     </li>
                   {% endif %}
