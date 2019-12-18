@@ -119,7 +119,7 @@
                         n.a.
                       {% endif %}
 	                    {% if ind.confirmed_sex %}
-	                      <span class="badge badge-pill badge-sm badge-light">V</span>
+	                      <span class="badge badge-pill badge-sm badge-secondary">V</span>
 	                    {% endif %}
 	                  </td>
 	                  <td>
@@ -134,7 +134,7 @@
 	                  <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
 	                  <td>
 	                    {% if ind.confirmed_parent == True %}
-	                      <span class="badge badge-pill badge-sm badge-light">V</span>
+	                      <span class="badge badge-pill badge-sm badge-secondary">V</span>
 	                    {% elif ind.confirmed_parent == False %}
 	                      <span class="badge badge-pill badge-sm badge-danger">!</span>
 	                    {% else %}
