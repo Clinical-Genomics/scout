@@ -317,5 +317,21 @@ input[type="checkbox"].ios8-switch:checked + label:before {
 /* end of CHECKBOX ios8-switch*/
 
 option {
-  width: 100%;
+  width: 100;
+}
+
+.list-group-item {
+  background: #f6f6f6;
+}
+
+textarea.form-control {
+  background-color: #f6f6f6 !important;
+}
+
+input.form-control{
+  background-color: #f6f6f6 !important;
+}
+
+select.form-control {
+  background-color: #f6f6f6 !important;
 }
