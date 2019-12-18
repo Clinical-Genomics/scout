@@ -111,13 +111,15 @@
 	                <tr {% if ind.phenotype == 2 %} class="table-danger" {% endif %}>
 	                  <td>{{ ind.display_name }}</td>
 	                  <td>
-                      {% if ind.sex_human in ['female','male'] %}
-                        <i class="fa fa-{{ind.sex_human}}" aria-hidden="true"></i>
+                      {% if ind.sex_human == 'female' %}
+                        F
+                      {% elif ind.sex_human == 'male' %}
+                        M
                       {% else %}
                         n.a.
                       {% endif %}
 	                    {% if ind.confirmed_sex %}
-	                      <i class="fa fa-check"></i>
+	                      <span class="badge badge-pill badge-sm badge-light">V</span>
 	                    {% endif %}
 	                  </td>
 	                  <td>
@@ -132,9 +134,9 @@
 	                  <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
 	                  <td>
 	                    {% if ind.confirmed_parent == True %}
-	                      <i class="fa fa-check"></i>
+	                      <span class="badge badge-pill badge-sm badge-light">V</span>
 	                    {% elif ind.confirmed_parent == False %}
-	                      <i class="fa fa-exclamation-circle"></i>
+	                      <span class="badge badge-pill badge-sm badge-danger">!</span>
 	                    {% else %}
 	                      N/A
 	                    {% endif %}
