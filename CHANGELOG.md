@@ -10,6 +10,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 ### Fixed
+
+## [4.10.1]
+
+### Fixed
 - Fixed issue with opening research variants
 
 ## [4.10.0]
