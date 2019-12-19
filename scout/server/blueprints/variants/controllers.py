@@ -76,8 +76,10 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
             # get variant by simple_id.
             clinical_var_obj = store.variant(case_id=case_obj['_id'],
                                 simple_id =variant_obj['simple_id'], variant_type='clinical')
-            # Get all previous ACMG evalautions of the variant
-            variant_obj['clinical_assessments'] = get_manual_assessments(clinical_var_obj)
+
+            if clinical_var_obj != None:
+                # Get all previous ACMG evalautions of the variant
+                variant_obj['clinical_assessments'] = get_manual_assessments(clinical_var_obj)
 
         variants.append(parse_variant(store, institute_obj, case_obj, variant_obj,
                         update=True, genome_build=genome_build))
@@ -107,8 +109,10 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
             # but mostly that would be clinical.. Its a start.
             clinical_var_obj = store.variant(case_id=case_obj['_id'],
                                 simple_id =variant_obj['simple_id'], variant_type='clinical')
-            # Get all previous ACMG evalautions of the variant
-            variant_obj['clinical_assessments'] = get_manual_assessments(clinical_var_obj)
+
+             if clinical_var_obj != None:
+                 # Get all previous ACMG evalautions of the variant
+                 variant_obj['clinical_assessments'] = get_manual_assessments(clinical_var_obj)
 
         variants.append(parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build))
 
