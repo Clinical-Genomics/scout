@@ -8,6 +8,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+
+### Fixed
+
+## [4.10.1]
+
+### Fixed
+- Fixed issue with opening research variants
+
+## [4.10.0]
+
+### Added
 - Rank score model in causatives page
 - Exportable HPO terms from phenotypes page
 - AMP guideline tiers for cancer variants
@@ -30,7 +41,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixes issue with unaligned table headers that comes with hidden Datatables
 - Layout in general report PDF export
 - Fixed issue on the case statistics view. The validation bars didn't show up when all institutes were selected. Now they do.
-- Included Font Awesome availability in general report
 - Fixed missing path import by importing pathlib.Path
 - Handle index inconsistencies in the update index functions
 - Fixed layout problems
