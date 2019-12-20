@@ -93,7 +93,6 @@
                         height: "{{track.height}}"
                       },
                       {% endfor %}
-
                       {% for ttrack in tiddit_wig_tracks %}
                       {
                         type: "wig",
@@ -102,7 +101,7 @@
                         format: 'bigwig',
                         sourceType: 'file'
                       },
-                        {% endfor %}
+                      {% endfor %}
                       {% for rtrack in updregion_tracks %}
                       {
                         type: "bed",
@@ -110,7 +109,7 @@
                         url: '{{ url_for("alignviewers.remote_static", file=rtrack.url) }}',
                         sourceType: 'file'
                       },
-                        {% endfor %}
+                      {% endfor %}
                       {% for strack in updsites_tracks %}
                       {
                         type: "bed",
@@ -118,8 +117,7 @@
                         url: '{{ url_for("alignviewers.remote_static", file=strack.url) }}',
                         sourceType: 'file'
                       },
-                        {% endfor %}
-  
+                      {% endfor %}
                     ]
                 };
 

@@ -27,7 +27,6 @@ individual = dict(
     tiddit_coverage_wig=str,  # Path to wig file
     upd_regions_bed=str,  # Path to bed file
     upd_sites_bed=str,  # Path to bed file
-    
     vcf2cytosure=str, # Path to CGH file
     analysis_type=str,  # choices=ANALYSIS_TYPES
     confirmed_sex=bool,  # True or False. None if no check has been done

@@ -106,8 +106,6 @@ def igv():
 
     # Init upcoming igv-tracks
     sample_tracks = []
-    wig_tracks = []
-
     upd_regions_bed_tracks, upd_sites_bed_tracks = [], []
     counter = 0
     
@@ -130,21 +128,17 @@ def igv():
         })
         counter += 1
 
-
+    rhocall_bed_tracks = make_tracks('Rhocall Bed', rhocall_bed_files)
     rhocall_wig_tracks = make_tracks('Rhocall Wig', rhocall_wig_files)
     tiddit_wig_tracks = make_tracks('Tiddit Wig', rhocall_wig_files)
-    rhocall_bed_tracks = make_tracks('Rhocall Bed', rhocall_bed_files)
     updregion_tracks = make_tracks('upd region', updregion_files)
     updsites_tracks = make_tracks('upd sites', updsites_files)
       
     display_obj['sample_tracks'] = sample_tracks
 
-    LOG.debug('wig tracks %s', rhocall_wig_tracks)
-    
     if rhocall_wig_files:
         display_obj['rhocall_wig_tracks'] = rhocall_wig_tracks
     if rhocall_bed_files:
-        LOG.debug('BED BED')
         display_obj['rhocall_bed_tracks'] = rhocall_bed_tracks
     if tiddit_coverage_files:
         display_obj['tiddit_wig_tracks'] = tiddit_wig_tracks
