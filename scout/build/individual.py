@@ -107,7 +107,3 @@ def build_individual(ind):
     ind_obj['tissue_type'] = ind.get('tissue_type', 'unknown')
 
     return ind_obj
-
-
-
-
