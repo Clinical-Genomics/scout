@@ -4,6 +4,7 @@ import logging
 from flask import (Blueprint, render_template, flash, redirect, request)
 from flask_login import current_user
 
+from . import controllers
 from scout.constants import PHENOTYPE_GROUPS
 from scout.server.extensions import store
 from scout.server.utils import user_institutes, templated
@@ -51,13 +52,23 @@ def institute(institute_id):
         flash("Current user doesn't have the permission to modify this institute", 'warning')
         return redirect(request.referrer)
 
+    institute_obj = store.institute(institute_id)
+
     # if institute is to be updated
     if request.method == 'POST':
         LOG.info('----------> UPDATING INSTITUTE!!!!')
 
+    data = controllers.institute(store, institute_id)
+
+    # initialize form data
     form = InstituteForm()
+    institutes_tuples = []
+    for inst in store.institutes():
+        if not inst['internal_id'] == institute_id:
+            institutes_tuples.append( ((inst['internal_id'], inst['internal_id']) ))
+    form.institutes.choices = institutes_tuples
 
-    institute_obj = store.institute(institute_id)
-    users = store.users(institute_id)
+    form.coverage_cutoff.value = institute_obj.get('coverage_cutoff')
+    form.frequency_cutoff.value = institute_obj.get('frequency_cutoff')
 
-    return render_template('/overview/institute.html', form=form, institute=institute_obj, users=users)
+    return render_template('/overview/institute.html', form=form, institutes_tuples=institutes_tuples, **data)

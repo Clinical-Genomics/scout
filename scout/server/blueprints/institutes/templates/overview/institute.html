@@ -24,20 +24,26 @@
 {% endblock %}
 
 {% block content_main %}
-<div class="container">
-  <form  action="{{ url_for('overview.institute', institute_id=institute.internal_id) }}" method="POST">
-    <div class="card mt-3">
+<form  action="{{ url_for('overview.institute', institute_id=institute.internal_id) }}" method="POST" accept-charset="utf-8">
+<div class="container-fluid">
+  <div class="row">
+    <!-- institute settings panel -->
+    <div class="card mt-3 col-6">
       <div style="padding: 0;" class="card-body mt-3 ml-3 mr-3" >
         <h5 class="header">Institute Settings</h5>
-        <form method="POST" action="/">
           <div class="form-row mt-3 d-flex justify-content-between">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-6">
               {{ wtf.form_field(form.coverage_cutoff, class='form-control', placeholder='default=10') }}
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-6">
+              {{ wtf.form_field(form.frequency_cutoff, class='form-control', placeholder='default=10') }}
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-between">
+            <div class="form-group col-md-6">
               {{ wtf.form_field(form.snvs_rank_threshold, class='form-control', placeholder='default=0') }}
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-6">
               {{ wtf.form_field(form.svs_rank_threshold, class='form-control', placeholder='default=0') }}
             </div>
           </div>
@@ -51,7 +57,7 @@
           </div>
           <div class="form-row mt-3 d-flex justify-content-center">
             <div class="col-md-12 selectpicker">
-              {{ wtf.form_field(form.partner_institutes, class='form-control') }}
+              {{ wtf.form_field(form.institutes, class='form-control') }}
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-center">
@@ -59,18 +65,19 @@
               {{ form.submit }}
             </div>
           </div>
-        </form>
       </div>
     </div>
-  </form>
-  <hr>
-  <div class="card">
-    <div style="padding: 0;" class="card-body mt-3 ml-3" >
-      <h5 class="header">Institute users</h5>
+    <hr>
+    <!-- institute users panel -->
+    <div class="card col-6 mt-3">
+      <div style="padding: 0;" class="card-body mt-3 overflow-auto">
+        <h5 class="header">Institute users</h5>
+          {{ users_table(users) }}
+      </div>
     </div>
-    {{ users_table(users) }}
-  </div>
-</div>
+  </div> <!-- end of div class="row" -->
+</div> <!-- end of container div -->
+</form>
 {% endblock %}
 
 {% block scripts %}
