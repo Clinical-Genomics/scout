@@ -10,7 +10,8 @@ class InstituteForm(FlaskForm):
     cohort_tuples = [ (COHORT_TAGS[i], COHORT_TAGS[i]) for i in range(0, len(COHORT_TAGS)) ]
     hpo_tuples = []
     for key in PHENOTYPE_GROUPS.keys():
-        hpo_tuples.append((PHENOTYPE_GROUPS[key], ' '.join([ PHENOTYPE_GROUPS[key]['name'], '(', PHENOTYPE_GROUPS[key]['abbr'] ,')'])))
+        option_name = ' '.join([ PHENOTYPE_GROUPS[key]['name'], '(', PHENOTYPE_GROUPS[key]['abbr'] ,')'])
+        hpo_tuples.append((option_name,option_name))
 
     coverage_cutoff = IntegerField('Coverage cutoff', validators=[validators.Optional(),
         validators.NumberRange(min=1)], default=10)
