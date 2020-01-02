@@ -290,6 +290,14 @@
               <span class="float-right"><strong>{{ variant.reference }} → {{ variant.alternative }}</strong></span>
             </td>
           </tr>
+          {% if variant.str_repid %}
+          <tr>
+            <td colspan="2">
+              Repeat locus
+              <span><strong>{{variant.str_repid}}</strong></span>
+            </td>
+          </tr>
+          {% endif %}
         </tbody>
       </table>
       <div class="table-responsive">
