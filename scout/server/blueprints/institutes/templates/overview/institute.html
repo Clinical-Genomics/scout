@@ -25,6 +25,7 @@
 
 {% block content_main %}
 <form  action="{{ url_for('overview.institute', institute_id=institute.internal_id) }}" method="POST" accept-charset="utf-8">
+{{ form.csrf_token() }}
 <div class="container-fluid">
   <div class="row">
     <!-- institute settings panel -->
@@ -33,18 +34,34 @@
         <h5 class="header">Institute Settings</h5>
           <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-6">
-              {{ wtf.form_field(form.coverage_cutoff, class='form-control', placeholder='default=10') }}
+              {{ form.coverage_cutoff.label }}
+              {{ form.coverage_cutoff(class='form-control') }}
+              {% for error in form.coverage_cutoff.errors %}
+                <span style="color: red;">{{ error }}</span>
+              {% endfor %}
             </div>
             <div class="form-group col-md-6">
-              {{ wtf.form_field(form.frequency_cutoff, class='form-control', placeholder='default=10') }}
+              {{ form.frequency_cutoff.label }}
+              {{ form.frequency_cutoff(class='form-control') }}
+              {% for error in form.frequency_cutoff.errors %}
+                <span style="color: red;">{{ error }}</span>
+              {% endfor %}
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-6">
-              {{ wtf.form_field(form.snvs_rank_threshold, class='form-control', placeholder='default=0') }}
+              {{ form.snvs_rank_threshold.label }}
+              {{ form.snvs_rank_threshold(class='form-control') }}
+              {% for error in form.snvs_rank_threshold.errors %}
+                <span style="color: red;">{{ error }}</span>
+              {% endfor %}
             </div>
             <div class="form-group col-md-6">
-              {{ wtf.form_field(form.svs_rank_threshold, class='form-control', placeholder='default=0') }}
+              {{ form.svs_rank_threshold.label }}
+              {{ form.svs_rank_threshold(class='form-control') }}
+              {% for error in form.svs_rank_threshold.errors %}
+                <span style="color: red;">{{ error }}</span>
+              {% endfor %}
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-between">
@@ -67,7 +84,6 @@
           </div>
       </div>
     </div>
-    <hr>
     <!-- institute users panel -->
     <div class="card col-6 mt-3">
       <div style="padding: 0;" class="card-body mt-3 overflow-auto">

@@ -53,15 +53,16 @@ def institute(institute_id):
         return redirect(request.referrer)
 
     institute_obj = store.institute(institute_id)
+    form = InstituteForm(request.form)
 
     # if institute is to be updated
-    if request.method == 'POST':
-        LOG.info('----------> UPDATING INSTITUTE!!!!')
+    if request.method == 'POST' and form.validate_on_submit():
+        flash('form is validated!')
+    elif request.method == 'POST':
+        flash('POST')
+
 
     data = controllers.institute(store, institute_id)
-
-    # initialize form data
-    form = InstituteForm()
     institutes_tuples = []
     for inst in store.institutes():
         if not inst['internal_id'] == institute_id:

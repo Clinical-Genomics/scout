@@ -13,9 +13,9 @@ class InstituteForm(FlaskForm):
         hpo_tuples.append((PHENOTYPE_GROUPS[key], ' '.join([ PHENOTYPE_GROUPS[key]['name'], '(', PHENOTYPE_GROUPS[key]['abbr'] ,')'])))
 
     coverage_cutoff = IntegerField('Coverage cutoff', validators=[validators.Optional(),
-        IntegerField], default=10)
+        validators.NumberRange(min=1)], default=10)
     frequency_cutoff = DecimalField('Frequency cutoff', validators=[validators.Optional(),
-        IntegerField], default=0.01)
+        validators.NumberRange(min=0, message="Number must be positive")], default=0.01)
     snvs_rank_threshold = IntegerField('SNVs rank threshold',  validators=[validators.Optional(),
         IntegerField], default=0,)
     svs_rank_threshold = IntegerField('SVs rank threshold', validators=[validators.Optional(),
