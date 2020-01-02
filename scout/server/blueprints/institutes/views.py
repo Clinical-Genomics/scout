@@ -57,18 +57,17 @@ def institute(institute_id):
 
     # if institute is to be updated
     if request.method == 'POST' and form.validate_on_submit():
-        flash('form is validated!')
-    elif request.method == 'POST':
-        flash('POST')
-
+        # save form values to database
+        LOG.info('SAVE STUFF TO DB')
 
     data = controllers.institute(store, institute_id)
     institutes_tuples = []
     for inst in store.institutes():
         if not inst['internal_id'] == institute_id:
             institutes_tuples.append( ((inst['internal_id'], inst['internal_id']) ))
-    form.institutes.choices = institutes_tuples
 
+    form.display_name.value = institute_obj.get('display_name')
+    form.institutes.choices = institutes_tuples
     form.coverage_cutoff.value = institute_obj.get('coverage_cutoff')
     form.frequency_cutoff.value = institute_obj.get('frequency_cutoff')
 

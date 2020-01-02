@@ -33,16 +33,34 @@
       <div style="padding: 0;" class="card-body mt-3 ml-3 mr-3" >
         <h5 class="header">Institute Settings</h5>
           <div class="form-row mt-3 d-flex justify-content-between">
+            <div class="form-group col-md-12">
+              {{ form.display_name.label }}
+              {{ form.display_name(class='form-control', value=institute.display_name) }}
+              {% for error in form.display_name.errors %}
+                <span style="color: red;">{{ error }}</span><br>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-between">
+            <div class="form-group col-md-10">
+              {{ form.sanger_recipients.label }}
+              {{ form.sanger_recipients(class='form-control', value=institute.sanger_recipient) }}
+              {% for error in form.sanger_recipients.errors %}
+                <span style="color: red;">{{ error }}</span><br>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-6">
               {{ form.coverage_cutoff.label }}
-              {{ form.coverage_cutoff(class='form-control') }}
+              {{ form.coverage_cutoff(class='form-control', value=institute.coverage_cutoff) }}
               {% for error in form.coverage_cutoff.errors %}
                 <span style="color: red;">{{ error }}</span><br>
               {% endfor %}
             </div>
             <div class="form-group col-md-6">
               {{ form.frequency_cutoff.label }}
-              {{ form.frequency_cutoff(class='form-control') }}
+              {{ form.frequency_cutoff(class='form-control', value=institute.frequency_cutoff) }}
               {% for error in form.frequency_cutoff.errors %}
                 <span style="color: red;">{{ error }}</span><br>
               {% endfor %}
@@ -51,14 +69,14 @@
           <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-6">
               {{ form.snvs_rank_threshold.label }}
-              {{ form.snvs_rank_threshold(class='form-control') }}
+              {{ form.snvs_rank_threshold(class='form-control', value=institute.snvs_rank_threshold) }}
               {% for error in form.snvs_rank_threshold.errors %}
                 <span style="color: red;">{{ error }}</span><br>
               {% endfor %}
             </div>
             <div class="form-group col-md-6">
               {{ form.svs_rank_threshold.label }}
-              {{ form.svs_rank_threshold(class='form-control') }}
+              {{ form.svs_rank_threshold(class='form-control', value=institute.svs_rank_threshold) }}
               {% for error in form.svs_rank_threshold.errors %}
                 <span style="color: red;">{{ error }}</span><br>
               {% endfor %}
