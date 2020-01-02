@@ -8,7 +8,7 @@ import logging
 
 from bs4 import BeautifulSoup
 from xlsxwriter import Workbook
-from flask import url_for, current_app
+from flask import url_for, current_app, flash
 from flask_mail import Message
 import query_phenomizer
 from flask_login import current_user
@@ -770,6 +770,10 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
 
         if case_obj.get('suspects'):
             g_features = genomic_features(store, case_obj, individual.get('display_name'), genes_only)
+            # prevent user to submit more than 3 variants/genes for this patient
+            if len(g_features) > 3:
+                flash('At the moment it is not possible to save to MatchMaker more than 3 pinned variants', 'warning')
+                return None
             patient['genomicFeatures'] = g_features
 
         # send add request to server and capture response

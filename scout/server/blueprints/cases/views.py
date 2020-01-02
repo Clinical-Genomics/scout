@@ -276,6 +276,9 @@ def matchmaker_add(institute_id, case_name):
             add_disorders=mme_save_options[2], genes_only=genes_only,
             mme_base_url = mme_base_url, mme_accepts=mme_accepts, mme_token=mme_token)
 
+    if add_result is None:
+        return redirect(request.referrer)
+
     # flash MME responses (one for each patient posted)
     n_succes_response = 0
     n_inserted = 0
