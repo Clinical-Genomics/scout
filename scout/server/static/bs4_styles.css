@@ -335,3 +335,7 @@ input.form-control{
 select.form-control {
   background-color: #f6f6f6 !important;
 }
+
+.nav .nav-item, .nav > .active > a {
+  background-color: #f6f6f6 !important;
+}
