@@ -241,7 +241,7 @@ body {
     height: 35px;
 }
 .sidebar-separator {
-    background-color: #333;
+    background-color: #333 !important;
     height: 25px;
 }
 .logo-separator {
