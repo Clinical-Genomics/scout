@@ -95,6 +95,7 @@ table.dataTable {margin-bottom: 0rem}
 
 .panel-default {
 	margin-top: 5px;
+  background-color: #f6f6f6 !important;
 }
 
 .panel-default > .panel-heading {
