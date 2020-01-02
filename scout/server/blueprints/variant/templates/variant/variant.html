@@ -278,7 +278,7 @@
           <tr>
             <td>
               Position
-              <span class="float-right">
+              <span>
                 <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
                 {% if variant.is_par %}
                   <span class="badge badge-info">PAR</span>
@@ -287,7 +287,7 @@
             </td>
             <td>
               Change
-              <span class="float-right"><strong>{{ variant.reference }} → {{ variant.alternative }}</strong></span>
+              <span><strong>{{ variant.reference }} → {{ variant.alternative }}</strong></span>
             </td>
           </tr>
           {% if variant.str_repid %}
