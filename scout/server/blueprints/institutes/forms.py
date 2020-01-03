@@ -7,7 +7,6 @@ from scout.constants import COHORT_TAGS, PHENOTYPE_GROUPS
 
 class InstituteForm(FlaskForm):
     """ Instutute-specif settings """
-
     cohort_tuples = [ (COHORT_TAGS[i], COHORT_TAGS[i]) for i in range(0, len(COHORT_TAGS)) ]
     hpo_tuples = []
     for key in PHENOTYPE_GROUPS.keys():
@@ -16,8 +15,9 @@ class InstituteForm(FlaskForm):
 
     display_name = TextField('Institute display name', validators=[validators.InputRequired(),
         validators.Length(min=2, max=100)])
-    sanger_recipients = TextAreaField('Sanger recipients, comma separated', validators=[validators.Optional()],
-        render_kw={"rows": 2, "cols": 12})
+    sanger_email = EmailField('New sanger recipient', [validators.Optional(), validators.Email()])
+    sanger_recipients = TextAreaField('Sanger recipients',
+        render_kw={"rows": 2, "cols": 8, 'readonly': True})
     coverage_cutoff = IntegerField('Coverage cutoff', validators=[validators.Optional(),
         validators.NumberRange(min=1)])
     frequency_cutoff = DecimalField('Frequency cutoff', validators=[validators.Optional(),

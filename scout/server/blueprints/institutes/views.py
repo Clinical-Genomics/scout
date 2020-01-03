@@ -44,7 +44,6 @@ def institutes():
 
 
 @blueprint.route('/overview/edit/<institute_id>', methods=['GET','POST'])
-#@templated('/overview/institute.html')
 def institute(institute_id):
     """ Edit institute data """
 
@@ -61,6 +60,7 @@ def institute(institute_id):
         LOG.info('SAVE STUFF TO DB')
 
     data = controllers.institute(store, institute_id)
+    # get all other institutes to populate the select of the possible collaborators
     institutes_tuples = []
     for inst in store.institutes():
         if not inst['internal_id'] == institute_id:
@@ -70,5 +70,6 @@ def institute(institute_id):
     form.institutes.choices = institutes_tuples
     form.coverage_cutoff.value = institute_obj.get('coverage_cutoff')
     form.frequency_cutoff.value = institute_obj.get('frequency_cutoff')
+    form.sanger_recipients.data = ', '.join(institute_obj.get('sanger_recipients'))
 
     return render_template('/overview/institute.html', form=form, institutes_tuples=institutes_tuples, **data)
