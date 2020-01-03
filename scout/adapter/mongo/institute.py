@@ -75,7 +75,7 @@ class InstituteHandler(object):
 
         if sanger_recipients:
             for recipient in sanger_recipients:
-                user_obj = self.user(recipient)
+                user_obj = self.user(email=recipient)
                 if not user_obj:
                     return "user {} does not exist in database".format(recipient)
                 LOG.info("Updating sanger recipients for institute: {0} with {1}".format(

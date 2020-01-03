@@ -41,10 +41,7 @@ def update_institute_settings(store, institute_obj, form):
         phenotype_groups.append(pheno_group.split(',')[0])
         group_abbreviations.append(pheno_group[pheno_group.find("( ")+2:pheno_group.find(" )")])
 
-    # display_name
-    # sanger stuff
-    # coverage cutoff
-    # frequency_cutoff
+    ## STUFF COLLECTED FROM FORM AND STILL TO INTEGRATE INTO INSTITUTE:
     # snvs_rank_threshold
     # svs_rank_threshold
     # svs_rank_threshold
@@ -61,4 +58,4 @@ def update_institute_settings(store, institute_obj, form):
         group_abbreviations = group_abbreviations,
         add_groups = False
     )
-    flash(updated_institute)
+    return updated_institute
