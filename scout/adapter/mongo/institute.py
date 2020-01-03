@@ -34,14 +34,16 @@ class InstituteHandler(object):
         ##TODO check if insert info was ok
         LOG.info("Institute saved")
 
-    def update_institute(self, internal_id, sanger_recipient=None, coverage_cutoff=None,
-                         frequency_cutoff=None, display_name=None, remove_sanger=None,
-                         phenotype_groups=None, group_abbreviations=None, add_groups=None):
+    def update_institute(self, internal_id, sanger_recipient=None, sanger_recipients=None,
+                         coverage_cutoff=None, frequency_cutoff=None, display_name=None,
+                         remove_sanger=None, phenotype_groups=None, group_abbreviations=None,
+                         add_groups=None):
         """Update the information for an institute
 
         Args:
             internal_id(str): The internal institute id
             sanger_recipient(str): Email adress to add for sanger order
+            sanger_recipients(list): A list of sanger recipients email addresses
             coverage_cutoff(int): Update coverage cutoff
             frequency_cutoff(float): New frequency cutoff
             display_name(str): New display name
@@ -70,6 +72,15 @@ class InstituteHandler(object):
             LOG.info("Updating sanger recipients for institute: {0} with {1}".format(
                      internal_id, sanger_recipient))
             updates['$push'] = {'sanger_recipients':sanger_recipient}
+
+        if sanger_recipients:
+            for recipient in sanger_recipients:
+                user_obj = self.user(recipient)
+                if not user_obj:
+                    return "user {} does not exist in database".format(recipient)
+                LOG.info("Updating sanger recipients for institute: {0} with {1}".format(
+                         internal_id, recipient))
+                updates['$set'] = {'sanger_recipients':sanger_recipients}
 
         if remove_sanger:
             LOG.info("Removing sanger recipient {0} from institute: {1}".format(

@@ -57,7 +57,7 @@ def institute(institute_id):
     # if institute is to be updated
     if request.method == 'POST' and form.validate_on_submit():
         # save form values to database
-        LOG.info('SAVE STUFF TO DB')
+        controllers.update_institute_settings(store,institute_obj,request.form)
 
     data = controllers.institute(store, institute_id)
     # get all other institutes to populate the select of the possible collaborators

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from flask import flash
 
 def institute(store, institute_id):
     """ Process institute data.
@@ -19,3 +20,45 @@ def institute(store, institute_id):
         'users': users,
     }
     return data
+
+def update_institute_settings(store, institute_obj, form):
+    """ Update institute settings with data collected from institute form
+
+    Args:
+        score(adapter.MongoAdapter)
+        institute_id(str)
+        form(dict)
+
+    Returns:
+        updated_institute(dict)
+
+    """
+    sanger_recipients = form.get('sanger_recipients').split(', ')
+    phenotype_groups = []
+    group_abbreviations = []
+
+    for pheno_group in form.getlist('pheno_groups'):
+        phenotype_groups.append(pheno_group.split(',')[0])
+        group_abbreviations.append(pheno_group[pheno_group.find("( ")+2:pheno_group.find(" )")])
+
+    # display_name
+    # sanger stuff
+    # coverage cutoff
+    # frequency_cutoff
+    # snvs_rank_threshold
+    # svs_rank_threshold
+    # svs_rank_threshold
+    # sharing institutes
+    # patient cohorts
+
+    updated_institute = store.update_institute(
+        internal_id = institute_obj['internal_id'],
+        sanger_recipients = sanger_recipients,
+        coverage_cutoff = form.get('coverage_cutoff'),
+        frequency_cutoff = form.get('frequency_cutoff'),
+        display_name = form.get('display_name'),
+        phenotype_groups = phenotype_groups,
+        group_abbreviations = group_abbreviations,
+        add_groups = False
+    )
+    flash(updated_institute)
