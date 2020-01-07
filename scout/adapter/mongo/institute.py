@@ -37,7 +37,7 @@ class InstituteHandler(object):
     def update_institute(self, internal_id, sanger_recipient=None, sanger_recipients=None,
                          coverage_cutoff=None, frequency_cutoff=None, display_name=None,
                          remove_sanger=None, phenotype_groups=None, group_abbreviations=None,
-                         add_groups=None):
+                         add_groups=None, sharing_institutes=None):
         """Update the information for an institute
 
         Args:
@@ -51,6 +51,7 @@ class InstituteHandler(object):
             phenotype_groups(iterable(str)): New phenotype groups
             group_abbreviations(iterable(str))
             add_groups: If groups should be added. If False replace groups
+            sharing_institutes:(list): Other institutes to share cases with
 
         Returns:
             updated_institute(dict)
@@ -61,7 +62,9 @@ class InstituteHandler(object):
         if not institute_obj:
             raise IntegrityError("Institute {} does not exist in database".format(internal_id))
 
-        updates = {}
+        updates = {
+            '$set' : {},
+        }
         updated_institute = institute_obj
 
         if sanger_recipient:
@@ -80,7 +83,7 @@ class InstituteHandler(object):
                     return "user {} does not exist in database".format(recipient)
                 LOG.info("Updating sanger recipients for institute: {0} with {1}".format(
                          internal_id, recipient))
-                updates['$set'] = {'sanger_recipients':sanger_recipients}
+        updates['$set']['sanger_recipients'] = sanger_recipients # can be empty list
 
         if remove_sanger:
             LOG.info("Removing sanger recipient {0} from institute: {1}".format(
@@ -90,21 +93,17 @@ class InstituteHandler(object):
         if coverage_cutoff:
             LOG.info("Updating coverage cutoff for institute: {0} to {1}".format(
                             internal_id, coverage_cutoff))
-            updates['$set'] = {'coverage_cutoff': coverage_cutoff}
+            updates['$set']['coverage_cutoff'] = coverage_cutoff
 
         if frequency_cutoff:
             LOG.info("Updating frequency cutoff for institute: {0} to {1}".format(
                             internal_id, frequency_cutoff))
-            if not '$set' in updates:
-                updates['$set'] = {}
-            updates['$set'] = {'frequency_cutoff': frequency_cutoff}
+            updates['$set']['frequency_cutoff'] = frequency_cutoff
 
         if display_name:
             LOG.info("Updating display name for institute: {0} to {1}".format(
                             internal_id, display_name))
-            if not '$set' in updates:
-                updates['$set'] = {}
-            updates['$set'] = {'display_name': display_name}
+            updates['$set']['display_name'] = display_name
 
         if phenotype_groups:
             if group_abbreviations:
@@ -123,14 +122,16 @@ class InstituteHandler(object):
                 if group_abbreviations:
                     abbreviation = group_abbreviations[i]
                 existing_groups[hpo_term] = {'name': description, 'abbr':abbreviation}
-            updates['$set'] = {'phenotype_groups': existing_groups}
+            updates['$set']['phenotype_groups'] = existing_groups
 
-        if updates:
-            if not '$set' in updates:
-                updates['$set'] = {}
+        if sharing_institutes:
+            LOG.error('------->SHARING INSTITUTES:{}'.format(sharing_institutes))
+            updates['$set']['sharing_institutes'] = sharing_institutes
 
+        LOG.error('------->UPDATES:{}'.format(updates))
+
+        if updates['$set'].keys() or updates.get('$push') or updates.get('$pull'):
             updates['$set']['updated_at'] = datetime.now()
-
             updated_institute = self.institute_collection.find_one_and_update(
                 {'_id':internal_id}, updates, return_document = pymongo.ReturnDocument.AFTER)
 

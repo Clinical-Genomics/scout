@@ -57,7 +57,11 @@ def institute(institute_id):
     # if institute is to be updated
     if request.method == 'POST' and form.validate_on_submit():
         # save form values to database
-        controllers.update_institute_settings(store,institute_obj,request.form)
+        updated_institute = controllers.update_institute_settings(store,institute_obj,request.form)
+        if isinstance(updated_institute, dict):
+            flash('institute was updated ', 'success')
+        else: # an error message was retuned
+            flash(updated_institute, 'warning')
 
     data = controllers.institute(store, institute_id)
     # get all other institutes to populate the select of the possible collaborators
@@ -72,4 +76,4 @@ def institute(institute_id):
     form.frequency_cutoff.value = institute_obj.get('frequency_cutoff')
     form.sanger_recipients.data = ', '.join(institute_obj.get('sanger_recipients'))
 
-    return render_template('/overview/institute.html', form=form, institutes_tuples=institutes_tuples, **data)
+    return render_template('/overview/institute.html', form=form, **data)

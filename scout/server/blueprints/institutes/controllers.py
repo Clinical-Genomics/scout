@@ -33,9 +33,21 @@ def update_institute_settings(store, institute_obj, form):
         updated_institute(dict)
 
     """
-    sanger_recipients = form.get('sanger_recipients').split(', ')
+    sanger_recipients = []
+    sharing_institutes = []
     phenotype_groups = []
     group_abbreviations = []
+
+    if form.get('sanger_recipients'):
+        sanger_recipients = form.get('sanger_recipients').split(', ')
+
+    flash('POST!')
+    flash('INSTITUTES:{}'.format(form.getlist('institutes')))
+    flash('PHENO GROUPS:{}'.format(form.getlist('pheno_groups')))
+    flash('END OF POST!')
+
+    for inst in form.getlist('institutes'):
+        sharing_institutes.append(inst)
 
     for pheno_group in form.getlist('pheno_groups'):
         phenotype_groups.append(pheno_group.split(',')[0])
@@ -45,7 +57,6 @@ def update_institute_settings(store, institute_obj, form):
     # snvs_rank_threshold
     # svs_rank_threshold
     # svs_rank_threshold
-    # sharing institutes
     # patient cohorts
 
     updated_institute = store.update_institute(
@@ -56,6 +67,7 @@ def update_institute_settings(store, institute_obj, form):
         display_name = form.get('display_name'),
         phenotype_groups = phenotype_groups,
         group_abbreviations = group_abbreviations,
-        add_groups = False
+        add_groups = False,
+        sharing_institutes = sharing_institutes
     )
     return updated_institute

@@ -5,6 +5,11 @@ from wtforms import (IntegerField, SelectMultipleField, SubmitField, DecimalFiel
 from wtforms.fields.html5 import EmailField
 from scout.constants import COHORT_TAGS, PHENOTYPE_GROUPS
 
+class NonValidatingSelectMultipleField(SelectMultipleField):
+    """Necessary to skip validation of dynamic multiple selects in form"""
+    def pre_validate(self, form):
+        pass
+
 class InstituteForm(FlaskForm):
     """ Instutute-specif settings """
     cohort_tuples = [ (COHORT_TAGS[i], COHORT_TAGS[i]) for i in range(0, len(COHORT_TAGS)) ]
@@ -28,5 +33,5 @@ class InstituteForm(FlaskForm):
         IntegerField])
     pheno_groups = SelectMultipleField('Custom phenotype groups', choices=hpo_tuples)
     cohorts = SelectMultipleField('Patient coorts', choices=cohort_tuples)
-    institutes = SelectMultipleField('Institutes to share cases with', choices=[])
+    institutes = NonValidatingSelectMultipleField('Institutes to share cases with', choices=[])
     submit = SubmitField('Save settings')
