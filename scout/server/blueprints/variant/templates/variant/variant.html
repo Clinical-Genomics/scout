@@ -278,7 +278,7 @@
           <tr>
             <td>
               Position
-              <span class="float-right">
+              <span>
                 <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
                 {% if variant.is_par %}
                   <span class="badge badge-info">PAR</span>
@@ -287,9 +287,17 @@
             </td>
             <td>
               Change
-              <span class="float-right"><strong>{{ variant.reference }} → {{ variant.alternative }}</strong></span>
+              <span><strong>{{ variant.reference }} → {{ variant.alternative }}</strong></span>
             </td>
           </tr>
+          {% if variant.str_repid %}
+          <tr>
+            <td colspan="2">
+              Repeat locus
+              <span><strong>{{variant.str_repid}}</strong></span>
+            </td>
+          </tr>
+          {% endif %}
         </tbody>
       </table>
       <div class="table-responsive">
@@ -318,14 +326,10 @@
       </div>
       <ul class="list-group">
         <div class="list-group-item">
-          <strong>Gene panels</strong>
-          <ul class="list-inline float-right">
-            {% for panel_id in variant.panels %}
-              <li>
-                  <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>
-              </li>
-            {% endfor %}
-          </ul>
+          <strong>Gene panels:</strong><br>
+          {% for panel_id in variant.panels %}
+            <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>&nbsp;&nbsp;
+          {% endfor %}
         </div>
       </ul>
       <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
@@ -533,6 +537,28 @@
           </tr>
         </tbody>
       </table>
+
+      {% if variant.custom %}
+      <table class="table table-bordered table-sm">
+	<thead>
+	  <th>Custom annotation</th>
+	  <th>Value</th>
+	</thead>
+	<tbody>
+	  {% for pair in variant.custom %}
+	  <tr>
+	    <td>
+	      {{ pair[0] }}
+	    </td>
+	    <td>
+	      {{ pair[1] }}
+	    </td>
+	  </tr>
+	  {% endfor %}
+	</tbody>
+      </table>
+      {% endif %}
+
     </div> <!-- end of card body -->
   </div> <!--  end of card div -->
 {% endmacro %}

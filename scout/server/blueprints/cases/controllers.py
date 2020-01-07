@@ -236,6 +236,7 @@ def case_report_content(store, institute_obj, case_obj):
     """
     variant_types = {
         'causatives_detailed': 'causatives',
+        'partial_causatives_detailed': 'partial_causatives',
         'suspects_detailed': 'suspects',
         'classified_detailed': 'acmg_classification',
         'tagged_detailed': 'manual_rank',
@@ -263,16 +264,17 @@ def case_report_content(store, institute_obj, case_obj):
     data['report_created_at'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
     evaluated_variants = {vt:[] for vt in variant_types}
-    # We collect all causatives and suspected variants
+    # We collect all causatives (including the partial ones) and suspected variants
     # These are handeled in separate since they are on case level
-    for var_type in ['causatives', 'suspects']:
+    for var_type in ['causatives', 'suspects', 'partial_causatives']:
         #These include references to variants
         vt = '_'.join([var_type, 'detailed'])
-        for var_id in case_obj.get(var_type,[]):
+        for var_id in case_obj.get(var_type, []):
             variant_obj = store.variant(var_id)
             if not variant_obj:
                 continue
-            # If the variant exists we add it to the evaluated variants
+            if var_type == 'partial_causatives': # Collect associated phenotypes
+                variant_obj['phenotypes'] = [ value for key,value in case_obj['partial_causatives'].items() if key==var_id][0]
             evaluated_variants[vt].append(variant_obj)
 
     ## get variants for this case that are either classified, commented, tagged or dismissed.
