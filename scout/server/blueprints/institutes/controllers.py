@@ -45,12 +45,8 @@ def update_institute_settings(store, institute_obj, form):
         sharing_institutes.append(inst)
 
     for pheno_group in form.getlist('pheno_groups'):
-        phenotype_groups.append(pheno_group.split(',')[0])
+        phenotype_groups.append(pheno_group.split(' ,')[0])
         group_abbreviations.append(pheno_group[pheno_group.find("( ")+2:pheno_group.find(" )")])
-
-    flash('POST!')
-    flash('FORM: {}'.format(form))
-    flash('END OF POST!')
 
     ## STUFF COLLECTED FROM FORM AND STILL TO INTEGRATE INTO INSTITUTE:
     # snvs_rank_threshold

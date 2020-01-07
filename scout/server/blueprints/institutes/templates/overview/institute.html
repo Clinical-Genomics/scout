@@ -82,25 +82,30 @@
           <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-6">
               {{ form.snvs_rank_threshold.label }}
-              {{ form.snvs_rank_threshold(class='form-control', value=institute.snvs_rank_threshold) }}
+              {{ form.snvs_rank_threshold(class='form-control', value=institute.snvs_rank_threshold, disabled=True) }}
               {% for error in form.snvs_rank_threshold.errors %}
                 <span style="color: red;">{{ error }}</span><br>
               {% endfor %}
             </div>
             <div class="form-group col-md-6">
               {{ form.svs_rank_threshold.label }}
-              {{ form.svs_rank_threshold(class='form-control', value=institute.svs_rank_threshold) }}
+              {{ form.svs_rank_threshold(class='form-control', value=institute.svs_rank_threshold, disabled=True) }}
               {% for error in form.svs_rank_threshold.errors %}
                 <span style="color: red;">{{ error }}</span><br>
               {% endfor %}
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-between">
-            <div class="col-md-6 selectpicker">
-              {{ wtf.form_field(form.pheno_groups, class='form-control') }}
+            <div class="col-md-6">
+              {{ form.pheno_groups.label }}
+              <select multiple="multiple" class="selectpicker" name="pheno_groups">
+                {% for choice in form.pheno_groups.choices %}
+                  <option value="{{choice[0]}}" {% if choice[0].split(' ,')[0] in institute.phenotype_groups %} selected {% endif %}>{{choice[1]}}</option>
+                {% endfor %}
+              </select>
             </div>
             <div class="col-md-6 selectpicker">
-              {{ wtf.form_field(form.cohorts, class='form-control') }}
+              {{ wtf.form_field(form.cohorts, class='form-control', disabled=True) }}
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-center">

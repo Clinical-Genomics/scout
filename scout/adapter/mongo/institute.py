@@ -115,7 +115,7 @@ class InstituteHandler(object):
             for i,hpo_term in enumerate(phenotype_groups):
                 hpo_obj = self.hpo_term(hpo_term)
                 if not hpo_obj:
-                    raise IntegrityError("Term {} does not exist".format(hpo_term))
+                    return "Term {} does not exist in database".format(hpo_term)
                 hpo_id = hpo_obj['hpo_id']
                 description = hpo_obj['description']
                 abbreviation = None
@@ -126,8 +126,6 @@ class InstituteHandler(object):
 
         if sharing_institutes is not None:
             updates['$set']['sharing_institutes'] = sharing_institutes
-
-        LOG.error('------->UPDATES:{}'.format(updates))
 
         if updates['$set'].keys() or updates.get('$push') or updates.get('$pull'):
             updates['$set']['updated_at'] = datetime.now()
