@@ -76,14 +76,14 @@ class InstituteHandler(object):
                      internal_id, sanger_recipient))
             updates['$push'] = {'sanger_recipients':sanger_recipient}
 
-        if sanger_recipients:
+        if sanger_recipients is not None:
             for recipient in sanger_recipients:
                 user_obj = self.user(email=recipient)
                 if not user_obj:
                     return "user {} does not exist in database".format(recipient)
                 LOG.info("Updating sanger recipients for institute: {0} with {1}".format(
                          internal_id, recipient))
-        updates['$set']['sanger_recipients'] = sanger_recipients # can be empty list
+            updates['$set']['sanger_recipients'] = sanger_recipients # can be empty list
 
         if remove_sanger:
             LOG.info("Removing sanger recipient {0} from institute: {1}".format(
@@ -124,8 +124,7 @@ class InstituteHandler(object):
                 existing_groups[hpo_term] = {'name': description, 'abbr':abbreviation}
             updates['$set']['phenotype_groups'] = existing_groups
 
-        if sharing_institutes:
-            LOG.error('------->SHARING INSTITUTES:{}'.format(sharing_institutes))
+        if sharing_institutes is not None:
             updates['$set']['sharing_institutes'] = sharing_institutes
 
         LOG.error('------->UPDATES:{}'.format(updates))

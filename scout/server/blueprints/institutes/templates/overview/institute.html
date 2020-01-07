@@ -104,8 +104,13 @@
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-center">
-            <div class="col-md-12 selectpicker">
-              {{ wtf.form_field(form.institutes, class='form-control') }}
+            <div class="col-md-12">
+              {{ form.institutes.label }}
+              <select multiple="multiple" class="selectpicker" name="institutes">
+              {% for choice in form.institutes.choices %}
+                <option value="{{choice[0]}}" {% if choice[0] in institute.sharing_institutes %} selected {% endif %}>{{choice[1]}}</option>
+              {% endfor %}
+              </select>
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-center">

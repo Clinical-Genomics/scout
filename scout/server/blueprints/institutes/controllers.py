@@ -41,11 +41,6 @@ def update_institute_settings(store, institute_obj, form):
     if form.get('sanger_recipients'):
         sanger_recipients = form.get('sanger_recipients').split(', ')
 
-    flash('POST!')
-    flash('INSTITUTES:{}'.format(form.getlist('institutes')))
-    flash('PHENO GROUPS:{}'.format(form.getlist('pheno_groups')))
-    flash('END OF POST!')
-
     for inst in form.getlist('institutes'):
         sharing_institutes.append(inst)
 
@@ -53,9 +48,12 @@ def update_institute_settings(store, institute_obj, form):
         phenotype_groups.append(pheno_group.split(',')[0])
         group_abbreviations.append(pheno_group[pheno_group.find("( ")+2:pheno_group.find(" )")])
 
+    flash('POST!')
+    flash('FORM: {}'.format(form))
+    flash('END OF POST!')
+
     ## STUFF COLLECTED FROM FORM AND STILL TO INTEGRATE INTO INSTITUTE:
     # snvs_rank_threshold
-    # svs_rank_threshold
     # svs_rank_threshold
     # patient cohorts
 
