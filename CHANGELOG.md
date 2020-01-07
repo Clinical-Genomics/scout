@@ -8,6 +8,18 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+- Display locus name on STR variant page
+
+### Fixed
+
+## [4.10.1]
+
+### Fixed
+- Fixed issue with opening research variants
+
+## [4.10.0]
+
+### Added
 - Rank score model in causatives page
 - Exportable HPO terms from phenotypes page
 - AMP guideline tiers for cancer variants
@@ -20,6 +32,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - New mosaicism tag option
 - Add or modify individuals' age or tissue type from case page
 - Display GC and allele depth in causatives table.
+- Included primary reference transcript in general report
+- Included partial causative variants in general report
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
@@ -27,7 +41,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixes issue with unaligned table headers that comes with hidden Datatables
 - Layout in general report PDF export
 - Fixed issue on the case statistics view. The validation bars didn't show up when all institutes were selected. Now they do.
-- Included Font Awesome availability in general report
 - Fixed missing path import by importing pathlib.Path
 - Handle index inconsistencies in the update index functions
 - Fixed layout problems
