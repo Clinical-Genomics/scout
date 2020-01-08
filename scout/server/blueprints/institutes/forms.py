@@ -32,6 +32,6 @@ class InstituteForm(FlaskForm):
     svs_rank_threshold = IntegerField('SVs rank threshold', validators=[validators.Optional(),
         IntegerField])
     pheno_groups = SelectMultipleField('Custom phenotype groups', choices=hpo_tuples)
-    cohorts = SelectMultipleField('Patient coorts', choices=cohort_tuples)
+    cohorts = SelectMultipleField('Patient cohorts', choices=cohort_tuples)
     institutes = NonValidatingSelectMultipleField('Institutes to share cases with', choices=[])
     submit = SubmitField('Save settings')
