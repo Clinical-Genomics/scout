@@ -106,9 +106,8 @@ def test_test_query_biomart_38_xml():
     ## THEN assert that the result is correct
     i = 0
     for i,line in enumerate(client,1):
-        ## THEN assert the correct gene is fetched or that an HTML page us returned is service is down
-        assert 'ACTR3' in line or line=="<!doctype html>"
-        break
+        assert 'ACTR3' in line
+    assert i > 0
 
 def test_test_query_biomart_37_no_xml():
     """Prepare a test xml document for the biomart service build 37 and query the service using it"""
@@ -123,7 +122,7 @@ def test_test_query_biomart_37_no_xml():
 
     i = 0
     for i,line in enumerate(client):
-        ## THEN assert the correct gene is fetched or that an HTML page us returned is service is down
-        assert 'ACTR3' in line or line=="<!doctype html>"
-        break
+        ## THEN assert the correct gene is fetched
+        assert 'ACTR3' in line
     ## THEN assert there was a result
+    assert i > 0
