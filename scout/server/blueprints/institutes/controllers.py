@@ -49,7 +49,7 @@ def update_institute_settings(store, institute_obj, form):
         phenotype_groups.append(pheno_group.split(' ,')[0])
         group_abbreviations.append(pheno_group[pheno_group.find("( ")+2:pheno_group.find(" )")])
 
-    for cohort in form.getlist('cohort'):
+    for cohort in form.getlist('cohorts'):
         cohorts.append(cohort.strip())
 
     updated_institute = store.update_institute(
