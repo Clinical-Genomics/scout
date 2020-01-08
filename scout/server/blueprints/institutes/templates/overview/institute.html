@@ -113,7 +113,7 @@
               {{ form.institutes.label }}
               <select multiple="multiple" class="selectpicker" name="institutes">
               {% for choice in form.institutes.choices %}
-                <option value="{{choice[0]}}" {% if choice[0] in institute.sharing_institutes %} selected {% endif %}>{{choice[1]}}</option>
+                <option value="{{choice[0]}}" {% if choice[0] in institute.collaborators %} selected {% endif %}>{{choice[1]}}</option>
               {% endfor %}
               </select>
             </div>
