@@ -16,8 +16,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Fixed issue with opening research variants
-- Problem with coveralls not called by Travis CI
-- Handle Biomart service down in tests
 
 ## [4.10.0]
 
