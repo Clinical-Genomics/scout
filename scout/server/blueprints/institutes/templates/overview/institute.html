@@ -9,6 +9,7 @@
 {% block css %}
 {{ super() }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
 {% endblock %}
 
 {% block top_nav %}
@@ -27,10 +28,10 @@
 <form  action="{{ url_for('overview.institute', institute_id=institute.internal_id) }}" method="POST"
   accept-charset="utf-8" id="institute_form">
 {{ form.csrf_token() }}
-<div class="container-fluid">
-  <div class="row">
+<div class="container">
+  <div class="display:block">
     <!-- institute settings panel -->
-    <div class="card mt-3 col-6">
+    <div class="card mt-3">
       <div style="padding: 0;" class="card-body mt-3 ml-3 mr-3" >
         <h5 class="header">Institute Settings</h5>
           <div class="form-row mt-3 d-flex justify-content-between">
@@ -80,23 +81,7 @@
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-between">
-            <div class="form-group col-md-6">
-              {{ form.snvs_rank_threshold.label }}
-              {{ form.snvs_rank_threshold(class='form-control', value=institute.snvs_rank_threshold, disabled=True) }}
-              {% for error in form.snvs_rank_threshold.errors %}
-                <span style="color: red;">{{ error }}</span><br>
-              {% endfor %}
-            </div>
-            <div class="form-group col-md-6">
-              {{ form.svs_rank_threshold.label }}
-              {{ form.svs_rank_threshold(class='form-control', value=institute.svs_rank_threshold, disabled=True) }}
-              {% for error in form.svs_rank_threshold.errors %}
-                <span style="color: red;">{{ error }}</span><br>
-              {% endfor %}
-            </div>
-          </div>
-          <div class="form-row mt-3 d-flex justify-content-between">
-            <div class="col-md-6">
+            <div class="form-group col-md-12">
               {{ form.pheno_groups.label }}
               <select multiple="multiple" class="selectpicker" name="pheno_groups">
                 {% for choice in form.pheno_groups.choices %}
@@ -104,12 +89,16 @@
                 {% endfor %}
               </select>
             </div>
-            <div class="col-md-6 selectpicker">
-              {{ wtf.form_field(form.cohorts, class='form-control', disabled=True) }}
+          </div>
+          <div class="form-inline mt-3 mb-3">
+            {{form.cohorts.label}}
+            <div class="col-md-12 align-self-center mt-1">
+              <select class="form-control select2" id="tags" name="cohorts" multiple="true" style="width:100%;">
+              </select>
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-center">
-            <div class="col-md-12">
+            <div class="col-md-12 align-self-center">
               {{ form.institutes.label }}
               <select multiple="multiple" class="selectpicker" name="institutes">
               {% for choice in form.institutes.choices %}
@@ -119,17 +108,9 @@
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-center">
-            <div class="form-group">
               {{ form.submit(class="btn-primary btn") }}
-            </div>
           </div>
-      </div>
-    </div>
-    <!-- institute users panel -->
-    <div class="card col-6 mt-3">
-      <div style="padding: 0;" class="card-body mt-3 overflow-auto">
-        <h5 class="header">Institute users</h5>
-          {{ users_table(users) }}
+          <br>
       </div>
     </div>
   </div> <!-- end of div class="row" -->
@@ -140,7 +121,16 @@
 {% block scripts %}
   {{ super() }}
   <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
   <script>
+    // In your Javascript (external .js resource or <script> tag)
+    $('#tags').select2({
+    	tags: true,
+      data: ["endo","mito","ketogenic diet","pedhep","other"],
+      tokenSeparators: [','],
+      placeholder: "Add cohort tags",
+    });
+
     $(function () {
       $('select[multiple]').selectpicker({
           width: '100%'

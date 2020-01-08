@@ -37,7 +37,7 @@ class InstituteHandler(object):
     def update_institute(self, internal_id, sanger_recipient=None, sanger_recipients=None,
                          coverage_cutoff=None, frequency_cutoff=None, display_name=None,
                          remove_sanger=None, phenotype_groups=None, group_abbreviations=None,
-                         add_groups=None, sharing_institutes=None):
+                         add_groups=None, sharing_institutes=None, cohorts=None):
         """Update the information for an institute
 
         Args:
@@ -50,8 +50,9 @@ class InstituteHandler(object):
             remove_sanger(str): Email adress for sanger user to be removed
             phenotype_groups(iterable(str)): New phenotype groups
             group_abbreviations(iterable(str))
-            add_groups: If groups should be added. If False replace groups
-            sharing_institutes:(list): Other institutes to share cases with
+            add_groups(bool): If groups should be added. If False replace groups
+            sharing_institutes(list(str)): Other institutes to share cases with
+            cohorts(list(str)): patient cohorts
 
         Returns:
             updated_institute(dict)
@@ -126,6 +127,9 @@ class InstituteHandler(object):
 
         if sharing_institutes is not None:
             updates['$set']['collaborators'] = sharing_institutes
+
+        if cohorts is not None:
+            updates['$set']['cohorts'] = cohorts
 
         if updates['$set'].keys() or updates.get('$push') or updates.get('$pull'):
             updates['$set']['updated_at'] = datetime.now()

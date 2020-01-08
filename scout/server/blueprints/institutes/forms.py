@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import (IntegerField, SelectMultipleField, SubmitField, DecimalField,
     TextField, validators, TextAreaField)
 from wtforms.fields.html5 import EmailField
-from scout.constants import COHORT_TAGS, PHENOTYPE_GROUPS
+from scout.constants import PHENOTYPE_GROUPS
 
 class NonValidatingSelectMultipleField(SelectMultipleField):
     """Necessary to skip validation of dynamic multiple selects in form"""
@@ -12,7 +12,6 @@ class NonValidatingSelectMultipleField(SelectMultipleField):
 
 class InstituteForm(FlaskForm):
     """ Instutute-specif settings """
-    cohort_tuples = [ (COHORT_TAGS[i], COHORT_TAGS[i]) for i in range(0, len(COHORT_TAGS)) ]
     hpo_tuples = []
     for key in PHENOTYPE_GROUPS.keys():
         option_name = ' '.join([key, ',', PHENOTYPE_GROUPS[key]['name'], '(', PHENOTYPE_GROUPS[key]['abbr'] ,')'])
@@ -27,11 +26,7 @@ class InstituteForm(FlaskForm):
         validators.NumberRange(min=1)])
     frequency_cutoff = DecimalField('Frequency cutoff', validators=[validators.Optional(),
         validators.NumberRange(min=0, message="Number must be positive")])
-    snvs_rank_threshold = IntegerField('SNVs rank threshold',  validators=[validators.Optional(),
-        IntegerField])
-    svs_rank_threshold = IntegerField('SVs rank threshold', validators=[validators.Optional(),
-        IntegerField])
     pheno_groups = SelectMultipleField('Custom phenotype groups', choices=hpo_tuples)
-    cohorts = SelectMultipleField('Patient cohorts', choices=cohort_tuples)
+    cohorts = NonValidatingSelectMultipleField('Available patient cohorts', validators=[validators.Optional(),validators.Length(min=2, max=50)])
     institutes = NonValidatingSelectMultipleField('Institutes to share cases with', choices=[])
     submit = SubmitField('Save settings')
