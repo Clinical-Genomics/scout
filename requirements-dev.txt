@@ -1,9 +1,7 @@
 # everything the developer needs in addition to the production requirements
 
 # testing
-pytest>=3.8
-pytest-flask
-pytest-cov
+pytest>=3.7.1
 mongomock<=3.12
 coveralls
 
