@@ -2,6 +2,7 @@
 
 # testing
 pytest>=3.7.1
+pytest-cov
 mongomock<=3.12
 coveralls
 
