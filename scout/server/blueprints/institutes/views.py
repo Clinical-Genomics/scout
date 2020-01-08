@@ -47,7 +47,8 @@ def institutes():
 def institute(institute_id):
     """ Edit institute data """
 
-    if institute_id not in current_user.institutes or not current_user.is_admin:
+    if institute_id not in current_user.institutes and current_user.is_admin is False:
+        flash('Current user stuff:{}'.format(current_user.is_admin))
         flash("Current user doesn't have the permission to modify this institute", 'warning')
         return redirect(request.referrer)
 

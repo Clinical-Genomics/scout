@@ -125,7 +125,7 @@ class InstituteHandler(object):
             updates['$set']['phenotype_groups'] = existing_groups
 
         if sharing_institutes is not None:
-            updates['$set']['sharing_institutes'] = sharing_institutes
+            updates['$set']['collaborators'] = sharing_institutes
 
         if updates['$set'].keys() or updates.get('$push') or updates.get('$pull'):
             updates['$set']['updated_at'] = datetime.now()
