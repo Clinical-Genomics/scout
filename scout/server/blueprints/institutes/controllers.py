@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from flask import flash
 
 def institute(store, institute_id):
     """ Process institute data.
