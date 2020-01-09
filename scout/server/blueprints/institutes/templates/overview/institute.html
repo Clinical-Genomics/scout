@@ -94,6 +94,9 @@
                   <option value="{{ cohort }}" selected>{{ cohort }}</option>
                 {% endfor %}
               </select>
+              {% for error in form.cohorts.errors %}
+                <span style="color: red;">{{ error }}</span><br>
+              {% endfor %}
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-center">
