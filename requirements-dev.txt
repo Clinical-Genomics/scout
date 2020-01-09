@@ -1,12 +1,12 @@
 # everything the developer needs in addition to the production requirements
 
 # testing
-pytest==3.8
-pytest-flask==0.11
 pytest-mock
+pytest>=3.7.1
+pytest-flask
 pytest-cov
 mongomock<=3.12
-python-coveralls
+coveralls
 
 # packaging
 wheel>=0.23
