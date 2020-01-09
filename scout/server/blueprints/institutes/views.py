@@ -56,9 +56,6 @@ def institute(institute_id):
 
     # if institute is to be updated
     if request.method == 'POST' and form.validate_on_submit():
-
-        flash(request.form)
-
         # save form values to database
         updated_institute = controllers.update_institute_settings(store,institute_obj,request.form)
         if isinstance(updated_institute, dict):
