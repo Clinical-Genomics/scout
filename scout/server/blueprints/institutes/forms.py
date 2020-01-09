@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm
 from wtforms import (IntegerField, SelectMultipleField, SubmitField, DecimalField,
-    TextField, validators, TextAreaField)
-from wtforms.fields.html5 import EmailField
+    TextField, validators)
 from scout.constants import PHENOTYPE_GROUPS
 
 class NonValidatingSelectMultipleField(SelectMultipleField):
@@ -19,9 +18,7 @@ class InstituteForm(FlaskForm):
 
     display_name = TextField('Institute display name', validators=[validators.InputRequired(),
         validators.Length(min=2, max=100)])
-    sanger_email = EmailField('New sanger recipient', [validators.Optional(), validators.Email()])
-    sanger_recipients = TextAreaField('Sanger recipients',
-        render_kw={"rows": 2, "cols": 8, 'readonly': True})
+    sanger_emails = NonValidatingSelectMultipleField('Sanger recipients', validators=[validators.Optional()])
     coverage_cutoff = IntegerField('Coverage cutoff', validators=[validators.Optional(),
         validators.NumberRange(min=1)])
     frequency_cutoff = DecimalField('Frequency cutoff', validators=[validators.Optional(),

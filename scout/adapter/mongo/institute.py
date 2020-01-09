@@ -106,7 +106,7 @@ class InstituteHandler(object):
                             internal_id, display_name))
             updates['$set']['display_name'] = display_name
 
-        if phenotype_groups:
+        if phenotype_groups is not None:
             if group_abbreviations:
                 group_abbreviations = list(group_abbreviations)
             existing_groups = {}

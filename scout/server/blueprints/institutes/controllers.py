@@ -39,8 +39,8 @@ def update_institute_settings(store, institute_obj, form):
     group_abbreviations = []
     cohorts = []
 
-    if form.get('sanger_recipients'):
-        sanger_recipients = form.get('sanger_recipients').split(', ')
+    for email in form.getlist('sanger_emails'):
+        sanger_recipients.append(email.strip())
 
     for inst in form.getlist('institutes'):
         sharing_institutes.append(inst)

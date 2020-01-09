@@ -48,7 +48,6 @@ def institute(institute_id):
     """ Edit institute data """
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
-        flash('Current user stuff:{}'.format(current_user.is_admin))
         flash("Current user doesn't have the permission to modify this institute", 'warning')
         return redirect(request.referrer)
 
@@ -63,7 +62,7 @@ def institute(institute_id):
             flash('institute was updated ', 'success')
         else: # an error message was retuned
             flash(updated_institute, 'warning')
-
+    
     data = controllers.institute(store, institute_id)
     # get all other institutes to populate the select of the possible collaborators
     institutes_tuples = []
@@ -75,6 +74,5 @@ def institute(institute_id):
     form.institutes.choices = institutes_tuples
     form.coverage_cutoff.value = institute_obj.get('coverage_cutoff')
     form.frequency_cutoff.value = institute_obj.get('frequency_cutoff')
-    form.sanger_recipients.data = ', '.join(institute_obj.get('sanger_recipients'))
 
     return render_template('/overview/institute.html', form=form, **data)
