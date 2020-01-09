@@ -55,8 +55,8 @@ def update_institute_settings(store, institute_obj, form):
     updated_institute = store.update_institute(
         internal_id = institute_obj['internal_id'],
         sanger_recipients = sanger_recipients,
-        coverage_cutoff = form.get('coverage_cutoff'),
-        frequency_cutoff = form.get('frequency_cutoff'),
+        coverage_cutoff = int(form.get('coverage_cutoff')),
+        frequency_cutoff = float(form.get('frequency_cutoff')),
         display_name = form.get('display_name'),
         phenotype_groups = phenotype_groups,
         group_abbreviations = group_abbreviations,

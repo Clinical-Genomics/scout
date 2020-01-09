@@ -112,7 +112,6 @@ class InstituteHandler(object):
             existing_groups = {}
             if add_groups:
                 existing_groups = institute_obj.get('phenotype_groups', PHENOTYPE_GROUPS)
-
             for i,hpo_term in enumerate(phenotype_groups):
                 hpo_obj = self.hpo_term(hpo_term)
                 if not hpo_obj:
