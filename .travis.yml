@@ -10,9 +10,7 @@ services:
     - mongodb
 
 # command to install dependencies
-# pip locked to version in prod170926
 install:
-  - pip install pip==9.0.1
   - pip install cython
   - pip install -U -r requirements.txt .
 # command to run tests
@@ -35,18 +33,18 @@ jobs:
     - name: "coverage"
       #if: NOT type = pull_request
       script:
-        - pip install --upgrade pip && pip install -U -r requirements-dev.txt .
         - py.test --cov="$(basename "$PWD")" -rxs tests
+        - pip install -U -r requirements-dev.txt .
         - coveralls
     - name: "code formatting"
       #if: type = pull_request
       script:
-        - pip install --upgrade pip && pip install black
+        - pip install -U black
         - git --no-pager diff --name-only --diff-filter=AM $TRAVIS_COMMIT_RANGE | grep -F ".py" | xargs black --check
     - name: "pylint score"
       #if: type = pull_request
       script:
-        - pip install --upgrade pip && pip install -U -r requirements-dev.txt .
+        - pip install -U pylint
         - grep -r -E "pylint. {0,1}disable\=" .; if [ $? -eq 0 ]; then echo "Can not run pylint scoring with any pylint warnings disabled, please remove them and try again" && false; else true; fi
         - (git --no-pager diff --name-only --diff-filter=M $TRAVIS_COMMIT_RANGE | grep -F ".py" || echo "$(basename "$PWD")") > $TRAVIS_HOME/before_files.txt
         - (git --no-pager diff --name-only --diff-filter=AM $TRAVIS_COMMIT_RANGE | grep -F ".py" || echo "$(basename "$PWD")") > $TRAVIS_HOME/after_files.txt
@@ -57,7 +55,7 @@ jobs:
     - name: "linting"
       #if: type = pull_request
       script:
-        - pip install --upgrade pip && pip install -U -r requirements-dev.txt
+        - pip install -U git-lint pylint pycodestyle yamllint docutils html-linter tidy
         - git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git lint
 
 notifications:
