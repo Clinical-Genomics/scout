@@ -43,10 +43,12 @@
               {% endfor %}
             </div>
           </div>
-          <div class="form-inline mt-3 mb-3">
-            {{form.sanger_emails.label}}
-            <div class="col-md-12 align-self-center mt-1">
-              <select class="form-control select2" id="sanger_tags" name="sanger_emails" multiple="true" style="width:100%;">
+          <div class="form-row mt-3 mb-3">
+            <div class="col-md-2">
+              {{form.sanger_emails.label}}
+            </div>
+            <div class="col-md-10">
+              <select class="select2" id="sanger_tags" name="sanger_emails" multiple="true" style="width:100%;">
                 {% for email in institute.sanger_recipients %}
                   <option value="{{ email }}" selected>{{ email }}</option>
                 {% endfor %}
@@ -82,10 +84,12 @@
               </select>
             </div>
           </div>
-          <div class="form-inline mt-3 mb-3">
-            {{form.cohorts.label}}
-            <div class="col-md-12 align-self-center mt-1">
-              <select class="form-control select2" id="cohort_tags" name="cohorts" multiple="true" style="width:100%;">
+          <div class="form-row mt-3 mb-3">
+            <div class="col-md-2">
+              {{form.cohorts.label}}
+            </div>
+            <div class="col-md-10">
+              <select class="form-control" id="cohort_tags" name="cohorts" multiple="true" style="width:100%;">
                 {% for cohort in institute.cohorts %}
                   <option value="{{ cohort }}" selected>{{ cohort }}</option>
                 {% endfor %}
