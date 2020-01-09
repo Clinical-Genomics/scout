@@ -66,7 +66,6 @@ def institute(institute_id):
         else: # an error message was retuned
             flash(updated_institute, 'warning')
 
-
     data = controllers.institute(store, institute_id)
     # get all other institutes to populate the select of the possible collaborators
     institutes_tuples = []

@@ -20,19 +20,18 @@ def test_overview(app, user_obj, institute_obj):
 
 
 def test_institute(app, user_obj, institute_obj, monkeypatch):
-    """Test function that creates institute update form"""
+    """Test function that creates institute update form and updates an institute"""
 
-    # monkeypatching form validation is probably easier than haldling a csfr token
+    # monkeypatching form validation is easier than haldling a missing csfr token
     def mock_validate_form(*args, **kwargs):
         return True
     monkeypatch.setattr(form, 'validate_on_submit', mock_validate_form)
 
-    # mock insert 2 HPO terms in database, for later use
+    # insert 2 mock HPO terms in database, for later use
     mock_disease_terms = [
         {'_id' :'HP:0001298','description':'Encephalopathy', 'hpo_id':'HP:0001298'},
         {'_id':'HP:0001250', 'description':'Seizures', 'hpo_id':'HP:0001250'}
     ]
-
     for term in mock_disease_terms:
         store.load_hpo_term(term)
         assert store.hpo_term(term['_id'])
@@ -49,7 +48,7 @@ def test_institute(app, user_obj, institute_obj, monkeypatch):
         # THEN it should return a page
         assert resp.status_code == 200
 
-        # WHEN updating an institute using the form
+        # WHEN updating an institute using the following form
         form_data = {
             'display_name' : 'updated name',
             'sanger_emails' : ['john@doe.com'],
@@ -65,7 +64,7 @@ def test_institute(app, user_obj, institute_obj, monkeypatch):
             data = form_data)
         assert resp.status_code == 200
 
-        # THEN then institute object should be updated with the provided form data
+        # THEN the institute object should be updated with the provided form data
         updated_institute = store.institute_collection.find_one()
         assert updated_institute['display_name'] == form_data['display_name']
         assert updated_institute['sanger_recipients'] == form_data['sanger_emails']
