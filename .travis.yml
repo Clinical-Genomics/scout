@@ -81,6 +81,14 @@ jobs:
             script: coverage run --branch --omit="*.html" --source "$(basename "$PWD")" setup.py test
             after_success: coveralls
 
+        -   name: "Coverage the scout way"
+            if: NOT type = pull_request
+            install:
+                - pip install -U cython
+                - pip install -U -r requirements.txt -r requirements-dev.txt .
+            script: py.test --cov=scout -rxs tests/
+            after_success: coveralls
+
         -   name: "Code formatting"
             if: type = pull_request
             install: pip install -U black
