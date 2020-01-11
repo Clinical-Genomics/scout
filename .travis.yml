@@ -27,7 +27,7 @@ jobs:
     include:
         -   name: "Tests on python 3.6"
             # if: type = pull_request
-            python: "3.6"   # on clinical-db
+            python: "3.6"
             services: mongodb
             install:
                 - pip install cython
@@ -36,7 +36,7 @@ jobs:
 
         -   name: "Tests on python 3.7"
             # if: type = pull_request
-            python: "3.7"   # on hasta
+            python: "3.7"
             services: mongodb
             install:
                 - pip install cython
@@ -50,7 +50,7 @@ jobs:
 
         -   name: "Production dependencies on python 3.6"
             # if: type = pull_request
-            python: "3.6"   # on clinical-db
+            python: "3.6"
             install:
                 - pip install pip==18.1  # pip version in P_main
                 - pip install -U cython
@@ -59,9 +59,9 @@ jobs:
 
         -   name: "Production dependencies on python 3.7"
             # if: type = pull_request
-            python: "3.7"   # on hasta
+            python: "3.7"
             install:
-                - pip install pip==9.0.1  # pip version in prod170926
+                - pip install pip==9.0.1
                 - pip install -U cython
                 - pip install -U -r requirements.txt
             script: pip check
