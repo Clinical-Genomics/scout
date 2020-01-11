@@ -10,8 +10,8 @@ jobs:
           python: "3.6"   # on clinical-db
           services: mongodb
           install:
-            - pip install cython
-            - pip install -r requirements.txt -r requirements-dev.txt .
+              - pip install cython
+              - pip install -r requirements.txt -r requirements-dev.txt .
           script: py.test -rxs tests/
 
         - name: "Tests on python 3.7 (Hasta)"
@@ -19,8 +19,8 @@ jobs:
           python: "3.7"   # on hasta
           services: mongodb
           install:
-            - pip install cython
-            - pip install -r requirements.txt -r requirements-dev.txt .
+              - pip install cython
+              - pip install -r requirements.txt -r requirements-dev.txt .
           script: py.test -rxs tests/
 
         - name: "Package install"
@@ -32,25 +32,25 @@ jobs:
           if: type = pull_request
           python: "3.6"   # on clinical-db
           install:
-            - pip install pip==18.1  # pip version in P_main
-            - pip install -U cython
-            - pip install -U -r requirements.txt
+              - pip install pip==18.1  # pip version in P_main
+              - pip install -U cython
+              - pip install -U -r requirements.txt
           script: pip check
 
         - name: "Production dependencies on Hasta"
           if: type = pull_request
           python: "3.7"   # on hasta
           install:
-            - pip install pip==9.0.1  # pip version in prod170926
-            - pip install -U cython
-            - pip install -U -r requirements.txt
+              - pip install pip==9.0.1  # pip version in prod170926
+              - pip install -U cython
+              - pip install -U -r requirements.txt
           script: pip check
 
         - name: "Development dependencies"
           if: type = pull_request
           install:
-            - pip install cython
-            - pip install -U -r requirements.txt -r requirements-dev.txt .
+              - pip install cython
+              - pip install -U -r requirements.txt -r requirements-dev.txt .
           script: pip check
 
         - name: "Coverage"
@@ -58,8 +58,8 @@ jobs:
           python: "3.7"
           services: mongodb
           install:
-            - pip install -U cython
-            - pip install -U -r requirements.txt -r requirements-dev.txt  -e .
+              - pip install -U cython
+              - pip install -U -r requirements.txt -r requirements-dev.txt  -e .
           script: py.test --cov=scout -rxs tests/
           after_success: coveralls
 
@@ -72,13 +72,13 @@ jobs:
           if: type = pull_request
           install: pip install -U pylint
           script:
-            - grep -r -E "pylint. {0,1}disable\=" .; if [ $? -eq 0 ]; then echo "Can not run pylint scoring with any pylint warnings disabled, please remove them and try again" && false; else true; fi
-            - (git --no-pager diff --name-only --diff-filter=M $TRAVIS_COMMIT_RANGE | grep -F ".py" || echo "$(basename "$PWD")") > $TRAVIS_HOME/before_files.txt
-            - (git --no-pager diff --name-only --diff-filter=AM $TRAVIS_COMMIT_RANGE | grep -F ".py" || echo "$(basename "$PWD")") > $TRAVIS_HOME/after_files.txt
-            - pylint --rcfile=.configs/pylintrc --jobs=0 --exit-zero $(< $TRAVIS_HOME/after_files.txt) > $TRAVIS_HOME/pylint_after_output.txt
-            - git checkout $TRAVIS_BRANCH
-            - pylint --rcfile=.configs/pylintrc --jobs=0 --exit-zero $(< $TRAVIS_HOME/before_files.txt) > $TRAVIS_HOME/pylint_before_output.txt
-            - grep -F "/10, -" $TRAVIS_HOME/pylint_before_output.txt || grep -F "/10, +0.00" $TRAVIS_HOME/pylint_before_output.txt || (echo "pylint score decreased, please try again after fixing some lint issues." && cat $TRAVIS_HOME/pylint_after_output.txt && false)
+              - grep -r -E "pylint. {0,1}disable\=" .; if [ $? -eq 0 ]; then echo "Can not run pylint scoring with any pylint warnings disabled, please remove them and try again" && false; else true; fi
+              - (git --no-pager diff --name-only --diff-filter=M $TRAVIS_COMMIT_RANGE | grep -F ".py" || echo "$(basename "$PWD")") > $TRAVIS_HOME/before_files.txt
+              - (git --no-pager diff --name-only --diff-filter=AM $TRAVIS_COMMIT_RANGE | grep -F ".py" || echo "$(basename "$PWD")") > $TRAVIS_HOME/after_files.txt
+              - pylint --rcfile=.configs/pylintrc --jobs=0 --exit-zero $(< $TRAVIS_HOME/after_files.txt) > $TRAVIS_HOME/pylint_after_output.txt
+              - git checkout $TRAVIS_BRANCH
+              - pylint --rcfile=.configs/pylintrc --jobs=0 --exit-zero $(< $TRAVIS_HOME/before_files.txt) > $TRAVIS_HOME/pylint_before_output.txt
+              - grep -F "/10, -" $TRAVIS_HOME/pylint_before_output.txt || grep -F "/10, +0.00" $TRAVIS_HOME/pylint_before_output.txt || (echo "pylint score decreased, please try again after fixing some lint issues." && cat $TRAVIS_HOME/pylint_after_output.txt && false)
 
         - name: "Linting"
           if: type = pull_request
