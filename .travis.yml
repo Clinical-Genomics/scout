@@ -25,30 +25,30 @@ env: TRAVIS=1
 
 jobs:
     include:
-        -   name: "Tests on python 3.6"
+        -   name: "Tests on python 3.6 (Clinical-db)"
             # if: type = pull_request
             python: "3.6"   # on clinical-db
             services: mongodb
             install:
                 - pip install cython
                 - pip install -r requirements.txt -r requirements-dev.txt .
-            script: py.test --cov=scout -rxs tests/
+            script: py.test -rxs tests/
 
-        -   name: "Tests on python 3.7"
+        -   name: "Tests on python 3.7 (Hasta)"
             # if: type = pull_request
             python: "3.7"   # on hasta
             services: mongodb
             install:
                 - pip install cython
                 - pip install -r requirements.txt -r requirements-dev.txt .
-            script: py.test --cov=scout -rxs tests/
+            script: py.test -rxs tests/
 
         -   name: "Package install"
             # if: type = pull_request
             install: python setup.py install
             script: true
 
-        -   name: "Production dependencies on python 3.6"
+        -   name: "Production dependencies on Clinical-db"
             # if: type = pull_request
             python: "3.6"   # on clinical-db
             install:
@@ -57,7 +57,7 @@ jobs:
                 - pip install -U -r requirements.txt
             script: pip check
 
-        -   name: "Production dependencies on python 3.7"
+        -   name: "Production dependencies on Hasta"
             # if: type = pull_request
             python: "3.7"   # on hasta
             install:
