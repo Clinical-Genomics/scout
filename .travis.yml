@@ -4,7 +4,7 @@
 #python:
 #    - "3.6"
 #
-#env: TRAVIS=1
+# env: TRAVIS=1
 #
 #services: mongodb
 #
@@ -73,21 +73,32 @@ jobs:
                 - pip install -U -r requirements.txt -r requirements-dev.txt .
             script: pip check
 
-        -   name: "Coverage the cg way"
+        -   name: "Coverage the scout way 3.6"
             if: NOT type = pull_request
+            python: "3.6"
             services: mongodb
             install:
                 - pip install -U cython
-                - pip install -U -r requirements.txt -r requirements-dev.txt .
-            script: coverage run --branch --omit="*.html" --source "$(basename "$PWD")" setup.py test
+                - pip install -U -r requirements.txt -r requirements-dev.txt  -e .
+            script: py.test --cov=scout -rxs tests/
             after_success: coveralls
 
-        -   name: "Coverage the scout way"
+        -   name: "Coverage the scout way 3.7"
+            if: NOT type = pull_request
+            python: "3.7"
+            services: mongodb
+            install:
+                - pip install -U cython
+                - pip install -U -r requirements.txt -r requirements-dev.txt  -e .
+            script: py.test --cov=scout -rxs tests/
+            after_success: coveralls
+
+        -   name: "Coverage the scout way editable"
             if: NOT type = pull_request
             services: mongodb
             install:
                 - pip install -U cython
-                - pip install -U -r requirements.txt -r requirements-dev.txt .
+                - pip install -U -r requirements.txt -r requirements-dev.txt  -e .
             script: py.test --cov=scout -rxs tests/
             after_success: coveralls
 
