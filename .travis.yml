@@ -75,6 +75,7 @@ jobs:
 
         -   name: "Coverage the cg way"
             if: NOT type = pull_request
+            services: mongodb
             install:
                 - pip install -U cython
                 - pip install -U -r requirements.txt -r requirements-dev.txt .
@@ -83,6 +84,7 @@ jobs:
 
         -   name: "Coverage the scout way"
             if: NOT type = pull_request
+            services: mongodb
             install:
                 - pip install -U cython
                 - pip install -U -r requirements.txt -r requirements-dev.txt .
