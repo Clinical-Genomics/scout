@@ -26,7 +26,7 @@ cache: pip
 jobs:
     include:
         -   name: "Tests on python 3.6"
-            if: type = pull_request
+            # if: type = pull_request
             python: "3.6"   # on clinical-db
             services: mongodb
             install:
@@ -35,7 +35,7 @@ jobs:
             script: py.test --cov=scout -rxs tests/
 
         -   name: "Tests on python 3.7"
-            if: type = pull_request
+            # if: type = pull_request
             python: "3.7"   # on hasta
             services: mongodb
             install:
@@ -44,12 +44,12 @@ jobs:
             script: py.test --cov=scout -rxs tests/
 
         -   name: "Package install"
-            if: type = pull_request
+            # if: type = pull_request
             install: python setup.py install
             script: true
 
         -   name: "Production dependencies on python 3.6"
-            if: type = pull_request
+            # if: type = pull_request
             python: "3.6"   # on clinical-db
             install:
                 - pip install pip==18.1  # pip version in P_main
@@ -58,7 +58,7 @@ jobs:
             script: pip check
 
         -   name: "Production dependencies on python 3.7"
-            if: type = pull_request
+            # if: type = pull_request
             python: "3.7"   # on hasta
             install:
                 - pip install pip==9.0.1  # pip version in prod170926
@@ -67,13 +67,13 @@ jobs:
             script: pip check
 
         -   name: "Development dependencies"
-            if: type = pull_request
+            # if: type = pull_request
             install:
                 - pip install cython
                 - pip install -U -r requirements.txt -r requirements-dev.txt .
             script: pip check
 
-        -   name: "Coverage"
+        -   name: "Coverage the cg way"
             if: NOT type = pull_request
             install:
                 - pip install -U cython
@@ -90,12 +90,12 @@ jobs:
             after_success: coveralls
 
         -   name: "Code formatting"
-            if: type = pull_request
+            # if: type = pull_request
             install: pip install -U black
             script: git --no-pager diff --name-only --diff-filter=AM $TRAVIS_COMMIT_RANGE | grep -F ".py" | xargs black --check
 
         -   name: "Pylint score"
-            if: type = pull_request
+            # if: type = pull_request
             install: pip install -U pylint
             script:
                 - grep -r -E "pylint. {0,1}disable\=" .; if [ $? -eq 0 ]; then echo "Can not run pylint scoring with any pylint warnings disabled, please remove them and try again" && false; else true; fi
@@ -107,7 +107,7 @@ jobs:
                 - grep -F "/10, -" $TRAVIS_HOME/pylint_before_output.txt || grep -F "/10, +0.00" $TRAVIS_HOME/pylint_before_output.txt || (echo "pylint score decreased, please try again after fixing some lint issues." && cat $TRAVIS_HOME/pylint_after_output.txt && false)
 
         -   name: "Linting"
-            if: type = pull_request
+            # if: type = pull_request
             install: pip install -U git-lint pylint pycodestyle yamllint docutils html-linter tidy
             script: git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git lint
 
