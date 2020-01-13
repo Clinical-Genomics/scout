@@ -22,7 +22,7 @@ def parse_frequencies(variant, transcripts):
 
     # Gnomad have both snv and sv frequencies
     gnomad_keys = ['GNOMADAF', 'GNOMAD_AF', 'gnomad_svAF']
-    gnomad_max_keys = ['GNOMADAF_POPMAX', 'GNOMADAF_MAX']
+    gnomad_max_keys = ['GNOMADAF_popmax', 'GNOMADAF_POPMAX', 'GNOMADAF_MAX']
 
     for test_key in thousand_genomes_keys:
         thousand_g = parse_frequency(variant, test_key)
