@@ -97,6 +97,17 @@ def test_parse_sv_gnomad(cyvcf2_variant):
     # THEN the frequencies should be returned in a dictionary
     assert frequencies['gnomad'] == float(variant.INFO['gnomad_svAF'])
 
+def test_parse_gnomad_popmax(cyvcf2_variant):
+    variant = cyvcf2_variant
+    # GIVEN a variant dict with a certain popmax allele frequency
+    variant.INFO['GNOMADAF_popmax'] = '0.05'
+
+    # WHEN frequencies are parsed
+    frequencies = parse_frequencies(variant,[])
+
+    # THEN assert that the last frequency is returned
+    assert frequencies['gnomad_max'] == float(variant.INFO['GNOMADAF_popmax'])
+
 def test_parse_sv_frequencies_ngi(cyvcf2_variant):
     variant = cyvcf2_variant
     # GIVEN a variant dict with a differenct frequencies
