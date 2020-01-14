@@ -34,7 +34,7 @@ jobs:
           install:
               - pip install pip==9.0.1  # pip version in prod
               - pip install -U cython
-              - pip install -U -r requirements.txt
+              - pip install -U -r requirements.txt .
           script: pip check
 
         - name: "Production dependencies on python 3.7 (Hasta)"
@@ -43,7 +43,7 @@ jobs:
           install:
               - pip install pip==18.1  # pip version in P_main
               - pip install -U cython
-              - pip install -U -r requirements.txt
+              - pip install -U -r requirements.txt .
           script: pip check
 
         - name: "Development dependencies"
