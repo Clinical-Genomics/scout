@@ -1,5 +1,5 @@
 language: python
-python: "3.8"   # default in jobs
+
 cache: pip
 env: TRAVIS=1
 
