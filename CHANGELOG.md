@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Display locus name on STR variant page
 - Alternative key `GNOMADAF_popmax` for Gnomad popmax allele frequency
+- Collect variant conservation values from CSQ (vep annotation)
 
 ### Fixed
 
