@@ -74,7 +74,7 @@ def parse_conservation_csq(raw_transcripts, csq_key, field_key):
     """Get the conservation prediction from the CSQ field
 
         Args:
-            raw_transcripts(generator): raw transcripts from CSQ field
+            raw_transcripts(list): raw transcripts from CSQ field
             csq_key(str): 'GERP++_RS', 'phastCons100way_vertebrate' or 'phyloP100way_vertebrate'
             field_key(str): 'gerp', 'phast' or 'phylop'
 

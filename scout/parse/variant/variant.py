@@ -215,8 +215,8 @@ def parse_variant(variant, case, variant_type='clinical',
     if vep_header:
         vep_info = variant.INFO.get('CSQ')
         if vep_info:
-            raw_transcripts = (dict(zip(vep_header, transcript_info.split('|')))
-                               for transcript_info in vep_info.split(','))
+            raw_transcripts = list((dict(zip(vep_header, transcript_info.split('|')))
+                               for transcript_info in vep_info.split(',')))
             vep_conservation = 'GERP++_RS' in vep_info
 
     parsed_transcripts = []
