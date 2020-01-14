@@ -48,8 +48,10 @@ def test_parse_conservation_csq(cyvcf2_variant):
 
     assert len(raw_transcripts) == 2
 
+    ## WHEN parsing conservation
     conservations = parse_conservations(cyvcf2_variant, vep_header.split('|'))
 
+    ## THEN assert that all terms are returned
     assert conservations['gerp'] == ['NotConserved','Conserved']
     assert conservations['phast'] == ['Conserved']
     assert conservations['phylop'] == ['NotConserved']
