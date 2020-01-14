@@ -53,6 +53,3 @@ def test_parse_conservation_csq(cyvcf2_variant):
     assert conservations['gerp'] == ['NotConserved','Conserved']
     assert conservations['phast'] == ['Conserved']
     assert conservations['phylop'] == ['NotConserved']
-
-
-    #assert len(conservations[0]) == len(vep_header.split('|'))
