@@ -5,12 +5,13 @@ import numbers
 
 LOG = logging.getLogger(__name__)
 
-def parse_conservations(variant, vep_header=[]):
+def parse_conservations(variant, vep_conservation=False, raw_transcripts=None):
     """Parse the conservation predictors
 
         Args:
             variant(dict): A variant dictionary
-            vep_header(list): CSQ field might contain conservation annotations
+            vep_conservation(bool): If True parse CSQ, otherwise INFO field
+            raw_transcripts(generator): transcript annotations defined in the CSQ
 
         Returns:
             conservations(dict): A dictionary with the conservations
@@ -29,17 +30,11 @@ def parse_conservations(variant, vep_header=[]):
             'phylop' : 'phyloP100way_vertebrate'
         }
     }
-    vep_info = variant.INFO.get('CSQ')
 
     # if CSQ field contains any conservation key specified in conservation_keys['csq_keys']
-    if any(elem in list(conservation_keys['csq_keys'].values()) for elem in vep_header):
-
-        raw_transcripts = list(dict(zip(vep_header, transcript_info.split('|')))
-                           for transcript_info in vep_info.split(','))
-
+    if vep_conservation:
         for key,value in conservation_keys['csq_keys'].items():
             conservations[key] = parse_conservation_csq(raw_transcripts, value, key)
-
 
     else: # parse conservation from the INFO field
         for key,value in conservation_keys['info_keys'].items():
