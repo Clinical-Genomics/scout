@@ -282,7 +282,10 @@ def parse_variant(variant, case, variant_type='clinical',
         parsed_variant['spidex'] = float(spidex)
 
     ###################### Add conservation ######################
-    parsed_variant['conservation'] = parse_conservations(variant, vep_conservation, raw_transcripts)
+    if vep_conservation:
+        parsed_variant['conservation'] = parse_conservations(variant, raw_transcripts)
+    else:
+        parsed_variant['conservation'] = parse_conservations(variant)
 
     parsed_variant['callers'] = parse_callers(variant, category=category)
 

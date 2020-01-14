@@ -49,7 +49,7 @@ def test_parse_conservation_csq(cyvcf2_variant):
     assert len(raw_transcripts) == 2
 
     ## WHEN parsing conservation
-    conservations = parse_conservations(cyvcf2_variant, True, raw_transcripts)
+    conservations = parse_conservations(cyvcf2_variant, raw_transcripts)
 
     ## THEN assert that all terms are returned
     assert conservations['gerp'] == ['NotConserved','Conserved']
