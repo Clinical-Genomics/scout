@@ -37,7 +37,7 @@ jobs:
           services: mongodb
           install:
               - pip install cython
-              - pip install . -r requirements-dev.txt
+              - pip install . -r requirements-dev.txt -e
           script: py.test --cov=scout -rxs tests/
           after_success: coveralls
 
