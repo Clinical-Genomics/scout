@@ -1,46 +1,46 @@
 language: python
+
 cache: pip
-services: mongodb
-python:
-  - "3.6.2"
-  - "3.7.1"
-  - "3.8"
-env:
-  - PIP=9.0.1 TRAVIS=1
-  - PIP=18.1 TRAVIS=1
-  - PIP=19.3.1 TRAVIS=1
-
-install:
-  - python setup.py install
-  - pip check
-  - pip install .
-  - pip check
-  - pip install -r requirements.txt
-  - pip check
-  - pip install -r requirements-dev.txt
-  - pip check
-
-script: py.test -rxs tests/
+env: TRAVIS=1
 
 jobs:
     include:
-        - name: "Coverage"
+        - name: "Package install"
+          if: type = pull_request
+          install: python setup.py install
+          script: true
+
+        - name: "Production dependencies"
+          if: type = pull_request
+          install:
+              - pip install cython
+              - pip install .
+          script: pip check
+
+        - name: "Development dependencies"
+          if: type = pull_request
+          install:
+              - pip install cython
+              - pip install -r requirements.txt -r requirements-dev.txt .
+          script: pip check
+
+        - name: "Tests & Coverage"
           if: NOT type = pull_request
           services: mongodb
           install:
-              - pip install -U cython
-              - pip install -U -r requirements.txt -r requirements-dev.txt  -e .
+              - pip install cython
+              - pip install -r requirements.txt -r requirements-dev.txt  -e .
           script: py.test --cov=scout -rxs tests/
           after_success: coveralls
 
         - name: "Code formatting"
           if: type = pull_request
-          install: pip install -U black
+          install: pip install black
           script: git --no-pager diff --name-only --diff-filter=AM $TRAVIS_COMMIT_RANGE | grep -F ".py" | xargs black --check
 
         - name: "Pylint score"
           if: type = pull_request
-          install: pip install -U pylint
+          install: pip install pylint
           script:
               - grep -r -E "pylint. {0,1}disable\=" .; if [ $? -eq 0 ]; then echo "Can not run pylint scoring with any pylint warnings disabled, please remove them and try again" && false; else true; fi
               - (git --no-pager diff --name-only --diff-filter=M $TRAVIS_COMMIT_RANGE | grep -F ".py" || echo "$(basename "$PWD")") > $TRAVIS_HOME/before_files.txt
@@ -55,7 +55,7 @@ jobs:
 
         - name: "Linting"
           if: type = pull_request
-          install: pip install -U git-lint pylint pycodestyle yamllint docutils html-linter tidy
+          install: pip install git-lint pylint pycodestyle yamllint docutils html-linter tidy
           script: git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git lint
 
 notifications:
