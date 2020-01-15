@@ -24,12 +24,20 @@ jobs:
               - pip install -r requirements.txt -r requirements-dev.txt .
           script: pip check
 
+        - name: "Tests"
+          if: type = pull_request
+          services: mongodb
+          install:
+              - pip install cython
+              - pip install . -r requirements-dev.txt
+          script: py.test -rxs tests/
+
         - name: "Tests & Coverage"
           if: NOT type = pull_request
           services: mongodb
           install:
               - pip install cython
-              - pip install -r requirements.txt -r requirements-dev.txt  -e .
+              - pip install . -r requirements-dev.txt
           script: py.test --cov=scout -rxs tests/
           after_success: coveralls
 
