@@ -1,0 +1,197 @@
+# CSS
+csslint:
+  extensions:
+    - .css
+  command: csslint
+  arguments:
+    - "--ignore=ids,box-model,adjoining-classes,qualified-headings,\
+       unique-headings,zero-units"
+    - --format=compact
+  filter: >-
+    ^{filename}: line (?P<line>{lines}), col (?P<column>\d+)?,
+    (?P<severity>\S+) - (?P<message>.+)
+  installation: >-
+    Go to https://github.com/stubbornella/csslint/wiki/Command-line-interface
+    for installation instructions.
+
+# SCSS
+scss:
+  extensions:
+    - .scss
+  command: scss-lint
+  filter: >-
+    ^{filename}:(?P<line>{lines})(:(?P<column>\d+))?
+    \[(?P<severity>.+)\]( (?P<message_id>.+):)?
+    (?P<message>.+)
+  installation: >-
+    gem install scss-lint or go to https://github.com/causes/scss-lint
+
+# Javascript
+gjslint:
+  extensions:
+    - .js
+  command: gjslint
+  filter: >-
+      ^Line\s+(?P<line>{lines}), (?P<severity>[^: ]+):((?P<message_id>\d+):)?
+      (?P<message>.+)
+  installation: >-
+    Run pip install
+    http://closure-linter.googlecode.com/files/closure_linter-latest.tar.gz,
+    or visit https://developers.google.com/closure/utilities/docs/linter_howto
+    for installation instructions.
+
+jshint:
+  extensions:
+    - .js
+  command: jshint
+  arguments:
+    - --config
+    - "{DEFAULT_CONFIGS}/jshint.json"
+  filter: >-
+    ^{filename}: line (?P<line>{lines}), col (?P<column>\d+), (?P<message>.+)
+  installation: >-
+    Visit http://www.jshint.com/install/ for installation instructions.
+
+# Python
+pylint:
+  extensions:
+    - .py
+  command: pylint
+  arguments:
+    - --rcfile=.configs/pylintrc
+    - --errors-only
+    - --output-format=text
+    - --max-line-length=100
+    - --jobs=0
+    - >-
+      --msg-template={{abspath}}:{{line}}:{{column}}:
+      [{{category}}:{{symbol}}] {{obj}}: {{msg}}
+    - --reports=n
+  filter: >-
+    ^{filename}:(?P<line>{lines}):((?P<column>\d+):)?
+    \[(?P<severity>.+):(?P<message_id>\S+)\]\s+(:
+    )?(?P<message>.+)$
+  installation: "Run pip install pylint."
+
+pycodestyle:
+  extensions:
+    - .py
+  command: pycodestyle
+  arguments:
+    - "--max-line-length=100"
+  filter: >-
+    ^{filename}:(?P<line>{lines}):((?P<column>\d+):)?
+    (?P<message_id>\S+) (?P<message>.+)$
+  installation: "Run pip install pycodestyle."
+
+# JSON
+json:
+  extensions:
+    - .json
+  command: python
+  arguments:
+    - -m
+    - json.tool
+  # enforce that here comes a colon
+  filter: >-
+    ^(?P<message>[^:]+(?=:
+    line \d+ column \d+)|No JSON object could be decoded)(:
+    line (?P<line>\d+) column (?P<column>\d+).*)?$
+  installation: Nothing else should be required.
+
+# PNG
+pngcrush:
+  extensions:
+    - .png
+  command: pngcrush-linter.sh
+  requirements:
+    - pngcrush
+  filter: (?P<message>.+)$
+  installation: Run apt-get install pngcrush.
+
+optipng:
+  extensions:
+    - .png
+  command: optipng-linter.sh
+  requirements:
+    - optipng
+  filter: (?P<message>.+)$
+  installation: Run apt-get install optipng.
+
+# JPEG
+jpegtran:
+  extensions:
+    - .jpg
+    - .jpeg
+  command: jpegtran-linter.sh
+  requirements:
+    - jpegtran
+  filter: (?P<message>.+)
+  installation: Run apt-get install jpegtran.
+
+# SHELL scripts
+bash:
+  extensions:
+    - .sh
+  command: bash
+  arguments:
+    - "-n"
+  filter: >-
+    {filename}: line (?P<line>{lines}): (?P<message>.+)
+  installation: Please install bash in your system.
+
+# YAML
+yaml:
+  extensions:
+    - .yaml
+    - .yml
+  command: yamllint
+  arguments:
+    - --format
+    - parsable
+    - --config-data
+    - "{{extends: default, rules: {{document-start: disable, line-length: {{max: 250}}}}}}"
+  filter: >-
+    ^{filename}:(?P<line>{lines}|\d+(?=:\d+:
+    \[error\] syntax error:)):(?P<column>\d+):
+    \[(?P<severity>\S+)\] (?P<message>.+)$
+
+  installation: Run pip install yamllint.
+
+# INI
+ini:
+  extensions:
+    - .ini
+    - .cfg
+  command: ini_linter.py
+  filter: (?P<message>.+)$
+  installation: ""
+
+# HTML
+tidy:
+  extensions:
+    - .html
+  command: tidy-wrapper.sh
+  requirements:
+    - tidy
+    - remove_template.py
+    - grep
+  arguments:
+    - -qe
+    - --drop-empty-elements
+    - "false"
+  installation: Visit https://w3c.github.io/tidy-html5/
+  filter: >-
+    ^line (?P<line>{lines}) column (?P<column>\d+) -
+    (?P<severity>[^:]+): (?P<message>.+)
+
+html_lint:
+  extensions:
+    - .html
+  command: html_lint.py
+  arguments:
+    - --disable
+    - optional_tag
+  installation: pip install html-linter.
+  filter: >-
+    ^(?P<line>{lines}):(?P<column>\d+): (?P<severity>\S+): (?P<message>.+)
