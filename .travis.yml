@@ -14,7 +14,7 @@ script:
     - py.test --cov=scout -rxs tests/
 
 install:
-	- pip install pip==$PIP
+	- pip install pip=="$("$PIP")"
     - pip install cython
     - pip install -r requirements.txt -r requirements-dev.txt -e .
 
