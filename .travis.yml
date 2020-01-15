@@ -23,10 +23,7 @@ install:
 script: py.test -rxs tests/
 
 jobs:
-    exclude:
-		-
-		  if: NOT type = pull_request
-	include:
+    include:
         - name: "Coverage"
           if: NOT type = pull_request
           services: mongodb
