@@ -12,15 +12,9 @@ env:
 
 install:
     - pip install cython
-	- pip install .
-	- pip check
-	- pip install -r requirements.txt
-	- pip check
-	- pip install -r requirements-dev.txt
-	- pip check
+    - pip install -r requirements.txt -r requirements-dev.txt -e .
 
-script:
-	- py.test -rxs tests/
+script: py.test --cov=scout -rxs tests/
 
 notifications:
     email: false
