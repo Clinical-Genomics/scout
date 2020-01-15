@@ -4,8 +4,8 @@ python:
   - "3.8"
   - "pypy"
 env:
-  - TEST_SUITE=suite_2_7
-  - TEST_SUITE=suite_3_8
-  - TEST_SUITE=suite_pypy
+  - PIP=suite_2_7
+  - PIP=suite_3_8
+  - PIP=suite_pypy
 install: true
-script: pip install pip==$TEST_SUITE
+script: pip install pip==$PIP
