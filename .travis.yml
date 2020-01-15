@@ -5,7 +5,7 @@ python:
     - "3.6"
 
 env:
-    - TRAVIS=1 PIP="9.0.1"
+    - TRAVIS=1 PIP=9.0.1
 
 services:
     - mongodb
@@ -14,7 +14,6 @@ script:
     - py.test --cov=scout -rxs tests/
 
 install:
-	- pip install pip==$PIP
     - pip install cython
     - pip install -r requirements.txt -r requirements-dev.txt -e .
 
