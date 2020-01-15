@@ -1,25 +1,10 @@
----
 language: python
-
-python:
-    - "3.6"
-
-env:
-    - TRAVIS=1 PIP=9.0.1
-
-services:
-    - mongodb
-
-script:
-    - py.test --cov=scout -rxs tests/
-
-install:
-	- echo $PIP
-    - pip install cython
-    - pip install -r requirements.txt -r requirements-dev.txt -e .
-
-after_success:
-    - coveralls
-
-notifications:
-    email: false
+jobs:
+  include:
+  - python: "2.7"
+    env: TEST_SUITE=suite_2_7
+  - python: "3.8"
+    env: TEST_SUITE=suite_3_8
+  - python: "pypy"
+    env: TEST_SUITE=suite_pypy
+script: ./test.py $TEST_SUITE
