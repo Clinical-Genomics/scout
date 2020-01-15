@@ -1,7 +1,21 @@
 language: python
-
+python:
+	- "2.7"
+	- "3.4"
+	- "3.5"
+	- "3.6"
+	- "3.7"
+	- "3.8"
+pip:
+	- "9.0.1"
+	- "18.1"
 cache: pip
 env: TRAVIS=1
+services: mongodb
+install:
+  - pip install cython
+  - pip install -r requirements.txt -r requirements-dev.txt .
+script: py.test -rxs tests/
 
 jobs:
     include:
