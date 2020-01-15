@@ -1,11 +1,11 @@
 language: python
-jobs:
-  include:
-  - python: "2.7"
-    env: TEST_SUITE=suite_2_7
-  - python: "3.8"
-    env: TEST_SUITE=suite_3_8
-  - python: "pypy"
-    env: TEST_SUITE=suite_pypy
+python:
+  - "2.7"
+  - "3.8"
+  - "pypy"
+env:
+  - TEST_SUITE=suite_2_7
+  - TEST_SUITE=suite_3_8
+  - TEST_SUITE=suite_pypy
 install: true
 script: pip install pip==$TEST_SUITE
