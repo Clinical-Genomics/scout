@@ -2,10 +2,8 @@ language: python
 python:
   - "2.7"
   - "3.8"
-  - "pypy"
 env:
-  - PIP=9
-  - PIP=suite_3_8
-  - PIP=suite_pypy
+  - PIP=9.0.1
+  - PIP=18
 install: true
 script: pip install pip==$PIP
