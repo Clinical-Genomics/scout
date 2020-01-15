@@ -215,9 +215,8 @@ def parse_variant(variant, case, variant_type='clinical',
     if vep_header:
         vep_info = variant.INFO.get('CSQ')
         if vep_info:
-            raw_transcripts = list((dict(zip(vep_header, transcript_info.split('|')))
-                               for transcript_info in vep_info.split(',')))
-            vep_conservation = 'GERP++_RS' in vep_info
+            raw_transcripts = (dict(zip(vep_header, transcript_info.split('|')))
+                               for transcript_info in vep_info.split(','))
 
     parsed_transcripts = []
     dbsnp_ids = set()
@@ -282,10 +281,7 @@ def parse_variant(variant, case, variant_type='clinical',
         parsed_variant['spidex'] = float(spidex)
 
     ###################### Add conservation ######################
-    if vep_conservation:
-        parsed_variant['conservation'] = parse_conservations(variant, raw_transcripts)
-    else:
-        parsed_variant['conservation'] = parse_conservations(variant)
+    parsed_variant['conservation'] = parse_conservations(variant, parsed_transcripts)
 
     parsed_variant['callers'] = parse_callers(variant, category=category)
 
