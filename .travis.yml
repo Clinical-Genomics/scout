@@ -11,3 +11,6 @@ env:
   - PIP=19.3.1 TRAVIS=1
 install: pip install pip==$PIP
 script: py.test --cov=scout -rxs tests/
+
+notifications:
+    email: false
