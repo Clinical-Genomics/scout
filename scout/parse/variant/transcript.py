@@ -69,6 +69,9 @@ def parse_transcripts(raw_transcripts, allele=None):
 
         transcript['sift_prediction'] = prediction_term
 
+        if entry.get('REVEL_rankscore'):
+            transcript['revel'] = float(entry['REVEL_rankscore'])
+
         transcript['swiss_prot'] = entry.get('SWISSPROT') or 'unknown'
 
         # Check for conservation annotations

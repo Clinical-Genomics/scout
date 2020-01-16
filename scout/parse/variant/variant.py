@@ -279,6 +279,9 @@ def parse_variant(variant, case, variant_type='clinical',
     if spidex:
         parsed_variant['spidex'] = float(spidex)
 
+    if len(parsed_transcripts)>0:
+        parsed_variant['revel_score'] = parsed_transcripts[0]['revel']
+
     ###################### Add conservation ######################
     parsed_variant['conservation'] = parse_conservations(variant, parsed_transcripts)
 
