@@ -94,7 +94,7 @@ def test_parse_revel(cyvcf2_variant, case_obj):
         vep_header=csq_header.split('|'))
 
     # THEN the REVEL score should be parsed correctly
-    assert parsed_variant['revel_score'] = 0.75
+    assert parsed_variant['revel_score'] == 0.75
 
 
 def test_parse_customannotation(one_variant_customannotation,case_obj):
