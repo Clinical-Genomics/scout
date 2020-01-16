@@ -71,6 +71,11 @@ def parse_transcripts(raw_transcripts, allele=None):
 
         transcript['swiss_prot'] = entry.get('SWISSPROT') or 'unknown'
 
+        # Check for conservation annotations
+        transcript['gerp'] = entry.get('GERP++_RS')
+        transcript['phast'] = entry.get('phastCons100way_vertebrate')
+        transcript['phylop'] = entry.get('phyloP100way_vertebrate')
+
         if entry.get('DOMAINS', None):
             pfam_domains = entry['DOMAINS'].split('&')
 
