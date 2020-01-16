@@ -47,7 +47,6 @@ def parse_variant(variant, case, variant_type='clinical',
     rank_results_header = rank_results_header or []
     # Vep information
     vep_header = vep_header or []
-    vep_conservation = False
 
     parsed_variant = {}
 
