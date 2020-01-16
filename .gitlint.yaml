@@ -21,6 +21,9 @@
 # using '>-' line folding from YAML. This means that between each line a space
 # will be added.
 
+# This file is a copy from https://github.com/sk-/git-lint/blob/master/gitlint/configs/config.yaml at commit 763502bdd1809502461759c9817a878a46e7a704
+# The file has been changed to suit the linting needs of this repository and the changes can viewed here: https://github.com/Clinical-Genomics/scout/commits/master/.gitlint.yaml
+
 # CSS
 # Sample output:
 # /path_to/error.css: line 3, col 2, Warning - Duplicate property 'width' found.
