@@ -10,15 +10,15 @@ CONSEQUENCE = (
 )
 
 CONSERVATION = {
-    'dbNSFP_GERP___RS' : {
+    'gerp' : {
         'conserved_min' : 2,
         'conserved_max' : 10
     },
-    'dbNSFP_phastCons100way_vertebrate': {
+    'phast': {
         'conserved_min' : 0.8,
         'conserved_max' : 100
     },
-    'dbNSFP_phyloP100way_vertebrate' : {
+    'phylop' : {
         'conserved_min' : 2.5,
         'conserved_max' : 100
     }
@@ -270,4 +270,4 @@ MOSAICISM_OPTIONS = {
         'description': 'Variant was inspected for mosaicism, but not seen in reads from parental samples.',
         'evidence': ['allele_count']
         }
-}    
+}
