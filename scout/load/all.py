@@ -45,46 +45,86 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
         gene_obj = adapter.hgnc_gene(hgnc_id)
         if not gene_obj:
             ValueError("Gene {} does not exist in database".format(hgnc_id))
-        chrom = gene_obj['chromosome']
-        start = gene_obj['start']
-        end = gene_obj['end']
+        chrom = gene_obj["chromosome"]
+        start = gene_obj["start"]
+        end = gene_obj["end"]
 
     case_obj = adapter.case(case_id=case_id)
     if not case_obj:
         raise ValueError("Case {} does not exist in database".format(case_id))
 
-    log.info("Load clinical SNV variants for case: {0} region: chr {1}, start"
-             " {2}, end {3}".format(case_obj['_id'], chrom, start, end))
+    log.info(
+        "Load clinical SNV variants for case: {0} region: chr {1}, start"
+        " {2}, end {3}".format(case_obj["_id"], chrom, start, end)
+    )
 
-    adapter.load_variants(case_obj=case_obj, variant_type='clinical',
-                          category='snv', chrom=chrom, start=start, end=end)
+    adapter.load_variants(
+        case_obj=case_obj,
+        variant_type="clinical",
+        category="snv",
+        chrom=chrom,
+        start=start,
+        end=end,
+    )
 
-    vcf_sv_file = case_obj['vcf_files'].get('vcf_sv')
+    vcf_sv_file = case_obj["vcf_files"].get("vcf_sv")
     if vcf_sv_file:
-        log.info("Load clinical SV variants for case: {0} region: chr {1}, "
-                 "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
-        adapter.load_variants(case_obj=case_obj, variant_type='clinical',
-                              category='sv', chrom=chrom, start=start, end=end)
+        log.info(
+            "Load clinical SV variants for case: {0} region: chr {1}, "
+            "start {2}, end {3}".format(case_obj["_id"], chrom, start, end)
+        )
+        adapter.load_variants(
+            case_obj=case_obj,
+            variant_type="clinical",
+            category="sv",
+            chrom=chrom,
+            start=start,
+            end=end,
+        )
 
-    vcf_str_file = case_obj['vcf_files'].get('vcf_str')
-    if vcf_str_file: 
-        log.info("Load clinical STR variants for case: {0} region: chr {1}, "
-                 "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
-        adapter.load_variants(case_obj=case_obj, variant_type='clinical',
-                              category='str', chrom=chrom, start=start, end=end)
+    vcf_str_file = case_obj["vcf_files"].get("vcf_str")
+    if vcf_str_file:
+        log.info(
+            "Load clinical STR variants for case: {0} region: chr {1}, "
+            "start {2}, end {3}".format(case_obj["_id"], chrom, start, end)
+        )
+        adapter.load_variants(
+            case_obj=case_obj,
+            variant_type="clinical",
+            category="str",
+            chrom=chrom,
+            start=start,
+            end=end,
+        )
 
-    if case_obj['is_research']:
-        log.info("Load research SNV variants for case: {0} region: chr {1}, "
-                 "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
-        adapter.load_variants(case_obj=case_obj, variant_type='research',
-                              category='snv', chrom=chrom, start=start, end=end)
+    if case_obj["is_research"]:
+        log.info(
+            "Load research SNV variants for case: {0} region: chr {1}, "
+            "start {2}, end {3}".format(case_obj["_id"], chrom, start, end)
+        )
+        adapter.load_variants(
+            case_obj=case_obj,
+            variant_type="research",
+            category="snv",
+            chrom=chrom,
+            start=start,
+            end=end,
+        )
 
-        vcf_sv_research = case_obj['vcf_files'].get('vcf_sv_research')
+        vcf_sv_research = case_obj["vcf_files"].get("vcf_sv_research")
         if vcf_sv_research:
-            log.info("Load research SV variants for case: {0} region: chr {1},"
-                     " start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
-            adapter.load_variants(case_obj=case_obj, variant_type='research',
-                                  category='sv', chrom=chrom, start=start, end=end)
+            log.info(
+                "Load research SV variants for case: {0} region: chr {1},"
+                " start {2}, end {3}".format(case_obj["_id"], chrom, start, end)
+            )
+            adapter.load_variants(
+                case_obj=case_obj,
+                variant_type="research",
+                category="sv",
+                chrom=chrom,
+                start=start,
+                end=end,
+            )
 
 
 def load_scout(adapter, config, ped=None, update=False):
@@ -98,8 +138,9 @@ def load_scout(adapter, config, ped=None, update=False):
 
     """
     log.info("Check that the panels exists")
-    if not check_panels(adapter, config.get('gene_panels', []),
-                        config.get('default_gene_panels')):
+    if not check_panels(
+        adapter, config.get("gene_panels", []), config.get("default_gene_panels")
+    ):
         raise ConfigError("Some panel(s) does not exist in the database")
     case_obj = adapter.load_case(config, update=update)
     return case_obj

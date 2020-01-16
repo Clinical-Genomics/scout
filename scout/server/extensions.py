@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 import logging
-from pymongo.errors import (ConnectionFailure)
+from pymongo.errors import ConnectionFailure
 
 from flask_debugtoolbar import DebugToolbarExtension
+
 toolbar = DebugToolbarExtension()
 
 from flask_bootstrap import Bootstrap
+
 bootstrap = Bootstrap()
 
 from scout.adapter import MongoAdapter
+
 store = MongoAdapter()
 
 from flask_login import LoginManager
@@ -22,9 +25,10 @@ oauth = OAuth()
 # use Google as remote application
 # you must configure 3 values from Google APIs console
 # https://code.google.com/apis/console
-google = oauth.remote_app('google', app_key='GOOGLE')
+google = oauth.remote_app("google", app_key="GOOGLE")
 
 from flask_mail import Mail
+
 mail = Mail()
 
 from loqusdb.plugins import MongoAdapter as LoqusDBMongoAdapter
@@ -37,34 +41,33 @@ class LoqusDB(LoqusDBMongoAdapter):
     def init_app(self, app):
         """Initialize from Flask."""
         LOG.info("Connecting to loqusdb")
-        self.connect(**app.config['LOQUSDB_SETTINGS'])
+        self.connect(**app.config["LOQUSDB_SETTINGS"])
 
     def case_count(self):
         return sum(1 for i in self.db.case.find({}))
 
-class MongoDB(object):
 
+class MongoDB(object):
     def init_app(self, app):
         """Initialize from flask"""
         uri = app.config.get("MONGO_URI", None)
 
-        db_name = app.config.get("MONGO_DBNAME", 'scout')
+        db_name = app.config.get("MONGO_DBNAME", "scout")
 
         try:
             client = get_connection(
-                host = app.config.get("MONGO_HOST", 'localhost'),
+                host=app.config.get("MONGO_HOST", "localhost"),
                 port=app.config.get("MONGO_PORT", 27017),
                 username=app.config.get("MONGO_USERNAME", None),
                 password=app.config.get("MONGO_PASSWORD", None),
                 uri=uri,
-                mongodb= db_name
+                mongodb=db_name,
             )
         except ConnectionFailure:
             context.abort()
 
         app.config["MONGO_DATABASE"] = client[db_name]
-        app.config['MONGO_CLIENT'] = client
-
+        app.config["MONGO_CLIENT"] = client
 
 
 loqusdb = LoqusDB()

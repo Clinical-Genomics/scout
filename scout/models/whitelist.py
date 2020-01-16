@@ -8,7 +8,7 @@ from __future__ import absolute_import, unicode_literals
 from datetime import datetime
 
 whitelist = dict(
-    email = str, # required, unique
-    created_at = datetime, 
-    institutes = list, # list of institute_ids
+    email=str,  # required, unique
+    created_at=datetime,
+    institutes=list,  # list of institute_ids
 )

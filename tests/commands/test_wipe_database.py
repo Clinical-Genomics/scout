@@ -3,6 +3,7 @@
 from scout.commands import cli
 from scout.server.extensions import store
 
+
 def test_wipe_database_cmd(mock_app):
     """Testing the wipe database cli command"""
 
@@ -13,6 +14,6 @@ def test_wipe_database_cmd(mock_app):
     assert database_name
 
     # test CLI to wipe out database
-    result =  runner.invoke(cli, ['wipe'], input='y')
+    result = runner.invoke(cli, ["wipe"], input="y")
     assert result.exit_code == 0
-    assert 'Dropped whole database' in result.output
+    assert "Dropped whole database" in result.output

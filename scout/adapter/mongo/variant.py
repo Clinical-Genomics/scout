@@ -22,7 +22,7 @@ from scout.build import build_variant
 
 from scout.utils.coordinates import is_par
 
-from pymongo.errors import (DuplicateKeyError, BulkWriteError)
+from pymongo.errors import DuplicateKeyError, BulkWriteError
 from scout.exceptions import IntegrityError
 
 from .variant_loader import VariantLoader
@@ -44,7 +44,7 @@ class VariantHandler(VariantLoader):
         gene_panels = gene_panels or []
 
         # Add a variable that checks if there are any refseq transcripts
-        variant_obj['has_refseq'] = False
+        variant_obj["has_refseq"] = False
 
         # We need to check if there are any additional information in the gene panels
 
@@ -52,8 +52,8 @@ class VariantHandler(VariantLoader):
         # Collect all extra info from the panels in a dictionary with hgnc_id as keys
         extra_info = {}
         for panel_obj in gene_panels:
-            for gene_info in panel_obj['genes']:
-                hgnc_id = gene_info['hgnc_id']
+            for gene_info in panel_obj["genes"]:
+                hgnc_id = gene_info["hgnc_id"]
                 if hgnc_id not in extra_info:
                     extra_info[hgnc_id] = []
 
@@ -61,8 +61,8 @@ class VariantHandler(VariantLoader):
 
         # Loop over the genes in the variant object to add information
         # from hgnc_genes and panel genes to the variant object
-        for variant_gene in variant_obj.get('genes', []):
-            hgnc_id = variant_gene['hgnc_id']
+        for variant_gene in variant_obj.get("genes", []):
+            hgnc_id = variant_gene["hgnc_id"]
             # Get the hgnc_gene
             hgnc_gene = self.hgnc_gene(hgnc_id)
 
@@ -73,15 +73,15 @@ class VariantHandler(VariantLoader):
             # Use ensembl transcript id as keys
             transcripts_dict = {}
             # Add transcript information from the hgnc gene
-            for transcript in hgnc_gene.get('transcripts', []):
-                tx_id = transcript['ensembl_transcript_id']
+            for transcript in hgnc_gene.get("transcripts", []):
+                tx_id = transcript["ensembl_transcript_id"]
                 transcripts_dict[tx_id] = transcript
 
             # Add the transcripts to the gene object
-            hgnc_gene['transcripts_dict'] = transcripts_dict
+            hgnc_gene["transcripts_dict"] = transcripts_dict
 
-            if hgnc_gene.get('incomplete_penetrance'):
-                variant_gene['omim_penetrance'] = True
+            if hgnc_gene.get("incomplete_penetrance"):
+                variant_gene["omim_penetrance"] = True
 
             ############# PANEL SPECIFIC INFORMATION #############
             # Panels can have extra information about genes and transcripts
@@ -98,31 +98,31 @@ class VariantHandler(VariantLoader):
             # We need to loop since there can be information from multiple panels
             for gene_info in panel_info:
                 # Check if there are manually annotated disease transcripts
-                for tx in gene_info.get('disease_associated_transcripts', []):
+                for tx in gene_info.get("disease_associated_transcripts", []):
                     # We remove the version of transcript at this stage
-                    stripped = re.sub(r'\.[0-9]', '', tx)
+                    stripped = re.sub(r"\.[0-9]", "", tx)
                     disease_associated_no_version.add(stripped)
                     disease_associated.add(tx)
 
-                if gene_info.get('reduced_penetrance'):
+                if gene_info.get("reduced_penetrance"):
                     manual_penetrance = True
 
-                if gene_info.get('mosaicism'):
+                if gene_info.get("mosaicism"):
                     mosaicism = True
 
-                manual_inheritance.update(gene_info.get('inheritance_models', []))
+                manual_inheritance.update(gene_info.get("inheritance_models", []))
 
-            variant_gene['disease_associated_transcripts'] = list(disease_associated)
-            variant_gene['manual_penetrance'] = manual_penetrance
-            variant_gene['mosaicism'] = mosaicism
-            variant_gene['manual_inheritance'] = list(manual_inheritance)
+            variant_gene["disease_associated_transcripts"] = list(disease_associated)
+            variant_gene["manual_penetrance"] = manual_penetrance
+            variant_gene["mosaicism"] = mosaicism
+            variant_gene["manual_inheritance"] = list(manual_inheritance)
 
             # Now add the information from hgnc and panels
             # to the transcripts on the variant
 
             # First loop over the variants transcripts
-            for transcript in variant_gene.get('transcripts', []):
-                tx_id = transcript['transcript_id']
+            for transcript in variant_gene.get("transcripts", []):
+                tx_id = transcript["transcript_id"]
                 if not tx_id in transcripts_dict:
                     continue
 
@@ -130,32 +130,42 @@ class VariantHandler(VariantLoader):
                 hgnc_transcript = transcripts_dict[tx_id]
 
                 # Check in the common information if it is a primary transcript
-                if hgnc_transcript.get('is_primary'):
-                    transcript['is_primary'] = True
+                if hgnc_transcript.get("is_primary"):
+                    transcript["is_primary"] = True
                 # If the transcript has a ref seq identifier we add that
                 # to the variants transcript
-                if not hgnc_transcript.get('refseq_id'):
+                if not hgnc_transcript.get("refseq_id"):
                     continue
 
-                refseq_id = hgnc_transcript['refseq_id']
-                transcript['refseq_id'] = refseq_id
-                variant_obj['has_refseq'] = True
+                refseq_id = hgnc_transcript["refseq_id"]
+                transcript["refseq_id"] = refseq_id
+                variant_obj["has_refseq"] = True
                 # Check if the refseq id are disease associated
                 if refseq_id in disease_associated_no_version:
-                    transcript['is_disease_associated'] = True
+                    transcript["is_disease_associated"] = True
 
                 # Since a ensemble transcript can have multiple refseq identifiers we add all of
                 # those
-                transcript['refseq_identifiers'] = hgnc_transcript.get('refseq_identifiers',[])
+                transcript["refseq_identifiers"] = hgnc_transcript.get(
+                    "refseq_identifiers", []
+                )
 
-            variant_gene['common'] = hgnc_gene
+            variant_gene["common"] = hgnc_gene
             # Add the associated disease terms
-            variant_gene['disease_terms'] = self.disease_terms(hgnc_id)
+            variant_gene["disease_terms"] = self.disease_terms(hgnc_id)
 
         return variant_obj
 
-    def variants(self, case_id, query=None, variant_ids=None, category='snv',
-                 nr_of_variants=10, skip=0, sort_key='variant_rank'):
+    def variants(
+        self,
+        case_id,
+        query=None,
+        variant_ids=None,
+        category="snv",
+        nr_of_variants=10,
+        skip=0,
+        sort_key="variant_rank",
+    ):
         """Returns variants specified in question for a specific case.
 
         If skip not equal to 0 skip the first n variants.
@@ -178,26 +188,24 @@ class VariantHandler(VariantLoader):
             nr_of_variants = len(variant_ids)
 
         elif nr_of_variants == -1:
-            nr_of_variants = 0 # This will return all variants
+            nr_of_variants = 0  # This will return all variants
 
         else:
             nr_of_variants = skip + nr_of_variants
 
-        mongo_query = self.build_query(case_id, query=query,
-                                       variant_ids=variant_ids,
-                                       category=category)
+        mongo_query = self.build_query(
+            case_id, query=query, variant_ids=variant_ids, category=category
+        )
         sorting = []
-        if sort_key == 'variant_rank':
-            sorting = [('variant_rank', pymongo.ASCENDING)]
-        if sort_key == 'rank_score':
-            sorting = [('rank_score', pymongo.DESCENDING)]
-        if sort_key == 'position':
-            sorting = [('position', pymongo.ASCENDING)]
+        if sort_key == "variant_rank":
+            sorting = [("variant_rank", pymongo.ASCENDING)]
+        if sort_key == "rank_score":
+            sorting = [("rank_score", pymongo.DESCENDING)]
+        if sort_key == "position":
+            sorting = [("position", pymongo.ASCENDING)]
 
         result = self.variant_collection.find(
-            mongo_query,
-            skip=skip,
-            limit=nr_of_variants
+            mongo_query, skip=skip, limit=nr_of_variants
         ).sort(sorting)
 
         return result
@@ -212,16 +220,22 @@ class VariantHandler(VariantLoader):
         Returns:
             res(pymongo.Cursor): A Cursor with all variants with sanger activity
         """
-        query = {'validation': {'$exists': True}}
+        query = {"validation": {"$exists": True}}
         if institute_id:
-            query['institute_id'] = institute_id
+            query["institute_id"] = institute_id
         if case_id:
-            query['case_id'] = case_id
+            query["case_id"] = case_id
 
         return self.variant_collection.find(query)
 
-    def variant(self, document_id=None, gene_panels=None, case_id=None,
-                simple_id=None, variant_type='clinical'):
+    def variant(
+        self,
+        document_id=None,
+        gene_panels=None,
+        case_id=None,
+        simple_id=None,
+        variant_type="clinical",
+    ):
         """Returns the specified variant.
 
            Arguments:
@@ -237,30 +251,36 @@ class VariantHandler(VariantLoader):
         query = {}
         if case_id and document_id:
             # search for a variant in a case by variant_id
-            query['case_id'] = case_id
-            query['variant_id'] = document_id
+            query["case_id"] = case_id
+            query["variant_id"] = document_id
         elif case_id and simple_id:
             # search for a variant in a case by its simple_id
-            query['case_id'] = case_id
-            query['simple_id'] = simple_id
-            query['variant_type'] = variant_type
+            query["case_id"] = case_id
+            query["simple_id"] = simple_id
+            query["variant_type"] = variant_type
         else:
             # search with a unique id
-            query['_id'] = document_id
+            query["_id"] = document_id
 
         variant_obj = self.variant_collection.find_one(query)
         if variant_obj:
             variant_obj = self.add_gene_info(variant_obj, gene_panels)
-            if variant_obj['chromosome'] in ['X', 'Y']:
+            if variant_obj["chromosome"] in ["X", "Y"]:
                 ## TODO add the build here
-                variant_obj['is_par'] = is_par(variant_obj['chromosome'],
-                                               variant_obj['position'])
+                variant_obj["is_par"] = is_par(
+                    variant_obj["chromosome"], variant_obj["position"]
+                )
         return variant_obj
 
-    def gene_variants(self, query=None,
-                   category='snv', variant_type=['clinical'],
-                   institute_id=None,
-                   nr_of_variants=50, skip=0):
+    def gene_variants(
+        self,
+        query=None,
+        category="snv",
+        variant_type=["clinical"],
+        institute_id=None,
+        nr_of_variants=50,
+        skip=0,
+    ):
         """Return all variants seen in a given gene.
 
         If skip not equal to 0 skip the first n variants.
@@ -279,20 +299,26 @@ class VariantHandler(VariantLoader):
             similar_case,
             cohorts
         """
-        mongo_variant_query = self.build_variant_query(query=query,
-                                   institute_id=institute_id,
-                                   category=category, variant_type=variant_type)
+        mongo_variant_query = self.build_variant_query(
+            query=query,
+            institute_id=institute_id,
+            category=category,
+            variant_type=variant_type,
+        )
 
-        sorting = [('rank_score', pymongo.DESCENDING)]
+        sorting = [("rank_score", pymongo.DESCENDING)]
 
         if nr_of_variants == -1:
-            nr_of_variants = 0 # This will return all variants
+            nr_of_variants = 0  # This will return all variants
         else:
             nr_of_variants = skip + nr_of_variants
 
-        result = self.variant_collection.find(
-            mongo_variant_query
-            ).sort(sorting).skip(skip).limit(nr_of_variants)
+        result = (
+            self.variant_collection.find(mongo_variant_query)
+            .sort(sorting)
+            .skip(skip)
+            .limit(nr_of_variants)
+        )
 
         return result
 
@@ -305,21 +331,18 @@ class VariantHandler(VariantLoader):
         Returns:
             res(list): a list with validated variants
         """
-        query = {
-            'verb' : 'validate',
-            'institute' : institute_id,
-        }
+        query = {"verb": "validate", "institute": institute_id}
         res = []
         validate_events = self.event_collection.find(query)
         for validated in list(validate_events):
-            case_id = validated['case']
-            var_obj = self.variant(case_id=case_id, document_id=validated['variant_id'])
+            case_id = validated["case"]
+            var_obj = self.variant(case_id=case_id, document_id=validated["variant_id"])
             case_obj = self.case(case_id=case_id)
             if not case_obj or not var_obj:
-                continue # Take into account that stuff might have been removed from database
-            var_obj['case_obj'] = {
-                'display_name' : case_obj['display_name'],
-                'individuals' : case_obj['individuals']
+                continue  # Take into account that stuff might have been removed from database
+            var_obj["case_obj"] = {
+                "display_name": case_obj["display_name"],
+                "individuals": case_obj["individuals"],
             }
             res.append(var_obj)
 
@@ -340,19 +363,24 @@ class VariantHandler(VariantLoader):
 
         if case_id:
 
-            case_obj = self.case_collection.find_one(
-                    {"_id": case_id}
-                )
-            causatives = [causative for causative in case_obj['causatives']]
+            case_obj = self.case_collection.find_one({"_id": case_id})
+            causatives = [causative for causative in case_obj["causatives"]]
 
         elif institute_id:
 
-            query = self.case_collection.aggregate([
-                {'$match': {'collaborators': institute_id, 'causatives': {'$exists': True}}},
-                {'$unwind': '$causatives'},
-                {'$group': {'_id': '$causatives'}}
-            ])
-            causatives = [item['_id'] for item in query]
+            query = self.case_collection.aggregate(
+                [
+                    {
+                        "$match": {
+                            "collaborators": institute_id,
+                            "causatives": {"$exists": True},
+                        }
+                    },
+                    {"$unwind": "$causatives"},
+                    {"$group": {"_id": "$causatives"}},
+                ]
+            )
+            causatives = [item["_id"] for item in query]
 
         return causatives
 
@@ -371,48 +399,50 @@ class VariantHandler(VariantLoader):
             Returns:
                 causatives(iterable(Variant))
         """
-        institute_id = case_obj['owner'] if case_obj else institute_obj['_id']
-        var_causative_events = self.event_collection.find({
-            'institute' : institute_id,
-            'verb':'mark_causative',
-            'category' : 'variant'
-        })
+        institute_id = case_obj["owner"] if case_obj else institute_obj["_id"]
+        var_causative_events = self.event_collection.find(
+            {"institute": institute_id, "verb": "mark_causative", "category": "variant"}
+        )
         positional_variant_ids = set()
         for var_event in var_causative_events:
-            if case_obj and var_event['case'] == case_obj['_id']:
+            if case_obj and var_event["case"] == case_obj["_id"]:
                 # exclude causatives from the same case
                 continue
-            other_case = self.case(var_event['case'])
+            other_case = self.case(var_event["case"])
             if other_case is None:
                 # Other variant belongs to a case that doesn't exist any more
                 continue
-            other_link = var_event['link']
+            other_link = var_event["link"]
             # link contains other variant ID
-            other_causative_id = other_link.split('/')[-1]
+            other_causative_id = other_link.split("/")[-1]
 
-            if other_causative_id in other_case.get('causatives',[]):
-                positional_variant_ids.add(var_event['variant_id'])
+            if other_causative_id in other_case.get("causatives", []):
+                positional_variant_ids.add(var_event["variant_id"])
 
         # affected is phenotype == 2; assume
         affected_ids = []
         if case_obj:
-            for subject in case_obj.get('individuals'):
-                if subject.get('phenotype') == 2:
-                    affected_ids.append(subject.get('individual_id'))
+            for subject in case_obj.get("individuals"):
+                if subject.get("phenotype") == 2:
+                    affected_ids.append(subject.get("individual_id"))
             if len(affected_ids) == 0:
                 return []
 
         if len(positional_variant_ids) == 0:
             return []
-        filters = {'variant_id': {'$in': list(positional_variant_ids)}}
+        filters = {"variant_id": {"$in": list(positional_variant_ids)}}
         if case_obj:
-            filters['case_id'] = case_obj['_id']
-            filters['samples'] = { '$elemMatch': {'sample_id': {'$in': affected_ids},
-                                                'genotype_call': {'$regex': '1'}} }
+            filters["case_id"] = case_obj["_id"]
+            filters["samples"] = {
+                "$elemMatch": {
+                    "sample_id": {"$in": affected_ids},
+                    "genotype_call": {"$regex": "1"},
+                }
+            }
         else:
-            filters['institute'] = institute_obj['_id']
+            filters["institute"] = institute_obj["_id"]
         if limit_genes:
-            filters['genes.hgnc_id'] = {'$in':limit_genes}
+            filters["genes.hgnc_id"] = {"$in": limit_genes}
         LOG.debug("Attempting filtered matching causatives query: {}".format(filters))
         return self.variant_collection.find(filters)
 
@@ -427,42 +457,43 @@ class VariantHandler(VariantLoader):
             other_causative(dict)
         """
         # variant id without "*_[variant_type]"
-        variant_prefix = variant_obj['simple_id']
-        clinical_variant = ''.join([variant_prefix, '_clinical'])
-        research_variant = ''.join([variant_prefix, '_research'])
+        variant_prefix = variant_obj["simple_id"]
+        clinical_variant = "".join([variant_prefix, "_clinical"])
+        research_variant = "".join([variant_prefix, "_research"])
 
-        var_causative_events = self.event_collection.find({
-            'verb':'mark_causative',
-            'subject' : {'$in' : [clinical_variant, research_variant] },
-            'category' : 'variant'
-        })
+        var_causative_events = self.event_collection.find(
+            {
+                "verb": "mark_causative",
+                "subject": {"$in": [clinical_variant, research_variant]},
+                "category": "variant",
+            }
+        )
 
         for var_event in var_causative_events:
-            if var_event['case'] == case_obj['_id']:
+            if var_event["case"] == case_obj["_id"]:
                 # This is the variant the search started from, do not collect it
                 continue
-            other_case = self.case(var_event['case'])
+            other_case = self.case(var_event["case"])
             if other_case is None:
                 # Other variant belongs to a case that doesn't exist any more
                 continue
-            if variant_obj['institute'] not in other_case.get('collaborators'):
+            if variant_obj["institute"] not in other_case.get("collaborators"):
                 # User doesn't have access to this case/variant
                 continue
 
-            other_case_causatives = other_case.get('causatives', [])
-            other_link = var_event['link']
+            other_case_causatives = other_case.get("causatives", [])
+            other_link = var_event["link"]
             # link contains other variant ID
-            other_causative_id = other_link.split('/')[-1]
+            other_causative_id = other_link.split("/")[-1]
 
             # if variant is still causative for that case:
-            if other_causative_id in other_case_causatives :
+            if other_causative_id in other_case_causatives:
                 other_causative = {
-                    '_id' : other_causative_id,
-                    'case_id' : other_case['_id'],
-                    'case_display_name' : other_case['display_name']
+                    "_id": other_causative_id,
+                    "case_id": other_case["_id"],
+                    "case_display_name": other_case["display_name"],
                 }
                 yield other_causative
-
 
     def delete_variants(self, case_id, variant_type, category=None):
         """Delete variants of one type for a case
@@ -474,12 +505,15 @@ class VariantHandler(VariantLoader):
                 variant_type(str): 'research' or 'clinical'
                 category(str): 'snv', 'sv' or 'cancer'
         """
-        category = category or ''
-        LOG.info("Deleting old {0} {1} variants for case {2}".format(
-                    variant_type, category, case_id))
-        query = {'case_id': case_id, 'variant_type': variant_type}
+        category = category or ""
+        LOG.info(
+            "Deleting old {0} {1} variants for case {2}".format(
+                variant_type, category, case_id
+            )
+        )
+        query = {"case_id": case_id, "variant_type": variant_type}
         if category:
-            query['category'] = category
+            query["category"] = category
         result = self.variant_collection.delete_many(query)
         LOG.info("{0} variants deleted".format(result.deleted_count))
 
@@ -498,20 +532,20 @@ class VariantHandler(VariantLoader):
         Returns:
             variants(iterable(dict))
         """
-        #This is the category of the variants that we want to collect
-        category = 'snv' if variant_obj['category'] == 'sv' else 'sv'
-        variant_type = variant_obj.get('variant_type', 'clinical')
-        hgnc_ids = variant_obj['hgnc_ids']
+        # This is the category of the variants that we want to collect
+        category = "snv" if variant_obj["category"] == "sv" else "sv"
+        variant_type = variant_obj.get("variant_type", "clinical")
+        hgnc_ids = variant_obj["hgnc_ids"]
 
         query = {
-            '$and': [
-                {'case_id': variant_obj['case_id']},
-                {'category': category},
-                {'variant_type': variant_type},
-                {'hgnc_ids' : { '$in' : hgnc_ids}}
+            "$and": [
+                {"case_id": variant_obj["case_id"]},
+                {"category": category},
+                {"variant_type": variant_type},
+                {"hgnc_ids": {"$in": hgnc_ids}},
             ]
         }
-        sort_key = [('rank_score', pymongo.DESCENDING)]
+        sort_key = [("rank_score", pymongo.DESCENDING)]
         # We collect the 30 most severe overlapping variants
         variants = self.variant_collection.find(query).sort(sort_key).limit(30)
 
@@ -532,35 +566,33 @@ class VariantHandler(VariantLoader):
         """
         # Get all variants that have been evaluated in some way for a case
         query = {
-            '$and': [
-                {'case_id': case_id},
+            "$and": [
+                {"case_id": case_id},
                 {
-                    '$or': [
-                        {'acmg_classification': {'$exists': True}},
-                        {'manual_rank': {'$exists': True}},
-                        {'cancer_tier': {'$exists': True}},
-                        {'dismiss_variant': {'$exists': True}},
+                    "$or": [
+                        {"acmg_classification": {"$exists": True}},
+                        {"manual_rank": {"$exists": True}},
+                        {"cancer_tier": {"$exists": True}},
+                        {"dismiss_variant": {"$exists": True}},
                     ]
-                }
-            ],
+                },
+            ]
         }
 
         # Collect the result in a dictionary
         variants = {}
         for var in self.variant_collection.find(query):
-            variants[var['variant_id']] = self.add_gene_info(var)
+            variants[var["variant_id"]] = self.add_gene_info(var)
 
         # Collect all variant comments from the case
         event_query = {
-            '$and': [
-                {'case': case_id},
-                {'category': 'variant'},
-                {'verb': 'comment'},
-            ]
+            "$and": [{"case": case_id}, {"category": "variant"}, {"verb": "comment"}]
         }
 
         # Get all variantids for commented variants
-        comment_variants = {event['variant_id'] for event in self.event_collection.find(event_query)}
+        comment_variants = {
+            event["variant_id"] for event in self.event_collection.find(event_query)
+        }
 
         # Get the variant objects for commented variants, if they exist
         for var_id in comment_variants:
@@ -575,16 +607,23 @@ class VariantHandler(VariantLoader):
             if not variant_obj:
                 continue
 
-            variant_obj['is_commented'] = True
+            variant_obj["is_commented"] = True
             variants[var_id] = variant_obj
 
         # Return a list with the variant objects
         return variants.values()
 
-
-    def get_region_vcf(self, case_obj, chrom=None, start=None, end=None,
-                       gene_obj=None, variant_type='clinical', category='snv',
-                       rank_threshold=None):
+    def get_region_vcf(
+        self,
+        case_obj,
+        chrom=None,
+        start=None,
+        end=None,
+        gene_obj=None,
+        variant_type="clinical",
+        category="snv",
+        rank_threshold=None,
+    ):
         """Produce a reduced vcf with variants from the specified coordinates
            This is used for the alignment viewer.
 
@@ -604,18 +643,18 @@ class VariantHandler(VariantLoader):
         rank_threshold = rank_threshold or -100
 
         variant_file = None
-        if variant_type == 'clinical':
-            if category == 'snv':
-                variant_file = case_obj['vcf_files'].get('vcf_snv')
-            elif category == 'sv':
-                variant_file = case_obj['vcf_files'].get('vcf_sv')
-            elif category == 'str':
-                variant_file = case_obj['vcf_files'].get('vcf_str')
-        elif variant_type == 'research':
-            if category == 'snv':
-                variant_file = case_obj['vcf_files'].get('vcf_snv_research')
-            elif category == 'sv':
-                variant_file = case_obj['vcf_files'].get('vcf_sv_research')
+        if variant_type == "clinical":
+            if category == "snv":
+                variant_file = case_obj["vcf_files"].get("vcf_snv")
+            elif category == "sv":
+                variant_file = case_obj["vcf_files"].get("vcf_sv")
+            elif category == "str":
+                variant_file = case_obj["vcf_files"].get("vcf_str")
+        elif variant_type == "research":
+            if category == "snv":
+                variant_file = case_obj["vcf_files"].get("vcf_snv_research")
+            elif category == "sv":
+                variant_file = case_obj["vcf_files"].get("vcf_sv_research")
 
         if not variant_file:
             raise SyntaxError("Vcf file does not seem to exist")
@@ -624,12 +663,12 @@ class VariantHandler(VariantLoader):
         region = ""
 
         if gene_obj:
-            chrom = gene_obj['chromosome']
-            start = gene_obj['start']
-            end = gene_obj['end']
+            chrom = gene_obj["chromosome"]
+            start = gene_obj["start"]
+            end = gene_obj["end"]
 
         if chrom:
-            if (start and end):
+            if start and end:
                 region = "{0}:{1}-{2}".format(chrom, start, end)
             else:
                 region = "{0}".format(chrom)
@@ -637,18 +676,17 @@ class VariantHandler(VariantLoader):
         else:
             rank_threshold = rank_threshold or 5
 
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp:
             file_name = str(pathlib.Path(temp.name))
-            for header_line in vcf_obj.raw_header.split('\n'):
+            for header_line in vcf_obj.raw_header.split("\n"):
                 if len(header_line) > 3:
-                    temp.write(header_line + '\n')
+                    temp.write(header_line + "\n")
             for variant in vcf_obj(region):
                 temp.write(str(variant))
 
         return file_name
 
-
-    def sample_variants(self, variants, sample_name, category = 'snv'):
+    def sample_variants(self, variants, sample_name, category="snv"):
         """Given a list of variants get variant objects found in a specific patient
 
         Args:
@@ -659,16 +697,23 @@ class VariantHandler(VariantLoader):
         Returns:
             result(iterable(Variant))
         """
-        LOG.info('Retrieving variants for subject : {0}'.format(sample_name))
-        has_allele = re.compile('1|2') # a non wild-type allele is called at least once in this sample
+        LOG.info("Retrieving variants for subject : {0}".format(sample_name))
+        has_allele = re.compile(
+            "1|2"
+        )  # a non wild-type allele is called at least once in this sample
 
         query = {
-            '$and': [
-                {'_id' : { '$in' : variants}},
-                {'category' : category},
-                {'samples': {
-                    '$elemMatch': { 'display_name' : sample_name, 'genotype_call': { '$regex' : has_allele } }
-                }}
+            "$and": [
+                {"_id": {"$in": variants}},
+                {"category": category},
+                {
+                    "samples": {
+                        "$elemMatch": {
+                            "display_name": sample_name,
+                            "genotype_call": {"$regex": has_allele},
+                        }
+                    }
+                },
             ]
         }
 

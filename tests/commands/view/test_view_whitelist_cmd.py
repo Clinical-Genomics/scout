@@ -12,15 +12,15 @@ def test_view_witelist(mock_app):
     assert runner
 
     # Test CLI
-    result =  runner.invoke(cli, ['view', 'whitelist'])
+    result = runner.invoke(cli, ["view", "whitelist"])
     assert result.exit_code == 0
-    assert 'INFO Running scout view users' in result.output
+    assert "INFO Running scout view users" in result.output
 
     # insert mock obj in whitelist collection
-    store.whitelist_collection.insert_one({'_id' : 'fake_whitelist_id'})
+    store.whitelist_collection.insert_one({"_id": "fake_whitelist_id"})
 
     # Test CLI
-    result =  runner.invoke(cli, ['view', 'whitelist'])
+    result = runner.invoke(cli, ["view", "whitelist"])
     assert result.exit_code == 0
     # mock obj should be returned
-    assert 'fake_whitelist_id' in result.output
+    assert "fake_whitelist_id" in result.output

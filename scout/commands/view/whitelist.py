@@ -8,7 +8,7 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 
-@click.command('whitelist', short_help='Display whitelist')
+@click.command("whitelist", short_help="Display whitelist")
 @with_appcontext
 def whitelist():
     """Show all objects in the whitelist collection"""
@@ -17,4 +17,4 @@ def whitelist():
 
     ## TODO add a User interface to the adapter
     for whitelist_obj in adapter.whitelist_collection.find():
-        click.echo(whitelist_obj['_id'])
+        click.echo(whitelist_obj["_id"])

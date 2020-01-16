@@ -1,19 +1,26 @@
 import logging
 
-from flask import (Blueprint, request, redirect, flash, current_app, url_for, jsonify)
+from flask import Blueprint, request, redirect, flash, current_app, url_for, jsonify
 from flask_login import current_user
 
 from scout.utils.acmg import get_acmg
-from scout.server.utils import (templated, public_endpoint, institute_and_case)
-from scout.server.extensions import (store, loqusdb)
+from scout.server.utils import templated, public_endpoint, institute_and_case
+from scout.server.extensions import store, loqusdb
 from scout.server.blueprints.variant.controllers import variant as variant_controller
-from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
+from scout.server.blueprints.variant.controllers import (
+    evaluation as evaluation_controller,
+)
 from scout.server.blueprints.variant.controllers import variant_acmg as acmg_controller
-from scout.server.blueprints.variant.controllers import (observations, variant_acmg_post,
-                                                         clinvar_export)
+from scout.server.blueprints.variant.controllers import (
+    observations,
+    variant_acmg_post,
+    clinvar_export,
+)
 
-from scout.server.blueprints.variant.verification_controllers import (variant_verification,
-MissingVerificationRecipientError)
+from scout.server.blueprints.variant.verification_controllers import (
+    variant_verification,
+    MissingVerificationRecipientError,
+)
 
 from scout.parse.clinvar import set_submission_objects
 
@@ -21,67 +28,100 @@ from scout.constants import ACMG_MAP, ACMG_CRITERIA
 
 LOG = logging.getLogger(__name__)
 
-variant_bp = Blueprint('variant', __name__, static_folder='static', template_folder='templates')
+variant_bp = Blueprint(
+    "variant", __name__, static_folder="static", template_folder="templates"
+)
 
-@variant_bp.route('/<institute_id>/<case_name>/<variant_id>')
-@templated('variant/variant.html')
+
+@variant_bp.route("/<institute_id>/<case_name>/<variant_id>")
+@templated("variant/variant.html")
 def variant(institute_id, case_name, variant_id):
     """Display a specific SNV variant."""
     LOG.debug("Variants view requesting data for variant %s", variant_id)
-    data = variant_controller(store, institute_id, case_name, variant_id=variant_id,
-                               variant_type='snv')
+    data = variant_controller(
+        store, institute_id, case_name, variant_id=variant_id, variant_type="snv"
+    )
     if data is None:
-        LOG.warning("An error occurred: variants view requesting data for variant {}".format(variant_id))
-        flash('An error occurred while retrieving variant object', 'danger')
+        LOG.warning(
+            "An error occurred: variants view requesting data for variant {}".format(
+                variant_id
+            )
+        )
+        flash("An error occurred while retrieving variant object", "danger")
         return redirect(request.referrer)
 
-    if current_app.config.get('LOQUSDB_SETTINGS'):
+    if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
-        data['observations'] = observations(store, loqusdb, data['case'], data['variant'])
+        data["observations"] = observations(
+            store, loqusdb, data["case"], data["variant"]
+        )
 
-    data['cancer'] = request.args.get('cancer') == 'yes'
-    data['str'] = request.args.get('str') == 'yes'
+    data["cancer"] = request.args.get("cancer") == "yes"
+    data["str"] = request.args.get("str") == "yes"
     return data
 
-@variant_bp.route('/<institute_id>/<case_name>/sv/variants/<variant_id>')
-@templated('variant/sv-variant.html')
+
+@variant_bp.route("/<institute_id>/<case_name>/sv/variants/<variant_id>")
+@templated("variant/sv-variant.html")
 def sv_variant(institute_id, case_name, variant_id):
     """Display a specific structural variant."""
-    data = variant_controller(store, institute_id, case_name, variant_id, add_other=False,
-                               variant_type='sv')
+    data = variant_controller(
+        store, institute_id, case_name, variant_id, add_other=False, variant_type="sv"
+    )
     return data
 
-@variant_bp.route('/<institute_id>/<case_name>/str/variants/<variant_id>')
-@templated('variant/str-variant.html')
+
+@variant_bp.route("/<institute_id>/<case_name>/str/variants/<variant_id>")
+@templated("variant/str-variant.html")
 def str_variant(institute_id, case_name, variant_id):
     """Display a specific STR variant."""
-    data = variant_controller(store, institute_id, case_name, variant_id, add_other=False,
-                              get_overlapping=False, variant_type='str')
+    data = variant_controller(
+        store,
+        institute_id,
+        case_name,
+        variant_id,
+        add_other=False,
+        get_overlapping=False,
+        variant_type="str",
+    )
     return data
 
-@variant_bp.route('/<institute_id>/<case_name>/<variant_id>/acmg', methods=['GET','POST'])
-@templated('variant/acmg.html')
+
+@variant_bp.route(
+    "/<institute_id>/<case_name>/<variant_id>/acmg", methods=["GET", "POST"]
+)
+@templated("variant/acmg.html")
 def variant_acmg(institute_id, case_name, variant_id):
     """ACMG classification form."""
-    if request.method == 'GET':
+    if request.method == "GET":
         data = acmg_controller(store, institute_id, case_name, variant_id)
         return data
 
     criteria = []
-    criteria_terms = request.form.getlist('criteria')
+    criteria_terms = request.form.getlist("criteria")
     for term in criteria_terms:
-        criteria.append(dict(
-            term=term,
-            comment=request.form.get("comment-{}".format(term)),
-            links=[request.form.get("link-{}".format(term))],
-        ))
-    acmg = variant_acmg_post(store, institute_id, case_name, variant_id,
-                                         current_user.email, criteria)
-    flash("classified as: {}".format(acmg), 'info')
-    return redirect(url_for('.variant', institute_id=institute_id, case_name=case_name,
-                            variant_id=variant_id))
+        criteria.append(
+            dict(
+                term=term,
+                comment=request.form.get("comment-{}".format(term)),
+                links=[request.form.get("link-{}".format(term))],
+            )
+        )
+    acmg = variant_acmg_post(
+        store, institute_id, case_name, variant_id, current_user.email, criteria
+    )
+    flash("classified as: {}".format(acmg), "info")
+    return redirect(
+        url_for(
+            ".variant",
+            institute_id=institute_id,
+            case_name=case_name,
+            variant_id=variant_id,
+        )
+    )
 
-@variant_bp.route('/<institute_id>/<case_name>/<variant_id>/update', methods=['POST'])
+
+@variant_bp.route("/<institute_id>/<case_name>/<variant_id>/update", methods=["POST"])
 def variant_update(institute_id, case_name, variant_id):
     """Update user-defined information about a variant: manual rank & ACMG."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -89,42 +129,60 @@ def variant_update(institute_id, case_name, variant_id):
     user_obj = store.user(current_user.email)
     link = request.referrer
 
-    manual_rank = request.form.get('manual_rank')
-    cancer_tier = request.form.get('cancer_tier')
+    manual_rank = request.form.get("manual_rank")
+    cancer_tier = request.form.get("cancer_tier")
     if manual_rank:
         try:
-            new_manual_rank = int(manual_rank) if manual_rank != '-1' else None
+            new_manual_rank = int(manual_rank) if manual_rank != "-1" else None
         except:
-            LOG.warning("Attempt to update manual rank with invalid value {}".format(manual_rank))
-            manual_rank = '-1'
+            LOG.warning(
+                "Attempt to update manual rank with invalid value {}".format(
+                    manual_rank
+                )
+            )
+            manual_rank = "-1"
             new_manual_rank = -1
 
-        store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj,
-                                 new_manual_rank)
+        store.update_manual_rank(
+            institute_obj, case_obj, user_obj, link, variant_obj, new_manual_rank
+        )
         if new_manual_rank:
-            flash("updated variant tag: {}".format(new_manual_rank), 'info')
+            flash("updated variant tag: {}".format(new_manual_rank), "info")
         else:
-            flash("reset variant tag: {}".format(variant_obj.get('manual_rank', 'NA')), 'info')
+            flash(
+                "reset variant tag: {}".format(variant_obj.get("manual_rank", "NA")),
+                "info",
+            )
     elif cancer_tier:
         try:
-            new_cancer_tier = cancer_tier if cancer_tier != '-1' else None
+            new_cancer_tier = cancer_tier if cancer_tier != "-1" else None
         except:
-            LOG.warning("Attempt to update cancer tier with invalid value {}".format(cancer_tier))
-            cancer_tier = '-1'
-            new_cancer_tier = '-1'
+            LOG.warning(
+                "Attempt to update cancer tier with invalid value {}".format(
+                    cancer_tier
+                )
+            )
+            cancer_tier = "-1"
+            new_cancer_tier = "-1"
 
-        store.update_cancer_tier(institute_obj, case_obj, user_obj, link, variant_obj,
-                                 new_cancer_tier)
+        store.update_cancer_tier(
+            institute_obj, case_obj, user_obj, link, variant_obj, new_cancer_tier
+        )
         if new_cancer_tier:
-            flash("updated variant tag: {}".format(new_cancer_tier), 'info')
+            flash("updated variant tag: {}".format(new_cancer_tier), "info")
         else:
-            flash("reset variant tag: {}".format(variant_obj.get('cancer_tier', 'NA')), 'info')
-    elif request.form.get('acmg_classification'):
-        new_acmg = request.form['acmg_classification']
-        acmg_classification = variant_obj.get('acmg_classification')
+            flash(
+                "reset variant tag: {}".format(variant_obj.get("cancer_tier", "NA")),
+                "info",
+            )
+    elif request.form.get("acmg_classification"):
+        new_acmg = request.form["acmg_classification"]
+        acmg_classification = variant_obj.get("acmg_classification")
         # If there already is a classification and the same one is sent again this means that
         # We want to remove the classification
-        if isinstance(acmg_classification, int) and (new_acmg == ACMG_MAP[acmg_classification]):
+        if isinstance(acmg_classification, int) and (
+            new_acmg == ACMG_MAP[acmg_classification]
+        ):
             new_acmg = None
 
         store.submit_evaluation(
@@ -133,94 +191,126 @@ def variant_update(institute_id, case_name, variant_id):
             institute_obj=institute_obj,
             case_obj=case_obj,
             link=link,
-            classification=new_acmg
+            classification=new_acmg,
         )
-        flash("updated ACMG classification: {}".format(new_acmg), 'info')
+        flash("updated ACMG classification: {}".format(new_acmg), "info")
 
-    new_dismiss = request.form.getlist('dismiss_variant')
+    new_dismiss = request.form.getlist("dismiss_variant")
     if new_dismiss:
-        store.update_dismiss_variant(institute_obj, case_obj, user_obj, link, variant_obj,
-                                     new_dismiss)
-        flash("Dismissed variant: {}".format(new_dismiss), 'info')
+        store.update_dismiss_variant(
+            institute_obj, case_obj, user_obj, link, variant_obj, new_dismiss
+        )
+        flash("Dismissed variant: {}".format(new_dismiss), "info")
 
-    variant_dismiss = variant_obj.get('dismiss_variant')
+    variant_dismiss = variant_obj.get("dismiss_variant")
     if variant_dismiss and not new_dismiss:
-        if 'dismiss' in request.form:
-            store.update_dismiss_variant(institute_obj, case_obj, user_obj, link, variant_obj,
-                                     new_dismiss)
-            flash("Reset variant dismissal: {}".format(variant_obj.get('dismiss_variant')), 'info')
+        if "dismiss" in request.form:
+            store.update_dismiss_variant(
+                institute_obj, case_obj, user_obj, link, variant_obj, new_dismiss
+            )
+            flash(
+                "Reset variant dismissal: {}".format(
+                    variant_obj.get("dismiss_variant")
+                ),
+                "info",
+            )
         else:
-            LOG.debug("DO NOT reset variant dismissal: {}".format(','.join(variant_dismiss), 'info'))
+            LOG.debug(
+                "DO NOT reset variant dismissal: {}".format(
+                    ",".join(variant_dismiss), "info"
+                )
+            )
 
-    mosaic_tags = request.form.getlist('mosaic_tags')
+    mosaic_tags = request.form.getlist("mosaic_tags")
     if mosaic_tags:
-        store.update_mosaic_tags(institute_obj, case_obj, user_obj, link, variant_obj,
-                                     mosaic_tags)
-        flash("Added mosaic tags: {}".format(mosaic_tags), 'info')
+        store.update_mosaic_tags(
+            institute_obj, case_obj, user_obj, link, variant_obj, mosaic_tags
+        )
+        flash("Added mosaic tags: {}".format(mosaic_tags), "info")
 
-    variant_mosaic = variant_obj.get('mosaic_tags')
-    if  variant_mosaic and not mosaic_tags:
-        if 'mosaic' in request.form:
-            store.update_mosaic_tags(institute_obj, case_obj, user_obj, link, variant_obj,
-                                     mosaic_tags)
-            flash("Reset mosaic tags: {}".format(','.join(variant_mosaic), 'info'))
+    variant_mosaic = variant_obj.get("mosaic_tags")
+    if variant_mosaic and not mosaic_tags:
+        if "mosaic" in request.form:
+            store.update_mosaic_tags(
+                institute_obj, case_obj, user_obj, link, variant_obj, mosaic_tags
+            )
+            flash("Reset mosaic tags: {}".format(",".join(variant_mosaic), "info"))
 
     return redirect(request.referrer)
 
 
-@variant_bp.route('/evaluations/<evaluation_id>', methods=['GET', 'POST'])
-@templated('variant/acmg.html')
+@variant_bp.route("/evaluations/<evaluation_id>", methods=["GET", "POST"])
+@templated("variant/acmg.html")
 def evaluation(evaluation_id):
     """Show or delete an ACMG evaluation."""
     evaluation_obj = store.get_evaluation(evaluation_id)
     evaluation_controller(store, evaluation_obj)
-    if request.method == 'POST':
-        link = url_for('.variant', institute_id=evaluation_obj['institute']['_id'],
-                       case_name=evaluation_obj['case']['display_name'],
-                       variant_id=evaluation_obj['variant_specific'])
+    if request.method == "POST":
+        link = url_for(
+            ".variant",
+            institute_id=evaluation_obj["institute"]["_id"],
+            case_name=evaluation_obj["case"]["display_name"],
+            variant_id=evaluation_obj["variant_specific"],
+        )
         store.delete_evaluation(evaluation_obj)
         return redirect(link)
-    return dict(evaluation=evaluation_obj, institute=evaluation_obj['institute'],
-                case=evaluation_obj['case'], variant=evaluation_obj['variant'],
-                CRITERIA=ACMG_CRITERIA)
+    return dict(
+        evaluation=evaluation_obj,
+        institute=evaluation_obj["institute"],
+        case=evaluation_obj["case"],
+        variant=evaluation_obj["variant"],
+        CRITERIA=ACMG_CRITERIA,
+    )
 
 
-@variant_bp.route('/api/v1/acmg')
+@variant_bp.route("/api/v1/acmg")
 @public_endpoint
 def acmg():
     """Calculate an ACMG classification from submitted criteria."""
-    criteria = request.args.getlist('criterion')
+    criteria = request.args.getlist("criterion")
     classification = get_acmg(criteria)
     return jsonify(dict(classification=classification))
 
 
-@variant_bp.route('/<institute_id>/<case_name>/<variant_id>/clinvar', methods=['POST', 'GET'])
-@templated('variant/clinvar.html')
+@variant_bp.route(
+    "/<institute_id>/<case_name>/<variant_id>/clinvar", methods=["POST", "GET"]
+)
+@templated("variant/clinvar.html")
 def clinvar(institute_id, case_name, variant_id):
     """Build a clinVar submission form for a variant."""
     data = clinvar_export(store, institute_id, case_name, variant_id)
-    if request.method == 'GET':
+    if request.method == "GET":
         return data
-    #POST
+    # POST
     form_dict = {}
     # flatten up HPO and OMIM terms lists into string of keys separated by semicolon
     for key, value in request.form.items():
-        if key.startswith('conditions@') or key.startswith('clin_features@'):
-            conditions = request.form.getlist(key) # can be HPO or OMIM conditions
+        if key.startswith("conditions@") or key.startswith("clin_features@"):
+            conditions = request.form.getlist(key)  # can be HPO or OMIM conditions
             if conditions:
-                variant_id = key.split('@')[1]
+                variant_id = key.split("@")[1]
                 cond_types = []
                 cond_values = []
 
                 for condition in conditions:
-                    cond_types.append(condition.split('_')[0]) # 'HPO' or 'OMIM'
-                    cond_values.append(condition.split('_')[1]) # HPO id or OMIM ID
+                    cond_types.append(condition.split("_")[0])  # 'HPO' or 'OMIM'
+                    cond_values.append(condition.split("_")[1])  # HPO id or OMIM ID
 
-                if key.startswith('conditions@'): # Filling in 'condition_id_type' and 'condition_id_value' in variant data
-                    form_dict['@'.join(['condition_id_type',variant_id])] = ';'.join(cond_types) # Flattened list
-                    form_dict['@'.join(['condition_id_value',variant_id])] = ';'.join(cond_values) # Flattened list
-                elif key.startswith('clin_features@'): # Filling in 'clin_features' in casedata
-                    form_dict['@'.join(['clin_features',variant_id])] = ';'.join(cond_values) # Flattened list
+                if key.startswith(
+                    "conditions@"
+                ):  # Filling in 'condition_id_type' and 'condition_id_value' in variant data
+                    form_dict["@".join(["condition_id_type", variant_id])] = ";".join(
+                        cond_types
+                    )  # Flattened list
+                    form_dict["@".join(["condition_id_value", variant_id])] = ";".join(
+                        cond_values
+                    )  # Flattened list
+                elif key.startswith(
+                    "clin_features@"
+                ):  # Filling in 'clin_features' in casedata
+                    form_dict["@".join(["clin_features", variant_id])] = ";".join(
+                        cond_values
+                    )  # Flattened list
 
         else:
             form_dict[key] = value
@@ -230,16 +320,24 @@ def clinvar(institute_id, case_name, variant_id):
 
     # Add submission data to an open clinvar submission object,
     # or create a new if no open submission is found in database
-    open_submission = store.get_open_clinvar_submission(current_user.email, institute_id)
-    updated_submission = store.add_to_submission(open_submission['_id'], submission_objects)
+    open_submission = store.get_open_clinvar_submission(
+        current_user.email, institute_id
+    )
+    updated_submission = store.add_to_submission(
+        open_submission["_id"], submission_objects
+    )
 
     # Redirect to clinvar submissions handling page, and pass it the updated_submission_object
-    return redirect(url_for('cases.clinvar_submissions', institute_id=institute_id))
+    return redirect(url_for("cases.clinvar_submissions", institute_id=institute_id))
 
-@variant_bp.route('/<institute_id>/<case_name>/<variant_id>/<variant_category>/<order>', methods=['POST'])
+
+@variant_bp.route(
+    "/<institute_id>/<case_name>/<variant_id>/<variant_category>/<order>",
+    methods=["POST"],
+)
 def verify(institute_id, case_name, variant_id, variant_category, order):
     """Start procedure to validate variant using other techniques."""
-    comment = request.form.get('verification_comment')
+    comment = request.form.get("verification_comment")
 
     try:
         variant_verification(
@@ -248,12 +346,12 @@ def verify(institute_id, case_name, variant_id, variant_category, order):
             case_name=case_name,
             comment=comment,
             variant_id=variant_id,
-            sender=current_app.config.get('MAIL_USERNAME'),
+            sender=current_app.config.get("MAIL_USERNAME"),
             variant_url=request.referrer,
             order=order,
-            url_builder=url_for
+            url_builder=url_for,
         )
     except MissingVerificationRecipientError:
-        flash('No verification recipients added to institute.', 'danger')
+        flash("No verification recipients added to institute.", "danger")
 
     return redirect(request.referrer)

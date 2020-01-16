@@ -6,8 +6,8 @@ from scout.constants import INDEXES
 
 LOG = logging.getLogger(__name__)
 
-class IndexHandler(object):
 
+class IndexHandler(object):
     def indexes(self, collection=None):
         """Return a list with the current indexes
 
@@ -26,7 +26,7 @@ class IndexHandler(object):
             if collection and collection != collection_name:
                 continue
             for index_name in self.db[collection_name].index_information():
-                if index_name != '_id_':
+                if index_name != "_id_":
                     indexes.append(index_name)
         return indexes
 
@@ -42,14 +42,16 @@ class IndexHandler(object):
             existing_indexes = self.indexes(collection_name)
             indexes = INDEXES[collection_name]
             for index in indexes:
-                index_name = index.document.get('name')
+                index_name = index.document.get("name")
                 if index_name in existing_indexes:
                     LOG.info("Deleting old index: %s" % index_name)
                     self.db[collection_name].drop_index(index_name)
-            LOG.info("creating indexes for {0} collection: {1}".format(
-                collection_name,
-                ', '.join([index.document.get('name') for index in indexes])
-                ))
+            LOG.info(
+                "creating indexes for {0} collection: {1}".format(
+                    collection_name,
+                    ", ".join([index.document.get("name") for index in indexes]),
+                )
+            )
             self.db[collection_name].create_indexes(indexes)
 
     def update_indexes(self):
@@ -65,16 +67,24 @@ class IndexHandler(object):
             existing_indexes = self.indexes(collection_name)
             indexes = INDEXES[collection_name]
             for index in indexes:
-                index_name = index.document.get('name')
+                index_name = index.document.get("name")
                 if index_name not in existing_indexes:
                     nr_updated += 1
                     LOG.info("Adding index : %s" % index_name)
                     try:
                         self.db[collection_name].create_indexes([index])
                     except pymongo_errors.OperationFailure as op_failure:
-                        LOG.warning('An Operation Failure occurred while updating Scout indexes: {}'.format(op_failure))
+                        LOG.warning(
+                            "An Operation Failure occurred while updating Scout indexes: {}".format(
+                                op_failure
+                            )
+                        )
                     except Exception as ex:
-                        LOG.warning('An error occurred while updating Scout indexes: {}'.format(ex))
+                        LOG.warning(
+                            "An error occurred while updating Scout indexes: {}".format(
+                                ex
+                            )
+                        )
 
         if nr_updated == 0:
             LOG.info("All indexes in place")

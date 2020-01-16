@@ -3,8 +3,8 @@ import logging
 
 import operator
 
-from pymongo.errors import (DuplicateKeyError, BulkWriteError)
-from pymongo import (ASCENDING)
+from pymongo.errors import DuplicateKeyError, BulkWriteError
+from pymongo import ASCENDING
 
 from scout.exceptions import IntegrityError
 
@@ -12,7 +12,6 @@ LOG = logging.getLogger(__name__)
 
 
 class HpoHandler(object):
-
     def load_hpo_term(self, hpo_obj):
         """Add a hpo object
 
@@ -20,11 +19,13 @@ class HpoHandler(object):
             hpo_obj(dict)
 
         """
-        LOG.debug("Loading hpo term %s into database", hpo_obj['_id'])
+        LOG.debug("Loading hpo term %s into database", hpo_obj["_id"])
         try:
             self.hpo_term_collection.insert_one(hpo_obj)
         except DuplicateKeyError as err:
-            raise IntegrityError("Hpo term %s already exists in database".format(hpo_obj['_id']))
+            raise IntegrityError(
+                "Hpo term %s already exists in database".format(hpo_obj["_id"])
+            )
         LOG.debug("Hpo term saved")
 
     def load_hpo_bulk(self, hpo_bulk):
@@ -56,7 +57,7 @@ class HpoHandler(object):
         """
         LOG.debug("Fetching hpo term %s", hpo_id)
 
-        return self.hpo_term_collection.find_one({'_id': hpo_id})
+        return self.hpo_term_collection.find_one({"_id": hpo_id})
 
     def hpo_terms(self, query=None, hpo_term=None, text=None, limit=None):
         """Return all HPO terms
@@ -75,29 +76,33 @@ class HpoHandler(object):
         query_dict = {}
         search_term = None
         if query:
-            query_dict = {'$or':
-                [
-                    {'hpo_id': {'$regex': query, '$options':'i'}},
-                    {'description': {'$regex': query, '$options':'i'}},
-                ]   
+            query_dict = {
+                "$or": [
+                    {"hpo_id": {"$regex": query, "$options": "i"}},
+                    {"description": {"$regex": query, "$options": "i"}},
+                ]
             }
             search_term = query
         elif text:
-            new_string = ''
-            for i,word in enumerate(text.split(' ')):
+            new_string = ""
+            for i, word in enumerate(text.split(" ")):
                 if i == 0:
                     new_string += word
                 else:
-                    new_string += ' \"{0}\"'.format(word)
+                    new_string += ' "{0}"'.format(word)
             LOG.info("Search HPO terms with %s", new_string)
-            query_dict['$text'] = {'$search': new_string}
+            query_dict["$text"] = {"$search": new_string}
             search_term = text
         elif hpo_term:
-            query_dict['hpo_id'] = hpo_term
+            query_dict["hpo_id"] = hpo_term
             search_term = hpo_term
 
         limit = limit or int(10e10)
-        res = self.hpo_term_collection.find(query_dict).limit(limit).sort('hpo_number',ASCENDING)
+        res = (
+            self.hpo_term_collection.find(query_dict)
+            .limit(limit)
+            .sort("hpo_number", ASCENDING)
+        )
 
         return res
 
@@ -115,9 +120,9 @@ class HpoHandler(object):
         query = {}
         try:
             disease_identifier = int(disease_identifier)
-            query['disease_nr'] = disease_identifier
+            query["disease_nr"] = disease_identifier
         except ValueError:
-            query['_id'] = disease_identifier
+            query["_id"] = disease_identifier
 
         return self.disease_term_collection.find_one(query)
 
@@ -135,7 +140,7 @@ class HpoHandler(object):
         query = {}
         if hgnc_id:
             LOG.debug("Fetching all diseases for gene %s", hgnc_id)
-            query['genes'] = hgnc_id
+            query["genes"] = hgnc_id
         else:
             LOG.info("Fetching all disease terms")
 
@@ -147,11 +152,13 @@ class HpoHandler(object):
         Args:
             disease_obj(dict)
         """
-        LOG.debug("Loading disease term %s into database", disease_obj['_id'])
+        LOG.debug("Loading disease term %s into database", disease_obj["_id"])
         try:
             self.disease_term_collection.insert_one(disease_obj)
         except DuplicateKeyError as err:
-            raise IntegrityError("Disease term %s already exists in database".format(disease_obj['_id']))
+            raise IntegrityError(
+                "Disease term %s already exists in database".format(disease_obj["_id"])
+            )
 
         LOG.debug("Disease term saved")
 
@@ -170,7 +177,7 @@ class HpoHandler(object):
         for term in hpo_terms:
             hpo_obj = self.hpo_term(term)
             if hpo_obj:
-                for hgnc_id in hpo_obj['genes']:
+                for hgnc_id in hpo_obj["genes"]:
                     if hgnc_id in genes:
                         genes[hgnc_id] += 1
                     else:

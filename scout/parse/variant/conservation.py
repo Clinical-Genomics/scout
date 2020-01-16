@@ -1,6 +1,7 @@
 from scout.constants import CONSERVATION
 import numbers
 
+
 def parse_conservations(variant):
     """Parse the conservation predictors
 
@@ -12,19 +13,15 @@ def parse_conservations(variant):
     """
     conservations = {}
 
-    conservations['gerp'] = parse_conservation(
-                                            variant,
-                                            'dbNSFP_GERP___RS'
-                                        )
-    conservations['phast'] = parse_conservation(
-                                            variant,
-                                            'dbNSFP_phastCons100way_vertebrate'
-                                        )
-    conservations['phylop'] = parse_conservation(
-                                            variant,
-                                            'dbNSFP_phyloP100way_vertebrate'
-                                        )
+    conservations["gerp"] = parse_conservation(variant, "dbNSFP_GERP___RS")
+    conservations["phast"] = parse_conservation(
+        variant, "dbNSFP_phastCons100way_vertebrate"
+    )
+    conservations["phylop"] = parse_conservation(
+        variant, "dbNSFP_phyloP100way_vertebrate"
+    )
     return conservations
+
 
 def parse_conservation(variant, info_key):
     """Get the conservation prediction
@@ -44,9 +41,9 @@ def parse_conservation(variant, info_key):
             raw_score = (raw_score,)
 
         for score in raw_score:
-            if score >= CONSERVATION[info_key]['conserved_min']:
-                conservations.append('Conserved')
+            if score >= CONSERVATION[info_key]["conserved_min"]:
+                conservations.append("Conserved")
             else:
-                conservations.append('NotConserved')
+                conservations.append("NotConserved")
 
     return conservations
