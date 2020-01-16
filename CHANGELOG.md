@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Alternative key `GNOMADAF_popmax` for Gnomad popmax allele frequency
 - Automatic suggestions on how to improve the code on Pull Requests
 - Parse GERP, phastCons and phyloP annotations from vep annotated CSQ fields
+- Parse REVEL score from vep annotated CSQ fields
 
 
 ### Fixed
