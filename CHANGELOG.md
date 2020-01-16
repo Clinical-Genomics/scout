@@ -10,7 +10,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Display locus name on STR variant page
 - Alternative key `GNOMADAF_popmax` for Gnomad popmax allele frequency
+- Automatic suggestions on how to improve the code on Pull Requests
 - Parse GERP, phastCons and phyloP annotations from vep annotated CSQ fields
+
 
 ### Fixed
 
@@ -205,7 +207,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation for loading/updating exons
 - Showing SV variant annotations: SV cgh frequencies, gnomad-SV, local SV frequencies
 - Showing transcripts mapping score in segmental duplications
-- Handle requests to Ensembl Rest API  
+- Handle requests to Ensembl Rest API
 - Handle requests to Ensembl Rest Biomart
 - STR variants view now displays GT and IGV link.
 - Description field for gene panels
