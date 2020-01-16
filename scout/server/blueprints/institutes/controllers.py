@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import logging
+
+LOG = logging.getLogger(__name__)
 
 def institute(store, institute_id):
     """ Process institute data.
@@ -48,8 +51,12 @@ def update_institute_settings(store, institute_obj, form):
         phenotype_groups.append(pheno_group.split(' ,')[0])
         group_abbreviations.append(pheno_group[pheno_group.find("( ")+2:pheno_group.find(" )")])
 
+    if form.get('hpo_term') and form.get('pheno_abbrev'):
+        phenotype_groups.append(form['hpo_term'].split(' |')[0])
+        group_abbreviations.append(form['pheno_abbrev'])
+
     for cohort in form.getlist('cohorts'):
-        cohorts.append(cohort.strip())
+        cohorts.append(cohort.strip(form['pheno_abbrev']))
 
     updated_institute = store.update_institute(
         internal_id = institute_obj['internal_id'],

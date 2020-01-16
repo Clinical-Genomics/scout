@@ -23,7 +23,11 @@ class InstituteForm(FlaskForm):
         validators.NumberRange(min=1)])
     frequency_cutoff = DecimalField('Frequency cutoff', validators=[validators.Optional(),
         validators.NumberRange(min=0, message="Number must be positive")])
+
+    pheno_group = TextField('New phenotype group', validators=[validators.Optional()])
+    pheno_abbrev = TextField('Abbreviation', validators=[validators.Optional()])
+
     pheno_groups = SelectMultipleField('Custom phenotype groups', choices=hpo_tuples)
     cohorts = NonValidatingSelectMultipleField('Available patient cohorts', validators=[validators.Optional()])
     institutes = NonValidatingSelectMultipleField('Institutes to share cases with', choices=[])
-    submit = SubmitField('Save settings')
+    submit_btn = SubmitField('Save settings')

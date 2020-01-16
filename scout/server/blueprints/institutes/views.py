@@ -46,7 +46,6 @@ def institutes():
 @blueprint.route('/overview/edit/<institute_id>', methods=['GET','POST'])
 def institute(institute_id):
     """ Edit institute data """
-
     if institute_id not in current_user.institutes and current_user.is_admin is False:
         flash("Current user doesn't have the permission to modify this institute", 'warning')
         return redirect(request.referrer)
@@ -75,4 +74,13 @@ def institute(institute_id):
     form.coverage_cutoff.value = institute_obj.get('coverage_cutoff')
     form.frequency_cutoff.value = institute_obj.get('frequency_cutoff')
 
-    return render_template('/overview/institute.html', form=form, **data)
+    # collect all available default HPO terms
+    default_phenotypes = [ choice[0].split(' ')[0] for choice in form.pheno_groups.choices ]
+    if institute_obj.get('phenotype_groups'):
+        for key,value in institute_obj['phenotype_groups'].items():
+            if not key in default_phenotypes:
+                flash(value)
+                custom_group = " ".join([key, ",", value.get('name'), "({})".format(value.get('abbr'))])
+                form.pheno_groups.choices.append((custom_group,custom_group))
+
+    return render_template('/overview/institute.html', form=form, default_phenotypes=default_phenotypes, **data)

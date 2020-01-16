@@ -4,7 +4,7 @@
   <div>
   <h5 class="card-title"><a href="{{ url_for('cases.cases', institute_id=institute.internal_id) }}"> {{ institute.display_name }}</a>
   {%- if current_user.is_admin or institute.internal_id in current_user.institutes %}
-    <button class="float-right btn-primary btn-sm" type="submit" class="btn btn-primary btn-sm" title="edit">edit</button>
+    <button class="float-right btn-primary btn-sm" type="submit" class="btn btn-primary btn-sm" title="settings">settings</button>
   {%- endif -%}
   </h5>
   </div>
