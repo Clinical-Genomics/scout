@@ -17,3 +17,6 @@ invoke
 # docs
 mkdocs
 mkdocs-material
+
+# code formatting
+black
