@@ -10,7 +10,7 @@ def parse_conservations(variant, parsed_transcripts=[]):
 
         Args:
             variant(dict): A variant dictionary
-            raw_transcripts(generator): if provided, use transcript annotations defined in the CSQ
+            parsed_transcripts(list): if provided, use transcript annotations
 
         Returns:
             conservations(dict): A dictionary with the conservations
