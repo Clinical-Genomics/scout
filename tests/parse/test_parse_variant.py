@@ -97,10 +97,6 @@ def test_parse_revel(cyvcf2_variant, case_obj):
     assert parsed_variant['revel_score'] = 0.75
 
 
-
-
-
-
 def test_parse_customannotation(one_variant_customannotation,case_obj):
     """Test parsing of custom annotations"""
     parsed_variant = parse_variant(one_variant_customannotation, case_obj)
