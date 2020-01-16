@@ -92,9 +92,11 @@ pylint:
     - .py
   command: pylint
   arguments:
-    - --rcfile={DEFAULT_CONFIGS}/pylintrc
+    - --rcfile=.configs/pylintrc
+    - --errors-only
     - --output-format=text
     - --max-line-length=100
+    - --jobs=0
     - >-
       --msg-template={{abspath}}:{{line}}:{{column}}:
       [{{category}}:{{symbol}}] {{obj}}: {{msg}}
