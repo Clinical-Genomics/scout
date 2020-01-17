@@ -5,25 +5,6 @@ env: TRAVIS=1
 
 jobs:
     include:
-        - name: "Package install"
-          if: type = pull_request
-          install: python setup.py install
-          script: pip check
-
-        - name: "Production dependencies"
-          if: type = pull_request
-          install:
-              - pip install cython
-              - pip install .
-          script: pip check
-
-        - name: "Development dependencies"
-          if: type = pull_request
-          install:
-              - pip install cython
-              - pip install . -r requirements-dev.txt
-          script: pip check
-
         - name: "Tests"
           if: type = pull_request
           services: mongodb
@@ -40,6 +21,25 @@ jobs:
               - pip install -r requirements-dev.txt -e .
           script: py.test --cov=scout -rxs tests/
           after_success: coveralls
+
+        - name: "Package Install"
+          if: type = pull_request
+          install: python setup.py install
+          script: pip check
+
+        - name: "Production Dependencies"
+          if: type = pull_request
+          install:
+              - pip install cython
+              - pip install .
+          script: pip check
+
+        - name: "Development Dependencies"
+          if: type = pull_request
+          install:
+              - pip install cython
+              - pip install . -r requirements-dev.txt
+          script: pip check
 
         - name: "PEP8 Compliance"
           if: type = pull_request
