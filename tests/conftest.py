@@ -49,7 +49,7 @@ transcripts38_reduced_path, genes38_reduced_path, exons37_reduced_path, exons37_
 
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path, clinical_str_path,
                         clinical_sv_path, ped_path, load_path, panel_path, empty_sv_clinical_path,
-                        customannotation_snv_path)
+                        customannotation_snv_path, vep_97_annotated_path)
 
 from scout.models.hgnc_map import HgncGene
 
@@ -802,6 +802,17 @@ def one_variant(request, variant_clinical_file):
 
 
 @pytest.fixture(scope='function')
+def one_vep97_annotated_variant(request, vep_97_annotated_variant_clinical_file):
+    LOG.info("Return one parsed variant")
+    variant_parser = VCF(vep_97_annotated_variant_clinical_file)
+
+    for variant in variant_parser:
+        break
+
+    return variant
+
+
+@pytest.fixture(scope='function')
 def one_variant_customannotation(request, customannotation_snv_file):
     LOG.info("Return one parsed variant with custom annotations")
     variant_parser = VCF(customannotation_snv_file)
@@ -869,6 +880,14 @@ def parsed_variant(request, one_variant, case_obj):
     """Return a parsed variant"""
     print('')
     variant_dict = parse_variant(one_variant, case_obj)
+    return variant_dict
+
+
+@pytest.fixture(scope='function')
+def parsed_vep97_variant(request, one_vep97_annotated_variant, case_obj):
+    """Return a parsed variant"""
+    print('')
+    variant_dict = parse_variant(one_vep97_annotated_variant, case_obj)
     return variant_dict
 
 
@@ -1124,6 +1143,13 @@ def variant_clinical_file(request):
     print('')
     return clinical_snv_path
 
+
+@pytest.fixture(scope='function')
+def vep_97_annotated_variant_clinical_file(request):
+    """Get a path to a VCF file annotated with VEP and containing conservation
+       and REVEL score in the CSQ field
+    """
+    return vep_97_annotated_path
 
 @pytest.fixture(scope='function')
 def sv_clinical_file(request):
