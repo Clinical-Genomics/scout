@@ -884,14 +884,6 @@ def parsed_variant(request, one_variant, case_obj):
 
 
 @pytest.fixture(scope='function')
-def parsed_vep97_variant(request, one_vep97_annotated_variant, case_obj):
-    """Return a parsed variant"""
-    print('')
-    variant_dict = parse_variant(one_vep97_annotated_variant, case_obj)
-    return variant_dict
-
-
-@pytest.fixture(scope='function')
 def variant_obj(request, parsed_variant):
     """Return a variant object"""
     print('')

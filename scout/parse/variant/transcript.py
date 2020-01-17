@@ -69,15 +69,16 @@ def parse_transcripts(raw_transcripts, allele=None):
 
         transcript['sift_prediction'] = prediction_term
 
-        if entry.get('REVEL_rankscore'):
-            transcript['revel'] = float(entry['REVEL_rankscore'])
+        if entry.get('REVEL_RANKSCORE'):
+            transcript['revel'] = float(entry.get('REVEL_RANKSCORE'))
 
         transcript['swiss_prot'] = entry.get('SWISSPROT') or 'unknown'
 
         # Check for conservation annotations
         transcript['gerp'] = entry.get('GERP++_RS')
-        transcript['phast'] = entry.get('phastCons100way_vertebrate')
-        transcript['phylop'] = entry.get('phyloP100way_vertebrate')
+
+        transcript['phast'] = entry.get('PHASTCONS100WAY_VERTEBRATE')
+        transcript['phylop'] = entry.get('PHYLOP100WAY_VERTEBRATE')
 
         if entry.get('DOMAINS', None):
             pfam_domains = entry['DOMAINS'].split('&')
