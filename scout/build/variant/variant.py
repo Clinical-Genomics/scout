@@ -374,7 +374,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     if variant.get('cadd_score'):
         variant_obj['cadd_score'] = variant['cadd_score']
 
-    if variat.get('revel_score'):
+    if variant.get('revel_score'):
         variant_obj['revel_score'] = variant['revel_score']
 
     if variant.get('spidex'):
