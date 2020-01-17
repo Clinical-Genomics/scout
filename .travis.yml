@@ -63,14 +63,9 @@ jobs:
 
         - name: "Linting"
           #if: type = pull_request
-          install: pip install git-lint pylint pycodestyle yamllint docutils html-linter tidy
+          install: pip install git-lint pylint pycodestyle yamllint docutils html-linter
           script:
-              - pip show tidy
-              - remove_template.py
-              - tidy-wrapper.sh
-              - which grep
               - git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git lint
-              - tidy
 
 notifications:
     email: false
