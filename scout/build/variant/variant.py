@@ -99,6 +99,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
             # Predicted deleteriousness:
             cadd_score = float,
+            ravek_score = float,
             clnsig = list, # list of <clinsig>
             spidex = float,
 
@@ -318,7 +319,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
     if variant.get('custom'):
         variant_obj['custom'] = variant['custom']
-        
+
     ##### Add the frequencies #####
     frequencies = variant.get('frequencies', {})
     if frequencies.get('thousand_g'):
@@ -372,6 +373,9 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
     if variant.get('cadd_score'):
         variant_obj['cadd_score'] = variant['cadd_score']
+
+    if variat.get('revel_score'):
+        variant_obj['revel_score'] = variant['revel_score']
 
     if variant.get('spidex'):
         variant_obj['spidex'] = variant['spidex']
