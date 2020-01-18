@@ -17,6 +17,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 
 ### Fixed
+- Slightly darker page background
+- Fixed an issued with parsed conservation values from CSQ
 
 
 ## [4.10.1]
@@ -25,7 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed issue with opening research variants
 - Problem with coveralls not called by Travis CI
 - Handle Biomart service down in tests
-- Fixed an issued with parsed conservation values from CSQ
+
 
 
 ## [4.10.0]
@@ -55,7 +57,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed missing path import by importing pathlib.Path
 - Handle index inconsistencies in the update index functions
 - Fixed layout problems
-- Slightly darker page background
 
 
 ## [4.9.0]
