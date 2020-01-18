@@ -76,7 +76,6 @@ def parse_transcripts(raw_transcripts, allele=None):
 
         # Check for conservation annotations
         transcript['gerp'] = entry.get('GERP++_RS')
-
         transcript['phast'] = entry.get('PHASTCONS100WAY_VERTEBRATE')
         transcript['phylop'] = entry.get('PHYLOP100WAY_VERTEBRATE')
 

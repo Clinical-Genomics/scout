@@ -89,9 +89,11 @@ def test_parse_revel(cyvcf2_variant, case_obj):
 
     cyvcf2_variant.INFO['CSQ'] = csq_entry
 
+    header = [word.upper() for word in csq_header.split('|')]
+
     # WHEN the variant is parsed
     parsed_variant = parse_variant(variant=cyvcf2_variant,case=case_obj,
-        vep_header=csq_header.split('|'))
+        vep_header=header)
 
     # THEN the REVEL score should be parsed correctly
     assert parsed_variant['revel_score'] == 0.75

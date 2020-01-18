@@ -135,7 +135,6 @@ def parse_variant(variant, case, variant_type='clinical',
     rank_score = parse_rank_score(variant.INFO.get('RankScore', ''), genmod_key)
     parsed_variant['rank_score'] = rank_score or 0
 
-
     ################# Add gt calls #################
     if individual_positions and case['individuals']:
         parsed_variant['samples'] = parse_genotypes(variant, case['individuals'],
