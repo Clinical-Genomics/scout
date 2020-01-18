@@ -223,25 +223,6 @@ ini:
 
 # HTML
 # Sample output:
-# line 2 column 1 - Warning: missing </h2> before </h3>
-tidy:
-  extensions:
-    - .html
-  command: tidy-wrapper.sh
-  requirements:
-    - tidy
-    - remove_template.py
-    - grep
-  arguments:
-    - -qe
-    - --drop-empty-elements
-    - "false"
-  installation: Visit https://w3c.github.io/tidy-html5/
-  filter: >-
-    ^line (?P<line>{lines}) column (?P<column>\d+) -
-    (?P<severity>[^:]+): (?P<message>.+)
-
-# Sample output:
 # 1:10: Error: Javascript ...
 html_lint:
   extensions:
