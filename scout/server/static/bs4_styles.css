@@ -131,7 +131,8 @@ table.dataTable {margin-bottom: 0rem}
 }
 
 .popover {
-	max-width: none;
+    max-width: none;
+    pointer-events: none;
 }
 
 .popover-content > table {
