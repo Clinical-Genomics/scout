@@ -99,7 +99,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
             # Predicted deleteriousness:
             cadd_score = float,
-            ravek_score = float,
+            revel_score = float,
             clnsig = list, # list of <clinsig>
             spidex = float,
 

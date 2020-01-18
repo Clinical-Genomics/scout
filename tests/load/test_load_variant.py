@@ -7,6 +7,7 @@ from scout.server.blueprints.variants.controllers import variants
 
 from cyvcf2 import VCF
 
+
 def test_load_variant(real_populated_database, variant_obj):
     """Test to load a variant into a real mongo database"""
     adapter = real_populated_database
@@ -18,6 +19,7 @@ def test_load_variant(real_populated_database, variant_obj):
     # THEN assert the variant is loaded
 
     assert adapter.variant_collection.find_one()
+
 
 def test_load_variant_twice(real_populated_database, variant_obj):
     """Test to load a variant into a mongo database"""
@@ -33,17 +35,20 @@ def test_load_variant_twice(real_populated_database, variant_obj):
         adapter.load_variant(variant_obj=variant_obj)
 
 
-def test_load_vep97_parsed_variant(one_vep97_annotated_variant, real_populated_database, case_obj):
+def test_load_vep97_parsed_variant(
+    one_vep97_annotated_variant, real_populated_database, case_obj
+):
     """test first parsing and then loading a vep v97 annotated variant"""
 
     # GIVEN a variant annotated using the following CSQ entry fields
     csq_header = "Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|CANONICAL|TSL|APPRIS|CCDS|ENSP|SWISSPROT|TREMBL|UNIPARC|REFSEQ_MATCH|SOURCE|GIVEN_REF|USED_REF|BAM_EDIT|SIFT|PolyPhen|DOMAINS|HGVS_OFFSET|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|MOTIF_SCORE_CHANGE|MES-NCSS_downstream_acceptor|MES-NCSS_downstream_donor|MES-NCSS_upstream_acceptor|MES-NCSS_upstream_donor|MES-SWA_acceptor_alt|MES-SWA_acceptor_diff|MES-SWA_acceptor_ref|MES-SWA_acceptor_ref_comp|MES-SWA_donor_alt|MES-SWA_donor_diff|MES-SWA_donor_ref|MES-SWA_donor_ref_comp|MaxEntScan_alt|MaxEntScan_diff|MaxEntScan_ref|GERP++_NR|GERP++_RS|REVEL_rankscore|phastCons100way_vertebrate|phyloP100way_vertebrate|LoFtool|ExACpLI|CLINVAR|CLINVAR_CLNSIG|CLINVAR_CLNVID|CLINVAR_CLNREVSTAT|genomic_superdups_frac_match"
 
-    header = [word.upper() for word in csq_header.split('|')]
+    header = [word.upper() for word in csq_header.split("|")]
 
     # WHEN parsed using
-    parsed_vep97_annotated_variant = parse_variant(variant=one_vep97_annotated_variant,
-        vep_header=header, case=case_obj)
+    parsed_vep97_annotated_variant = parse_variant(
+        variant=one_vep97_annotated_variant, vep_header=header, case=case_obj
+    )
 
     # GIVEN a database without any variants
     adapter = real_populated_database
@@ -54,10 +59,10 @@ def test_load_vep97_parsed_variant(one_vep97_annotated_variant, real_populated_d
 
     # THEN the variant is loaded with the fields correctly parsed
     variant = adapter.variant_collection.find_one()
-    assert isinstance(variant['revel_score'],float)
+    assert isinstance(variant["revel_score"], float)
 
-    for key,value in variant['conservation'].items():
-        assert value == [ "NotConserved" ]
+    for key, value in variant["conservation"].items():
+        assert value == ["NotConserved"]
 
 
 def test_load_variants(real_populated_database, case_obj, variant_clinical_file):
@@ -69,31 +74,39 @@ def test_load_variants(real_populated_database, case_obj, variant_clinical_file)
     # WHEN loading a variant into the database
     rank_threshold = 0
     adapter.load_variants(
-            case_obj=case_obj,
-            variant_type='clinical',
-            category='snv',
-            rank_threshold=rank_threshold,
-            chrom=None,
-            start=None,
-            end=None,
+        case_obj=case_obj,
+        variant_type="clinical",
+        category="snv",
+        rank_threshold=rank_threshold,
+        chrom=None,
+        start=None,
+        end=None,
     )
     # THEN assert the variant is loaded
 
     assert sum(1 for i in adapter.variant_collection.find()) > 0
-    pathogenic_categories = set(['pathogenic', 'likely_pathogenic',
-                            'conflicting_interpretations_of_pathogenecity', 4, 5])
+    pathogenic_categories = set(
+        [
+            "pathogenic",
+            "likely_pathogenic",
+            "conflicting_interpretations_of_pathogenecity",
+            4,
+            5,
+        ]
+    )
     for variant in adapter.variant_collection.find():
         pathogenic = False
-        for annotation in variant.get('clnsig',[]):
-            if annotation['value'] in pathogenic_categories:
+        for annotation in variant.get("clnsig", []):
+            if annotation["value"] in pathogenic_categories:
                 pathogenic = True
-        if variant['chromosome'] == 'MT':
+        if variant["chromosome"] == "MT":
             continue
         if pathogenic:
             continue
-        assert variant['rank_score'] >= rank_threshold
-        assert variant['category'] == 'snv'
-        assert variant['variant_rank']
+        assert variant["rank_score"] >= rank_threshold
+        assert variant["category"] == "snv"
+        assert variant["variant_rank"]
+
 
 def test_load_sv_variants(real_populated_database, case_obj, sv_clinical_file):
     """Test to load a variant into a mongo database"""
@@ -104,19 +117,20 @@ def test_load_sv_variants(real_populated_database, case_obj, sv_clinical_file):
     # WHEN loading a variant into the database
     rank_threshold = 0
     adapter.load_variants(
-            case_obj=case_obj,
-            variant_type='clinical',
-            category='sv',
-            rank_threshold=rank_threshold,
+        case_obj=case_obj,
+        variant_type="clinical",
+        category="sv",
+        rank_threshold=rank_threshold,
     )
     # THEN assert the variant is loaded
 
     assert sum(1 for i in adapter.variant_collection.find()) > 0
 
     for variant in adapter.variant_collection.find():
-        assert variant['rank_score'] >= rank_threshold
-        assert variant['category'] == 'sv'
-        assert variant['variant_rank']
+        assert variant["rank_score"] >= rank_threshold
+        assert variant["category"] == "sv"
+        assert variant["variant_rank"]
+
 
 def test_load_region(real_populated_database, case_obj, variant_clinical_file):
     """Test to load variants from a region into a mongo database"""
@@ -125,25 +139,26 @@ def test_load_region(real_populated_database, case_obj, variant_clinical_file):
     assert sum(1 for i in adapter.variant_collection.find()) == 0
 
     # WHEN loading a variant into the database
-    chrom = '1'
+    chrom = "1"
     start = 7847367
     end = 156126553
     adapter.load_variants(
-            case_obj=case_obj,
-            variant_type='clinical',
-            category='snv',
-            chrom=chrom,
-            start=start,
-            end=end,
+        case_obj=case_obj,
+        variant_type="clinical",
+        category="snv",
+        chrom=chrom,
+        start=start,
+        end=end,
     )
     # THEN assert all variants loaded are in the given region
 
     assert sum(1 for i in adapter.variant_collection.find()) > 0
 
     for variant in adapter.variant_collection.find():
-        assert variant['chromosome'] == chrom
-        assert variant['position'] <= end
-        assert variant['end'] >= start
+        assert variant["chromosome"] == chrom
+        assert variant["position"] <= end
+        assert variant["end"] >= start
+
 
 def test_load_mitochondrial(real_populated_database, case_obj, variant_clinical_file):
     """Test that all variants from mt are loaded"""
@@ -154,7 +169,7 @@ def test_load_mitochondrial(real_populated_database, case_obj, variant_clinical_
     vcf_obj = VCF(variant_clinical_file)
     mt_variants = 0
     for variant in vcf_obj:
-        if variant.CHROM == 'MT':
+        if variant.CHROM == "MT":
             mt_variants += 1
 
     # Make sure there are some MT variants
@@ -166,19 +181,20 @@ def test_load_mitochondrial(real_populated_database, case_obj, variant_clinical_
     # WHEN loading a variant into the database
 
     adapter.load_variants(
-            case_obj=case_obj,
-            variant_type='clinical',
-            category='snv',
-            rank_threshold = rank_threshold,
+        case_obj=case_obj,
+        variant_type="clinical",
+        category="snv",
+        rank_threshold=rank_threshold,
     )
     # THEN assert all MT variants is loaded
 
     mt_variants_found = 0
     for variant in adapter.variant_collection.find():
-        if variant['chromosome'] == 'MT':
+        if variant["chromosome"] == "MT":
             mt_variants_found += 1
 
     assert mt_variants == mt_variants_found
+
 
 def test_compounds_region(real_populated_database, case_obj):
     """When loading the variants not all variants will be loaded, only the ones that
@@ -188,47 +204,47 @@ def test_compounds_region(real_populated_database, case_obj):
        have status 'not_loaded'=False.
     """
     adapter = real_populated_database
-    variant_type = 'clinical'
-    category = 'snv'
+    variant_type = "clinical"
+    category = "snv"
     ## GIVEN a database without any variants
     assert sum(1 for i in adapter.variant_collection.find()) == 0
 
     ## WHEN loading a variant into the database
     adapter.load_variants(
-            case_obj=case_obj,
-            variant_type=variant_type,
-            category=category,
-            rank_threshold=-10
+        case_obj=case_obj,
+        variant_type=variant_type,
+        category=category,
+        rank_threshold=-10,
     )
 
     adapter.load_indexes()
     institute_obj = adapter.institute_collection.find_one()
     case_obj = adapter.case_collection.find_one()
 
-    chrom = '1'
+    chrom = "1"
     start = 156112157
     end = 156152543
 
     query = adapter.build_query(
-                case_id=case_obj['_id'],
-                query={
-                    'variant_type': variant_type,
-                    'chrom': chrom,
-                    'start': start,
-                    'end': end,
-                },
-                category=category
-            )
+        case_id=case_obj["_id"],
+        query={
+            "variant_type": variant_type,
+            "chrom": chrom,
+            "start": start,
+            "end": end,
+        },
+        category=category,
+    )
     ## THEN assert that there are variants with compounds without information
     variants_query = adapter.variant_collection.find(query)
     nr_comps = 0
     nr_variants = 0
     nr_not_loaded = 0
     genomic_regions = adapter.get_coding_intervals()
-    for nr_variants,variant in enumerate(variants_query):
-        for comp in variant.get('compounds',[]):
+    for nr_variants, variant in enumerate(variants_query):
+        for comp in variant.get("compounds", []):
             nr_comps += 1
-            if comp['not_loaded']:
+            if comp["not_loaded"]:
                 nr_not_loaded += 1
 
     assert nr_not_loaded > 0
@@ -236,27 +252,28 @@ def test_compounds_region(real_populated_database, case_obj):
     assert nr_comps > 0
 
     ## THEN when loading all variants in the region, assert that ALL the compounds are updated
-    print('')
+    print("")
     adapter.load_variants(
-            case_obj=case_obj,
-            variant_type=variant_type,
-            category=category,
-            chrom=chrom,
-            start=start,
-            end=end
-            )
+        case_obj=case_obj,
+        variant_type=variant_type,
+        category=category,
+        chrom=chrom,
+        start=start,
+        end=end,
+    )
 
     variants_query = adapter.variant_collection.find(query)
     nr_comps = 0
     nr_variants = 0
-    for nr_variants,variant in enumerate(variants_query):
-        for comp in variant.get('compounds',[]):
+    for nr_variants, variant in enumerate(variants_query):
+        for comp in variant.get("compounds", []):
             nr_comps += 1
             # We know that all ar updated and loaded if this flag is set
-            assert comp['not_loaded'] == False
+            assert comp["not_loaded"] == False
 
     assert nr_variants > 0
     assert nr_comps > 0
+
 
 def test_updated_panel(real_variant_database, case_obj):
     """Test if the annotated panels are correct on variant level when a gene is removed
@@ -273,25 +290,25 @@ def test_updated_panel(real_variant_database, case_obj):
     # Collect the hgnc_ids for all genes in the panel
     panel_hgnc_ids = set()
     # Get the panel object
-    panel_name = case_obj['panels'][0]['panel_name']
+    panel_name = case_obj["panels"][0]["panel_name"]
     panel_obj = adapter.gene_panel(panel_name)
-    for gene_obj in panel_obj['genes']:
+    for gene_obj in panel_obj["genes"]:
         # Add the existing hgnc ids to the panel
-        panel_hgnc_ids.add(gene_obj['hgnc_id'])
+        panel_hgnc_ids.add(gene_obj["hgnc_id"])
 
     # Loop over the variants and check that there are variants in
     # the genes from the panel
-    variants = adapter.variants(case_id=case_obj['_id'])
+    variants = adapter.variants(case_id=case_obj["_id"])
 
     # Collect all present hgnc ids from the variants
     variant_hgnc_ids = set()
     for variant in variants:
         # print(variant['hgnc_ids'])
-        if variant.get('hgnc_ids'):
-            for hgnc_id in variant['hgnc_ids']:
+        if variant.get("hgnc_ids"):
+            for hgnc_id in variant["hgnc_ids"]:
                 if hgnc_id in panel_hgnc_ids:
                     # assert that the panel is annotated on the variant
-                    assert panel_name in variant['panels']
+                    assert panel_name in variant["panels"]
                 variant_hgnc_ids.add(hgnc_id)
 
     # Assert that there are data
@@ -304,54 +321,56 @@ def test_updated_panel(real_variant_database, case_obj):
     # Create a new case and a new gene panel
 
     # Create and insert a new gene panel without the intersecting genes
-    old_panel_genes = panel_obj['genes']
-    panel_obj['genes'] = []
+    old_panel_genes = panel_obj["genes"]
+    panel_obj["genes"] = []
     for gene in old_panel_genes:
-        if gene['hgnc_id'] not in intersecting_ids:
-            panel_obj['genes'].append(gene)
+        if gene["hgnc_id"] not in intersecting_ids:
+            panel_obj["genes"].append(gene)
 
-    new_version = panel_obj['version'] + 1
-    panel_obj['version'] = new_version
-    panel_obj.pop('_id')
+    new_version = panel_obj["version"] + 1
+    panel_obj["version"] = new_version
+    panel_obj.pop("_id")
 
     adapter.panel_collection.insert_one(panel_obj)
 
-    new_panel = adapter.panel_collection.find_one({'panel_name': panel_obj['panel_name'], 'version': new_version})
+    new_panel = adapter.panel_collection.find_one(
+        {"panel_name": panel_obj["panel_name"], "version": new_version}
+    )
     new_panel_ids = set()
 
-    for gene in new_panel['genes']:
-        hgnc_id = gene['hgnc_id']
+    for gene in new_panel["genes"]:
+        hgnc_id = gene["hgnc_id"]
         new_panel_ids.add(hgnc_id)
         assert hgnc_id not in intersecting_ids
 
     # Create a new case with the new panel
-    case_obj['_id'] = 'second_case'
-    case_obj['panels'][0]['version'] = new_panel['version']
-    case_obj['panels'][0]['panel_id'] =  new_panel['_id']
+    case_obj["_id"] = "second_case"
+    case_obj["panels"][0]["version"] = new_panel["version"]
+    case_obj["panels"][0]["panel_id"] = new_panel["_id"]
 
     # Insert the new case and the variants
     adapter._add_case(case_obj)
 
-    new_caseobj = adapter.case_collection.find_one({'_id': 'second_case'})
+    new_caseobj = adapter.case_collection.find_one({"_id": "second_case"})
 
     adapter.load_variants(
         new_caseobj,
-        variant_type='clinical',
-        category='snv',
+        variant_type="clinical",
+        category="snv",
         rank_threshold=-10,
-        build='37'
+        build="37",
     )
 
     # These are the new variants
-    new_variants = adapter.variant_collection.find({'case_id': case_obj['_id']})
+    new_variants = adapter.variant_collection.find({"case_id": case_obj["_id"]})
 
     nr_variants = 0
     for variant in new_variants:
-        if variant.get('hgnc_ids'):
-            for hgnc_id in variant['hgnc_ids']:
+        if variant.get("hgnc_ids"):
+            for hgnc_id in variant["hgnc_ids"]:
                 if hgnc_id in intersecting_ids:
                     # assert that the panel is NOT annotated on the variant
                     # We removed the gener from the new panel
-                    assert panel_name not in variant.get('panels',[])
+                    assert panel_name not in variant.get("panels", [])
                     nr_variants += 1
     assert nr_variants > 0
