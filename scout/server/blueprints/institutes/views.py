@@ -56,11 +56,11 @@ def institute(institute_id):
     # if institute is to be updated
     if request.method == 'POST' and form.validate_on_submit():
         # save form values to database
-        updated_institute = controllers.update_institute_settings(store,institute_obj,request.form)
-        if isinstance(updated_institute, dict):
+        institute_obj = controllers.update_institute_settings(store,institute_obj,request.form)
+        if isinstance(institute_obj, dict):
             flash('institute was updated ', 'success')
         else: # an error message was retuned
-            flash(updated_institute, 'warning')
+            flash(institute_obj, 'warning')
 
     data = controllers.institute(store, institute_id)
     # get all other institutes to populate the select of the possible collaborators
