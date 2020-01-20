@@ -49,7 +49,7 @@ transcripts38_reduced_path, genes38_reduced_path, exons37_reduced_path, exons37_
 
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path, clinical_str_path,
                         clinical_sv_path, ped_path, load_path, panel_path, empty_sv_clinical_path,
-                        customannotation_snv_path)
+                        customannotation_snv_path, vep_97_annotated_path)
 
 from scout.models.hgnc_map import HgncGene
 
@@ -315,7 +315,7 @@ def parsed_institute(request):
     institute = {
         'institute_id': 'cust000',
         'display_name': 'test_institute',
-        'sanger_recipients': ['john@doe.com', 'jane@doe.com']
+        'sanger_recipients': ['john@doe.com', 'jane@doe.com'],
     }
 
     return institute
@@ -330,6 +330,8 @@ def institute_obj(request, parsed_institute):
         display_name=parsed_institute['display_name'],
         sanger_recipients=parsed_institute['sanger_recipients'],
     )
+    # move institute created time 1 day back in time
+    institute['created_at'] = datetime.datetime.now() - datetime.timedelta(days=1)
     return institute
 
 
@@ -802,6 +804,17 @@ def one_variant(request, variant_clinical_file):
 
 
 @pytest.fixture(scope='function')
+def one_vep97_annotated_variant(request, vep_97_annotated_variant_clinical_file):
+    LOG.info("Return one parsed variant")
+    variant_parser = VCF(vep_97_annotated_variant_clinical_file)
+
+    for variant in variant_parser:
+        break
+
+    return variant
+
+
+@pytest.fixture(scope='function')
 def one_variant_customannotation(request, customannotation_snv_file):
     LOG.info("Return one parsed variant with custom annotations")
     variant_parser = VCF(customannotation_snv_file)
@@ -1124,6 +1137,13 @@ def variant_clinical_file(request):
     print('')
     return clinical_snv_path
 
+
+@pytest.fixture(scope='function')
+def vep_97_annotated_variant_clinical_file(request):
+    """Get a path to a VCF file annotated with VEP and containing conservation
+       and REVEL score in the CSQ field
+    """
+    return vep_97_annotated_path
 
 @pytest.fixture(scope='function')
 def sv_clinical_file(request):
