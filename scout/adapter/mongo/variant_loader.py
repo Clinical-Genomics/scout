@@ -30,7 +30,6 @@ from scout.constants import (CHROMOSOMES, FILE_TYPE_MAP)
 
 LOG = logging.getLogger(__name__)
 
-
 class VariantLoader(object):
 
     """Methods to handle variant loading in the mongo adapter"""

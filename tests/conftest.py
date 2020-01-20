@@ -62,6 +62,7 @@ REAL_DATABASE = 'realtestdb'
 LOG = logging.getLogger(__name__)
 
 ##################### Gene fixtures #####################
+
 @pytest.fixture
 def gene_obj():
     """Get a dictionary with with gene obj information"""

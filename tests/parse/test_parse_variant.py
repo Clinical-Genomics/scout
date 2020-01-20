@@ -2,6 +2,7 @@
 from scout.parse.variant import parse_variant
 from scout.exceptions import VcfError
 
+
 def test_parse_minimal(one_variant, case_obj):
     """Test to parse a minimal variant"""
     parsed_variant = parse_variant(one_variant, case_obj, variant_type='clinical')

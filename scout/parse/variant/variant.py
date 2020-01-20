@@ -23,7 +23,6 @@ from scout.exceptions import VcfError
 
 logger = logging.getLogger(__name__)
 
-
 def parse_variant(variant, case, variant_type='clinical',
                  rank_results_header=None, vep_header=None,
                  individual_positions=None, category=None):

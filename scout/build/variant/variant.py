@@ -5,6 +5,7 @@ from . import (build_genotype, build_compound, build_gene, build_clnsig)
 
 LOG = logging.getLogger(__name__)
 
+
 def build_variant(variant, institute_id, gene_to_panels = None,
                   hgncid_to_gene=None, sample_info=None):
     """Build a variant object based on parsed information

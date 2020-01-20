@@ -6,6 +6,7 @@ from pprint import pprint as pp
 
 LOG = logging.getLogger(__name__)
 
+
 def parse_transcripts(raw_transcripts, allele=None):
     """Parse transcript information from VCF variants
 

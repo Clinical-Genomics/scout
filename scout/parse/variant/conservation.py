@@ -38,6 +38,7 @@ def parse_conservations(variant, parsed_transcripts=[]):
 
     return conservations
 
+
 def parse_conservation_info(variant, info_key, field_key):
     """Get the conservation prediction from the INFO field
 

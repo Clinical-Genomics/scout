@@ -1,7 +1,6 @@
 import pkg_resources
 
 ###### Files ######
-
 # Gene panel:
 panel_file = 'demo/panel_1.txt'
 madeline_file = 'demo/madeline.xml'
