@@ -135,7 +135,6 @@ def parse_variant(variant, case, variant_type='clinical',
     rank_score = parse_rank_score(variant.INFO.get('RankScore', ''), genmod_key)
     parsed_variant['rank_score'] = rank_score or 0
 
-
     ################# Add gt calls #################
     if individual_positions and case['individuals']:
         is_cancer = (category == 'cancer' or category == 'cancer_sv')
@@ -279,6 +278,9 @@ def parse_variant(variant, case, variant_type='clinical',
     spidex = variant.INFO.get('SPIDEX')
     if spidex:
         parsed_variant['spidex'] = float(spidex)
+
+    if len(parsed_transcripts)>0:
+        parsed_variant['revel_score'] = parsed_transcripts[0].get('revel')
 
     ###################### Add conservation ######################
     parsed_variant['conservation'] = parse_conservations(variant, parsed_transcripts)
