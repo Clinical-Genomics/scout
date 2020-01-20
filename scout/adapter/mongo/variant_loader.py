@@ -30,7 +30,6 @@ from scout.constants import (CHROMOSOMES, FILE_TYPE_MAP)
 
 LOG = logging.getLogger(__name__)
 
-
 class VariantLoader(object):
 
     """Methods to handle variant loading in the mongo adapter"""
@@ -77,7 +76,7 @@ class VariantLoader(object):
         requests = []
 
         for index, var_obj in enumerate(variants):
-            
+
             operation = pymongo.UpdateOne(
                 {'_id': var_obj['_id']},
                 {
@@ -86,7 +85,7 @@ class VariantLoader(object):
                     }
                 })
             requests.append(operation)
-            
+
             if not len(requests) > 5000:
                 continue
             try:
@@ -365,7 +364,7 @@ class VariantLoader(object):
 
         This is the function that loops over the variants, parse them and build the variant
         objects so they are ready to be inserted into the database.
-        
+
         Args:
             variants(iterable(cyvcf2.Variant))
             variant_type(str): ['clinical', 'research']
@@ -379,7 +378,7 @@ class VariantLoader(object):
             category(str): ['snv','sv','cancer','str']
             sample_info(dict): A dictionary with info about samples.
                                Strictly for cancer to tell which is tumor
-        
+
         Returns:
             nr_inserted(int)
         """
@@ -510,6 +509,7 @@ class VariantLoader(object):
 
         return nr_inserted
 
+
     def load_variants(self, case_obj, variant_type='clinical', category='snv',
                       rank_threshold=None, chrom=None, start=None, end=None,
                       gene_obj=None, build='37'):
@@ -580,7 +580,7 @@ class VariantLoader(object):
         individual_positions = {}
         for i, ind in enumerate(vcf_obj.samples):
             individual_positions[ind] = i
-        
+
         # Dictionary for cancer analysis
         sample_info = {}
         if category == 'cancer':

@@ -81,6 +81,24 @@ def test_parse_cadd(variants, case_obj):
             # THEN make sure that the cadd score is parsed correct
             assert parsed_variant['cadd_score'] == cadd_score
 
+
+def test_parse_revel(cyvcf2_variant, case_obj):
+    ## GIVEN a variant with REVEL score in the CSQ entry
+    csq_header="ALLELE|CONSEQUENCE|REVEL_rankscore"
+    csq_entry="C|missense_variant|0.75,C|missense_variant|0.75"  # mimic a variant with transcripts
+
+    cyvcf2_variant.INFO['CSQ'] = csq_entry
+
+    header = [word.upper() for word in csq_header.split('|')]
+
+    # WHEN the variant is parsed
+    parsed_variant = parse_variant(variant=cyvcf2_variant,case=case_obj,
+        vep_header=header)
+
+    # THEN the REVEL score should be parsed correctly
+    assert parsed_variant['revel_score'] == 0.75
+
+
 def test_parse_customannotation(one_variant_customannotation,case_obj):
     """Test parsing of custom annotations"""
     parsed_variant = parse_variant(one_variant_customannotation, case_obj)
