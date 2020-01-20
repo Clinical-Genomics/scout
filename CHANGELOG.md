@@ -12,9 +12,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Alternative key `GNOMADAF_popmax` for Gnomad popmax allele frequency
 - Automatic suggestions on how to improve the code on Pull Requests
 - Parse GERP, phastCons and phyloP annotations from vep annotated CSQ fields
+- Avoid flickering comment popovers in variant list
+- Parse REVEL score from vep annotated CSQ fields
 
 
 ### Fixed
+- Slightly darker page background
+- Fixed an issued with parsed conservation values from CSQ
 
 
 ## [4.10.1]
@@ -23,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed issue with opening research variants
 - Problem with coveralls not called by Travis CI
 - Handle Biomart service down in tests
+
 
 
 ## [4.10.0]
