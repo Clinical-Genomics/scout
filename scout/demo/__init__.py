@@ -1,8 +1,6 @@
 import pkg_resources
 
-
 ###### Files ######
-
 # Gene panel:
 panel_file = 'demo/panel_1.txt'
 madeline_file = 'demo/madeline.xml'
@@ -13,6 +11,7 @@ load_file = 'demo/643594.config.yaml'
 clinical_snv_file = 'demo/643594.clinical.vcf.gz'
 research_snv_file = 'demo/643594.research.vcf.gz'
 customannotation_snv_file = 'demo/customannotations_one.vcf.gz'
+vep_97_annotated_snv_file = 'demo/vep97_annotated_conservation_revel.vcf'
 
 ped_path = pkg_resources.resource_filename('scout', ped_file)
 clinical_sv_file = 'demo/643594.clinical.SV.vcf.gz'
@@ -30,6 +29,7 @@ clinical_sv_path = pkg_resources.resource_filename('scout', clinical_sv_file)
 clinical_str_path = pkg_resources.resource_filename('scout', clinical_str_file)
 
 customannotation_snv_path = pkg_resources.resource_filename('scout', customannotation_snv_file)
+vep_97_annotated_path = pkg_resources.resource_filename('scout', vep_97_annotated_snv_file)
 
 research_snv_path = pkg_resources.resource_filename('scout', research_snv_file)
 research_sv_path = pkg_resources.resource_filename('scout', research_sv_file)

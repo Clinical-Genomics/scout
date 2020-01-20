@@ -5,6 +5,7 @@ from . import (build_genotype, build_compound, build_gene, build_clnsig)
 
 LOG = logging.getLogger(__name__)
 
+
 def build_variant(variant, institute_id, gene_to_panels = None,
                   hgncid_to_gene=None, sample_info=None):
     """Build a variant object based on parsed information
@@ -99,6 +100,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
             # Predicted deleteriousness:
             cadd_score = float,
+            revel_score = float,
             clnsig = list, # list of <clinsig>
             spidex = float,
 
@@ -131,7 +133,6 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
             acmg_evaluation = str, # choices=ACMG_TERMS
         )
-
     """
     gene_to_panels = gene_to_panels or {}
     hgncid_to_gene = hgncid_to_gene or {}
@@ -318,7 +319,7 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
     if variant.get('custom'):
         variant_obj['custom'] = variant['custom']
-        
+
     ##### Add the frequencies #####
     frequencies = variant.get('frequencies', {})
     if frequencies.get('thousand_g'):
@@ -372,6 +373,9 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
     if variant.get('cadd_score'):
         variant_obj['cadd_score'] = variant['cadd_score']
+
+    if variant.get('revel_score'):
+        variant_obj['revel_score'] = variant['revel_score']
 
     if variant.get('spidex'):
         variant_obj['spidex'] = variant['spidex']
