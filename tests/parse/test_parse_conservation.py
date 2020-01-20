@@ -33,7 +33,6 @@ def test_parse_conservations(cyvcf2_variant):
     assert conservations['phast'] == ['Conserved']
     assert conservations['phylop'] == ['NotConserved']
 
-
 def test_parse_conservation_csq(transcript_info):
 
     ## GIVEN a trascript with multiple conservation annotations

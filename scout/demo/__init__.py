@@ -1,6 +1,5 @@
 import pkg_resources
 
-
 ###### Files ######
 
 # Gene panel:

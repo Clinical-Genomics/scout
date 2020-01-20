@@ -510,6 +510,7 @@ class VariantLoader(object):
 
         return nr_inserted
 
+
     def load_variants(self, case_obj, variant_type='clinical', category='snv',
                       rank_threshold=None, chrom=None, start=None, end=None,
                       gene_obj=None, build='37'):

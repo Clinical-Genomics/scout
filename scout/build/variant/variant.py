@@ -132,7 +132,6 @@ def build_variant(variant, institute_id, gene_to_panels = None,
 
             acmg_evaluation = str, # choices=ACMG_TERMS
         )
-
     """
     gene_to_panels = gene_to_panels or {}
     hgncid_to_gene = hgncid_to_gene or {}

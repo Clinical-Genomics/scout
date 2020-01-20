@@ -12,7 +12,6 @@ def parse_transcripts(raw_transcripts, allele=None):
     Args:
         raw_transcripts(iterable(dict)): An iterable with raw transcript
                                          information
-
     Yields:
         transcript(dict) A dictionary with transcript information
     """
