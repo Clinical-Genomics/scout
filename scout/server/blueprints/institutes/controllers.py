@@ -56,7 +56,7 @@ def update_institute_settings(store, institute_obj, form):
         group_abbreviations.append(form['pheno_abbrev'])
 
     for cohort in form.getlist('cohorts'):
-        cohorts.append(cohort.strip(form['pheno_abbrev']))
+        cohorts.append(cohort.strip())
 
     updated_institute = store.update_institute(
         internal_id = institute_obj['internal_id'],
