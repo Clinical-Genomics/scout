@@ -315,7 +315,7 @@ def parsed_institute(request):
     institute = {
         'institute_id': 'cust000',
         'display_name': 'test_institute',
-        'sanger_recipients': ['john@doe.com', 'jane@doe.com']
+        'sanger_recipients': ['john@doe.com', 'jane@doe.com'],
     }
 
     return institute
@@ -330,6 +330,8 @@ def institute_obj(request, parsed_institute):
         display_name=parsed_institute['display_name'],
         sanger_recipients=parsed_institute['sanger_recipients'],
     )
+    # move institute created time 1 day back in time
+    institute['created_at'] = datetime.datetime.now() - datetime.timedelta(days=1)
     return institute
 
 
