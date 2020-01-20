@@ -55,7 +55,6 @@ def institute(institute_id):
 
     # if institute is to be updated
     if request.method == 'POST' and form.validate_on_submit():
-        # save form values to database
         institute_obj = controllers.update_institute_settings(store,institute_obj,request.form)
         if isinstance(institute_obj, dict):
             flash('institute was updated ', 'success')
@@ -79,8 +78,7 @@ def institute(institute_id):
     if institute_obj.get('phenotype_groups'):
         for key,value in institute_obj['phenotype_groups'].items():
             if not key in default_phenotypes:
-                flash(value)
-                custom_group = " ".join([key, ",", value.get('name'), "({})".format(value.get('abbr'))])
+                custom_group = " ".join([key, ",", value.get('name'), "( {} )".format(value.get('abbr'))])
                 form.pheno_groups.choices.append((custom_group,custom_group))
 
     return render_template('/overview/institute.html', form=form, default_phenotypes=default_phenotypes, **data)

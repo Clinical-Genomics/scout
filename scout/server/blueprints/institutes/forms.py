@@ -27,7 +27,7 @@ class InstituteForm(FlaskForm):
     pheno_group = TextField('New phenotype group', validators=[validators.Optional()])
     pheno_abbrev = TextField('Abbreviation', validators=[validators.Optional()])
 
-    pheno_groups = SelectMultipleField('Custom phenotype groups', choices=hpo_tuples)
+    pheno_groups = NonValidatingSelectMultipleField('Custom phenotype groups', choices=hpo_tuples)
     cohorts = NonValidatingSelectMultipleField('Available patient cohorts', validators=[validators.Optional()])
     institutes = NonValidatingSelectMultipleField('Institutes to share cases with', choices=[])
     submit_btn = SubmitField('Save settings')

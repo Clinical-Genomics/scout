@@ -89,8 +89,7 @@
           <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-12">
               {{ form.pheno_groups.label }}
-              {{form.pheno_groups.choices}}
-              <select multiple="multiple" id="pheno_groups" name="pheno_groups">
+              <select multiple="multiple" name="pheno_groups" class="selectpicker">
                 {% for choice in form.pheno_groups.choices %}
                   <option value="{{choice[0]}}" {% if choice[0].split(' ,')[0] in institute.phenotype_groups %} selected {% endif %}>{{choice[1]}}</option>
                 {% endfor %}
@@ -174,13 +173,6 @@
       name: 'hpo_term',
       source: getTerms,
       minLength: 3,
-    });
-
-    $('#pheno_groups').select2({
-    	tags: true,
-      data: [],
-      tokenSeparators: {{default_phenotypes|safe}},
-      placeholder: "Available patient cohorts",
     });
 
     $('#cohort_tags').select2({
