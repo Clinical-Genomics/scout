@@ -771,6 +771,10 @@
         <span class="float-right">{{ variant.sift_predictions|join(', ') }}</span>
       </li>
       <li class="list-group-item">
+        <a href="https://sites.google.com/site/revelgenomics/about" target="_blank">REVEL</a>
+        <span class="float-right">{{ variant.revel_score or "-" }}</span>
+      </li>
+      <li class="list-group-item">
         <a href="http://genetics.bwh.harvard.edu/pph2/" target="_blank">Polyphen</a>
         <span class="float-right">{{ variant.polyphen_predictions|join(', ') }}</span>
       </li>
