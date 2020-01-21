@@ -137,9 +137,8 @@ def parse_variant(variant, case, variant_type='clinical',
 
     ################# Add gt calls #################
     if individual_positions and case['individuals']:
-        is_cancer = (category == 'cancer' or category == 'cancer_sv')
         parsed_variant['samples'] = parse_genotypes(variant, case['individuals'],
-                                                    individual_positions, is_cancer)
+                                                    individual_positions)
     else:
         parsed_variant['samples'] = []
 
