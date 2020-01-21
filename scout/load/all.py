@@ -3,7 +3,7 @@ import logging
 
 from scout.exceptions.config import ConfigError
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 def check_panels(adapter, panels, default_panels=None):
@@ -21,11 +21,11 @@ def check_panels(adapter, panels, default_panels=None):
     panels_exist = True
     for panel in default_panels:
         if panel not in panels:
-            log.warning("Default panels have to be defined in panels")
+            LOG.warning("Default panels have to be defined in panels")
             panels_exist = False
     for panel in panels:
         if not adapter.gene_panel(panel):
-            log.warning("Panel {} does not exist in database".format(panel))
+            LOG.warning("Panel {} does not exist in database".format(panel))
             panels_exist = False
     return panels_exist
 
@@ -53,7 +53,7 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
     if not case_obj:
         raise ValueError("Case {} does not exist in database".format(case_id))
 
-    log.info("Load clinical SNV variants for case: {0} region: chr {1}, start"
+    LOG.info("Load clinical SNV variants for case: {0} region: chr {1}, start"
              " {2}, end {3}".format(case_obj['_id'], chrom, start, end))
 
     adapter.load_variants(case_obj=case_obj, variant_type='clinical',
@@ -62,7 +62,7 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
     # loading germline variants
     vcf_sv_file = case_obj['vcf_files'].get('vcf_sv')
     if vcf_sv_file:
-        log.info("Load clinical SV variants for case: {0} region: chr {1}, "
+        LOG.info("Load clinical SV variants for case: {0} region: chr {1}, "
                  "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
         adapter.load_variants(case_obj=case_obj, variant_type='clinical',
                               category='sv', chrom=chrom, start=start, end=end)
@@ -70,27 +70,27 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
     # if there are somatic (cancer) variants:
     vcf_cancer_sv_file = case_obj['vcf_files'].get('vcf_cancer_sv')
     if vcf_cancer_sv_file:
-        log.info("Load clinical cancer SV variants for case: {0} region: chr {1}, "
+        LOG.info("Load clinical cancer SV variants for case: {0} region: chr {1}, "
                  "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
         adapter.load_variants(case_obj=case_obj, variant_type='clinical',
                               category='cancer_sv', chrom=chrom, start=start, end=end)
 
     vcf_str_file = case_obj['vcf_files'].get('vcf_str')
-    if vcf_str_file: 
+    if vcf_str_file:
         log.info("Load clinical STR variants for case: {0} region: chr {1}, "
                  "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
         adapter.load_variants(case_obj=case_obj, variant_type='clinical',
                               category='str', chrom=chrom, start=start, end=end)
 
     if case_obj['is_research']:
-        log.info("Load research SNV variants for case: {0} region: chr {1}, "
+        LOG.info("Load research SNV variants for case: {0} region: chr {1}, "
                  "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
         adapter.load_variants(case_obj=case_obj, variant_type='research',
                               category='snv', chrom=chrom, start=start, end=end)
 
         vcf_sv_research = case_obj['vcf_files'].get('vcf_sv_research')
         if vcf_sv_research:
-            log.info("Load research SV variants for case: {0} region: chr {1},"
+            LOG.info("Load research SV variants for case: {0} region: chr {1},"
                      " start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
             adapter.load_variants(case_obj=case_obj, variant_type='research',
                                   category='sv', chrom=chrom, start=start, end=end)
@@ -106,7 +106,7 @@ def load_scout(adapter, config, ped=None, update=False):
             update(bool): If existing case should be updated
 
     """
-    log.info("Check that the panels exists")
+    LOG.info("Check that the panels exists")
     if not check_panels(adapter, config.get('gene_panels', []),
                         config.get('default_gene_panels')):
         raise ConfigError("Some panel(s) does not exist in the database")

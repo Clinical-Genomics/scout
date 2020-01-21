@@ -63,7 +63,7 @@ def get_length(alt_len, ref_len, category, pos, end, svtype=None, svlen=None):
         else:
             length = abs(ref_len - alt_len)
 
-    elif category == 'sv':
+    elif category in ('sv', 'cancer_sv'):
         if svtype == 'bnd':
             length = int(10e10)
         else:

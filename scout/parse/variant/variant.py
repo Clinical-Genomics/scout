@@ -43,6 +43,9 @@ def parse_variant(variant, case, variant_type='clinical',
     Returns:
         parsed_variant(dict): Parsed variant
     """
+    if category == 'cancer_sv':
+        logger.info('##########################################DAJEEEEE##################')
+
     # These are to display how the rank score is built
     rank_results_header = rank_results_header or []
     # Vep information
