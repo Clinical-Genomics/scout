@@ -66,5 +66,10 @@ jobs:
           install: pip install git-lint pylint pycodestyle yamllint docutils html-linter
           script: git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git lint || (echo "Linting issues found, please try again after fixing the above lint issues." && false)
 
+    allow_failures:
+      - name: "Lint Free"
+      - name: "PEP8 Compliance"
+      - name: "Pylint Rating"
+
 notifications:
     email: false
