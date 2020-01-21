@@ -365,9 +365,9 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     return coverage_data
 
 
-def clinvar_submissions(store, user_id, institute_id):
+def clinvar_submissions(store, institute_id):
     """Get all Clinvar submissions for a user and an institute"""
-    submissions = list(store.clinvar_submissions(user_id, institute_id))
+    submissions = list(store.clinvar_submissions(institute_id))
     return submissions
 
 
