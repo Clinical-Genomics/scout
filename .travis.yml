@@ -6,7 +6,7 @@ env: TRAVIS=1
 jobs:
     include:
         - name: "Tests"
-          if: type = pull_request
+          if: type = push
           services: mongodb
           install:
               - pip install cython
