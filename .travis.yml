@@ -14,7 +14,7 @@ jobs:
           script: py.test -rxs tests/
 
         - name: "Tests & Coverage"
-          if: NOT type = pull_request
+          if: NOT type = push
           services: mongodb
           install:
               - pip install cython
