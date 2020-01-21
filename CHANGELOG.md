@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Slightly darker page background
 - Fixed an issued with parsed conservation values from CSQ
+- Coverage calculated on Pull Request commits instead of last push commit
 - Clinvar submissions accessible to all users of an institute
 
 
