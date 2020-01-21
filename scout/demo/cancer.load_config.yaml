@@ -3,7 +3,7 @@
 owner: cust000
 
 family: 'cancer_test'
-family_name: 'cancer'
+family_name: 'cancer_case'
 samples:
   - analysis_type: panel
     sample_id: 999-99
@@ -28,11 +28,9 @@ samples:
     mt_bam: scout/demo/reduced_mt.bam
 
 vcf_cancer: scout/demo/cancer_test.vcf.gz
+vcf_cancer_sv: scout/demo/cancer.clinical.SV.vcf
 
 delivery_report: scout/demo/delivery_report.html
-
-default_gene_panels: [panel1]
-gene_panels: [panel1]
 
 # meta data
 rank_model_version: '1.1'
