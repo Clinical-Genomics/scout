@@ -5,7 +5,6 @@ from scout.exceptions.config import ConfigError
 
 LOG = logging.getLogger(__name__)
 
-
 def check_panels(adapter, panels, default_panels=None):
     """Make sure that the gene panels exist in the database
         Also check if the default panels are defined in gene panels
@@ -77,7 +76,7 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
 
     vcf_str_file = case_obj['vcf_files'].get('vcf_str')
     if vcf_str_file:
-        log.info("Load clinical STR variants for case: {0} region: chr {1}, "
+        LOG.info("Load clinical STR variants for case: {0} region: chr {1}, "
                  "start {2}, end {3}".format(case_obj['_id'], chrom, start, end))
         adapter.load_variants(case_obj=case_obj, variant_type='clinical',
                               category='str', chrom=chrom, start=start, end=end)
