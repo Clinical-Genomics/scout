@@ -35,7 +35,7 @@
         <h5 class="header">Institute Settings</h5>
           <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-12">
-              {{ form.display_name.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Name of the institite which will be displayed on Scout pages") }}
+              {{ form.display_name.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Name of the institute which will be displayed on Scout pages.") }}
               {{ form.display_name(class='form-control', value=institute.display_name) }}
               {% for error in form.display_name.errors %}
                 <span style="color: red;">{{ error }}</span><br>
@@ -59,14 +59,14 @@
           </div>
           <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-5">
-              {{ form.coverage_cutoff.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Read depth considered reliable for displaying variants. Used in coverage reports") }}
+              {{ form.coverage_cutoff.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Read depth considered reliable for displaying variants. Used in coverage reports.") }}
               {{ form.coverage_cutoff(class='form-control', value=institute.coverage_cutoff) }}
               {% for error in form.coverage_cutoff.errors %}
                 <span style="color: red;">{{ error }}</span><br>
               {% endfor %}
             </div>
             <div class="form-group col-md-5">
-              {{ form.frequency_cutoff.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Lower frequency threshold to display variants. Used as the institute's default in clinical filter.") }}
+              {{ form.frequency_cutoff.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Lower frequency threshold to display variants. NOTE: used as the institute's default in clinical filter.") }}
               {{ form.frequency_cutoff(class='form-control', value=institute.frequency_cutoff) }}
               {% for error in form.frequency_cutoff.errors %}
                 <span style="color: red;">{{ error }}</span><br>
@@ -75,11 +75,11 @@
           </div>
           <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-7">
-              {{ form.pheno_group.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Add a new phenotype group item to the list of phenotype shortcuts below") }}
+              {{ form.pheno_group.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Add a new phenotype group item to the list of phenotype shortcuts below.") }}
               <input name="hpo_term" class="typeahead_hpo form-control" id="pheno_group" data-provide="typeahead" autocomplete="off" placeholder="Search HPO..">
             </div>
             <div class="d-block col-md-3">
-              {{ form.pheno_abbrev.label(class="control-label",data_toggle="tooltip", data_placement="top", title="A short name for this phenotype group") }}
+              {{ form.pheno_abbrev.label(class="control-label",data_toggle="tooltip", data_placement="top", title="A short name for this phenotype group.") }}
               <input name="pheno_abbrev" class="form-control" name="pheno_abbrev" id="pheno_abbrev" placeholder="e.g.: NEUR" pattern=".{2,10}">
             </div>
             <div class="d-flex align-items-center col-md-2">
@@ -88,7 +88,7 @@
           </div>
           <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-12">
-              {{ form.pheno_groups.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Phenotype groups are used to quickly assign a certain phenotype to a case, on the case page") }}
+              {{ form.pheno_groups.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Phenotype groups are used to quickly assign a certain phenotype to a case, on the case page.") }}
               <select multiple="multiple" name="pheno_groups" class="selectpicker">
                 {% for choice in form.pheno_groups.choices %}
                   <option value="{{choice[0]}}" {% if choice[0].split(' ,')[0] in institute.phenotype_groups %} selected {% endif %}>{{choice[1]}}</option>
@@ -110,7 +110,7 @@
           </div>
           <div class="form-row mt-3 d-flex justify-content-center">
             <div class="col-md-12 align-self-center">
-              {{ form.institutes.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Allow case sharing only with preselected institutes") }}
+              {{ form.institutes.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Allow case sharing only with preselected institutes.") }}
               <select multiple="multiple" class="selectpicker" name="institutes">
               {% for choice in form.institutes.choices %}
                 <option value="{{choice[0]}}" {% if choice[0] in institute.collaborators %} selected {% endif %}>{{choice[1]}}</option>
