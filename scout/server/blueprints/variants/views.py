@@ -323,7 +323,7 @@ def cancer_variants(institute_id, case_name):
 
 
     variant_type = request.args.get('variant_type', 'clinical')
-    data = controllers.cancer_variants(store, request.args, institute_id, case_name, form, page)
+    data = controllers.cancer_variants(store, institute_id, case_name, form, page=page)
     return dict(variant_type=variant_type, **data)
 
 @variants_bp.route('/<institute_id>/<case_name>/cancer/sv-variants',
