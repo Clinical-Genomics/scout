@@ -56,6 +56,7 @@ nav:
       - Institutes: 'admin-guide/institute.md'
       - Display data:
           - Cases: 'admin-guide/display-data/cases.md'
+      - Backup and restore: 'admin-guide/backup.md'
   
   - Blog:
       - Intro: 'blog/README.md'
