@@ -183,6 +183,8 @@ def str_variants(institute_id, case_name):
 @templated('variants/sv-variants.html')
 def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
+
+    """Display a list of structural variants."""
     page = int(request.form.get('page', 1))
     category='sv'
 
@@ -331,11 +333,15 @@ def cancer_variants(institute_id, case_name):
 @templated('variants/cancer-sv-variants.html')
 def cancer_sv_variants(institute_id, case_name):
     """Display a list of cancer structural variants."""
-    page = int(request.form.get('page', 1))
 
+    page = int(request.form.get('page', 1))
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = request.args.get('variant_type', 'clinical')
 
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    category='cancer_sv'
+
+    #LEVA DA QUI
+    ##################################
 
     form = SvFiltersForm(request.form)
 
@@ -483,6 +489,9 @@ def upload_panel(institute_id, case_name):
     else:
         return redirect(url_for('.variants', institute_id=institute_id, case_name=case_name,
                             **form.data), code=307)
+
+    # A QUI
+    ##################################
 
 
 @variants_bp.route('/verified', methods=['GET'])

@@ -90,6 +90,15 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         'more_variants': more_variants,
     }
 
+def populate_sv_filter_form(store, institute_obj, case_obj, request, user_obj):
+    """ Populates the sv variants filter form based on users' choices """
+    return None
+
+
+def create_sv_variants_query(store, request, case_obj, institute_obj):
+    """ Composes a SV variants query based on SV filters form """
+    return None
+
 
 def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of SV variants."""
