@@ -44,7 +44,7 @@
           </div>
           <div class="form-row mt-3 mb-3">
             <div class="col-md-2">
-              {{form.sanger_emails.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Email addresses to send variant verification email to")}}
+              {{form.sanger_emails.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Email addresses to send variant verification email to. Only accepts current Scout user emails: exceptions to this can be made by a db admin. Please ask for support!")}}
             </div>
             <div class="col-md-10">
               <select class="select2" id="sanger_tags" name="sanger_emails" multiple="true" style="width:100%;">
@@ -59,14 +59,14 @@
           </div>
           <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-5">
-              {{ form.coverage_cutoff.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Read depth considered reliable for displaying variants") }}
+              {{ form.coverage_cutoff.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Read depth considered reliable for displaying variants. Used in coverage reports") }}
               {{ form.coverage_cutoff(class='form-control', value=institute.coverage_cutoff) }}
               {% for error in form.coverage_cutoff.errors %}
                 <span style="color: red;">{{ error }}</span><br>
               {% endfor %}
             </div>
             <div class="form-group col-md-5">
-              {{ form.frequency_cutoff.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Lower frequency threshold to display variants") }}
+              {{ form.frequency_cutoff.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Lower frequency threshold to display variants. Used as the institute's default in clinical filter.") }}
               {{ form.frequency_cutoff(class='form-control', value=institute.frequency_cutoff) }}
               {% for error in form.frequency_cutoff.errors %}
                 <span style="color: red;">{{ error }}</span><br>
@@ -75,12 +75,12 @@
           </div>
           <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-7">
-              {{ form.pheno_group.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Add a new phenotype group item the the list of phenotype shortcuts below") }}
+              {{ form.pheno_group.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Add a new phenotype group item to the list of phenotype shortcuts below") }}
               <input name="hpo_term" class="typeahead_hpo form-control" id="pheno_group" data-provide="typeahead" autocomplete="off" placeholder="Search HPO..">
             </div>
             <div class="d-block col-md-3">
               {{ form.pheno_abbrev.label(class="control-label",data_toggle="tooltip", data_placement="top", title="A short name for this phenotype group") }}
-              <input name="pheno_abbrev" class="form-control" name="pheno_abbrev" id="pheno_abbrev" placeholder="ex: NEUR" pattern=".{2,10}">
+              <input name="pheno_abbrev" class="form-control" name="pheno_abbrev" id="pheno_abbrev" placeholder="e.g.: NEUR" pattern=".{2,10}">
             </div>
             <div class="d-flex align-items-center col-md-2">
               <button type="button" class="btn btn-light btn-small" onclick="validate_pheno()">Add custom phenotype group</button>
@@ -110,7 +110,7 @@
           </div>
           <div class="form-row mt-3 d-flex justify-content-center">
             <div class="col-md-12 align-self-center">
-              {{ form.institutes.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Allow case sharing only with preselected Institutes") }}
+              {{ form.institutes.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Allow case sharing only with preselected institutes") }}
               <select multiple="multiple" class="selectpicker" name="institutes">
               {% for choice in form.institutes.choices %}
                 <option value="{{choice[0]}}" {% if choice[0] in institute.collaborators %} selected {% endif %}>{{choice[1]}}</option>
