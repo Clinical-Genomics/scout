@@ -442,7 +442,7 @@ def cancer_sv_variants(institute_id, case_name):
         return Response(generate(",".join(document_header), export_lines), mimetype='text/csv', headers=headers) # return a csv with the exported variants
 
     else:
-        data = controllers.cancer_sv_variants(store, institute_obj, case_obj,
+        data = controllers.sv_variants(store, institute_obj, case_obj,
                                        variants_query, page)
 
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
