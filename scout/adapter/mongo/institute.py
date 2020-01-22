@@ -34,21 +34,25 @@ class InstituteHandler(object):
         ##TODO check if insert info was ok
         LOG.info("Institute saved")
 
-    def update_institute(self, internal_id, sanger_recipient=None, coverage_cutoff=None,
-                         frequency_cutoff=None, display_name=None, remove_sanger=None,
-                         phenotype_groups=None, group_abbreviations=None, add_groups=None):
+    def update_institute(self, internal_id, sanger_recipient=None, sanger_recipients=None,
+                         coverage_cutoff=None, frequency_cutoff=None, display_name=None,
+                         remove_sanger=None, phenotype_groups=None, group_abbreviations=None,
+                         add_groups=None, sharing_institutes=None, cohorts=None):
         """Update the information for an institute
 
         Args:
             internal_id(str): The internal institute id
             sanger_recipient(str): Email adress to add for sanger order
+            sanger_recipients(list): A list of sanger recipients email addresses
             coverage_cutoff(int): Update coverage cutoff
             frequency_cutoff(float): New frequency cutoff
             display_name(str): New display name
             remove_sanger(str): Email adress for sanger user to be removed
             phenotype_groups(iterable(str)): New phenotype groups
             group_abbreviations(iterable(str))
-            add_groups: If groups should be added. If False replace groups
+            add_groups(bool): If groups should be added. If False replace groups
+            sharing_institutes(list(str)): Other institutes to share cases with
+            cohorts(list(str)): patient cohorts
 
         Returns:
             updated_institute(dict)
@@ -59,7 +63,9 @@ class InstituteHandler(object):
         if not institute_obj:
             raise IntegrityError("Institute {} does not exist in database".format(internal_id))
 
-        updates = {}
+        updates = {
+            '$set' : {},
+        }
         updated_institute = institute_obj
 
         if sanger_recipient:
@@ -71,6 +77,15 @@ class InstituteHandler(object):
                      internal_id, sanger_recipient))
             updates['$push'] = {'sanger_recipients':sanger_recipient}
 
+        if sanger_recipients is not None:
+            for recipient in sanger_recipients:
+                user_obj = self.user(email=recipient)
+                if not user_obj:
+                    return "user {} does not exist in database".format(recipient)
+                LOG.info("Updating sanger recipients for institute: {0} with {1}".format(
+                         internal_id, recipient))
+            updates['$set']['sanger_recipients'] = sanger_recipients # can be empty list
+
         if remove_sanger:
             LOG.info("Removing sanger recipient {0} from institute: {1}".format(
                      remove_sanger, internal_id))
@@ -79,47 +94,44 @@ class InstituteHandler(object):
         if coverage_cutoff:
             LOG.info("Updating coverage cutoff for institute: {0} to {1}".format(
                             internal_id, coverage_cutoff))
-            updates['$set'] = {'coverage_cutoff': coverage_cutoff}
+            updates['$set']['coverage_cutoff'] = coverage_cutoff
 
         if frequency_cutoff:
             LOG.info("Updating frequency cutoff for institute: {0} to {1}".format(
                             internal_id, frequency_cutoff))
-            if not '$set' in updates:
-                updates['$set'] = {}
-            updates['$set'] = {'frequency_cutoff': frequency_cutoff}
+            updates['$set']['frequency_cutoff'] = frequency_cutoff
 
         if display_name:
             LOG.info("Updating display name for institute: {0} to {1}".format(
                             internal_id, display_name))
-            if not '$set' in updates:
-                updates['$set'] = {}
-            updates['$set'] = {'display_name': display_name}
+            updates['$set']['display_name'] = display_name
 
-        if phenotype_groups:
+        if phenotype_groups is not None:
             if group_abbreviations:
                 group_abbreviations = list(group_abbreviations)
             existing_groups = {}
             if add_groups:
                 existing_groups = institute_obj.get('phenotype_groups', PHENOTYPE_GROUPS)
-
             for i,hpo_term in enumerate(phenotype_groups):
                 hpo_obj = self.hpo_term(hpo_term)
                 if not hpo_obj:
-                    raise IntegrityError("Term {} does not exist".format(hpo_term))
+                    return "Term {} does not exist in database".format(hpo_term)
                 hpo_id = hpo_obj['hpo_id']
                 description = hpo_obj['description']
                 abbreviation = None
                 if group_abbreviations:
                     abbreviation = group_abbreviations[i]
                 existing_groups[hpo_term] = {'name': description, 'abbr':abbreviation}
-            updates['$set'] = {'phenotype_groups': existing_groups}
+            updates['$set']['phenotype_groups'] = existing_groups
 
-        if updates:
-            if not '$set' in updates:
-                updates['$set'] = {}
+        if sharing_institutes is not None:
+            updates['$set']['collaborators'] = sharing_institutes
 
+        if cohorts is not None:
+            updates['$set']['cohorts'] = cohorts
+
+        if updates['$set'].keys() or updates.get('$push') or updates.get('$pull'):
             updates['$set']['updated_at'] = datetime.now()
-
             updated_institute = self.institute_collection.find_one_and_update(
                 {'_id':internal_id}, updates, return_document = pymongo.ReturnDocument.AFTER)
 

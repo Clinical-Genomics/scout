@@ -38,26 +38,22 @@ def get_test_submission_case(case_obj):
     return casedata_subm_obj
 
 
-def get_new_submission(adapter, user_obj, institute_obj):
-
-    # Given a valid user id
-    user_id = user_obj['_id']
-    assert user_id
+def get_new_submission(adapter, institute_obj):
 
     # And a valid institute id
     institute_id = institute_obj['_id']
     assert institute_id
 
     # Check that a new clinvar submission can be created
-    new_submission_id = adapter.create_submission( user_id=user_id, institute_id=institute_id)
+    new_submission_id = adapter.create_submission(institute_id=institute_id)
     return new_submission_id
 
 
-def test_create_submission(adapter, user_obj, institute_obj, case_obj):
+def test_create_submission(adapter, institute_obj, case_obj):
     """Test create a clinvar submission"""
 
     # Assert that a new submission can be created
-    submission_id = get_new_submission(adapter, user_obj, institute_obj)
+    submission_id = get_new_submission(adapter, institute_obj)
     assert submission_id
 
     # Given a test variant and its associated casedata
@@ -71,11 +67,10 @@ def test_create_submission(adapter, user_obj, institute_obj, case_obj):
     # Insert case test case in database
     adapter.case_collection.insert_one(case_obj)
 
-    # Check that submission is returned when collecting submissions by user_id and institute_id
-    submissions = adapter.clinvar_submissions(user_obj['_id'], institute_obj['_id'])
+    # Check that submission is returned when collecting submissions by institute_id
+    submissions = adapter.clinvar_submissions(institute_obj['_id'])
     assert submissions[0]['_id'] == submission_id
     assert 'status' in submissions[0]
-    assert 'user_id' in submissions[0]
     assert 'institute_id' in submissions[0]
     assert 'created_at' in submissions[0]
     assert 'updated_at' in submissions[0]
@@ -84,40 +79,39 @@ def test_create_submission(adapter, user_obj, institute_obj, case_obj):
     assert 'case_data' in submissions[0]
 
 
-def test_delete_submission(adapter, user_obj, institute_obj):
+def test_delete_submission(adapter, institute_obj):
     """Test delete a clinvar submission providing its ID"""
     # Get the ID of an existing submission
-    submission_id = get_new_submission(adapter, user_obj, institute_obj)
+    submission_id = get_new_submission(adapter, institute_obj)
 
     # Check that it is possible to delete the submission
     deleted_objects = adapter.delete_submission(submission_id)
     assert deleted_objects == (0,1) # deleted 1 submission with 0 objects inside
 
 
-def test_clinvar_submission_status(adapter, user_obj, institute_obj):
+def test_clinvar_submission_status(adapter, institute_obj):
     """Test the function that returns an open clinvar submission object"""
 
-    user_id = user_obj['_id']
     institute_id = institute_obj['_id']
 
     # Check that a new clinvar submission can be created
-    submission_obj = adapter.get_open_clinvar_submission( user_id=user_id, institute_id=institute_id)
+    submission_obj = adapter.get_open_clinvar_submission( institute_id=institute_id)
     assert submission_obj
 
     # And that its 'status' is set to "open"
     assert submission_obj['status'] == "open"
 
     # Update submission status to 'closed'
-    updated_submission = adapter.update_clinvar_submission_status(user_id , submission_obj['_id'], "closed")
+    updated_submission = adapter.update_clinvar_submission_status(institute_obj['_id'], submission_obj['_id'], "closed")
 
     # And that now its 'status' is set to "closed"
     assert updated_submission['status'] == "closed"
 
 
-def test_update_clinvar_id(adapter, user_obj, institute_obj):
+def test_update_clinvar_id(adapter, institute_obj):
     """record an official clinvar submission name for a submission"""
 
-    submission_id = get_new_submission(adapter, user_obj, institute_obj)
+    submission_id = get_new_submission(adapter, institute_obj)
 
     # Update the submission with the official clinvar name
     updated_submission = adapter.update_clinvar_id(clinvar_id='SUB0001', submission_id=submission_id)
@@ -126,11 +120,11 @@ def test_update_clinvar_id(adapter, user_obj, institute_obj):
     assert adapter.get_clinvar_id(submission_id) == "SUB0001"
 
 
-def test_add_remove_subm_objects(adapter, user_obj, institute_obj, case_obj):
+def test_add_remove_subm_objects(adapter, institute_obj, case_obj):
     """Test adding variant and casedata objects to a submission"""
 
     # Get the ID of an existing submission
-    submission_obj = adapter.get_open_clinvar_submission( user_id=user_obj['_id'], institute_id=institute_obj['_id'])
+    submission_obj = adapter.get_open_clinvar_submission(institute_id=institute_obj['_id'])
 
     # Given a test variant and its associated casedata
     variant_data = [ get_test_submission_variant(case_obj) ] # a list of 1 dictionary element
