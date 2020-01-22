@@ -8,9 +8,7 @@ import zipfile
 import pathlib
 import pymongo
 
-from flask import (Blueprint, request, redirect, abort, flash, current_app, url_for, Response,
-                   send_file)
-from werkzeug.datastructures import (Headers, MultiDict)
+from flask import (Blueprint, request, redirect, abort, flash, current_app, url_for, send_file)
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS, MANUAL_RANK_OPTIONS, CANCER_TIER_OPTIONS
@@ -128,29 +126,9 @@ def variants(institute_id, case_name):
         form.hgnc_symbols.data = list(current_symbols)
 
     variants_query = store.variants(case_obj['_id'], query=form.data, category=category)
-    data = {}
 
     if request.form.get('export'):
-        document_header = controllers.variants_export_header(case_obj)
-        export_lines = []
-        if form.data['chrom'] == 'MT':
-            # Return all MT variants
-            export_lines = controllers.variant_export_lines(store, case_obj, variants_query)
-        else:
-            # Return max 500 variants
-            export_lines = controllers.variant_export_lines(store, case_obj, variants_query.limit(500))
-
-        def generate(header, lines):
-            yield header + '\n'
-            for line in lines:
-                yield line + '\n'
-
-        headers = Headers()
-        headers.add('Content-Disposition','attachment', filename=str(case_obj['display_name'])+'-filtered_variants.csv')
-
-        # return a csv with the exported variants
-        return Response(generate(",".join(document_header), export_lines), mimetype='text/csv',
-                        headers=headers)
+        return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
     return dict(institute=institute_obj, case=case_obj, form=form, manual_rank_options=MANUAL_RANK_OPTIONS,
@@ -206,22 +184,9 @@ def sv_variants(institute_id, case_name):
 
     variants_query = store.variants(case_obj['_id'], category=category,
                                     query=form.data)
-    data = {}
     # if variants should be exported
     if request.form.get('export'):
-        document_header = controllers.variants_export_header(case_obj)
-        export_lines = []
-        # Return max 500 variants
-        export_lines = controllers.variant_export_lines(store, case_obj, variants_query.limit(500))
-
-        def generate(header, lines):
-            yield header + '\n'
-            for line in lines:
-                yield line + '\n'
-
-        headers = Headers()
-        headers.add('Content-Disposition','attachment', filename=str(case_obj['display_name'])+'-filtered_sv-variants.csv')
-        return Response(generate(",".join(document_header), export_lines), mimetype='text/csv', headers=headers) # return a csv with the exported variants
+        return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.sv_variants(store, institute_obj, case_obj,
                                        variants_query, page)
@@ -293,22 +258,9 @@ def cancer_sv_variants(institute_id, case_name):
 
     variants_query = store.variants(case_obj['_id'], category=category,
                                     query=form.data)
-    data = {}
     # if variants should be exported
     if request.form.get('export'):
-        document_header = controllers.variants_export_header(case_obj)
-        export_lines = []
-        # Return max 500 variants
-        export_lines = controllers.variant_export_lines(store, case_obj, variants_query.limit(500))
-
-        def generate(header, lines):
-            yield header + '\n'
-            for line in lines:
-                yield line + '\n'
-
-        headers = Headers()
-        headers.add('Content-Disposition','attachment', filename=str(case_obj['display_name'])+'-filtered_sv-variants.csv')
-        return Response(generate(",".join(document_header), export_lines), mimetype='text/csv', headers=headers) # return a csv with the exported variants
+        return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.sv_variants(store, institute_obj, case_obj,
                                        variants_query, page)
@@ -352,9 +304,6 @@ def upload_panel(institute_id, case_name):
     else:
         return redirect(url_for('.variants', institute_id=institute_id, case_name=case_name,
                             **form.data), code=307)
-
-    # A QUI
-    ##################################
 
 
 @variants_bp.route('/verified', methods=['GET'])

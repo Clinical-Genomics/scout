@@ -10,9 +10,9 @@ from xlsxwriter import Workbook
 from datetime import date
 import datetime
 from flask_login import current_user
-from flask import url_for, flash, request
+from flask import url_for, flash, request, Response
 from flask_mail import Message
-from werkzeug.datastructures import MultiDict
+from werkzeug.datastructures import MultiDict, Headers
 
 from scout.constants import (
     CLINSIG_MAP, ACMG_MAP, ACMG_OPTIONS, ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN,
@@ -269,6 +269,32 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False, gen
         variant_obj['end_chrom'] = variant_obj['chromosome']
 
     return variant_obj
+
+def download_variants(store, case_obj, variant_objs):
+    """ Download filtered variants for a case to an excel file
+
+        Args:
+            store(adapter.MongoAdapter)
+            case_obj(dict)
+            variant_objs(PyMongo cursor)
+
+        Returns:
+            an HTTP response containing a csv file
+    """
+    document_header = variants_export_header(case_obj)
+    export_lines = []
+    # Return max 500 variants
+    export_lines = variant_export_lines(store, case_obj, variant_objs.limit(500))
+
+    def generate(header, lines):
+        yield header + '\n'
+        for line in lines:
+            yield line + '\n'
+
+    headers = Headers()
+    headers.add('Content-Disposition','attachment', filename=str(case_obj['display_name'])+'-filtered_sv-variants.csv')
+    # return a csv with the exported variants
+    return Response(generate(",".join(document_header), export_lines), mimetype='text/csv', headers=headers)
 
 
 def variant_export_lines(store, case_obj, variants_query):
