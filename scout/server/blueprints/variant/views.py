@@ -231,7 +231,7 @@ def clinvar(institute_id, case_name, variant_id):
 
     # Add submission data to an open clinvar submission object,
     # or create a new if no open submission is found in database
-    open_submission = store.get_open_clinvar_submission(current_user.email, institute_id)
+    open_submission = store.get_open_clinvar_submission(institute_id)
     updated_submission = store.add_to_submission(open_submission['_id'], submission_objects)
 
     # Redirect to clinvar submissions handling page, and pass it the updated_submission_object
