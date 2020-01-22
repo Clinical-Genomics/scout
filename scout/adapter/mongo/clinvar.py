@@ -10,10 +10,9 @@ LOG = logging.getLogger(__name__)
 class ClinVarHandler(object):
     """Class to handle clinvar submissions for the mongo adapter"""
 
-    def create_submission(self, user_id, institute_id):
-        """Create an open clinvar submission for a user and an institute
+    def create_submission(self, institute_id):
+        """Create an open clinvar submission for an institute
            Args:
-                user_id(str): a user ID
                 institute_id(str): an institute ID
 
            returns:
@@ -23,10 +22,9 @@ class ClinVarHandler(object):
         submission_obj = {
             'status' : 'open',
             'created_at' : datetime.now(),
-            'user_id' : user_id,
             'institute_id' : institute_id
         }
-        LOG.info("Creating a new clinvar submission for user '%s' and institute %s", user_id, institute_id)
+        LOG.info("Creating a new clinvar submission institute %s", institute_id)
         result = self.clinvar_submission_collection.insert_one(submission_obj)
         return result.inserted_id
 
@@ -68,25 +66,24 @@ class ClinVarHandler(object):
         return deleted_objects,deleted_submissions
 
 
-    def get_open_clinvar_submission(self, user_id, institute_id):
-        """Retrieve the database id of an open clinvar submission for a user and institute,
+    def get_open_clinvar_submission(self, institute_id):
+        """Retrieve the database id of an open clinvar submission for an institute,
            if none is available then create a new submission and return it
 
            Args:
-                user_id(str): a user ID
                 institute_id(str): an institute ID
 
            Returns:
                 submission(obj) : an open clinvar submission object
         """
 
-        LOG.info("Retrieving an open clinvar submission for user '%s' and institute %s", user_id, institute_id)
-        query = dict(user_id=user_id, institute_id=institute_id, status='open')
+        LOG.info("Retrieving an open clinvar submission for institute %s", institute_id)
+        query = dict(institute_id=institute_id, status='open')
         submission = self.clinvar_submission_collection.find_one(query)
 
-        # If there is no open submission for this user and institute, create one
+        # If there is no open submission for this institute, create one
         if submission is None:
-            submission_id = self.create_submission(user_id, institute_id)
+            submission_id = self.create_submission(institute_id)
             submission = self.clinvar_submission_collection.find_one({'_id':submission_id})
 
         return submission
@@ -157,7 +154,7 @@ class ClinVarHandler(object):
         return updated_submission
 
 
-    def update_clinvar_submission_status(self, user_id, submission_id, status):
+    def update_clinvar_submission_status(self, institute_id, submission_id, status):
         """Set a clinvar submission ID to 'closed'
 
             Args:
@@ -169,10 +166,10 @@ class ClinVarHandler(object):
         """
         LOG.info('closing clinvar submission "%s"', submission_id)
 
-        if status == 'open': # just close the submission its status does not affect the other submissions for this user
-            # Close all other submissions for this user and then open the desired one
+        if status == 'open': # just close the submission its status does not affect the other submissions
+            # Close all other submissions for this institute and then open the desired one
             self.clinvar_submission_collection.update_many(
-                {'user_id' : user_id},
+                {'institute_id': institute_id},
                 {'$set' :
                     {'status' : 'closed', 'updated_at' : datetime.now()}
                 }
@@ -188,19 +185,18 @@ class ClinVarHandler(object):
         return updated_submission
 
 
-    def clinvar_submissions(self, user_id, institute_id):
-        """Collect all open and closed clinvar submission created by a user for an institute
+    def clinvar_submissions(self, institute_id):
+        """Collect all open and closed clinvar submissions for an institute
 
             Args:
-                user_id(str): a user ID
                 institute_id(str): an institute ID
 
             Returns:
                 submissions(list): a list of clinvar submission objects
         """
-        LOG.info("Retrieving all clinvar submissions for user '%s', institute '%s'", user_id, institute_id)
+        LOG.info("Retrieving all clinvar submissions for institute '%s'", institute_id)
         # get first all submission objects
-        query = dict(user_id=user_id, institute_id=institute_id)
+        query = dict(institute_id=institute_id)
         results = list(self.clinvar_submission_collection.find(query))
 
         submissions = []
@@ -209,7 +205,6 @@ class ClinVarHandler(object):
             cases = {}
             submission['_id'] =  result.get('_id')
             submission['status'] = result.get('status')
-            submission['user_id'] = result.get('user_id')
             submission['institute_id'] = result.get('institute_id')
             submission['created_at'] = result.get('created_at')
             submission['updated_at'] = result.get('updated_at')
@@ -228,7 +223,6 @@ class ClinVarHandler(object):
 
             if result.get('case_data'):
                 submission['case_data'] = self.clinvar_collection.find({'_id' : { "$in": result['case_data'] } })
-
 
             submissions.append(submission)
 
