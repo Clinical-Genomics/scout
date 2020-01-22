@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse GERP, phastCons and phyloP annotations from vep annotated CSQ fields
 - Avoid flickering comment popovers in variant list
 - Parse REVEL score from vep annotated CSQ fields
+- Allow users to modify general institute settings
 
 
 ### Fixed

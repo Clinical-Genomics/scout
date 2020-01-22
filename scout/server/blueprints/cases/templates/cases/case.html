@@ -543,17 +543,19 @@
       <form method="POST"
             action="{{ url_for('cases.cohorts', institute_id=institute._id,
                                case_name=case.display_name) }}">
-        <div class="row">
-          <div class="col-xs-7">
-            <select class="form-control" name="cohort_tag">
-              <option>Add cohort tag...</option>
+        <div class="form-inline row justify-content-between">
+          <div class="col-sm-7">
+            <select class="form-control" name="cohort_tag" style="width:100%">
               {% for cohort_tag in cohort_tags %}
                 <option value="{{ cohort_tag }}">{{ cohort_tag }}</option>
               {% endfor %}
             </select>
           </div>
-          <div class="col-xs-5">
+          <div class="col-sm-1">
             <button class="btn btn-outline-secondary form-control" type="submit">Add</button>
+          </div>
+          <div class="col-sm-3">
+            <a href="{{ url_for('overview.institute', institute_id=institute.internal_id) }}">Add options</a>
           </div>
         </div>
       </form>
@@ -731,9 +733,9 @@
       <form method="POST"
             action="{{ url_for('cases.phenotypes', institute_id=institute._id,
                                case_name=case.display_name, is_group='yes') }}">
-        <div class="form-inline">
-          <div class="form-group mb-2">
-            <select class="form-control" name="hpo_term">
+        <div class="form-inline row justify-content-between">
+          <div class="col-sm-7">
+            <select class="form-control" name="hpo_term" style="width:100%">
               <option>Add HPO group...</option>
               {% for hpo_id, group in hpo_groups.items() %}
                 <option value="{{ hpo_id }}">
@@ -742,8 +744,11 @@
               {% endfor %}
             </select>
           </div>
-          <div class="form-group mb-2">
-            <button class="btn btn-outline-secondary btn-sm form-control" type="submit">Add</button>
+          <div class="col-sm-1">
+            <button class="btn btn-outline-secondary form-control" type="submit">Add</button>
+          </div>
+          <div class="col-sm-3">
+            <a href="{{ url_for('overview.institute', institute_id=institute.internal_id) }}">Add options</a>
           </div>
         </div>
       </form>
@@ -756,11 +761,11 @@
       <form method="POST"
             action="{{ url_for('cases.phenotypes', institute_id=institute._id,
                                case_name=case.display_name) }}">
-        <div class="row">
-          <div class="col-xs-7">
+        <div class="row form-inline">
+          <div class="col-sm-9">
             <input name="hpo_term" class="typeahead_hpo form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search...">
           </div>
-          <div class="col-xs-5">
+          <div class="col-sm-3">
             <button class="btn btn-outline-secondary form-control">Add</button>
           </div>
         </div>
