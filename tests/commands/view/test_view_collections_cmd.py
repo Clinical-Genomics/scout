@@ -13,4 +13,3 @@ def test_view_diseases(mock_app):
     # Test CLI
     result =  runner.invoke(cli, ['view', 'collections'])
     assert result.exit_code == 0
-    assert "collections\nexon\nhpo_term\ninstitute\ncase\nhgnc_gene\nuser\ngene_panel\nvariant\ntranscript\nevent\n" in result.output

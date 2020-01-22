@@ -13,7 +13,7 @@ from flask_mail import Message
 import query_phenomizer
 from flask_login import current_user
 
-from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, COHORT_TAGS, SEX_MAP, PHENOTYPE_MAP,
+from scout.constants import (CASE_STATUSES, PHENOTYPE_GROUPS, SEX_MAP, PHENOTYPE_MAP,
                              CANCER_PHENOTYPE_MAP, VERBS_MAP, MT_EXPORT_HEADER)
 from scout.constants.variant_tags import (MANUAL_RANK_OPTIONS, CANCER_TIER_OPTIONS,
                              DISMISS_VARIANT_OPTIONS, GENETIC_MODELS)
@@ -214,7 +214,7 @@ def case(store, institute_obj, case_obj):
         'causatives': causatives,
         'partial_causatives' : partial_causatives,
         'collaborators': collab_ids,
-        'cohort_tags': COHORT_TAGS,
+        'cohort_tags': institute_obj.get('cohorts',[]),
         'manual_rank_options': MANUAL_RANK_OPTIONS,
         'cancer_tier_options': CANCER_TIER_OPTIONS
     }
@@ -365,9 +365,9 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     return coverage_data
 
 
-def clinvar_submissions(store, user_id, institute_id):
+def clinvar_submissions(store, institute_id):
     """Get all Clinvar submissions for a user and an institute"""
-    submissions = list(store.clinvar_submissions(user_id, institute_id))
+    submissions = list(store.clinvar_submissions(institute_id))
     return submissions
 
 

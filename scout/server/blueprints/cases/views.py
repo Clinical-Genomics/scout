@@ -111,9 +111,9 @@ def clinvar_submissions(institute_id):
         submission_id = request.form.get('submission_id')
         if request.form.get('update_submission'):
             if request.form.get('update_submission') == 'close': # close a submission
-                store.update_clinvar_submission_status(current_user.email, submission_id, 'closed')
+                store.update_clinvar_submission_status(institute_id, submission_id, 'closed')
             elif request.form.get('update_submission') == 'open':
-                store.update_clinvar_submission_status(current_user.email, submission_id, 'open') # open a submission
+                store.update_clinvar_submission_status(institute_id, submission_id, 'open') # open a submission
             elif request.form.get('update_submission') == 'register_id' and request.form.get('clinvar_id'): # provide an official clinvar submission ID
                 result = store.update_clinvar_id(clinvar_id = request.form.get('clinvar_id'), submission_id = submission_id)
             elif request.form.get('update_submission') == 'delete': # delete a submission
@@ -147,7 +147,7 @@ def clinvar_submissions(institute_id):
                 flash('There are no submission objects of type "{}" to include in the csv file!'.format(csv_type),'warning')
 
     data = {
-        'submissions' : controllers.clinvar_submissions(store, current_user.email, institute_id),
+        'submissions' : controllers.clinvar_submissions(store, institute_id),
         'institute_id' : institute_id,
         'variant_header_fields' : CLINVAR_HEADER ,
         'casedata_header_fields' : CASEDATA_HEADER
