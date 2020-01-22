@@ -14,12 +14,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse GERP, phastCons and phyloP annotations from vep annotated CSQ fields
 - Avoid flickering comment popovers in variant list
 - Parse REVEL score from vep annotated CSQ fields
+- Allow users to modify general institute settings
 
 
 ### Fixed
 - Slightly darker page background
 - Fixed an issued with parsed conservation values from CSQ
 - Coverage calculated on Pull Request commits instead of last push commit
+- Clinvar submissions accessible to all users of an institute
+
 
 ## [4.10.1]
 
