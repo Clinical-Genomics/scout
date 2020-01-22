@@ -38,8 +38,11 @@ Please know that we appreciate your work even if Travis suggests changes.
 ### Coding standards
 
 - We try to follow [PEP8][pep8] with an line length of 100
+- To get [pre-commit][pre-commit] formatting of code with [Black][black] to PEP8 do `pre-commit install`
 - Always include docstrings to explain functions/classes.
 - All code has to work for python versions > 3.6.
 
 [release_flow]: https://www.nebbiatech.com/2019/03/15/git-branching-strategies-which-one-should-i-pick/
 [pep8]: https://www.python.org/dev/peps/pep-0008/
+[black]: https://github.com/psf/black
+[pre-commit]: https://pre-commit.com/
