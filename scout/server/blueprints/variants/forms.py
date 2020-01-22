@@ -50,7 +50,7 @@ class BetterDecimalField(DecimalField):
 
 class VariantFiltersForm(FlaskForm):
     variant_type = HiddenField(default='clinical')
-    
+
     gene_panels = SelectMultipleField(choices=[])
     hgnc_symbols = TagListField('HGNC Symbols/Ids (case sensitive)')
 
@@ -92,18 +92,6 @@ class CancerFiltersForm(VariantFiltersForm):
     alt_count = IntegerField('Min alt count >')
     control_frequency = BetterDecimalField('Control freq. <', places=2)
     mvl_tag = BooleanField('In Managed Variant List')
-
-class CancerSvFiltersForm(FiltersForm):
-    """Extends FiltersForm for cancer structural variants"""
-    size = TextField('Length')
-    size_shorter = BooleanField('Length shorter than')
-    svtype = SelectMultipleField('SVType', choices=SV_TYPE_CHOICES)
-    decipher = BooleanField('Decipher')
-
-    clingen_ngi = IntegerField('ClinGen NGI obs')
-    swegen = IntegerField('SweGen obs')
-
-    export = SubmitField(label='Filter and export')
 
 class StrFiltersForm(FlaskForm):
     """docstring for StrFiltersForm"""

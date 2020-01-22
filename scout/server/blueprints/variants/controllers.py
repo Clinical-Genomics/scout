@@ -90,16 +90,6 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         'more_variants': more_variants,
     }
 
-def populate_sv_filter_form(store, institute_obj, case_obj, request, user_obj):
-    """ Populates the sv variants filter form based on users' choices """
-    return None
-
-
-def create_sv_variants_query(store, request, case_obj, institute_obj):
-    """ Composes a SV variants query based on SV filters form """
-    return None
-
-
 def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of SV variants."""
     skip_count = (per_page * max(page - 1, 0))
@@ -488,7 +478,7 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj,
             'variant_type': 'clinical',
             'gene_panels': clinical_filter_panels
          })
-    elif category == 'sv':
+    elif category in ('sv','cancer_sv'):
         FiltersFormClass = SvFiltersForm
         clinical_filter = MultiDict({
             'variant_type': 'clinical',
@@ -531,6 +521,90 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj,
         form = FiltersFormClass(request_form)
 
     return form
+
+
+def populate_sv_filters_form(store, institute_obj, case_obj,
+                          category, request_obj):
+    """ Populate a filters form object of the type SvFiltersForm
+
+    Accepts:
+        store(adapter.MongoAdapter)
+        institute_obj(dict)
+        case_obj(dict)
+        category(str)
+        request_obj(Flask.requests obj)
+
+    Returns:
+        form(SvFiltersForm)
+    """
+
+    form = SvFiltersForm(request_obj.args)
+    user_obj = store.user(current_user.email)
+
+    if request_obj.method == 'GET':
+        form = SvFiltersForm(request_obj.args)
+        form.variant_type.data = request_obj.args.get('variant_type', 'clinical')
+
+    else: # POST
+        form = populate_filters_form(store, institute_obj, case_obj,
+                                                 user_obj, category, request_obj.form)
+
+    # populate filters dropdown
+    available_filters = store.filters(institute_obj['_id'], category)
+    form.filters.choices = [(filter.get('_id'), filter.get('display_name'))
+        for filter in available_filters]
+
+    # populate available panel choices
+    available_panels = case_obj.get('panels', []) + [
+        {'panel_name': 'hpo', 'display_name': 'HPO'}]
+
+    panel_choices = [(panel['panel_name'], panel['display_name'])
+                     for panel in available_panels]
+
+    form.gene_panels.choices = panel_choices
+
+    # check if supplied gene symbols exist
+    hgnc_symbols = []
+    non_clinical_symbols = []
+    not_found_symbols = []
+    not_found_ids = []
+    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
+        is_clinical = form.data.get('variant_type', 'clinical') == 'clinical'
+        clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+        for hgnc_symbol in form.hgnc_symbols.data:
+            if hgnc_symbol.isdigit():
+                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
+                if hgnc_gene is None:
+                    not_found_ids.append(hgnc_symbol)
+                else:
+                    hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
+            elif sum(1 for i in store.hgnc_genes(hgnc_symbol)) == 0:
+                  not_found_symbols.append(hgnc_symbol)
+            elif is_clinical and (hgnc_symbol not in clinical_symbols):
+                 non_clinical_symbols.append(hgnc_symbol)
+            else:
+                hgnc_symbols.append(hgnc_symbol)
+
+    if (not_found_ids):
+        flash("HGNC id not found: {}".format(", ".join(not_found_ids)), 'warning')
+    if (not_found_symbols):
+        flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), 'warning')
+    if (non_clinical_symbols):
+        flash("Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)), 'warning')
+    form.hgnc_symbols.data = hgnc_symbols
+
+    # handle HPO gene list separately
+    if 'hpo' in form.data['gene_panels']:
+        hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
+                               case_obj['dynamic_gene_list']))
+
+        current_symbols = set(hgnc_symbols)
+        current_symbols.update(hpo_symbols)
+        form.hgnc_symbols.data = list(current_symbols)
+
+    return form
+
+
 
 def verified_excel_file(store, institute_list, temp_excel_dir):
     """Collect all verified variants in a list on institutes and save them to file
