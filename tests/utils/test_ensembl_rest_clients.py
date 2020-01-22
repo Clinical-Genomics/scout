@@ -126,6 +126,7 @@ def test_test_query_biomart_37_no_xml():
     client = eracs.EnsemblBiomartClient(build='38', filters=filters, attributes=attributes, header=False)
 
     i = 0
+
     for i,line in enumerate(client):
         ## THEN assert that either the correct gene is fetched or that an HTML page is returned (if the service is down)
         assert 'ACTR3' in line or line=="<!doctype html>" or "BioMart::Exception::Database" in line
