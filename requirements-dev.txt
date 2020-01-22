@@ -17,3 +17,16 @@ invoke
 # docs
 mkdocs
 mkdocs-material
+
+# PEP8 Compliance
+black
+
+# Pylint Rating
+pylint
+
+# Lint Free
+git-lint
+pycodestyle
+yamllint
+docutils
+html-linter
