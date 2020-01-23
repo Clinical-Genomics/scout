@@ -52,6 +52,7 @@ nav:
       - Annotations: 'admin-guide/annotations.md'
       - Server: 'admin-guide/server.md'
       - Chanjo coverage integration: 'admin-guide/chanjo_coverage_integration.md'
+      - Loqusdb integration: 'admin-guide/loqusdb_integration.md'
       - Indexes: 'admin-guide/indexes.md'
       - Institutes: 'admin-guide/institute.md'
       - Display data:
