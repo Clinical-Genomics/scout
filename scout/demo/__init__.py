@@ -8,6 +8,8 @@ madeline_file = 'demo/madeline.xml'
 # Case info
 ped_file = 'demo/643594.ped'
 load_file = 'demo/643594.config.yaml'
+cancer_load_file = 'demo/cancer.load_config.yaml'
+
 clinical_snv_file = 'demo/643594.clinical.vcf.gz'
 research_snv_file = 'demo/643594.research.vcf.gz'
 customannotation_snv_file = 'demo/customannotations_one.vcf.gz'
@@ -24,6 +26,7 @@ clinical_str_file = 'demo/643594.clinical.str.annotated.limits.vcf.gz'
 panel_path = pkg_resources.resource_filename('scout', panel_file)
 madeline_path = pkg_resources.resource_filename('scout', madeline_file)
 load_path = pkg_resources.resource_filename('scout', load_file)
+cancer_load_path = pkg_resources.resource_filename('scout', cancer_load_file)
 
 clinical_snv_path = pkg_resources.resource_filename('scout', clinical_snv_file)
 clinical_sv_path = pkg_resources.resource_filename('scout', clinical_sv_file)
