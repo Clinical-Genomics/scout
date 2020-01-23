@@ -84,7 +84,9 @@ class LoqusDB:
     def init_app(self, app):
         """Initialize from Flask."""
         LOG.info("Connecting to loqusdb")
-        self.loqusdb_binary = app.config["LOQUSDB_SETTINGS"].get("binary", "loqusdb")
+        self.loqusdb_binary = app.config["LOQUSDB_SETTINGS"].get(
+            "binary_path", "loqusdb"
+        )
         LOG.info("Use loqusdb: %s", self.loqusdb_binary)
         self.loqusdb_config = app.config["LOQUSDB_SETTINGS"].get("config_path")
         if self.loqusdb_config:
