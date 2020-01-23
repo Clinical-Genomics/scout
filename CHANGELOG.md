@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid flickering comment popovers in variant list
 - Parse REVEL score from vep annotated CSQ fields
 - Allow users to modify general institute settings
+- Parsing and displaying cancer SV variants from Manta annotated VCF files
 
 
 ### Fixed
