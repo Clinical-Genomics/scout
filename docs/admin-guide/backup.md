@@ -47,6 +47,6 @@ To recreate do the following steps:
 3. Everything should now be in place except for the variants. Add the variants for a case with `scout upload variants <case_id>`. See `--help` for more info.
 
 
-[mongorestore]: https://docs.mongodb.com/manual/reference/program/mongodump/
+[mongodump]: https://docs.mongodb.com/manual/reference/program/mongodump/
 [mongorestore]: https://docs.mongodb.com/manual/reference/program/mongorestore/
 [mongodbbackup]: https://docs.mongodb.com/manual/core/backups/
