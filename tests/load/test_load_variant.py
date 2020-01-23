@@ -91,7 +91,7 @@ def test_load_cancer_SV_variant(one_cancer_manta_SV_variant, real_populated_data
     assert variant['chromosome']
     assert variant['position']
     assert variant['end']
-    assert variant['somatic_score']
+    assert isinstance(variant['somatic_score'], int)
 
 
 def test_load_variants(real_populated_database, case_obj, variant_clinical_file):
