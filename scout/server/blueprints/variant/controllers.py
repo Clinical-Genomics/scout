@@ -240,6 +240,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
 
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)
+        obs_data["total"] = loqusdb.case_count()
         return obs_data
 
     user_institutes_ids = set(

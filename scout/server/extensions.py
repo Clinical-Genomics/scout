@@ -158,6 +158,14 @@ class LoqusDB:
 
         return loqus_variant
 
+    def case_count(self):
+        """Returns number of cases in loqus instance
+
+        Returns:
+            nr_cases(int)
+        """
+        return self._case_count()
+
     def _case_count(self):
         """Return number of cases that the observation is based on
 
