@@ -1,6 +1,6 @@
 # Backing up Scout
 In general it is best practice to follow the mongodb official [recommendations][mongodbbackup] for backing up a database.
-For a "light" backup there is a command in scout which works as a wrapper around [`mongodump`][mongodump]. This command was added to ease the process of backing up without including static information. Some of the collections are better to recreate than to backup including genes, transcripts and especially the gigantic variants collection.
+For a "light" backup there is a command in scout which works as a wrapper around [`mongodump`][mongodump]. This command was added to ease the process of backing up without including static information. Some of the collections are better to recreate than to backup including genes, transcripts and especially the gigantic variants collection. Please make sure [`mongodump`] is on your `PATH` before running this backup command.
 
 ## Backup command
 
