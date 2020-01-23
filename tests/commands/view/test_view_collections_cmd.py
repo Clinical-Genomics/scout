@@ -13,3 +13,5 @@ def test_view_diseases(mock_app):
     # Test CLI
     result =  runner.invoke(cli, ['view', 'collections'])
     assert result.exit_code == 0
+    for collection in ['gene_panel','case','institute','exon','event','variant']:
+        assert collection in result.output
