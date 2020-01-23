@@ -71,6 +71,11 @@ class LoqusDB:
         self.loqusdb_binary = loqusdb_binary
         self.loqusdb_config = loqusdb_config
         self.version = version or 0.0
+        LOG.info(
+            "Initializing loqus extension with binary: {}, version: {}".format(
+                self.loqusdb_binary, self.version
+            )
+        )
 
         self.base_call = [self.loqusdb_binary]
         if self.loqusdb_config:
