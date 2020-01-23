@@ -18,3 +18,18 @@ invoke
 # docs
 mkdocs
 mkdocs-material
+
+# PEP8 Compliance
+pre-commit
+black
+
+# Pylint Rating
+pylint
+six>=1.12                   # due to astroid 2.3.3 needed by pylint
+
+# Lint Free
+git-lint
+pycodestyle
+yamllint
+docutils
+html-linter
