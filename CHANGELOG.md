@@ -15,7 +15,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid flickering comment popovers in variant list
 - Parse REVEL score from vep annotated CSQ fields
 - Allow users to modify general institute settings
+- Optionally format code automatically on commit
 - Adds command to backup vital parts `scout export database`
+
 
 ### Fixed
 - Slightly darker page background
