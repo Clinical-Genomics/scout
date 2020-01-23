@@ -27,7 +27,9 @@ class LoqusdbMock():
         return self.nr_cases
     
     def get_variant(self, var_dict):
-        return self.variants.get(var_dict['_id'])
+        var = self.variants.get(var_dict['_id'], {})
+        var['total'] = self.nr_cases
+        return var
     
     def _add_variant(self, var_obj):
         simple_id = var_obj['simple_id']
@@ -38,7 +40,6 @@ class LoqusdbMock():
         return self.variants
     
 # -*- coding: utf-8 -*-
-
 
 class MockMail:
     _send_was_called = False
