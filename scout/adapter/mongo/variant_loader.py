@@ -206,7 +206,7 @@ class VariantLoader(object):
         """
 
         case_id = case_obj['_id']
-        # Possible categories 'snv', 'sv', 'str', 'cancer':
+        # Possible categories 'snv', 'sv', 'str', 'cancer', 'cancer_sv':
         categories = set()
         # Possible variant types 'clinical', 'research':
         variant_types = set()
@@ -549,6 +549,9 @@ class VariantLoader(object):
             elif category == 'cancer':
                 # Currently this implies a paired tumor normal
                 variant_file = case_obj['vcf_files'].get('vcf_cancer')
+            elif category == 'cancer_sv':
+                # ditto for paired tumor normal
+                variant_file = case_obj['vcf_files'].get('vcf_cancer_sv')
         elif variant_type == 'research':
             if category == 'snv':
                 variant_file = case_obj['vcf_files'].get('vcf_snv_research')
@@ -556,6 +559,8 @@ class VariantLoader(object):
                 variant_file = case_obj['vcf_files'].get('vcf_sv_research')
             elif category == 'cancer':
                 variant_file = case_obj['vcf_files'].get('vcf_cancer_research')
+            elif category == 'cancer_sv':
+                variant_file = case_obj['vcf_files'].get('vcf_cancer_sv_research')
 
         if not variant_file:
             raise SyntaxError("Vcf file does not seem to exist")
@@ -583,7 +588,7 @@ class VariantLoader(object):
 
         # Dictionary for cancer analysis
         sample_info = {}
-        if category == 'cancer':
+        if category in ('cancer','cancer_sv') :
             for ind in case_obj['individuals']:
                 if ind['phenotype'] == 2:
                     sample_info[ind['individual_id']] = 'case'
