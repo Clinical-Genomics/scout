@@ -1,6 +1,4 @@
 # encoding: utf-8
-import logging
-logger = logging.getLogger(__name__)
 """
 parse_genotypes will try to collect and merge information from vcf with
 genotypes called by multiple variant callers. This is a complex problem,
