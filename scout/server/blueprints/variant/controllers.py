@@ -3,6 +3,7 @@ from datetime import date
 
 from flask import url_for
 from flask_login import current_user
+
 from scout.constants import (ACMG_COMPLETE_MAP, ACMG_CRITERIA, ACMG_MAP,
                              ACMG_OPTIONS, CALLERS, CANCER_TIER_OPTIONS,
                              DISMISS_VARIANT_OPTIONS, MANUAL_RANK_OPTIONS,
@@ -200,7 +201,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
     """Query observations for a variant.
 
     Check if variant_obj have been observed before ni the loqusdb instance.
-    If not return {}
+    If not return empty dictionary.
 
     We need to add links to the variant in other cases where the variant has been observed.
     First we need to make sure that the user has access to these cases. The user_institute_ids holds
@@ -237,8 +238,6 @@ def observations(store, loqusdb, case_obj, variant_obj):
     }
     obs_data = loqusdb.get_variant(variant_query) or {}
 
-    # Add case count even if there where no hit
-    obs_data["total"] = loqusdb.case_count()
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)
         return obs_data

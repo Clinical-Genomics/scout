@@ -12,6 +12,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_oauthlib.client import OAuth
 from pymongo.errors import ConnectionFailure
+
 from scout.adapter import MongoAdapter
 from scout.adapter.client import get_connection
 
@@ -52,7 +53,7 @@ def execute_command(cmd):
     """
     output = ""
     try:
-        output = subprocess.check_output(" ".join(cmd), shell=False)
+        output = subprocess.check_output(cmd, shell=False)
     except CalledProcessError as err:
         LOG.warning("Something went wrong with loqusdb")
         raise err
