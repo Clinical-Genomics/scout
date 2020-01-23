@@ -4,16 +4,16 @@
 
 ## Setup
 
-Install loqudb according to the instructions on the package homepage. This can be done using the same environment or another virtual environment, also the same mongodb process can be used for the loqusdatabase however if large datasets(1000s of whole genomes) are expected it is preferable to keep these separate. In the config `config.py` give the connection information like:
+Install loqudb according to the instructions on the package homepage. This can be done using the same environment or another virtual environment, also the same mongodb process can be used for the loqus database however if large datasets(1000s of whole genomes) are expected it is preferable to keep these separate. In the config `config.py` give the connection information like:
 
 ```python
 #connection details for LoqusDB MongoDB database
 LOQUSDB_SETTINGS = dict(
-    binary='/path/to/bin/loqusdb',
+    binary_path='/path/to/bin/loqusdb',
     config_path=<path/to/loqus/config>
 )
 ```
-where the `binary` is mandatory and `config_path` is alternative if not connecting to the default (which is `port=27017`, `host=localhost`)
+where the `binary_path` is mandatory and `config_path` is alternative if not connecting to the default (which is `port=27017`, `host=localhost`)
 
 Now scout will display if the variant has been seen in other cases and also will link to these if they exists in the same scout instance.
 
