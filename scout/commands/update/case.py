@@ -25,12 +25,16 @@ LOG = logging.getLogger(__name__)
               help='path to clinical SV VCF file to be added')
 @click.option('--vcf-cancer', type=click.Path(exists=True),
               help='path to clinical cancer VCF file to be added')
+@click.option('--vcf-cancer-sv', type=click.Path(exists=True),
+              help='path to clinical cancer structural VCF file to be added')
 @click.option('--vcf-research', type=click.Path(exists=True),
               help='path to research VCF file to be added')
 @click.option('--vcf-sv-research', type=click.Path(exists=True),
               help='path to research VCF with SV variants to be added')
 @click.option('--vcf-cancer-research', type=click.Path(exists=True),
               help='path to research VCF with cancer variants to be added')
+@click.option('--vcf-cancer-sv-research', type=click.Path(exists=True),
+              help='path to research VCF with cancer structural variants to be added')
 @click.option('--reupload-sv', is_flag=True,
               help='Remove all SVs and re upload from existing files')
 @click.option('--rankscore-treshold',
@@ -41,7 +45,7 @@ LOG = logging.getLogger(__name__)
               help='Update the SV rank model version')
 @click.pass_context
 def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
-         vcf_cancer, vcf_research, vcf_sv_research, vcf_cancer_research,
+         vcf_cancer, vcf_cancer_sv, vcf_research, vcf_sv_research, vcf_cancer_research, vcf_cancer_sv_research,
          reupload_sv, rankscore_treshold, rankmodel_version, sv_rankmodel_version):
     """
     Update a case in the database
@@ -81,6 +85,10 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
         LOG.info("Updating 'vcf_cancer' to %s", vcf_cancer)
         case_obj['vcf_files']['vcf_cancer'] = vcf_cancer
         case_changed = True
+    if vcf_cancer_sv:
+        LOG.info("Updating 'vcf_cancer_sv' to %s", vcf_cancer_sv)
+        case_obj['vcf_files']['vcf_cancer_sv'] = vcf_cancer_sv
+        case_changed = True
     if vcf_research:
         LOG.info("Updating 'vcf_research' to %s", vcf_research)
         case_obj['vcf_files']['vcf_research'] = vcf_research
@@ -92,6 +100,10 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
     if vcf_cancer_research:
         LOG.info("Updating 'vcf_cancer_research' to %s", vcf_cancer_research)
         case_obj['vcf_files']['vcf_cancer_research'] = vcf_cancer_research
+        case_changed = True
+    if vcf_cancer_sv_research:
+        LOG.info("Updating 'vcf_cancer_sv_research' to %s", vcf_cancer_sv_research)
+        case_obj['vcf_files']['vcf_cancer_sv_research'] = vcf_cancer_sv_research
         case_changed = True
 
     if case_changed:

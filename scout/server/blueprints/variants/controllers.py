@@ -10,9 +10,9 @@ from xlsxwriter import Workbook
 from datetime import date
 import datetime
 from flask_login import current_user
-from flask import url_for, flash, request
+from flask import url_for, flash, request, Response
 from flask_mail import Message
-from werkzeug.datastructures import MultiDict
+from werkzeug.datastructures import MultiDict, Headers
 
 from scout.constants import (
     CLINSIG_MAP, ACMG_MAP, ACMG_OPTIONS, ACMG_COMPLETE_MAP, CALLERS, SPIDEX_HUMAN,
@@ -89,7 +89,6 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         'variants': variants,
         'more_variants': more_variants,
     }
-
 
 def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of SV variants."""
@@ -202,10 +201,8 @@ def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_pag
 def parse_variant(store, institute_obj, case_obj, variant_obj, update=False, genome_build='37',
                   get_compounds = True):
     """Parse information about variants.
-
     - Adds information about compounds
     - Updates the information about compounds if necessary and 'update=True'
-
     Args:
         store(scout.adapter.MongoAdapter)
         institute_obj(scout.models.Institute)
@@ -213,7 +210,6 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False, gen
         variant_obj(scout.models.Variant)
         update(bool): If variant should be updated in database
         genome_build(str)
-
     """
     has_changed = False
     compounds = variant_obj.get('compounds', [])
@@ -274,15 +270,39 @@ def parse_variant(store, institute_obj, case_obj, variant_obj, update=False, gen
 
     return variant_obj
 
+def download_variants(store, case_obj, variant_objs):
+    """ Download filtered variants for a case to an excel file
+
+        Args:
+            store(adapter.MongoAdapter)
+            case_obj(dict)
+            variant_objs(PyMongo cursor)
+
+        Returns:
+            an HTTP response containing a csv file
+    """
+    document_header = variants_export_header(case_obj)
+    export_lines = []
+    # Return max 500 variants
+    export_lines = variant_export_lines(store, case_obj, variant_objs.limit(500))
+
+    def generate(header, lines):
+        yield header + '\n'
+        for line in lines:
+            yield line + '\n'
+
+    headers = Headers()
+    headers.add('Content-Disposition','attachment', filename=str(case_obj['display_name'])+'-filtered_sv-variants.csv')
+    # return a csv with the exported variants
+    return Response(generate(",".join(document_header), export_lines), mimetype='text/csv', headers=headers)
+
 
 def variant_export_lines(store, case_obj, variants_query):
     """Get variants info to be exported to file, one list (line) per variant.
-
         Args:
             store(scout.adapter.MongoAdapter)
             case_obj(scout.models.Case)
             variants_query: a list of variant objects, each one is a dictionary
-
         Returns:
             export_variants: a list of strings. Each string  of the list corresponding to the fields
                              of a variant to be exported to file, separated by comma
@@ -349,10 +369,8 @@ def variant_export_lines(store, case_obj, variants_query):
 
 def variants_export_header(case_obj):
     """Returns a header for the CSV file with the filtered variants to be exported.
-
         Args:
             case_obj(scout.models.Case)
-
         Returns:
             header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
                     + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
@@ -419,14 +437,12 @@ def cancer_variants(store, institute_id, case_name, form, page=1):
 
 def get_clinvar_submission(store, institute_id, case_name, variant_id, submission_id):
     """Collects all variants from the clinvar submission collection with a specific submission_id
-
         Args:
             store(scout.adapter.MongoAdapter)
             institute_id(str): Institute ID
             case_name(str): case ID
             variant_id(str): variant._id
             submission_id(str): clinvar submission id, i.e. SUB76578
-
         Returns:
             A dictionary with all the data to display the clinvar_update.html template page
     """
@@ -488,7 +504,7 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj,
             'variant_type': 'clinical',
             'gene_panels': clinical_filter_panels
          })
-    elif category == 'sv':
+    elif category in ('sv','cancer_sv'):
         FiltersFormClass = SvFiltersForm
         clinical_filter = MultiDict({
             'variant_type': 'clinical',
@@ -532,14 +548,96 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj,
 
     return form
 
+
+def populate_sv_filters_form(store, institute_obj, case_obj,
+                          category, request_obj):
+    """ Populate a filters form object of the type SvFiltersForm
+
+    Accepts:
+        store(adapter.MongoAdapter)
+        institute_obj(dict)
+        case_obj(dict)
+        category(str)
+        request_obj(Flask.requests obj)
+
+    Returns:
+        form(SvFiltersForm)
+    """
+
+    form = SvFiltersForm(request_obj.args)
+    user_obj = store.user(current_user.email)
+
+    if request_obj.method == 'GET':
+        form = SvFiltersForm(request_obj.args)
+        form.variant_type.data = request_obj.args.get('variant_type', 'clinical')
+
+    else: # POST
+        form = populate_filters_form(store, institute_obj, case_obj,
+                                                 user_obj, category, request_obj.form)
+
+    # populate filters dropdown
+    available_filters = store.filters(institute_obj['_id'], category)
+    form.filters.choices = [(filter.get('_id'), filter.get('display_name'))
+        for filter in available_filters]
+
+    # populate available panel choices
+    available_panels = case_obj.get('panels', []) + [
+        {'panel_name': 'hpo', 'display_name': 'HPO'}]
+
+    panel_choices = [(panel['panel_name'], panel['display_name'])
+                     for panel in available_panels]
+
+    form.gene_panels.choices = panel_choices
+
+    # check if supplied gene symbols exist
+    hgnc_symbols = []
+    non_clinical_symbols = []
+    not_found_symbols = []
+    not_found_ids = []
+    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
+        is_clinical = form.data.get('variant_type', 'clinical') == 'clinical'
+        clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+        for hgnc_symbol in form.hgnc_symbols.data:
+            if hgnc_symbol.isdigit():
+                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
+                if hgnc_gene is None:
+                    not_found_ids.append(hgnc_symbol)
+                else:
+                    hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
+            elif sum(1 for i in store.hgnc_genes(hgnc_symbol)) == 0:
+                  not_found_symbols.append(hgnc_symbol)
+            elif is_clinical and (hgnc_symbol not in clinical_symbols):
+                 non_clinical_symbols.append(hgnc_symbol)
+            else:
+                hgnc_symbols.append(hgnc_symbol)
+
+    if (not_found_ids):
+        flash("HGNC id not found: {}".format(", ".join(not_found_ids)), 'warning')
+    if (not_found_symbols):
+        flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), 'warning')
+    if (non_clinical_symbols):
+        flash("Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)), 'warning')
+    form.hgnc_symbols.data = hgnc_symbols
+
+    # handle HPO gene list separately
+    if 'hpo' in form.data['gene_panels']:
+        hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
+                               case_obj['dynamic_gene_list']))
+
+        current_symbols = set(hgnc_symbols)
+        current_symbols.update(hpo_symbols)
+        form.hgnc_symbols.data = list(current_symbols)
+
+    return form
+
+
+
 def verified_excel_file(store, institute_list, temp_excel_dir):
     """Collect all verified variants in a list on institutes and save them to file
-
     Args:
         store(adapter.MongoAdapter)
         institute_list(list): a list of institute ids
         temp_excel_dir(os.Path): folder where the temp excel files are written to
-
     Returns:
         written_files(int): the number of files written to temp_excel_dir
     """

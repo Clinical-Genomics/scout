@@ -98,6 +98,10 @@ CALLERS = {
             'id': 'freebayes',
             'name': 'Freebayes',
     }],
+    'cancer_sv': [{
+            'id': 'manta',
+            'name': 'Manta',
+    }],
     'sv': [{
             'id': 'cnvnator',
             'name': 'CNVnator',
