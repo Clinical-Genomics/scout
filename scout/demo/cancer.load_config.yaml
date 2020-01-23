@@ -28,7 +28,7 @@ samples:
     mt_bam: scout/demo/reduced_mt.bam
 
 vcf_cancer: scout/demo/cancer_test.vcf.gz
-vcf_cancer_sv: scout/demo/cancer.clinical.SV.vcf
+vcf_cancer_sv: scout/demo/manta_vep_94_annotated_sv_cancer_file.vcf
 
 delivery_report: scout/demo/delivery_report.html
 
