@@ -6,13 +6,13 @@ from pprint import pprint as pp
 
 LOG = logging.getLogger(__name__)
 
+
 def parse_transcripts(raw_transcripts, allele=None):
     """Parse transcript information from VCF variants
 
     Args:
         raw_transcripts(iterable(dict)): An iterable with raw transcript
                                          information
-
     Yields:
         transcript(dict) A dictionary with transcript information
     """
@@ -69,7 +69,15 @@ def parse_transcripts(raw_transcripts, allele=None):
 
         transcript['sift_prediction'] = prediction_term
 
+        if entry.get('REVEL_RANKSCORE'):
+            transcript['revel'] = float(entry.get('REVEL_RANKSCORE'))
+
         transcript['swiss_prot'] = entry.get('SWISSPROT') or 'unknown'
+
+        # Check for conservation annotations
+        transcript['gerp'] = entry.get('GERP++_RS')
+        transcript['phast'] = entry.get('PHASTCONS100WAY_VERTEBRATE')
+        transcript['phylop'] = entry.get('PHYLOP100WAY_VERTEBRATE')
 
         if entry.get('DOMAINS', None):
             pfam_domains = entry['DOMAINS'].split('&')

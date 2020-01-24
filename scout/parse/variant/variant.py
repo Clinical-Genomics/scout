@@ -135,7 +135,6 @@ def parse_variant(variant, case, variant_type='clinical',
     rank_score = parse_rank_score(variant.INFO.get('RankScore', ''), genmod_key)
     parsed_variant['rank_score'] = rank_score or 0
 
-
     ################# Add gt calls #################
     if individual_positions and case['individuals']:
         parsed_variant['samples'] = parse_genotypes(variant, case['individuals'],
@@ -208,7 +207,7 @@ def parse_variant(variant, case, variant_type='clinical',
     scout_custom_data = variant.INFO.get('SCOUT_CUSTOM')
     if scout_custom_data:
         parsed_variant['custom'] = parse_custom_data(scout_custom_data)
-        
+
     ################# Add gene and transcript information #################
     raw_transcripts = []
     if vep_header:
@@ -279,9 +278,11 @@ def parse_variant(variant, case, variant_type='clinical',
     if spidex:
         parsed_variant['spidex'] = float(spidex)
 
-    ###################### Add conservation ######################
+    if len(parsed_transcripts)>0:
+        parsed_variant['revel_score'] = parsed_transcripts[0].get('revel')
 
-    parsed_variant['conservation'] = parse_conservations(variant)
+    ###################### Add conservation ######################
+    parsed_variant['conservation'] = parse_conservations(variant, parsed_transcripts)
 
     parsed_variant['callers'] = parse_callers(variant, category=category)
 
@@ -307,7 +308,7 @@ def parse_variant(variant, case, variant_type='clinical',
 
 def parse_custom_data(custom_str):
     """Parse SCOUT_CUSTOM info field
-    
+
     Input: "key1|val1,key2|val2"
     Output: [ ["key1","val1"], ["key2", "val2"] ]
 

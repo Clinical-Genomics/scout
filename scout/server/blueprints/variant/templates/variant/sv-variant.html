@@ -96,7 +96,7 @@
                   <label class="ml-3">Dismiss variant</label>
                   <div class="row">
                     <div class="col-8 d-flex">
-                        <select multiple class="selectpicker ml-3" title="Select categories..." data-style="btn-custom-select" name="dismiss_variant" id="dismiss_variant" >
+                        <select multiple class="ml-3 selectpicker" title="Select categories..." name="dismiss_variant" id="dismiss_variant" >
                         {% for rank, data in dismiss_variant_options.items() %}
                           <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
                             {{ data.label }}
@@ -354,6 +354,44 @@
       {% endfor %}
     </ul>
   </div>
+  {% if config.LOQUSDB_SETTINGS %}
+    <div class="card panel-default mt-3">
+      <div class="panel-heading">
+        <a href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
+      </div>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-4">
+              {{ observations.observations|default('N/A') }} <small>obs.</small>
+            </div>
+            <div class="col-4">
+              {{ observations.homozygote|default('N/A') }} <small>homo.</small>
+            </div>
+            <div class="col-4">
+              {{ observations.total }} <small>tot.</small>
+            </div>
+          </div>
+        </li>
+        {% if observations['cases'] %}
+          <div class="list-group-item">
+            <div class="row">
+              <div class="col-3"><strong>Cases</strong></div>
+              <div class="col-9">
+                {% for data in observations['cases'] %}
+                  {% if data.variant %}
+                    <a class="ml-3" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+                  {% else %}
+                    <span class="text-muted ml-3">{{ data.case.display_name }}</span>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </ul>
+    </div>
+  {% endif %}
 {% endmacro %}
 
 {% macro gt_calls(samples) %}

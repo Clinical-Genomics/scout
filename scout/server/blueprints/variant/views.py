@@ -49,6 +49,11 @@ def sv_variant(institute_id, case_name, variant_id):
     """Display a specific structural variant."""
     data = variant_controller(store, institute_id, case_name, variant_id, add_other=False,
                                variant_type='sv')
+
+    if current_app.config.get('LOQUSDB_SETTINGS'):
+        LOG.debug("Fetching loqusdb information for %s", variant_id)
+        data['observations'] = observations(store, loqusdb, data['case'], data['variant'])
+
     return data
 
 @variant_bp.route('/<institute_id>/<case_name>/str/variants/<variant_id>')
@@ -230,7 +235,7 @@ def clinvar(institute_id, case_name, variant_id):
 
     # Add submission data to an open clinvar submission object,
     # or create a new if no open submission is found in database
-    open_submission = store.get_open_clinvar_submission(current_user.email, institute_id)
+    open_submission = store.get_open_clinvar_submission(institute_id)
     updated_submission = store.add_to_submission(open_submission['_id'], submission_objects)
 
     # Redirect to clinvar submissions handling page, and pass it the updated_submission_object

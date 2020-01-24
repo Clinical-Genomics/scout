@@ -8,13 +8,30 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+- Display locus name on STR variant page
+- Alternative key `GNOMADAF_popmax` for Gnomad popmax allele frequency
+- Automatic suggestions on how to improve the code on Pull Requests
+- Parse GERP, phastCons and phyloP annotations from vep annotated CSQ fields
+- Avoid flickering comment popovers in variant list
+- Parse REVEL score from vep annotated CSQ fields
+- Allow users to modify general institute settings
+- Optionally format code automatically on commit
 
 ### Fixed
+- Slightly darker page background
+- Fixed an issued with parsed conservation values from CSQ
+- Coverage calculated on Pull Request commits instead of last push commit
+- Clinvar submissions accessible to all users of an institute
+
 
 ## [4.10.1]
 
 ### Fixed
 - Fixed issue with opening research variants
+- Problem with coveralls not called by Travis CI
+- Handle Biomart service down in tests
+
+
 
 ## [4.10.0]
 
@@ -33,6 +50,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display GC and allele depth in causatives table.
 - Included primary reference transcript in general report
 - Included partial causative variants in general report
+- Remove dependency of loqusdb by utilising the CLI
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
@@ -198,7 +216,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation for loading/updating exons
 - Showing SV variant annotations: SV cgh frequencies, gnomad-SV, local SV frequencies
 - Showing transcripts mapping score in segmental duplications
-- Handle requests to Ensembl Rest API  
+- Handle requests to Ensembl Rest API
 - Handle requests to Ensembl Rest Biomart
 - STR variants view now displays GT and IGV link.
 - Description field for gene panels

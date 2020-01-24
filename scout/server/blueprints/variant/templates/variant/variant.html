@@ -278,7 +278,7 @@
           <tr>
             <td>
               Position
-              <span class="float-right">
+              <span>
                 <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
                 {% if variant.is_par %}
                   <span class="badge badge-info">PAR</span>
@@ -287,9 +287,17 @@
             </td>
             <td>
               Change
-              <span class="float-right"><strong>{{ variant.reference }} → {{ variant.alternative }}</strong></span>
+              <span><strong>{{ variant.reference }} → {{ variant.alternative }}</strong></span>
             </td>
           </tr>
+          {% if variant.str_repid %}
+          <tr>
+            <td colspan="2">
+              Repeat locus
+              <span><strong>{{variant.str_repid}}</strong></span>
+            </td>
+          </tr>
+          {% endif %}
         </tbody>
       </table>
       <div class="table-responsive">
@@ -761,6 +769,10 @@
       <li class="list-group-item">
         Sift
         <span class="float-right">{{ variant.sift_predictions|join(', ') }}</span>
+      </li>
+      <li class="list-group-item">
+        <a href="https://sites.google.com/site/revelgenomics/about" target="_blank">REVEL</a>
+        <span class="float-right">{{ variant.revel_score or "-" }}</span>
       </li>
       <li class="list-group-item">
         <a href="http://genetics.bwh.harvard.edu/pph2/" target="_blank">Polyphen</a>
@@ -1280,7 +1292,7 @@
         External links: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
       </div>
       <div class="panel-body">
-        <div class="btn-group">
+        <div class="btn-group-justified">
           <a href="{{ gene.ensembl_link }}" class="btn btn-outline-secondary" target="_blank">Ensembl</a>
           <a href="{{ gene.hpa_link }}" class="btn btn-outline-secondary" target="_blank">HPA</a>
           <a href="{{ gene.string_link }}" class="btn btn-outline-secondary" target="_blank">STRING</a>
