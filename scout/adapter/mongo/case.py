@@ -508,6 +508,7 @@ class CaseHandler(object):
         if existing_case and update:
             if case_obj['status'] == 'active':
                 case_obj['status'] = 'inactive'
+                case_obj['research_requested'] = False
             self.update_case(case_obj)
 
             # update Sanger status for the new inserted variants
