@@ -107,7 +107,7 @@ def case(context, case_id, case_name, institute, collaborator, vcf, vcf_sv,
         case_changed = True
 
     if case_changed:
-        adapter.update_case(case_obj, keep_date=False)
+        adapter.update_case(case_obj)
 
     if reupload_sv:
         LOG.info("Set needs_check to True for case %s", case_id)

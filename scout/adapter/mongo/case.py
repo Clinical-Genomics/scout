@@ -510,7 +510,7 @@ class CaseHandler(object):
             if case_obj['status'] in ['active', 'archived']:
                 case_obj['status'] = 'inactive'
 
-            self.update_case(case_obj, keep_date=False)
+            self.update_case(case_obj)
 
             # update Sanger status for the new inserted variants
             self.update_case_sanger_variants(institute_obj,case_obj, old_sanger_variants)
