@@ -479,6 +479,8 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
     res = adapter.case(case_obj['_id'])
     assert res['status'] == 'inactive'
 
+    adaptep
+
     # archive case
     adapter.archive_case(institute_obj, res, user_obj, 'blank')
     res = adapter.case(case_obj['_id'])

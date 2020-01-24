@@ -506,9 +506,10 @@ class CaseHandler(object):
             LOG.warning(error)
 
         if existing_case and update:
+            case['rerun_requested'] = False
             if case_obj['status'] == 'active':
                 case_obj['status'] = 'inactive'
-                case_obj['research_requested'] = False
+
             self.update_case(case_obj)
 
             # update Sanger status for the new inserted variants
@@ -588,7 +589,7 @@ class CaseHandler(object):
                     'delivery_report': case_obj.get('delivery_report'),
                     'individuals': case_obj['individuals'],
                     'updated_at': datetime.datetime.now(),
-                    'rerun_requested': False,
+                    'rerun_requested': case_obj.get('rerun_requested', False),
                     'panels': case_obj.get('panels', []),
                     'genome_build': case_obj.get('genome_build', '37'),
                     'genome_version': case_obj.get('genome_version'),
