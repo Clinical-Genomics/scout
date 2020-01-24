@@ -66,9 +66,9 @@
                         url: '{{ url_for("alignviewers.remote_static", file=wtrack.url) }}',
                         format: 'bigwig',
                         {# indexURL: '{{ url_for("alignviewers.remote_static", file=wtrack.url)  }}', #}
-                        {# color: "rgb(110, 40, 150)",#}
-                        {# min: '{{ wtrack.min }}', #}
-                        {# max: '{{ wtrack.max }}', #}
+                        color: "rgb(60, 37, 17)",
+                        min: '{{ wtrack.min }}',
+                        max: '{{ wtrack.max }}',
                         sourceType: 'file'
                       },
                       {% endfor %}
@@ -78,10 +78,10 @@
                         name: '{{ btrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=btrack.url) }}',
                         format: 'bed',
+                        color: "rgb(65, 31, 30)",
                         sourceType: 'file'
                       },
                       {% endfor %}
-                        
                       {% for track in sample_tracks %}
                       {
                         name: "{{ track.name }}",
@@ -99,6 +99,7 @@
                         name: '{{ ttrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=ttrack.url) }}',
                         format: 'bigwig',
+                        color: "rgb(40, 0, 13)",
                         sourceType: 'file'
                       },
                       {% endfor %}
@@ -107,6 +108,7 @@
                         type: "bed",
                         name: '{{ rtrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=rtrack.url) }}',
+                        color: "rgb(0, 204, 102)",
                         sourceType: 'file'
                       },
                       {% endfor %}
@@ -115,6 +117,7 @@
                         type: "bed",
                         name: '{{ strack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=strack.url) }}',
+                        color: "rgb(25, 61, 4)",
                         sourceType: 'file'
                       },
                       {% endfor %}
