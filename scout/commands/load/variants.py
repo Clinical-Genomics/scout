@@ -13,6 +13,8 @@ LOG = logging.getLogger(__name__)
 @click.option('-f', '--force', is_flag=True, help='upload without request')
 @click.option('--cancer', is_flag=True, help='Upload clinical cancer variants')
 @click.option('--cancer-research', is_flag=True, help='Upload research cancer variants')
+@click.option('--cancer-sv', is_flag=True, help='Upload clinical cancer structural variants')
+@click.option('--cancer-sv-research', is_flag=True, help='Upload research cancer structural variants')
 @click.option('--sv', is_flag=True, help='Upload clinical structural variants')
 @click.option('--sv-research', is_flag=True, help='Upload research structural variants')
 @click.option('--snv', is_flag=True, help='Upload clinical SNV variants')
@@ -26,7 +28,7 @@ LOG = logging.getLogger(__name__)
 @click.option('--rank-treshold', default=5, help='Specify the rank score treshold',
                 show_default=True)
 @with_appcontext
-def variants(case_id, institute, force, cancer, cancer_research, sv,
+def variants(case_id, institute, force, cancer, cancer_sv, cancer_research, cancer_sv_research, sv,
              sv_research, snv, snv_research, str_clinical, chrom, start, end, hgnc_id,
              hgnc_symbol, rank_treshold):
     """Upload variants to a case
@@ -53,7 +55,9 @@ def variants(case_id, institute, force, cancer, cancer_research, sv,
 
     files = [
         {'category': 'cancer', 'variant_type': 'clinical', 'upload': cancer},
+        {'category': 'cancer_sv', 'variant_type': 'clinical', 'upload': cancer_sv},
         {'category': 'cancer', 'variant_type': 'research', 'upload': cancer_research},
+        {'category': 'cancer_sv', 'variant_type': 'research', 'upload': cancer_sv_research},
         {'category': 'sv', 'variant_type': 'clinical', 'upload': sv},
         {'category': 'sv', 'variant_type': 'research', 'upload': sv_research},
         {'category': 'snv', 'variant_type': 'clinical', 'upload': snv},

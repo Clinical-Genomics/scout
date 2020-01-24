@@ -320,6 +320,9 @@ def build_variant(variant, institute_id, gene_to_panels = None,
     if variant.get('custom'):
         variant_obj['custom'] = variant['custom']
 
+    if variant.get('somatic_score'):
+        variant_obj['somatic_score'] = variant['somatic_score']
+
     ##### Add the frequencies #####
     frequencies = variant.get('frequencies', {})
     if frequencies.get('thousand_g'):

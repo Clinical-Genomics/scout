@@ -49,7 +49,7 @@ transcripts38_reduced_path, genes38_reduced_path, exons37_reduced_path, exons37_
 
 from scout.demo import (research_snv_path, research_sv_path, clinical_snv_path, clinical_str_path,
                         clinical_sv_path, ped_path, load_path, panel_path, empty_sv_clinical_path,
-                        customannotation_snv_path, vep_97_annotated_path)
+                        customannotation_snv_path, vep_97_annotated_path, cancer_sv_path, cancer_load_path)
 
 from scout.models.hgnc_map import HgncGene
 
@@ -245,9 +245,30 @@ def parsed_case(request, scout_config):
 
 
 @pytest.fixture(scope='function')
+def cancer_parsed_case(request, cancer_scout_config):
+    """Get the lines for a cancer case"""
+    case = parse_case(cancer_scout_config)
+    return case
+
+
+@pytest.fixture(scope='function')
+def cancer_case_obj(request, cancer_parsed_case):
+    """Return a cancer case object"""
+
+    case = cancer_parsed_case
+    case['_id'] = cancer_parsed_case['case_id']
+    case['owner'] = cancer_parsed_case['owner']
+    case['has_svvariants'] = True
+
+    case['individuals'][0]['sex'] = '1'
+    case['individuals'][1]['sex'] = '1'
+
+    return case
+
+
+@pytest.fixture(scope='function')
 def case_obj(request, parsed_case):
 
-    LOG.info("Create a case obj")
     case = parsed_case
     case['_id'] = parsed_case['case_id']
     case['owner'] = parsed_case['owner']
@@ -815,6 +836,17 @@ def one_vep97_annotated_variant(request, vep_97_annotated_variant_clinical_file)
 
 
 @pytest.fixture(scope='function')
+def one_cancer_manta_SV_variant(request, vep_94_manta_annotated_SV_variants_file):
+    LOG.info("Return one parsed cancer SV variant")
+    variant_parser = VCF(vep_94_manta_annotated_SV_variants_file)
+
+    for variant in variant_parser:
+        break
+
+    return variant
+
+
+@pytest.fixture(scope='function')
 def one_variant_customannotation(request, customannotation_snv_file):
     LOG.info("Return one parsed variant with custom annotations")
     variant_parser = VCF(customannotation_snv_file)
@@ -1145,6 +1177,15 @@ def vep_97_annotated_variant_clinical_file(request):
     """
     return vep_97_annotated_path
 
+
+@pytest.fixture(scope='function')
+def vep_94_manta_annotated_SV_variants_file(request):
+    """Get a path to a Manta VCF outfile annotated containg SVs
+       annotated with VEP
+    """
+    return cancer_sv_path
+
+
 @pytest.fixture(scope='function')
 def sv_clinical_file(request):
     """Get the path to a variant file"""
@@ -1182,6 +1223,14 @@ def scout_config(request, config_file):
     """Return a dictionary with scout configs"""
     print('')
     in_handle = get_file_handle(config_file)
+    data = yaml.load(in_handle, Loader=yaml.FullLoader)
+    return data
+
+
+@pytest.fixture(scope='function')
+def cancer_scout_config(request):
+    """Return a dictionary with cancer case scout configs"""
+    in_handle = get_file_handle(cancer_load_path)
     data = yaml.load(in_handle, Loader=yaml.FullLoader)
     return data
 

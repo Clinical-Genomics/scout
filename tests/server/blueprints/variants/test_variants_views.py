@@ -120,6 +120,22 @@ def test_sv_variants_post_data(app, institute_obj, case_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
+def test_str_variants(app, institute_obj, case_obj):
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for('auto_login'))
+        assert resp.status_code == 200
+
+        # WHEN accessing the str-variants page
+        resp = client.get(url_for('variants.str_variants',
+                                  institute_id=institute_obj['internal_id'],
+                                  case_name=case_obj['display_name']))
+        # THEN it should return a page
+        assert resp.status_code == 200
+
 def test_cancer_variants(app, institute_obj, case_obj):
         # GIVEN an initialized app
         # GIVEN a valid user and institute
@@ -136,8 +152,7 @@ def test_cancer_variants(app, institute_obj, case_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
-
-def test_str_variants(app, institute_obj, case_obj):
+def test_sv_cancer_variants(app, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -146,9 +161,9 @@ def test_str_variants(app, institute_obj, case_obj):
         resp = client.get(url_for('auto_login'))
         assert resp.status_code == 200
 
-        # WHEN accessing the str-variants page
-        resp = client.get(url_for('variants.str_variants',
-                                  institute_id=institute_obj['internal_id'],
-                                  case_name=case_obj['display_name']))
-        # THEN it should return a page
-        assert resp.status_code == 200
+    # WHEN accessing the sv-variants page
+    resp = client.get(url_for('variants.cancer_sv_variants',
+                              institute_id=institute_obj['internal_id'],
+                              case_name=case_obj['display_name']))
+    # THEN it should return a page
+    assert resp.status_code == 200
