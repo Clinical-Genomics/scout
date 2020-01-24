@@ -65,6 +65,35 @@ def test_load_vep97_parsed_variant(
         assert value == ["NotConserved"]
 
 
+def test_load_cancer_SV_variant(one_cancer_manta_SV_variant, real_populated_database,
+    cancer_case_obj):
+    """ Test loading a cancer SV variant into a mongo database """
+
+    # GIVEN a database containing one cancer case
+    adapter = real_populated_database
+    adapter.case_collection.insert_one(cancer_case_obj)
+    assert sum(1 for i in adapter.case_collection.find({"track":"cancer"})) == 1
+
+    # AND no variants
+    assert adapter.variant_collection.find_one() is None
+
+    # WHEN parsing a SV variant
+    parsed_cancer_SV_variant = parse_variant(
+        variant=one_cancer_manta_SV_variant, case=cancer_case_obj
+    )
+
+    # WHEN loading the variant into the database
+    adapter.load_variant(variant_obj=parsed_cancer_SV_variant)
+
+    # THEN the variant should have been parsed correctly
+    variant = adapter.variant_collection.find_one()
+    assert variant['variant_type'] == 'clinical'
+    assert variant['chromosome']
+    assert variant['position']
+    assert variant['end']
+    assert isinstance(variant['somatic_score'], int)
+
+
 def test_load_variants(real_populated_database, case_obj, variant_clinical_file):
     """Test to load a variant into a mongo database"""
     adapter = real_populated_database

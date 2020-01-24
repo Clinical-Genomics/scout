@@ -16,6 +16,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse REVEL score from vep annotated CSQ fields
 - Allow users to modify general institute settings
 - Optionally format code automatically on commit
+- Adds command to backup vital parts `scout export database`
+- Parsing and displaying cancer SV variants from Manta annotated VCF files
+
 
 ### Fixed
 - Slightly darker page background
@@ -50,6 +53,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display GC and allele depth in causatives table.
 - Included primary reference transcript in general report
 - Included partial causative variants in general report
+- Remove dependency of loqusdb by utilising the CLI
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
