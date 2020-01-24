@@ -28,7 +28,7 @@ def load_case(adapter, case_obj, update=False):
 
     if existing_case:
         if update:
-            adapter.update_case(case_obj, update)
+            adapter.update_case(case_obj, keep_date=False)
         else:
             raise IntegrityError("Case {0} already exists in database".format(case_obj['_id']))
     else:

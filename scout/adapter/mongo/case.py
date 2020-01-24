@@ -507,10 +507,10 @@ class CaseHandler(object):
 
         if existing_case and update:
             case_obj['rerun_requested'] = False
-            if case_obj['status'] == 'active':
+            if case_obj['status'] in ['active', 'archived']:
                 case_obj['status'] = 'inactive'
 
-            self.update_case(case_obj, soft=False)
+            self.update_case(case_obj, keep_date=False)
 
             # update Sanger status for the new inserted variants
             self.update_case_sanger_variants(institute_obj,case_obj, old_sanger_variants)
@@ -534,7 +534,7 @@ class CaseHandler(object):
 
         return self.case_collection.insert_one(case_obj)
 
-    def update_case(self, case_obj, soft=False):
+    def update_case(self, case_obj, keep_date=False):
         """Update a case in the database
 
         The following will be updated:
@@ -558,7 +558,7 @@ class CaseHandler(object):
 
             Args:
                 case_obj(dict): The new case information
-                soft(boolean): The update is small and should not trigger a date change
+                keep_date(boolean): The update is small and should not trigger a date change
 
             Returns:
                 updated_case(dict): The updated case information
@@ -571,13 +571,8 @@ class CaseHandler(object):
         )
 
         updated_at = datetime.datetime.now()
-        if soft:
+        if keep_date:
             updated_at = old_case['updated_at']
-
-        # if case is updated and was archived make it inactive instead
-        updated_status = old_case.get('status')
-        if updated_status ==  'archived':
-            updated_status = 'inactive'
 
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case_obj['_id']},
@@ -610,7 +605,7 @@ class CaseHandler(object):
                     'research_requested': case_obj.get('research_requested', False),
                     'multiqc': case_obj.get('multiqc'),
                     'mme_submission': case_obj.get('mme_submission'),
-                    'status': updated_status
+                    'status': case_obj.get('status')
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER
