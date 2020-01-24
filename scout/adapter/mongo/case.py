@@ -506,7 +506,7 @@ class CaseHandler(object):
             LOG.warning(error)
 
         if existing_case and update:
-            case['rerun_requested'] = False
+            case_obj['rerun_requested'] = False
             if case_obj['status'] == 'active':
                 case_obj['status'] = 'inactive'
 
