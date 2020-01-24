@@ -72,7 +72,6 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
         self.db = database
         self.hgnc_collection = database.hgnc_gene
         self.user_collection = database.user
-        self.whitelist_collection = database.whitelist
         self.institute_collection = database.institute
         self.event_collection = database.event
         self.case_collection = database.case
