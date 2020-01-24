@@ -534,7 +534,7 @@ class CaseHandler(object):
 
         return self.case_collection.insert_one(case_obj)
 
-    def update_case(self, case_obj):
+    def update_case(self, case_obj, soft):
         """Update a case in the database
 
         The following will be updated:
@@ -558,6 +558,7 @@ class CaseHandler(object):
 
             Args:
                 case_obj(dict): The new case information
+                soft(boolean): The update is small and should not trigger a date change
 
             Returns:
                 updated_case(dict): The updated case information
@@ -568,6 +569,10 @@ class CaseHandler(object):
         old_case = self.case_collection.find_one(
             {'_id': case_obj['_id']}
         )
+
+        updated_at = datetime.datetime.now()
+        if soft:
+            updated_at = old_case['updated_at']
 
         # if case is updated and was archived make it inactive instead
         updated_status = old_case.get('status')
@@ -588,7 +593,7 @@ class CaseHandler(object):
                     'analysis_date': case_obj['analysis_date'],
                     'delivery_report': case_obj.get('delivery_report'),
                     'individuals': case_obj['individuals'],
-                    'updated_at': datetime.datetime.now(),
+                    'updated_at': updated_at,
                     'rerun_requested': case_obj.get('rerun_requested', False),
                     'panels': case_obj.get('panels', []),
                     'genome_build': case_obj.get('genome_build', '37'),
