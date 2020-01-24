@@ -510,7 +510,7 @@ class CaseHandler(object):
             if case_obj['status'] == 'active':
                 case_obj['status'] = 'inactive'
 
-            self.update_case(case_obj)
+            self.update_case(case_obj, soft=False)
 
             # update Sanger status for the new inserted variants
             self.update_case_sanger_variants(institute_obj,case_obj, old_sanger_variants)
@@ -534,7 +534,7 @@ class CaseHandler(object):
 
         return self.case_collection.insert_one(case_obj)
 
-    def update_case(self, case_obj, soft):
+    def update_case(self, case_obj, soft=False):
         """Update a case in the database
 
         The following will be updated:
