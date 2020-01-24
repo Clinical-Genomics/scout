@@ -25,7 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed an issued with parsed conservation values from CSQ
 - Coverage calculated on Pull Request commits instead of last push commit
 - Clinvar submissions accessible to all users of an institute
-- Case inactivation upon update
+- Case should not always inactivate upon update
 
 
 ## [4.10.1]
