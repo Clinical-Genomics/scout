@@ -43,7 +43,7 @@ def get_correct_date(date_info):
     return datetime.datetime.now()
 
 def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
-                    vcf_sv=None, vcf_cancer=None, vcf_str=None, peddy_ped=None,
+                    vcf_sv=None, vcf_cancer=None, vcf_cancer_sv=None, vcf_str=None, peddy_ped=None,
                     peddy_sex=None, peddy_check=None, delivery_report=None, multiqc=None):
     """Parse all data necessary for loading a case into scout
 
@@ -59,6 +59,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
         vcf_str(str): Path to a VCF file
         vcf_sv(str): Path to a vcf file
         vcf_cancer(str): Path to a vcf file
+        vcf_cancer_sv(str): Path to a vcf file
         peddy_ped(str): Path to a peddy ped
         multiqc(str): Path to dir with multiqc information
 
@@ -108,6 +109,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     LOG.debug("Config vcf_str set to {0}".format(config_data['vcf_str']))
 
     config_data['vcf_cancer'] = vcf_cancer if vcf_cancer else config_data.get('vcf_cancer')
+    config_data['vcf_cancer_sv'] = vcf_cancer_sv if vcf_cancer_sv else config_data.get('vcf_cancer_sv')
 
     config_data['delivery_report'] = delivery_report if delivery_report else config_data.get('delivery_report')
 
@@ -117,7 +119,7 @@ def parse_case_data(config=None, ped=None, owner=None, vcf_snv=None,
     config_data['sv_rank_model_version'] = str(config_data.get('sv_rank_model_version', ''))
 
     config_data['track'] = config_data.get('track', 'rare')
-    if config_data['vcf_cancer']:
+    if config_data['vcf_cancer'] or config_data['vcf_cancer_sv']:
         config_data['track'] = 'cancer'
 
     return config_data
@@ -346,9 +348,11 @@ def parse_case(config):
             'vcf_sv': config.get('vcf_sv'),
             'vcf_str': config.get('vcf_str'),
             'vcf_cancer': config.get('vcf_cancer'),
+            'vcf_cancer_sv': config.get('vcf_cancer_sv'),
             'vcf_snv_research': config.get('vcf_snv_research'),
             'vcf_sv_research': config.get('vcf_sv_research'),
             'vcf_cancer_research': config.get('vcf_cancer_research'),
+            'vcf_cancer_sv_research': config.get('vcf_cancer_sv_research'),
         },
         'default_panels': config.get('default_gene_panels', []),
         'gene_panels': config.get('gene_panels', []),
@@ -371,7 +375,11 @@ def parse_case(config):
         with mad_path.open('r') as in_handle:
             case_data['madeline_info'] = in_handle.read()
 
-    if (case_data['vcf_files']['vcf_cancer'] or case_data['vcf_files']['vcf_cancer_research']):
+    if (case_data['vcf_files']['vcf_cancer'] or 
+          case_data['vcf_files']['vcf_cancer_research'] or
+          case_data['vcf_files']['vcf_cancer_sv'] or
+          case_data['vcf_files']['vcf_cancer_sv_research'] 
+        ):
         case_data['track'] = 'cancer'
 
     case_data['analysis_date'] = get_correct_date(case_data.get('analysis_date'))

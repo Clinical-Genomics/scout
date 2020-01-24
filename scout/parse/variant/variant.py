@@ -21,7 +21,7 @@ from scout.constants import CHR_PATTERN
 
 from scout.exceptions import VcfError
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 def parse_variant(variant, case, variant_type='clinical',
                  rank_results_header=None, vep_header=None,
@@ -38,7 +38,7 @@ def parse_variant(variant, case, variant_type='clinical',
         vep_header(list)
         individual_positions(dict): Explain what position each individual has
                                     in vcf
-        category(str): 'snv', 'sv', 'str' or 'cancer'
+        category(str): 'snv', 'sv', 'str', 'cancer' or 'cancer_sv'
 
     Returns:
         parsed_variant(dict): Parsed variant
@@ -53,7 +53,7 @@ def parse_variant(variant, case, variant_type='clinical',
     # Create the ID for the variant
     case_id = case['_id']
     if '-' in case_id:
-        logger.debug('internal case id detected')
+        LOG.debug('internal case id detected')
         genmod_key = case['display_name']
     else:
         genmod_key = case['_id']
@@ -202,6 +202,11 @@ def parse_variant(variant, case, variant_type='clinical',
     if str_pathologic_min:
         parsed_variant['str_pathologic_min'] = int(str_pathologic_min)
 
+    ################# Add somatic info ##################
+    somatic = variant.INFO.get('SOMATIC')
+    if somatic:
+        somatic_score = variant.INFO.get('SOMATICSCORE')
+        parsed_variant['somatic_score'] = int(somatic_score)
 
     ################# Add custom info ##################
     scout_custom_data = variant.INFO.get('SCOUT_CUSTOM')

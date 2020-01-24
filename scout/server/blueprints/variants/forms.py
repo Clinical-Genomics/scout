@@ -50,7 +50,7 @@ class BetterDecimalField(DecimalField):
 
 class VariantFiltersForm(FlaskForm):
     variant_type = HiddenField(default='clinical')
-    
+
     gene_panels = SelectMultipleField(choices=[])
     hgnc_symbols = TagListField('HGNC Symbols/Ids (case sensitive)')
 
@@ -94,7 +94,7 @@ class CancerFiltersForm(VariantFiltersForm):
     mvl_tag = BooleanField('In Managed Variant List')
 
 class StrFiltersForm(FlaskForm):
-    """Placeholder filters form for CancerFiltersForm (**unused**)"""
+    """docstring for StrFiltersForm"""
     variant_type = HiddenField(default='clinical')
 
     chrom = TextField('Chromosome')
