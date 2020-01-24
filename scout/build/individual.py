@@ -67,7 +67,7 @@ def build_individual(ind):
         raise(PedigreeError("Unknown phenotype: %s" % phenotype))
 
     # Fix absolute path for individual bam files (takes care of incomplete path for demo files)
-    ind_files = ['bam_file', 'mt_bam', 'vcf2cytosure', 'wig_file', 'rhocall_bed',
+    ind_files = ['bam_file', 'mt_bam', 'vcf2cytosure', 'rhocall_bed',
                  'rhocall_wig', 'tiddit_coverage_wig', 'upd_regions_bed', 'upd_sites_bed']
 
     for ind_file in ind_files:

@@ -118,25 +118,25 @@ def case_append_alignments(case_obj):
     Args:
         case_obj(scout.models.Case)
     """
-    analysis = [{'path':'bam_file', 'append_to':'bam_files', 'index':'bai_files'},
-                {'path':'mt_bam', 'append_to':'mt_bams', 'index':'mt_bais'},
-                {'path':'rhocall_bed', 'append_to':'rhocall_beds', 'index':'no_index'},
-                {'path':'rhocall_wig', 'append_to':'rhocall_wigs', 'index':'no_index'},
-                {'path':'upd_regions_bed', 'append_to':'upd_regions_beds', 'index':'no_index'},
-                {'path':'upd_sites_bed', 'append_to':'upd_sites_beds', 'index':'no_index'},
-                {'path':'tiddit_coverage_wig', 'append_to':'tiddit_coverage_wigs', 'index':'no_index'}]
+    unwrap_settings = [{'path':'bam_file', 'append_to':'bam_files', 'index':'bai_files'},
+                      {'path':'mt_bam', 'append_to':'mt_bams', 'index':'mt_bais'},
+                      {'path':'rhocall_bed', 'append_to':'rhocall_beds', 'index':'no_index'},
+                      {'path':'rhocall_wig', 'append_to':'rhocall_wigs', 'index':'no_index'},
+                      {'path':'upd_regions_bed', 'append_to':'upd_regions_beds', 'index':'no_index'},
+                      {'path':'upd_sites_bed', 'append_to':'upd_sites_beds', 'index':'no_index'},
+                      {'path':'tiddit_coverage_wig', 'append_to':'tiddit_coverage_wigs', 'index':'no_index'}]
 
     for individual in case_obj['individuals']:
         case_obj['sample_names'] =(individual.get('display_name'))
-        for a in analysis:
-            file_path = individual.get(a['path'])
+        for setting in unwrap_settings:
+            file_path = individual.get(setting['path'])
             LOG.debug("filepath %s: ", file_path)
             if not (file_path and os.path.exists(file_path)):
                 LOG.debug("%s: no bam/cram file found", individual['individual_id'])
                 continue
-            append_safe(case_obj, a['append_to'], file_path)
-            if not a['index'] == 'no_index':
-                append_safe(case_obj, a['index'], find_index(file_path)) # either bai_files or mt_bais
+            append_safe(case_obj, setting['append_to'], file_path)
+            if not setting['index'] == 'no_index':
+                append_safe(case_obj, setting['index'], find_index(file_path)) # either bai_files or mt_bais
 
 
 def append_safe(obj, obj_index, elem):

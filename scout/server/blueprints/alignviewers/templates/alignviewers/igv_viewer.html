@@ -64,7 +64,7 @@
                         type: "wig",
                         name: '{{ wtrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=wtrack.url) }}',
-                        format: 'bigwig',
+                        format: 'wig',
                         {# indexURL: '{{ url_for("alignviewers.remote_static", file=wtrack.url)  }}', #}
                         color: "rgb(60, 37, 17)",
                         min: '{{ wtrack.min }}',
@@ -98,7 +98,7 @@
                         type: "wig",
                         name: '{{ ttrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=ttrack.url) }}',
-                        format: 'bigwig',
+                        format: 'wig',
                         color: "rgb(40, 0, 13)",
                         sourceType: 'file'
                       },

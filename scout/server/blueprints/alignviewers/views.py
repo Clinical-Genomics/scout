@@ -106,7 +106,8 @@ def igv():
 
     # Init upcoming igv-tracks
     sample_tracks = []
-    upd_regions_bed_tracks, upd_sites_bed_tracks = [], []
+    upd_regions_bed_tracks = []
+    upd_sites_bed_tracks = []
     counter = 0
     
     for sample in samples:
@@ -128,11 +129,11 @@ def igv():
         })
         counter += 1
 
-    rhocall_bed_tracks = make_tracks('Rhocall Bed', rhocall_bed_files)
-    rhocall_wig_tracks = make_tracks('Rhocall Wig', rhocall_wig_files)
-    tiddit_wig_tracks = make_tracks('Tiddit Wig', rhocall_wig_files)
-    updregion_tracks = make_tracks('upd region', updregion_files)
-    updsites_tracks = make_tracks('upd sites', updsites_files)
+    rhocall_bed_tracks = make_igv_tracks('Rhocall Regions', rhocall_bed_files)
+    rhocall_wig_tracks = make_igv_tracks('Rhocall Zygosity', rhocall_wig_files)
+    tiddit_wig_tracks = make_igv_tracks('TIDDIT Coverage', rhocall_wig_files)
+    updregion_tracks = make_igv_tracks('UPD region', updregion_files)
+    updsites_tracks = make_igv_tracks('UPD sites', updsites_files)
       
     display_obj['sample_tracks'] = sample_tracks
 
@@ -156,15 +157,17 @@ def igv():
 
 
 
-def make_tracks(name, files):
-    l = []
+def make_igv_tracks(name, file_list):
+    """ Return a dict according to IGV track format. """
+
+    track_list = []
     counter = 0
-    for r in files:
-        l.append({'name': name,
-                  'url': files[counter],
-                  'min': 0.0,
-                  'max': 30.0})
+    for r in file_list:
+        track_list.append({'name': name,
+                           'url': file_list[counter],
+                           'min': 0.0,
+                           'max': 30.0})
         counter += 1
-    return l
+    return track_list
 
 
