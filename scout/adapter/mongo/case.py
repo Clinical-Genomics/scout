@@ -506,6 +506,8 @@ class CaseHandler(object):
             LOG.warning(error)
 
         if existing_case and update:
+            if case_obj['status'] == 'active':
+                case_obj['status'] = 'inactive'
             self.update_case(case_obj)
 
             # update Sanger status for the new inserted variants
