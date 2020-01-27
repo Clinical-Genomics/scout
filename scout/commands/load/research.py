@@ -99,6 +99,6 @@ def research(case_id, institute, force):
                 raise click.Abort()
             case_obj['is_research'] = True
             case_obj['research_requested'] = False
-            adapter.update_case(case_obj)
+            adapter.update_case(case_obj, keep_date=True)
         else:
             LOG.warning("research not requested, use '--force'")

@@ -506,6 +506,10 @@ class CaseHandler(object):
             LOG.warning(error)
 
         if existing_case and update:
+            case_obj['rerun_requested'] = False
+            if case_obj['status'] in ['active', 'archived']:
+                case_obj['status'] = 'inactive'
+
             self.update_case(case_obj)
 
             # update Sanger status for the new inserted variants
@@ -530,7 +534,7 @@ class CaseHandler(object):
 
         return self.case_collection.insert_one(case_obj)
 
-    def update_case(self, case_obj):
+    def update_case(self, case_obj, keep_date=False):
         """Update a case in the database
 
         The following will be updated:
@@ -554,6 +558,7 @@ class CaseHandler(object):
 
             Args:
                 case_obj(dict): The new case information
+                keep_date(boolean): The update is small and should not trigger a date change
 
             Returns:
                 updated_case(dict): The updated case information
@@ -565,10 +570,21 @@ class CaseHandler(object):
             {'_id': case_obj['_id']}
         )
 
-        # if case is updated and was archived or active - make it inactive
-        updated_status = old_case.get('status')
-        if old_case.get('status') in ['archived', 'active']:
-            updated_status = 'inactive'
+        updated_at = datetime.datetime.now()
+        if keep_date:
+            updated_at = old_case['updated_at']
+
+        # collect already available info from individuals
+        old_individuals = old_case.get('individuals')
+        for ind in case_obj.get('individuals'):
+            for old_ind in old_individuals:
+                # if the same individual is present in new case and old case
+                if ind['individual_id'] == old_ind['individual_id']:
+                    # collect user-entered info and save at the individual level in new case_obj
+                    if ind.get('age') is None:
+                        ind['age'] = old_ind.get('age')
+                    if ind.get('tissue_type') is None:
+                        ind['tissue_type'] = old_ind.get('tissue_type')
 
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case_obj['_id']},
@@ -584,8 +600,8 @@ class CaseHandler(object):
                     'analysis_date': case_obj['analysis_date'],
                     'delivery_report': case_obj.get('delivery_report'),
                     'individuals': case_obj['individuals'],
-                    'updated_at': datetime.datetime.now(),
-                    'rerun_requested': False,
+                    'updated_at': updated_at,
+                    'rerun_requested': case_obj.get('rerun_requested', False),
                     'panels': case_obj.get('panels', []),
                     'genome_build': case_obj.get('genome_build', '37'),
                     'genome_version': case_obj.get('genome_version'),
@@ -601,7 +617,7 @@ class CaseHandler(object):
                     'research_requested': case_obj.get('research_requested', False),
                     'multiqc': case_obj.get('multiqc'),
                     'mme_submission': case_obj.get('mme_submission'),
-                    'status': updated_status
+                    'status': case_obj.get('status')
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER
