@@ -15,12 +15,6 @@ samples:
     sex: male
     expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
-    bam_path: /Users/Mikael/Work/genomes/HG00096.mapped.ILLUMINA.bwa.GBR.low_coverage.20101123.bam
-    rhocall_wig: /Users/Mikael/Work/scout_dev2/scout/scout/demo/test.bw
-    rhocall_bed: /Users/Mikael/Work/scout_dev2/scout/scout/demo/test_upd.sites.bed
-    tiddit_coverage_wig: /Users/Mikael/Work/scout_dev2/scout/scout/demo/test.bw
-    upd_regions_bed: /Users/Mikael/Work/scout_dev2/scout/scout/demo/test_upd.sites.bed
-    upd_sites_bed: /Users/Mikael/Work/scout_dev2/scout/scout/demo/test_upd.sites.bed
     vcf2cytosure: scout/demo/ADM1059A2.dummy.cgh
     tissue_type: blood
 
@@ -34,12 +28,6 @@ samples:
     sex: male
     expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
-    bam_path: /Users/Mikael/Work/genomes/HG00096.mapped.ILLUMINA.bwa.GBR.low_coverage.20101123.bam
-    rhocall_wig: scout/demo/test.bw
-    rhocall_bed: /Users/Mikael/Work/scout_dev2/scout/scout/demo/test_upd.sites.bed    
-    tiddit_coverage_wig: /Users/Mikael/Work/scout_dev2/scout/scout/demo/test.bw
-    upd_regions_bed: /Users/Mikael/Work/scout_dev2/scout/scout/demo/test_upd.sites.bed
-    upd_sites_bed: /Users/Mikael/Work/scout_dev2/scout/scout/demo/test_upd.sites.bed
     vcf2cytosure: scout/demo/ADM1059A1.dummy.cgh
     tissue_type: blood
 
@@ -52,15 +40,9 @@ samples:
     phenotype: unaffected
     sex: female
     expected_coverage: 30
-    mt_bam: /Users/Mikael/Work/genomes/HG00096.mapped.ILLUMINA.bwa.GBR.low_coverage.20101123.bam
-    bam_path: /Users/Mikael/Work/genomes/HG00096.mapped.ILLUMINA.bwa.GBR.low_coverage.20101123.bam
-    rhocall_wig: scout/demo/test.bw
-    rhocall_bed: /Users/Mikael/Work/scout_dev2/scout/scout/demo/test_upd.sites.bed
-    tiddit_coverage_wig: /Users/Mikael/Work/scout_dev2/scout/scout/demo/test.bw
-    upd_regions_bed: /Users/Mikael/Work/scout_dev2/scout/scout/demo/test_upd.sites.bed
-    upd_sites_bed: /Users/Mikael/Work/scout_dev2/scout/scout/demo/test_upd.sites.bed
-
-
+    mt_bam: scout/demo/reduced_mt.bam
+    vcf2cytosure: scout/demo/ADM1059A3.dummy.cgh
+    tissue_type: blood
 
 vcf_snv: scout/demo/643594.clinical.vcf.gz
 vcf_sv: scout/demo/643594.clinical.SV.vcf.gz
