@@ -49,6 +49,11 @@ def sv_variant(institute_id, case_name, variant_id):
     """Display a specific structural variant."""
     data = variant_controller(store, institute_id, case_name, variant_id, add_other=False,
                                variant_type='sv')
+
+    if current_app.config.get('LOQUSDB_SETTINGS'):
+        LOG.debug("Fetching loqusdb information for %s", variant_id)
+        data['observations'] = observations(store, loqusdb, data['case'], data['variant'])
+
     return data
 
 @variant_bp.route('/<institute_id>/<case_name>/str/variants/<variant_id>')
