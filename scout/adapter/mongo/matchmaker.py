@@ -24,7 +24,7 @@ class MMEHandler(object):
         existing_mm_submission = case_obj.get('mme_submission')
         if existing_mm_submission:
             created = existing_mm_submission['created_at']
-        
+
         patients = [ resp['patient'] for resp in mme_subm_obj.get('server_responses')]
 
         subm_obj = {
@@ -38,7 +38,7 @@ class MMEHandler(object):
             'genes_only' : mme_subm_obj['genes_only']
         }
         case_obj['mme_submission'] = subm_obj
-        updated_case = self.update_case(case_obj)
+        updated_case = self.update_case(case_obj, keep_date=True)
 
         # create events for subjects add in MatchMaker for this case
         institute_obj = self.institute(case_obj['owner'])
@@ -73,5 +73,5 @@ class MMEHandler(object):
 
         # Reset mme_submission field for this case
         case_obj['mme_submission'] = None
-        updated_case = self.update_case(case_obj)
+        updated_case = self.update_case(case_obj, keep_date=True)
         return updated_case
