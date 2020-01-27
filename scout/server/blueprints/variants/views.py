@@ -8,9 +8,7 @@ import zipfile
 import pathlib
 import pymongo
 
-from flask import (Blueprint, request, redirect, abort, flash, current_app, url_for, Response,
-                   send_file)
-from werkzeug.datastructures import (Headers, MultiDict)
+from flask import (Blueprint, request, redirect, abort, flash, current_app, url_for, send_file)
 from flask_login import current_user
 
 from scout.constants import SEVERE_SO_TERMS, MANUAL_RANK_OPTIONS, CANCER_TIER_OPTIONS
@@ -128,29 +126,9 @@ def variants(institute_id, case_name):
         form.hgnc_symbols.data = list(current_symbols)
 
     variants_query = store.variants(case_obj['_id'], query=form.data, category=category)
-    data = {}
 
     if request.form.get('export'):
-        document_header = controllers.variants_export_header(case_obj)
-        export_lines = []
-        if form.data['chrom'] == 'MT':
-            # Return all MT variants
-            export_lines = controllers.variant_export_lines(store, case_obj, variants_query)
-        else:
-            # Return max 500 variants
-            export_lines = controllers.variant_export_lines(store, case_obj, variants_query.limit(500))
-
-        def generate(header, lines):
-            yield header + '\n'
-            for line in lines:
-                yield line + '\n'
-
-        headers = Headers()
-        headers.add('Content-Disposition','attachment', filename=str(case_obj['display_name'])+'-filtered_variants.csv')
-
-        # return a csv with the exported variants
-        return Response(generate(",".join(document_header), export_lines), mimetype='text/csv',
-                        headers=headers)
+        return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
     return dict(institute=institute_obj, case=case_obj, form=form, manual_rank_options=MANUAL_RANK_OPTIONS,
@@ -183,30 +161,15 @@ def str_variants(institute_id, case_name):
 @templated('variants/sv-variants.html')
 def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
+
     page = int(request.form.get('page', 1))
+    variant_type = request.args.get('variant_type', 'clinical')
     category='sv'
 
+    # Define case and institute objects
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_type = request.args.get('variant_type', 'clinical')
-
     if request.form.get('hpo_clinical_filter'):
         case_obj['hpo_clinical_filter'] = True
-
-    user_obj = store.user(current_user.email)
-    if(request.method == "POST"):
-        form = controllers.populate_filters_form(store, institute_obj, case_obj,
-                                                 user_obj, category, request.form)
-    else:
-        form = SvFiltersForm(request.args)
-        # set form variant data type the first time around
-        form.variant_type.data = variant_type
-
-
-    # populate filters dropdown
-    available_filters = store.filters(institute_id, category)
-    form.filters.choices = [(filter.get('_id'), filter.get('display_name'))
-        for filter in available_filters]
-
 
     # update status of case if visited for the first time
     if case_obj['status'] == 'inactive' and not current_user.is_admin:
@@ -216,81 +179,21 @@ def sv_variants(institute_id, case_name):
                             case_name=case_obj['display_name'])
         store.update_status(institute_obj, case_obj, user_obj, 'active', case_link)
 
-    # populate available panel choices
-    available_panels = case_obj.get('panels', []) + [
-        {'panel_name': 'hpo', 'display_name': 'HPO'}]
-
-    panel_choices = [(panel['panel_name'], panel['display_name'])
-                     for panel in available_panels]
-
-    form.gene_panels.choices = panel_choices
-
-    # upload gene panel if symbol file exists???
-
-    # check if supplied gene symbols exist
-    hgnc_symbols = []
-    non_clinical_symbols = []
-    not_found_symbols = []
-    not_found_ids = []
-    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
-        is_clinical = form.data.get('variant_type', 'clinical') == 'clinical'
-        clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
-        for hgnc_symbol in form.hgnc_symbols.data:
-            if hgnc_symbol.isdigit():
-                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
-                if hgnc_gene is None:
-                    not_found_ids.append(hgnc_symbol)
-                else:
-                    hgnc_symbols.append(hgnc_gene['hgnc_symbol'])
-            elif sum(1 for i in store.hgnc_genes(hgnc_symbol)) == 0:
-                  not_found_symbols.append(hgnc_symbol)
-            elif is_clinical and (hgnc_symbol not in clinical_symbols):
-                 non_clinical_symbols.append(hgnc_symbol)
-            else:
-                hgnc_symbols.append(hgnc_symbol)
-
-    if (not_found_ids):
-        flash("HGNC id not found: {}".format(", ".join(not_found_ids)), 'warning')
-    if (not_found_symbols):
-        flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), 'warning')
-    if (non_clinical_symbols):
-        flash("Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)), 'warning')
-    form.hgnc_symbols.data = hgnc_symbols
-
-    # handle HPO gene list separately
-    if 'hpo' in form.data['gene_panels']:
-        hpo_symbols = list(set(term_obj['hgnc_symbol'] for term_obj in
-                               case_obj['dynamic_gene_list']))
-
-        current_symbols = set(hgnc_symbols)
-        current_symbols.update(hpo_symbols)
-        form.hgnc_symbols.data = list(current_symbols)
-
+    form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category,
+        request)
 
     variants_query = store.variants(case_obj['_id'], category=category,
                                     query=form.data)
-    data = {}
     # if variants should be exported
     if request.form.get('export'):
-        document_header = controllers.variants_export_header(case_obj)
-        export_lines = []
-        # Return max 500 variants
-        export_lines = controllers.variant_export_lines(store, case_obj, variants_query.limit(500))
-
-        def generate(header, lines):
-            yield header + '\n'
-            for line in lines:
-                yield line + '\n'
-
-        headers = Headers()
-        headers.add('Content-Disposition','attachment', filename=str(case_obj['display_name'])+'-filtered_sv-variants.csv')
-        return Response(generate(",".join(document_header), export_lines), mimetype='text/csv', headers=headers) # return a csv with the exported variants
+        return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.sv_variants(store, institute_obj, case_obj,
                                        variants_query, page)
 
     return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
-                form=form, severe_so_terms=SEVERE_SO_TERMS, cancer_tier_options=CANCER_TIER_OPTIONS, manual_rank_options=MANUAL_RANK_OPTIONS, page=page, **data)
+                form=form, severe_so_terms=SEVERE_SO_TERMS, manual_rank_options=MANUAL_RANK_OPTIONS, page=page, **data)
+
 
 @variants_bp.route('/<institute_id>/<case_name>/cancer/variants', methods=['GET','POST'])
 @templated('variants/cancer-variants.html')
@@ -325,6 +228,46 @@ def cancer_variants(institute_id, case_name):
     variant_type = request.args.get('variant_type', 'clinical')
     data = controllers.cancer_variants(store, institute_id, case_name, form, page=page)
     return dict(variant_type=variant_type, **data)
+
+
+@variants_bp.route('/<institute_id>/<case_name>/cancer/sv-variants',
+                   methods=['GET','POST'])
+@templated('variants/cancer-sv-variants.html')
+def cancer_sv_variants(institute_id, case_name):
+    """Display a list of cancer structural variants."""
+
+    page = int(request.form.get('page', 1))
+    variant_type = request.args.get('variant_type', 'clinical')
+    category='cancer_sv'
+
+    # Define case and institute objects
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    if request.form.get('hpo_clinical_filter'):
+        case_obj['hpo_clinical_filter'] = True
+
+    # update status of case if visited for the first time
+    if case_obj['status'] == 'inactive' and not current_user.is_admin:
+        flash('You just activated this case!', 'info')
+        user_obj = store.user(current_user.email)
+        case_link = url_for('cases.case', institute_id=institute_obj['_id'],
+                            case_name=case_obj['display_name'])
+        store.update_status(institute_obj, case_obj, user_obj, 'active', case_link)
+
+    form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category,
+        request)
+
+    variants_query = store.variants(case_obj['_id'], category=category,
+                                    query=form.data)
+    # if variants should be exported
+    if request.form.get('export'):
+        return controllers.download_variants(store, case_obj, variants_query)
+
+    data = controllers.sv_variants(store, institute_obj, case_obj,
+                                       variants_query, page)
+
+    return dict(institute=institute_obj, case=case_obj, variant_type=variant_type,
+                form=form, severe_so_terms=SEVERE_SO_TERMS, cancer_tier_options=CANCER_TIER_OPTIONS, manual_rank_options=MANUAL_RANK_OPTIONS, page=page, **data)
+
 
 @variants_bp.route('/<institute_id>/<case_name>/upload', methods=['POST'])
 def upload_panel(institute_id, case_name):

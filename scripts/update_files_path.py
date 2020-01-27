@@ -5,7 +5,7 @@ import pymongo
 from pymongo import MongoClient
 from tabulate import tabulate
 
-VCF_FILES = ['vcf_snv', 'vcf_sv', 'vcf_str', 'vcf_cancer', 'vcf_snv_research', 'vcf_sv_research', 'vcf_cancer_research']
+VCF_FILES = ['vcf_snv', 'vcf_sv', 'vcf_str', 'vcf_cancer', 'vcf_cancer_sv', 'vcf_snv_research', 'vcf_sv_research', 'vcf_cancer_research','vcf_cancer_sv_research']
 INDIVIDUAL_FILES = ['bam_file', 'mt_bam', 'vcf2cytosure']
 
 @click.command()

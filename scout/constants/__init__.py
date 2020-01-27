@@ -31,7 +31,6 @@ cytobands_handle = get_file_handle(cytobands_path)
 COLLECTIONS = [
     'hgnc_gene',
     'user',
-    'whitelist',
     'institute',
     'event',
     'case',
@@ -97,6 +96,10 @@ CALLERS = {
         }, {
             'id': 'freebayes',
             'name': 'Freebayes',
+    }],
+    'cancer_sv': [{
+            'id': 'manta',
+            'name': 'Manta',
     }],
     'sv': [{
             'id': 'cnvnator',
