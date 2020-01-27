@@ -17,6 +17,12 @@ def build_individual(ind):
         Returns:
             ind_obj (dict): A Individual object
 
+        Raises:
+            PedigreeError: if sex is unknown, 
+            if phenotype is unknown, 
+            if analysis_type is unknwon,
+            or missing individual_id
+
         dict(
             individual_id = str, # required
             display_name = str,
