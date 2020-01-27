@@ -500,7 +500,7 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj, ):
     with pytest.raises(ValueError):
         adapter.request_rerun(institute_obj, res, user_obj, 'blank')
 
-    # and WHEN updating the case agagin
+    # and WHEN updating the case again
     res = adapter.update_case(case_obj)
 
     # THEN it is inactivated
