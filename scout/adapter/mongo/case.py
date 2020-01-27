@@ -574,6 +574,18 @@ class CaseHandler(object):
         if keep_date:
             updated_at = old_case['updated_at']
 
+        # collect already available info from individuals
+        old_individuals = old_case.get('individuals')
+        for ind in case_obj.get('individuals'):
+            for old_ind in old_individuals:
+                # if the same individual is present in new case and old case
+                if ind['individual_id'] == old_ind['individual_id']:
+                    # collect user-entered info and save at the individual level in new case_obj
+                    if old_ind.get('age'):
+                        ind['age'] = old_ind['age']
+                    if old_ind.get('tissue_type'):
+                        ind['tissue_type'] = old_ind['tissue_type']
+
         updated_case = self.case_collection.find_one_and_update(
             {'_id': case_obj['_id']},
             {
