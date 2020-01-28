@@ -77,7 +77,7 @@ Let's go through each field:
 	- *sex* specifies the sex of the sample in human readable format
 	- *expected_coverage* the level of expected coverage
 	- *bam_file* Path to bam file to view alignments
-	- *rhocall_bed* Path to bed file to view alignments [Reference](https://github.com/dnil/rhocall)
+	- *rhocall_bed* Path to bed file to view alignments (Reference)[https://github.com/dnil/rhocall]
 	- *rhocall_wig* Path to wig file to view alignments (Reference)[https://github.com/dnil/rhocall]
 	- *upd_regions_bed* Path to bed file to view alignments (Reference)[https://github.com/bjhall/upd]
 	- *upd_sites_bed* Path to bed file to view alignments (Reference)[https://github.com/bjhall/upd]
