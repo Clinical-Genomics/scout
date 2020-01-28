@@ -64,3 +64,20 @@ hpo_terms_def_path = pkg_resources.resource_filename("scout", hpo_terms_def_file
 
 # Additional paths
 madeline_path = pkg_resources.resource_filename("scout", madeline_file)
+
+demo_files = {
+    "exac_path": exac_reduced_path,
+    "genemap2_path": genemap2_reduced_path,
+    "mim2gene_path": mim2gene_reduced_path,
+    "genes37_path": genes37_reduced_path,
+    "genes38_path": genes38_reduced_path,
+    "hgnc_path": hgnc_reduced_path,
+    "hpo_disease_path": hpo_phenotype_to_terms_reduced_path,
+    "hpo_to_genes_path": hpo_to_genes_reduced_path,
+    "hpogenes_path": hpogenes_reduced_path,
+    "hpoterms_path": hpoterms_reduced_path,
+    "madeline_path": madeline_path,
+    "transcripts37_path": transcripts37_reduced_path,
+    "transcripts38_path": transcripts38_reduced_path,
+    "panel_path": transcripts38_reduced_path,
+}
