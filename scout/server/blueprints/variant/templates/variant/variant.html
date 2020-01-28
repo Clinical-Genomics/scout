@@ -709,7 +709,7 @@
     </ul>
     {% if config.LOQUSDB_SETTINGS %}
       <div class="panel-heading">
-        <a href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
+        <a class="text-white" href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
       </div>
       <ul class="list-group">
         <li class="list-group-item">
@@ -798,7 +798,7 @@
         <span class="float-right">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
       </li>
     </ul>
-    <div class="panel-heading">Mappability (<a href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
+    <div class="panel-heading">Mappability (<a class="text-white" href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
     {% set superdups_fracmatches = [] %}
     {% for gene in variant.genes %}
       {% for transcript in gene.transcripts %}
@@ -811,11 +811,13 @@
     {% endfor %}
     {% set superdups_fracmatches = superdups_fracmatches|sort %}
     <div class="panel-body">
+      <div class="ml-3 mb-3 mt-3">
         {% if superdups_fracmatches %}
           <span>mapping to {{superdups_fracmatches|length}} segm. dups. (min matching:{{ superdups_fracmatches|first|float|round(3) }}, max matching:{{ superdups_fracmatches|last|float|round(3) }})</span>
         {% else %}
           <span> - </span>
         {% endif %}
+      </div>
     </div>
   </div>
 {% endmacro %}
