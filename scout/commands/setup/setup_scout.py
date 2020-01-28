@@ -45,7 +45,7 @@ def abort_if_false(ctx, param, value):
     expose_value=False,
     prompt="This will delete existing database, do you wish to continue?",
 )
-@click.option("--hgnc-path", type=click.Path(exists=True))
+@click.option("--hgnc", type=click.Path(exists=True))
 @click.option(
     "--exac", type=click.Path(exists=True), help="Path to file with EXAC pLi scores"
 )
@@ -140,14 +140,18 @@ def database(
     }
     LOG.info("Setting up database %s", context.obj["mongodb"])
 
-    setup_scout(
-        adapter=adapter,
-        institute_id=institute_name,
-        user_name=user_name,
-        user_mail=user_mail,
-        api_key=api_key,
-        resource_files=resource_files,
-    )
+    try:
+        setup_scout(
+            adapter=adapter,
+            institute_id=institute_name,
+            user_name=user_name,
+            user_mail=user_mail,
+            api_key=api_key,
+            resource_files=resource_files,
+        )
+    except Exception as err:
+        LOG.error(err)
+        raise click.Abort()
 
 
 @click.command("demo", short_help="Setup a scout demo instance")
