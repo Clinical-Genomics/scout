@@ -12,6 +12,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display all phenotypes on variant page
 - Display hgvs coordinates on pinned and causatives
 - Clear panel pending changes
+- Adds option to setup the database with static files
+- Adds cli command to download the resources from CLI that scout needs
 
 ### Fixed
 - Cancer case HPO panel variants link
@@ -42,6 +44,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parsing and displaying cancer SV variants from Manta annotated VCF files
 - Dismiss cancer snv variants with cancer-specific options
 - Add IGV.js UPD, RHO and TIDDIT coverage wig tracks.
+
 
 ### Fixed
 - Slightly darker page background
