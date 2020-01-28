@@ -229,6 +229,24 @@ DISMISS_VARIANT_OPTIONS = {
         }
 }
 
+CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS = {
+    44: {
+        'label': 'Possible Germline',
+        'description': 'Variant is possibly a germline event.',
+        'evidence': []
+        },
+    45: {
+        'label': 'Low count normal',
+        'description': 'Variant has too few reads in normal sample "AD".',
+        'evidence': []
+        },
+    46: {
+        'label': 'Low count tumor',
+        'description': 'Variant has too few reads in tumor sample. "AD".',
+        'evidence': []
+        }
+}
+
 MOSAICISM_OPTIONS = {
     1: {
         'label': 'Suspected in parent',

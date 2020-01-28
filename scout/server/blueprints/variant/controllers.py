@@ -7,7 +7,8 @@ from flask_login import current_user
 from scout.constants import (ACMG_COMPLETE_MAP, ACMG_CRITERIA, ACMG_MAP,
                              ACMG_OPTIONS, CALLERS, CANCER_TIER_OPTIONS,
                              DISMISS_VARIANT_OPTIONS, MANUAL_RANK_OPTIONS,
-                             MOSAICISM_OPTIONS, VERBS_MAP)
+                             MOSAICISM_OPTIONS, VERBS_MAP,
+                             CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS)
 from scout.parse.variant.ids import parse_document_id
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import (institute_and_case, user_institutes,
@@ -181,6 +182,10 @@ def variant(
             overlapping_vars.append(var)
     variant_obj["end_chrom"] = variant_obj.get("end_chrom", variant_obj["chromosome"])
 
+    dismiss_options = DISMISS_VARIANT_OPTIONS
+    if case_obj.get('track') == 'cancer':
+        dismiss_options = {**DISMISS_VARIANT_OPTIONS, **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS}
+
     return {
         "institute": institute_obj,
         "case": case_obj,
@@ -190,7 +195,7 @@ def variant(
         "overlapping_vars": overlapping_vars,
         "manual_rank_options": MANUAL_RANK_OPTIONS,
         "cancer_tier_options": CANCER_TIER_OPTIONS,
-        "dismiss_variant_options": DISMISS_VARIANT_OPTIONS,
+        "dismiss_variant_options": dismiss_options,
         "mosaic_variant_options": MOSAICISM_OPTIONS,
         "ACMG_OPTIONS": ACMG_OPTIONS,
         "evaluations": evaluations,
