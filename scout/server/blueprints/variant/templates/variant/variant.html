@@ -520,7 +520,6 @@
           <!--<input type="hidden" name="now" values="{{now}}"-->
         {% endif %}
         <!-- end of general hidden form fields -->
-
         <div class="panel-heading">Gene coverage</div>
         <table class="table table-bordered table-fixed table-sm">
           <tbody>
@@ -530,14 +529,14 @@
                   {% if case.mt_bams %}
                     <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
                     <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
-                    <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV viewer</a>
+                    <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV viewer</button>
                   {% else %}
                     <span class="text-muted">MT BAM file(s) missing</span>
                   {% endif %}
                 {% elif case.bam_files %}
                   <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
                   <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
-                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</a>
+                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
                 {% else %}
                   <span class="text-muted">BAM file(s) missing</span>
                 {% endif %}
