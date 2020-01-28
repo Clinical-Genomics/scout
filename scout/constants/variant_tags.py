@@ -226,7 +226,10 @@ DISMISS_VARIANT_OPTIONS = {
         'description':
         'In a gene where mainly other types of variation (e.g. repeat expansion) are established as pathologic.',
         'evidence': ['type']
-        },
+        }
+}
+
+CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS = {
     44: {
         'label': 'Possible Germline',
         'description': 'Variant is possibly a germline event.',
