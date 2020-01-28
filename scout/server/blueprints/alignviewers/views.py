@@ -40,13 +40,14 @@ def igv():
     chromosome_build = request.form.get('build')
     LOG.debug('Chromosome build is %s', chromosome_build)
 
-    samples = request.form.get('sample')
+    samples = request.form.get('sample').split(',')
+
     if request.form.get('align') == 'mt_bam':
-        bam_files = request.form.get('mt_bam')
-        bai_files = request.form.get('mt_bai')
+        bam_files = request.form.get('mt_bam').split(',')
+        bai_files = request.form.get('mt_bai').split(',')
     else:
-        bam_files = request.form.get('bam')
-        bai_files = request.form.get('bai')
+        bam_files = request.form.get('bam').split(',')
+        bai_files = request.form.get('bai').split(',')
 
     LOG.debug('loading the following tracks: %s', bam_files)
 

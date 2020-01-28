@@ -511,12 +511,12 @@
       <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
         <!-- general hidden fields required to submit POST request to IGV viewer -->
         {% if case.mt_bams or case.bam_files %}
-          <input type="hidden" name="sample" value="{{case.sample_names}}">
+          <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
           <input type="hidden" name="build" value="{{case.genome_build}}">
           <input type="hidden" name="contig" value="{{variant.chromosome}}">
           <input type="hidden" name="start" value="{{variant.position - 50}}">
           <input type="hidden" name="stop" value="{{variant.end_position - 50}}">
-          <input type="hidden" name="center_guide" value="{{T}}">
+          <input type="hidden" name="center_guide" value="T">
           <!--<input type="hidden" name="now" values="{{now}}"-->
         {% endif %}
         <!-- end of general hidden form fields -->
@@ -528,15 +528,15 @@
               <td>
                 {% if variant.chromosome == "MT" %}
                   {% if case.mt_bams %}
-                    <input type="hidden" name="mt_bam" value="{{case.mt_bams}}">
-                    <input type="hidden" name="mt_bai" value="{{case.mt_bais}}">
+                    <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
+                    <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
                     <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV viewer</a>
                   {% else %}
                     <span class="text-muted">MT BAM file(s) missing</span>
                   {% endif %}
                 {% elif case.bam_files %}
-                  <input type="hidden" name="bam" value="{{case.bam_files}}">
-                  <input type="hidden" name="bai" value="{{case.bai_files}}">
+                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
+                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
                   <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</a>
                 {% else %}
                   <span class="text-muted">BAM file(s) missing</span>
