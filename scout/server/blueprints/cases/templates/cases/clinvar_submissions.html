@@ -10,9 +10,8 @@
     <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute_id) }}">
-      {{ institute_id }} Cases
-    </a>
+    <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">{{ institute.display_name }}
+      Cases</a>
   </li>
   {% if config.SHOW_CAUSATIVES %}
     <li class="nav-item">
