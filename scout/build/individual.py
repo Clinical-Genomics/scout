@@ -18,8 +18,8 @@ def build_individual(ind):
             ind_obj (dict): A Individual object
 
         Raises:
-            PedigreeError: if sex is unknown, 
-            if phenotype is unknown, 
+            PedigreeError: if sex is unknown,
+            if phenotype is unknown,
             if analysis_type is unknwon,
             or missing individual_id
 
@@ -31,11 +31,15 @@ def build_individual(ind):
             father = str, # Individual id of father
             mother = str, # Individual id of mother
             capture_kits = list, # List of names of capture kits
-            bam_file = str, # Path to bam file
+            bam_file = str, # Path to bam file,
+            rhocall_wig = str, # Path to a rhocall wig file showing heterozygosity levels
+            rhocall_bed = str, # Path to a rhocall bed file marking LOH regions
+            tiddit_coverage_wig = str, # Path to a TIDDIT coverage wig - overview coverage
+            upd_regions_bed = str, # Path to a UPD regions bed marking UPD calls
+            upd_sites_bed = str, # Path to a UPD sites bed, showing UPD info for vars
             vcf2cytosure = str, # Path to CGH file
             analysis_type = str, # choices=ANALYSIS_TYPES
         )
-
     """
 
     try:
