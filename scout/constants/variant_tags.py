@@ -237,12 +237,12 @@ CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS = {
         },
     45: {
         'label': 'Low count normal',
-        'description': 'If normal sample exists, variant has too few reads in normal sample "AD".',
+        'description': 'Variant has too few reads in normal sample "AD".',
         'evidence': []
         },
     46: {
         'label': 'Low count tumor',
-        'description': 'Variant has too few reads in tumor sample. "AD"',
+        'description': 'Variant has too few reads in tumor sample. "AD".',
         'evidence': []
         }
 }
