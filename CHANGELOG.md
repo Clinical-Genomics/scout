@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clinvar submissions accessible to all users of an institute
 - Case should not always inactivate upon update
 - Show dismissed snv cancer variants as grey on the cancer variants page
+- Convert all the GET requests to the igv view to POST request
 
 
 
