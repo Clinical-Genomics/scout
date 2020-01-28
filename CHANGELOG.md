@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Optionally format code automatically on commit
 - Adds command to backup vital parts `scout export database`
 - Parsing and displaying cancer SV variants from Manta annotated VCF files
+- Dismiss cancer snv variants with cancer-specific options
 
 
 ### Fixed
@@ -26,6 +27,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Coverage calculated on Pull Request commits instead of last push commit
 - Clinvar submissions accessible to all users of an institute
 - Case should not always inactivate upon update
+- Show dismissed snv cancer variants as grey on the cancer variants page
+
 
 
 ## [4.10.1]
