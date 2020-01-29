@@ -26,7 +26,7 @@ def panels():
         lines = None
         try:
             if b'\n' in content:
-                lines = content.decode('utf-8', 'ignore').split('\n')
+                lines = content.decode('utf-8-sig', 'ignore').split('\n')
             else:
                 lines = content.decode('windows-1252').split('\r')
         except Exception as err:
