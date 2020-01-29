@@ -29,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case should not always inactivate upon update
 - Show dismissed snv cancer variants as grey on the cancer variants page
 - Improved style of mappability link and local observations on variant page
+- Convert all the GET requests to the igv view to POST request
 
 
 ## [4.10.1]
