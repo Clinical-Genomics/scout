@@ -11,6 +11,7 @@ and one admin user is added.
 """
 import datetime
 import logging
+import pathlib
 from pprint import pprint as pp
 
 import click
@@ -45,6 +46,7 @@ def abort_if_false(ctx, param, value):
     expose_value=False,
     prompt="This will delete existing database, do you wish to continue?",
 )
+@click.option("--files", type=click.Path(exists=True, dir_okay=True, file_okay=False))
 @click.option("--hgnc", type=click.Path(exists=True))
 @click.option(
     "--exac", type=click.Path(exists=True), help="Path to file with EXAC pLi scores"
@@ -58,6 +60,16 @@ def abort_if_false(ctx, param, value):
     "--ensgenes38",
     type=click.Path(exists=True),
     help="Path to file with ENSEMBL genes, build 38",
+)
+@click.option(
+    "--enstx37",
+    type=click.Path(exists=True),
+    help="Path to file with ENSEMBL transcripts, build 37",
+)
+@click.option(
+    "--enstx38",
+    type=click.Path(exists=True),
+    help="Path to file with ENSEMBL transcripts, build 38",
 )
 @click.option("--mim2gene", type=click.Path(exists=True))
 @click.option("--genemap", type=click.Path(exists=True))
@@ -105,9 +117,12 @@ def database(
     exac,
     ensgenes37,
     ensgenes38,
+    enstx37,
+    enstx38,
     hpoterms,
     hpo_to_genes,
     hpo_disease,
+    files,
 ):
     """Setup a scout database."""
 
@@ -133,25 +148,57 @@ def database(
         "exac_path": exac,
         "genes37_path": ensgenes37,
         "genes38_path": ensgenes38,
+        "transcripts37_path": enstx37,
+        "transcripts38_path": enstx38,
         "hpogenes_path": hpo_to_genes,
         "hpoterms_path": hpoterms,
         "hpo_to_genes_path": hpo_to_genes,
         "hpo_disease_path": hpo_disease,
     }
     LOG.info("Setting up database %s", context.obj["mongodb"])
-
-    try:
-        setup_scout(
-            adapter=adapter,
-            institute_id=institute_name,
-            user_name=user_name,
-            user_mail=user_mail,
-            api_key=api_key,
-            resource_files=resource_files,
-        )
-    except Exception as err:
-        LOG.error(err)
-        raise click.Abort()
+    if files:
+        for path in pathlib.Path(files).glob("**/*"):
+            if path.stem == "mim2genes":
+                resource_files["mim2gene_path"] = str(path.resolve())
+            if path.stem == "genemap2":
+                resource_files["genemap_path"] = str(path.resolve())
+            if path.stem == "hgnc":
+                resource_files["hgnc_path"] = str(path.resolve())
+            if path.stem == "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data":
+                resource_files["exac_path"] = str(path.resolve())
+            if path.stem == "ensembl_genes_37":
+                resource_files["genes37_path"] = str(path.resolve())
+            if path.stem == "ensembl_genes_38":
+                resource_files["genes38_path"] = str(path.resolve())
+            if path.stem == "ensembl_transcripts_37":
+                resource_files["transcripts37_path"] = str(path.resolve())
+            if path.stem == "ensembl_transcripts_38":
+                resource_files["transcripts38_path"] = str(path.resolve())
+            if path.stem == "ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype":
+                resource_files["hpogenes_path"] = str(path.resolve())
+            if path.stem == "hpo":
+                resource_files["hpoterms_path"] = str(path.resolve())
+            if path.stem == "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes":
+                resource_files["hpo_to_genes_path"] = str(path.resolve())
+            if (
+                path.stem
+                == "ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes"
+            ):
+                resource_files["hpo_disease_path"] = str(path.resolve())
+    # pp(resource_files)
+    # raise click.Abort()
+    # try:
+    setup_scout(
+        adapter=adapter,
+        institute_id=institute_name,
+        user_name=user_name,
+        user_mail=user_mail,
+        api_key=api_key,
+        resource_files=resource_files,
+    )
+    # except Exception as err:
+    #     LOG.error(err)
+    #     raise click.Abort()
 
 
 @click.command("demo", short_help="Setup a scout demo instance")
