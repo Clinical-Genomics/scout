@@ -102,7 +102,7 @@ def setup_scout(
     genemap_path = resource_files.get("genemap_path")
     if genemap_path and mim2gene_path:
         mim2gene_lines = [line for line in get_file_handle(mim2gene_path)]
-        genemap_lines = [line for line in get_file_handle(genemap2_path)]
+        genemap_lines = [line for line in get_file_handle(genemap_path)]
 
     if (genemap_lines is None) and api_key:
         try:

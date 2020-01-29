@@ -38,7 +38,7 @@ def parse_omim_line(line, header):
     return omim_info
 
 
-def parse_genemap2_phenotypes(phenotype_entry):
+def parse_genemap2_phenotypes(phenotype_entry, mim_number=None):
     """Parse the Phenotype entry of a genemap2 line
 
     Returns a list with the relevant phenotypes.
@@ -77,7 +77,7 @@ def parse_genemap2_phenotypes(phenotype_entry):
                 if mimnr_match:
                     phenotype_mim = int(mimnr_match.group())
                 else:
-                    phenotype_mim = parsed_entry["mim_number"]
+                    phenotype_mim = mim_number
                     phenotype_description += text[:-4]
                 break
         # Find the inheritance
@@ -142,7 +142,8 @@ def parse_genemap2(lines):
             continue
 
         parsed_entry = parse_omim_line(line, header)
-        parsed_entry["mim_number"] = int(parsed_entry["MIM Number"])
+        mim_number = int(parsed_entry["MIM Number"])
+        parsed_entry["mim_number"] = mim_number
         parsed_entry["raw"] = line
 
         # This is the approved symbol for the entry
@@ -166,7 +167,7 @@ def parse_genemap2(lines):
         # patterns found in the associated phenotypes
         gene_inheritance = set()
         parsed_entry["phenotypes"] = parse_genemap2_phenotypes(
-            parsed_entry.get("Phenotypes", "")
+            parsed_entry.get("Phenotypes", ""), mim_number
         )
 
         for phenotype in parsed_entry["phenotypes"]:
@@ -218,7 +219,7 @@ def parse_mim2gene(lines):
         if line.startswith("#"):
             continue
 
-        if not len(line) > 0:
+        if not len(line) > 10:
             continue
 
         line = line.rstrip()
