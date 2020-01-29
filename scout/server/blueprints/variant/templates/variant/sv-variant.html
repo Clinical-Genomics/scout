@@ -207,7 +207,7 @@
   	        Length
             <div class="float-right">
               {{ variant.length }}
-              <form role="form" name="bp2_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
+              <form role="form" name="alignment_length_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
                 {% if case.mt_bams or case.bam_files %}
                 <!-- general hidden fields required to submit POST request to IGV viewer -->
                   <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
