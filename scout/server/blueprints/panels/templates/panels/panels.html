@@ -133,12 +133,12 @@
       <div class="col-sm-5">
         <div class="form-group">
           <div class="custom-control custom-radio">
-            <input type="radio" id="add" name="modify_option" class="custom-control-input" value="add" checked>
-            <label class="custom-control-label" for="add">Add genes from CSV file</label>
+            <input type="radio" id="add_{{panel_obj.display_name}}" name="modify_option" class="custom-control-input" value="add" checked>
+            <label class="custom-control-label" for="add_{{panel_obj.display_name}}">Add genes from CSV file</label>
           </div>
           <div class="custom-control custom-radio">
-            <input type="radio" id="replace" name="modify_option" class="custom-control-input" value="replace">
-            <label class="custom-control-label" for="replace">Replace genes using CSV file</label>
+            <input type="radio" id="replace_{{panel_obj.display_name}}" name="modify_option" class="custom-control-input" value="replace">
+            <label class="custom-control-label" for="replace_{{panel_obj.display_name}}">Replace genes using CSV file</label>
           </div>
         </div>
       </div><!--end of col-->

@@ -31,37 +31,44 @@ def unindexed_remote_static():
     resp = send_file(file_path, attachment_filename=base_name)
     return resp
 
-@alignviewers_bp.route('/igv')
+@alignviewers_bp.route('/igv', methods=['POST'])
 def igv():
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)"""
-    chrom = request.args.get('contig')
+    chrom = request.form.get('contig')
     if chrom == 'MT':
         chrom = 'M'
 
-    start = request.args.get('start')
-    stop = request.args.get('stop')
+    start = request.form.get('start')
+    stop = request.form.get('stop')
 
     locus = "chr{0}:{1}-{2}".format(chrom,start,stop)
     LOG.debug('Displaying locus %s', locus)
 
-    chromosome_build = request.args.get('build')
+    chromosome_build = request.form.get('build')
     LOG.debug('Chromosome build is %s', chromosome_build)
 
-    samples = request.args.getlist('sample')
-    bam_files = request.args.getlist('bam')
-    bai_files = request.args.getlist('bai')
-    rhocall_bed_files = request.args.getlist('rhocall_bed')
-    rhocall_wig_files = request.args.getlist('rhocall_wig')
-    tiddit_coverage_files = request.args.getlist('tiddit_coverage_wig')
-    updregion_files = request.args.getlist('upd_regions_bed')
-    updsites_files = request.args.getlist('upd_sites_bed')
-    LOG.debug('samples: %s', samples)
-    LOG.debug('loading the following BAM tracks: %s', bam_files)
-    LOG.debug('loading the following rhocall BED tracks: %s', rhocall_bed_files)
-    LOG.debug('loading the following rhocall WIG tracks: %s', rhocall_wig_files)
-    LOG.debug('loading the following tiddit_coverage tracks: %s', tiddit_coverage_files)
-    LOG.debug('loading the following upd sites tracks: %s', updregion_files)
-    LOG.debug('loading the following upd region tracks: %s', updsites_files)
+    samples = request.form.get('sample').split(',')
+
+    if request.form.get('align') == 'mt_bam':
+        bam_files = request.form.get('mt_bam').split(',')
+        bai_files = request.form.get('mt_bai').split(',')
+    else:
+        bam_files = request.form.get('bam').split(',')
+        bai_files = request.form.get('bai').split(',')
+        rhocall_bed_files = request.form.getlist('rhocall_bed')
+        rhocall_wig_files = request.form.getlist('rhocall_wig')
+        tiddit_coverage_files = request.form.getlist('tiddit_coverage_wig')
+        updregion_files = request.form.getlist('upd_regions_bed')
+        updsites_files = request.form.getlist('upd_sites_bed')
+        LOG.debug('samples: %s', samples)
+        LOG.debug('loading the following BAM tracks: %s', bam_files)
+        LOG.debug('loading the following rhocall BED tracks: %s', rhocall_bed_files)
+        LOG.debug('loading the following rhocall WIG tracks: %s', rhocall_wig_files)
+        LOG.debug('loading the following tiddit_coverage tracks: %s', tiddit_coverage_files)
+        LOG.debug('loading the following upd sites tracks: %s', updregion_files)
+        LOG.debug('loading the following upd region tracks: %s', updsites_files)
+        LOG.debug('loading the following tracks: %s', bam_files)
+
     display_obj={}
 
     # Add chromosome build info to the track object
@@ -109,7 +116,7 @@ def igv():
     upd_regions_bed_tracks = []
     upd_sites_bed_tracks = []
     counter = 0
-    
+
     for sample in samples:
         # some samples might not have an associated bam file, take care if this
         if bam_files[counter]:
@@ -117,7 +124,7 @@ def igv():
                                    'indexURL' : bai_files[counter],
                                    'height' : 700
                                    })
-                   
+
     counter = 0
     for sample in samples:
         sample_tracks.append({
@@ -134,9 +141,10 @@ def igv():
     tiddit_wig_tracks = make_igv_tracks('TIDDIT Coverage', rhocall_wig_files)
     updregion_tracks = make_igv_tracks('UPD region', updregion_files)
     updsites_tracks = make_igv_tracks('UPD sites', updsites_files)
-      
+
     display_obj['sample_tracks'] = sample_tracks
 
+<<<<<<< HEAD
     if rhocall_wig_files:
         display_obj['rhocall_wig_tracks'] = rhocall_wig_tracks
     if rhocall_bed_files:
@@ -147,8 +155,11 @@ def igv():
         display_obj['updregion_tracks'] = updregion_tracks
     if updsites_files:
         display_obj['updsites_tracks'] = updsites_tracks
-        
+
     if request.args.get('center_guide'):
+=======
+    if request.form.get('center_guide'):
+>>>>>>> master
         display_obj['display_center_guide'] = True
     else:
         display_obj['display_center_guide'] = False
@@ -169,5 +180,3 @@ def make_igv_tracks(name, file_list):
                            'max': 30.0})
         counter += 1
     return track_list
-
-
