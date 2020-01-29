@@ -1,13 +1,13 @@
-import re
-import click
+"""Code for parsing OMIM formatted files"""
 import logging
+import re
 
-from pprint import pprint as pp
+import click
 
-mimnr_pattern = re.compile("[0-9]{6,6}")
-entry_pattern = re.compile("\([1,2,3,4]\)")
+MIMNR_PATTERN = re.compile("[0-9]{6,6}")
+ENTRY_PATTERN = re.compile("\([1,2,3,4]\)")
 
-mim_inheritance_terms = [
+MIM_INHERITANCE_TERMS = [
     "Autosomal recessive",
     "Autosomal dominant",
     "Digenic recessive",
@@ -36,6 +36,67 @@ def parse_omim_line(line, header):
     """docstring for parse_omim_2_line"""
     omim_info = dict(zip(header, line.split("\t")))
     return omim_info
+
+
+def parse_genemap2_phenotypes(phenotype_entry):
+    """Parse the Phenotype entry of a genemap2 line
+
+    Returns a list with the relevant phenotypes.
+    The phenotype entries are separated by ';'
+
+    If a special symbol is used in the description it indicates the disease status.
+
+    """
+    parsed_phenotypes = []
+
+    for phenotype_info in phenotype_entry.split(";"):
+        if not phenotype_info:
+            continue
+        phenotype_info = phenotype_info.lstrip()
+
+        phenotype_status = OMIM_STATUS_MAP.get(phenotype_info[0], "established")
+
+        # Skip phenotype entries that not associated to disease
+        if phenotype_status == "nondisease":
+            continue
+
+        phenotype_description = ""
+
+        # We will try to save the description
+        splitted_info = phenotype_info.split(",")
+        for i, text in enumerate(splitted_info):
+            # Everything before ([1,2,3])
+            # We check if we are in the part where the mim number exists
+            match = ENTRY_PATTERN.search(text)
+            if not match:
+                phenotype_description += text
+            else:
+                # If we find the end of the entry
+                mimnr_match = MIMNR_PATTERN.search(phenotype_info)
+                # Then if the entry have a mim number we choose that
+                if mimnr_match:
+                    phenotype_mim = int(mimnr_match.group())
+                else:
+                    phenotype_mim = parsed_entry["mim_number"]
+                    phenotype_description += text[:-4]
+                break
+        # Find the inheritance
+        inheritance = set()
+        inheritance_text = ",".join(splitted_info[i:])
+        for term in MIM_INHERITANCE_TERMS:
+            if term in inheritance_text:
+
+                inheritance.add(TERMS_MAPPER[term])
+
+        parsed_phenotypes.append(
+            {
+                "mim_number": phenotype_mim,
+                "inheritance": inheritance,
+                "description": phenotype_description.strip("?\{\}"),
+                "status": phenotype_status,
+            }
+        )
+    return parsed_phenotypes
 
 
 def parse_genemap2(lines):
@@ -104,63 +165,13 @@ def parse_genemap2(lines):
         # Gene inheritance is a construct. It is the union of all inheritance
         # patterns found in the associated phenotypes
         gene_inheritance = set()
+        parsed_entry["phenotypes"] = parse_genemap2_phenotypes(
+            parsed_entry.get("Phenotypes", "")
+        )
 
-        parsed_phenotypes = []
-        # Information about the related phenotypes
-        # Each related phenotype is separated by ';'
-        for phenotype_info in parsed_entry.get("Phenotypes", "").split(";"):
-            if not phenotype_info:
-                continue
+        for phenotype in parsed_entry["phenotypes"]:
+            gene_inheritance.update(phenotype["inheritance"])
 
-            phenotype_info = phenotype_info.lstrip()
-
-            # First symbol in description indicates phenotype status
-            # If no special symbol is used the phenotype is 'established'
-            phenotype_status = OMIM_STATUS_MAP.get(phenotype_info[0], "established")
-
-            # Skip phenotype entries that not associated to disease
-            if phenotype_status == "nondisease":
-                continue
-
-            phenotype_description = ""
-
-            # We will try to save the description
-            splitted_info = phenotype_info.split(",")
-            for i, text in enumerate(splitted_info):
-                # Everything before ([1,2,3])
-                # We check if we are in the part where the mim number exists
-                match = entry_pattern.search(text)
-                if not match:
-                    phenotype_description += text
-                else:
-                    # If we find the end of the entry
-                    mimnr_match = mimnr_pattern.search(phenotype_info)
-                    # Then if the entry have a mim number we choose that
-                    if mimnr_match:
-                        phenotype_mim = int(mimnr_match.group())
-                    else:
-                        phenotype_mim = parsed_entry["mim_number"]
-                        phenotype_description += text[:-4]
-                    break
-            # Find the inheritance
-            inheritance = set()
-            inheritance_text = ",".join(splitted_info[i:])
-            for term in mim_inheritance_terms:
-                if term in inheritance_text:
-
-                    inheritance.add(TERMS_MAPPER[term])
-                    gene_inheritance.add(TERMS_MAPPER[term])
-
-            parsed_phenotypes.append(
-                {
-                    "mim_number": phenotype_mim,
-                    "inheritance": inheritance,
-                    "description": phenotype_description.strip("?\{\}"),
-                    "status": phenotype_status,
-                }
-            )
-
-        parsed_entry["phenotypes"] = parsed_phenotypes
         parsed_entry["inheritance"] = gene_inheritance
 
         yield parsed_entry
@@ -356,10 +367,6 @@ def get_mim_phenotypes(genemap_lines):
              'mim_number': int, # mim number of phenotype
         }
     """
-    # Set with all omim numbers that are phenotypes
-    # Parsed from mim2gene.txt
-    phenotype_mims = set()
-
     phenotypes_found = {}
 
     # Genemap is a file with one entry per gene.
