@@ -513,35 +513,52 @@
           </li>
         {% endif %}
       </ul>
-      <div class="panel-heading">Gene coverage</div>
-      <table class="table table-bordered table-fixed table-sm">
-        <tbody>
-          <tr>
-            <td>
-              {% if variant.chromosome == "MT" %}
-                {% if case.mt_bams %}
-                  <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
+      <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
+        <!-- general hidden fields required to submit POST request to IGV viewer -->
+        {% if case.mt_bams or case.bam_files %}
+          <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
+          <input type="hidden" name="build" value="{{case.genome_build}}">
+          <input type="hidden" name="contig" value="{{variant.chromosome}}">
+          <input type="hidden" name="start" value="{{variant.position - 50}}">
+          <input type="hidden" name="stop" value="{{variant.end_position + 50}}">
+          <input type="hidden" name="center_guide" value="T">
+          <!--<input type="hidden" name="now" values="{{now}}"-->
+        {% endif %}
+        <!-- end of general hidden form fields -->
+        <div class="panel-heading">Gene coverage</div>
+        <table class="table table-bordered table-fixed table-sm">
+          <tbody>
+            <tr>
+              <td>
+                {% if variant.chromosome == "MT" %}
+                  {% if case.mt_bams %}
+                    <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
+                    <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
+                    <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV viewer</button>
+                  {% else %}
+                    <span class="text-muted">MT BAM file(s) missing</span>
+                  {% endif %}
+                {% elif case.bam_files %}
+                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
+                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
+                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
                 {% else %}
-                  <span class="text-muted">MT BAM file(s) missing</span>
+                  <span class="text-muted">BAM file(s) missing</span>
                 {% endif %}
-              {% elif case.bam_files %}
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
-              {% else %}
-                <span class="text-muted">BAM file(s) missing</span>
+              </td>
+              {% if config.SQLALCHEMY_DATABASE_URI %}
+                {% for gene in variant.genes %}
+                  <td>
+                    <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
+                      {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                    </a>
+                  </td>
+                {% endfor %}
               {% endif %}
-            </td>
-            {% if config.SQLALCHEMY_DATABASE_URI %}
-              {% for gene in variant.genes %}
-                <td>
-                  <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
-                    {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                  </a>
-                </td>
-              {% endfor %}
-            {% endif %}
-          </tr>
-        </tbody>
-      </table>
+            </tr>
+          </tbody>
+        </table>
+      </form>
 
       {% if variant.custom %}
       <table class="table table-bordered table-sm">
