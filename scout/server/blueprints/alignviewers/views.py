@@ -24,25 +24,31 @@ def remote_static():
     new_resp = send_file_partial(file_path)
     return new_resp
 
-@alignviewers_bp.route('/igv')
+@alignviewers_bp.route('/igv', methods=['POST'])
 def igv():
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)"""
-    chrom = request.args.get('contig')
+    chrom = request.form.get('contig')
     if chrom == 'MT':
         chrom = 'M'
 
-    start = request.args.get('start')
-    stop = request.args.get('stop')
+    start = request.form.get('start')
+    stop = request.form.get('stop')
 
     locus = "chr{0}:{1}-{2}".format(chrom,start,stop)
     LOG.debug('Displaying locus %s', locus)
 
-    chromosome_build = request.args.get('build')
+    chromosome_build = request.form.get('build')
     LOG.debug('Chromosome build is %s', chromosome_build)
 
-    samples = request.args.getlist('sample')
-    bam_files = request.args.getlist('bam')
-    bai_files = request.args.getlist('bai')
+    samples = request.form.get('sample').split(',')
+
+    if request.form.get('align') == 'mt_bam':
+        bam_files = request.form.get('mt_bam').split(',')
+        bai_files = request.form.get('mt_bai').split(',')
+    else:
+        bam_files = request.form.get('bam').split(',')
+        bai_files = request.form.get('bai').split(',')
+
     LOG.debug('loading the following tracks: %s', bam_files)
 
     display_obj={}
@@ -101,7 +107,7 @@ def igv():
 
     display_obj['sample_tracks'] = sample_tracks
 
-    if request.args.get('center_guide'):
+    if request.form.get('center_guide'):
         display_obj['display_center_guide'] = True
     else:
         display_obj['display_center_guide'] = False

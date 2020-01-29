@@ -87,7 +87,17 @@
             <td>
               {{ variant.position }}
               {% if case.bam_files %}
-                <a class="btn btn-outline-secondary btn-sm float-right" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
+                <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
+                  <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
+                  <input type="hidden" name="build" value="{{case.genome_build}}">
+                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
+                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
+                  <input type="hidden" name="contig" value="{{variant.chromosome}}">
+                  <input type="hidden" name="start" value="{{variant.position - 50}}">
+                  <input type="hidden" name="stop" value="{{variant.position + 50}}">
+                  <input type="hidden" name="center_guide" value="T">
+                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
+                </form>
               {% endif %}
             </td>
         </tr>
