@@ -61,12 +61,12 @@ def get_panel_info(panel_lines=None, panel_id=None, institute=None, version=None
             line = line.rstrip()
             if not line.startswith('##'):
                 break
-        
+
             info = line[2:].split('=')
             field = info[0]
             value = info[1]
-        
-        
+
+
             if not panel_info.get(field):
                 panel_info[field] = value
 
@@ -192,13 +192,13 @@ def parse_genes(gene_lines):
     # There are some files that start with a header line without
     # any special symbol
     for i,line in enumerate(gene_lines):
-        line = line.rstrip()
+        line = line.strip()
         if not len(line) > 0:
             continue
         if line.startswith('#'):
             if not line.startswith('##'):
                 # We need to try delimiters
-                # We prefer ';' or '\t' byt should accept ' '
+                # We prefer ';' or '\t' but should accept ' '
                 line_length = 0
                 delimiter = None
                 for alt in delimiters:
@@ -217,7 +217,7 @@ def parse_genes(gene_lines):
                     if len(head_line) > line_length:
                         line_length = len(head_line)
                         delimiter = alt
-                
+
                 if ('hgnc' in line or 'HGNC' in line):
                     header = [word.lower() for word in line.split(delimiter)]
                     continue
@@ -257,7 +257,7 @@ def parse_genes(gene_lines):
     return genes
 
 
-def parse_gene_panel(path, institute='cust000', panel_id='test', panel_type='clinical', date=datetime.now(), 
+def parse_gene_panel(path, institute='cust000', panel_id='test', panel_type='clinical', date=datetime.now(),
                      version=1.0, display_name=None, genes = None):
     """Parse the panel info and return a gene panel
 
@@ -294,11 +294,11 @@ def parse_gene_panel(path, institute='cust000', panel_id='test', panel_type='cli
 
 def parse_panel_app_gene(app_gene, hgnc_map):
     """Parse a panel app formated gene
-    
+
     Args:
         app_gene(dict): Dict with panel app info
         hgnc_map(dict): Map from hgnc_symbol to hgnc_id
-    
+
     Returns:
         gene_info(dict): Scout infromation
     """
@@ -307,14 +307,14 @@ def parse_panel_app_gene(app_gene, hgnc_map):
     # Return empty gene if not confident gene
     if not confidence_level == 'HighEvidence':
         return gene_info
-    
+
     hgnc_symbol = app_gene['GeneSymbol']
     # Returns a set of hgnc ids
     hgnc_ids = get_correct_ids(hgnc_symbol, hgnc_map)
     if not hgnc_ids:
         LOG.warning("Gene %s does not exist in database. Skipping gene...", hgnc_symbol)
         return gene_info
-    
+
     if len(hgnc_ids) > 1:
         LOG.warning("Gene %s has unclear identifier. Choose random id", hgnc_symbol)
 
@@ -327,36 +327,36 @@ def parse_panel_app_gene(app_gene, hgnc_map):
     inheritance_models = []
     for model in MODELS_MAP.get(app_gene['ModeOfInheritance'],[]):
         inheritance_models.append(model)
-    
+
     gene_info['inheritance_models'] = inheritance_models
-    
+
     return gene_info
 
 def parse_panel_app_panel(panel_info, hgnc_map, institute='cust000', panel_type='clinical'):
     """Parse a PanelApp panel
-    
+
     Args:
         panel_info(dict)
         hgnc_map(dict): Map from symbol to hgnc ids
         institute(str)
         panel_type(str)
-    
+
     Returns:
         gene_panel(dict)
     """
     date_format = "%Y-%m-%dT%H:%M:%S.%f"
-    
+
     gene_panel = {}
     gene_panel['version'] = float(panel_info['version'])
     gene_panel['date'] = get_date(panel_info['Created'][:-1], date_format=date_format)
     gene_panel['display_name'] = panel_info['SpecificDiseaseName']
     gene_panel['institute'] = institute
     gene_panel['panel_type'] = panel_type
-    
+
     LOG.info("Parsing panel %s", gene_panel['display_name'])
-    
+
     gene_panel['genes'] = []
-    
+
     nr_low_confidence = 1
     nr_genes = 0
     for nr_genes, gene in enumerate(panel_info['Genes'],1):
@@ -365,31 +365,31 @@ def parse_panel_app_panel(panel_info, hgnc_map, institute='cust000', panel_type=
             nr_low_confidence += 1
             continue
         gene_panel['genes'].append(gene_info)
-    
+
     LOG.info("Number of genes in panel %s", nr_genes)
     LOG.info("Number of low confidence genes in panel %s", nr_low_confidence)
-    
+
     return gene_panel
 
 def get_omim_panel_genes(genemap2_lines, mim2gene_lines, alias_genes):
     """Return all genes that should be included in the OMIM-AUTO panel
     Return the hgnc symbols
-    
+
     Genes that have at least one 'established' or 'provisional' phenotype connection
     are included in the gene panel
-    
+
     Args:
         genemap2_lines(iterable)
         mim2gene_lines(iterable)
         alias_genes(dict): A dictionary that maps hgnc_symbol to hgnc_id
-    
+
     Yields:
         hgnc_symbol(str)
     """
     parsed_genes = get_mim_genes(genemap2_lines, mim2gene_lines)
-    
+
     STATUS_TO_ADD = set(['established', 'provisional'])
-    
+
     for hgnc_symbol in parsed_genes:
         try:
             gene = parsed_genes[hgnc_symbol]
@@ -413,8 +413,6 @@ def get_omim_panel_genes(genemap2_lines, mim2gene_lines, alias_genes):
                     }
                 else:
                     LOG.warning("Gene symbol %s does not exist", hgnc_symbol)
-                    
+
         except KeyError:
             pass
-    
-
