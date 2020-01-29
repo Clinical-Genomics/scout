@@ -128,32 +128,67 @@
             Breakpoint 1
             <div class="float-right">
               {{ variant.chromosome }}:{{ variant.position }}
-              {% if variant.chromosome == "MT" and case.mt_bams %}
-                - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">IGV viewer</a>
-              {% elif case.bam_files %}
-                - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.position + 500)) }}" target="_blank">IGV</a>
-              {% else %}
-                - BAM file(s) missing
-              {% endif %}
-              - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+              <form role="form" name="bp1_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
+                {% if case.mt_bams or case.bam_files %}
+                <!-- general hidden fields required to submit POST request to IGV viewer -->
+                  <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
+                  <input type="hidden" name="build" value="{{case.genome_build}}">
+                  <input type="hidden" name="contig" value="{{variant.chromosome}}">
+                  <input type="hidden" name="center_guide" value="T">
+                  <input type="hidden" name="start" value="{{variant.position - 500}}">
+                  <input type="hidden" name="stop" value="{{variant.position + 500}}">
+                  <!--<input type="hidden" name="now" values="{{now}}"-->
+                {% endif %}
+
+                {% if variant.chromosome == "MT" and case.mt_bams %}
+                  <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
+                  <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
+                  - Alignment:
+                  <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV</button>
+                {% elif case.bam_files %}
+                  - Alignment:
+                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
+                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
+                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type=submit>IGV</button>
+                {% else %}
+                  - BAM file(s) missing
+                {% endif %}
+                - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+              </form>
             </div>
           </li>
           <li class="list-group-item">
             Breakpoint 2
             <div class="float-right">
               {{ variant.end_chrom }}:{{ variant.end }}
-              {% if variant.end_chrom == "MT" and case.mt_bams %}
-                - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.end_chrom, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">IGV viewer</a>
-              {% elif case.bam_files %}
-                - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.end_chrom, start=(variant.end - 500), stop=(variant.end + 500)) }}" target="_blank">IGV</a>
-              {% else %}
-                - BAM file(s) missing
-              {% endif %}
-                - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.end_chrom }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+              <form role="form" name="bp2_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
+                {% if case.mt_bams or case.bam_files %}
+                <!-- general hidden fields required to submit POST request to IGV viewer -->
+                  <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
+                  <input type="hidden" name="build" value="{{case.genome_build}}">
+                  <input type="hidden" name="contig" value="{{variant.chromosome}}">
+                  <input type="hidden" name="center_guide" value="T">
+                  <input type="hidden" name="start" value="{{variant.end - 500}}">
+                  <input type="hidden" name="stop" value="{{variant.end + 500}}">
+                  <!--<input type="hidden" name="now" values="{{now}}"-->
+                {% endif %}
+
+                {% if variant.end_chrom == "MT" and case.mt_bams %}
+                  - Alignment:
+                  <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
+                  <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
+                  - Alignment:
+                  <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV</button>
+                {% elif case.bam_files %}
+                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
+                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
+                  - Alignment:
+                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type=submit>IGV</button>
+                {% else %}
+                  - BAM file(s) missing
+                {% endif %}
+                  - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.end_chrom }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+              </form>
             </div>
           </li>
   	      <li class="list-group-item">
@@ -172,22 +207,38 @@
   	        Length
             <div class="float-right">
               {{ variant.length }}
-              {% if variant.chromosome == "MT" and case.mt_bams %}
-                - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500)) }}" target="_blank">IGV viewer</a>
-              {% elif case.bam_files and variant.chromosome == variant.end_chrom %}
-                - Alignment:
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', bam=case.bam_files, bai=case.bai_files, sample=case.sample_names, build=case.genome_build, contig=variant.chromosome, start=(variant.position - 500), stop=(variant.end + 500)) }}" target="_blank">IGV</a>
-              {% elif case.bam_files %}
-                - Complex rearrangement: check breakpoint alignments.
-              {% else %}
-                - BAM file(s) missing
-              {% endif %}
-              {% if variant.chromosome == variant.end_chrom %}
-              - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
-              {% endif %}
-            </div>
+              <form role="form" name="alignment_length_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
+                {% if case.mt_bams or case.bam_files %}
+                <!-- general hidden fields required to submit POST request to IGV viewer -->
+                  <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
+                  <input type="hidden" name="build" value="{{case.genome_build}}">
+                  <input type="hidden" name="contig" value="{{variant.chromosome}}">
+                  <input type="hidden" name="center_guide" value="T">
+                  <input type="hidden" name="start" value="{{variant.position - 500}}">
+                  <input type="hidden" name="stop" value="{{variant.end + 500}}">
+                  <!--<input type="hidden" name="now" values="{{now}}"-->
+                {% endif %}
 
+                {% if variant.chromosome == "MT" and case.mt_bams %}
+                  <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
+                  <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
+                  - Alignment:
+                  <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV</button>
+                {% elif case.bam_files and variant.chromosome == variant.end_chrom %}
+                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
+                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
+                  - Alignment:
+                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type=submit>IGV</button>
+                {% elif case.bam_files %}
+                  - Complex rearrangement: check breakpoint alignments.
+                {% else %}
+                  - BAM file(s) missing
+                {% endif %}
+                {% if variant.chromosome == variant.end_chrom %}
+                - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+                {% endif %}
+              </form>
+            </div>
   	      </li>
   	      <li class="list-group-item">
   	        Type <div class="float-right">{{ variant.sub_category|upper }}</div>
