@@ -198,7 +198,7 @@ def parse_genes(gene_lines):
         if line.startswith('#'):
             if not line.startswith('##'):
                 # We need to try delimiters
-                # We prefer ';' or '\t' but should accept ' '
+                # We prefer ';' or '\t' byt should accept ' '
                 line_length = 0
                 delimiter = None
                 for alt in delimiters:
