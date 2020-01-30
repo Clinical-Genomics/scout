@@ -127,7 +127,7 @@ def case_append_alignments(case_obj):
                       {'path':'tiddit_coverage_wig', 'append_to':'tiddit_coverage_wigs', 'index':'no_index'}]
 
     for individual in case_obj['individuals']:
-        case_obj['sample_names'] =(individual.get('display_name'))
+        append_safe(case_obj, 'sample_names', individual.get('display_name'))
         for setting in unwrap_settings:
             file_path = individual.get(setting['path'])
             LOG.debug("filepath %s: ", file_path)
@@ -147,7 +147,7 @@ def append_safe(obj, obj_index, elem):
         obj[obj_index].append(elem)
     except:
         obj[obj_index]=[elem]
-    
+
 
 def find_index(align_file):
     """Find out BAI file by extension given the BAM file.
