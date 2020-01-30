@@ -115,30 +115,23 @@ def igv():
     sample_tracks = []
     upd_regions_bed_tracks = []
     upd_sites_bed_tracks = []
-    counter = 0
 
+    counter = 0
     for sample in samples:
         # some samples might not have an associated bam file, take care if this
         if bam_files[counter]:
-            sample_tracks.append({ 'name' : sample, 'url' : bam_files[counter],
-                                   'indexURL' : bai_files[counter],
-                                   'height' : 700
-                                   })
-
-    counter = 0
-    for sample in samples:
-        sample_tracks.append({
-            'name' : sample,
-            'url' : bam_files[counter],
-            'format': bam_files[counter].split(".")[-1], # "bam" or "cram"
-            'indexURL' : bai_files[counter],
-            'height' : 700
-        })
+            sample_tracks.append({
+                'name' : sample,
+                'url' : bam_files[counter],
+                'format': bam_files[counter].split(".")[-1], # "bam" or "cram"
+                'indexURL' : bai_files[counter],
+                'height' : 700
+            })
         counter += 1
 
     rhocall_bed_tracks = make_igv_tracks('Rhocall Regions', rhocall_bed_files)
     rhocall_wig_tracks = make_igv_tracks('Rhocall Zygosity', rhocall_wig_files)
-    tiddit_wig_tracks = make_igv_tracks('TIDDIT Coverage', rhocall_wig_files)
+    tiddit_wig_tracks = make_igv_tracks('TIDDIT Coverage', tiddit_coverage_files)
     updregion_tracks = make_igv_tracks('UPD region', updregion_files)
     updsites_tracks = make_igv_tracks('UPD sites', updsites_files)
 
