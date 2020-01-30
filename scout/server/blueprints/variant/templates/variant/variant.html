@@ -951,37 +951,23 @@
           </thead>
           <tbody>
             {% for gene in variant.genes %}
-              {% for disease_term in gene.disease_terms %}
-                <tr>
-                  <td>
-                    {% if gene.common %}
-                      <a href="http://omim.org/entry/{{ gene.common.omim_id }}" target="_blank">
-                        {{ gene.common.hgnc_symbol }}
-                      </a>
-                    {% else %}
-                      {{ gene.hgnc_id }}
-                    {% endif %}
-                  </td>
-                  <td>
-                    <a href="http://omim.org/entry/{{ disease_term.disease_id|replace('OMIM:', '') }}" target="_blank">
-                      {{ disease_term.description }}
-                    </a>
-                  </td>
-                  <td>{{ disease_term.inheritance|join(', ') }}</td>
-                </tr>
-              {% else %}
-                {% if gene.common %}
+              {% if gene.common %}
+                {% for disease_term in gene.common.phenotypes %}
                   <tr>
                     <td>
-                      <a href="http://omim.org/entry/{{ gene.common.omim_id }}" target="_blank">
-                        {{ gene.common.hgnc_symbol }}
+                        <a href="http://omim.org/entry/{{ gene.common.omim_id }}" target="_blank">
+                          {{ gene.common.hgnc_symbol }}
+                        </a>
+                    </td>
+                    <td>
+                      <a href="http://omim.org/entry/{{ disease_term.mim_number|replace('OMIM:', '') }}" target="_blank">
+                        {{ disease_term.description }}
                       </a>
                     </td>
-                    <td></td>
-                    <td></td>
+                    <td>{{ disease_term.inheritance_models|join(', ') }}</td>
                   </tr>
-                {% endif %}
-              {% endfor %}
+                {% endfor %}
+              {% endif %}
             {% endfor %}
           </tbody>
         </table>
