@@ -19,7 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Adds command to backup vital parts `scout export database`
 - Parsing and displaying cancer SV variants from Manta annotated VCF files
 - Dismiss cancer snv variants with cancer-specific options
-
+- Add IGV.js UPD, RHO and TIDDIT coverage wig tracks.
 
 ### Fixed
 - Slightly darker page background

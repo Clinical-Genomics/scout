@@ -1,6 +1,7 @@
 import tempfile
 from scout.server.links import get_variant_links
 from scout.server.utils import find_index
+from scout.server.utils import append_safe
 
 def test_get_variant_links(variant_obj):
     ## GIVEN a variant object without links
@@ -63,3 +64,26 @@ def test_find_index_cram_crai(case_obj):
             # THEN the find_index function should return the correct index file
             index = find_index(cram_file)
             assert index.endswith('cram.crai')
+
+
+def test_append_safe_noExcept():
+    ## GIVEN a simple dict with list
+    d = {'a':[1]}
+
+    ## WHEN calling append_safe
+    append_safe(d, 'a', 2)
+
+    ## THEN append_safe() will append elem at index
+    assert(d == {'a':[1,2]})
+
+
+def test_append_safe_Except():
+    ## GIVEN a simple dict with list
+    d = {}
+
+    ## WHEN calling append_safe() on a empty
+    append_safe(d, 'a', 2)
+
+    ## THEN list.append exception is caught in try/except and
+    ## program execution continues
+    assert(d == {'a':[2]})

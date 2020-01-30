@@ -118,26 +118,35 @@ def case_append_alignments(case_obj):
     Args:
         case_obj(scout.models.Case)
     """
-    case_obj['bam_files'] = []
-    case_obj['mt_bams'] = []
-    case_obj['bai_files'] = []
-    case_obj['mt_bais'] = []
-    case_obj['sample_names'] = []
-
-    bam_files = [
-        ('bam_file','bam_files', 'bai_files'),
-        ('mt_bam', 'mt_bams', 'mt_bais')
-    ]
+    unwrap_settings = [{'path':'bam_file', 'append_to':'bam_files', 'index':'bai_files'},
+                      {'path':'mt_bam', 'append_to':'mt_bams', 'index':'mt_bais'},
+                      {'path':'rhocall_bed', 'append_to':'rhocall_beds', 'index':'no_index'},
+                      {'path':'rhocall_wig', 'append_to':'rhocall_wigs', 'index':'no_index'},
+                      {'path':'upd_regions_bed', 'append_to':'upd_regions_beds', 'index':'no_index'},
+                      {'path':'upd_sites_bed', 'append_to':'upd_sites_beds', 'index':'no_index'},
+                      {'path':'tiddit_coverage_wig', 'append_to':'tiddit_coverage_wigs', 'index':'no_index'}]
 
     for individual in case_obj['individuals']:
-        case_obj['sample_names'].append(individual.get('display_name'))
-        for bam in bam_files:
-            bam_path = individual.get(bam[0])
-            if not (bam_path and os.path.exists(bam_path)):
+        append_safe(case_obj, 'sample_names', individual.get('display_name'))
+        for setting in unwrap_settings:
+            file_path = individual.get(setting['path'])
+            LOG.debug("filepath %s: ", file_path)
+            if not (file_path and os.path.exists(file_path)):
                 LOG.debug("%s: no bam/cram file found", individual['individual_id'])
                 continue
-            case_obj[bam[1]].append(bam_path) # either bam_files or mt_bams
-            case_obj[bam[2]].append(find_index(bam_path)) # either bai_files or mt_bais
+            append_safe(case_obj, setting['append_to'], file_path)
+            if not setting['index'] == 'no_index':
+                append_safe(case_obj, setting['index'], find_index(file_path)) # either bai_files or mt_bais
+
+
+def append_safe(obj, obj_index, elem):
+    """Append `elem` to list in `obj` at `obj_index`.
+    If no list exists `elem` will be first element catching
+    the KeyError raised."""
+    try:
+        obj[obj_index].append(elem)
+    except:
+        obj[obj_index]=[elem]
 
 
 def find_index(align_file):
