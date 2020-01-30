@@ -119,7 +119,7 @@ def igv():
     counter = 0
     for sample in samples:
         # some samples might not have an associated bam file, take care if this
-        if bam_files[counter]:
+        if len(bam_files) > counter and bam_files[counter]:
             sample_tracks.append({
                 'name' : sample,
                 'url' : bam_files[counter],
@@ -148,13 +148,12 @@ def igv():
     if updsites_files:
         display_obj['updsites_tracks'] = updsites_tracks
 
-    if request.args.get('center_guide'):
+    if request.form.get('center_guide'):
         display_obj['display_center_guide'] = True
     else:
         display_obj['display_center_guide'] = False
 
     return render_template('alignviewers/igv_viewer.html', locus=locus, **display_obj )
-
 
 
 def make_igv_tracks(name, file_list):
