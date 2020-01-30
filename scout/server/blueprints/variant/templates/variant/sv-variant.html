@@ -47,99 +47,101 @@
   {% if variant.missing_data %}
     <div class="alert alert-warning">Showing only first 30 genes!</div>
   {% endif %}
-  <div class="row">
-    <div class="col-md-6">
-      <div class="card mt-3">
-        <div class="class-body">
-          <ul class="list-group">
-            <li class="list-group-item">Rank <span class="badge badge-pill badge-secondary float-right">{{ variant.variant_rank }}</span></li>
-            <li class="list-group-item">
-              Rank score
-              <span class="badge badge-pill badge-secondary float-right">{{ variant.rank_score }}</span>
-            </li>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card mt-3 panel-default">
+          <div class="panel-heading">Basics</div>
+            <div class="card-body">
+            <ul class="list-group">
+              <li class="list-group-item">Rank <span class="badge badge-pill badge-secondary float-right">{{ variant.variant_rank }}</span></li>
+              <li class="list-group-item">
+                Rank score
+                <span class="badge badge-pill badge-secondary float-right">{{ variant.rank_score }}</span>
+              </li>
 
-            <li class="list-group-item">
-              Category
-              <span class="badge badge-pill badge-secondary float-right">{{ variant.sub_category|upper }}</span>
-            </li>
+              <li class="list-group-item">
+                Category
+                <span class="badge badge-pill badge-secondary float-right">{{ variant.sub_category|upper }}</span>
+              </li>
 
-            <div class="list-group-item">
-              <strong>Gene panels:</strong><br>
-              {% for panel_id in variant.panels %}
-                <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>&nbsp;&nbsp;
-              {% endfor %}
-            </div>
-            <div class="list-group mt-3">
-              <div>
-                <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
-                  <label class="ml-3">Variant tag</label>
-                  <div class="row">
-                    <div class="col-8">
-                      <select name="manual_rank" class="form-control ml-3">
-                        <option value="-1">Select a tag...</option>
-                        {% for rank, data in manual_rank_options.items() %}
-                          <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
-                            {{ data.label }}
-                          </option>
-                        {% endfor %}
-                      </select>
-                    </div>
-                    <div class="col-4">
-                      <button type="submit" class="btn btn-outline-secondary form-control">Save</button>
-                    </div>
-                  </div>
-                </form>
+              <div class="list-group-item">
+                <strong>Gene panels:</strong><br>
+                {% for panel_id in variant.panels %}
+                  <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>&nbsp;&nbsp;
+                {% endfor %}
               </div>
-            </div>
-            <div class="list-group mt-3">
-              <div>
-                <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
-                  <label class="ml-3">Dismiss variant</label>
-                  <div class="row">
-                    <div class="col-8 d-flex">
-                        <select multiple class="ml-3 selectpicker" title="Select categories..." name="dismiss_variant" id="dismiss_variant" >
-                        {% for rank, data in dismiss_variant_options.items() %}
-                          <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
-                            {{ data.label }}
-                          </option>
-                        {% endfor %}
-                      </select>
+              <div class="list-group mt-3">
+                <div>
+                  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+                    <label class="ml-3">Variant tag</label>
+                    <div class="row">
+                      <div class="col-8">
+                        <select name="manual_rank" class="form-control ml-3">
+                          <option value="-1">Select a tag...</option>
+                          {% for rank, data in manual_rank_options.items() %}
+                            <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
+                              {{ data.label }}
+                            </option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="col-4">
+                        <button type="submit" class="btn btn-outline-secondary form-control">Save</button>
+                      </div>
                     </div>
-                    <div class="col-4">
-                      <button type="submit" class="btn btn-outline-secondary form-control">Save</button>
+                  </form>
+                </div>
+              </div>
+              <div class="list-group mt-3">
+                <div>
+                  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+                    <label class="ml-3">Dismiss variant</label>
+                    <div class="row">
+                      <div class="col-8 d-flex">
+                          <select multiple class="ml-3 selectpicker" title="Select categories..." name="dismiss_variant" id="dismiss_variant" >
+                          {% for rank, data in dismiss_variant_options.items() %}
+                            <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
+                              {{ data.label }}
+                            </option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="col-4">
+                        <button type="submit" class="btn btn-outline-secondary form-control">Save</button>
+                      </div>
                     </div>
-                  </div>
-                </form>
-            </div>
-          </ul>
-        </div> <!-- end of card -->
-      </div> <!-- end of col -->
-    </div> <!-- end of row -->
+                  </form>
+                </div>
+              </ul>
+            </div> <!-- end of card -->
+          </div> <!-- end of col -->
+        </div> <!-- end of row -->
 
     <div class="col-md-6">
-      <div class="card mt-3">
-        <ul class="list-group">
-          <li class="list-group-item">
-            Position
+      <div class="card mt-3 panel-default">
+        <div class="panel-heading">Summary</div>
+          <ul class="list-group">
+            <li class="list-group-item">
+              Position
             <div class="float-right">
               {{ variant.chromosome }}:{{ variant.position }} {{ "-" if variant.end_chrom == variant.chromosome else " / "+variant.end_chrom+":" }}{{ variant.end }}
             </div>
-          </li>
-          <li class="list-group-item">
-            Breakpoint 1
-            <div class="float-right">
-              {{ variant.chromosome }}:{{ variant.position }}
-              <form role="form" name="bp1_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
-                {% if case.mt_bams or case.bam_files %}
-                <!-- general hidden fields required to submit POST request to IGV viewer -->
-                  <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
-                  <input type="hidden" name="build" value="{{case.genome_build}}">
-                  <input type="hidden" name="contig" value="{{variant.chromosome}}">
-                  <input type="hidden" name="center_guide" value="T">
-                  <input type="hidden" name="start" value="{{variant.position - 500}}">
-                  <input type="hidden" name="stop" value="{{variant.position + 500}}">
-                  <!--<input type="hidden" name="now" values="{{now}}"-->
-                {% endif %}
+            </li>
+            <li class="list-group-item">
+              Breakpoint 1
+              <div class="float-right">
+                {{ variant.chromosome }}:{{ variant.position }}
+                <form role="form" name="bp1_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
+                  {% if case.mt_bams or case.bam_files %}
+                  <!-- general hidden fields required to submit POST request to IGV viewer -->
+                    <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
+                    <input type="hidden" name="build" value="{{case.genome_build}}">
+                    <input type="hidden" name="contig" value="{{variant.chromosome}}">
+                    <input type="hidden" name="center_guide" value="T">
+                    <input type="hidden" name="start" value="{{variant.position - 500}}">
+                    <input type="hidden" name="stop" value="{{variant.position + 500}}">
+                    <!--<input type="hidden" name="now" values="{{now}}"-->
+                  {% endif %}
 
                 {% if variant.chromosome == "MT" and case.mt_bams %}
                   <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
@@ -210,40 +212,41 @@
                     <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
                   {% endif %}
                   <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type=submit>IGV</button>
+                  {% else %}
+                    - BAM file(s) missing
+                  {% endif %}
+                    - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.end_chrom }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+                </form>
+              </div>
+            </li>
+  	        <li class="list-group-item">
+  	          Cytoband
+              <div class="float-right">
+                {% if variant.chromosome == variant.end_chrom and variant.cytoband_start == variant.cytoband_end %}
+                  {{ variant.chromosome }}{{ variant.cytoband_start }}
+                {% elif variant.chromosome == variant.end_chrom %}
+                  {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end }}
                 {% else %}
-                  - BAM file(s) missing
+                  {{ variant.chromosome }}{{ variant.cytoband_start }}-{{variant.end_chrom}}{{ variant.cytoband_end }}
                 {% endif %}
-                  - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.end_chrom }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
-              </form>
-            </div>
-          </li>
-  	      <li class="list-group-item">
-  	        Cytoband
-            <div class="float-right">
-              {% if variant.chromosome == variant.end_chrom and variant.cytoband_start == variant.cytoband_end %}
-                {{ variant.chromosome }}{{ variant.cytoband_start }}
-              {% elif variant.chromosome == variant.end_chrom %}
-                {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end }}
-              {% else %}
-                {{ variant.chromosome }}{{ variant.cytoband_start }}-{{variant.end_chrom}}{{ variant.cytoband_end }}
-              {% endif %}
-            </div>
-  	      </li>
-  	      <li class="list-group-item">
-  	        Length
-            <div class="float-right">
-              {{ variant.length }}
-              <form role="form" name="alignment_length_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
-                {% if case.mt_bams or case.bam_files %}
-                <!-- general hidden fields required to submit POST request to IGV viewer -->
-                  <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
-                  <input type="hidden" name="build" value="{{case.genome_build}}">
-                  <input type="hidden" name="contig" value="{{variant.chromosome}}">
-                  <input type="hidden" name="center_guide" value="T">
-                  <input type="hidden" name="start" value="{{variant.position - 500}}">
-                  <input type="hidden" name="stop" value="{{variant.end + 500}}">
-                  <!--<input type="hidden" name="now" values="{{now}}"-->
-                {% endif %}
+              </div>
+  	        </li>
+  	        <li class="list-group-item">
+  	          Length
+              <div class="float-right">
+                {{ variant.length }}
+                <form role="form" name="alignment_length_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
+                  {% if case.mt_bams or case.bam_files %}
+                  <!-- general hidden fields required to submit POST request to IGV viewer -->
+                    <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
+                    <input type="hidden" name="build" value="{{case.genome_build}}">
+                    <input type="hidden" name="contig" value="{{variant.chromosome}}">
+                    <input type="hidden" name="center_guide" value="T">
+                    <input type="hidden" name="start" value="{{variant.position - 500}}">
+                    <input type="hidden" name="stop" value="{{variant.end + 500}}">
+                    <!--<input type="hidden" name="now" values="{{now}}"-->
+                  {% endif %}
+
                 {% if variant.chromosome == "MT" and case.mt_bams %}
                   <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
                   <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
@@ -282,8 +285,7 @@
   	        Type <div class="float-right">{{ variant.sub_category|upper }}</div>
   	      </li>
           {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
-            <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}"
-              class="btn btn-default form-control" target="_blank">Submit to ClinVar</a>
+            <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control" target="_blank">Submit to ClinVar</a>
           {% endif %}
           {% if variant.clinvar_clinsig%}
             <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-default form-control">Modify clinvar submission</a>
