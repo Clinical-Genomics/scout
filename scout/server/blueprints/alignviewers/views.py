@@ -48,26 +48,40 @@ def igv():
     LOG.debug('Chromosome build is %s', chromosome_build)
 
     samples = request.form.get('sample').split(',')
+    LOG.debug('samples: %s', samples)
+    
+    bam_files = None
+    bai_files = None
+    rhocall_bed_files = None
+    rhocall_wig_files = None
+    tiddit_coverage_files = None
+    updregion_files = None
+    updsites_files = None
 
     if request.form.get('align') == 'mt_bam':
         bam_files = request.form.get('mt_bam').split(',')
         bai_files = request.form.get('mt_bai').split(',')
     else:
-        bam_files = request.form.get('bam').split(',')
-        bai_files = request.form.get('bai').split(',')
-        rhocall_bed_files = request.form.get('rhocall_bed').split(',')
-        rhocall_wig_files = request.form.get('rhocall_wig').split(',')
-        tiddit_coverage_files = request.form.get('tiddit_coverage_wig').split(',')
-        updregion_files = request.form.get('upd_regions_bed').split(',')
-        updsites_files = request.form.get('upd_sites_bed').split(',')
-        LOG.debug('samples: %s', samples)
-        LOG.debug('loading the following BAM tracks: %s', bam_files)
-        LOG.debug('loading the following rhocall BED tracks: %s', rhocall_bed_files)
-        LOG.debug('loading the following rhocall WIG tracks: %s', rhocall_wig_files)
-        LOG.debug('loading the following tiddit_coverage tracks: %s', tiddit_coverage_files)
-        LOG.debug('loading the following upd sites tracks: %s', updregion_files)
-        LOG.debug('loading the following upd region tracks: %s', updsites_files)
-        LOG.debug('loading the following tracks: %s', bam_files)
+        if request.form.get('bam'):
+            bam_files = request.form.get('bam').split(',')
+            LOG.debug('loading the following BAM tracks: %s', bam_files)
+        if request.form.get('bai'):
+            bai_files = request.form.get('bai').split(',')
+        if request.form.get('rhocall_bed'):
+            rhocall_bed_files = request.form.get('rhocall_bed').split(',')
+            LOG.debug('loading the following rhocall BED tracks: %s', rhocall_bed_files)
+        if request.form.get('rhocall_wig'):
+            rhocall_wig_files = request.form.get('rhocall_wig').split(',')
+            LOG.debug('loading the following rhocall WIG tracks: %s', rhocall_wig_files)
+        if request.form.get('tiddit_coverage_wig'):
+            tiddit_coverage_files = request.form.get('tiddit_coverage_wig').split(',')
+            LOG.debug('loading the following tiddit_coverage tracks: %s', tiddit_coverage_files)
+        if request.form.get('upd_regions_bed'):
+            updregion_files = request.form.get('upd_regions_bed').split(',')
+            LOG.debug('loading the following upd sites tracks: %s', updregion_files)
+        if request.form.get('upd_sites_bed'):
+            updsites_files = request.form.get('upd_sites_bed').split(',')
+            LOG.debug('loading the following upd region tracks: %s', updsites_files)
 
     display_obj={}
 
@@ -129,23 +143,22 @@ def igv():
             })
         counter += 1
 
-    rhocall_bed_tracks = make_igv_tracks('Rhocall Regions', rhocall_bed_files)
-    rhocall_wig_tracks = make_igv_tracks('Rhocall Zygosity', rhocall_wig_files)
-    tiddit_wig_tracks = make_igv_tracks('TIDDIT Coverage', tiddit_coverage_files)
-    updregion_tracks = make_igv_tracks('UPD region', updregion_files)
-    updsites_tracks = make_igv_tracks('UPD sites', updsites_files)
-
     display_obj['sample_tracks'] = sample_tracks
 
     if rhocall_wig_files:
+        rhocall_wig_tracks = make_igv_tracks('Rhocall Zygosity', rhocall_wig_files)
         display_obj['rhocall_wig_tracks'] = rhocall_wig_tracks
     if rhocall_bed_files:
+        rhocall_bed_tracks = make_igv_tracks('Rhocall Regions', rhocall_bed_files)
         display_obj['rhocall_bed_tracks'] = rhocall_bed_tracks
     if tiddit_coverage_files:
+        tiddit_wig_tracks = make_igv_tracks('TIDDIT Coverage', tiddit_coverage_files)
         display_obj['tiddit_wig_tracks'] = tiddit_wig_tracks
     if updregion_files:
+        updregion_tracks = make_igv_tracks('UPD region', updregion_files)
         display_obj['updregion_tracks'] = updregion_tracks
     if updsites_files:
+        updsites_tracks = make_igv_tracks('UPD sites', updsites_files)
         display_obj['updsites_tracks'] = updsites_tracks
 
     if request.form.get('center_guide'):
