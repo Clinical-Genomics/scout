@@ -336,3 +336,52 @@ def test_removeNoneValues():
     # THEN calling removeNoneValues(dict) will remove key-value pair
     # where value=None
     assert {"a":"1", "b":2} == removeNoneValues(d)
+
+
+def test_parse_optional_igv_param(scout_config):
+    # GIVEN a dict contains optional igv params
+    # i.e. rhocall_wig
+    samples = scout_config['samples']
+
+    # WHEN optional parameters are added to config
+    for sample in samples:
+        sample['rhocall_bed'] ="path/to/rb"
+        sample['rhocall_wig'] ="path/to/rw"
+        sample['upd_regions_bed'] ="path/to/up"
+        sample['upd_sites_bed'] ="path/to/us"
+        sample['tiddit_coverage_wig'] ="path/to/tc"
+    scout_config['samples'] = samples
+
+    # THEN parsing the config will add those to case data
+    case_data = parse_case(scout_config)
+    case_list = []
+    config_list = []
+    for individual in case_data['individuals']:
+       case_list.append( (individual['rhocall_wig'],
+                          individual['rhocall_bed'],
+                          individual['upd_regions_bed'],
+                          individual['upd_sites_bed'],
+                          individual['tiddit_coverage_wig'] ))
+
+    for sample in samples:
+       config_list.append( (sample['rhocall_wig'],
+                            sample['rhocall_bed'],
+                            sample['upd_regions_bed'],
+                            sample['upd_sites_bed'],
+                            sample['tiddit_coverage_wig'] ))
+
+    assert config_list == case_list
+
+
+def test_missing_optional_igv_param(scout_config):
+    # WHEN a dict is missing optinal wig param (later passed to igv.js)
+    # i.e. rhocall_wig
+    scout_config.pop('rhocall_bed', 'ignore_return')
+    scout_config.pop('rhocall_wig', 'ignore_return')
+    scout_config.pop('upd_regions_bed', 'ignore_return')
+    scout_config.pop('upd_sites_bed', 'ignore_return')
+    scout_config.pop('tiddit_coverage_wig', 'ignore_return')
+
+    # THEN parsing the config will not raise an exception
+    case_data = parse_case(scout_config)
+    assert case_data

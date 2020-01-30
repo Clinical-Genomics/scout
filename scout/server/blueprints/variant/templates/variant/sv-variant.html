@@ -149,6 +149,19 @@
                   - Alignment:
                   <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
                   <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
+                  {% if case.rhocall_beds %}
+                    <input type="hidden" name="rhocall_bed" value="{{case.rhocall_beds|join(',')}}">
+                    <input type="hidden" name="rhocall_wig" value="{{case.rhocall_wigs|join(',')}}">
+                  {% endif %}
+                  {% if case.tiddit_coverage_wigs %}
+                    <input type="hidden" name="tiddit_coverage_wig" value="{{case.tiddit_coverage_wigs|join(',')}}">
+                  {% endif %}
+                  {% if case.upd_regions_beds %}
+                    <input type="hidden" name="upd_regions_bed" value="{{case.upd_regions_beds|join(',')}}">
+                  {% endif %}
+                  {% if case.upd_sites_beds %}
+                    <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
+                  {% endif %}
                   <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type=submit>IGV</button>
                 {% else %}
                   - BAM file(s) missing
@@ -177,12 +190,24 @@
                   - Alignment:
                   <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
                   <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
-                  - Alignment:
                   <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV</button>
                 {% elif case.bam_files %}
+                  - Alignment:
                   <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
                   <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
-                  - Alignment:
+                  {% if case.rhocall_beds %}
+                    <input type="hidden" name="rhocall_bed" value="{{case.rhocall_beds|join(',')}}">
+                    <input type="hidden" name="rhocall_wig" value="{{case.rhocall_wigs|join(',')}}">
+                  {% endif %}
+                  {% if case.tiddit_coverage_wigs %}
+                    <input type="hidden" name="rhocall_coverage_wig" value="{{case.tiddit_coverage_wigs|join(',')}}">
+                  {% endif %}
+                  {% if case.upd_regions_beds %}
+                    <input type="hidden" name="upd_regions_bed" value="{{case.upd_regions_beds|join(',')}}">
+                  {% endif %}
+                  {% if case.upd_sites_beds %}
+                    <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
+                  {% endif %}
                   <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type=submit>IGV</button>
                 {% else %}
                   - BAM file(s) missing
@@ -218,7 +243,6 @@
                   <input type="hidden" name="stop" value="{{variant.end + 500}}">
                   <!--<input type="hidden" name="now" values="{{now}}"-->
                 {% endif %}
-
                 {% if variant.chromosome == "MT" and case.mt_bams %}
                   <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
                   <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
@@ -227,6 +251,19 @@
                 {% elif case.bam_files and variant.chromosome == variant.end_chrom %}
                   <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
                   <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
+                  {% if case.rhocall_beds %}
+                    <input type="hidden" name="rhocall_bed" value="{{case.rhocall_beds|join(',')}}">
+                    <input type="hidden" name="rhocall_wig" value="{{case.rhocall_wigs|join(',')}}">
+                  {% endif %}
+                  {% if case.tiddit_coverage_wigs %}
+                    <input type="hidden" name="rhocall_coverage_wig" value="{{case.tiddit_coverage_wigs|join(',')}}">
+                  {% endif %}
+                  {% if case.upd_regions_beds %}
+                    <input type="hidden" name="upd_regions_bed" value="{{case.upd_regions_beds|join(',')}}">
+                  {% endif %}
+                  {% if case.upd_sites_beds %}
+                    <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
+                  {% endif %}
                   - Alignment:
                   <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type=submit>IGV</button>
                 {% elif case.bam_files %}

@@ -1,3 +1,4 @@
+
 import logging
 import os
 
@@ -16,6 +17,12 @@ def build_individual(ind):
         Returns:
             ind_obj (dict): A Individual object
 
+        Raises:
+            PedigreeError: if sex is unknown,
+            if phenotype is unknown,
+            if analysis_type is unknwon,
+            or missing individual_id
+
         dict(
             individual_id = str, # required
             display_name = str,
@@ -24,11 +31,15 @@ def build_individual(ind):
             father = str, # Individual id of father
             mother = str, # Individual id of mother
             capture_kits = list, # List of names of capture kits
-            bam_file = str, # Path to bam file
+            bam_file = str, # Path to bam file,
+            rhocall_wig = str, # Path to a rhocall wig file showing heterozygosity levels
+            rhocall_bed = str, # Path to a rhocall bed file marking LOH regions
+            tiddit_coverage_wig = str, # Path to a TIDDIT coverage wig - overview coverage
+            upd_regions_bed = str, # Path to a UPD regions bed marking UPD calls
+            upd_sites_bed = str, # Path to a UPD sites bed, showing UPD info for vars
             vcf2cytosure = str, # Path to CGH file
             analysis_type = str, # choices=ANALYSIS_TYPES
         )
-
     """
 
     try:
@@ -66,7 +77,9 @@ def build_individual(ind):
         raise(PedigreeError("Unknown phenotype: %s" % phenotype))
 
     # Fix absolute path for individual bam files (takes care of incomplete path for demo files)
-    ind_files = ('bam_file', 'mt_bam', 'vcf2cytosure')
+    ind_files = ['bam_file', 'mt_bam', 'vcf2cytosure', 'rhocall_bed',
+                 'rhocall_wig', 'tiddit_coverage_wig', 'upd_regions_bed', 'upd_sites_bed']
+
     for ind_file in ind_files:
         file_path = ind.get(ind_file)
         if file_path and os.path.exists(file_path):
@@ -80,6 +93,7 @@ def build_individual(ind):
     ind_obj['confirmed_sex'] = ind.get('confirmed_sex')
     ind_obj['confirmed_parent'] = ind.get('confirmed_parent')
     ind_obj['predicted_ancestry'] = ind.get('predicted_ancestry')
+
 
     # Check if the analysis type is ok
     # Can be anyone of ('wgs', 'wes', 'mixed', 'unknown')
