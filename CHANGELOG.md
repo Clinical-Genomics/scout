@@ -24,9 +24,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Slightly darker page background
 - Fixed an issued with parsed conservation values from CSQ
-- Coverage calculated on Pull Request commits instead of last push commit
 - Clinvar submissions accessible to all users of an institute
-- Header toolbar when on Clinvar page now shows institute name correctly 
+- Header toolbar when on Clinvar page now shows institute name correctly
 - Case should not always inactivate upon update
 - Show dismissed snv cancer variants as grey on the cancer variants page
 - Improved style of mappability link and local observations on variant page
