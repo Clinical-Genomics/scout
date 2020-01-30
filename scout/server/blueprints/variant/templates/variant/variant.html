@@ -1,6 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table, modal_causative %}
+{% from "variant/utils.html" import omim_phenotypes, gtcall_panel %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -70,7 +71,7 @@
     </div>
     <div class="row">
         <div class="col-sm">{{ inheritance_panel() }}</div>
-        <div class="col-sm">{{ omim_phenotypes() }}</div>
+        <div class="col-sm">{{ omim_phenotypes(variant) }}</div>
     </div>
     <div class="row">
       <div class="col-sm">{{ frequency_list() }}</div>
@@ -80,7 +81,7 @@
       <div class="col-sm-4">
         {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
       </div>
-      <div class="col-sm-5">{{ gtcall_panel() }}</div>
+      <div class="col-sm-5">{{ gtcall_panel(variant) }}</div>
       {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
       {% if has_pedigree %}
         <div class="col-sm-3">{{ pedigree_panel(case) }}</div>
@@ -934,94 +935,6 @@
           {% endfor %}
         </tbody>
       </table>
-  </div>
-{% endmacro %}
-
-{% macro omim_phenotypes() %}
-  <div class="card mt-3 panel-default">
-      <div class="panel-heading">OMIM</div>
-      <div class="table-responsive fixed-panel">
-        <table class="table table-bordered table-condensed table-sm">
-          <thead>
-            <tr>
-              <th>Gene</th>
-              <th>Phenotype</th>
-              <th>Inheritance model</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for gene in variant.genes %}
-              {% if gene.common %}
-                {% for disease_term in gene.common.phenotypes %}
-                  <tr>
-                    <td>
-                        <a href="http://omim.org/entry/{{ gene.common.omim_id }}" target="_blank">
-                          {{ gene.common.hgnc_symbol }}
-                        </a>
-                    </td>
-                    <td>
-                      <a href="http://omim.org/entry/{{ disease_term.mim_number|replace('OMIM:', '') }}" target="_blank">
-                        {{ disease_term.description }}
-                      </a>
-                    </td>
-                    <td>{{ disease_term.inheritance_models|join(', ') }}</td>
-                  </tr>
-                {% endfor %}
-              {% endif %}
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-  </div>
-{% endmacro %}
-
-{% macro gtcall_panel() %}
-  <div class="card panel-default">
-    <div class="panel-heading">
-      GT call
-      {% if variant.is_par %}
-        <span class="badge badge-info">PAR</span>
-      {% endif %}
-    </div>
-    <div class="table-responsive">
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th rowspan="2">Sample</th>
-              <th rowspan="2">Genotype (GT)</th>
-              <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
-              <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
-            </tr>
-            <tr>
-              <th>Reference</th>
-              <th>Alternative</th>
-            </tr>
-          </tr>
-        </thead>
-        <tbody>
-          {% for sample in variant.samples %}
-            <tr {{ 'class="danger"' if sample.is_affected }}>
-              <td>{{ sample.display_name }}</td>
-              <td class="text-center">{{ sample.genotype_call }}</td>
-              {% if sample.allele_depths %}
-                  {% for number in sample.allele_depths %}
-                    <td class="text-right">{{ number }}</td>
-                  {% endfor %}
-              {% else %}
-                  <td class="text-right"><small>N/A</small></td>
-                  <td class="text-right"><small>N/A</small></td>
-              {% endif %}
-              <td class="text-right">{{ sample.genotype_quality }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <div class="panel-footer">
-      {% for name, caller in variant.callers %}
-        <span class="badge badge-secondary">{{ name }}: {{ caller }}</span>
-      {% endfor %}
-    </div>
   </div>
 {% endmacro %}
 

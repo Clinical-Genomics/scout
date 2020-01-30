@@ -1,6 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, pedigree_panel %}
 {% from "variants/utils.html" import modal_causative %}
+{% from "variant/utils.html" import omim_phenotypes, gtcall_panel %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -317,23 +318,27 @@
   </div>
 
   <div class="row">
-    <div class="col-md-4">
-      {{ frequencies(variant) }}
-    </div>
     <div class="col-md-8">
-      {{ gt_calls(variant.samples) }}
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-xs-12 col-sm-9 {{ 'col-md9' if has_pedigree }}">
-      {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
+      {{ gtcall_panel(variant) }}
     </div>
     {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
     {% if has_pedigree %}
-      <div class="col-xs-12 col-md-3">{{ pedigree_panel(case) }}</div>
+      <div class="col-md-4">{{ pedigree_panel(case) }}</div>
     {% endif %}
   </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
+    </div>
+    <div class="col-md-4">
+      {{ frequencies(variant) }}
+    </div>
+    <div class="col-md-4">
+      {{ omim_phenotypes(variant) }}
+    </div>
+  </div>
+
 
   <div class="row">
     <div class="col-md-12">
@@ -480,44 +485,6 @@
       </ul>
     </div>
   {% endif %}
-{% endmacro %}
-
-{% macro gt_calls(samples) %}
-  <div class="card mt-3">
-    <table class="table table-bordered table-sm">
-      <thead>
-        <tr>
-          <th rowspan="2">Sample</th>
-          <th rowspan="2">Genotype</th>
-          <th colspan="2">Alleles</th>
-          <th rowspan="2">GQ</th>
-        </tr>
-        <tr>
-          <th>1st</th>
-          <th>2nd</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for sample in samples %}
-          <tr>
-            <td>{{ sample.display_name }}</td>
-            <td>{{ sample.genotype_call }}</td>
-            {% for allele in sample.allele_depths %}
-              <td>{{ allele }}</td>
-            {% endfor %}
-            <td>{{ sample.genotype_quality }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% if variant.callers %}
-      <div class="panel-footer">
-        {% for name, caller in variant.callers %}
-          <span class="badge badge-secondary">{{ name }}: {{ caller }}</span>
-        {% endfor %}
-      </div>
-    {% endif %}
-  </div>
 {% endmacro %}
 
 {% macro genes_panel(variant) %}
