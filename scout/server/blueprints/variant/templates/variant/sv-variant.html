@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, pedigree_panel %}
 {% from "variants/utils.html" import modal_causative %}
-{% from "variant/utils.html" import omim_phenotypes, gtcall_panel %}
+{% from "variant/utils.html" import omim_phenotypes, gtcall_panel, rankscore_panel %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -339,6 +339,9 @@
     </div>
   </div>
 
+  <div class="row">
+    <div class="col-12">{{ rankscore_panel(variant) }}</div>
+  </div>
 
   <div class="row">
     <div class="col-md-12">
