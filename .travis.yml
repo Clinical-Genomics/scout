@@ -6,7 +6,7 @@ env: TRAVIS=1
 jobs:
     include:
         - name: "Tests"
-          if: type = push
+          if: type = pull_request
           services: mongodb
           install:
               - pip install cython
@@ -14,7 +14,7 @@ jobs:
           script: py.test -rxs tests/
 
         - name: "Tests & Coverage"
-          if: NOT type = push
+          if: NOT type = pull_request
           services: mongodb
           install:
               - pip install cython
