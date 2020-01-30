@@ -144,7 +144,6 @@ def igv():
 
     display_obj['sample_tracks'] = sample_tracks
 
-<<<<<<< HEAD
     if rhocall_wig_files:
         display_obj['rhocall_wig_tracks'] = rhocall_wig_tracks
     if rhocall_bed_files:
@@ -157,9 +156,6 @@ def igv():
         display_obj['updsites_tracks'] = updsites_tracks
 
     if request.args.get('center_guide'):
-=======
-    if request.form.get('center_guide'):
->>>>>>> master
         display_obj['display_center_guide'] = True
     else:
         display_obj['display_center_guide'] = False
