@@ -513,6 +513,7 @@
           </li>
         {% endif %}
       </ul>
+
       <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
         <!-- general hidden fields required to submit POST request to IGV viewer -->
         {% if case.mt_bams or case.bam_files %}
@@ -541,6 +542,19 @@
                 {% elif case.bam_files %}
                   <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
                   <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
+                  {% if case.rhocall_beds %}
+                    <input type="hidden" name="rhocall_bed" value="{{case.rhocall_beds|join(',')}}">
+                    <input type="hidden" name="rhocall_wig" value="{{case.rhocall_wigs|join(',')}}">
+                  {% endif %}
+                  {% if case.tiddit_coverage_wigs %}
+                    <input type="hidden" name="tiddit_coverage_wig" value="{{case.tiddit_coverage_wigs|join(',')}}">
+                  {% endif %}
+                  {% if case.upd_regions_beds %}
+                    <input type="hidden" name="upd_regions_bed" value="{{case.upd_regions_beds|join(',')}}">
+                  {% endif %}
+                  {% if case.upd_sites_beds %}
+                    <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
+                  {% endif %}
                   <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
                 {% else %}
                   <span class="text-muted">BAM file(s) missing</span>
