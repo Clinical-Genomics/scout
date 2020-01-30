@@ -41,10 +41,19 @@
 </a>
 <!-- Submenu content -->
 <div id='submenu1' class="collapse sidebar-submenu">
-    <a href="{{ url_for('cases.case_report', institute_id=institute._id,
-                      case_name=case.display_name) }}" target="_blank" class="list-group-item list-group-item-action bg-dark text-white">
-        <span class="menu-collapsed">General</span>
-    </a>
+    <div href="#" class="bg-dark list-group-item text-white">
+      <div class="d-flex align-items-center justify-content-start">
+          <div><span class="menu-collapsed ml-2">General</span></div>
+          <div>
+            <a href="{{ url_for('cases.case_report', institute_id=institute._id,
+                              case_name=case.display_name) }}" target="_blank">
+                            <i class="fa fa-link"></i></a>
+            <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id,
+                              case_name=case.display_name) }}">
+                            <i class="fa fa-file-pdf-o"></i></a>
+          </div>
+      </div>
+    </div>
     {% if case.multiqc %}
       <a href="{{ url_for('cases.multiqc', institute_id=institute._id,
                           case_name=case.display_name) }}" class="list-group-item list-group-item-action bg-dark text-white">
@@ -59,24 +68,17 @@
         </a>
       </form>
     {% endif %}
-    <a href="{{ url_for('cases.mt_report', institute_id=institute._id,
-                      case_name=case.display_name) }}" class="list-group-item list-group-item-action bg-dark text-white">
-        <span class="menu-collapsed">mtDNA report</span>
-    </a>
-    {% if case.delivery_report %}
-      <div href="#" class="bg-dark list-group-item text-white">
-        <div class="d-flex align-items-center justify-content-start">
-            <div><span class="menu-collapsed ml-2">Delivery</span></div>
-            <div>
-              <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+    <div href="#" class="bg-dark list-group-item text-white">
+      <div class="d-flex align-items-center justify-content-start">
+          <div><span class="menu-collapsed ml-2">mtDNA report</span></div>
+          <div>
+            <a href="{{ url_for('cases.mt_report', institute_id=institute._id,
                               case_name=case.display_name) }}" target="_blank">
-                              <i class="fa fa-link"></i></a>
-              <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                              case_name=case.display_name, format='pdf') }}">
-                              <i class="fa fa-file-pdf-o"></i></a>
-            </div>
-        </div>
+                            <i class="fa fa-file-excel-o"></i></a>
+          </div>
       </div>
+    </div>
+    {% if case.analyses %}
       {% for analysis in case.analyses %}
         <div href="#" class="bg-dark list-group-item text-white">
           <div class="d-flex align-items-center justify-content-start ">
@@ -92,6 +94,21 @@
           </div>
         </div>
       {% endfor %}
+    {% elif case.delivery_report %}
+      <div href="#" class="bg-dark list-group-item text-white">
+        <div class="d-flex align-items-center justify-content-start">
+            <div><span class="menu-collapsed ml-2">Delivery</span></div>
+            <div>
+              <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                              case_name=case.display_name) }}" target="_blank">
+                              <i class="fa fa-link"></i></a>
+              <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                              case_name=case.display_name, format='pdf') }}">
+                              <i class="fa fa-file-pdf-o"></i></a>
+            </div>
+        </div>
+      </div>
+
     {% endif %}
 </div>
 {% endmacro %}
