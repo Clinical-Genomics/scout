@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Accepts `alignemnt_path` in load config to pass bam/cram files
+- Display all phenotypes on variant page
 
 ### Fixed
 - Cancer case HPO panel variants link
