@@ -24,7 +24,7 @@
 {% endblock %}
 
 {% block content_main %}
-<form  action="{{ url_for('overview.institute', institute_id=institute.internal_id) }}" method="POST"
+<form  action="{{ url_for('overview.institute', institute_id=institute._id) }}" method="POST"
   accept-charset="utf-8" id="institute_form">
 {{ form.csrf_token() }}
 <div class="container">
