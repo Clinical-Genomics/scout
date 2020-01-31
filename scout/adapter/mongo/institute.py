@@ -78,12 +78,6 @@ class InstituteHandler(object):
             updates['$push'] = {'sanger_recipients':sanger_recipient}
 
         if sanger_recipients is not None:
-            for recipient in sanger_recipients:
-                user_obj = self.user(email=recipient)
-                if not user_obj:
-                    return "user {} does not exist in database".format(recipient)
-                LOG.info("Updating sanger recipients for institute: {0} with {1}".format(
-                         internal_id, recipient))
             updates['$set']['sanger_recipients'] = sanger_recipients # can be empty list
 
         if remove_sanger:
