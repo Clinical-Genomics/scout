@@ -66,7 +66,7 @@ def institute(institute_id):
     institutes_tuples = []
     for inst in store.institutes():
         if not inst['_id'] == institute_id:
-            institutes_tuples.append( ((inst['_id'], inst['_id']) ))
+            institutes_tuples.append( ((inst['_id'], inst['display_name']) ))
 
     form.display_name.value = institute_obj.get('display_name')
     form.institutes.choices = institutes_tuples
