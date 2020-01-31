@@ -13,6 +13,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Institute settings page
 - Link institute settings to sharing institutes choices
 
+## [4.11.1]
+
+### Fixed
+- Institute settings page
+
+
 ## [4.11.0]
 
 ### Added
