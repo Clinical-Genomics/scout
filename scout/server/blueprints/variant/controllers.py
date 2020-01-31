@@ -150,9 +150,8 @@ def variant(
 
     # Add general variant links
     variant_obj.update(get_variant_links(variant_obj, int(genome_build)))
-    if variant_type == "sv":
-        variant_obj["frequencies"] = sv_frequencies(variant_obj)
-    elif variant_type in ["snv", "cancer"]:
+    variant_obj["frequencies"] = frequencies(variant_obj)
+    if variant_type in ["snv", "cancer"]:
         # This is to convert a summary of frequencies to a string
         variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
