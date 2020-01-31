@@ -60,7 +60,8 @@ def institute(institute_id):
             flash('institute was updated ', 'success')
         else: # an error message was retuned
             flash(institute_obj, 'warning')
-
+            return redirect(request.referrer)
+            
     data = controllers.institute(store, institute_id)
     # get all other institutes to populate the select of the possible collaborators
     institutes_tuples = []
