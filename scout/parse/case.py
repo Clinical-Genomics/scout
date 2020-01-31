@@ -253,8 +253,13 @@ def parse_individual(sample):
     ind_info['confirmed_sex'] = sample.get('confirmed_sex')
     ind_info['predicted_ancestry'] = sample.get('predicted_ancestry')
 
+    # IGV files
     ind_info['bam_file'] = sample.get('bam_path',sample.get('bam_file'))
-
+    ind_info['rhocall_bed'] = sample.get('rhocall_bed',sample.get('rhocall_bed'))
+    ind_info['rhocall_wig'] = sample.get('rhocall_wig',sample.get('rhocall_wig'))
+    ind_info['tiddit_coverage_wig'] = sample.get('tiddit_coverage_wig',sample.get('tiddit_coverage_wig'))
+    ind_info['upd_regions_bed'] = sample.get('upd_regions_bed',sample.get('upd_regions_bed'))
+    ind_info['upd_sites_bed'] = sample.get('upd_sites_bed',sample.get('upd_sites_bed'))
     ind_info['mt_bam'] = sample.get('mt_bam')
     ind_info['analysis_type'] = sample.get('analysis_type')
 
