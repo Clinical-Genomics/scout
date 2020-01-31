@@ -65,14 +65,11 @@
           <span class="menu-collapsed ml-2">Coverage</span>
             <form method="POST" id="coverage_html" target="_blank" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
               <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
-
               <a href="javascript:;" onclick="document.getElementById('coverage_html').submit();" target="_blank">
                 <i class="fa fa-link"></i></a>
             </form>
-
             <form method="POST" id="coverage_pdf" target="_blank" action="{{ url_for('report.pdf', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
               <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
-
               <a href="javascript:;" onclick="document.getElementById('coverage_pdf').submit();" target="_blank">
                 <i class="fa fa-file-pdf-o"></i></a>
             </form>
@@ -82,9 +79,7 @@
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row">
         <span class="menu-collapsed ml-2">mtDNA report</span>
-          <a href="{{ url_for('cases.mt_report', institute_id=institute._id,
-                              case_name=case.display_name) }}" target="_blank">
-                          <i class="fa fa-file-excel-o"></i></a>
+          <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-file-excel-o"></i></a>
       </div>
     </div>
     {% if case.analyses %}
