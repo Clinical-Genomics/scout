@@ -189,8 +189,7 @@ def case(store, institute_obj, case_obj):
                                    collab_obj in o_collaborators]
 
     collab_ids = [(collab['_id'], collab['display_name']) for collab in store.institutes() if
-                  (collab['_id'] not in ('cust000', institute_obj['_id'])) and
-                  (collab['_id'] not in case_obj['collaborators'])]
+        collab['_id'] in institute_obj.get('collaborators')
 
     events = list(store.events(institute_obj, case=case_obj))
     for event in events:
