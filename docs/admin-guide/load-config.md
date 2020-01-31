@@ -22,6 +22,11 @@ samples:
     expected_coverage: int(mandatory)
     vcf2cytosure: str(optional) # path to CGH file
     bam_path: str(optional) # path to bam file
+    rhocall_bed: str(optional) # path to bed file
+    rhocall_wig: str(optional) # path to wig file
+    upd_regions_bed: str(optional) # path to bed file
+    upd_sites_bed: str(optional) # path to bed file
+    tiddit_coverage_wig: str(optional) # path to wig file
 
     tissue_type: str(optional)
     tumor_type: str(optional)
@@ -72,6 +77,11 @@ Let's go through each field:
 	- *sex* specifies the sex of the sample in human readable format
 	- *expected_coverage* the level of expected coverage
 	- *bam_file* Path to bam file to view alignments
+	- *rhocall_bed* Path to bed file to view alignments (Reference)[https://github.com/dnil/rhocall]
+	- *rhocall_wig* Path to wig file to view alignments (Reference)[https://github.com/dnil/rhocall]
+	- *upd_regions_bed* Path to bed file to view alignments (Reference)[https://github.com/bjhall/upd]
+	- *upd_sites_bed* Path to bed file to view alignments (Reference)[https://github.com/bjhall/upd]
+	- *tiddit_coverage_wig* Path to wig file to view alignments (Reference)[https://github.com/SciLifeLab/TIDDIT]
     - *vcf2cytosure* Path to CGH file to allow download per individual
     - *tumor_type* Type of tumor
     - *tissue_type* What tissue the sample originates from
