@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, pedigree_panel %}
 {% from "variants/utils.html" import modal_causative %}
-{% from "variant/utils.html" import omim_phenotypes, gtcall_panel, rankscore_panel, overlapping_panel %}
+{% from "variant/utils.html" import omim_phenotypes, gtcall_panel, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -362,7 +362,7 @@
         </nav>
         <div class="tab-content mt-3" id="nav-tabContent">
           <div class="tab-pane fade show active" id="nav-genes" role="tabpanel" aria-labelledby="nav-genes-tab">{{ genes_panel(variant) }}</div>
-          <div class="tab-pane fade" id="nav-transcripts" role="tabpanel" aria-labelledby="nav-transcripts-tab">{{ transcripts_panel() }}</div>
+          <div class="tab-pane fade" id="nav-transcripts" role="tabpanel" aria-labelledby="nav-transcripts-tab">{{ transcripts_panel(variant) }}</div>
         </div>
       </div>
     </div>
@@ -490,118 +490,6 @@
       </ul>
     </div>
   {% endif %}
-{% endmacro %}
-
-{% macro genes_panel(variant) %}
-  <div class="card panel-default">
-    <div class="table-responsive">
-      <table id="genes_table" class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Gene</th>
-            <th>Ensembl</th>
-            <th>Region</th>
-            <th>Function</th>
-            <th>Description</th>
-            <th>OMIM</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for gene in variant.genes %}
-            <tr>
-              {% if gene.common %}
-              <td>
-                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                </a>
-              </td>
-              <td>
-                <a target="_blank" href="{{ gene.ensembl_link }}">
-                  {{ gene.common.ensembl_id }}
-                </a>
-              </td>
-              <td>{{ gene.region_annotation }}</td>
-              <td>{{ gene.functional_annotation }}</td>
-              <td>{{ gene.common.description|replace('_', ' ') }}</td>
-              <td>
-                {% if gene.common.omim_id %}
-                  <a href="http://omim.org/entry/{{ gene.common.omim_id }}" target="_blank">
-                    {{ gene.common.omim_id }}
-                  </a>
-                {% endif %}
-              </td>
-              {% else %}
-                <td>
-                  <a href="https://www.genenames.org/tools/search/#!/all?query={{ gene.hgnc_id }}" target="_blank">
-                    {{ gene.hgnc_id }}
-                  </a>
-                </td>
-                <td></td>
-                <td>{{ gene.region_annotation }}</td>
-                <td>{{ gene.functional_annotation }}</td>
-                <td></td>
-                <td></td>
-              {% endif %}
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-{% endmacro %}
-
-{% macro transcripts_panel() %}
-<div class="card panel-default">
-  <div class="table-responsive">
-    <table id="transcripts_table" class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Gene</th>
-          <th>Transcript</th>
-          <th>RefSeq</th>
-          <th>Biotype</th>
-          <th>Mutation type</th>
-          <th>Strand</th>
-          <th>Exon</th>
-          <th>Intron</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for gene in variant.genes %}
-          {% for transcript in gene.transcripts %}
-            <tr class="{{ 'danger' if transcript.is_disease_associated }}">
-              <td>
-                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                </a>
-              </td>
-              <td class="d-flex justify-content-around align-items-center">
-                <a target="_blank" href="{{ transcript.ensembl_link }}">
-                  {{ transcript.transcript_id }}
-                </a>
-                {% if transcript.is_canonical %}
-                  <span class="badge badge-info">C</span>
-                {% endif %}
-              </td>
-              <td>
-                {{ transcript.refseq_identifiers|join(',') }}
-              </td>
-              <td>{{ transcript.biotype or '' }}</td>
-              <td data-toggle="tooltip" data-placement="right" title="{{ transcript.functional_annotations|join(', ') }}">
-                {{ transcript.functional_annotations
-                      |join(', ')
-                      |truncate(20, True) }}
-              </td>
-              <td class="text-center">{{ transcript.strand }}</td>
-              <td>{{ transcript.exon or '' }}</td>
-              <td>{{ transcript.intron or '' }}</td>
-            </tr>
-          {% endfor %}
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
 {% endmacro %}
 
 {% macro ext_links(variant) %}

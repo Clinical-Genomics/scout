@@ -162,3 +162,153 @@
     </div>
   </div>
 {% endmacro %}
+
+{% macro genes_panel(variant) %}
+  <div class="card panel-default">
+    <table class="table table-bordered table-sm">
+      <thead>
+        <tr>
+          <th>Gene</th>
+          <th>Ensembl ID</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for gene in variant.genes %}
+          <tr>
+            <td>
+              <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+              </a>
+            </td>
+            <td>
+              {% if gene.common %}
+                <a target="_blank" href="{{ gene.ensembl_link }}">
+                  {{ gene.common.ensembl_id }}
+                </a>
+              {% endif %}
+            </td>
+            <td>{{ gene.common.description if gene.common }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
+
+{% macro transcripts_panel(variant) %}
+  <div class="card panel-default table-responsive fixed-panel">
+    <table id="transcripts_panel_table" class="table table-bordered card-sm">
+      <thead>
+        <tr>
+          <th>Gene</th>
+          <th>Transcript</th>
+          <th>RefSeq</th>
+          <th>Biotype</th>
+          <th>Mutation type</th>
+          <th>Strand</th>
+          <th>Exon</th>
+          <th>Intron</th>
+          <th>cDNA</th>
+          <th>Amino acid</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for gene in variant.genes %}
+          {% for transcript in gene.transcripts %}
+            <tr class="{{ 'danger' if transcript.is_disease_associated }}">
+              <td>
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                </a>
+              </td>
+              <td class="d-flex justify-content-around align-items-center">
+                <a target="_blank" href="{{ transcript.ensembl_link }}">
+                  {{ transcript.transcript_id }}
+                </a>
+                {% if transcript.is_canonical %}
+                  <span class="badge badge-info">C</span>
+                {% endif %}
+              </td>
+              <td>
+                {{ transcript.refseq_identifiers|join(',') }}
+              </td>
+              <td>{{ transcript.biotype or '' }}</td>
+              <td data-toggle="tooltip" data-placement="right" title="{{ transcript.functional_annotations|join(', ') }}">
+                {{ transcript.functional_annotations
+                      |join(', ')
+                      |truncate(20, True) }}
+              </td>
+              <td class="text-center">{{ transcript.strand }}</td>
+              <td>{{ transcript.exon or '' }}</td>
+              <td>{{ transcript.intron or '' }}</td>
+              <td>{{ (transcript.coding_sequence_name or '') }}</td>
+              <td>{{ (transcript.protein_sequence_name or '')|url_decode }}</td>
+            </tr>
+          {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
+
+{% macro proteins_panel(variant) %}
+  <div class="panel panel-default table-responsive">
+    <table id="proteins_panel_table" class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Gene</th>
+          <th>Transcript</th>
+          <th>Protein</th>
+          <th>SWISS PROT</th>
+          <th>Sift</th>
+          <th>Polyphen</th>
+          <th>Pfam</th>
+          <th>ProSite</th>
+          <th>Smart</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for gene in variant.genes %}
+          {% for transcript in gene.transcripts %}
+            <tr>
+              <td>{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}</td>
+              <td>
+                <a target="_blank" href="{{ transcript.ensembl_link }}">
+                  {{ transcript.transcript_id }}
+                </a>
+              </td>
+              <td>{{ transcript.protein_id if transcript.protein_id }}</td>
+              <td>
+                {% if transcript.swiss_prot != 'unknown' %}
+                  <a target="_blank" href="{{ transcript.swiss_prot_link }}">
+                    {{ transcript.swiss_prot }}
+                  </a>
+                {% else %}
+                  {{ transcript.swiss_prot }}
+                {% endif %}
+              </td>
+              <td>{{ transcript.sift_prediction }}</td>
+              <td>{{ transcript.polyphen_prediction }}</td>
+              <td>
+                <a target="_blank" href="{{ transcript.pfam_domain_link }}">
+                  {{ transcript.pfam_domain if transcript.pfam_domain }}
+                </a>
+              </td>
+              <td>
+                <a target="_blank" href="{{ transcript.prosite_profile_link }}">
+                  {{ transcript.prosite_profile if transcript.prosite_profile }}
+                </a>
+              </td>
+              <td>
+                <a target="_blank" href="{{ transcript.smart_domain_link }}">
+                  {{ transcript.smart_domain if transcript.smart_domain }}
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
