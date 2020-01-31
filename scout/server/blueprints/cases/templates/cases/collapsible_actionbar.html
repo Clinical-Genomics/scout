@@ -43,14 +43,16 @@
 <div id='submenu1' class="collapse sidebar-submenu">
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex align-items-center justify-content-start">
-          <div><span class="menu-collapsed ml-2">General</span></div>
           <div>
-            <a href="{{ url_for('cases.case_report', institute_id=institute._id,
-                              case_name=case.display_name) }}" target="_blank">
-                            <i class="fa fa-link"></i></a>
-            <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id,
-                              case_name=case.display_name) }}">
-                            <i class="fa fa-file-pdf-o"></i></a>
+            <span class="menu-collapsed ml-2">General report</span>
+            <div>
+              <a href="{{ url_for('cases.case_report', institute_id=institute._id,
+                                case_name=case.display_name) }}" target="_blank">
+                              <i class="fa fa-link"></i></a>
+              <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id,
+                                case_name=case.display_name) }}">
+                              <i class="fa fa-file-pdf-o"></i></a>
+            </div>
           </div>
       </div>
     </div>
@@ -98,14 +100,16 @@
         {% if analysis.delivery_report %}
           <div href="#" class="bg-dark list-group-item text-white">
             <div class="d-flex align-items-center justify-content-start ">
-              <div><span class="menu-collapsed ml-2">Delivery report ({{analysis.date.date()}})</span></div>
               <div>
-                <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                                            case_name=case.display_name, date=analysis.date) }}" target="_blank">
-                                <i class="fa fa-link"></i></a>
-                <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                                            case_name=case.display_name, date=analysis.date, format='pdf') }}">
-                                <i class="fa fa-file-pdf-o"></i></a>
+                <span class="menu-collapsed ml-2">Delivery ({{analysis.date.date()}})</span>
+                <div>
+                  <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                                              case_name=case.display_name, date=analysis.date) }}" target="_blank">
+                                  <i class="fa fa-link"></i></a>
+                  <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                                              case_name=case.display_name, date=analysis.date, format='pdf') }}">
+                                  <i class="fa fa-file-pdf-o"></i></a>
+                </div>
               </div>
             </div>
           </div>
