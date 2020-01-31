@@ -8,6 +8,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+
+### Fixed
+
+
+## [4.11.0]
+
+### Added
 - Display locus name on STR variant page
 - Alternative key `GNOMADAF_popmax` for Gnomad popmax allele frequency
 - Automatic suggestions on how to improve the code on Pull Requests
@@ -40,7 +47,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed issue with opening research variants
 - Problem with coveralls not called by Travis CI
 - Handle Biomart service down in tests
-
 
 
 ## [4.10.0]
