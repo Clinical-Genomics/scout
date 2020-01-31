@@ -188,8 +188,10 @@ def case(store, institute_obj, case_obj):
     case_obj['o_collaborators'] = [(collab_obj['_id'], collab_obj['display_name']) for
                                    collab_obj in o_collaborators]
 
-    collab_ids = [(collab['_id'], collab['display_name']) for collab in store.institutes() if
-        collab['_id'] in institute_obj.get('collaborators')
+    collab_ids = None
+    if institute_obj.get('collaborators'):
+        collab_ids = [(collab['_id'], collab['display_name']) for collab in store.institutes() if
+            institute_obj.get('collaborators') and collab['_id'] in institute_obj.get('collaborators')]
 
     events = list(store.events(institute_obj, case=case_obj))
     for event in events:
