@@ -65,8 +65,8 @@ def institute(institute_id):
     # get all other institutes to populate the select of the possible collaborators
     institutes_tuples = []
     for inst in store.institutes():
-        if not inst['internal_id'] == institute_id:
-            institutes_tuples.append( ((inst['internal_id'], inst['internal_id']) ))
+        if not inst['_id'] == institute_id:
+            institutes_tuples.append( ((inst['_id'], inst['_id']) ))
 
     form.display_name.value = institute_obj.get('display_name')
     form.institutes.choices = institutes_tuples
