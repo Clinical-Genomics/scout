@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, pedigree_panel %}
 {% from "variants/utils.html" import modal_causative %}
-{% from "variant/utils.html" import omim_phenotypes, gtcall_panel, rankscore_panel %}
+{% from "variant/utils.html" import omim_phenotypes, gtcall_panel, rankscore_panel, overlapping_panel %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -347,7 +347,7 @@
 
   <div class="row">
     <div class="col-md-12">
-      {{ overlapping(overlapping_vars, variant.rank_score) }}
+      {{ overlapping_panel(variant, overlapping_vars, case, institute) }}
     </div>
   </div>
 
@@ -623,46 +623,6 @@
 {% endmacro %}
 
 
-{% macro overlapping(other_variants, rank_score) %}
-  <div class="card panel-default">
-    <div class="panel-heading">Overlapping SNVs</div>
-    <table id="overlapping_snvs_table" class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Variant</th>
-          <th>Gene</th>
-          <th>Combined score</th>
-          <th>Rank score</th>
-          <th>Region</th>
-          <th>Function</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for variant in other_variants %}
-          <tr>
-            <td>
-              <a href="{{ url_for('variant.variant', institute_id=institute._id,
-                                  case_name=case.display_name,
-                                  variant_id=variant._id)}}">
-                {{ variant.display_name|truncate(20, True) }}
-              </a>
-            </td>
-            <td>{{ variant.hgnc_symbols|join(', ') }}</td>
-            <td class="text-right">{{ rank_score + variant.rank_score }}</td>
-            <td class="text-right">{{ variant.rank_score }}</td>
-            <td>{{ variant.region_annotations|join(',') }}</td>
-            <td>{{ variant.functional_annotations|join(',') }}</td>
-          </tr>
-        {% else %}
-          <tr>
-            <td colspan="6">No overlapping SNVs found</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-{% endmacro %}
 
 {% macro verify_button() %}
   {% if variant.sanger_ordered %}

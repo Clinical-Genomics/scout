@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table, modal_causative %}
-{% from "variant/utils.html" import omim_phenotypes, gtcall_panel, rankscore_panel %}
+{% from "variant/utils.html" import omim_phenotypes, gtcall_panel, rankscore_panel, overlapping_panel %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -96,7 +96,7 @@
       <div class="col-12">{{ rankscore_panel(variant) }}</div>
     </div>
     <div class="row">
-      <div class="col-12">{{ overlapping_panel() }}</div>
+      <div class="col-12">{{ overlapping_panel(variant, overlapping_vars, case, institute) }}</div>
     </div>
     <div class="row">
       <div class="col-12">
@@ -942,52 +942,6 @@
   <div class="card panel-default">
     <div class="panel-heading">Compounds (top 20)</div>
     {{ compounds_table(institute, case, variant.compounds[:20]) }}
-  </div>
-{% endmacro %}
-
-{% macro overlapping_panel() %}
-  <div class="card panel-default">
-    <div class="panel-heading">Overlapping SVs</div>
-    <div class="table-responsive">
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Variant</th>
-            <th>Gene</th>
-	    <th>Type</th>
-            <th>Combined score</th>
-            <th>Rank score</th>
-            <th>Length</th>
-            <th>Region</th>
-            <th>Function</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for sv_variant in overlapping_vars %}
-            <tr>
-              <td>
-                <a href="{{url_for('variant.sv_variant', institute_id=institute._id,
-                                   case_name=case.display_name, variant_id=sv_variant._id)}}">
-                  {{ sv_variant.display_name|truncate(20, True) }}
-                </a>
-              </td>
-              <td>{{ sv_variant.hgnc_symbols|join(', ')|truncate(40, True) }}</td>
-              <td>{{ sv_variant.sub_category|upper }}</td>
-	      <td class="text-right">{{ variant.rank_score + sv_variant.rank_score }}</td>
-              <td class="text-right">{{ sv_variant.rank_score }}</td>
-              <td class="text-right">{{ sv_variant.length }}</td>
-
-              <td>{{ sv_variant.region_annotations|join(', ')|truncate(40, True) }}</td>
-              <td>{{ sv_variant.functional_annotations|join(', ')|truncate(40, True) }}</td>
-            </tr>
-          {% else %}
-            <tr>
-              <td colspan="7">No overlapping SVs found</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
   </div>
 {% endmacro %}
 
