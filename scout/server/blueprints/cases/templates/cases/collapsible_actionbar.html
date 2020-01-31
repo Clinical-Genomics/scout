@@ -42,7 +42,7 @@
 <!-- Submenu content -->
 <div id='submenu1' class="collapse sidebar-submenu">
     <div href="#" class="bg-dark list-group-item text-white">
-      <div class="d-flex flex-row">
+      <div class="d-flex flex-row align-items-center">
         <span class="menu-collapsed ml-2">General</span>
         <a href="{{ url_for('cases.case_report', institute_id=institute._id,
                               case_name=case.display_name) }}" target="_blank">
@@ -53,15 +53,15 @@
         </span>
       </div>
     </div>
-    {%-if case.multiqc -%}
+    {% if case.multiqc %}
       <a href="{{ url_for('cases.multiqc', institute_id=institute._id,
                           case_name=case.display_name) }}" class="list-group-item list-group-item-action bg-dark text-white">
           <span class="menu-collapsed">MultiQC</span>
       </a>
-    {%- endif -%}
-    {%- if config.SQLALCHEMY_DATABASE_URI -%}
+    {% endif %}
+    {% if config.SQLALCHEMY_DATABASE_URI %}
       <div href="#" class="bg-dark list-group-item text-white">
-        <div class="d-flex flex-row">
+        <div class="d-flex flex-row align-items-center">
           <span class="menu-collapsed ml-2">Coverage
             <form method="POST" id="coverage_html" target="_blank" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
               <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
@@ -76,18 +76,18 @@
           </span>
         </div>
       </div>
-    {%- endif -%}
+    {% endif %}
     <div href="#" class="bg-dark list-group-item text-white">
-      <div class="d-flex flex-row">
+      <div class="d-flex flex-row align-items-center">
         <span class="menu-collapsed ml-2">mtDNA report</span>
           <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-file-excel-o"></i></a>
       </div>
     </div>
-    {%- if case.analyses -%}
-      {%- for analysis in case.analyses -%}
-        {%- if analysis.delivery_report -%}
+    {% if case.analyses %}
+      {% for analysis in case.analyses %}
+        {% if analysis.delivery_report %}
           <div href="#" class="bg-dark list-group-item text-white">
-            <div class="d-flex flex-row">
+            <div class="d-flex flex-row align-items-center">
               <span class="menu-collapsed ml-2">Delivery ({{analysis.date.date()}})
                 <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
                                               case_name=case.display_name, date=analysis.date) }}" target="_blank">
@@ -95,12 +95,11 @@
                 <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
                                               case_name=case.display_name, date=analysis.date, format='pdf') }}">
                                   <i class="fa fa-file-pdf-o"></i></a>
-              </span>
             </div>
           </div>
-        {%- endif -%}
-      {%- endfor -%}
-    {%- endif -%}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
 </div>
 {% endmacro %}
 
