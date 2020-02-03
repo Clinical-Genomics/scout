@@ -5,6 +5,14 @@ env: TRAVIS=1
 
 jobs:
     include:
+        - name: "Tests"
+          if: type = pull_request
+          services: mongodb
+          install:
+              - pip install cython
+              - pip install . -r requirements-dev.txt
+          script: py.test --cov=scout -rxs tests/
+
         - name: "Package Install"
           if: type = pull_request
           install: python setup.py install
@@ -53,9 +61,6 @@ jobs:
       - name: "Lint Free"
       - name: "PEP8 Compliance"
       - name: "Pylint Rating"
-
-script:
-    - py.test --cov=scout -rxs tests/
 
 after_success:
     - coveralls
