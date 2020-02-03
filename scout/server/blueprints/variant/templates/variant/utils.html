@@ -488,3 +488,23 @@
       </form>
     </div>
 {% endmacro %}
+
+{% macro pin_button(variant, case, institute) %}
+  {% if variant._id not in case.suspects %}
+    <form action="{{ url_for('cases.pin_variant',
+                             institute_id=institute._id,
+                             case_name=case.display_name,
+                             variant_id=variant._id) }}"
+          method="POST">
+      <button name="action" value="ADD" type="submit" class="btn btn-light navbar-btn" title="Pin variant">Pin</button>
+    </form>
+  {% else %}
+    <form action="{{ url_for('cases.pin_variant',
+                             institute_id=institute._id,
+                             case_name=case.display_name,
+                             variant_id=variant._id) }}"
+          method="POST">
+      <button name="action" value="DELETE" type="submit" class="btn btn-light" title="Unpin variant">Unpin</button>
+    </form>
+  {% endif %}
+{% endmacro %}

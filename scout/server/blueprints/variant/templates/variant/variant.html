@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table, modal_causative %}
-{% from "variant/utils.html" import omim_phenotypes, gtcall_panel, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel, frequencies, observations_panel %}
+{% from "variant/utils.html" import omim_phenotypes, gtcall_panel, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel, frequencies, observations_panel , pin_button %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -49,7 +49,7 @@
     {# Email setting must be setup #}
     <li class="nav-item text-nowrap">{{ sanger_button() }}</li>
   {% endif %}
-  <li class="nav-item">{{ pin_button() }}</li>
+  <li class="nav-item">{{ pin_button(variant, case, institute) }}</li>
   <li class="nav-item text-nowrap">{{ causative_button() }}</li>
   {{ super() }}
 {% endblock %}
@@ -198,26 +198,6 @@
     </div>
     <div class="list-group-item">Comment: <input type="text" size=45 name="verification_comment"></div>
   </ul>
-{% endmacro %}
-
-{% macro pin_button() %}
-  {% if variant._id not in case.suspects %}
-    <form action="{{ url_for('cases.pin_variant',
-                             institute_id=institute._id,
-                             case_name=case.display_name,
-                             variant_id=variant._id) }}"
-          method="POST">
-      <button name="action" value="ADD" type="submit" class="btn btn-light navbar-btn" title="Pin variant">Pin</button>
-    </form>
-  {% else %}
-    <form action="{{ url_for('cases.pin_variant',
-                             institute_id=institute._id,
-                             case_name=case.display_name,
-                             variant_id=variant._id) }}"
-          method="POST">
-      <button name="action" value="DELETE" type="submit" class="btn btn-light" title="Unpin variant">Unpin</button>
-    </form>
-  {% endif %}
 {% endmacro %}
 
 {% macro causative_button() %}
