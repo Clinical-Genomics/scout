@@ -71,7 +71,7 @@ jobs:
       - name: "Pylint Rating"
 
 after_success:
-    - coveralls --ignore-errors
+    - coveralls
 
 notifications:
     email: false
