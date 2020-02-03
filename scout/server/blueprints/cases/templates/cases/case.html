@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal %}
 {% from "utils.html" import comments_panel, activity_panel %}
-{% from "cases/utils.html" import individuals_table %}
+{% from "cases/utils.html" import individuals_table, causatives_list, suspects_list, remove_form, matching_causatives %}
 {% from "cases/case_ideograms.html" import case_ideograms %}
 {% from "variants/utils.html" import tier_cell %}
 
@@ -47,9 +47,14 @@
       <div class="row text-center"> <!-- variants buttons -->
         <div class="col-sm-12">{{ variants_buttons() }}</div>
       </div>
+      {% if other_causatives|length > 1%}
+        <div class="row ">
+          <div class="col-xs-12 col-md-12">{{ matching_causatives(other_causatives, institute, case) }}</div>
+        </div>
+      {% endif %}
       <div class="row ">
-          <div class="col-xs-12 col-md-6">{{ candidates_list() }}</div>
-          <div class="col-xs-12 col-md-6">{{ related_causatives_list() }}</div>
+          <div class="col-xs-12 col-md-6">{{ causatives_list(causatives, institute, case) }}</div>
+          <div class="col-xs-12 col-md-6">{{ suspects_list(suspects, institute, case) }}</div>
       </div>
       <div class="row">
           {% if case.track == 'cancer' %}
@@ -150,27 +155,6 @@
     </div>
   </div>
 {% endif %}
-{% endmacro %}
-
-{% macro related_causatives_list() %}
-  <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="If there are any variants in this case
-      that have been marked as causative in another case for this insitute">
-      Matching causatives from other cases
-    </div>
-    <ul class="list-group">
-      {% for variant in other_causatives %}
-        <li class="list-group-item">
-          <a href="{{ url_for('variant.variant', institute_id=institute._id,
-                              case_name=case.display_name, variant_id=variant._id) }}">
-            {{ variant.hgnc_symbols|join(', ') }}
-          </a>
-        </li>
-      {% else %}
-        <li class="list-group-item">No matching causative variants.</li>
-      {% endfor %}
-    </ul>
-  </div>
 {% endmacro %}
 
 {% macro cancer_individuals_table() %}
@@ -279,204 +263,6 @@
       </div>
     </div>
   </form>
-{% endmacro %}
-
-{% macro candidates_list() %}
-  <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Displays all variants that have been marked causative for this case">
-      Causative variants
-    </div>
-    <ul class="list-group">
-      <!--causative variants -->
-      {% for variant in causatives %}
-        <li class="list-group-item">
-          {% if variant._id %}
-            <div class="row align-items-between align-items-center">
-              <div class="col-10">
-                <i class="fa fa-check-circle-o"></i>
-		            {% if variant.category == "snv" %}
-                  <a href="{{ url_for('variant.variant',
-                                      institute_id=variant.institute,
-                                      case_name=case.display_name,
-                                      variant_id=variant._id) }}">
-                        {{ variant.hgnc_symbols|join(', ') }}
-		             {% else %}
-        		      <a href="{{ url_for('variant.sv_variant',
-                                            institute_id=variant.institute,
-                                            case_name=case.display_name,
-                                            variant_id=variant._id) }}">
-		              {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
-		             {% endif %}
-                </a>
-                {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
-                  <span class="badge badge-default">Verification ordered</span>
-                {% elif variant.sanger_ordered %}
-                  <span class="badge badge-success">Validated</span>
-                {% endif %}
-              </div>
-              <div class="col-2">
-                {{ remove_form(url_for('cases.mark_causative',
-                                       institute_id=institute._id,
-                                       case_name=case.display_name,
-                                       variant_id=variant._id,
-                                       partial_causative=False),
-                               button_name='action', button_value='DELETE') }}
-              </div>
-            </div>
-          {% else %} <!-- no variant._id -->
-            {{ variant }} <small class="text-muted">(not loaded)</small>
-          {% endif %}
-        </li>
-      {% endfor %}
-      <!-- End of causative variants -->
-      <!-- Partial causative variants -->
-      {% for variant_phenotypes in partial_causatives %}
-        {% set variant = variant_phenotypes.variant %}
-        <div class="list-group-item">
-          {% if variant._id %}
-            <div class="row align-items-between align-items-center">
-              <div class="col-10">
-                <i class="fa fa-check-circle-o"></i>
-                {% if variant.category == "snv" %}
-                  <a href="{{ url_for('variant.variant',
-                                      institute_id=variant.institute,
-                                      case_name=case.display_name,
-                                      variant_id=variant._id) }}">
-                        {{ variant.hgnc_symbols|join(', ') }} (partial causative)
-		             {% else %}
-        		      <a href="{{ url_for('variant.sv_variant',
-                                            institute_id=variant.institute,
-                                            case_name=case.display_name,
-                                            variant_id=variant._id) }}">
-		              {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
-                  (partial causative)
-		             {% endif %}
-                 </a>
-              </div>
-              <div class="col-2">
-                {{ remove_form(url_for('cases.mark_causative',
-                                       institute_id=institute._id,
-                                       case_name=case.display_name,
-                                       variant_id=variant._id,
-                                       partial_causative=True),
-                               button_name='action', button_value='DELETE') }}
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-4">
-                OMIM diagnoses
-              </div>
-              <div class="col-sm-8">
-                {% for omim in variant_phenotypes.omim_terms %}
-                  <span class="badge badge-sm badge-secondary">
-                    <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim}}">
-                      {{omim}}
-                    </a>
-                  </span>
-                {% endfor %}
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-4">
-                HPO terms
-              </div>
-              <div class="col-sm-8">
-                {% for hpo in variant_phenotypes.hpo_terms %}
-                  <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.phenotype_id}}">
-                    <span class="badge badge-sm badge-info">{{hpo.phenotype_id}}</span>
-                  </a>
-
-                {% endfor %}
-              </div>
-            </div>
-
-          {% else %}
-            {{ variant }} <small class="text-muted">(not loaded)</small>
-          {% endif %}
-        </div>
-      {% endfor %}
-      <!-- end of partial causative variants -->
-      {% if not case.causatives|length and not case.partial_causatives|length %}
-        <div class="card-body">No variants marked causative</div>
-      {% endif %}
-    </ul>
-
-    <div data-toggle='tooltip' class="panel-heading panel-heading-secondary"
-         title="Displays all variants that has been pinned for this case">
-      Pinned variants
-    </div>
-
-    <ul class="list-group">
-      {% for variant in suspects %}
-        <li class="list-group-item">
-          {% if variant._id %}
-            <div class="row">
-              <div class="col-sm-8">
-                <div class="form-group row justify-content-between align-items-center">
-                <div class="ml-3">
-                  <i class="fa fa-bookmark"></i>
-                  {% if variant.category == "snv" %}
-                    <a href="{{ url_for('variant.variant',
-                                        institute_id=variant.institute,
-                                        case_name=case.display_name,
-                                        variant_id=variant._id) }}">
-                      {% set display_genes = [] %}
-                      {% for gene in variant.genes %}
-                        {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier) }}
-                      {% endfor %}
-                      {{ display_genes|join(", ") }}
-                  {% else %}
-                    <a href="{{ url_for('variant.sv_variant',
-                                              institute_id=variant.institute,
-                                              case_name=case.display_name,
-                                              variant_id=variant._id) }}">
-                    {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
-                  {% endif %}
-                  </a>
-                </div>
-                {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
-                  <span class="badge badge-default">Verification ordered</span>
-                {% elif variant.sanger_ordered %}
-                  <span class="badge badge-success">Validated</span>
-                {% elif variant.manual_rank or variant.cancer_tier %}
-                  {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
-                {% endif %}
-                {% if variant.mosaic_tags %}
-                  <span class="badge badge-info">mosaic</span>
-                {% endif %}
-                <form action="{{ url_for('cases.mark_validation',
-                                         institute_id=variant.institute,
-                                         case_name=case.display_name,
-                                         variant_id=variant._id) }}"
-                      method="POST" accept-charset="utf-8">
-                  <select class="form-control form-control-sm" onchange="this.form.submit()" name="type">
-                    {% for type in ('Not validated', 'True positive', 'False positive') %}
-                      <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
-                    {% endfor %}
-                  </select>
-                </form>
-              </div>
-            </div>
-
-            <div class="col-sm-4">
-              {{ remove_form(url_for('cases.pin_variant',
-                                     institute_id=institute._id,
-                                     case_name=case.display_name,
-                                     variant_id=variant._id),
-                             button_name='action', button_value='DELETE') }}
-            </div>
-          </div>
-          {% else %}
-            {{ variant }} <small class="text-muted">(not loaded)</small></t
-          {% endif %}
-        </li>
-      {% endfor %}
-      {% if not suspects|length %}
-        <div class="card-body">No pinned variants</div>
-      {% endif %}
-
-    </ul>
-  </div>
 {% endmacro %}
 
 {% macro diagnosis_panel() %}
