@@ -467,6 +467,10 @@
           {% endif %}
         </li>
       {% endfor %}
+      {% if not suspects|length %}
+        <div class="card-body">No pinned variants</div>
+      {% endif %}
+
     </ul>
   </div>
 {% endmacro %}
