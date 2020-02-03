@@ -13,7 +13,7 @@ jobs:
               - pip install . -r requirements-dev.txt
           script: py.test -rxs tests/
 
-        - name: "Tests & Coverage"
+        - name: "Tests"
           if: NOT type = pull_request
           services: mongodb
           install:
