@@ -3,18 +3,20 @@ language: python
 cache: pip
 env: TRAVIS=1
 
-services:
-  - mongodb
-
-script:
-  - py.test --cov=scout -rxs tests/
-
 install:
     - pip install cython
-    - pip install -r requirements-dev.txt -e .
+    - pip install -r requirements.txt -r requirements-dev.txt -e .
 
 jobs:
     include:
+        - name: Unit tests
+          services:
+            - mongodb
+          script:
+            - py.test --cov=scout -rxs tests/
+          after_success:
+            - coveralls
+
         - name: "Package Install"
           if: type = pull_request
           install: python setup.py install
@@ -57,8 +59,6 @@ jobs:
       - name: "PEP8 Compliance"
       - name: "Pylint Rating"
 
-after_success:
-    - coveralls
 
 notifications:
     email: false
