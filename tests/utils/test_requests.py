@@ -15,3 +15,13 @@ def test_get_request_bad_url():
     with pytest.raises(ValueError) as err:
         # function should raise error
         assert get_request(url)
+
+
+@pytest.mark.skipif(TRAVIS, reason="Requests seems to be problematic on travis")
+def test_get_request():
+    """Test functions that accepts an url and returns decoded data from it"""
+
+    # test function with url that exists
+    url = "http://www.github.com"
+    decoded_resp = get_request(url)
+    assert "<!DOCTYPE html>" in decoded_resp
