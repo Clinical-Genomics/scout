@@ -3,16 +3,18 @@ language: python
 cache: pip
 env: TRAVIS=1
 
+services:
+  - mongodb
+
+script:
+  - py.test --cov=scout -rxs tests/
+
+install:
+    - pip install cython
+    - pip install -r requirements-dev.txt -e .
+
 jobs:
     include:
-        - name: "Tests"
-          if: type = pull_request
-          services: mongodb
-          install:
-              - pip install cython
-              - pip install . -r requirements-dev.txt
-          script: py.test --cov=scout -rxs tests/
-
         - name: "Package Install"
           if: type = pull_request
           install: python setup.py install
@@ -20,16 +22,10 @@ jobs:
 
         - name: "Production Dependencies"
           if: type = pull_request
-          install:
-              - pip install cython
-              - pip install .
           script: pip check
 
         - name: "Development Dependencies"
           if: type = pull_request
-          install:
-              - pip install cython
-              - pip install . -r requirements-dev.txt
           script: pip check
 
         - name: "PEP8 Compliance"
@@ -54,7 +50,6 @@ jobs:
 
         - name: "Lint Free"
           if: type = pull_request
-          install: pip install -r requirements-dev.txt
           script: git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git lint || (echo "Linting issues found, please try again after fixing the above lint issues." && false)
 
     allow_failures:
