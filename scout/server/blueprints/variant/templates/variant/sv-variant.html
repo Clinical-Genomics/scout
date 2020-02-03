@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, pedigree_panel %}
 {% from "variants/utils.html" import modal_causative %}
-{% from "variant/utils.html" import omim_phenotypes, gtcall_panel, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, frequencies %}
+{% from "variant/utils.html" import omim_phenotypes, gtcall_panel, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, frequencies, sv_alignments %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -120,163 +120,50 @@
     <div class="col-md-6">
       <div class="card panel-default">
         <div class="panel-heading">Summary</div>
+        <div class="card-body">
           <ul class="list-group">
             <li class="list-group-item">
-              Position
-            <div class="float-right">
-              {{ variant.chromosome }}:{{ variant.position }} {{ "-" if variant.end_chrom == variant.chromosome else " / "+variant.end_chrom+":" }}{{ variant.end }}
-            </div>
+              <div class="row d-flex justify-content-between">
+                <div>Position</div>
+                <div>
+                  {{ variant.chromosome }}:{{ variant.position }} {{ "-" if variant.end_chrom == variant.chromosome else " / " + variant.end_chrom+":" }}{{ variant.end }}
+                </div>
+              </div>
             </li>
             <li class="list-group-item">
-              Breakpoint 1
-              <div class="float-right">
-                {{ variant.chromosome }}:{{ variant.position }}
-                <form role="form" name="bp1_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
-                  {% if case.mt_bams or case.bam_files %}
-                  <!-- general hidden fields required to submit POST request to IGV viewer -->
-                    <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
-                    <input type="hidden" name="build" value="{{case.genome_build}}">
-                    <input type="hidden" name="contig" value="{{variant.chromosome}}">
-                    <input type="hidden" name="center_guide" value="T">
-                    <input type="hidden" name="start" value="{{variant.position - 500}}">
-                    <input type="hidden" name="stop" value="{{variant.position + 500}}">
-                    <!--<input type="hidden" name="now" values="{{now}}"-->
-                  {% endif %}
-
-                {% if variant.chromosome == "MT" and case.mt_bams %}
-                  <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
-                  <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
-                  - Alignment:
-                  <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV</button>
-                {% elif case.bam_files %}
-                  - Alignment:
-                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
-                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
-                  {% if case.rhocall_beds %}
-                    <input type="hidden" name="rhocall_bed" value="{{case.rhocall_beds|join(',')}}">
-                    <input type="hidden" name="rhocall_wig" value="{{case.rhocall_wigs|join(',')}}">
-                  {% endif %}
-                  {% if case.tiddit_coverage_wigs %}
-                    <input type="hidden" name="tiddit_coverage_wig" value="{{case.tiddit_coverage_wigs|join(',')}}">
-                  {% endif %}
-                  {% if case.upd_regions_beds %}
-                    <input type="hidden" name="upd_regions_bed" value="{{case.upd_regions_beds|join(',')}}">
-                  {% endif %}
-                  {% if case.upd_sites_beds %}
-                    <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
-                  {% endif %}
-                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type=submit>IGV</button>
-                {% else %}
-                  - BAM file(s) missing
-                {% endif %}
-                - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
-              </form>
-            </div>
-          </li>
-          <li class="list-group-item">
-            Breakpoint 2
-            <div class="float-right">
-              {{ variant.end_chrom }}:{{ variant.end }}
-              <form role="form" name="bp2_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
-                {% if case.mt_bams or case.bam_files %}
-                <!-- general hidden fields required to submit POST request to IGV viewer -->
-                  <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
-                  <input type="hidden" name="build" value="{{case.genome_build}}">
-                  <input type="hidden" name="contig" value="{{variant.chromosome}}">
-                  <input type="hidden" name="center_guide" value="T">
-                  <input type="hidden" name="start" value="{{variant.end - 500}}">
-                  <input type="hidden" name="stop" value="{{variant.end + 500}}">
-                  <!--<input type="hidden" name="now" values="{{now}}"-->
-                {% endif %}
-
-                {% if variant.end_chrom == "MT" and case.mt_bams %}
-                  - Alignment:
-                  <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
-                  <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
-                  <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV</button>
-                {% elif case.bam_files %}
-                  - Alignment:
-                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
-                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
-                  {% if case.rhocall_beds %}
-                    <input type="hidden" name="rhocall_bed" value="{{case.rhocall_beds|join(',')}}">
-                    <input type="hidden" name="rhocall_wig" value="{{case.rhocall_wigs|join(',')}}">
-                  {% endif %}
-                  {% if case.tiddit_coverage_wigs %}
-                    <input type="hidden" name="rhocall_coverage_wig" value="{{case.tiddit_coverage_wigs|join(',')}}">
-                  {% endif %}
-                  {% if case.upd_regions_beds %}
-                    <input type="hidden" name="upd_regions_bed" value="{{case.upd_regions_beds|join(',')}}">
-                  {% endif %}
-                  {% if case.upd_sites_beds %}
-                    <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
-                  {% endif %}
-                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type=submit>IGV</button>
-                  {% else %}
-                    - BAM file(s) missing
-                  {% endif %}
-                    - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.end_chrom }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
-                </form>
+              <div class="row d-flex justify-content-between">
+                <div>Breakpoint 1</div>
+                {{ sv_alignments(variant, case, "start") }}
+              </div>
+            </li>
+            <li class="list-group-item">
+              <div class="row d-flex justify-content-between">
+                <div>Breakpoint 2</div>
+                {{ sv_alignments(variant, case, "end") }}
               </div>
             </li>
   	        <li class="list-group-item">
-  	          Cytoband
-              <div class="float-right">
-                {{ variant.chromosome }}:{{ variant.position }} {{ "-" if variant.end_chrom == variant.chromosome else " / "+variant.end_chrom+":" }}{{ variant.end }}
+              <div class="row d-flex justify-content-between">
+  	          <div>Cytoband</div>
+                <div>
+                  {% if variant.end_chrom == variant.chromosome %}
+                    {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end if variant.cytoband_end != variant.cytoband_start else "" }}
+                  {% else %}
+                    ({{ variant.chromosome + ";" + variant.end_chrom}})({{ variant.cytoband_start + ";" + variant.cytoband_end }})
+                  {% endif %}
+                </div>
               </div>
   	        </li>
   	        <li class="list-group-item">
-  	          Length
-              <div class="float-right">
-                {{ variant.length }}
-                <form role="form" name="alignment_length_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
-                  {% if case.mt_bams or case.bam_files %}
-                  <!-- general hidden fields required to submit POST request to IGV viewer -->
-                    <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
-                    <input type="hidden" name="build" value="{{case.genome_build}}">
-                    <input type="hidden" name="contig" value="{{variant.chromosome}}">
-                    <input type="hidden" name="center_guide" value="T">
-                    <input type="hidden" name="start" value="{{variant.position - 500}}">
-                    <input type="hidden" name="stop" value="{{variant.end + 500}}">
-                    <!--<input type="hidden" name="now" values="{{now}}"-->
-                  {% endif %}
-
-                {% if variant.chromosome == "MT" and case.mt_bams %}
-                  <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
-                  <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
-                  - Alignment:
-                  <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV</button>
-                {% elif case.bam_files and variant.chromosome == variant.end_chrom %}
-                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
-                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
-                  {% if case.rhocall_beds %}
-                    <input type="hidden" name="rhocall_bed" value="{{case.rhocall_beds|join(',')}}">
-                    <input type="hidden" name="rhocall_wig" value="{{case.rhocall_wigs|join(',')}}">
-                  {% endif %}
-                  {% if case.tiddit_coverage_wigs %}
-                    <input type="hidden" name="rhocall_coverage_wig" value="{{case.tiddit_coverage_wigs|join(',')}}">
-                  {% endif %}
-                  {% if case.upd_regions_beds %}
-                    <input type="hidden" name="upd_regions_bed" value="{{case.upd_regions_beds|join(',')}}">
-                  {% endif %}
-                  {% if case.upd_sites_beds %}
-                    <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
-                  {% endif %}
-                  - Alignment:
-                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type=submit>IGV</button>
-                {% elif case.bam_files %}
-                  - Complex rearrangement: check breakpoint alignments.
-                {% else %}
-                  - BAM file(s) missing
-                {% endif %}
-                {% if variant.chromosome == variant.end_chrom %}
-                - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
-                {% endif %}
-              </form>
-            </div>
-  	      </li>
+  	          <div class="row d-flex justify-content-between">
+                <div>Length</div>
+                {{ sv_alignments(variant, case, "length") }}
+              </div>
+            </li>
   	      <li class="list-group-item">
-  	        Type <div class="float-right">{{ variant.sub_category|upper }}</div>
+            <div class="row d-flex justify-content-between">
+  	          <div>Type</div><div class="float-right">{{ variant.sub_category|upper }}</div>
+            </div>
   	      </li>
           {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
             <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control" target="_blank">Submit to ClinVar</a>
@@ -284,6 +171,7 @@
           {% if variant.clinvar_clinsig%}
             <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-default form-control">Modify clinvar submission</a>
           {% endif %}
+          </ul>
         </div> <!-- end of card body -->
       </div> <!-- end of card -->
     </div> <!-- end of col -->

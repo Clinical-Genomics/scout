@@ -417,3 +417,74 @@
     </div>
   </div>
 {% endmacro %}
+
+{% macro sv_alignments(variant, case, zoom)%}
+    <div>
+      {% if zoom == "start" %}
+        {{ variant.chromosome }}:{{ variant.position }}
+      {% elif zoom == "end" %}
+        {{ variant.chromosome }}:{{ variant.end }}
+      {% elif zoom == "length" %}
+        {{ variant.length }}
+      {% endif %}
+      <form role="form" name="bp1_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
+        {% if case.mt_bams or case.bam_files %}
+        <!-- general hidden fields required to submit POST request to IGV viewer -->
+          <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
+          <input type="hidden" name="build" value="{{case.genome_build}}">
+          <input type="hidden" name="contig" value="{{variant.chromosome}}">
+          <input type="hidden" name="center_guide" value="T">
+          {% if zoom == "start" %}
+            <input type="hidden" name="start" value="{{variant.position - 500}}">
+            <input type="hidden" name="stop" value="{{variant.position + 500}}">
+            <!--<input type="hidden" name="now" values="{{now}}"-->
+          {% elif zoom == "end" %}
+            <input type="hidden" name="start" value="{{variant.end - 500}}">
+            <input type="hidden" name="stop" value="{{variant.end + 500}}">
+          {% elif zoom == "length" %}
+            <input type="hidden" name="start" value="{{variant.position - 500}}">
+            <input type="hidden" name="stop" value="{{variant.end + 500}}">
+          {% endif %}
+        {% endif %}
+
+        {% if variant.chromosome == "MT" and case.mt_bams %}
+          <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
+          <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
+          - Alignment:
+          <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV</button>
+        {% elif case.bam_files %}
+          - Alignment:
+          <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
+          <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
+          {% if case.rhocall_beds %}
+            <input type="hidden" name="rhocall_bed" value="{{case.rhocall_beds|join(',')}}">
+            <input type="hidden" name="rhocall_wig" value="{{case.rhocall_wigs|join(',')}}">
+          {% endif %}
+          {% if case.tiddit_coverage_wigs %}
+            <input type="hidden" name="tiddit_coverage_wig" value="{{case.tiddit_coverage_wigs|join(',')}}">
+          {% endif %}
+          {% if case.upd_regions_beds %}
+            <input type="hidden" name="upd_regions_bed" value="{{case.upd_regions_beds|join(',')}}">
+          {% endif %}
+          {% if case.upd_sites_beds %}
+            <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
+          {% endif %}
+          {% if zoom == "length" and variant.chromosome != variant.end_chrom %}
+            - Complex rearrangement: check breakpoint alignments.
+          {% else %}
+            <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type=submit>IGV</button>
+          {% endif %}
+        {% else %}
+          - BAM file(s) missing
+        {% endif %}
+
+        {% if zoom == "length" and variant.chromosome == variant.end_chrom %}
+          - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+        {% elif zoom == "start" %}
+          - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+        {% elif zoom == "end" %}
+          - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ variant.chromosome }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+        {% endif %}
+      </form>
+    </div>
+{% endmacro %}
