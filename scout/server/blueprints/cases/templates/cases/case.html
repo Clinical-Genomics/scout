@@ -420,7 +420,11 @@
                                         institute_id=variant.institute,
                                         case_name=case.display_name,
                                         variant_id=variant._id) }}">
-                          {{ variant.hgnc_symbols|join(', ') }}
+                      {% set display_genes = [] %}
+                      {% for gene in variant.genes %}
+                        {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier) }}
+                      {% endfor %}
+                      {{ display_genes|join(", ") }}
                   {% else %}
                     <a href="{{ url_for('variant.sv_variant',
                                               institute_id=variant.institute,
