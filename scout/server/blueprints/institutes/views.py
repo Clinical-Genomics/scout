@@ -60,18 +60,19 @@ def institute(institute_id):
             flash('institute was updated ', 'success')
         else: # an error message was retuned
             flash(institute_obj, 'warning')
-
+            return redirect(request.referrer)
+            
     data = controllers.institute(store, institute_id)
     # get all other institutes to populate the select of the possible collaborators
     institutes_tuples = []
     for inst in store.institutes():
-        if not inst['internal_id'] == institute_id:
-            institutes_tuples.append( ((inst['internal_id'], inst['internal_id']) ))
+        if not inst['_id'] == institute_id:
+            institutes_tuples.append( ((inst['_id'], inst['display_name']) ))
 
-    form.display_name.value = institute_obj.get('display_name')
+    form.display_name.default = institute_obj.get('display_name')
     form.institutes.choices = institutes_tuples
-    form.coverage_cutoff.value = institute_obj.get('coverage_cutoff')
-    form.frequency_cutoff.value = institute_obj.get('frequency_cutoff')
+    form.coverage_cutoff.default = institute_obj.get('coverage_cutoff')
+    form.frequency_cutoff.default = institute_obj.get('frequency_cutoff')
 
     # collect all available default HPO terms
     default_phenotypes = [ choice[0].split(' ')[0] for choice in form.pheno_groups.choices ]

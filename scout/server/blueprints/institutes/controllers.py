@@ -59,7 +59,7 @@ def update_institute_settings(store, institute_obj, form):
         cohorts.append(cohort.strip())
 
     updated_institute = store.update_institute(
-        internal_id = institute_obj['internal_id'],
+        internal_id = institute_obj['_id'],
         sanger_recipients = sanger_recipients,
         coverage_cutoff = int(form.get('coverage_cutoff')),
         frequency_cutoff = float(form.get('frequency_cutoff')),
