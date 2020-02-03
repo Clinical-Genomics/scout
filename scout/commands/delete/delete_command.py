@@ -6,13 +6,11 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
-@click.command('panel', short_help='Delete a gene panel')
-@click.option('--panel-id',
-    help="The panel identifier name",
-    required=True
-)
-@click.option('-v', '--version',
-    type=float,
+
+@click.command("panel", short_help="Delete a gene panel")
+@click.option("--panel-id", help="The panel identifier name", required=True)
+@click.option(
+    "-v", "--version", type=float,
 )
 @with_appcontext
 def panel(panel_id, version):
@@ -27,6 +25,7 @@ def panel(panel_id, version):
 
     for panel_obj in panel_objs:
         adapter.delete_panel(panel_obj)
+
 
 # @click.command('users', short_help='Display users')
 # @click.pass_context
@@ -50,7 +49,7 @@ def panel(panel_id, version):
 #         click.echo(institute_obj['internal_id'])
 
 
-@click.command('index', short_help='Delete all indexes')
+@click.command("index", short_help="Delete all indexes")
 @with_appcontext
 def index():
     """Delete all indexes in the database"""
@@ -62,8 +61,8 @@ def index():
     LOG.info("All indexes deleted")
 
 
-@click.command('user', short_help='Delete a user')
-@click.option('-m', '--mail', required=True)
+@click.command("user", short_help="Delete a user")
+@click.option("-m", "--mail", required=True)
 @with_appcontext
 def user(mail):
     """Delete a user from the database"""
@@ -76,8 +75,8 @@ def user(mail):
         adapter.delete_user(mail)
 
 
-@click.command('genes', short_help='Delete genes')
-@click.option('-b', 'build', type=click.Choice(['37', '38']))
+@click.command("genes", short_help="Delete genes")
+@click.option("-b", "build", type=click.Choice(["37", "38"]))
 @with_appcontext
 def genes(build):
     """Delete all genes in the database"""
@@ -90,8 +89,9 @@ def genes(build):
         LOG.info("Dropping all genes")
     adapter.drop_genes(build=build)
 
-@click.command('exons', short_help='Delete exons')
-@click.option('-b', 'build', type=click.Choice(['37', '38']))
+
+@click.command("exons", short_help="Delete exons")
+@click.option("-b", "build", type=click.Choice(["37", "38"]))
 @with_appcontext
 def exons(build):
     """Delete all exons in the database"""
@@ -101,10 +101,10 @@ def exons(build):
     adapter.drop_exons(build)
 
 
-@click.command('case', short_help='Delete a case')
-@click.option('-i', '--institute', help='institute id of related cases')
-@click.option('-c', '--case-id')
-@click.option('-d', '--display-name')
+@click.command("case", short_help="Delete a case")
+@click.option("-i", "--institute", help="institute id of related cases")
+@click.option("-c", "--case-id")
+@click.option("-d", "--display-name")
 @with_appcontext
 def case(institute, case_id, display_name):
     """Delete a case and it's variants from the database"""
@@ -115,23 +115,24 @@ def case(institute, case_id, display_name):
 
     if display_name:
         if not institute:
-            click.echo("Please specify the owner of the case that should be "
-                       "deleted with flag '-i/--institute'.")
+            click.echo(
+                "Please specify the owner of the case that should be "
+                "deleted with flag '-i/--institute'."
+            )
             raise click.Abort()
 
     LOG.info("Running deleting case {0}".format(case_id))
     case = adapter.delete_case(
-        case_id=case_id,
-        institute_id=institute,
-        display_name=display_name
+        case_id=case_id, institute_id=institute, display_name=display_name
     )
 
     if case.deleted_count == 1:
-        adapter.delete_variants(case_id=case_id, variant_type='clinical')
-        adapter.delete_variants(case_id=case_id, variant_type='research')
+        adapter.delete_variants(case_id=case_id, variant_type="clinical")
+        adapter.delete_variants(case_id=case_id, variant_type="research")
     else:
         LOG.warning("Case does not exist in database")
         raise click.Abort()
+
 
 # @click.command('diseases', short_help='Display all diseases')
 # @click.pass_context

@@ -12,9 +12,16 @@ log = logging.getLogger(__name__)
 
 
 class ACMGHandler(object):
-
-    def submit_evaluation(self, variant_obj, user_obj, institute_obj, case_obj, link, 
-                          criteria=None, classification=None):
+    def submit_evaluation(
+        self,
+        variant_obj,
+        user_obj,
+        institute_obj,
+        case_obj,
+        link,
+        criteria=None,
+        classification=None,
+    ):
         """Submit an evaluation to the database
 
         Get all the relevant information, build a evaluation_obj
@@ -39,18 +46,18 @@ class ACMGHandler(object):
         """
         criteria = criteria or []
 
-        variant_specific = variant_obj['_id']
-        variant_id = variant_obj['variant_id']
-        user_id = user_obj['_id']
-        user_name = user_obj.get('name', user_obj['_id'])
-        institute_id = institute_obj['_id']
-        case_id = case_obj['_id']
+        variant_specific = variant_obj["_id"]
+        variant_id = variant_obj["variant_id"]
+        user_id = user_obj["_id"]
+        user_name = user_obj.get("name", user_obj["_id"])
+        institute_id = institute_obj["_id"]
+        case_id = case_obj["_id"]
 
-        evaluation_terms = [evluation_info['term'] for evluation_info in criteria]
+        evaluation_terms = [evluation_info["term"] for evluation_info in criteria]
 
         if classification is None:
             classification = get_acmg(evaluation_terms)
-        
+
         if classification:
             evaluation_obj = build_evaluation(
                 variant_specific=variant_specific,
@@ -60,13 +67,15 @@ class ACMGHandler(object):
                 institute_id=institute_id,
                 case_id=case_id,
                 classification=classification,
-                criteria=criteria
+                criteria=criteria,
             )
 
             self._load_evaluation(evaluation_obj)
 
         # Update the acmg classification for the variant:
-        self.update_acmg(institute_obj, case_obj, user_obj, link, variant_obj, classification)
+        self.update_acmg(
+            institute_obj, case_obj, user_obj, link, variant_obj, classification
+        )
         return classification
 
     def _load_evaluation(self, evaluation_obj):
@@ -81,7 +90,7 @@ class ACMGHandler(object):
             evaluation_obj(dict)
 
         """
-        self.acmg_collection.delete_one({'_id': evaluation_obj['_id']})
+        self.acmg_collection.delete_one({"_id": evaluation_obj["_id"]})
 
     def get_evaluation(self, evaluation_id):
         """Get a single evaluation from the database
@@ -90,7 +99,7 @@ class ACMGHandler(object):
             evaluation_id(str)
 
         """
-        return self.acmg_collection.find_one({'_id': ObjectId(evaluation_id)})
+        return self.acmg_collection.find_one({"_id": ObjectId(evaluation_id)})
 
     def get_evaluations(self, variant_obj):
         """Return all evaluations for a certain variant.
@@ -101,6 +110,8 @@ class ACMGHandler(object):
         Returns:
             pymongo.cursor: database cursor
         """
-        query = dict(variant_id=variant_obj['variant_id'])
-        res = self.acmg_collection.find(query).sort([('created_at', pymongo.DESCENDING)])
+        query = dict(variant_id=variant_obj["variant_id"])
+        res = self.acmg_collection.find(query).sort(
+            [("created_at", pymongo.DESCENDING)]
+        )
         return res

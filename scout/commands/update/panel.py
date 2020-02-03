@@ -10,23 +10,22 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 
-@click.command('panel', short_help='Update a panel')
-@click.option('--panel', '-p',
-              help="Specify what panel to update",
-              required=True
-              )
-@click.option('--version',
-              type=float,
-              help="Specify the version of a panel. If no version the latest panel is chosen.",
-              )
-@click.option('--update-date', '-d',
-              # There will be more roles in the future
-              help="Update the date for a panel",
-              )
-@click.option('--update-version',
-              type=float,
-              help="Change the version of a panel",
-              )
+@click.command("panel", short_help="Update a panel")
+@click.option("--panel", "-p", help="Specify what panel to update", required=True)
+@click.option(
+    "--version",
+    type=float,
+    help="Specify the version of a panel. If no version the latest panel is chosen.",
+)
+@click.option(
+    "--update-date",
+    "-d",
+    # There will be more roles in the future
+    help="Update the date for a panel",
+)
+@click.option(
+    "--update-version", type=float, help="Change the version of a panel",
+)
 @with_appcontext
 def panel(panel, version, update_date, update_version):
     """
@@ -52,7 +51,7 @@ def panel(panel, version, update_date, update_version):
     update_panel(
         adapter,
         panel,
-        panel_version=panel_obj['version'],
+        panel_version=panel_obj["version"],
         new_version=update_version,
-        new_date=date_obj
+        new_date=date_obj,
     )

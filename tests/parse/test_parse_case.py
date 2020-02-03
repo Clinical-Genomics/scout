@@ -2,39 +2,46 @@ import pytest
 
 from datetime import datetime
 from pprint import pprint as pp
-from scout.parse.case import (parse_case, parse_ped, parse_individuals,
-                              parse_individual, parse_case_data,
-                              removeNoneValues)
+from scout.parse.case import (
+    parse_case,
+    parse_ped,
+    parse_individuals,
+    parse_individual,
+    parse_case_data,
+    removeNoneValues,
+)
 from scout.exceptions import PedigreeError
 from scout.constants import REV_SEX_MAP
 
 
 def test_parse_case_no_date(scout_config):
     # GIVEN a load config without a date
-    scout_config.pop('analysis_date')
+    scout_config.pop("analysis_date")
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the todays date should have been set
-    assert 'analysis_date' not in scout_config
-    assert isinstance(case_data['analysis_date'], datetime)
+    assert "analysis_date" not in scout_config
+    assert isinstance(case_data["analysis_date"], datetime)
+
 
 def test_parse_case_wrong_date_string(scout_config):
     # GIVEN you load info thats not a date
-    scout_config['analysis_date'] = 'not a date'
+    scout_config["analysis_date"] = "not a date"
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the todays date should have been set
-    assert isinstance(scout_config['analysis_date'], str)
-    assert isinstance(case_data['analysis_date'], datetime)
+    assert isinstance(scout_config["analysis_date"], str)
+    assert isinstance(case_data["analysis_date"], datetime)
+
 
 def test_parse_case_date_string(scout_config):
     # GIVEN a load config with date string
     # WHEN case is parsed
-    scout_config['analysis_date'] = '2019-11-05'
+    scout_config["analysis_date"] = "2019-11-05"
     case_data = parse_case(scout_config)
     # THEN the case should have a datetime object
-    assert isinstance(scout_config['analysis_date'], str)
-    assert isinstance(case_data['analysis_date'], datetime)
+    assert isinstance(scout_config["analysis_date"], str)
+    assert isinstance(case_data["analysis_date"], datetime)
 
 
 def test_parse_case_date(scout_config):
@@ -42,8 +49,8 @@ def test_parse_case_date(scout_config):
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have an analysis_date
-    assert isinstance(scout_config['analysis_date'], datetime)
-    assert isinstance(case_data['analysis_date'], datetime)
+    assert isinstance(scout_config["analysis_date"], datetime)
+    assert isinstance(case_data["analysis_date"], datetime)
 
 
 def test_parse_case_owner(scout_config):
@@ -51,7 +58,7 @@ def test_parse_case_owner(scout_config):
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have a owner
-    assert case_data['owner'] == scout_config['owner']
+    assert case_data["owner"] == scout_config["owner"]
 
 
 def test_parse_case(scout_config):
@@ -59,7 +66,7 @@ def test_parse_case(scout_config):
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case a correct case id
-    assert case_data['case_id'] == scout_config['family']
+    assert case_data["case_id"] == scout_config["family"]
 
 
 def test_parse_case_madeline(scout_config):
@@ -67,7 +74,7 @@ def test_parse_case_madeline(scout_config):
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case a correct case id
-    assert case_data['madeline_info']
+    assert case_data["madeline_info"]
 
 
 def test_parse_case_collaborators(scout_config):
@@ -75,7 +82,7 @@ def test_parse_case_collaborators(scout_config):
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have a list with collaborators
-    assert case_data['collaborators'] == [scout_config['owner']]
+    assert case_data["collaborators"] == [scout_config["owner"]]
 
 
 def test_parse_case_gene_panels(scout_config):
@@ -83,7 +90,7 @@ def test_parse_case_gene_panels(scout_config):
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have the same panels like the config
-    assert case_data['gene_panels'] == scout_config['gene_panels']
+    assert case_data["gene_panels"] == scout_config["gene_panels"]
 
 
 def test_parse_case_default_panels(scout_config):
@@ -91,7 +98,7 @@ def test_parse_case_default_panels(scout_config):
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have the same panels like the config
-    assert case_data['default_panels'] == scout_config['default_gene_panels']
+    assert case_data["default_panels"] == scout_config["default_gene_panels"]
 
 
 def test_parse_case_rank_threshold(scout_config):
@@ -99,7 +106,7 @@ def test_parse_case_rank_threshold(scout_config):
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have the same panels like the config
-    assert case_data['rank_score_threshold'] == scout_config['rank_score_threshold']
+    assert case_data["rank_score_threshold"] == scout_config["rank_score_threshold"]
 
 
 def test_parse_case_rank_model_version(scout_config):
@@ -107,15 +114,15 @@ def test_parse_case_rank_model_version(scout_config):
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have the same rank model version like the config
-    assert case_data['rank_model_version'] == scout_config['rank_model_version']
+    assert case_data["rank_model_version"] == scout_config["rank_model_version"]
 
-    
+
 def test_parse_case_chromograph_prefixes(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case a correct chromograph_prefixes
-    assert case_data['chromograph_prefixes']
+    assert case_data["chromograph_prefixes"]
 
 
 def test_parse_case_madeline(scout_config):
@@ -123,18 +130,20 @@ def test_parse_case_madeline(scout_config):
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case a correct chromograph_image_files
-    assert case_data['chromograph_image_files']
+    assert case_data["chromograph_image_files"]
 
-    
+
 def test_parse_case_vcf_files(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should the same vcf files as specified in the
-    assert case_data['vcf_files']['vcf_snv'] == scout_config['vcf_snv']
-    assert case_data['vcf_files']['vcf_sv'] == scout_config['vcf_sv']
-    assert case_data['vcf_files']['vcf_snv_research'] == scout_config['vcf_snv_research']
-    assert case_data['vcf_files']['vcf_sv_research'] == scout_config['vcf_sv_research']
+    assert case_data["vcf_files"]["vcf_snv"] == scout_config["vcf_snv"]
+    assert case_data["vcf_files"]["vcf_sv"] == scout_config["vcf_sv"]
+    assert (
+        case_data["vcf_files"]["vcf_snv_research"] == scout_config["vcf_snv_research"]
+    )
+    assert case_data["vcf_files"]["vcf_sv_research"] == scout_config["vcf_sv_research"]
 
 
 def test_parse_case_delivery_report(scout_config):
@@ -144,31 +153,32 @@ def test_parse_case_delivery_report(scout_config):
     case_data = parse_case(scout_config)
 
     # then we should find the delivery report in the parsed data
-    assert case_data['delivery_report'] == scout_config['delivery_report']
+    assert case_data["delivery_report"] == scout_config["delivery_report"]
 
 
 def test_parse_ped_file(ped_file):
     # GIVEN a pedigree with three samples
-    with open(ped_file, 'r') as case_lines:
+    with open(ped_file, "r") as case_lines:
         # WHEN parsing out relevant sample info
         family_id, samples = parse_ped(case_lines)
     # THEN it should return correct family id
-    assert family_id == '643594'
+    assert family_id == "643594"
     # THEN it should return correct number of individuals
     assert len(samples) == 3
     # THEN assert the sex has been converted
     for sample in samples:
-        assert sample['sex'] in REV_SEX_MAP
+        assert sample["sex"] in REV_SEX_MAP
+
 
 def test_parse_case_ped_file(ped_file):
     # GIVEN a pedigree with three samples
-    with open(ped_file, 'r') as case_lines:
+    with open(ped_file, "r") as case_lines:
         # WHEN parsing out relevant sample info
-        config_data = parse_case_data(ped=case_lines, owner='cust000')
+        config_data = parse_case_data(ped=case_lines, owner="cust000")
     # THEN it should return correct family id
-    assert config_data['family'] == '643594'
+    assert config_data["family"] == "643594"
     # THEN it should return correct number of individuals
-    assert len(config_data['samples']) == 3
+    assert len(config_data["samples"]) == 3
 
 
 def test_parse_case_minimal_config(minimal_config):
@@ -191,12 +201,13 @@ def test_parse_ped():
     # WHEN parsing out relevant sample info
     family_id, samples = parse_ped(case_lines)
     # THEN it should return correct family id
-    assert family_id == '636808'
+    assert family_id == "636808"
     # THEN it should return correct number of individuals
     assert len(samples) == 3
 
 
 # ## Test how problems are handeled when parsing a case
+
 
 def test_parse_case_two_cases_ped():
     # GIVEN ped lines from multiple families
@@ -225,8 +236,8 @@ def test_no_individuals():
 def test_parse_missing_id():
     # GIVEN a individual without sample_id
     sample_info = {
-        'sex': 'male',
-        'phenotype': 'affected',
+        "sex": "male",
+        "phenotype": "affected",
     }
     # WHEN a individual is parsed
     with pytest.raises(PedigreeError):
@@ -237,8 +248,8 @@ def test_parse_missing_id():
 def test_parse_missing_sex():
     # GIVEN a individual without sex
     sample_info = {
-        'sample_id': '1',
-        'phenotype': 'affected',
+        "sample_id": "1",
+        "phenotype": "affected",
     }
     # WHEN a individual is parsed
     with pytest.raises(PedigreeError):
@@ -249,8 +260,8 @@ def test_parse_missing_sex():
 def test_parse_missing_phenotype():
     # GIVEN a individual without phenotype
     sample_info = {
-        'sample_id': '1',
-        'sex': 'male',
+        "sample_id": "1",
+        "sex": "male",
     }
     # WHEN a individual is parsed
     with pytest.raises(PedigreeError):
@@ -261,9 +272,9 @@ def test_parse_missing_phenotype():
 def test_parse_wrong_phenotype():
     # GIVEN a individual with wrong phenotype format
     sample_info = {
-        'sample_id': '1',
-        'sex': 'male',
-        'phenotype': 'not-affected',
+        "sample_id": "1",
+        "sex": "male",
+        "phenotype": "not-affected",
     }
     # WHEN a individual is parsed
     with pytest.raises(PedigreeError):
@@ -274,9 +285,9 @@ def test_parse_wrong_phenotype():
 def test_parse_wrong_sex():
     # GIVEN a individual with wrong sex format
     sample_info = {
-        'sample_id': '1',
-        'sex': 'flale',
-        'phenotype': 'affected',
+        "sample_id": "1",
+        "sex": "flale",
+        "phenotype": "affected",
     }
     # WHEN a individual is parsed
     with pytest.raises(PedigreeError):
@@ -288,42 +299,40 @@ def test_wrong_relations():
     """docstring for test_wrong_relations"""
     # GIVEN a individual with correct family info
     sample_info = {
-        'sample_id': '1',
-        'sex': 'male',
-        'phenotype': 'affected',
-        'mother': '3',
-        'father': '2'
+        "sample_id": "1",
+        "sex": "male",
+        "phenotype": "affected",
+        "mother": "3",
+        "father": "2",
     }
     mother_info = {
-        'sample_id': '3',
-        'sex': 'female',
-        'phenotype': 'unaffected',
-        'mother': '0',
-        'father': '0'
+        "sample_id": "3",
+        "sex": "female",
+        "phenotype": "unaffected",
+        "mother": "0",
+        "father": "0",
     }
     father_info = {
-        'sample_id': '2',
-        'sex': 'male',
-        'phenotype': 'unaffected',
-        'mother': '0',
-        'father': '0'
+        "sample_id": "2",
+        "sex": "male",
+        "phenotype": "unaffected",
+        "mother": "0",
+        "father": "0",
     }
     samples = [sample_info, mother_info, father_info]
     # Nothong should happend here
     assert parse_individuals(samples)
 
     # WHEN changing mother id in proband
-    sample_info['mother'] = '5'
+    sample_info["mother"] = "5"
     # THEN a PedigreeError should be raised
     with pytest.raises(PedigreeError):
         parse_individuals(samples)
 
 
-
-
 def test_removeNoneValues():
     # WHEN a dict *not* containing a value which is None
-    d = {"a":"1", "b":2, "c":3}
+    d = {"a": "1", "b": 2, "c": 3}
 
     # THEN calling removeNoneValues(dict) will not change dict
     assert d == removeNoneValues(d)
@@ -331,44 +340,52 @@ def test_removeNoneValues():
 
 def test_removeNoneValues():
     # WHEN a dict containing a value which is None
-    d = {"a":"1", "b":2, "c":None}
-    
+    d = {"a": "1", "b": 2, "c": None}
+
     # THEN calling removeNoneValues(dict) will remove key-value pair
     # where value=None
-    assert {"a":"1", "b":2} == removeNoneValues(d)
+    assert {"a": "1", "b": 2} == removeNoneValues(d)
 
 
 def test_parse_optional_igv_param(scout_config):
     # GIVEN a dict contains optional igv params
     # i.e. rhocall_wig
-    samples = scout_config['samples']
+    samples = scout_config["samples"]
 
     # WHEN optional parameters are added to config
     for sample in samples:
-        sample['rhocall_bed'] ="path/to/rb"
-        sample['rhocall_wig'] ="path/to/rw"
-        sample['upd_regions_bed'] ="path/to/up"
-        sample['upd_sites_bed'] ="path/to/us"
-        sample['tiddit_coverage_wig'] ="path/to/tc"
-    scout_config['samples'] = samples
+        sample["rhocall_bed"] = "path/to/rb"
+        sample["rhocall_wig"] = "path/to/rw"
+        sample["upd_regions_bed"] = "path/to/up"
+        sample["upd_sites_bed"] = "path/to/us"
+        sample["tiddit_coverage_wig"] = "path/to/tc"
+    scout_config["samples"] = samples
 
     # THEN parsing the config will add those to case data
     case_data = parse_case(scout_config)
     case_list = []
     config_list = []
-    for individual in case_data['individuals']:
-       case_list.append( (individual['rhocall_wig'],
-                          individual['rhocall_bed'],
-                          individual['upd_regions_bed'],
-                          individual['upd_sites_bed'],
-                          individual['tiddit_coverage_wig'] ))
+    for individual in case_data["individuals"]:
+        case_list.append(
+            (
+                individual["rhocall_wig"],
+                individual["rhocall_bed"],
+                individual["upd_regions_bed"],
+                individual["upd_sites_bed"],
+                individual["tiddit_coverage_wig"],
+            )
+        )
 
     for sample in samples:
-       config_list.append( (sample['rhocall_wig'],
-                            sample['rhocall_bed'],
-                            sample['upd_regions_bed'],
-                            sample['upd_sites_bed'],
-                            sample['tiddit_coverage_wig'] ))
+        config_list.append(
+            (
+                sample["rhocall_wig"],
+                sample["rhocall_bed"],
+                sample["upd_regions_bed"],
+                sample["upd_sites_bed"],
+                sample["tiddit_coverage_wig"],
+            )
+        )
 
     assert config_list == case_list
 
@@ -376,11 +393,11 @@ def test_parse_optional_igv_param(scout_config):
 def test_missing_optional_igv_param(scout_config):
     # WHEN a dict is missing optinal wig param (later passed to igv.js)
     # i.e. rhocall_wig
-    scout_config.pop('rhocall_bed', 'ignore_return')
-    scout_config.pop('rhocall_wig', 'ignore_return')
-    scout_config.pop('upd_regions_bed', 'ignore_return')
-    scout_config.pop('upd_sites_bed', 'ignore_return')
-    scout_config.pop('tiddit_coverage_wig', 'ignore_return')
+    scout_config.pop("rhocall_bed", "ignore_return")
+    scout_config.pop("rhocall_wig", "ignore_return")
+    scout_config.pop("upd_regions_bed", "ignore_return")
+    scout_config.pop("upd_sites_bed", "ignore_return")
+    scout_config.pop("tiddit_coverage_wig", "ignore_return")
 
     # THEN parsing the config will not raise an exception
     case_data = parse_case(scout_config)

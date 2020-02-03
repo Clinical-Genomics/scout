@@ -3,16 +3,15 @@ import click
 
 from flask.cli import with_appcontext
 from scout.server.extensions import store
-from scout.constants import (BUILDS, CHROMOSOMES)
+from scout.constants import BUILDS, CHROMOSOMES
 
 LOG = logging.getLogger(__name__)
 
 
-@click.command('intervals', short_help='Show how many intervals that exists for each chromosome')
-@click.option('-b', '--build',
-              default='37',
-              type=click.Choice(BUILDS)
-              )
+@click.command(
+    "intervals", short_help="Show how many intervals that exists for each chromosome"
+)
+@click.option("-b", "--build", default="37", type=click.Choice(BUILDS))
 @with_appcontext
 def intervals(build):
     """Show all coding intervals in the database"""
@@ -21,11 +20,11 @@ def intervals(build):
 
     nr_genes = adapter.nr_genes()
     if nr_genes == 0:
-        LOG.error('There are no genes in database to calculate intervals')
+        LOG.error("There are no genes in database to calculate intervals")
         return
     nr_genes = adapter.nr_genes(build=build)
     if nr_genes == 0:
-        LOG.error('No genes in database with build {}'.format(build))
+        LOG.error("No genes in database with build {}".format(build))
         return
     intervals = adapter.get_coding_intervals(build)
     nr_intervals = 0

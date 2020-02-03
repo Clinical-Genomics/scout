@@ -8,21 +8,26 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 
-@click.command('groups', short_help='Update phenotype groups for an institute')
-@click.argument('institute-id')
-@click.option('-p', '--phenotype-group',
+@click.command("groups", short_help="Update phenotype groups for an institute")
+@click.argument("institute-id")
+@click.option(
+    "-p",
+    "--phenotype-group",
     help="Add one or more phenotype groups to institute",
-    multiple = True,
+    multiple=True,
 )
-@click.option('-a', '--group-abbreviation',
+@click.option(
+    "-a",
+    "--group-abbreviation",
     help="Specify a phenotype group abbreviation",
-    multiple = True,
+    multiple=True,
 )
-@click.option('-f', '--group-file',
-    help="CSV file with phenotype groups",
-    type=click.File('r'),
+@click.option(
+    "-f", "--group-file", help="CSV file with phenotype groups", type=click.File("r"),
 )
-@click.option('-add', '--add',
+@click.option(
+    "-add",
+    "--add",
     help="If groups should be added instead of replacing existing groups",
     is_flag=True,
 )
@@ -38,11 +43,11 @@ def groups(institute_id, phenotype_group, group_abbreviation, group_file, add):
         phenotype_group = []
         group_abbreviation = []
         for line in group_file:
-            if line.startswith('#'):
+            if line.startswith("#"):
                 continue
             if len(line) < 7:
                 continue
-            line = line.rstrip().split('\t')
+            line = line.rstrip().split("\t")
             phenotype_group.append(line[0])
             if line[1]:
                 group_abbreviation.append(line[1])
@@ -51,7 +56,7 @@ def groups(institute_id, phenotype_group, group_abbreviation, group_file, add):
         LOG.info("Please provide some groups")
         return
 
-    if (phenotype_group and group_abbreviation):
+    if phenotype_group and group_abbreviation:
         if not len(phenotype_group) == len(group_abbreviation):
             LOG.warning("Specify same number of groups and abbreviations")
             return
@@ -61,5 +66,5 @@ def groups(institute_id, phenotype_group, group_abbreviation, group_file, add):
         internal_id=institute_id,
         phenotype_groups=phenotype_group,
         group_abbreviations=group_abbreviation,
-        add_groups = add,
-        )
+        add_groups=add,
+    )
