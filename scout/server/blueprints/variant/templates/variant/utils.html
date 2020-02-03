@@ -508,3 +508,33 @@
     </form>
   {% endif %}
 {% endmacro %}
+
+{% macro causative_button(variant, case, institute) %}
+  {% if variant._id in case.causatives %}
+      <form action="{{ url_for('cases.mark_causative',
+                               institute_id=institute._id,
+                               case_name=case.display_name,
+                               variant_id=variant._id,
+                               partial_causative=False) }}"
+            method="POST">
+        <button name="action" value="DELETE" type="submit" class="btn btn-light navbar-btn" title="Reset causative">
+          Reset causative
+        </button>
+      </form>
+  {% elif variant._id in case.partial_causatives %}
+    <form action="{{ url_for('cases.mark_causative',
+                             institute_id=institute._id,
+                             case_name=case.display_name,
+                             variant_id=variant._id,
+                             partial_causative=True) }}"
+          method="POST">
+    <button name="action" value="DELETE" type="submit" class="btn btn-light navbar-btn" title="Reset causative">
+      Reset partial causative
+    </button>
+  </form>
+  {% else %}
+  <button class="btn btn-light navbar-btn" data-toggle="modal" data-target="#causativeModal">
+    Mark causative
+  </button>
+  {% endif %}
+{% endmacro %}
