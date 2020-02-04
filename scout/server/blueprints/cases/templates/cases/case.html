@@ -137,7 +137,7 @@
 
   </div>
 </div>
-{% if case.is_research %}
+{% if case.is_research and not case.track == "cancer" %}
   <div class="form-group">
     <div class="btn-group">
       <a class="btn btn-outline-dark" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research SNV and INDELs</a>
