@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 ### Fixed
-
+- Cancer case HPO panel variants link
 
 ## [4.11.1]
 
