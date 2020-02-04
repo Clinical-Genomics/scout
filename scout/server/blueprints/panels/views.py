@@ -154,9 +154,11 @@ def panel_update(panel_id):
     """Update panel to a new version."""
     panel_obj = store.panel(panel_id)
     if request.form.get("cancel_pending"):
-        flash("DAGLIE!!!")
-    update_version = request.form.get("version", None)
-    new_panel_id = store.apply_pending(panel_obj, update_version)
+
+        return redirect(request.referrer)
+    else:
+        update_version = request.form.get("version", None)
+        new_panel_id = store.apply_pending(panel_obj, update_version)
     return redirect(url_for("panels.panel", panel_id=new_panel_id))
 
 
