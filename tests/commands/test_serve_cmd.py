@@ -2,6 +2,7 @@
 
 from scout.commands import cli
 
+
 def test_serve(mock_app):
     """Test the CLI command that runs the app"""
 
@@ -9,6 +10,6 @@ def test_serve(mock_app):
     assert runner
 
     # test the CLI command:
-    result =  runner.invoke(cli, ['serve', '--test'])
-    assert result.exit_code==0
-    assert 'Connection could be established' in result.output
+    result = runner.invoke(cli, ["serve", "--test"])
+    assert result.exit_code == 0
+    assert "Connection could be established" in result.output

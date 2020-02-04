@@ -1,5 +1,3 @@
-
-
 def get_correct_gene(hgnc_symbol, genes):
     """Check which of the genes in query result that is the correct one
 
@@ -13,6 +11,6 @@ def get_correct_gene(hgnc_symbol, genes):
 
     """
     for gene in genes:
-        #if one of the gene matches the hgnc symbol return the correct one
-        if hgnc_symbol == gene['hgnc_symbol']:
+        # if one of the gene matches the hgnc symbol return the correct one
+        if hgnc_symbol == gene["hgnc_symbol"]:
             return gene

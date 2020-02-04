@@ -8,8 +8,9 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
-@click.command('compounds', short_help='Update compounds for a case')
-@click.argument('case_id')
+
+@click.command("compounds", short_help="Update compounds for a case")
+@click.argument("case_id")
 @with_appcontext
 def compounds(case_id):
     """
