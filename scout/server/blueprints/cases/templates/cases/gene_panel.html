@@ -1,35 +1,56 @@
 {% macro genepanels_table(case, institute) %}
   <div class="card panel-default">
     <div class="panel-heading">Gene panels</div>
-    <table id="panel-table" class="card-table table">
-      <thead>
-        <tr>
-          <th scope="col">Panel</th>
-          <th scope="col">Version</th>
-          <th scope="col">Genes</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for panel in case.panels %}
-          <tr {% if panel.is_default %} class="bg-info-light" {% endif %}>
-            <td>
-              <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
-                {{ panel.display_name|truncate(30, True) }}
-              </a>
-              {% if panel.is_default %}
-                <span class="badge badgel-default">Default</span>
-              {% endif %}
-            </td>
-            <td>{{ panel.version }} <small class="text-muted">({{ panel.updated_at.date() }})</small></td>
-            <td>{{ panel.nr_genes }}</td>
-          </tr>
-        {% else %}
+          <div class="table-responsive fixed-panel">
+      <table id="panel-table" class="table" style="width:100%">
+        <thead>
           <tr>
-            <td colspan="5">No panels linked to case</td>
+            <th>Panel</th>
+            <th>Version</th>
+            <th>Genes</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for panel in case.panels %}
+            <tr {% if panel.is_default %} class="bg-info-light" {% endif %}>
+              <td>
+                <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
+                  {{ panel.display_name|truncate(30, True) }}
+                </a>
+                {% if panel.is_default %}
+                  <span class="badge badgel-default pull-right">Default</span>
+                {% endif %}
+              </td>
+              <td>{{ panel.version }} <small class="text-muted">({{ panel.updated_at.date() }})</small></td>
+              <td>{{ panel.nr_genes }}</td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5">No panels linked to case</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="card-body">
+      <form action="{{ url_for('cases.default_panels', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+        <div class="form-group">
+          <label>Change default gene panels</label>
+        </div>
+        <div class="row">
+          <div class="col-xs-8">
+            <select name="panel_ids" class="form-control" multiple>
+              {% for panel in case.panels %}
+                <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>{{ panel.display_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-xs-4">
+            <button class="btn btn-outline-secondary form-control">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 {% endmacro %}
 
@@ -92,12 +113,21 @@
             Use HPO list for clinical filter</div>
         </div>
         <div>
-          <a class="btn btn-outline-secondary form-control"
-            href="{{ url_for('variants.variants', institute_id=institute._id,
-                             case_name=case.display_name, variant_type='clinical',
-                             gene_panels=['hpo']) }}">
-             Clinical HPO SNV variants
-           </a>
+          {% if case.track == 'cancer' %}
+            <a class="btn btn-outline-secondary form-control"
+              href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
+                               case_name=case.display_name, variant_type='clinical',
+                               gene_panels=['hpo']) }}">
+               Clinical HPO SNV variants
+             </a>
+          {% else %}
+            <a class="btn btn-outline-secondary form-control"
+              href="{{ url_for('variants.variants', institute_id=institute._id,
+                               case_name=case.display_name, variant_type='clinical',
+                               gene_panels=['hpo']) }}">
+               Clinical HPO SNV variants
+             </a>
+           {% endif %}
         </div>
       </div>
     {% endif %}
