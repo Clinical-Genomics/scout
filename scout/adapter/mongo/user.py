@@ -9,8 +9,8 @@ from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
 
-class UserHandler(object):
 
+class UserHandler(object):
     def update_user(self, user_obj):
         """Update an existing user.
 
@@ -20,11 +20,11 @@ class UserHandler(object):
             Returns:
                 updated_user(dict)
         """
-        LOG.info("Updating user %s", user_obj['_id'])
+        LOG.info("Updating user %s", user_obj["_id"])
         updated_user = self.user_collection.find_one_and_replace(
-            {'_id': user_obj['_id']},
+            {"_id": user_obj["_id"]},
             user_obj,
-            return_document=pymongo.ReturnDocument.AFTER
+            return_document=pymongo.ReturnDocument.AFTER,
         )
         return updated_user
 
@@ -37,15 +37,17 @@ class UserHandler(object):
             Returns:
                 user_info(dict): a copy of what was inserted
         """
-        LOG.info("Adding user %s to the database", user_obj['email'])
-        if not '_id' in user_obj:
-            user_obj['_id'] = user_obj['email']
+        LOG.info("Adding user %s to the database", user_obj["email"])
+        if not "_id" in user_obj:
+            user_obj["_id"] = user_obj["email"]
 
         try:
             self.user_collection.insert_one(user_obj)
             LOG.debug("User inserted")
         except DuplicateKeyError as err:
-            raise IntegrityError("User {} already exists in database".format(user_obj['email']))
+            raise IntegrityError(
+                "User {} already exists in database".format(user_obj["email"])
+            )
 
         return user_obj
 
@@ -61,7 +63,7 @@ class UserHandler(object):
         query = {}
         if institute:
             LOG.info("Fetching all users from institute %s", institute)
-            query = {'institutes': {'$in': [institute]}}
+            query = {"institutes": {"$in": [institute]}}
         else:
             LOG.info("Fetching all users")
 
@@ -84,11 +86,11 @@ class UserHandler(object):
         query = {}
         if user_id:
             LOG.info("Fetching user %s", user_id)
-            query['_id'] = user_id
+            query["_id"] = user_id
         else:
             LOG.info("Fetching user %s", email)
-            query['email'] = email
-            
+            query["email"] = email
+
         user_obj = self.user_collection.find_one(query)
 
         return user_obj
@@ -104,6 +106,6 @@ class UserHandler(object):
 
         """
         LOG.info("Deleting user %s", email)
-        user_obj = self.user_collection.delete_one({'email': email})
+        user_obj = self.user_collection.delete_one({"email": email})
 
         return user_obj

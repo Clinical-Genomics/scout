@@ -10,7 +10,8 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
-@click.command('exons', short_help='Export exons')
+
+@click.command("exons", short_help="Export exons")
 @builds_option
 @with_appcontext
 def exons(build):
@@ -22,7 +23,6 @@ def exons(build):
 
     for line in header:
         click.echo(line)
-
 
     for exon_line in export_exons(adapter, build):
         click.echo(exon_line)
