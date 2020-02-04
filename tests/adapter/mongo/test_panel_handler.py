@@ -96,7 +96,7 @@ def test_reset_pending(adapter, dummypanel_obj, gene_obj):
     updated_panel = adapter.reset_pending(res)
     assert updated_panel.get("pending") == None
 
-    
+
 def test_add_pending(adapter, dummypanel_obj, gene_obj):
 
     adapter.panel_collection.insert_one(dummypanel_obj)
