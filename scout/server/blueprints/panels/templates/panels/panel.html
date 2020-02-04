@@ -206,11 +206,14 @@
         <form action="{{ url_for('panels.panel_update', panel_id=panel._id) }}" method="POST">
           <div class="form-group">
             <div class="row">
-              <div class="form-group col-xs-3">
+              <div class="form-group col-sm-3">
                 <label class="col-form-label">Version</label>
               </div>
               <div class="form-group col-sm-3 text-center">
                 <input class="form-control" name="version" type="number" min="{{panel.version}}" value="{{ panel.version + 1 }}">
+              </div>
+              <div class="form-group col-sm-6 text-center">
+                <button class="btn btn-warning form-control" id="cancel_pending" value="cancel_pending">Cancel pending actions</button>
               </div>
             </div>
           </div>
