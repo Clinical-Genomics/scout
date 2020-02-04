@@ -11,7 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Code reformatting using `https://github.com/psf/black`
 
 ### Fixed
-
+- Cancer case HPO panel variants link
 
 ## [4.11.1]
 
