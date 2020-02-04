@@ -904,12 +904,21 @@
             Use HPO list for clinical filter</div>
         </div>
         <div>
-          <a class="btn btn-outline-secondary form-control"
-            href="{{ url_for('variants.variants', institute_id=institute._id,
-                             case_name=case.display_name, variant_type='clinical',
-                             gene_panels=['hpo']) }}">
-             Clinical HPO SNV variants
-           </a>
+          {% if case.track == 'cancer' %}
+            <a class="btn btn-outline-secondary form-control"
+              href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
+                               case_name=case.display_name, variant_type='clinical',
+                               gene_panels=['hpo']) }}">
+               Clinical HPO SNV variants
+             </a>
+          {% else %}
+            <a class="btn btn-outline-secondary form-control"
+              href="{{ url_for('variants.variants', institute_id=institute._id,
+                               case_name=case.display_name, variant_type='clinical',
+                               gene_panels=['hpo']) }}">
+               Clinical HPO SNV variants
+             </a>
+           {% endif %}
         </div>
       </div>
     {% endif %}
