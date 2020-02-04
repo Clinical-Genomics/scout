@@ -8,37 +8,35 @@ mimnr_pattern = re.compile("[0-9]{6,6}")
 entry_pattern = re.compile("\([1,2,3,4]\)")
 
 mim_inheritance_terms = [
-        'Autosomal recessive',
-        'Autosomal dominant',
-        'Digenic recessive',
-        'X-linked dominant',
-        'X-linked recessive',
-        'Y-linked',
-        'Mitochondrial'
-    ]
+    "Autosomal recessive",
+    "Autosomal dominant",
+    "Digenic recessive",
+    "X-linked dominant",
+    "X-linked recessive",
+    "Y-linked",
+    "Mitochondrial",
+]
 
 TERMS_MAPPER = {
-     'Autosomal recessive': 'AR',
-     'Autosomal dominant': 'AD',
-     'Digenic recessive': 'DR',
-     'X-linked dominant': 'XD',
-     'X-linked recessive': 'XR',
-     'Y-linked': 'Y',
-     'Mitochondrial': 'MT'
-   }
-
-OMIM_STATUS_MAP = {
-    '[':'nondisease',
-    '{':'susceptibility',
-    '?':'provisional',
+    "Autosomal recessive": "AR",
+    "Autosomal dominant": "AD",
+    "Digenic recessive": "DR",
+    "X-linked dominant": "XD",
+    "X-linked recessive": "XR",
+    "Y-linked": "Y",
+    "Mitochondrial": "MT",
 }
+
+OMIM_STATUS_MAP = {"[": "nondisease", "{": "susceptibility", "?": "provisional"}
 
 LOG = logging.getLogger(__name__)
 
+
 def parse_omim_line(line, header):
     """docstring for parse_omim_2_line"""
-    omim_info = dict(zip(header, line.split('\t')))
+    omim_info = dict(zip(header, line.split("\t")))
     return omim_info
+
 
 def parse_genemap2(lines):
     """Parse the omim source file called genemap2.txt
@@ -71,20 +69,20 @@ def parse_genemap2(lines):
     """
     LOG.info("Parsing the omim genemap2")
     header = []
-    for i,line in enumerate(lines):
+    for i, line in enumerate(lines):
         line = line.rstrip()
-        if line.startswith('#'):
+        if line.startswith("#"):
             if i < 10:
-                if line.startswith('# Chromosome'):
-                    header = line[2:].split('\t')
+                if line.startswith("# Chromosome"):
+                    header = line[2:].split("\t")
             continue
 
         if len(line) < 5:
             continue
 
         parsed_entry = parse_omim_line(line, header)
-        parsed_entry['mim_number'] = int(parsed_entry['MIM Number'])
-        parsed_entry['raw'] = line
+        parsed_entry["mim_number"] = int(parsed_entry["MIM Number"])
+        parsed_entry["raw"] = line
 
         # This is the approved symbol for the entry
         hgnc_symbol = parsed_entry.get("Approved Symbol")
@@ -92,14 +90,16 @@ def parse_genemap2(lines):
         # If no approved symbol could be found choose the first of
         # the gene symbols
         gene_symbols = []
-        if parsed_entry.get('Gene Symbols'):
-            gene_symbols = [symbol.strip() for symbol in parsed_entry['Gene Symbols'].split(',')]
-        parsed_entry['hgnc_symbols'] = gene_symbols
+        if parsed_entry.get("Gene Symbols"):
+            gene_symbols = [
+                symbol.strip() for symbol in parsed_entry["Gene Symbols"].split(",")
+            ]
+        parsed_entry["hgnc_symbols"] = gene_symbols
 
         if not hgnc_symbol and gene_symbols:
             hgnc_symbol = gene_symbols[0]
 
-        parsed_entry['hgnc_symbol'] = hgnc_symbol
+        parsed_entry["hgnc_symbol"] = hgnc_symbol
 
         # Gene inheritance is a construct. It is the union of all inheritance
         # patterns found in the associated phenotypes
@@ -108,7 +108,7 @@ def parse_genemap2(lines):
         parsed_phenotypes = []
         # Information about the related phenotypes
         # Each related phenotype is separated by ';'
-        for phenotype_info in parsed_entry.get('Phenotypes', '').split(';'):
+        for phenotype_info in parsed_entry.get("Phenotypes", "").split(";"):
             if not phenotype_info:
                 continue
 
@@ -116,16 +116,16 @@ def parse_genemap2(lines):
 
             # First symbol in description indicates phenotype status
             # If no special symbol is used the phenotype is 'established'
-            phenotype_status = OMIM_STATUS_MAP.get(phenotype_info[0], 'established')
+            phenotype_status = OMIM_STATUS_MAP.get(phenotype_info[0], "established")
 
             # Skip phenotype entries that not associated to disease
-            if phenotype_status == 'nondisease':
+            if phenotype_status == "nondisease":
                 continue
 
             phenotype_description = ""
 
             # We will try to save the description
-            splitted_info = phenotype_info.split(',')
+            splitted_info = phenotype_info.split(",")
             for i, text in enumerate(splitted_info):
                 # Everything before ([1,2,3])
                 # We check if we are in the part where the mim number exists
@@ -139,12 +139,12 @@ def parse_genemap2(lines):
                     if mimnr_match:
                         phenotype_mim = int(mimnr_match.group())
                     else:
-                        phenotype_mim = parsed_entry['mim_number']
+                        phenotype_mim = parsed_entry["mim_number"]
                         phenotype_description += text[:-4]
                     break
             # Find the inheritance
             inheritance = set()
-            inheritance_text = ','.join(splitted_info[i:])
+            inheritance_text = ",".join(splitted_info[i:])
             for term in mim_inheritance_terms:
                 if term in inheritance_text:
 
@@ -153,15 +153,15 @@ def parse_genemap2(lines):
 
             parsed_phenotypes.append(
                 {
-                    'mim_number':phenotype_mim,
-                    'inheritance': inheritance,
-                    'description': phenotype_description.strip('?\{\}'),
-                    'status': phenotype_status,
+                    "mim_number": phenotype_mim,
+                    "inheritance": inheritance,
+                    "description": phenotype_description.strip("?\{\}"),
+                    "status": phenotype_status,
                 }
             )
 
-        parsed_entry['phenotypes'] = parsed_phenotypes
-        parsed_entry['inheritance'] = gene_inheritance
+        parsed_entry["phenotypes"] = parsed_phenotypes
+        parsed_entry["inheritance"] = gene_inheritance
 
         yield parsed_entry
 
@@ -196,9 +196,15 @@ def parse_mim2gene(lines):
 
     """
     LOG.info("Parsing mim2gene")
-    header = ["mim_number", "entry_type", "entrez_gene_id", "hgnc_symbol", "ensembl_gene_id"]
+    header = [
+        "mim_number",
+        "entry_type",
+        "entrez_gene_id",
+        "hgnc_symbol",
+        "ensembl_gene_id",
+    ]
     for i, line in enumerate(lines):
-        if line.startswith('#'):
+        if line.startswith("#"):
             continue
 
         if not len(line) > 0:
@@ -206,34 +212,36 @@ def parse_mim2gene(lines):
 
         line = line.rstrip()
         parsed_entry = parse_omim_line(line, header)
-        parsed_entry['mim_number'] = int(parsed_entry['mim_number'])
-        parsed_entry['raw'] = line
+        parsed_entry["mim_number"] = int(parsed_entry["mim_number"])
+        parsed_entry["raw"] = line
 
-        if 'hgnc_symbol' in parsed_entry:
-            parsed_entry['hgnc_symbol'] = parsed_entry['hgnc_symbol']
+        if "hgnc_symbol" in parsed_entry:
+            parsed_entry["hgnc_symbol"] = parsed_entry["hgnc_symbol"]
 
-        if parsed_entry.get('entrez_gene_id'):
-            parsed_entry['entrez_gene_id'] = int(parsed_entry['entrez_gene_id'])
+        if parsed_entry.get("entrez_gene_id"):
+            parsed_entry["entrez_gene_id"] = int(parsed_entry["entrez_gene_id"])
 
-        if parsed_entry.get('ensembl_gene_id'):
-            ensembl_info = parsed_entry['ensembl_gene_id'].split(',')
-            parsed_entry['ensembl_gene_id'] = ensembl_info[0].strip()
+        if parsed_entry.get("ensembl_gene_id"):
+            ensembl_info = parsed_entry["ensembl_gene_id"].split(",")
+            parsed_entry["ensembl_gene_id"] = ensembl_info[0].strip()
             if len(ensembl_info) > 1:
-                parsed_entry['ensembl_transcript_id'] = ensembl_info[1].strip()
+                parsed_entry["ensembl_transcript_id"] = ensembl_info[1].strip()
 
         yield parsed_entry
+
 
 def parse_omim_morbid(lines):
     """docstring for parse_omim_morbid"""
     header = []
-    for i,line in enumerate(lines):
+    for i, line in enumerate(lines):
         line = line.rstrip()
-        if line.startswith('#'):
+        if line.startswith("#"):
             if i < 10:
-                if line.startswith('# Phenotype'):
-                    header = line[2:].split('\t')
+                if line.startswith("# Phenotype"):
+                    header = line[2:].split("\t")
         else:
             yield parse_omim_line(line, header)
+
 
 def parse_mim_titles(lines):
     """Parse the mimTitles.txt file
@@ -254,14 +262,23 @@ def parse_mim_titles(lines):
         }
 
     """
-    header = ['prefix', 'mim_number', 'preferred_title', 'alternative_title', 'included_title']
-    for i,line in enumerate(lines):
+    header = [
+        "prefix",
+        "mim_number",
+        "preferred_title",
+        "alternative_title",
+        "included_title",
+    ]
+    for i, line in enumerate(lines):
         line = line.rstrip()
-        if not line.startswith('#'):
+        if not line.startswith("#"):
             parsed_entry = parse_omim_line(line, header)
-            parsed_entry['mim_number'] = int(parsed_entry['mim_number'])
-            parsed_entry['preferred_title'] = parsed_entry['preferred_title'].split(';')[0]
+            parsed_entry["mim_number"] = int(parsed_entry["mim_number"])
+            parsed_entry["preferred_title"] = parsed_entry["preferred_title"].split(
+                ";"
+            )[0]
             yield parsed_entry
+
 
 def get_mim_genes(genemap_lines, mim2gene_lines):
     """Get a dictionary with genes and their omim information
@@ -283,10 +300,10 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
     no_hgnc = 0
 
     for entry in parse_mim2gene(mim2gene_lines):
-        if 'gene' in entry['entry_type']:
-            mim_nr = entry['mim_number']
+        if "gene" in entry["entry_type"]:
+            mim_nr = entry["mim_number"]
             gene_nr += 1
-            if not 'hgnc_symbol' in entry:
+            if not "hgnc_symbol" in entry:
                 no_hgnc += 1
             else:
                 genes[mim_nr] = entry
@@ -294,29 +311,30 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
     LOG.info("Number of genes without hgnc symbol %s", str(no_hgnc))
 
     for entry in parse_genemap2(genemap_lines):
-        mim_number = entry['mim_number']
-        inheritance = entry['inheritance']
-        phenotype_info = entry['phenotypes']
-        hgnc_symbol = entry['hgnc_symbol']
-        hgnc_symbols = entry['hgnc_symbols']
+        mim_number = entry["mim_number"]
+        inheritance = entry["inheritance"]
+        phenotype_info = entry["phenotypes"]
+        hgnc_symbol = entry["hgnc_symbol"]
+        hgnc_symbols = entry["hgnc_symbols"]
         if mim_number in genes:
-            genes[mim_number]['inheritance'] = inheritance
-            genes[mim_number]['phenotypes'] = phenotype_info
-            genes[mim_number]['hgnc_symbols'] = hgnc_symbols
+            genes[mim_number]["inheritance"] = inheritance
+            genes[mim_number]["phenotypes"] = phenotype_info
+            genes[mim_number]["hgnc_symbols"] = hgnc_symbols
 
     for mim_nr in genes:
         gene_info = genes[mim_nr]
-        hgnc_symbol = gene_info['hgnc_symbol']
+        hgnc_symbol = gene_info["hgnc_symbol"]
 
         if hgnc_symbol in hgnc_genes:
             existing_info = hgnc_genes[hgnc_symbol]
-            if not existing_info['phenotypes']:
+            if not existing_info["phenotypes"]:
                 hgnc_genes[hgnc_symbol] = gene_info
 
         else:
             hgnc_genes[hgnc_symbol] = gene_info
 
     return hgnc_genes
+
 
 def get_mim_phenotypes(genemap_lines):
     """Get a dictionary with phenotypes
@@ -350,26 +368,28 @@ def get_mim_phenotypes(genemap_lines):
     # From this source we collect inheritane patterns and what hgnc symbols
     # a phenotype is associated with
     for entry in parse_genemap2(genemap_lines):
-        hgnc_symbol = entry['hgnc_symbol']
-        for phenotype in entry['phenotypes']:
-            mim_nr = phenotype['mim_number']
+        hgnc_symbol = entry["hgnc_symbol"]
+        for phenotype in entry["phenotypes"]:
+            mim_nr = phenotype["mim_number"]
             if mim_nr in phenotypes_found:
                 phenotype_entry = phenotypes_found[mim_nr]
-                phenotype_entry['inheritance'] = phenotype_entry['inheritance'].union(phenotype['inheritance'])
-                phenotype_entry['hgnc_symbols'].add(hgnc_symbol)
+                phenotype_entry["inheritance"] = phenotype_entry["inheritance"].union(
+                    phenotype["inheritance"]
+                )
+                phenotype_entry["hgnc_symbols"].add(hgnc_symbol)
             else:
-                phenotype['hgnc_symbols'] = set([hgnc_symbol])
+                phenotype["hgnc_symbols"] = set([hgnc_symbol])
                 phenotypes_found[mim_nr] = phenotype
 
     return phenotypes_found
 
 
 @click.command()
-@click.option('--morbid', type=click.Path(exists=True))
-@click.option('--genemap', type=click.Path(exists=True))
-@click.option('--mim2gene', type=click.Path(exists=True))
-@click.option('--mim_titles', type=click.Path(exists=True))
-@click.option('--phenotypes', is_flag=True)
+@click.option("--morbid", type=click.Path(exists=True))
+@click.option("--genemap", type=click.Path(exists=True))
+@click.option("--mim2gene", type=click.Path(exists=True))
+@click.option("--mim_titles", type=click.Path(exists=True))
+@click.option("--phenotypes", is_flag=True)
 @click.pass_context
 def cli(context, morbid, genemap, mim2gene, mim_titles, phenotypes):
     """Parse the omim files"""
@@ -385,7 +405,6 @@ def cli(context, morbid, genemap, mim2gene, mim_titles, phenotypes):
     print("mim2gene file: %s" % mim2gene)
     print("MimTitles file: %s" % mim_titles)
 
-
     if morbid:
         morbid_handle = get_file_handle(morbid)
     if genemap:
@@ -395,10 +414,9 @@ def cli(context, morbid, genemap, mim2gene, mim_titles, phenotypes):
     if mim_titles:
         mimtitles_handle = get_file_handle(mim_titles)
 
-
     mim_genes = get_mim_genes(genemap_handle, mim2gene_handle)
     for entry in mim_genes:
-        if entry == 'C10orf11':
+        if entry == "C10orf11":
             pp(mim_genes[entry])
 
     context.abort()
@@ -407,7 +425,7 @@ def cli(context, morbid, genemap, mim2gene, mim_titles, phenotypes):
             click.echo("Please provide the genemap file")
             context.abort()
         phenotypes = get_mim_phenotypes(genemap_handle)
-        for i,mim_term in enumerate(phenotypes):
+        for i, mim_term in enumerate(phenotypes):
             # pp(phenotypes[mim_term])
             pass
 
@@ -423,8 +441,9 @@ def cli(context, morbid, genemap, mim2gene, mim_titles, phenotypes):
 
     genes = get_mim_genes(genemap_handle, mim2gene_handle)
     for hgnc_symbol in genes:
-        if hgnc_symbol == 'OPA1':
+        if hgnc_symbol == "OPA1":
             print(genes[hgnc_symbol])
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     cli()

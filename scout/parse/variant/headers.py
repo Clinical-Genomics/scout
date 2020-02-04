@@ -2,6 +2,7 @@
 Functions to parse information from vcf headers
 """
 
+
 def parse_rank_results_header(vcf_obj):
     """Return a list with the rank results header
     
@@ -15,11 +16,12 @@ def parse_rank_results_header(vcf_obj):
         rank_results_header(list)
     """
     rank_results_header = []
-    
-    if 'RankResult' in vcf_obj:
-        rank_results_header = vcf_obj['RankResult']['Description'].strip('"').split('|')
-    
+
+    if "RankResult" in vcf_obj:
+        rank_results_header = vcf_obj["RankResult"]["Description"].strip('"').split("|")
+
     return rank_results_header
+
 
 def parse_header_format(description):
     """Get the format from a vcf header line description
@@ -33,9 +35,10 @@ def parse_header_format(description):
         format(str): The format information from description
     """
     description = description.strip('"')
-    keyword = 'Format:'
+    keyword = "Format:"
     before_keyword, keyword, after_keyword = description.partition(keyword)
     return after_keyword.strip()
+
 
 def parse_vep_header(vcf_obj):
     """Return a list with the VEP header
@@ -50,11 +53,11 @@ def parse_vep_header(vcf_obj):
         vep_header(list)
     """
     vep_header = []
-    
-    if 'CSQ' in vcf_obj:
+
+    if "CSQ" in vcf_obj:
         # This is a dictionary
-        csq_info = vcf_obj['CSQ']
-        format_info = parse_header_format(csq_info['Description'])
-        vep_header = [key.upper() for key in format_info.split('|')]
-    
+        csq_info = vcf_obj["CSQ"]
+        format_info = parse_header_format(csq_info["Description"])
+        vep_header = [key.upper() for key in format_info.split("|")]
+
     return vep_header

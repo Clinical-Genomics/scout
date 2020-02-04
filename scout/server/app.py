@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import logging
+
 try:
     from urllib.parse import unquote
 except ImportError:
@@ -25,17 +26,30 @@ except ImportError:
     chanjo_api = None
     report_bp = None
     configure_template_filters = None
-    LOG.info('chanjo report not installed!')
+    LOG.info("chanjo report not installed!")
 
 from . import extensions
-from .blueprints import (alignviewers, public, genes, cases, login, variant, variants, panels, 
-                         dashboard, api, phenotypes, institutes)
+from .blueprints import (
+    alignviewers,
+    public,
+    genes,
+    cases,
+    login,
+    variant,
+    variants,
+    panels,
+    dashboard,
+    api,
+    phenotypes,
+    institutes,
+)
+
 
 def create_app(config_file=None, config=None):
     """Flask app factory function."""
     app = Flask(__name__)
-    app.config.from_pyfile('config.py')
-    app.jinja_env.add_extension('jinja2.ext.do')
+    app.config.from_pyfile("config.py")
+    app.jinja_env.add_extension("jinja2.ext.do")
     if config:
         app.config.update(config)
     if config_file:
@@ -43,32 +57,35 @@ def create_app(config_file=None, config=None):
 
     # If there is a MatchMaker Exchange server
     # collect the connected external nodes
-    app.mme_nodes = mme_nodes(app.config.get('MME_URL'), app.config.get('MME_TOKEN'))
+    app.mme_nodes = mme_nodes(app.config.get("MME_URL"), app.config.get("MME_TOKEN"))
 
     app.config["JSON_SORT_KEYS"] = False
     current_log_level = LOG.getEffectiveLevel()
-    coloredlogs.install(level='DEBUG' if app.debug else current_log_level)
+    coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
 
-    if not (app.debug or app.testing) and app.config.get('MAIL_USERNAME'):
+    if not (app.debug or app.testing) and app.config.get("MAIL_USERNAME"):
         # setup email logging of errors
         configure_email_logging(app)
 
     @app.before_request
     def check_user():
-        if not app.config.get('LOGIN_DISABLED') and request.endpoint:
+        if not app.config.get("LOGIN_DISABLED") and request.endpoint:
             # check if the endpoint requires authentication
-            static_endpoint = 'static' in request.endpoint or 'report' in request.endpoint
-            public_endpoint = getattr(app.view_functions[request.endpoint],
-                                      'is_public', False)
+            static_endpoint = (
+                "static" in request.endpoint or "report" in request.endpoint
+            )
+            public_endpoint = getattr(
+                app.view_functions[request.endpoint], "is_public", False
+            )
             relevant_endpoint = not (static_endpoint or public_endpoint)
             # if endpoint requires auth, check if user is authenticated
             if relevant_endpoint and not current_user.is_authenticated:
                 # combine visited URL (convert byte string query string to unicode!)
                 next_url = "{}?{}".format(request.path, request.query_string.decode())
-                login_url = url_for('public.index', next=next_url)
+                login_url = url_for("public.index", next=next_url)
                 return redirect(login_url)
 
     return app
@@ -86,19 +103,20 @@ def configure_extensions(app):
 
     Markdown(app)
 
-    if app.config.get('SQLALCHEMY_DATABASE_URI'):
+    if app.config.get("SQLALCHEMY_DATABASE_URI"):
         LOG.info("Chanjo extension enabled")
         configure_coverage(app)
 
-    if app.config.get('LOQUSDB_SETTINGS'):
+    if app.config.get("LOQUSDB_SETTINGS"):
         LOG.info("LoqusDB enabled")
         # setup LoqusDB
         extensions.loqusdb.init_app(app)
 
-    if app.config.get('LDAP_HOST'):
+    if app.config.get("LDAP_HOST"):
         LOG.info("LDAP login enabled")
         # setup connection to server
         extensions.ldap_manager.init_app(app)
+
 
 def register_blueprints(app):
     """Register Flask blueprints."""
@@ -129,11 +147,11 @@ def register_filters(app):
             str: humanized string of the decimal number
         """
         min_number = 10 ** -ndigits
-        if isinstance(number,str):
+        if isinstance(number, str):
             number = None
         if number is None:
             # NaN
-            return '-'
+            return "-"
         elif number == 0:
             # avoid confusion over what is rounded and what is actually 0
             return 0
@@ -156,16 +174,18 @@ def configure_email_logging(app):
     from scout.log import TlsSMTPHandler
 
     mail_handler = TlsSMTPHandler(
-        mailhost=app.config['MAIL_SERVER'],
-        fromaddr=app.config['MAIL_USERNAME'],
-        toaddrs=app.config['ADMINS'],
+        mailhost=app.config["MAIL_SERVER"],
+        fromaddr=app.config["MAIL_USERNAME"],
+        toaddrs=app.config["ADMINS"],
         subject="O_ops... {} failed!".format(app.name),
-        credentials=(app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
+        credentials=(app.config["MAIL_USERNAME"], app.config["MAIL_PASSWORD"]),
     )
     mail_handler.setLevel(logging.ERROR)
-    mail_handler.setFormatter(logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s: %(message)s '
-        '[in %(pathname)s:%(lineno)d]')
+    mail_handler.setFormatter(
+        logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s: %(message)s "
+            "[in %(pathname)s:%(lineno)d]"
+        )
     )
     app.logger.addHandler(mail_handler)
 
@@ -173,28 +193,28 @@ def configure_email_logging(app):
 def configure_coverage(app):
     """Setup coverage related extensions."""
     # setup chanjo report
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True if app.debug else False
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True if app.debug else False
     if chanjo_api:
         chanjo_api.init_app(app)
         configure_template_filters(app)
         # register chanjo report blueprint
-        app.register_blueprint(report_bp, url_prefix='/reports')
+        app.register_blueprint(report_bp, url_prefix="/reports")
 
     babel = Babel(app)
 
     @babel.localeselector
     def get_locale():
         """Determine locale to use for translations."""
-        accept_languages = current_app.config.get('ACCEPT_LANGUAGES', ['en'])
+        accept_languages = current_app.config.get("ACCEPT_LANGUAGES", ["en"])
 
         # first check request args
-        session_language = request.args.get('lang')
+        session_language = request.args.get("lang")
         if session_language in accept_languages:
             current_app.logger.info("using session language: %s", session_language)
             return session_language
 
         # language can be forced in config
-        user_language = current_app.config.get('REPORT_LANGUAGE')
+        user_language = current_app.config.get("REPORT_LANGUAGE")
         if user_language:
             return user_language
 

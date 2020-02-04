@@ -9,7 +9,7 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 
-@click.command('collections', short_help='Display all collections')
+@click.command("collections", short_help="Display all collections")
 @with_appcontext
 def collections():
     """Show all collections in the database"""
