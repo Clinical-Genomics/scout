@@ -157,10 +157,10 @@
         <form action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
           <div class="row search_form mt-3">
             <div class="input-group">
-              <div class="col-md-6 col-xs-6"">
+              <div class="col-md-6 col-sm-6"">
                 <input name="hgnc_id" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for gene...">
               </div>
-              <div class="col-xs-4">
+              <div class="col-sm-4">
                 <button type="submit" name="action" value="add" class="btn btn-outline-secondary form-control">
                   Add gene
                 </button>
@@ -190,11 +190,11 @@
             {{ gene.symbol }}
           </span>
           {% if gene.action == 'add' %}
-            <span class="badge badge-primary badge-pill float-right">{{ gene.action }}</span>
+            <span class="badge badge-primary badge-pill float-right">{{ gene.action-}}ed</span>
           {% elif gene.action == 'delete' %}
-            <span class="badge badge-danger badge-pill float-right">{{ gene.action }}</span>
+            <span class="badge badge-danger badge-pill float-right">{{ gene.action-}}ed</span>
           {% else %}
-            <span class="badge badge-secondary badge-pill float-right">{{ gene.action }}</span>
+            <span class="badge badge-secondary badge-pill float-right">{{ gene.action-}}ed</span>
           {% endif %}
         </li>
       {% else %}
