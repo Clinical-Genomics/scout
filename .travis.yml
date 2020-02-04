@@ -19,7 +19,7 @@ jobs:
           install:
               - pip install cython
               - pip install -r requirements-dev.txt -e .
-          script: py.test --cov=scout -rxs tests/
+          script: py.test --cov=scout -rxs tests/commands/load/
           after_success: coveralls
 
         - name: "Package Install"
