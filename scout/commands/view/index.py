@@ -7,8 +7,8 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 
-@click.command('index', short_help='Display all indexes')
-@click.option('-n', '--collection-name')
+@click.command("index", short_help="Display all indexes")
+@click.option("-n", "--collection-name")
 @with_appcontext
 def index(collection_name):
     """Show all indexes in the database"""

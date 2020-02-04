@@ -2,14 +2,14 @@ import logging
 from pprint import pprint as pp
 
 from scout.build.genes.exon import build_exon
-from pymongo.errors import (DuplicateKeyError, BulkWriteError)
+from pymongo.errors import DuplicateKeyError, BulkWriteError
 
 from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
 
-class TranscriptHandler(object):
 
+class TranscriptHandler(object):
     def load_hgnc_transcript(self, transcript_obj):
         """Add a transcript object to the database
 
@@ -39,7 +39,7 @@ class TranscriptHandler(object):
         """Delete the transcripts collection"""
         if build:
             LOG.info("Dropping the transcripts collection, build %s", build)
-            self.transcript_collection.delete_many({'build': build})
+            self.transcript_collection.delete_many({"build": build})
         else:
             LOG.info("Dropping the transcripts collection")
             self.transcript_collection.drop()
@@ -48,12 +48,12 @@ class TranscriptHandler(object):
         """Delete the exons collection"""
         if build:
             LOG.info("Dropping the exons collection, build %s", build)
-            self.exon_collection.delete_many({'build': build})
+            self.exon_collection.delete_many({"build": build})
         else:
             LOG.info("Dropping the exons collection")
             self.exon_collection.drop()
 
-    def ensembl_transcripts(self, build='37'):
+    def ensembl_transcripts(self, build="37"):
         """Return a dictionary with ensembl ids as keys and transcripts as value.
 
         Args:
@@ -65,13 +65,13 @@ class TranscriptHandler(object):
         ensembl_transcripts = {}
         LOG.info("Fetching all transcripts")
         for transcript_obj in self.transcripts(build):
-            enst_id = transcript_obj['ensembl_transcript_id']
+            enst_id = transcript_obj["ensembl_transcript_id"]
             ensembl_transcripts[enst_id] = transcript_obj
         LOG.info("Ensembl transcripts fetched")
 
         return ensembl_transcripts
 
-    def get_id_transcripts(self, hgnc_id=None, build='37', transcripts=None):
+    def get_id_transcripts(self, hgnc_id=None, build="37", transcripts=None):
         """Return a set with identifier transcript(s)
 
         Choose all refseq transcripts with NM symbols, if none where found choose ONE with NR,
@@ -93,29 +93,29 @@ class TranscriptHandler(object):
             transcripts = self.transcripts(build=build, hgnc_id=hgnc_id)
 
         identifier_transcripts = set()
-        
+
         refseq_tx = None
         longest = None
         longest_length = 0
         nr = []
         xm = []
         for tx in transcripts:
-            enst_id = tx['ensembl_transcript_id']
-            refseq_id = tx.get('refseq_id')
+            enst_id = tx["ensembl_transcript_id"]
+            refseq_id = tx.get("refseq_id")
             if refseq_id:
                 refseq_tx = True
-                if 'NM' in refseq_id:
+                if "NM" in refseq_id:
                     identifier_transcripts.add(enst_id)
-                elif 'NR' in refseq_id:
+                elif "NR" in refseq_id:
                     nr.append(enst_id)
-                elif 'XM' in refseq_id:
+                elif "XM" in refseq_id:
                     xm.append(enst_id)
                 continue
-            
+
             if refseq_tx:
                 continue
 
-            tx_length = tx['end'] - tx['start']
+            tx_length = tx["end"] - tx["start"]
             if not longest:
                 longest = enst_id
                 longest_length = tx_length
@@ -135,7 +135,7 @@ class TranscriptHandler(object):
 
         return set([longest])
 
-    def transcripts_by_gene(self, build='37'):
+    def transcripts_by_gene(self, build="37"):
         """Return a dictionary with hgnc_id as keys and a list of transcripts as value
 
         Args:
@@ -147,8 +147,8 @@ class TranscriptHandler(object):
         """
         hgnc_transcripts = {}
         LOG.info("Fetching all transcripts")
-        for transcript in self.transcript_collection.find({'build':build}):
-            hgnc_id = transcript['hgnc_id']
+        for transcript in self.transcript_collection.find({"build": build}):
+            hgnc_id = transcript["hgnc_id"]
             if not hgnc_id in hgnc_transcripts:
                 hgnc_transcripts[hgnc_id] = []
 
@@ -156,7 +156,7 @@ class TranscriptHandler(object):
 
         return hgnc_transcripts
 
-    def id_transcripts_by_gene(self, build='37'):
+    def id_transcripts_by_gene(self, build="37"):
         """Return a dictionary with hgnc_id as keys and a set of id transcripts as value
 
         Args:
@@ -167,14 +167,14 @@ class TranscriptHandler(object):
         """
         hgnc_id_transcripts = {}
         LOG.info("Fetching all id transcripts")
-        for gene_obj in self.hgnc_collection.find({'build': build}):
-            hgnc_id = gene_obj['hgnc_id']
+        for gene_obj in self.hgnc_collection.find({"build": build}):
+            hgnc_id = gene_obj["hgnc_id"]
             id_transcripts = self.get_id_transcripts(hgnc_id=hgnc_id, build=build)
             hgnc_id_transcripts[hgnc_id] = id_transcripts
 
         return hgnc_id_transcripts
 
-    def transcripts(self, build='37', hgnc_id=None):
+    def transcripts(self, build="37", hgnc_id=None):
         """Return all transcripts.
 
             If a gene is specified return all transcripts for the gene
@@ -187,9 +187,9 @@ class TranscriptHandler(object):
             iterable(transcript)
         """
 
-        query = {'build': build}
+        query = {"build": build}
         if hgnc_id:
-            query['hgnc_id'] = hgnc_id
+            query["hgnc_id"] = hgnc_id
 
         return self.transcript_collection.find(query)
 
@@ -218,7 +218,7 @@ class TranscriptHandler(object):
 
         return result
 
-    def exons(self, hgnc_id=None, transcript_id=None,  build=None):
+    def exons(self, hgnc_id=None, transcript_id=None, build=None):
         """Return all exons
 
         Args:
@@ -231,11 +231,11 @@ class TranscriptHandler(object):
         """
         query = {}
         if build:
-            query['build'] = build
+            query["build"] = build
         if hgnc_id:
-            query['hgnc_id'] = hgnc_id
+            query["hgnc_id"] = hgnc_id
         if transcript_id:
-            query['transcript_id'] = transcript_id
+            query["transcript_id"] = transcript_id
 
         return self.exon_collection.find(query)
 
@@ -250,6 +250,6 @@ class TranscriptHandler(object):
         """
         query = {}
         if build:
-            query['build'] = build
+            query["build"] = build
 
         return self.exon_collection.find_one(query)

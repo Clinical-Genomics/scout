@@ -21,16 +21,18 @@ def load_case(adapter, case_obj, update=False):
     Returns:
         case_obj(dict): A dictionary with the builded case
     """
-    logger.info('Loading case {} into database'.format(case_obj['display_name']))
+    logger.info("Loading case {} into database".format(case_obj["display_name"]))
 
     # Check if case exists in database
-    existing_case = adapter.case(case_obj['_id'])
+    existing_case = adapter.case(case_obj["_id"])
 
     if existing_case:
         if update:
             adapter.update_case(case_obj)
         else:
-            raise IntegrityError("Case {0} already exists in database".format(case_obj['_id']))
+            raise IntegrityError(
+                "Case {0} already exists in database".format(case_obj["_id"])
+            )
     else:
         adapter.add_case(case_obj)
     return case_obj

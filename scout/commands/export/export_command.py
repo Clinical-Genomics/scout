@@ -27,7 +27,6 @@ from .variant import variants, verified
 LOG = logging.getLogger(__name__)
 
 
-
 @click.group()
 def export():
     """

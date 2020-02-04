@@ -12,25 +12,27 @@ from shutil import rmtree
 from setuptools import find_packages, setup, Command
 
 # Package meta-data.
-NAME = 'scout-browser'
-DESCRIPTION = 'Clinical DNA variant visualizer and browser.'
-URL = 'https://github.com/Clinical-Genomics/scout'
-EMAIL = 'mans.magnusson@scilifelab.se'
-AUTHOR = 'Måns Magnusson'
+NAME = "scout-browser"
+DESCRIPTION = "Clinical DNA variant visualizer and browser."
+URL = "https://github.com/Clinical-Genomics/scout"
+EMAIL = "mans.magnusson@scilifelab.se"
+AUTHOR = "Måns Magnusson"
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-def parse_reqs(req_path='./requirements.txt'):
+
+def parse_reqs(req_path="./requirements.txt"):
     """Recursively parse requirements from nested pip files."""
     install_requires = []
-    with io.open(os.path.join(here, 'requirements.txt'), encoding='utf-8') as handle:
+    with io.open(os.path.join(here, "requirements.txt"), encoding="utf-8") as handle:
         # remove comments and empty lines
-        lines = (line.strip() for line in handle
-                 if line.strip() and not line.startswith('#'))
+        lines = (
+            line.strip() for line in handle if line.strip() and not line.startswith("#")
+        )
 
         for line in lines:
             # check for nested requirements files
-            if line.startswith('-r'):
+            if line.startswith("-r"):
                 # recursively call this function
                 install_requires += parse_reqs(req_path=line[3:])
 
@@ -39,6 +41,7 @@ def parse_reqs(req_path='./requirements.txt'):
                 install_requires.append(line)
 
     return install_requires
+
 
 # What packages are required for this module to be executed?
 REQUIRED = parse_reqs()
@@ -50,24 +53,25 @@ REQUIRED = parse_reqs()
 
 # Import the README and use it as the long-description.
 # Note: this will only work if 'README.rst' is present in your MANIFEST.in file!
-with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
-    long_description = '\n' + f.read()
+with io.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+    long_description = "\n" + f.read()
 
 # Load the package's __version__.py module as a dictionary.
 about = {}
-with open(os.path.join(here, 'scout', '__version__.py')) as f:
+with open(os.path.join(here, "scout", "__version__.py")) as f:
     exec(f.read(), about)
+
 
 class UploadCommand(Command):
     """Support setup.py upload."""
 
-    description = 'Build and publish the package.'
+    description = "Build and publish the package."
     user_options = []
 
     @staticmethod
     def status(s):
         """Prints things in bold."""
-        print('\033[1m{0}\033[0m'.format(s))
+        print("\033[1m{0}\033[0m".format(s))
 
     def initialize_options(self):
         pass
@@ -77,55 +81,46 @@ class UploadCommand(Command):
 
     def run(self):
         try:
-            self.status('Removing previous builds…')
-            rmtree(os.path.join(here, 'dist'))
+            self.status("Removing previous builds…")
+            rmtree(os.path.join(here, "dist"))
         except OSError:
             pass
 
-        self.status('Building Source and Wheel (universal) distribution…')
-        os.system('{0} setup.py sdist bdist_wheel --universal'.format(sys.executable))
+        self.status("Building Source and Wheel (universal) distribution…")
+        os.system("{0} setup.py sdist bdist_wheel --universal".format(sys.executable))
 
-        self.status('Uploading the package to PyPi via Twine…')
-        os.system('twine upload dist/*')
+        self.status("Uploading the package to PyPi via Twine…")
+        os.system("twine upload dist/*")
 
         sys.exit()
 
 
 setup(
     name=NAME,
-    version=about['__version__'],
+    version=about["__version__"],
     description=DESCRIPTION,
     long_description=long_description,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     author=AUTHOR,
     author_email=EMAIL,
     url=URL,
-    packages=find_packages(exclude=['tests/', 'scripts/']),
+    packages=find_packages(exclude=["tests/", "scripts/"]),
     zip_safe=False,
     install_requires=REQUIRED,
     include_package_data=True,
-    extras_require=dict(
-        coverage=['chanjo-report'],
-    ),
-    entry_points=dict(
-        console_scripts=[
-            'scout = scout.commands:cli',
-        ]
-    ),
-    test_suite='tests',
+    extras_require=dict(coverage=["chanjo-report"]),
+    entry_points=dict(console_scripts=["scout = scout.commands:cli"]),
+    test_suite="tests",
     classifiers=[
-        'Environment :: Web Environment',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        'Topic :: Software Development :: Libraries',
-        'Programming Language :: Python :: 3.6',
+        "Environment :: Web Environment",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+        "Topic :: Software Development :: Libraries",
+        "Programming Language :: Python :: 3.6",
     ],
     # $ setup.py publish support.
-    cmdclass={
-        'upload': UploadCommand,
-    },
-
+    cmdclass={"upload": UploadCommand},
 )

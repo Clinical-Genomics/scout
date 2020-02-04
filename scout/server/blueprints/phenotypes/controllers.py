@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 def hpo_terms(store):
     """Retrieves a list of HPO terms from scout database
 
@@ -11,5 +12,5 @@ def hpo_terms(store):
 
     """
     hpo_phenotypes = {}
-    hpo_phenotypes['phenotypes'] = list(store.hpo_terms())
+    hpo_phenotypes["phenotypes"] = list(store.hpo_terms())
     return hpo_phenotypes

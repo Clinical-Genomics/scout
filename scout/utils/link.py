@@ -4,8 +4,11 @@ import logging
 from pprint import pprint as pp
 
 from scout.parse.hgnc import parse_hgnc_genes
-from scout.parse.ensembl import (parse_ensembl_transcripts, parse_ensembl_exons,
-                                 parse_ensembl_genes)
+from scout.parse.ensembl import (
+    parse_ensembl_transcripts,
+    parse_ensembl_exons,
+    parse_ensembl_genes,
+)
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hpo import get_incomplete_penetrance_genes
 from scout.parse.omim import get_mim_genes
@@ -36,23 +39,21 @@ def genes_by_alias(hgnc_genes):
     for hgnc_id in hgnc_genes:
         gene = hgnc_genes[hgnc_id]
         # This is the primary symbol:
-        hgnc_symbol = gene['hgnc_symbol']
+        hgnc_symbol = gene["hgnc_symbol"]
 
-        for alias in gene['previous_symbols']:
+        for alias in gene["previous_symbols"]:
             true_id = None
             if alias == hgnc_symbol:
                 true_id = hgnc_id
             if alias in alias_genes:
-                alias_genes[alias.upper()]['ids'].add(hgnc_id)
+                alias_genes[alias.upper()]["ids"].add(hgnc_id)
                 if true_id:
-                    alias_genes[alias.upper()]['true_id'] = hgnc_id
+                    alias_genes[alias.upper()]["true_id"] = hgnc_id
             else:
-                alias_genes[alias.upper()] = {
-                    'true': true_id,
-                    'ids': set([hgnc_id])
-                }
+                alias_genes[alias.upper()] = {"true": true_id, "ids": set([hgnc_id])}
 
     return alias_genes
+
 
 def add_ensembl_info(genes, ensembl_lines):
     """Add the coordinates from ensembl
@@ -67,18 +68,22 @@ def add_ensembl_info(genes, ensembl_lines):
     ensembl_genes = parse_ensembl_genes(ensembl_lines)
 
     for ensembl_gene in ensembl_genes:
-        if not 'hgnc_id' in ensembl_gene:
-            LOG.debug("Ensembl gene %s is missing hgnc id. Skipping", ensembl_gene.get('ensembl_gene_id'))
+        if not "hgnc_id" in ensembl_gene:
+            LOG.debug(
+                "Ensembl gene %s is missing hgnc id. Skipping",
+                ensembl_gene.get("ensembl_gene_id"),
+            )
             continue
-        gene_obj = genes.get(ensembl_gene['hgnc_id'])
+        gene_obj = genes.get(ensembl_gene["hgnc_id"])
         if not gene_obj:
             continue
-        gene_obj['chromosome'] = ensembl_gene['chrom']
-        gene_obj['start'] = ensembl_gene['gene_start']
-        gene_obj['end'] = ensembl_gene['gene_end']
+        gene_obj["chromosome"] = ensembl_gene["chrom"]
+        gene_obj["start"] = ensembl_gene["gene_start"]
+        gene_obj["end"] = ensembl_gene["gene_end"]
         # ensembl ids can differ between builds. The ensembl gene ids from HGNC are only
         # true for build 38. So we add correct information from ensembl
-        gene_obj['ensembl_gene_id'] = ensembl_gene['ensembl_gene_id']
+        gene_obj["ensembl_gene_id"] = ensembl_gene["ensembl_gene_id"]
+
 
 def add_exac_info(genes, alias_genes, exac_lines):
     """Add information from the exac genes
@@ -96,11 +101,12 @@ def add_exac_info(genes, alias_genes, exac_lines):
     """
     LOG.info("Add exac pli scores")
     for exac_gene in parse_exac_genes(exac_lines):
-        hgnc_symbol = exac_gene['hgnc_symbol'].upper()
-        pli_score = exac_gene['pli_score']
+        hgnc_symbol = exac_gene["hgnc_symbol"].upper()
+        pli_score = exac_gene["pli_score"]
 
         for hgnc_id in get_correct_ids(hgnc_symbol, alias_genes):
-            genes[hgnc_id]['pli_score'] = pli_score
+            genes[hgnc_id]["pli_score"] = pli_score
+
 
 def add_omim_info(genes, alias_genes, genemap_lines, mim2gene_lines):
     """Add omim information
@@ -120,23 +126,24 @@ def add_omim_info(genes, alias_genes, genemap_lines, mim2gene_lines):
 
     for hgnc_symbol in omim_genes:
         omim_info = omim_genes[hgnc_symbol]
-        inheritance = omim_info.get('inheritance', set())
+        inheritance = omim_info.get("inheritance", set())
 
         for hgnc_id in get_correct_ids(hgnc_symbol, alias_genes):
             gene_info = genes[hgnc_id]
 
             # Update the omim id to the one found in omim
-            gene_info['omim_id'] = omim_info['mim_number']
+            gene_info["omim_id"] = omim_info["mim_number"]
 
-            gene_info['inheritance_models'] = list(inheritance)
-            gene_info['phenotypes'] = omim_info.get('phenotypes', [])
+            gene_info["inheritance_models"] = list(inheritance)
+            gene_info["phenotypes"] = omim_info.get("phenotypes", [])
+
 
 def add_incomplete_penetrance(genes, alias_genes, hpo_lines):
     """Add information of incomplete penetrance"""
     LOG.info("Add incomplete penetrance info")
     for hgnc_symbol in get_incomplete_penetrance_genes(hpo_lines):
         for hgnc_id in get_correct_ids(hgnc_symbol, alias_genes):
-            genes[hgnc_id]['incomplete_penetrance'] = True
+            genes[hgnc_id]["incomplete_penetrance"] = True
 
 
 def get_correct_ids(hgnc_symbol, alias_genes):
@@ -158,14 +165,21 @@ def get_correct_ids(hgnc_symbol, alias_genes):
     hgnc_symbol = hgnc_symbol.upper()
     if hgnc_symbol in alias_genes:
         hgnc_id_info = alias_genes[hgnc_symbol]
-        if hgnc_id_info['true']:
-            return set([hgnc_id_info['true']])
+        if hgnc_id_info["true"]:
+            return set([hgnc_id_info["true"]])
         else:
-            return set(hgnc_id_info['ids'])
+            return set(hgnc_id_info["ids"])
     return hgnc_ids
 
-def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, mim2gene_lines=None,
-               genemap_lines=None):
+
+def link_genes(
+    ensembl_lines,
+    hgnc_lines,
+    exac_lines,
+    hpo_lines,
+    mim2gene_lines=None,
+    genemap_lines=None,
+):
     """Gather information from different sources and return a gene dict
 
     Extract information collected from a number of sources and combine them
@@ -197,7 +211,7 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, mim2gene_lines=
     # HGNC genes are the main source, these define the gene dataset to use
     # Try to use as much information as possible from hgnc
     for hgnc_gene in parse_hgnc_genes(hgnc_lines):
-        hgnc_id = hgnc_gene['hgnc_id']
+        hgnc_id = hgnc_gene["hgnc_id"]
         genes[hgnc_id] = hgnc_gene
 
     add_ensembl_info(genes, ensembl_lines)
@@ -208,7 +222,7 @@ def link_genes(ensembl_lines, hgnc_lines, exac_lines, hpo_lines, mim2gene_lines=
 
     add_incomplete_penetrance(genes, symbol_to_id, hpo_lines)
 
-    if (mim2gene_lines and genemap_lines):
+    if mim2gene_lines and genemap_lines:
         add_omim_info(genes, symbol_to_id, genemap_lines, mim2gene_lines)
 
     return genes

@@ -4,9 +4,18 @@ from datetime import datetime
 
 from click import progressbar
 
-from scout.parse.hpo import (parse_hpo_phenotypes, parse_hpo_diseases, parse_hpo_obo,
-                             parse_hpo_to_genes, build_hpo_tree)
-from scout.utils.requests import (fetch_hpo_terms, fetch_hpo_to_genes, fetch_hpo_phenotype_to_terms)
+from scout.parse.hpo import (
+    parse_hpo_phenotypes,
+    parse_hpo_diseases,
+    parse_hpo_obo,
+    parse_hpo_to_genes,
+    build_hpo_tree,
+)
+from scout.utils.requests import (
+    fetch_hpo_terms,
+    fetch_hpo_to_genes,
+    fetch_hpo_phenotype_to_terms,
+)
 
 from scout.parse.omim import get_mim_phenotypes
 from scout.build.hpo import build_hpo_term
@@ -17,7 +26,9 @@ from pprint import pprint as pp
 LOG = logging.getLogger(__name__)
 
 
-def load_hpo(adapter, disease_lines, hpo_disease_lines=None, hpo_lines=None, hpo_gene_lines=None):
+def load_hpo(
+    adapter, disease_lines, hpo_disease_lines=None, hpo_lines=None, hpo_gene_lines=None
+):
     """Load the hpo terms and hpo diseases into database
 
     Args:
@@ -50,6 +61,7 @@ def load_hpo(adapter, disease_lines, hpo_disease_lines=None, hpo_lines=None, hpo
 
     load_disease_terms(adapter, disease_lines, alias_genes, hpo_disease_lines)
 
+
 def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=None):
     """Load the hpo terms into the database
 
@@ -79,32 +91,34 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
 
     LOG.info("Adding gene information to hpo terms ...")
     for hpo_to_symbol in parse_hpo_to_genes(hpo_gene_lines):
-        hgnc_symbol = hpo_to_symbol['hgnc_symbol']
-        hpo_id = hpo_to_symbol['hpo_id']
+        hgnc_symbol = hpo_to_symbol["hgnc_symbol"]
+        hpo_id = hpo_to_symbol["hpo_id"]
 
         # Fetch gene info to get correct hgnc id
         gene_info = alias_genes.get(hgnc_symbol)
         if not gene_info:
             continue
 
-        hgnc_id = gene_info['true']
+        hgnc_id = gene_info["true"]
 
         if hpo_id not in hpo_terms:
             continue
 
         hpo_term = hpo_terms[hpo_id]
 
-        if not 'genes' in hpo_term:
-            hpo_term['genes'] = set()
+        if not "genes" in hpo_term:
+            hpo_term["genes"] = set()
 
-        hpo_term['genes'].add(hgnc_id)
+        hpo_term["genes"].add(hgnc_id)
 
     start_time = datetime.now()
 
     LOG.info("Loading the hpo terms...")
     nr_terms = len(hpo_terms)
     hpo_bulk = []
-    with progressbar(hpo_terms.values(), label="Loading hpo terms", length=nr_terms) as bar:
+    with progressbar(
+        hpo_terms.values(), label="Loading hpo terms", length=nr_terms
+    ) as bar:
 
         for hpo_info in bar:
             hpo_bulk.append(build_hpo_term(hpo_info))
@@ -153,9 +167,9 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=Non
         disease_id = "OMIM:{0}".format(disease_number)
 
         if disease_id in hpo_diseases:
-            hpo_terms = hpo_diseases[disease_id]['hpo_terms']
+            hpo_terms = hpo_diseases[disease_id]["hpo_terms"]
             if hpo_terms:
-                disease_info['hpo_terms'] = hpo_terms
+                disease_info["hpo_terms"] = hpo_terms
         disease_obj = build_disease_term(disease_info, genes)
 
         adapter.load_disease_term(disease_obj)
