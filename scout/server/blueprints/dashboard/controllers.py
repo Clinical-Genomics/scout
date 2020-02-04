@@ -76,7 +76,9 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
     general_info = get_general_case_info(adapter, institute_id=institute_id)
     total_cases = general_info["total_cases"]
     sliced_case_ids = general_sliced_info["case_ids"]
-    verified_query = {"verb": {"$in": ["validate", "sanger"]}}
+    verified_query = {
+        "verb": {"$in": ["validate", "sanger"]},
+    }
     if institute_id:  # filter by institute if users wishes so
         verified_query["institute"] = institute_id
 
@@ -87,9 +89,7 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
     # Variant level information
     validated_tp = set()
     validated_fp = set()
-    var_valid_orders = (
-        0
-    )  # use this counter to count 'True Positive', 'False positive' and 'Not validated' vars
+    var_valid_orders = 0  # use this counter to count 'True Positive', 'False positive' and 'Not validated' vars
 
     validate_events = adapter.event_collection.find(verified_query)
     for validate_event in list(validate_events):

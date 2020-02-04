@@ -89,9 +89,7 @@ def test_parse_cadd(variants, case_obj):
 def test_parse_revel(cyvcf2_variant, case_obj):
     ## GIVEN a variant with REVEL score in the CSQ entry
     csq_header = "ALLELE|CONSEQUENCE|REVEL_rankscore"
-    csq_entry = (
-        "C|missense_variant|0.75,C|missense_variant|0.75"
-    )  # mimic a variant with transcripts
+    csq_entry = "C|missense_variant|0.75,C|missense_variant|0.75"  # mimic a variant with transcripts
 
     cyvcf2_variant.INFO["CSQ"] = csq_entry
 
