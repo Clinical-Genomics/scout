@@ -4,7 +4,7 @@
 {% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives %}
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
 {% from "cases/phenotype.html" import cohort_panel, diagnosis_phenotypes, diagnosis_genes, phenotype_groups_panel, phenotype_terms_panel, phenotypes_panel %}
-{% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
+{% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel, change_default_panels %}
 {% from "cases/case_ideograms.html" import case_ideograms %}
 {% from "variants/utils.html" import tier_cell %}
 
@@ -93,23 +93,21 @@
       </div>
 
         <div class="row">
-          <div class="col-xs-12 col-md-4">{{ cohort_panel(case, institute, cohort_tags) }}</div>
-          <div class="col-xs-12 col-md-4">{{ diagnosis_phenotypes(case, institute) }}</div>
-          <div class="col-xs-12 col-md-4">{{ diagnosis_genes(case, institute) }}</div>
+          <div class="col-md-4">{{ cohort_panel(case, institute, cohort_tags) }}</div>
+          <div class="col-md-4">{{ phenotype_groups_panel(case, institute, hpo_groups) }}</div>
+          <div class="col-md-4">{{ diagnosis_phenotypes(case, institute) }}</div>
         </div>
 
         <div class="row">
-          <div class="col-md-6">{{ phenotype_groups_panel(case, institute, hpo_groups) }}</div>
-          <div class="col-md-6">{{ phenotype_terms_panel(case, institute) }}</div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-6">{{ phenotypes_panel(case, institute, config) }}</div>
+          <div class="col-md-4">{{ phenotypes_panel(case, institute, config) }}</div>
+          <div class="col-md-4">{{ phenotype_terms_panel(case, institute) }}</div>
+          <div class="col-md-4">{{ diagnosis_genes(case, institute) }}</div>
         </div>
 
         <div class="row">
           <div class="col-md-6">{{ genepanels_table(case, institute) }}</div>
-          <div class="col-md-6">{{ hpo_genelist_panel(case, institute, config) }}</div>
+          <div class="col-md-3">{{ change_default_panels(case, institute) }}</div>
+          <div class="col-md-3">{{ hpo_genelist_panel(case, institute, config) }}</div>
         </div>
 
         <!-- data sharing panels -->
