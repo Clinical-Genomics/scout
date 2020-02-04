@@ -139,11 +139,16 @@
 
   </div>
 </div>
-{% if case.is_research %}
+{% if case.is_research%}
   <div class="form-group">
     <div class="btn-group">
+    {% if case.track=="cancer" %}
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research SNV and INDELs</a>
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research structural variants</a>
+    {% else %}
       <a class="btn btn-outline-dark" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research SNV and INDELs</a>
       <a class="btn btn-outline-dark" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research structural variants</a>
+    {% endif %}
     </div>
   </div>
 {% endif %}
@@ -909,12 +914,21 @@
             Use HPO list for clinical filter</div>
         </div>
         <div>
-          <a class="btn btn-outline-secondary form-control"
-            href="{{ url_for('variants.variants', institute_id=institute._id,
-                             case_name=case.display_name, variant_type='clinical',
-                             gene_panels=['hpo']) }}">
-             Clinical HPO SNV variants
-           </a>
+          {% if case.track == 'cancer' %}
+            <a class="btn btn-outline-secondary form-control"
+              href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
+                               case_name=case.display_name, variant_type='clinical',
+                               gene_panels=['hpo']) }}">
+               Clinical HPO SNV variants
+             </a>
+          {% else %}
+            <a class="btn btn-outline-secondary form-control"
+              href="{{ url_for('variants.variants', institute_id=institute._id,
+                               case_name=case.display_name, variant_type='clinical',
+                               gene_panels=['hpo']) }}">
+               Clinical HPO SNV variants
+             </a>
+           {% endif %}
         </div>
       </div>
     {% endif %}
