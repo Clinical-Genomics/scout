@@ -7,10 +7,9 @@ from scout.exceptions import IntegrityError, DataNotFoundError
 logger = logging.getLogger(__name__)
 
 
-def load_delivery_report(adapter: MongoAdapter,
-                         report_path: str,
-                         case_id: str,
-                         update: bool = False):
+def load_delivery_report(
+    adapter: MongoAdapter, report_path: str, case_id: str, update: bool = False
+):
     """ Load a delivery report into a case in the database
 
     If the report already exists the function will exit.
@@ -28,26 +27,25 @@ def load_delivery_report(adapter: MongoAdapter,
 
     """
 
-    case_obj = adapter.case(
-        case_id=case_id,
-    )
+    case_obj = adapter.case(case_id=case_id)
 
     if case_obj is None:
         raise DataNotFoundError("no case found")
 
-    if not case_obj.get('delivery_report'):
+    if not case_obj.get("delivery_report"):
         _put_report_in_case_root(case_obj, report_path)
     else:
         if update:
             _put_report_in_case_root(case_obj, report_path)
         else:
-            raise IntegrityError('Existing delivery report found, use update = True to '
-                                 'overwrite')
+            raise IntegrityError(
+                "Existing delivery report found, use update = True to " "overwrite"
+            )
 
-    logger.info('Saving report for case {} in database'.format(case_obj['_id']))
+    logger.info("Saving report for case {} in database".format(case_obj["_id"]))
     return adapter.replace_case(case_obj)
 
 
 def _put_report_in_case_root(case_obj, report_path):
-    case_obj['delivery_report'] = report_path
+    case_obj["delivery_report"] = report_path
     return True

@@ -8,6 +8,7 @@ def docs(context):
     """Publish docs to the GitHub pages branch."""
     context.run("mkdocs gh-deploy")
 
+
 @task
 def deploy(context):
     """Deploy recent updated to AWS demo instance."""

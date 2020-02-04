@@ -11,10 +11,15 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
-@click.command('hpo', short_help='Update hpo terms')
-@click.option('--yes', is_flag=True, callback=abort_if_false,
-              expose_value=False,
-              prompt='Are you sure you want to drop the hpo terms?')
+
+@click.command("hpo", short_help="Update hpo terms")
+@click.option(
+    "--yes",
+    is_flag=True,
+    callback=abort_if_false,
+    expose_value=False,
+    prompt="Are you sure you want to drop the hpo terms?",
+)
 @with_appcontext
 def hpo():
     """

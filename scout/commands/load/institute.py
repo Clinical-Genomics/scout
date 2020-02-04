@@ -9,11 +9,10 @@ from scout.load import load_institute
 from scout.server.extensions import store
 
 
-@click.command('institute', short_help='Load a institute')
-@click.option('-i', '--internal-id',
-              required=True)
-@click.option('-d', '--display-name')
-@click.option('-s', '--sanger-recipients', multiple=True)
+@click.command("institute", short_help="Load a institute")
+@click.option("-i", "--internal-id", required=True)
+@click.option("-d", "--display-name")
+@click.option("-s", "--sanger-recipients", multiple=True)
 @with_appcontext
 def institute(internal_id, display_name, sanger_recipients):
     """
@@ -37,7 +36,7 @@ def institute(internal_id, display_name, sanger_recipients):
             adapter=adapter,
             internal_id=internal_id,
             display_name=display_name,
-            sanger_recipients=sanger_recipients
+            sanger_recipients=sanger_recipients,
         )
     except Exception as e:
         LOG.warning(e)

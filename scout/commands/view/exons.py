@@ -9,18 +9,18 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 
-@click.command('exons', short_help='Display exons')
-@click.option('-b', '--build', default='37', type=click.Choice(['37', '38']))
-@click.option('-i', '--hgnc-id', type=int)
-@click.option('--json', is_flag=True)
+@click.command("exons", short_help="Display exons")
+@click.option("-b", "--build", default="37", type=click.Choice(["37", "38"]))
+@click.option("-i", "--hgnc-id", type=int)
+@click.option("--json", is_flag=True)
 @with_appcontext
 def exons(build, hgnc_id, json):
     """Show exons in the database"""
     LOG.info("Running scout view exons")
     adapter = store
-    
+
     exon = adapter.exon(build=build)
-    
+
     pp(exon)
 
     # if not json:
