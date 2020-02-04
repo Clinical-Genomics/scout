@@ -21,7 +21,7 @@ mkdocs-material
 
 # PEP8 Compliance
 pre-commit
-black
+black==19.3b0
 
 # Pylint Rating
 pylint
