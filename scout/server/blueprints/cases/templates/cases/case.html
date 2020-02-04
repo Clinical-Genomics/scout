@@ -1,9 +1,12 @@
 {% extends "layout_bs4.html" %}
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal %}
-{% from "utils.html" import comments_panel, activity_panel %}
-{% from "cases/utils.html" import individuals_table, causatives_list, suspects_list, remove_form, matching_causatives %}
+{% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
+{% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives %}
+{% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
+{% from "cases/phenotype.html" import cohort_panel, diagnosis_phenotypes, diagnosis_genes %}
 {% from "cases/case_ideograms.html" import case_ideograms %}
 {% from "variants/utils.html" import tier_cell %}
+
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
@@ -41,49 +44,57 @@
 {% macro case_page() %}
 <div class="col {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}"> <!-- This is the main container -->
 <div class="container_spaced">
-  <div class="card col-md-12">
-    <h4 class="mt-3">Case: {{case.display_name}}</h4><p class="text-muted {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">status: <strong>{{case.status}}</strong></p>
+  <div class="card">
+    <h4 class="card-header">Case: {{case.display_name}}</h4>
+      <p class="card-title {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">status: <strong>{{case.status}}</strong></p>
     <div class="card-body">
+
       <div class="row text-center"> <!-- variants buttons -->
         <div class="col-sm-12">{{ variants_buttons() }}</div>
       </div>
+
       {% if other_causatives|length > 1%}
         <div class="row ">
           <div class="col-xs-12 col-md-12">{{ matching_causatives(other_causatives, institute, case) }}</div>
         </div>
       {% endif %}
+
       <div class="row ">
           <div class="col-xs-12 col-md-6">{{ causatives_list(causatives, institute, case) }}</div>
           <div class="col-xs-12 col-md-6">{{ suspects_list(suspects, institute, case) }}</div>
       </div>
+
       <div class="row">
-          {% if case.track == 'cancer' %}
-            <div class="col-xs-12 col-md-12">{{ cancer_individuals_table() }}</div>
+        {% if case.track == 'cancer' %}
+          <div class="col-xs-12 col-md-12">{{ cancer_individuals_table(case) }}</div>
+        {% else %}
+          <div class="col-xs-12 col-md-12">{{ individuals_table(case, institute, tissue_types) }}</div>
+        {% endif %}
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">{{ roh_panel() }}</div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          {% if case.madeline_info and case.individuals|length > 1 %}
+            {{ pedigree_panel(case) }}
           {% else %}
-            <div class="col-xs-12 col-md-12">{{ individuals_table(case, institute, tissue_types) }}</div>
+            <p>No pedigree picture available.</p>
           {% endif %}
-        </div> <!-- <div class="row" -->
-        <div class="row">
-          <div class="col-sm-12">{{ roh_panel() }}</div>
         </div>
 
-        <div class="row">
-          <div class="col-md-4">
-            {% if case.madeline_info and case.individuals|length > 1 %}
-              {{ pedigree_panel() }}
-            {% else %}
-              <p>No pedigree picture available.</p>
-            {% endif %}
-          </div>
-          <div class="col-md-8">
-            {{ synopsis_panel() }}
-            {{ comments_panel(institute, case, current_user, comments) }}
-          </div>
-        </div> <!-- end of   <div class="row"> -->
+        <div class="col-md-8">
+          {{ synopsis_panel() }}
+          {{ comments_panel(institute, case, current_user, comments) }}
+        </div>
+      </div>
 
         <div class="row">
-          <div class="col-xs-12 col-md-6">{{ cohort_panel() }}</div>
-          <div class="col-xs-12 col-md-6">{{ diagnosis_panel() }}</div>
+          <div class="col-xs-12 col-md-4">{{ cohort_panel(case, institute, cohort_tags) }}</div>
+          <div class="col-xs-12 col-md-4">{{ diagnosis_phenotypes(case, institute) }}</div>
+          <div class="col-xs-12 col-md-4">{{ diagnosis_genes(case, institute) }}</div>
         </div>
 
         <div class="row">
@@ -122,8 +133,7 @@
 
 
 {% macro variants_buttons() %}
-<div class="form-group">
-  <div class="btn-group" style="width:100%;">
+  <div class="form-group">
     {% if case.vcf_files.vcf_snv %}
       <a class="btn btn-outline-dark" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV and INDELs</a>
     {% endif %}
@@ -141,8 +151,7 @@
     {% endif %}
 
   </div>
-</div>
-{% if case.is_research%}
+  {% if case.is_research%}
   <div class="form-group">
     <div class="btn-group">
     {% if case.track=="cancer" %}
@@ -157,72 +166,25 @@
 {% endif %}
 {% endmacro %}
 
-{% macro cancer_individuals_table() %}
-  <div class="card panel-default">
-    <div class="panel-heading">Individuals</div>
-    <div class="table-responsive">
-      <table class="table table-sm">
-        <thead>
-          <tr>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
-             title="Sample display name">Sample</th>
-            <th class="col-xs-1" title="Tumor type">Tumor Type</th>
-            <th class="col-xs-1" title="Phenotype">Phenotype</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
-             title="Type of sequencing (e.g panel, wes)">Sequencing</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
-             title="Measure of the tumor mutational burden">TMB</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
-             title="Measure of microsatellite instability">MSI</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
-             title="Measure of tumor purity">Tumor Purity</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
-             title="Tissue origin for the sample">Tissue</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for ind in case.individuals %}
-            <tr {% if ind.phenotype_human == 'tumor' %} class="bg-danger-light" {% endif %}>
-              <td>{{ ind.display_name }}</td>
-              <td>{{ ind.tumor_type or 'Unknown'}}</td>
-              <td>{{ ind.phenotype_human }}</td>
-              <td>{{ ind.analysis_type|upper }}</td>
-              <td>{{ ind.tmb or 'N/A' }}</td>
-              <td>{{ ind.msi or 'N/A' }}</td>
-              <td>{{ ind.tumor_purity or 'N/A' }}</td>
-              <td>{{ ind.tissue_type or 'unknown' }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+  {% if case.is_research %}
+  <div class="form-group">
+    <a class="btn btn-outline-dark" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research SNV and INDELs</a>
+    <a class="btn btn-outline-dark" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research structural variants</a>
   </div>
-{% endmacro %}
-
-
-{% macro pedigree_panel() %}
-  <div class="card panel-default">
-    <div class="panel-heading">Pedigree</div>
-    <div class="card-body text-center">
-      {{ case.madeline_info|safe }}
-    </div>
-  </div>
+  {% endif %}
 {% endmacro %}
 
 {% macro synopsis_panel() %}
   <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Free text field. Write a summary about
-     the case! Markdown format">
-      Synopsis
-    </div>
-    <div class="card-body">
-      {{ case.synopsis|markdown if case.synopsis else 'Nothing written yet...' }}
-    </div>
-    <div class="card-footer">
-      <button type="button" class="btn btn-outline-secondary form-control" data-toggle="modal" data-target="#edit-synopsis">
-        Edit
-      </button>
-    </div>
+    <div data-toggle='tooltip' class="panel-heading" title="Free text field. Write a summary about the case! Markdown format">Synopsis</div>
+      <div class="card-body">
+        {{ case.synopsis|markdown if case.synopsis else 'Nothing written yet...' }}
+      </div>
+      <div class="card-footer">
+        <button type="button" class="btn btn-outline-secondary form-control" data-toggle="modal" data-target="#edit-synopsis">
+          Edit
+        </button>
+      </div>
   </div>
 {% endmacro %}
 
@@ -239,7 +201,6 @@
   </div>
   {% endif %}
 {% endmacro %}
-
 
 {% macro modal_synopsis() %}
   <form action="{{ url_for('cases.case_synopsis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
@@ -263,103 +224,6 @@
       </div>
     </div>
   </form>
-{% endmacro %}
-
-{% macro diagnosis_panel() %}
-  <div class="card panel-default">
-    <div class="panel-heading">Diagnosis phenotypes</div>
-    <div class="card-body">{{ diagnosis_form('phenotype') }}</div>
-    <ul class="list-group">
-      {% for omim_id in case.diagnosis_phenotypes %}
-        <li class="list-group-item">
-          <a target="_blank" href="http://omim.org/entry/{{ omim_id }}">
-            {{ omim_id }}
-          </a>
-          <span class="pull-right">
-            {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
-                                  case_name=case.display_name, remove='yes'),
-                         hidden_input=('omim_id', omim_id), button_name='phenotype') }}
-          </span>
-        </li>
-      {% else %}
-        <li class="list-group-item">No phenotypes added</li>
-      {% endfor %}
-    </ul>
-    <div class="panel-heading panel-heading-secondary">Diagnosis genes</div>
-    <div class="card-body">{{ diagnosis_form('gene') }}</div>
-    <ul class="list-group">
-      {% for omim_id in case.diagnosis_genes %}
-        <li class="list-group-item">
-          <a target="_blank" href="http://omim.org/entry/{{ omim_id }}">
-            {{ omim_id }}
-          </a>
-          <span class="pull-right">
-            {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
-                                   case_name=case.display_name, remove='yes'),
-                           hidden_input=('omim_id', omim_id), button_name='gene') }}
-          </span>
-        </li>
-      {% else %}
-        <li class="list-group-item">No genes added</li>
-      {% endfor %}
-    </ul>
-  </div>
-{% endmacro %}
-
-{% macro diagnosis_form(type) %}
-  <form action="{{ url_for('cases.case_diagnosis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-    <div class="row">
-      <div class="col-xs-8">
-        <input class="form-control" name="omim_id" placeholder="OMIM:XXX" required pattern="OMIM:[0-9]+">
-      </div>
-      <div class="col-xs-4">
-        <button class="btn btn-outline-secondary form-control" type="submit" name="{{ type }}">
-          Add
-        </button>
-      </div>
-    </div>
-  </form>
-{% endmacro %}
-
-{% macro cohort_panel() %}
-  <div class="card panel-default">
-    <div class="panel-heading">Cohort tag</div>
-    <ul class="list-group">
-      {% for cohort_tag in case.cohorts %}
-        <li class="list-group-item">
-          {{ cohort_tag }}
-          <span class="pull-right">
-            {{ remove_form(url_for('cases.cohorts', institute_id=institute._id,
-                                   case_name=case.display_name, remove='yes'),
-                           hidden_input=('cohort_tag', cohort_tag)) }}
-          </span>
-        </li>
-      {% else %}
-        <li class="list-group-item">No cohort tags added yet.</li>
-      {% endfor %}
-    </ul>
-    <div class="card-body">
-      <form method="POST"
-            action="{{ url_for('cases.cohorts', institute_id=institute._id,
-                               case_name=case.display_name) }}">
-        <div class="form-inline row justify-content-between">
-          <div class="col-sm-7">
-            <select class="form-control" name="cohort_tag" style="width:100%">
-              {% for cohort_tag in cohort_tags %}
-                <option value="{{ cohort_tag }}">{{ cohort_tag }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-sm-1">
-            <button class="btn btn-outline-secondary form-control" type="submit">Add</button>
-          </div>
-          <div class="col-sm-3">
-            <a href="{{ url_for('overview.institute', institute_id=institute._id) }}">Add options</a>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
 {% endmacro %}
 
 {% macro clinvar_panel() %}
