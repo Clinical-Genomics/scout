@@ -305,6 +305,9 @@ def frequencies(variant_obj):
         link = freqs[freq_key]["link"]
         # Allways add gnomad
         if freq_key == "gnomad_frequency":
+            # If gnomad not found search for exac
+            if not value:
+                value = variant_obj.get("exac_frequency")
             value = value or "NA"
             frequency_list.append((display_name, value, link))
             continue

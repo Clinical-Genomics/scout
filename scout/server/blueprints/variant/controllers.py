@@ -32,7 +32,7 @@ from .utils import (
     frequency,
     is_affected,
     predictions,
-    sv_frequencies,
+    frequencies,
 )
 
 LOG = logging.getLogger(__name__)
