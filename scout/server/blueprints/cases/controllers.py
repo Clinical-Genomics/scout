@@ -244,7 +244,7 @@ def case(store, institute_obj, case_obj):
 
     data = {
         "status_class": STATUS_MAP.get(case_obj["status"]),
-        "other_causatives": store.check_causatives(case_obj=case_obj),
+        "other_causatives": [var for var in store.check_causatives(case_obj=case_obj)],
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "hpo_groups": pheno_groups,
         "events": events,
