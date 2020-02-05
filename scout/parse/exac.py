@@ -1,6 +1,8 @@
 import logging
 from pprint import pprint as pp
+
 logger = logging.getLogger(__name__)
+
 
 def parse_exac_line(line, header):
     """Parse an exac formated line
@@ -13,13 +15,14 @@ def parse_exac_line(line, header):
             exac_info(dict): A dictionary with the relevant info
     """
     exac_gene = {}
-    splitted_line = line.rstrip().split('\t')
+    splitted_line = line.rstrip().split("\t")
     exac_gene = dict(zip(header, splitted_line))
-    exac_gene['hgnc_symbol'] = exac_gene['gene']
-    exac_gene['pli_score'] = float(exac_gene['pLI'])
-    exac_gene['raw'] = line
-    
+    exac_gene["hgnc_symbol"] = exac_gene["gene"]
+    exac_gene["pli_score"] = float(exac_gene["pLI"])
+    exac_gene["raw"] = line
+
     return exac_gene
+
 
 def parse_exac_genes(lines):
     """Parse lines with exac formated genes
@@ -38,8 +41,8 @@ def parse_exac_genes(lines):
     logger.info("Parsing exac genes...")
     for index, line in enumerate(lines):
         if index == 0:
-            header = line.rstrip().split('\t')
+            header = line.rstrip().split("\t")
         elif len(line) > 0:
             exac_gene = parse_exac_line(line, header)
-            
+
             yield exac_gene

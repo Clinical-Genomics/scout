@@ -5,13 +5,13 @@ from pprint import pprint as pp
 
 from click import progressbar
 
-from scout.parse.ensembl import (parse_ensembl_exons)
+from scout.parse.ensembl import parse_ensembl_exons
 from scout.build.genes.exon import build_exon
 
 LOG = logging.getLogger(__name__)
 
 
-def load_exons(adapter, exon_lines, build='37', nr_exons=None):
+def load_exons(adapter, exon_lines, build="37", nr_exons=None):
     """Build and load all the exons of a build
     
     Transcript information is from ensembl.
@@ -31,7 +31,7 @@ def load_exons(adapter, exon_lines, build='37', nr_exons=None):
 
     LOG.debug("Parsing ensembl exons from iterable")
     exons = parse_ensembl_exons(exon_lines)
-    
+
     start_insertion = datetime.now()
     loaded_exons = 0
     exon_bulk = []
@@ -39,21 +39,21 @@ def load_exons(adapter, exon_lines, build='37', nr_exons=None):
     current_chrom = None
     with progressbar(exons, label="Loading exons", length=nr_exons) as bar:
         for exon in bar:
-            ensg_id = exon['gene']
-            enst_id = exon['transcript']
+            ensg_id = exon["gene"]
+            enst_id = exon["transcript"]
             gene_obj = ensembl_genes.get(ensg_id)
             if not gene_obj:
                 continue
-        
-            hgnc_id = gene_obj['hgnc_id']
 
-            if not enst_id in gene_obj.get('id_transcripts', set()):
+            hgnc_id = gene_obj["hgnc_id"]
+
+            if not enst_id in gene_obj.get("id_transcripts", set()):
                 continue
-        
-            exon_id = exon['exon_id']
 
-            exon['hgnc_id'] = hgnc_id
-            
+            exon_id = exon["exon_id"]
+
+            exon["hgnc_id"] = hgnc_id
+
             exon_obj = build_exon(exon, build)
             exon_bulk.append(exon_obj)
             if len(exon_bulk) > 10000:
@@ -64,7 +64,6 @@ def load_exons(adapter, exon_lines, build='37', nr_exons=None):
     if exon_bulk:
         adapter.load_exon_bulk(exon_bulk)
 
-    LOG.info('Number of exons in build {0}: {1}'.format(build, nr_exons))
-    LOG.info('Number loaded: {0}'.format(loaded_exons))
-    LOG.info('Time to load exons: {0}'.format(datetime.now() - start_insertion))
-    
+    LOG.info("Number of exons in build {0}: {1}".format(build, nr_exons))
+    LOG.info("Number loaded: {0}".format(loaded_exons))
+    LOG.info("Time to load exons: {0}".format(datetime.now() - start_insertion))

@@ -1,7 +1,7 @@
 from scout.constants import CALLERS
 
 
-def parse_callers(variant, category='snv'):
+def parse_callers(variant, category="snv"):
     """Parse how the different variant callers have performed
 
         Args:
@@ -12,29 +12,29 @@ def parse_callers(variant, category='snv'):
             {'gatk': <filter>,'freebayes': <filter>,'samtools': <filter>}
     """
     relevant_callers = CALLERS[category]
-    callers = {caller['id']: None for caller in relevant_callers}
-    raw_info = variant.INFO.get('set')
+    callers = {caller["id"]: None for caller in relevant_callers}
+    raw_info = variant.INFO.get("set")
     if raw_info:
-        info = raw_info.split('-')
+        info = raw_info.split("-")
         for call in info:
-            if call == 'FilteredInAll':
+            if call == "FilteredInAll":
                 for caller in callers:
-                    callers[caller] = 'Filtered'
-            elif call == 'Intersection':
+                    callers[caller] = "Filtered"
+            elif call == "Intersection":
                 for caller in callers:
-                    callers[caller] = 'Pass'
-            elif 'filterIn' in call:
+                    callers[caller] = "Pass"
+            elif "filterIn" in call:
                 for caller in callers:
                     if caller in call:
-                        callers[caller] = 'Filtered'
+                        callers[caller] = "Filtered"
 
             elif call in set(callers.keys()):
-                callers[call] = 'Pass'
+                callers[call] = "Pass"
     # The following is parsing of a custom made merge
-    other_info = variant.INFO.get('FOUND_IN')
+    other_info = variant.INFO.get("FOUND_IN")
     if other_info:
-        for info in other_info.split(','):
-            called_by = info.split('|')[0]
-            callers[called_by] = 'Pass'
+        for info in other_info.split(","):
+            called_by = info.split("|")[0]
+            callers[called_by] = "Pass"
 
     return callers

@@ -22,8 +22,9 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
-@click.command('diseases', short_help='Update disease terms')
-@click.option('--api-key', help='Specify the api key')
+
+@click.command("diseases", short_help="Update disease terms")
+@click.option("--api-key", help="Specify the api key")
 @with_appcontext
 def diseases(api_key):
     """
@@ -32,7 +33,7 @@ def diseases(api_key):
     adapter = store
 
     # Fetch the omim information
-    api_key = api_key or current_app.config.get('OMIM_API_KEY')
+    api_key = api_key or current_app.config.get("OMIM_API_KEY")
     if not api_key:
         LOG.warning("Please provide a omim api key to load the omim gene panel")
         raise click.Abort()
@@ -47,9 +48,6 @@ def diseases(api_key):
     adapter.disease_term_collection.drop()
     LOG.debug("DiseaseTerms dropped")
 
-    load_disease_terms(
-        adapter=adapter,
-        genemap_lines=mim_files['genemap2'],
-    )
+    load_disease_terms(adapter=adapter, genemap_lines=mim_files["genemap2"])
 
     LOG.info("Successfully loaded all disease terms")

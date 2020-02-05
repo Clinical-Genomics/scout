@@ -2,12 +2,13 @@
 from scout.constants import SAMPLE_SOURCE
 from flask import get_template_attribute
 
+
 def test_update_individuals_table(app, case_obj, institute_obj):
     # GIVEN an initialized app
     with app.test_client() as client:
 
         # WHEN collecting the individuals_table jinja macro
-        macro = get_template_attribute('cases/utils.html', 'individuals_table')
+        macro = get_template_attribute("cases/utils.html", "individuals_table")
 
         # and passing to it the required parameters
         html = macro(case_obj, institute_obj, SAMPLE_SOURCE)

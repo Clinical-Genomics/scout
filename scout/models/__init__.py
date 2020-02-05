@@ -2,4 +2,4 @@
 
 from .user import User
 from .institute import Institute
-from .phenotype_term import (DiseaseTerm, HpoTerm)
+from .phenotype_term import DiseaseTerm, HpoTerm
