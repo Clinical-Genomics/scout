@@ -2,6 +2,7 @@
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table, modal_causative %}
 {% from "variant/utils.html" import omim_phenotypes, gtcall_panel, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel, frequencies, observations_panel, pin_button, causative_button %}
+{% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -66,7 +67,10 @@
       <div class="col-sm-4">{{ panel_basics() }}</div>
       <div class="col-sm-8">
         <div class="col-sm-12">{{ panel_summary() }}</div>
-        <div class="col-sm-12">{{ transcript_overview() }}</div>
+        {% if variant.disease_associated_transcripts %}
+          <div class="col-sm-12">{{ disease_associated(variant) }}</div>
+        {% endif %}
+        <div class="col-sm-12">{{ transcripts_overview(variant) }}</div>
       </div>
     </div>
     <div class="row">
@@ -549,91 +553,6 @@
   </div> <!--  end of card div -->
 {% endmacro %}
 
-{% macro transcript_overview() %}
-  <div class="card mt-3 panel-default">
-    <div class="panel-heading" data-toggle='tooltip' title="Transcripts described as disease associated in any of the gene panels">Disease associated transcripts</div>
-      <table class="table table-bordered table-hover table-sm">
-        <tr>
-          <td>{{ variant.disease_associated_transcripts|join(', ')
-            if variant.disease_associated_transcripts else '-' }}</td>
-        </tr>
-      </table>
-    <div data-toggle='tooltip' class="panel-heading mt-3" title="Displays all transcripts with refseq ids.
-      One ensembl transcript can have multiple refseq ids. Blue color indicates that the ensembl transcript is mapped
-      to a transcript that is canonical according to HGNC">
-      Transcript overview
-    </div>
-    <table id="transcript_overview_table" class="table table-bordered table-hover table-sm">
-      <thead>
-        <tr>
-          <th>Gene</th>
-          <th>Transcript</th>
-          <th>HGVS Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for gene in variant.genes %}
-          {% if not variant.has_refseq %}
-            {% for transcript in gene.transcripts %}
-              <tr>
-                <td class="d-flex justify-content-between align-items-center">
-                  <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                    {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                  </a>
-                  {% if transcript.is_canonical %}
-                    <span class="badge badge-info" title="vep canonical">C</span>
-                  {% endif %}
-                </td>
-                <td>
-                  <div>
-                    {{ transcript.transcript_id }}
-                  </div>
-                </td>
-                <td title="{{ transcript.coding_sequence_name or '' }}">
-                  {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
-                  <span class="text-muted float-right">
-                    {{ (transcript.protein_sequence_name or '')|url_decode }}
-                  </span>
-                </td>
-              </tr>
-            {% endfor %}
-
-          {% else %}
-            {% for transcript in gene.primary_transcripts %}
-              {% for refseq_id in transcript.refseq_identifiers %}
-                <tr {% if transcript.is_primary %} class="bg-info-light" {% endif %}>
-                  <td class="d-flex justify-content-between align-items-center">
-                    <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                      {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                    </a>
-                    {% if transcript.is_canonical %}
-                      <span class="badge badge-info" title="vep canonical">C</span>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <div>
-                      {{ refseq_id }}<span class="text-muted"> ({{ transcript.transcript_id }})</span>
-                      {% if refseq_id in gene.common.primary_transcripts %}
-                      <span class="text-muted">(hgnc-primary)</span>
-                      {% endif %}
-                    </div>
-                  </td>
-                  <td title="{{ transcript.coding_sequence_name or '' }}">
-                    {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
-                    <span class="text-muted float-right">
-                      {{ (transcript.protein_sequence_name or '')|url_decode }}
-                    </span>
-                  </td>
-                </tr>
-              {% endfor %}
-            {% endfor %}
-          {% endif %}
-        {% endfor %}
-      </tbody>
-    </table>
-</div> <!-- end of card div -->
-{% endmacro %}
-
 {% macro severity_list() %}
   <div class="card mt-3 panel-default">
     <div class="panel-heading">Severity</div>
@@ -783,7 +702,9 @@
 {% macro compounds_panel() %}
   <div class="card panel-default">
     <div class="panel-heading">Compounds (top 20)</div>
-    {{ compounds_table(institute, case, variant.compounds[:20]) }}
+    <div class="card-body">
+      {{ compounds_table(institute, case, variant.compounds[:20]) }}
+    </div>
   </div>
 {% endmacro %}
 
