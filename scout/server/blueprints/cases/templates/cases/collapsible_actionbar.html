@@ -208,7 +208,7 @@
 {% endmacro %}
 
 {% macro research(case) %}
-<a href="#submenu2" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+<a href="#submenu2" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="submenu2" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fa fa-graduation-cap fa-fw mr-3"></span>
     <span class="menu-collapsed">Research list</span>
@@ -216,13 +216,15 @@
   </div>
 </a>
 <!-- Submenu content -->
-<div id='submenu2' class="collapse sidebar-submenu">
   {% if case.research_requested %}
-    <i class="text-white">Research pending</i>
+    <div id='submenu2' class="collapse-show">
+      <div class="card card-body">Research pending</div>
+    </div>
   {% else %}
-    <button type="button" class="btn btn-danger btn-sm form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
+    <div id='submenu2' class="collapse">
+      <button type="button" class="btn btn-danger btn-sm form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
+    </div>
   {% endif %}
-</div>
 {% endmacro %}
 
 {% macro rerun(case) %}
