@@ -1,42 +1,4 @@
 
-{% macro omim_phenotypes(variant) %}
-  <div class="card mt-3 panel-default">
-      <div class="panel-heading">OMIM</div>
-      <div class="table-responsive fixed-panel">
-        <table class="table table-bordered table-condensed table-sm">
-          <thead>
-            <tr>
-              <th>Gene</th>
-              <th>Phenotype</th>
-              <th>Inheritance model</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for gene in variant.genes %}
-              {% if gene.common %}
-                {% for disease_term in gene.common.phenotypes %}
-                  <tr>
-                    <td>
-                        <a href="http://omim.org/entry/{{ gene.common.omim_id }}" target="_blank">
-                          {{ gene.common.hgnc_symbol }}
-                        </a>
-                    </td>
-                    <td>
-                      <a href="http://omim.org/entry/{{ disease_term.mim_number|replace('OMIM:', '') }}" target="_blank">
-                        {{ disease_term.description }}
-                      </a>
-                    </td>
-                    <td>{{ disease_term.inheritance_models|join(', ') }}</td>
-                  </tr>
-                {% endfor %}
-              {% endif %}
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-  </div>
-{% endmacro %}
-
 {% macro gtcall_panel(variant) %}
   <div class="card panel-default">
     <div class="panel-heading">

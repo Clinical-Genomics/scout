@@ -1,7 +1,9 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, pedigree_panel %}
 {% from "variants/utils.html" import modal_causative %}
-{% from "variant/utils.html" import omim_phenotypes, gtcall_panel, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, frequencies, sv_alignments, pin_button, causative_button %}
+{% from "variant/utils.html" import gtcall_panel, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, frequencies, sv_alignments, pin_button, causative_button %}
+{% from "variant/gene_disease_relations.html" import omim_phenotypes, genemodels_panel %}
+
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
