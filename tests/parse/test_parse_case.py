@@ -1,17 +1,12 @@
-import pytest
-
 from datetime import datetime
 from pprint import pprint as pp
-from scout.parse.case import (
-    parse_case,
-    parse_ped,
-    parse_individuals,
-    parse_individual,
-    parse_case_data,
-    removeNoneValues,
-)
-from scout.exceptions import PedigreeError
+
+import pytest
+
 from scout.constants import REV_SEX_MAP
+from scout.exceptions import PedigreeError
+from scout.parse.case import (parse_case, parse_case_data, parse_individual,
+                              parse_individuals, parse_ped, removeNoneValues)
 
 
 def test_parse_case_no_date(scout_config):
@@ -154,6 +149,45 @@ def test_parse_case_delivery_report(scout_config):
 
     # then we should find the delivery report in the parsed data
     assert case_data["delivery_report"] == scout_config["delivery_report"]
+
+
+def test_parse_case_bam_path(scout_config):
+    # GIVEN a load config with bam_path as key to bam/cram files
+    bam_path = "a bam"
+    for sample in scout_config["samples"]:
+        sample["bam_path"] = bam_path
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+
+    # THEN assert that bam files are added correct
+    for ind in case_data["individuals"]:
+        assert ind["bam_file"] == bam_path
+
+
+def test_parse_case_bam_file(scout_config):
+    # GIVEN a load config with bam_file as key to bam/cram files
+    bam_path = "a bam"
+    for sample in scout_config["samples"]:
+        sample["bam_file"] = bam_path
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+
+    # THEN assert that bam files are added correct
+    for ind in case_data["individuals"]:
+        assert ind["bam_file"] == bam_path
+
+
+def test_parse_case_alignment_path(scout_config):
+    # GIVEN a load config with bam_file as key to bam/cram files
+    bam_path = "a bam"
+    for sample in scout_config["samples"]:
+        sample["alignment_path"] = bam_path
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+
+    # THEN assert that bam files are added correct
+    for ind in case_data["individuals"]:
+        assert ind["bam_file"] == bam_path
 
 
 def test_parse_ped_file(ped_file):
