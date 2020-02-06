@@ -157,3 +157,76 @@
     </div>
   </div>
 {% endmacro %}
+
+{% macro severity_list(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Severity</div>
+    <div class="card-body">
+      <ul class="list-group">
+        <li class="list-group-item">
+          <a href="https://sift.bii.a-star.edu.sg/www/SIFT_help.html" target="_blank">SIFT</a>
+          <span class="float-right">{{ variant.sift_predictions|join(', ') }}</span>
+        </li>
+        <li class="list-group-item">
+          <a href="https://sites.google.com/site/revelgenomics/about" target="_blank">REVEL</a>
+          <span class="float-right">{{ variant.revel_score or "-" }}</span>
+        </li>
+        <li class="list-group-item">
+          <a href="http://genetics.bwh.harvard.edu/pph2/" target="_blank">Polyphen</a>
+          <span class="float-right">{{ variant.polyphen_predictions|join(', ') }}</span>
+        </li>
+        <li class="list-group-item">
+          SPIDEX
+          <span class="float-right">{{ variant.spidex_human }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro conservations(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Conservation</div>
+    <div class="card-body">
+      <ul class="list-group">
+        <li class="list-group-item">
+          PHAST
+          <span class="float-right">{{ variant.phast_conservation|join(', ') or '-' }}</span>
+        </li>
+        <li class="list-group-item">
+          GERP
+          <span class="float-right">{{ variant.gerp_conservation|join(', ') or '-' }}</span>
+        </li>
+        <li class="list-group-item">
+          phyloP
+          <span class="float-right">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+{% endmacro %}
+
+
+{% macro mappability(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Mappability (<a class="text-white" href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
+    {% set superdups_fracmatches = [] %}
+    {% for gene in variant.genes %}
+      {% for transcript in gene.transcripts %}
+        {% if transcript.superdups_fracmatch %}
+          {% for superdup in transcript.superdups_fracmatch %}
+            {% do superdups_fracmatches.append(superdup) %}
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    {% set superdups_fracmatches = superdups_fracmatches|sort %}
+    <div class="panel-body">
+      {% if superdups_fracmatches %}
+        <span>mapping to {{superdups_fracmatches|length}} segm. dups. (min matching:{{ superdups_fracmatches|first|float|round(3) }}, max matching:{{ superdups_fracmatches|last|float|round(3) }})</span>
+      {% else %}
+        <p class="card-text">-</p>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}

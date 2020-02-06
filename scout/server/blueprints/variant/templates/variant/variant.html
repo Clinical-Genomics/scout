@@ -4,7 +4,7 @@
 {% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
-{% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations %}
+{% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, severity_list, conservations, mappability %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -85,16 +85,23 @@
       <div class="col-sm-4">{{ genemodels_panel(variant) }}</div>
       <div class="col-sm-4">{{ omim_phenotypes(variant) }}</div>
     </div>
+
     <div class="row">
-      <div class="col-sm-4">
-        <div class="col-sm-12">{{ frequencies(variant) }}</div>
+      <div class="col">{{ frequencies(variant) }}</div>
         {% if config['LOQUSDB_SETTINGS'] %}
-          <div class="col-sm-12">{{ observations_panel(variant, observations, case) }}</div>
+          <div class="col">{{ observations_panel(variant, observations, case) }}</div>
         {% endif %}
-        <div class="col-sm-12">{{ old_observations(variant) }}</div>
+        <div class="col">{{ old_observations(variant) }}</div>
       </div>
-      <div class="col">{{ severity_list() }}</div>
     </div>
+
+    <div class="row">
+      <div class="col">{{ severity_list(variant) }}</div>
+      <div class="col">{{ conservations(variant) }}</div>
+      <div class="col">{{ mappability(variant) }}</div>
+
+    </div>
+
     <div class="row">
       <div class="col-sm-4">
         {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
@@ -562,67 +569,6 @@
     </div> <!-- end of card body -->
   </div> <!--  end of card div -->
 {% endmacro %}
-
-{% macro severity_list() %}
-  <div class="card mt-3 panel-default">
-    <div class="panel-heading">Severity</div>
-    <ul class="list-group">
-      <li class="list-group-item">
-        Sift
-        <span class="float-right">{{ variant.sift_predictions|join(', ') }}</span>
-      </li>
-      <li class="list-group-item">
-        <a href="https://sites.google.com/site/revelgenomics/about" target="_blank">REVEL</a>
-        <span class="float-right">{{ variant.revel_score or "-" }}</span>
-      </li>
-      <li class="list-group-item">
-        <a href="http://genetics.bwh.harvard.edu/pph2/" target="_blank">Polyphen</a>
-        <span class="float-right">{{ variant.polyphen_predictions|join(', ') }}</span>
-      </li>
-      <li class="list-group-item">
-        SPIDEX
-        <span class="float-right">{{ variant.spidex_human }}</span>
-      </li>
-    </ul>
-    <div class="panel-heading">Conservation</div>
-    <ul class="list-group">
-      <li class="list-group-item">
-        PHAST
-        <span class="float-right">{{ variant.phast_conservation|join(', ') or '-' }}</span>
-      </li>
-      <li class="list-group-item">
-        GERP
-        <span class="float-right">{{ variant.gerp_conservation|join(', ') or '-' }}</span>
-      </li>
-      <li class="list-group-item">
-        phyloP
-        <span class="float-right">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
-      </li>
-    </ul>
-    <div class="panel-heading">Mappability (<a class="text-white" href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
-    {% set superdups_fracmatches = [] %}
-    {% for gene in variant.genes %}
-      {% for transcript in gene.transcripts %}
-        {% if transcript.superdups_fracmatch %}
-          {% for superdup in transcript.superdups_fracmatch %}
-            {% do superdups_fracmatches.append(superdup) %}
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-    {% endfor %}
-    {% set superdups_fracmatches = superdups_fracmatches|sort %}
-    <div class="panel-body">
-      <div class="ml-3 mb-3 mt-3">
-        {% if superdups_fracmatches %}
-          <span>mapping to {{superdups_fracmatches|length}} segm. dups. (min matching:{{ superdups_fracmatches|first|float|round(3) }}, max matching:{{ superdups_fracmatches|last|float|round(3) }})</span>
-        {% else %}
-          <span> - </span>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-{% endmacro %}
-
 
 {% macro compounds_panel() %}
   <div class="card panel-default">
