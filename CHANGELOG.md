@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+- Accepts `alignemnt_path` in load config to pass bam/cram files
 
 ### Fixed
 - Cancer case HPO panel variants link

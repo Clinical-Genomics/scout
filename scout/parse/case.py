@@ -1,21 +1,16 @@
 import copy
-import logging
 import datetime
-
+import logging
+from pathlib import Path
 from pprint import pprint as pp
 
-from pathlib import Path
 from ped_parser import FamilyParser
 
-from scout.exceptions import PedigreeError, ConfigError
-from scout.constants import PHENOTYPE_MAP, SEX_MAP, REV_SEX_MAP, REV_PHENOTYPE_MAP
-
-from scout.parse.peddy import (
-    parse_peddy_ped,
-    parse_peddy_ped_check,
-    parse_peddy_sex_check,
-)
-
+from scout.constants import (PHENOTYPE_MAP, REV_PHENOTYPE_MAP, REV_SEX_MAP,
+                             SEX_MAP)
+from scout.exceptions import ConfigError, PedigreeError
+from scout.parse.peddy import (parse_peddy_ped, parse_peddy_ped_check,
+                               parse_peddy_sex_check)
 from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
@@ -287,8 +282,10 @@ def parse_individual(sample):
     ind_info["confirmed_sex"] = sample.get("confirmed_sex")
     ind_info["predicted_ancestry"] = sample.get("predicted_ancestry")
 
-    # IGV files
-    ind_info["bam_file"] = sample.get("bam_path", sample.get("bam_file"))
+    # IGV files these can be bam or cram format
+    ind_info["bam_file"] = sample.get(
+        "bam_path", sample.get("bam_file", sample.get("alignment_path"))
+    )
     ind_info["rhocall_bed"] = sample.get("rhocall_bed", sample.get("rhocall_bed"))
     ind_info["rhocall_wig"] = sample.get("rhocall_wig", sample.get("rhocall_wig"))
     ind_info["tiddit_coverage_wig"] = sample.get(
