@@ -1,0 +1,159 @@
+{% macro gtcall_panel(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">
+      GT call
+      {% if variant.is_par %}
+        <span class="badge badge-info">PAR</span>
+      {% endif %}
+    </div>
+    <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th rowspan="2">Sample</th>
+            <th rowspan="2">Genotype (GT)</th>
+            <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
+            <th rowspan="2" colspan="1" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+            <tr>
+              <th>Reference</th>
+              <th>Alternative</th>
+            </tr>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sample in variant.samples %}
+            <tr {{ 'class="danger"' if sample.is_affected }}>
+              <td>{{ sample.display_name }}</td>
+              <td class="text-center">{{ sample.genotype_call }}</td>
+              {% if sample.allele_depths %}
+                  {% for number in sample.allele_depths %}
+                    <td class="text-right">{{ number }}</td>
+                  {% endfor %}
+              {% else %}
+                  <td class="text-right"><small>N/A</small></td>
+                  <td class="text-right"><small>N/A</small></td>
+              {% endif %}
+              <td class="text-right">{{ sample.genotype_quality }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="panel-footer">
+      {% for name, caller in variant.callers %}
+        <span class="badge badge-secondary">{{ name }}: {{ caller }}</span>
+      {% endfor %}
+    </div>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro frequencies(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Frequencies</div>
+    <div class="card-body">
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Source</th>
+            <th scope="col">Frequency</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for freq_name, value, link in variant.frequencies %}
+          <tr>
+            <td>
+              {% if link %}
+                <a href="{{ link }}" target="_blank">{{ freq_name }}</a>
+              {% else %}
+                {{ freq_name }}
+              {% endif %}
+            </td>
+            <td>
+              {% if value %}
+                <span class="badge badge-secondary">{{ value|human_decimal }}</span>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer">
+      <a href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
+      <a href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
+      {% if variant.cosmic_link %}
+        <a href="{{ variant.cosmic_link }}" target="_blank">COSMIC</a>
+      {% else %}
+        COSMIC
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro observations_panel(variant, observations, case) %}
+  <div class="card panel-default">
+    <div class="panel-heading">
+      <a class="text-white" href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
+    </div>
+    <div class="card-body">
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Nr obs.</th>
+            <th scope="col">Nr homo.</th>
+            <th scope="col">Total nr.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ observations.observations|default('N/A') }}</td>
+            <td>{{ observations.homozygote|default('N/A') }}</td>
+            <td>{{ observations.total }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer">
+    {% if observations['cases'] %}
+        <strong>Cases</strong>
+        {% for data in observations['cases'] %}
+          {% if variant %}
+            <a class="ml-3" href="{{ url_for('variant.variant', institute_id=case.owner, case_name=case.display_name, variant_id=variant._id) }}">{{ case.display_name }}</a>
+          {% else %}
+            <span class="text-muted ml-3">{{ case.display_name }}</span>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro old_observations(variant, obs_date) %}
+  <div class="card panel-default">
+    <div class="panel-heading">
+      <a class="text-white" href="https://github.com/moonso/loqusdb" target="_blank">Local observations (archive {{obs_date or '2017-05-31'}})</a>
+    </div>
+    <div class="card-body">
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Nr obs.</th>
+            <th scope="col">Nr homo.</th>
+            <th scope="col">Total nr.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ variant.local_obs_old or 'N/A' }}</td>
+            <td>{{ variant.local_obs_hom_old or 'N/A' }}</td>
+            <td>{{ variant.local_obs_total_old or 638 }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endmacro %}

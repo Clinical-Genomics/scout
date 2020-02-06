@@ -1,9 +1,10 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table, modal_causative %}
-{% from "variant/utils.html" import omim_phenotypes, gtcall_panel, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel, frequencies, observations_panel, pin_button, causative_button %}
+{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
+{% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -85,12 +86,14 @@
       <div class="col-sm-4">{{ omim_phenotypes(variant) }}</div>
     </div>
     <div class="row">
-      <div class="col">{{ frequencies(variant) }}</div>
-      {% if config['LOQUSDB_SETTINGS'] %}
-        <div class="col">{{ observations_panel(variant, observations) }}</div>
-      {% endif %}
-      <div class="w-100"></div>
-      <div class="col-sm-4">{{ severity_list() }}</div>
+      <div class="col-sm-4">
+        <div class="col-sm-12">{{ frequencies(variant) }}</div>
+        {% if config['LOQUSDB_SETTINGS'] %}
+          <div class="col-sm-12">{{ observations_panel(variant, observations, case) }}</div>
+        {% endif %}
+        <div class="col-sm-12">{{ old_observations(variant) }}</div>
+      </div>
+      <div class="col">{{ severity_list() }}</div>
     </div>
     <div class="row">
       <div class="col-sm-4">

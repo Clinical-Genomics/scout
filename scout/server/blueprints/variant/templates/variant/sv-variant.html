@@ -1,8 +1,9 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, pedigree_panel %}
 {% from "variants/utils.html" import modal_causative %}
-{% from "variant/utils.html" import gtcall_panel, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, frequencies, sv_alignments, pin_button, causative_button %}
+{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, sv_alignments, pin_button, causative_button %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, genemodels_panel %}
+{% from "variant/variant_details.html" import gtcall_panel, frequencies, observations_panel %}
 
 
 {% block title %}
@@ -190,14 +191,20 @@
   </div>
 
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
       {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
+      {{ omim_phenotypes(variant) }}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
       {{ frequencies(variant) }}
     </div>
-    <div class="col-md-4">
-      {{ omim_phenotypes(variant) }}
+    <div class="col-md-6">
+      {{ observations_panel(variant, observations, case) }}
     </div>
   </div>
 
