@@ -6,9 +6,16 @@ COPY . /scout/
 
 WORKDIR /scout/
 
-RUN apt-get update && apt-get install -y libffi-dev && apt-get clean autoclean
+RUN apt-get update && apt-get install -y libffi-dev ssl-cert ca-certificates && apt-get clean autoclean
 
-RUN pip install -r /scout/requirements.txt --editable .
+RUN pip3 install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r /scout/requirements.txt --editable .
+
+RUN pip3 install gunicorn==19.9.0
+
+COPY certs/vll.crt /usr/local/share/ca-certificates/vll.crt
+RUN update-ca-certificates
+
+WORKDIR /scout/
 
 EXPOSE 443
 

@@ -1,6 +1,5 @@
 # Everything needed in production
 
-gunicorn==19.9.0
 BeautifulSoup4
 Flask>=0.10
 Flask-DebugToolbar
