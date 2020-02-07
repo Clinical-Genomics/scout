@@ -5,7 +5,7 @@ build:
 	@docker build -t scout-remove:v1.0 scout-remove/
 	@docker build -t scout-adduser:v1.0 scout-adduser/
 	@docker build -t scout-removeuser:v1.0 scout-removeuser/
-
+	@docker build -t scout-run:v1.0 scout-run/
 
 setup:
 	@docker-compose run --rm scout-setup
