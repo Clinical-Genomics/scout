@@ -8,14 +8,53 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
-- Display locus name on STR variant page
+- Accepts `alignemnt_path` in load config to pass bam/cram files
 
 ### Fixed
+- Cancer case HPO panel variants link
+
+## [4.11.1]
+
+### Fixed
+- Institute settings page
+- Link institute settings to sharing institutes choices
+
+## [4.11.0]
+
+### Added
+- Display locus name on STR variant page
+- Alternative key `GNOMADAF_popmax` for Gnomad popmax allele frequency
+- Automatic suggestions on how to improve the code on Pull Requests
+- Parse GERP, phastCons and phyloP annotations from vep annotated CSQ fields
+- Avoid flickering comment popovers in variant list
+- Parse REVEL score from vep annotated CSQ fields
+- Allow users to modify general institute settings
+- Optionally format code automatically on commit
+- Adds command to backup vital parts `scout export database`
+- Parsing and displaying cancer SV variants from Manta annotated VCF files
+- Dismiss cancer snv variants with cancer-specific options
+- Add IGV.js UPD, RHO and TIDDIT coverage wig tracks.
+
+### Fixed
+- Slightly darker page background
+- Fixed an issued with parsed conservation values from CSQ
+- Clinvar submissions accessible to all users of an institute
+- Header toolbar when on Clinvar page now shows institute name correctly
+- Case should not always inactivate upon update
+- Show dismissed snv cancer variants as grey on the cancer variants page
+- Improved style of mappability link and local observations on variant page
+- Convert all the GET requests to the igv view to POST request
+- Error when updating gene panels using a file containing BOM chars
+- Add/replace gene radio button not working in gene panels
+
 
 ## [4.10.1]
 
 ### Fixed
 - Fixed issue with opening research variants
+- Problem with coveralls not called by Travis CI
+- Handle Biomart service down in tests
+
 
 ## [4.10.0]
 
@@ -34,6 +73,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display GC and allele depth in causatives table.
 - Included primary reference transcript in general report
 - Included partial causative variants in general report
+- Remove dependency of loqusdb by utilising the CLI
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
@@ -199,7 +239,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation for loading/updating exons
 - Showing SV variant annotations: SV cgh frequencies, gnomad-SV, local SV frequencies
 - Showing transcripts mapping score in segmental duplications
-- Handle requests to Ensembl Rest API  
+- Handle requests to Ensembl Rest API
 - Handle requests to Ensembl Rest Biomart
 - STR variants view now displays GT and IGV link.
 - Description field for gene panels

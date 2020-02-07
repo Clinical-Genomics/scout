@@ -17,16 +17,19 @@ from flask.cli import with_appcontext, current_app
 
 LOG = logging.getLogger(__name__)
 
+
 def abort_if_false(ctx, param, value):
     if not value:
         raise click.Abort()
 
-@click.command('wipe', short_help="Wipe a scout instance")
-@click.option("--yes",
+
+@click.command("wipe", short_help="Wipe a scout instance")
+@click.option(
+    "--yes",
     is_flag=True,
     callback=abort_if_false,
     expose_value=False,
-    prompt="Are you sure you want to drop the db?"
+    prompt="Are you sure you want to drop the db?",
 )
 @with_appcontext
 def wipe():
@@ -35,7 +38,7 @@ def wipe():
     db_name = current_app.config["MONGO_DBNAME"]
     LOG.info("Dropping database %s", db_name)
     try:
-        current_app.config['MONGO_CLIENT'].drop_database(db_name)
+        current_app.config["MONGO_CLIENT"].drop_database(db_name)
     except Exception as err:
         LOG.warning(err)
         raise click.Abort()

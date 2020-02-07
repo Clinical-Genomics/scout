@@ -1,29 +1,57 @@
 import logging
-
 from datetime import date
 
 from flask import url_for
 from flask_login import current_user
 
-from scout.server.utils import (institute_and_case, variant_case, user_institutes)
-from scout.constants import (CALLERS, MANUAL_RANK_OPTIONS, CANCER_TIER_OPTIONS,
-                            DISMISS_VARIANT_OPTIONS, VERBS_MAP, ACMG_MAP,
-                            MOSAICISM_OPTIONS, ACMG_OPTIONS, ACMG_COMPLETE_MAP,
-                            ACMG_CRITERIA)
-
-from scout.server.links import (ensembl, get_variant_links)
+from scout.constants import (
+    ACMG_COMPLETE_MAP,
+    ACMG_CRITERIA,
+    ACMG_MAP,
+    ACMG_OPTIONS,
+    CALLERS,
+    CANCER_TIER_OPTIONS,
+    DISMISS_VARIANT_OPTIONS,
+    MANUAL_RANK_OPTIONS,
+    MOSAICISM_OPTIONS,
+    VERBS_MAP,
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+)
 from scout.parse.variant.ids import parse_document_id
+from scout.server.links import ensembl, get_variant_links
+from scout.server.utils import institute_and_case, user_institutes, variant_case
 from scout.utils.requests import fetch_refseq_version
 
-from .utils import (end_position, default_panels, frequency, callers, evaluation,
-                    is_affected, predictions, sv_frequencies, add_gene_info, clinsig_human)
-
+from .utils import (
+    add_gene_info,
+    callers,
+    clinsig_human,
+    default_panels,
+    end_position,
+    evaluation,
+    frequency,
+    is_affected,
+    predictions,
+    sv_frequencies,
+)
 
 LOG = logging.getLogger(__name__)
 
-def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, add_case=True,
-            add_other=True, get_overlapping=True, add_compounds=True, variant_type=None,
-            case_obj=None, institute_obj=None):
+
+def variant(
+    store,
+    institute_id,
+    case_name,
+    variant_id=None,
+    variant_obj=None,
+    add_case=True,
+    add_other=True,
+    get_overlapping=True,
+    add_compounds=True,
+    variant_type=None,
+    case_obj=None,
+    institute_obj=None,
+):
     """Pre-process a single variant for the detailed variant view.
 
     Adds information from case and institute that is not present on the variant
@@ -66,15 +94,17 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     if variant_obj is None:
         return None
 
-    variant_type = variant_type or variant_obj.get('category', 'snv')
-    variant_id = variant_obj['variant_id']
+    variant_type = variant_type or variant_obj.get("category", "snv")
+    variant_id = variant_obj["variant_id"]
 
-    genome_build = case_obj.get('genome_build', '37')
-    if genome_build not in ['37','38']:
-        genome_build = '37'
+    genome_build = case_obj.get("genome_build", "37")
+    if genome_build not in ["37", "38"]:
+        genome_build = "37"
 
     panels = default_panels(store, case_obj)
-    variant_obj = add_gene_info(store, variant_obj, gene_panels=panels, genome_build=genome_build)
+    variant_obj = add_gene_info(
+        store, variant_obj, gene_panels=panels, genome_build=genome_build
+    )
     # Add information about bam files and create a region vcf
     if add_case:
         variant_case(store, case_obj, variant_obj)
@@ -82,104 +112,120 @@ def variant(store, institute_id, case_name, variant_id=None, variant_obj=None, a
     # Collect all the events for the variant
     events = store.events(institute_obj, case=case_obj, variant_id=variant_id)
     for event in events:
-        event['verb'] = VERBS_MAP[event['verb']]
+        event["verb"] = VERBS_MAP[event["verb"]]
 
     # Comments are not on case level so these needs to be fetched on their own
-    variant_obj['comments'] = store.events(institute_obj, case=case_obj,
-                                           variant_id=variant_id, comments=True)
+    variant_obj["comments"] = store.events(
+        institute_obj, case=case_obj, variant_id=variant_id, comments=True
+    )
 
     # Adds information about other causative variants
     other_causatives = []
     if add_other:
-        other_causatives = [causative for causative in
-                            store.other_causatives(case_obj, variant_obj)]
+        other_causatives = [
+            causative for causative in store.other_causatives(case_obj, variant_obj)
+        ]
 
     # Gather display information for the genes
-    variant_obj.update(predictions(variant_obj.get('genes',[])))
+    variant_obj.update(predictions(variant_obj.get("genes", [])))
 
     # Prepare classification information for visualisation
-    classification = variant_obj.get('acmg_classification')
+    classification = variant_obj.get("acmg_classification")
     if isinstance(classification, int):
-        acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
-        variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
+        acmg_code = ACMG_MAP[variant_obj["acmg_classification"]]
+        variant_obj["acmg_classification"] = ACMG_COMPLETE_MAP[acmg_code]
 
     # sort compounds on combined rank score
-    compounds = variant_obj.get('compounds', [])
+    compounds = variant_obj.get("compounds", [])
     if compounds:
-    # Gather display information for the compounds
+        # Gather display information for the compounds
         for compound_obj in compounds:
-            compound_obj.update(predictions(compound_obj.get('genes', [])))
+            compound_obj.update(predictions(compound_obj.get("genes", [])))
 
-        variant_obj['compounds'] = sorted(variant_obj['compounds'],
-                                          key=lambda compound: -compound['combined_score'])
+        variant_obj["compounds"] = sorted(
+            variant_obj["compounds"], key=lambda compound: -compound["combined_score"]
+        )
 
-    variant_obj['end_position'] = end_position(variant_obj)
+    variant_obj["end_position"] = end_position(variant_obj)
 
     # Add general variant links
     variant_obj.update(get_variant_links(variant_obj, int(genome_build)))
-    if variant_type == 'sv':
-        variant_obj['frequencies'] = sv_frequencies(variant_obj)
-    elif variant_type in ['snv', 'cancer']:
+    if variant_type == "sv":
+        variant_obj["frequencies"] = sv_frequencies(variant_obj)
+    elif variant_type in ["snv", "cancer"]:
         # This is to convert a summary of frequencies to a string
-        variant_obj['frequency'] = frequency(variant_obj)
+        variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
-    variant_obj['clinsig_human'] = (clinsig_human(variant_obj) if variant_obj.get('clnsig')
-                                    else None)
+    variant_obj["clinsig_human"] = (
+        clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    )
 
     # Add display information about callers
-    variant_obj['callers'] = callers(variant_obj, category=variant_type)
+    variant_obj["callers"] = callers(variant_obj, category=variant_type)
 
     # Convert affection status to strings for the template
     is_affected(variant_obj, case_obj)
 
-    if variant_obj.get('genetic_models'):
-        variant_models = set(model.split('_', 1)[0] for model in variant_obj['genetic_models'])
-        all_models = variant_obj.get('all_models', set())
-        variant_obj['is_matching_inheritance'] = set.intersection(variant_models,all_models)
+    if variant_obj.get("genetic_models"):
+        variant_models = set(
+            model.split("_", 1)[0] for model in variant_obj["genetic_models"]
+        )
+        all_models = variant_obj.get("all_models", set())
+        variant_obj["is_matching_inheritance"] = set.intersection(
+            variant_models, all_models
+        )
 
     # Prepare classification information for visualisation
-    classification = variant_obj.get('acmg_classification')
+    classification = variant_obj.get("acmg_classification")
     if isinstance(classification, int):
-        acmg_code = ACMG_MAP[variant_obj['acmg_classification']]
-        variant_obj['acmg_classification'] = ACMG_COMPLETE_MAP[acmg_code]
+        acmg_code = ACMG_MAP[variant_obj["acmg_classification"]]
+        variant_obj["acmg_classification"] = ACMG_COMPLETE_MAP[acmg_code]
 
     evaluations = []
     for evaluation_obj in store.get_evaluations(variant_obj):
         evaluation(store, evaluation_obj)
         evaluations.append(evaluation_obj)
 
-    case_clinvars = store.case_to_clinVars(case_obj.get('display_name'))
+    case_clinvars = store.case_to_clinVars(case_obj.get("display_name"))
 
     if variant_id in case_clinvars:
-        variant_obj['clinvar_clinsig'] = case_clinvars.get(variant_id)['clinsig']
+        variant_obj["clinvar_clinsig"] = case_clinvars.get(variant_id)["clinsig"]
 
     overlapping_vars = []
     if get_overlapping:
         for var in store.overlapping(variant_obj):
-            var.update(predictions(var.get('genes',[])))
+            var.update(predictions(var.get("genes", [])))
             overlapping_vars.append(var)
-    variant_obj['end_chrom'] = variant_obj.get('end_chrom', variant_obj['chromosome'])
+    variant_obj["end_chrom"] = variant_obj.get("end_chrom", variant_obj["chromosome"])
+
+    dismiss_options = DISMISS_VARIANT_OPTIONS
+    if case_obj.get("track") == "cancer":
+        dismiss_options = {
+            **DISMISS_VARIANT_OPTIONS,
+            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+        }
 
     return {
-        'institute': institute_obj,
-        'case': case_obj,
-        'variant': variant_obj,
-        'causatives': other_causatives,
-        'events': events,
-        'overlapping_vars': overlapping_vars,
-        'manual_rank_options': MANUAL_RANK_OPTIONS,
-        'cancer_tier_options': CANCER_TIER_OPTIONS,
-        'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
-        'mosaic_variant_options': MOSAICISM_OPTIONS,
-        'ACMG_OPTIONS': ACMG_OPTIONS,
-        'evaluations': evaluations,
+        "institute": institute_obj,
+        "case": case_obj,
+        "variant": variant_obj,
+        "causatives": other_causatives,
+        "events": events,
+        "overlapping_vars": overlapping_vars,
+        "manual_rank_options": MANUAL_RANK_OPTIONS,
+        "cancer_tier_options": CANCER_TIER_OPTIONS,
+        "dismiss_variant_options": dismiss_options,
+        "mosaic_variant_options": MOSAICISM_OPTIONS,
+        "ACMG_OPTIONS": ACMG_OPTIONS,
+        "evaluations": evaluations,
     }
+
 
 def observations(store, loqusdb, case_obj, variant_obj):
     """Query observations for a variant.
 
     Check if variant_obj have been observed before ni the loqusdb instance.
-    If not return {}
+    If not return empty dictionary.
 
     We need to add links to the variant in other cases where the variant has been observed.
     First we need to make sure that the user has access to these cases. The user_institute_ids holds
@@ -197,27 +243,36 @@ def observations(store, loqusdb, case_obj, variant_obj):
     Returns:
         obs_data(dict)
     """
-    chrom = variant_obj['chromosome']
-    pos = variant_obj['position']
-    ref = variant_obj['reference']
-    alt = variant_obj['alternative']
-    var_case_id = variant_obj['case_id']
-    var_type = variant_obj.get('variant_type', 'clinical')
+    chrom = variant_obj["chromosome"]
+    pos = variant_obj["position"]
+    ref = variant_obj["reference"]
+    alt = variant_obj["alternative"]
+    var_case_id = variant_obj["case_id"]
+    var_type = variant_obj.get("variant_type", "clinical")
 
-    composite_id = ("{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt))
-    obs_data = loqusdb.get_variant({'_id': composite_id}) or {}
-
-    # Add case count even if there where no hit
-    obs_data['total'] = loqusdb.case_count()
+    composite_id = "{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt)
+    variant_query = {
+        "_id": composite_id,
+        "chrom": chrom,
+        "end_chrom": variant_obj.get("end_chrom", chrom),
+        "pos": pos,
+        "end": variant_obj["end"],
+        "variant_type": variant_obj.get("sub_category", "").upper(),
+        "category": variant_obj["category"],
+    }
+    obs_data = loqusdb.get_variant(variant_query) or {}
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)
+        obs_data["total"] = loqusdb.case_count()
         return obs_data
 
-    user_institutes_ids = set([inst['_id'] for inst in user_institutes(store, current_user)])
+    user_institutes_ids = set(
+        [inst["_id"] for inst in user_institutes(store, current_user)]
+    )
 
-    obs_data['cases'] = []
-    institute_id = variant_obj['institute']
-    for case_id in obs_data.get('families', []):
+    obs_data["cases"] = []
+    institute_id = variant_obj["institute"]
+    for case_id in obs_data.get("families", []):
         if case_id == var_case_id:
             continue
         # other case might belong to same institute, collaborators or other institutes
@@ -226,17 +281,18 @@ def observations(store, loqusdb, case_obj, variant_obj):
             # Case could have been removed
             LOG.debug("Case %s could not be found in database", case_id)
             continue
-        other_institutes = set([other_case.get('owner')])
-        other_institutes.update(set(other_case.get('collaborators', [])))
+        other_institutes = set([other_case.get("owner")])
+        other_institutes.update(set(other_case.get("collaborators", [])))
 
         if user_institutes_ids.isdisjoint(other_institutes):
             # If the user does not have access to the information we skip it
             continue
         document_id = parse_document_id(chrom, str(pos), ref, alt, var_type, case_id)
         other_variant = store.variant(document_id=document_id)
-        obs_data['cases'].append(dict(case=other_case, variant=other_variant))
+        obs_data["cases"].append(dict(case=other_case, variant=other_variant))
 
     return obs_data
+
 
 def variant_acmg(store, institute_id, case_name, variant_id):
     """Collect data relevant for rendering ACMG classification form.
@@ -252,8 +308,13 @@ def variant_acmg(store, institute_id, case_name, variant_id):
     """
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
-    return dict(institute=institute_obj, case=case_obj, variant=variant_obj,
-                CRITERIA=ACMG_CRITERIA, ACMG_OPTIONS=ACMG_OPTIONS)
+    return dict(
+        institute=institute_obj,
+        case=case_obj,
+        variant=variant_obj,
+        CRITERIA=ACMG_CRITERIA,
+        ACMG_OPTIONS=ACMG_OPTIONS,
+    )
 
 
 def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, criteria):
@@ -274,8 +335,12 @@ def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, cr
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(user_email)
-    variant_link = url_for('variant.variant', institute_id=institute_id,
-                           case_name=case_name, variant_id=variant_id)
+    variant_link = url_for(
+        "variant.variant",
+        institute_id=institute_id,
+        case_name=case_name,
+        variant_id=variant_id,
+    )
     classification = store.submit_evaluation(
         institute_obj=institute_obj,
         case_obj=case_obj,
@@ -285,6 +350,7 @@ def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, cr
         criteria=criteria,
     )
     return classification
+
 
 def clinvar_export(store, institute_id, case_name, variant_id):
     """Gather the required data for creating the clinvar submission form
@@ -301,23 +367,25 @@ def clinvar_export(store, institute_id, case_name, variant_id):
 
     """
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    pinned = [store.variant(variant_id) or variant_id for variant_id in
-                  case_obj.get('suspects', [])]
+    pinned = [
+        store.variant(variant_id) or variant_id
+        for variant_id in case_obj.get("suspects", [])
+    ]
     variant_obj = store.variant(variant_id)
 
     # gather missing transcript info from entrez (refseq id version)
     for pinned_var in pinned:
-        for gene in pinned_var.get('genes'):
-            for transcript in gene.get('transcripts'):
-                refseq_id = transcript.get('refseq_id')
+        for gene in pinned_var.get("genes"):
+            for transcript in gene.get("transcripts"):
+                refseq_id = transcript.get("refseq_id")
                 if not refseq_id:
                     continue
-                transcript['refseq_id'] = fetch_refseq_version(refseq_id)
+                transcript["refseq_id"] = fetch_refseq_version(refseq_id)
 
     return dict(
-        today = str(date.today()),
+        today=str(date.today()),
         institute=institute_obj,
         case=case_obj,
         variant=variant_obj,
-        pinned_vars=pinned
+        pinned_vars=pinned,
     )

@@ -129,16 +129,24 @@
       <a class="btn btn-outline-dark" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical STR variants</a>
     {% endif %}
     {% if case.vcf_files.vcf_cancer %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical cancer variants</a>
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV and INDELs</a>
+    {% endif %}
+    {% if case.vcf_files.vcf_cancer_sv %}
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical structural variants</a>
     {% endif %}
 
   </div>
 </div>
-{% if case.is_research %}
+{% if case.is_research%}
   <div class="form-group">
     <div class="btn-group">
+    {% if case.track=="cancer" %}
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research SNV and INDELs</a>
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research structural variants</a>
+    {% else %}
       <a class="btn btn-outline-dark" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research SNV and INDELs</a>
       <a class="btn btn-outline-dark" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research structural variants</a>
+    {% endif %}
     </div>
   </div>
 {% endif %}
@@ -540,17 +548,19 @@
       <form method="POST"
             action="{{ url_for('cases.cohorts', institute_id=institute._id,
                                case_name=case.display_name) }}">
-        <div class="row">
-          <div class="col-xs-7">
-            <select class="form-control" name="cohort_tag">
-              <option>Add cohort tag...</option>
+        <div class="form-inline row justify-content-between">
+          <div class="col-sm-7">
+            <select class="form-control" name="cohort_tag" style="width:100%">
               {% for cohort_tag in cohort_tags %}
                 <option value="{{ cohort_tag }}">{{ cohort_tag }}</option>
               {% endfor %}
             </select>
           </div>
-          <div class="col-xs-5">
+          <div class="col-sm-1">
             <button class="btn btn-outline-secondary form-control" type="submit">Add</button>
+          </div>
+          <div class="col-sm-3">
+            <a href="{{ url_for('overview.institute', institute_id=institute._id) }}">Add options</a>
           </div>
         </div>
       </form>
@@ -726,9 +736,9 @@
       <form method="POST"
             action="{{ url_for('cases.phenotypes', institute_id=institute._id,
                                case_name=case.display_name, is_group='yes') }}">
-        <div class="form-inline">
-          <div class="form-group mb-2">
-            <select class="form-control" name="hpo_term">
+        <div class="form-inline row justify-content-between">
+          <div class="col-sm-7">
+            <select class="form-control" name="hpo_term" style="width:100%">
               <option>Add HPO group...</option>
               {% for hpo_id, group in hpo_groups.items() %}
                 <option value="{{ hpo_id }}">
@@ -737,8 +747,11 @@
               {% endfor %}
             </select>
           </div>
-          <div class="form-group mb-2">
-            <button class="btn btn-outline-secondary btn-sm form-control" type="submit">Add</button>
+          <div class="col-sm-1">
+            <button class="btn btn-outline-secondary form-control" type="submit">Add</button>
+          </div>
+          <div class="col-sm-3">
+            <a href="{{ url_for('overview.institute', institute_id=institute._id) }}">Add options</a>
           </div>
         </div>
       </form>
@@ -751,11 +764,11 @@
       <form method="POST"
             action="{{ url_for('cases.phenotypes', institute_id=institute._id,
                                case_name=case.display_name) }}">
-        <div class="row">
-          <div class="col-xs-7">
+        <div class="row form-inline">
+          <div class="col-sm-9">
             <input name="hpo_term" class="typeahead_hpo form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search...">
           </div>
-          <div class="col-xs-5">
+          <div class="col-sm-3">
             <button class="btn btn-outline-secondary form-control">Add</button>
           </div>
         </div>
@@ -896,12 +909,21 @@
             Use HPO list for clinical filter</div>
         </div>
         <div>
-          <a class="btn btn-outline-secondary form-control"
-            href="{{ url_for('variants.variants', institute_id=institute._id,
-                             case_name=case.display_name, variant_type='clinical',
-                             gene_panels=['hpo']) }}">
-             Clinical HPO SNV variants
-           </a>
+          {% if case.track == 'cancer' %}
+            <a class="btn btn-outline-secondary form-control"
+              href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
+                               case_name=case.display_name, variant_type='clinical',
+                               gene_panels=['hpo']) }}">
+               Clinical HPO SNV variants
+             </a>
+          {% else %}
+            <a class="btn btn-outline-secondary form-control"
+              href="{{ url_for('variants.variants', institute_id=institute._id,
+                               case_name=case.display_name, variant_type='clinical',
+                               gene_panels=['hpo']) }}">
+               Clinical HPO SNV variants
+             </a>
+           {% endif %}
         </div>
       </div>
     {% endif %}

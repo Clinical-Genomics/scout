@@ -1,11 +1,12 @@
 # everything the developer needs in addition to the production requirements
 
 # testing
-pytest==3.8
-pytest-flask==0.11
+pytest-mock
+pytest>=3.7.1
+pytest-flask
 pytest-cov
 mongomock<=3.12
-python-coveralls
+coveralls
 
 # packaging
 wheel>=0.23
@@ -17,3 +18,18 @@ invoke
 # docs
 mkdocs
 mkdocs-material
+
+# PEP8 Compliance
+pre-commit
+black
+
+# Pylint Rating
+pylint
+six>=1.12                   # due to astroid 2.3.3 needed by pylint
+
+# Lint Free
+git-lint
+pycodestyle
+yamllint
+docutils
+html-linter

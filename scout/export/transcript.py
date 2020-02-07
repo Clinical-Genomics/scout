@@ -2,7 +2,8 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-def export_transcripts(adapter, build='37'):
+
+def export_transcripts(adapter, build="37"):
     """Export all transcripts from the database
     
     Args:
@@ -16,4 +17,3 @@ def export_transcripts(adapter, build='37'):
 
     for tx_obj in adapter.transcripts(build=build):
         yield tx_obj
-    

@@ -7,7 +7,7 @@ Establish a connection to the database
 import logging
 
 from pymongo import MongoClient
-from pymongo.errors import (ConnectionFailure, ServerSelectionTimeoutError)
+from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
 try:
     # Python 3.x
@@ -20,8 +20,18 @@ except ImportError:
 LOG = logging.getLogger(__name__)
 
 
-def get_connection(host='localhost', port=27017, username=None, password=None,
-                   uri=None, mongodb=None, authdb=None, timeout=20, *args, **kwargs):
+def get_connection(
+    host="localhost",
+    port=27017,
+    username=None,
+    password=None,
+    uri=None,
+    mongodb=None,
+    authdb=None,
+    timeout=20,
+    *args,
+    **kwargs
+):
     """Get a client to the mongo database
 
         host(str): Host of database
@@ -36,13 +46,14 @@ def get_connection(host='localhost', port=27017, username=None, password=None,
     authdb = authdb or mongodb
     if uri is None:
         if username and password:
-            uri = ("mongodb://{}:{}@{}:{}/{}"
-                   .format(quote_plus(username), quote_plus(password), host, port, authdb))
-            log_uri = ("mongodb://{}:****@{}:{}/{}"
-                   .format(quote_plus(username), host, port, authdb))
+            uri = "mongodb://{}:{}@{}:{}/{}".format(
+                quote_plus(username), quote_plus(password), host, port, authdb
+            )
+            log_uri = "mongodb://{}:****@{}:{}/{}".format(
+                quote_plus(username), host, port, authdb
+            )
         else:
             log_uri = uri = "mongodb://%s:%s" % (host, port)
-            
 
     LOG.info("Try to connect to %s" % log_uri)
     try:

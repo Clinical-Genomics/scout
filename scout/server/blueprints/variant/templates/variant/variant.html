@@ -508,35 +508,66 @@
           </li>
         {% endif %}
       </ul>
-      <div class="panel-heading">Gene coverage</div>
-      <table class="table table-bordered table-fixed table-sm">
-        <tbody>
-          <tr>
-            <td>
-              {% if variant.chromosome == "MT" %}
-                {% if case.mt_bams %}
-                  <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.mt_bams, bai=case.mt_bais, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
+
+      <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
+        <!-- general hidden fields required to submit POST request to IGV viewer -->
+        {% if case.mt_bams or case.bam_files %}
+          <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
+          <input type="hidden" name="build" value="{{case.genome_build}}">
+          <input type="hidden" name="contig" value="{{variant.chromosome}}">
+          <input type="hidden" name="start" value="{{variant.position - 50}}">
+          <input type="hidden" name="stop" value="{{variant.end_position + 50}}">
+          <input type="hidden" name="center_guide" value="T">
+          <!--<input type="hidden" name="now" values="{{now}}"-->
+        {% endif %}
+        <!-- end of general hidden form fields -->
+        <div class="panel-heading">Gene coverage</div>
+        <table class="table table-bordered table-fixed table-sm">
+          <tbody>
+            <tr>
+              <td>
+                {% if variant.chromosome == "MT" %}
+                  {% if case.mt_bams %}
+                    <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
+                    <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
+                    <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV viewer</button>
+                  {% else %}
+                    <span class="text-muted">MT BAM file(s) missing</span>
+                  {% endif %}
+                {% elif case.bam_files %}
+                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
+                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
+                  {% if case.rhocall_beds %}
+                    <input type="hidden" name="rhocall_bed" value="{{case.rhocall_beds|join(',')}}">
+                    <input type="hidden" name="rhocall_wig" value="{{case.rhocall_wigs|join(',')}}">
+                  {% endif %}
+                  {% if case.tiddit_coverage_wigs %}
+                    <input type="hidden" name="tiddit_coverage_wig" value="{{case.tiddit_coverage_wigs|join(',')}}">
+                  {% endif %}
+                  {% if case.upd_regions_beds %}
+                    <input type="hidden" name="upd_regions_bed" value="{{case.upd_regions_beds|join(',')}}">
+                  {% endif %}
+                  {% if case.upd_sites_beds %}
+                    <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
+                  {% endif %}
+                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
                 {% else %}
-                  <span class="text-muted">MT BAM file(s) missing</span>
+                  <span class="text-muted">BAM file(s) missing</span>
                 {% endif %}
-              {% elif case.bam_files %}
-                <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('alignviewers.igv', sample=case.sample_names, build=case.genome_build, bam=case.bam_files, bai=case.bai_files, contig=variant.chromosome, start=(variant.position - 50), stop=(variant.end_position + 50), center_guide="T") }}" target="_blank">IGV viewer</a>
-              {% else %}
-                <span class="text-muted">BAM file(s) missing</span>
+              </td>
+              {% if config.SQLALCHEMY_DATABASE_URI %}
+                {% for gene in variant.genes %}
+                  <td>
+                    <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
+                      {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                    </a>
+                  </td>
+                {% endfor %}
               {% endif %}
-            </td>
-            {% if config.SQLALCHEMY_DATABASE_URI %}
-              {% for gene in variant.genes %}
-                <td>
-                  <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
-                    {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                  </a>
-                </td>
-              {% endfor %}
-            {% endif %}
-          </tr>
-        </tbody>
-      </table>
+            </tr>
+          </tbody>
+        </table>
+      </form>
 
       {% if variant.custom %}
       <table class="table table-bordered table-sm">
@@ -709,7 +740,7 @@
     </ul>
     {% if config.LOQUSDB_SETTINGS %}
       <div class="panel-heading">
-        <a href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
+        <a class="text-white" href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
       </div>
       <ul class="list-group">
         <li class="list-group-item">
@@ -771,6 +802,10 @@
         <span class="float-right">{{ variant.sift_predictions|join(', ') }}</span>
       </li>
       <li class="list-group-item">
+        <a href="https://sites.google.com/site/revelgenomics/about" target="_blank">REVEL</a>
+        <span class="float-right">{{ variant.revel_score or "-" }}</span>
+      </li>
+      <li class="list-group-item">
         <a href="http://genetics.bwh.harvard.edu/pph2/" target="_blank">Polyphen</a>
         <span class="float-right">{{ variant.polyphen_predictions|join(', ') }}</span>
       </li>
@@ -794,7 +829,7 @@
         <span class="float-right">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
       </li>
     </ul>
-    <div class="panel-heading">Mappability (<a href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
+    <div class="panel-heading">Mappability (<a class="text-white" href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
     {% set superdups_fracmatches = [] %}
     {% for gene in variant.genes %}
       {% for transcript in gene.transcripts %}
@@ -807,11 +842,13 @@
     {% endfor %}
     {% set superdups_fracmatches = superdups_fracmatches|sort %}
     <div class="panel-body">
+      <div class="ml-3 mb-3 mt-3">
         {% if superdups_fracmatches %}
           <span>mapping to {{superdups_fracmatches|length}} segm. dups. (min matching:{{ superdups_fracmatches|first|float|round(3) }}, max matching:{{ superdups_fracmatches|last|float|round(3) }})</span>
         {% else %}
           <span> - </span>
         {% endif %}
+      </div>
     </div>
   </div>
 {% endmacro %}
@@ -1288,7 +1325,7 @@
         External links: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
       </div>
       <div class="panel-body">
-        <div class="btn-group">
+        <div class="btn-group-justified">
           <a href="{{ gene.ensembl_link }}" class="btn btn-outline-secondary" target="_blank">Ensembl</a>
           <a href="{{ gene.hpa_link }}" class="btn btn-outline-secondary" target="_blank">HPA</a>
           <a href="{{ gene.string_link }}" class="btn btn-outline-secondary" target="_blank">STRING</a>

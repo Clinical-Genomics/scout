@@ -12,10 +12,8 @@ Flask-Mail
 Flask-WeasyPrint
 coloredlogs
 query_phenomizer
-loqusdb<2.0
 Flask-Babel
 livereload
-mongo_adapter
 python-dateutil
 pymongo<3.7
 pathlib

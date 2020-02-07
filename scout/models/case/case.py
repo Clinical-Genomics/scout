@@ -1,4 +1,4 @@
-from __future__ import (absolute_import)
+from __future__ import absolute_import
 
 import os
 import logging
@@ -22,7 +22,12 @@ individual = dict(
     mother=str,  # Individual id of mother
     capture_kits=list,  # List of names of capture kits
     bam_file=str,  # Path to bam file
-    vcf2cytosure=str, # Path to CGH file
+    rhocall_bed=str,  # Path to bed file
+    rhocall_wig=str,  # Path to wig file
+    tiddit_coverage_wig=str,  # Path to wig file
+    upd_regions_bed=str,  # Path to bed file
+    upd_sites_bed=str,  # Path to bed file
+    vcf2cytosure=str,  # Path to CGH file
     analysis_type=str,  # choices=ANALYSIS_TYPES
     confirmed_sex=bool,  # True or False. None if no check has been done
     confirmed_parent=bool,
@@ -36,7 +41,6 @@ case = dict(
     display_name=str,  # required
     # This internal_id for the owner of the case. E.g. 'cust000'
     owner=str,  # required
-
     # These are the names of all the collaborators that are allowed to view the
     # case, including the owner
     collaborators=list,  # List of institute_ids
@@ -46,48 +50,32 @@ case = dict(
     updated_at=datetime,
     suspects=list,  # List of variants referred by there _id
     causatives=list,  # List of variants referred by there _id
-
     synopsis=str,  # The synopsis is a text blob
     status=str,  # default='inactive', choices=STATUS
     is_research=bool,  # default=False
     research_requested=bool,  # default=False
     rerun_requested=bool,  # default=False
-
     analysis_date=datetime,
-
     # default_panels specifies which panels that should be shown when
     # the case is opened
     panels=list,  # list of dictionaries with panel information
-
     dynamic_gene_list=list,  # List of genes
-
     genome_build=str,  # This should be 37 or 38
     genome_version=float,  # What version of the build
-
     rank_model_version=str,
     rank_score_threshold=int,  # default=8
-
     sv_rank_model_version=str,
-
     phenotype_terms=list,  # List of dictionaries with phenotype information
     phenotype_groups=list,  # List of dictionaries with phenotype information
-
     madeline_info=str,  # madeline info is a full xml file
-
     chromograph_image_files=str,  # path to dir
     chromograph_prefixes=list,  # path to dir
-
     delivery_report=str,  # delivery report is a path to html file
-
     vcf_files=dict,  # A dictionary with vcf files
-
     diagnosis_phenotypes=list,  # List of references to diseases
     diagnosis_genes=list,  # List of references to genes
-
     has_svvariants=bool,  # default=False
-    has_strvariants=bool, # default=False
-
-    is_migrated = bool, # default=False
-
-    multiqc = str,  # path to multiqc report
+    has_strvariants=bool,  # default=False
+    is_migrated=bool,  # default=False
+    multiqc=str,  # path to multiqc report
 )

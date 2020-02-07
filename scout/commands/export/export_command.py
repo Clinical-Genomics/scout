@@ -14,17 +14,17 @@ import logging
 
 import click
 
-
-LOG = logging.getLogger(__name__)
-
-from .variant import variants, verified
-from .hpo import hpo_genes
-from .transcript import transcripts
+from .case import cases
+from .database import database
 from .exon import exons
 from .gene import genes
-from .panel import panel
-from .case import cases
+from .hpo import hpo_genes
 from .mitochondrial_report import mt_report
+from .panel import panel
+from .transcript import transcripts
+from .variant import variants, verified
+
+LOG = logging.getLogger(__name__)
 
 
 @click.group()
@@ -35,6 +35,7 @@ def export():
     LOG.info("Running scout export")
     pass
 
+
 export.add_command(panel)
 export.add_command(genes)
 export.add_command(transcripts)
@@ -44,3 +45,4 @@ export.add_command(verified)
 export.add_command(hpo_genes)
 export.add_command(cases)
 export.add_command(mt_report)
+export.add_command(database)

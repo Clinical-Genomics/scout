@@ -1,0 +1,201 @@
+{% extends "layout_bs4.html" %}
+{% from "overview/utils.html" import users_table%}
+
+{% block title %}
+  {{ super() }} - Institutes
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.institutes') }}">
+      institutes
+    </a>
+  </li>
+  <li class="nav-item active">
+    <p class="navbar-text text-nowrap">{{ institute.display_name }}</p>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+<form  action="{{ url_for('overview.institute', institute_id=institute._id) }}" method="POST"
+  accept-charset="utf-8" id="institute_form">
+{{ form.csrf_token() }}
+<div class="container">
+  <div class="display:block">
+    <!-- institute settings panel -->
+    <div class="card mt-3">
+      <div style="padding: 0;" class="card-body mt-3 ml-3 mr-3" >
+        <h5 class="header">Institute Settings</h5>
+          <div class="form-row mt-3 d-flex justify-content-between">
+            <div class="form-group col-md-12">
+              {{ form.display_name.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Name of the institute which will be displayed on Scout pages.") }}
+              {{ form.display_name(class='form-control', value=institute.display_name) }}
+              {% for error in form.display_name.errors %}
+                <span style="color: red;">{{ error }}</span><br>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-row mt-3 mb-3">
+            <div class="col-md-2">
+              {{form.sanger_emails.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Email addresses to send variant verification email to. Only accepts current Scout user emails: exceptions to this can be made by a db admin. Please ask for support!")}}
+            </div>
+            <div class="col-md-10">
+              <select class="select2" id="sanger_tags" name="sanger_emails" multiple="true" style="width:100%;">
+                {% for email in institute.sanger_recipients %}
+                  <option value="{{ email }}" selected>{{ email }}</option>
+                {% endfor %}
+              </select>
+              {% for error in form.sanger_emails.errors %}
+                <span style="color: red;">{{ error }}</span><br>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-between">
+            <div class="form-group col-md-5">
+              {{ form.coverage_cutoff.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Read depth considered reliable for displaying variants. Used in coverage reports.") }}
+              {{ form.coverage_cutoff(class='form-control', value=institute.coverage_cutoff) }}
+              {% for error in form.coverage_cutoff.errors %}
+                <span style="color: red;">{{ error }}</span><br>
+              {% endfor %}
+            </div>
+            <div class="form-group col-md-5">
+              {{ form.frequency_cutoff.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Lower frequency threshold to display variants. NOTE: used as the institute's default in clinical filter.") }}
+              {{ form.frequency_cutoff(class='form-control', value=institute.frequency_cutoff) }}
+              {% for error in form.frequency_cutoff.errors %}
+                <span style="color: red;">{{ error }}</span><br>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-between">
+            <div class="form-group col-md-7">
+              {{ form.pheno_group.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Add a new phenotype group item to the list of phenotype shortcuts below.") }}
+              <input name="hpo_term" class="typeahead_hpo form-control" id="pheno_group" data-provide="typeahead" autocomplete="off" placeholder="Search HPO..">
+            </div>
+            <div class="d-block col-md-3">
+              {{ form.pheno_abbrev.label(class="control-label",data_toggle="tooltip", data_placement="top", title="A short name for this phenotype group.") }}
+              <input name="pheno_abbrev" class="form-control" name="pheno_abbrev" id="pheno_abbrev" placeholder="e.g.: NEUR" pattern=".{2,10}">
+            </div>
+            <div class="d-flex align-items-center col-md-2">
+              <button type="button" class="btn btn-light btn-small" onclick="validate_pheno()">Add custom phenotype group</button>
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-between">
+            <div class="form-group col-md-12">
+              {{ form.pheno_groups.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Phenotype groups are used to quickly assign a certain phenotype to a case, on the case page.") }}
+              <select multiple="multiple" name="pheno_groups" class="selectpicker">
+                {% for choice in form.pheno_groups.choices %}
+                  <option value="{{choice[0]}}" {% if choice[0].split(' ,')[0] in institute.phenotype_groups %} selected {% endif %}>{{choice[1]}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-row mt-3 mb-3">
+            <div class="col-md-2">
+              {{form.cohorts.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Categories used to subdivide patients")}}
+            </div>
+            <div class="col-md-10">
+              <select class="form-control" id="cohort_tags" name="cohorts" multiple="true" style="width:100%;">
+                {% for cohort in institute.cohorts %}
+                  <option value="{{ cohort }}" selected>{{ cohort }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-center">
+            <div class="col-md-12 align-self-center">
+              {{ form.institutes.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Allow case sharing only with preselected institutes.") }}
+              <select multiple="multiple" class="selectpicker" name="institutes">
+              {% for choice in form.institutes.choices %}
+                <option value="{{choice[0]}}" {% if choice[0] in institute.collaborators %} selected {% endif %}>{{choice[1]}}</option>
+              {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-center">
+              {{ form.submit_btn(class="btn-primary btn") }}
+          </div>
+          <br>
+      </div>
+    </div>
+  </div> <!-- end of div class="row" -->
+</div> <!-- end of container div -->
+</form>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
+  <script>
+    $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    var avail_terms = {{ default_phenotypes|safe }};
+
+    function validate_pheno(){
+      var pheno_term = document.getElementById("pheno_group");
+      var hpo_id = pheno_term.value.split(" ")[0]; // collect just hpo id
+      var hpo_name = pheno_term.value.split(" ")[2]; // collect just hpo id
+
+      // check validity for new pheno group:
+      if (hpo_id && hpo_name){
+        if (document.getElementById("pheno_abbrev").value){
+          // if HPO terms is NOT among the default terms
+          if (avail_terms.indexOf(hpo_id) < 0){
+            document.getElementById("institute_form").submit();
+          }
+          else{
+            alert("Phenotype group is already present in phenotype group list");
+          }
+        }
+        else{
+          alert("Abbreviation is missing");
+        }
+      }
+      else{
+        alert("Please fill in a valid HPO term");
+      }
+    }
+
+    function getTerms(query, process) {
+      $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
+        process(data);
+      });
+    }
+
+    $(".typeahead_hpo").typeahead({
+      name: 'hpo_term',
+      source: getTerms,
+      minLength: 3,
+    });
+
+    $('#cohort_tags').select2({
+    	tags: true,
+      data: ["endo","mito","ketogenic diet","pedhep","other"],
+      tokenSeparators: [','],
+      placeholder: "Add cohort tags",
+    });
+
+    $('#sanger_tags').select2({
+      tags: true,
+      tokenSeparators: [','],
+      placeholder: "Add Sanger email",
+    });
+
+    $(function () {
+      $('select[multiple]').selectpicker({
+          width: '100%'
+        });
+    });
+  </script>
+
+{% endblock %}
