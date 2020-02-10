@@ -6,8 +6,10 @@ from pymongo.errors import ConnectionFailure
 from scout.adapter.client import get_connection
 import scout
 
+
 def get_mock_client():
     return MongoClient()
+
 
 def test_pymongo_adapter(adapter, database_name):
     """Test the pymongo adapter"""
@@ -16,12 +18,15 @@ def test_pymongo_adapter(adapter, database_name):
     ##THEN assert the correct database is accessed
     assert adapter.db.name == database_name
 
+
 def test_connection(monkeypatch):
     def simple_mongo():
         return mongomock.MongoClient()
-    monkeypatch.setattr(scout.adapter.client, 'get_connection', simple_mongo)
+
+    monkeypatch.setattr(scout.adapter.client, "get_connection", simple_mongo)
     client = scout.adapter.client.get_connection()
     assert isinstance(client, mongomock.MongoClient)
+
 
 # ##GIVEN a connection to a mongodatabase
 # print('du')
@@ -38,5 +43,3 @@ def test_connection(monkeypatch):
 #     ##WHEN getting a mongo client
 #     ##THEN assert that the port is default
 #     assert client.PORT == 27017
-
-

@@ -48,10 +48,24 @@ from .filter import FilterHandler
 
 log = logging.getLogger(__name__)
 
-class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
-                   HpoHandler, PanelHandler, QueryHandler, VariantHandler,
-                   UserHandler, ACMGHandler, IndexHandler, ClinVarHandler,
-                   MMEHandler, TranscriptHandler, FilterHandler):
+
+class MongoAdapter(
+    GeneHandler,
+    CaseHandler,
+    InstituteHandler,
+    EventHandler,
+    HpoHandler,
+    PanelHandler,
+    QueryHandler,
+    VariantHandler,
+    UserHandler,
+    ACMGHandler,
+    IndexHandler,
+    ClinVarHandler,
+    MMEHandler,
+    TranscriptHandler,
+    FilterHandler,
+):
 
     """Adapter for cummunication with a mongo database."""
 
@@ -61,11 +75,11 @@ class MongoAdapter(GeneHandler, CaseHandler, InstituteHandler, EventHandler,
 
     def init_app(self, app):
         """Setup via Flask."""
-        host = app.config.get('MONGO_HOST', 'localhost')
-        port = app.config.get('MONGO_PORT', 27017)
-        dbname = app.config['MONGO_DBNAME']
+        host = app.config.get("MONGO_HOST", "localhost")
+        port = app.config.get("MONGO_PORT", 27017)
+        dbname = app.config["MONGO_DBNAME"]
         log.info("connecting to database: %s:%s/%s", host, port, dbname)
-        self.setup(app.config['MONGO_DATABASE'])
+        self.setup(app.config["MONGO_DATABASE"])
 
     def setup(self, database):
         """Setup connection to database."""

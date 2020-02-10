@@ -7,8 +7,9 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
-@click.command('hpo_genes', short_help='Export hpo gene list')
-@click.argument('hpo_term',nargs=-1)
+
+@click.command("hpo_genes", short_help="Export hpo gene list")
+@click.argument("hpo_term", nargs=-1)
 @with_appcontext
 def hpo_genes(hpo_term):
     """Export a list of genes based on hpo terms"""

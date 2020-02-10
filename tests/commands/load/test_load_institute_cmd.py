@@ -3,6 +3,7 @@
 from scout.commands import cli
 from scout.server.extensions import store
 
+
 def test_load_institute(empty_mock_app):
     """Testing the load institute cli command"""
 
@@ -16,14 +17,18 @@ def test_load_institute(empty_mock_app):
     assert sum(1 for i in store.institute_collection.find()) == 0
 
     ## WHEN loading the institute into the database
-    result =  runner.invoke(cli, ['load', 'institute', '-i', ins_id, '-d', display_name])
+    result = runner.invoke(cli, ["load", "institute", "-i", ins_id, "-d", display_name])
 
     ## THEN assert command exits without errors
     assert result.exit_code == 0
-    
+
     ## THEN assert logging is correct
-    assert 'Adding institute with internal_id: {0} and display_name: {1}'.format(
-            ins_id,display_name) in result.output
-    
+    assert (
+        "Adding institute with internal_id: {0} and display_name: {1}".format(
+            ins_id, display_name
+        )
+        in result.output
+    )
+
     ## THEN assert institute is added
     assert sum(1 for i in store.institute_collection.find()) == 1

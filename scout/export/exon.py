@@ -15,7 +15,8 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-def export_exons(adapter, build='37'):
+
+def export_exons(adapter, build="37"):
     """Export all exons of a certain build from the database
     
     Args:
@@ -26,45 +27,51 @@ def export_exons(adapter, build='37'):
         transcript(scout.models.Transcript)
     """
     ens_transcripts = adapter.ensembl_transcripts(build=build)
-    
+
     hgnc_genes = {}
     for gene_obj in adapter.all_genes(build=build):
-        hgnc_genes[gene_obj['hgnc_id']] = gene_obj
-    
+        hgnc_genes[gene_obj["hgnc_id"]] = gene_obj
+
     exons = {}
     for exon_obj in adapter.exons(build=build):
-        ens_tx_id = exon_obj['transcript']
-        exon_id = exon_obj['exon_id']
+        ens_tx_id = exon_obj["transcript"]
+        exon_id = exon_obj["exon_id"]
         tx_obj = ens_transcripts[ens_tx_id]
-        hgnc_id = tx_obj['hgnc_id']
-        
+        hgnc_id = tx_obj["hgnc_id"]
+
         if not exon_id in exons:
-            exon_obj['exon_transcripts'] = []
-            exon_obj['hgnc_ids'] = []
+            exon_obj["exon_transcripts"] = []
+            exon_obj["hgnc_ids"] = []
             exons[exon_id] = exon_obj
-        
+
         tx_ids = []
         hgnc_ids = []
-        
-        tx_refseq = tx_obj.get('refseq_identifiers',[])
+
+        tx_refseq = tx_obj.get("refseq_identifiers", [])
         for refseq_id in tx_refseq:
-            exons[exon_id]['exon_transcripts'].append(refseq_id)
-            exons[exon_id]['hgnc_ids'].append(hgnc_id)
+            exons[exon_id]["exon_transcripts"].append(refseq_id)
+            exons[exon_id]["hgnc_ids"].append(hgnc_id)
         if not tx_refseq:
-            exons[exon_id]['exon_transcripts'].append(ens_tx_id)
-            exons[exon_id]['hgnc_ids'].append(hgnc_id)
-    
+            exons[exon_id]["exon_transcripts"].append(ens_tx_id)
+            exons[exon_id]["hgnc_ids"].append(hgnc_id)
+
     print_line = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}"
     for exon_id in exons:
         exon = exons[exon_id]
-        hgnc_ids = exon['hgnc_ids']
+        hgnc_ids = exon["hgnc_ids"]
         hgnc_symbols = []
         for hgnc_id in hgnc_ids:
-            hgnc_symbols.append(hgnc_genes.get(hgnc_id,{}).get('hgnc_symbol'))
-        transcripts_str = ','.join(exon['exon_transcripts'])
-        hgncids_str = ','.join([str(i) for i in hgnc_ids])
-        hgncsymbols_str = ','.join(hgnc_symbols)
+            hgnc_symbols.append(hgnc_genes.get(hgnc_id, {}).get("hgnc_symbol"))
+        transcripts_str = ",".join(exon["exon_transcripts"])
+        hgncids_str = ",".join([str(i) for i in hgnc_ids])
+        hgncsymbols_str = ",".join(hgnc_symbols)
 
-        yield print_line.format(exon['chrom'], exon['start'], exon['end'], exon_id, transcripts_str,
-                                hgncids_str, hgncsymbols_str)
-    
+        yield print_line.format(
+            exon["chrom"],
+            exon["start"],
+            exon["end"],
+            exon_id,
+            transcripts_str,
+            hgncids_str,
+            hgncsymbols_str,
+        )
