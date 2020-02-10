@@ -75,6 +75,28 @@ def test_get_panel_multiple_versions(adapter, dummypanel_obj):
     assert res["version"] == 2.0
 
 
+def test_reset_pending(adapter, dummypanel_obj, gene_obj):
+    """Test the function that clears the pending changes from a gene panel"""
+
+    # GIVEN a gene panel
+    adapter.panel_collection.insert_one(dummypanel_obj)
+    # and a gene
+    adapter.hgnc_collection.insert_one(gene_obj)
+
+    hgnc_obj = adapter.hgnc_collection.find_one()
+
+    ## WHEN adding a pending action of this gene to a panel
+    res = adapter.add_pending(
+        panel_obj=dummypanel_obj, hgnc_gene=hgnc_obj, action="add"
+    )
+    assert len(res["pending"]) == 1
+
+    ## IF reset pending is used to clear pending actions
+    ## Then panel should not have any more pending actions
+    updated_panel = adapter.reset_pending(res)
+    assert updated_panel.get("pending") == None
+
+
 def test_add_pending(adapter, dummypanel_obj, gene_obj):
 
     adapter.panel_collection.insert_one(dummypanel_obj)
