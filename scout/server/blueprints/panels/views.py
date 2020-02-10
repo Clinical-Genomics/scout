@@ -155,10 +155,11 @@ def panel_update(panel_id):
     panel_obj = store.panel(panel_id)
     if request.form.get("cancel_pending"):
         updated_panel = store.reset_pending(panel_obj)
-        if updated_panel.get("pending") is None:
-            flash("Pending actions were correctly canceled!", "success")
-        elif updated_panel is None:
+        if updated_panel is None:
             flash("Couldn't find a panel with ID {}".format(panel_id), "warning")
+        elif updated_panel.get("pending") is None:
+            flash("Pending actions were correctly canceled!", "success")
+
         return redirect(request.referrer)
     else:
         update_version = request.form.get("version", None)
