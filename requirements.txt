@@ -1,11 +1,12 @@
 # Everything needed in production
 
 BeautifulSoup4
+werkzeug<1.0 # This can be removed when switching from Flask-OAuthlib
 Flask>=0.10
 Flask-DebugToolbar
 Flask-Bootstrap
 path.py
-Flask-OAuthlib
+Flask-OAuthlib # This is deprecated and can not use werkzeug>=1.0
 Flask-Markdown
 Flask-WTF
 Flask-Mail
