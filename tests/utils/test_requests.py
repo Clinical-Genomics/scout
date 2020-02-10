@@ -2,7 +2,7 @@
 
 import os
 import pytest
-from scout.utils.requests import fetch_refseq_version, get_request
+from scout.utils.scout_requests import fetch_refseq_version, get_request
 
 TRAVIS = os.getenv("TRAVIS")
 

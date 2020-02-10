@@ -39,7 +39,7 @@ from scout.server.utils import (
 )
 from scout.server.links import add_gene_links, ensembl, add_tx_links
 from scout.server.blueprints.genes.controllers import gene
-from scout.utils.requests import fetch_refseq_version
+from scout.utils.scout_requests import fetch_refseq_version
 
 from scout.server.blueprints.variant.utils import predictions
 from .forms import (

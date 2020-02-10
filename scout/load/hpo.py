@@ -11,7 +11,7 @@ from scout.parse.hpo import (
     parse_hpo_to_genes,
     build_hpo_tree,
 )
-from scout.utils.requests import (
+from scout.utils.scout_requests import (
     fetch_hpo_terms,
     fetch_hpo_to_genes,
     fetch_hpo_phenotype_to_terms,
