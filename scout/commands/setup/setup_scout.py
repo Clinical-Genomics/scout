@@ -17,7 +17,6 @@ from pprint import pprint as pp
 import click
 import pymongo
 from flask.cli import current_app, with_appcontext
-
 # Adapter stuff
 from scout.adapter import MongoAdapter
 # from scout.demo.resources.generate_test_data import (generate_hgnc, generate_genemap2, generate_mim2genes,
@@ -46,7 +45,11 @@ def abort_if_false(ctx, param, value):
     expose_value=False,
     prompt="This will delete existing database, do you wish to continue?",
 )
-@click.option("--files", type=click.Path(exists=True, dir_okay=True, file_okay=False))
+@click.option(
+    "--files",
+    type=click.Path(exists=True, dir_okay=True, file_okay=False),
+    help="Path to directory with resource files",
+)
 @click.option("--hgnc", type=click.Path(exists=True))
 @click.option(
     "--exac", type=click.Path(exists=True), help="Path to file with EXAC pLi scores"
