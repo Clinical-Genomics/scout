@@ -4,7 +4,7 @@ import pathlib
 
 import click
 
-from scout.utils.requests import fetch_mim_files
+from scout.utils.scout_requests import fetch_mim_files
 
 LOG = logging.getLogger(__name__)
 

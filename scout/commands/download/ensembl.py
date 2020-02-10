@@ -4,8 +4,9 @@ import pathlib
 
 import click
 
-from scout.utils.requests import (fetch_ensembl_exons, fetch_ensembl_genes,
-                                  fetch_ensembl_transcripts)
+from scout.utils.scout_requests import (fetch_ensembl_exons,
+                                        fetch_ensembl_genes,
+                                        fetch_ensembl_transcripts)
 
 LOG = logging.getLogger(__name__)
 

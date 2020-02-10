@@ -4,7 +4,7 @@ import pathlib
 
 import click
 
-from scout.utils.requests import fetch_exac_constraint
+from scout.utils.scout_requests import fetch_exac_constraint
 
 LOG = logging.getLogger(__name__)
 
