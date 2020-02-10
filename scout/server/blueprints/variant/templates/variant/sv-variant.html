@@ -4,6 +4,7 @@
 {% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, sv_alignments, pin_button, causative_button %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, genemodels_panel %}
 {% from "variant/variant_details.html" import gtcall_panel, frequencies, observations_panel %}
+{% from "variant/buttons.html" import variant_tag_button, dismiss_variant_button %}
 
 
 {% block title %}
@@ -75,45 +76,12 @@
               </div>
               <div class="list-group mt-3">
                 <div>
-                  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
-                    <label class="ml-3">Variant tag</label>
-                    <div class="row">
-                      <div class="col-8">
-                        <select name="manual_rank" class="form-control ml-3">
-                          <option value="-1">Select a tag...</option>
-                          {% for rank, data in manual_rank_options.items() %}
-                            <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
-                              {{ data.label }}
-                            </option>
-                          {% endfor %}
-                        </select>
-                      </div>
-                      <div class="col-4">
-                        <button type="submit" class="btn btn-outline-secondary form-control">Save</button>
-                      </div>
-                    </div>
-                  </form>
+                  {{ variant_tag_button(variant, institute, case, manual_rank_options) }}
                 </div>
               </div>
               <div class="list-group mt-3">
                 <div>
-                  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
-                    <label class="ml-3">Dismiss variant</label>
-                    <div class="row">
-                      <div class="col-8 d-flex">
-                          <select multiple class="ml-3 selectpicker" title="Select categories..." name="dismiss_variant" id="dismiss_variant" >
-                          {% for rank, data in dismiss_variant_options.items() %}
-                            <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
-                              {{ data.label }}
-                            </option>
-                          {% endfor %}
-                        </select>
-                      </div>
-                      <div class="col-4">
-                        <button type="submit" class="btn btn-outline-secondary form-control">Save</button>
-                      </div>
-                    </div>
-                  </form>
+                  {{ dismiss_variant_button(variant, institute, case, dismiss_variant_options) }}
                 </div>
               </ul>
             </div> <!-- end of card -->
