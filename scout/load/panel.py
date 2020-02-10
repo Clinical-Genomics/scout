@@ -11,7 +11,7 @@ from pprint import pprint as pp
 
 from scout.utils.handle import get_file_handle
 from scout.parse.panel import get_panel_info, parse_panel_app_panel, parse_gene_panel
-from scout.utils.requests import get_request
+from scout.utils.scout_requests import get_request
 
 LOG = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ def load_panel(
     institute=None,
 ):
     """Load a manually curated gene panel into scout
-    
+
     Args:
         panel_path(str): path to gene panel file
         adapter(scout.adapter.MongoAdapter)
@@ -37,7 +37,7 @@ def load_panel(
         panel_type(str)
         panel_id(str)
         institute(str)
-    
+
     """
     panel_lines = get_file_handle(panel_path)
 
@@ -108,9 +108,9 @@ def load_panel(
 
 def load_panel_app(adapter, panel_id=None, institute="cust000"):
     """Load PanelApp panels into scout database
-    
-    If no panel_id load all PanelApp panels 
-    
+
+    If no panel_id load all PanelApp panels
+
     Args:
         adapter(scout.adapter.MongoAdapter)
         panel_id(str): The panel app panel id

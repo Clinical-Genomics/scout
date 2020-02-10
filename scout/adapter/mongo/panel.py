@@ -12,7 +12,7 @@ from bson import ObjectId
 
 from scout.parse.panel import parse_gene_panel, get_omim_panel_genes
 from scout.build import build_panel
-from scout.utils.requests import fetch_mim_files
+from scout.utils.scout_requests import fetch_mim_files
 from scout.utils.date import get_date
 
 from scout.exceptions import IntegrityError
