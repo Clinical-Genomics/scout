@@ -9,26 +9,22 @@ data but the gene definitions etc are reduced.
 and one admin user is added.
 
 """
-import datetime
+
 import logging
 import pathlib
-from pprint import pprint as pp
 
 import click
-import pymongo
 from flask.cli import current_app, with_appcontext
+from pymongo.errors import ServerSelectionTimeoutError
 # Adapter stuff
 from scout.adapter import MongoAdapter
-# from scout.demo.resources.generate_test_data import (generate_hgnc, generate_genemap2, generate_mim2genes,
-# generate_exac_genes, generate_ensembl_genes, generate_ensembl_transcripts, generate_hpo_files)
-from scout.demo import panel_path
 from scout.load.setup import setup_scout
-from scout.parse.panel import parse_gene_panel
 
 LOG = logging.getLogger(__name__)
 
 
 def abort_if_false(ctx, param, value):
+    """Small function to quit if flag is not used"""
     if not value:
         ctx.abort()
 
@@ -153,7 +149,7 @@ def database(
         "genes38_path": ensgenes38,
         "transcripts37_path": enstx37,
         "transcripts38_path": enstx38,
-        "hpogenes_path": hpo_to_genes,
+        "hpogenes_path": hpogenes,
         "hpoterms_path": hpoterms,
         "hpo_to_genes_path": hpo_to_genes,
         "hpo_disease_path": hpo_disease,
@@ -188,9 +184,7 @@ def database(
                 == "ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes"
             ):
                 resource_files["hpo_disease_path"] = str(path.resolve())
-    # pp(resource_files)
-    # raise click.Abort()
-    # try:
+
     setup_scout(
         adapter=adapter,
         institute_id=institute_name,
@@ -199,9 +193,6 @@ def database(
         api_key=api_key,
         resource_files=resource_files,
     )
-    # except Exception as err:
-    #     LOG.error(err)
-    #     raise click.Abort()
 
 
 @click.command("demo", short_help="Setup a scout demo instance")
@@ -260,25 +251,26 @@ def setup(context, institute, user_mail, user_name):
         "user_mail": user_mail,
     }
 
-    mongodb = current_app.config["MONGO_DBNAME"]
+    mongodb_name = current_app.config["MONGO_DBNAME"]
     client = current_app.config["MONGO_CLIENT"]
 
     if context.invoked_subcommand == "demo":
         # Modify the name of the database that will be created
         LOG.debug("Change database name to scout-demo")
-        mongodb = "scout-demo"
+        mongodb_name = "scout-demo"
 
-    database = client[mongodb]
+    mongo_database = client[mongodb_name]
     LOG.info("Test if mongod is running")
     try:
-        database.test.find_one()
+        mongo_database.test.find_one()
     except ServerSelectionTimeoutError as err:
         LOG.warning("Connection could not be established")
         LOG.warning("Please check if mongod is running")
+        LOG.warning(err)
         raise click.Abort()
 
-    setup_config["mongodb"] = mongodb
-    setup_config["adapter"] = MongoAdapter(database)
+    setup_config["mongodb"] = mongodb_name
+    setup_config["adapter"] = MongoAdapter(mongo_database)
     context.obj = setup_config
 
 
