@@ -5,6 +5,7 @@
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, severity_list, conservations, mappability %}
+{% from "variant/buttons.html" import variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -246,7 +247,7 @@
 {% endmacro %}
 
 {% macro panel_basics() %}
-  <div class="card mt-3 panel-default">
+  <div class="card panel-default">
     <div class="panel-heading">Basics</div>
     <div class="card-body">
       <table class="table table-sm">
@@ -308,79 +309,13 @@
           {% endfor %}
         </div>
       </ul>
-      <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
-        <label class="mt-3">Variant tag</label>
-        <div class="row">
-          <div class="col-8">
-            <select name="manual_rank" class="form-control">
-              <option value="-1">Select a tag...</option>
-              {% for rank, data in manual_rank_options.items() %}
-                <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
-                  {{ data.label }}
-                </option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-4">
-            <button type="submit" name="manual_rank" class="btn btn-outline-secondary form-control">Save</button>
-          </div>
-        </div>
-      </form>
+      {{ variant_tag_button(variant, institute, case, manual_rank_options) }}
       {% if cancer %}
-      <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
-        <label class="mt-3">Variant tier</label>
-        <div class="row">
-          <div class="col-8">
-            <select name="cancer_tier" class="form-control">
-              <option value="-1">Select a tag...</option>
-              {% for rank, data in cancer_tier_options.items() %}
-                <option {% if rank == variant.cancer_tier %} selected {% endif %} value="{{ rank }}">
-                  {{ data.label }}
-                </option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-4">
-            <button type="submit" name="manual_rank" class="btn btn-outline-secondary form-control">Save</button>
-          </div>
-        </div>
-      </form>
+       {{ variant_tier_button(variant, institute, case, cancer_tier_options) }}
       {% endif %}
-      <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
-        <label class="mt-3">Dismiss variant</label>
-        <div class="row">
-          <div class="col-8">
-            <select multiple="multiple" name="dismiss_variant" id="dismiss_variant" class="selectpicker">
-              {% for rank, data in dismiss_variant_options.items() %}
-                <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
-                  {{ data.label }}
-                </option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-4">
-            <button type="submit" name="dismiss" class="btn btn-outline-secondary form-control">Save</button>
-          </div>
-        </div>
-      </form>
+        {{ dismiss_variant_button(variant, institute, case, dismiss_variant_options) }}
       {% if not cancer %}
-      <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
-        <label class="mt-3">Mosaic Tags</label>
-        <div class="row">
-          <div class="col-8">
-            <select multiple="multiple" name="mosaic_tags" id="mosaic_tags" class="selectpicker" style="width: 90%;">
-              {% for rank, data in mosaic_variant_options.items() %}
-                <option {% if rank~"" in variant.mosaic_tags %} selected {% endif %} value="{{ rank }}">
-                  {{ data.label }}
-                </option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-4">
-            <button type="submit" name="mosaic" class="btn btn-outline-secondary form-control">Save</button>
-          </div>
-        </div>
-      </form>
+        {{ mosaic_variant_button(variant, institute, case, mosaic_variant_options) }}
       {% endif %}
       {{ acmg_form(variant.acmg_classification.code if variant.acmg_classification) }}
       <div class="mt-3">
