@@ -12,7 +12,7 @@ from pprint import pprint as pp
 import click
 import coloredlogs
 
-from scout.utils.requests import (
+from scout.utils.scout_requests import (
     fetch_hgnc,
     fetch_mim_files,
     fetch_exac_constraint,
@@ -53,7 +53,7 @@ LOG = logging.getLogger(__name__)
 
 def get_reduced_hpo_terms(hpo_terms):
     """Return a reduced version of the hpo terms
-    
+
     Args:
         hpo_terms(set(str)): Set of choosen terms that should be included
 
@@ -101,7 +101,7 @@ def get_reduced_hpo_terms(hpo_terms):
 
 def remove_file(path):
     """Check if a file exists and remove it if so
-    
+
     Args:
         path(str)
     """
@@ -116,11 +116,11 @@ def remove_file(path):
 
 def generate_hgnc(genes):
     """Generate lines from a file with reduced hgnc information
-    
+
     Args:
         genes(dict): A dictionary with hgnc_id as key and hgnc_symbol as value
         outpath(str): Defaults to hgnc_reduced_path
-    
+
     Yields:
         print_line(str): Lines from the reduced file
     """
@@ -159,7 +159,7 @@ def generate_hgnc(genes):
 
 def generate_genemap2(genes, api_key):
     """Generate a reduced file with omim genemap2 information
-    
+
     Args:
         genes(dict): A dictionary with hgnc_symbol as key and hgnc_id as value
         api_key(str)
@@ -188,7 +188,7 @@ def generate_genemap2(genes, api_key):
 
 def generate_mim2genes(genes, api_key):
     """Generate a reduced file with omim mim2gene information
-    
+
     Args:
         genes(dict): A dictionary with hgnc_symbol as key and hgnc_id as value
         api_key(str)
@@ -216,7 +216,7 @@ def generate_mim2genes(genes, api_key):
 
 def generate_exac_genes(genes):
     """Generate a reduced file with omim mim2gene information
-    
+
     Args:
         genes(dict): A dictionary with hgnc_symbol as key and hgnc_id as value
         outpath(str)
@@ -243,7 +243,7 @@ def generate_ensembl_genes(genes, silent=False, build=None):
         genes(dict): A dictionary with hgnc_symbol as key and hgnc_id as value
         silent(bool): If genes should be written to file or not
         build(str): What build to use. Defaults to 37
-    
+
     Yields:
         print_line(str):  Lines from the reduced file
     """
@@ -288,14 +288,14 @@ def generate_ensembl_genes(genes, silent=False, build=None):
 
 def generate_ensembl_transcripts(ensembl_genes, build=None):
     """Generate a file with reduced ensembl gene information
-    
+
     Args:
         genes(dict): A dictionary with ensembl_id as key and hgnc_id as value
         build(str): What build to use. Defaults to 37
-    
+
     Yields:
         print_line(str):  Lines from the reduced file
-    
+
     """
     build = build or "37"
 
@@ -332,10 +332,10 @@ def generate_ensembl_transcripts(ensembl_genes, build=None):
 
 def generate_hpo_genes(genes):
     """Generate the lines from a reduced hpo genes file
-    
+
     Args:
         genes(dict): A map from hgnc_symbol to hgnc_id
-    
+
     Yields:
         line(str): Lines from hpo with connection to genes
     """
@@ -361,10 +361,10 @@ def generate_hpo_genes(genes):
 
 def generate_hpo_terms(genes):
     """Generate the lines from a reduced hpo terms file
-    
+
     Args:
         genes(dict): A map from hgnc_symbol to hgnc_id
-    
+
     Yields:
         line(str): Lines from hpo with connection to genes
     """
@@ -428,7 +428,7 @@ def generate_hpo_files(genes):
 
 def read_panel_file(lines):
     """Read a file with gene ids and names.
-    
+
     A file with genes. First column hgnc id, secon column hgnc symbol
     """
     genes = {}

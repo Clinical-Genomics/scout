@@ -46,7 +46,7 @@ from scout.load import load_hgnc_genes, load_hpo, load_transcripts
 
 from scout.utils.handle import get_file_handle
 
-from scout.utils.requests import (
+from scout.utils.scout_requests import (
     fetch_mim_files,
     fetch_hpo_genes,
     fetch_ensembl_genes,

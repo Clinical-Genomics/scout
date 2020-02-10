@@ -7,7 +7,7 @@ import click
 from flask.cli import with_appcontext, current_app
 from scout.server.extensions import store
 
-from scout.utils.requests import fetch_mim_files
+from scout.utils.scout_requests import fetch_mim_files
 from scout.utils.date import get_date
 
 from scout.load.panel import load_panel_app, load_panel

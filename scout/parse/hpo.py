@@ -5,10 +5,10 @@ LOG = logging.getLogger(__name__)
 
 def parse_hpo_phenotype(hpo_line):
     """Parse hpo phenotype
-    
+
         Args:
             hpo_line(str): A iterable with hpo phenotype lines
-    
+
         Yields:
             hpo_info(dict)
     """
@@ -23,10 +23,10 @@ def parse_hpo_phenotype(hpo_line):
 
 def parse_hpo_gene(hpo_line):
     """Parse hpo gene information
-    
+
         Args:
             hpo_line(str): A iterable with hpo phenotype lines
-    
+
         Yields:
             hpo_info(dict)
     """
@@ -43,7 +43,7 @@ def parse_hpo_gene(hpo_line):
 
 def parse_hpo_disease(hpo_line):
     """Parse hpo disease line
-    
+
         Args:
             hpo_line(str)
     """
@@ -67,15 +67,15 @@ def parse_hpo_disease(hpo_line):
 
 def parse_hpo_phenotypes(hpo_lines):
     """Parse hpo phenotypes
-    
+
         Group the genes that a phenotype is associated to in 'genes'
-    
+
     Args:
         hpo_lines(iterable(str)): A file handle to the hpo phenotypes file
-    
+
     Returns:
         hpo_terms(dict): A dictionary with hpo_ids as keys and terms as values
-    
+
         {
             <hpo_id>: {
                 'hpo_id':str,
@@ -105,10 +105,10 @@ def parse_hpo_phenotypes(hpo_lines):
 
 def parse_hpo_diseases(hpo_lines):
     """Parse hpo disease phenotypes
-    
+
         Args:
             hpo_lines(iterable(str))
-        
+
         Returns:
             diseases(dict): A dictionary with mim numbers as keys
     """
@@ -151,10 +151,10 @@ def parse_hpo_diseases(hpo_lines):
 
 def parse_hpo_to_genes(hpo_lines):
     """Parse the map from hpo term to hgnc symbol
-    
+
     Args:
         lines(iterable(str)):
-    
+
     Yields:
         hpo_to_gene(dict): A dictionary with information on how a term map to a hgnc symbol
     """
@@ -170,10 +170,10 @@ def parse_hpo_to_genes(hpo_lines):
 
 def parse_hpo_genes(hpo_lines):
     """Parse HPO gene information
-    
+
         Args:
             hpo_lines(iterable(str))
-        
+
         Returns:
             diseases(dict): A dictionary with hgnc symbols as keys
     """
@@ -215,14 +215,14 @@ def parse_hpo_genes(hpo_lines):
 
 def get_incomplete_penetrance_genes(hpo_lines):
     """Get a set with all genes that have incomplete penetrance according to HPO
-    
+
     Args:
         hpo_lines(iterable(str))
-    
+
     Returns:
-        incomplete_penetrance_genes(set): A set with the hgnc symbols of all 
+        incomplete_penetrance_genes(set): A set with the hgnc symbols of all
                                           genes with incomplete penetrance
-        
+
     """
     genes = parse_hpo_genes(hpo_lines)
     incomplete_penetrance_genes = set()
@@ -293,9 +293,9 @@ def get_all_ancestors(hpo_tree, term, res=set()):
 
 def build_hpo_tree(hpo_lines):
     """Build a tree with all hpo terms
-    
+
     A tree is a dictionary where all entries have children and parents
-    
+
     """
     hpo_tree = {}
     hpo_tree = {term["hpo_id"]: term for term in parse_hpo_obo(hpo_lines)}
@@ -328,7 +328,7 @@ if __name__ == "__main__":
     import sys
     from pprint import pprint as pp
     from scout.utils.handle import get_file_handle
-    from scout.utils.requests import fetch_hpo_terms
+    from scout.utils.scout_requests import fetch_hpo_terms
 
     if not len(sys.argv) > 1:
         file_handle = fetch_hpo_terms()
