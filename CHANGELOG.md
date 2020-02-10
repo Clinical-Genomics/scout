@@ -15,6 +15,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Cancer case HPO panel variants link
 
+### Changed
+- Renamed `requests` file to `scout_requests`
+
+
 ## [4.11.1]
 
 ### Fixed
