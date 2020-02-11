@@ -1,7 +1,7 @@
-
+{% from "variants/utils.html" import tier_cell %}
 {% from "variants/utils.html" import tier_cell %}
 
-{% macro causatives_list(causatives, institute, case) %}
+{% macro causatives_list(causatives, partial_causatives, institute, case) %}
   <div class="card panel-default">
     <div data-toggle='tooltip' class="panel-heading" title="Displays all variants that have been marked causative for this case">
       Causative variants
@@ -128,7 +128,7 @@
   </div>
 {% endmacro %}
 
-{% macro suspects_list(suspects, institute, case, manual_rank_options) %}
+{% macro suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) %}
   <div class="card panel-default">
     <div data-toggle='tooltip' class="panel-heading panel-heading-secondary"
          title="Displays all variants that has been pinned for this case">

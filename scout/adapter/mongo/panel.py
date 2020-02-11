@@ -385,6 +385,26 @@ class PanelHandler(object):
 
         return updated_panel
 
+    def reset_pending(self, panel_obj):
+        """Reset the pending status of a gene panel
+
+        Args:
+            panel_obj(dict): panel in database to update
+
+        Returns:
+            updated_panel(dict): the updated gene panel
+        """
+
+        if "pending" in panel_obj:
+            del panel_obj["pending"]
+
+        updated_panel = self.panel_collection.find_one_and_replace(
+            {"_id": panel_obj["_id"]},
+            panel_obj,
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
+        return updated_panel
+
     def apply_pending(self, panel_obj, version):
         """Apply the pending changes to an existing gene panel or create a new version of the same panel.
 
