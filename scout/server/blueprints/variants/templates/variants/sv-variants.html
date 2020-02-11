@@ -232,14 +232,17 @@
       return true;
     }
 
-    $('[data-toggle="tooltip"]').tooltip();
-    $(function () {
-      $('[data-toggle="popover"]').popover({
-        container: 'body',
-      });
+    $('select[multiple]').selectpicker({
+      width: '100%'
+    });
 
-      $('select[multiple]').selectpicker({
-        width: '100%'
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+      $('[data-toggle="popover"]').popover({
+        sanitizeFn: function (content) {
+          return DOMPurify.sanitize(content)
+        },
+        container: 'body',
       });
     })
   </script>
