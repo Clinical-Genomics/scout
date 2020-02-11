@@ -101,7 +101,7 @@
                     <label class="ml-3">Dismiss variant</label>
                     <div class="row">
                       <div class="col-8 d-flex">
-                          <select multiple class="ml-3 selectpicker" title="Select categories..." name="dismiss_variant" id="dismiss_variant" >
+                          <select multiple class="ml-3 selectpicker" title="Select categories..." name="dismiss_variant" id="dismiss_variant" data-width="100%">
                           {% for rank, data in dismiss_variant_options.items() %}
                             <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
                               {{ data.label }}
