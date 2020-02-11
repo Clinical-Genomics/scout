@@ -1,5 +1,4 @@
 """Code for handling downloading of files used by scout from CLI"""
-import logging
 
 import click
 
@@ -9,8 +8,6 @@ from .exac import exac as exac_command
 from .hgnc import hgnc as hgnc_command
 from .hpo import hpo as hpo_command
 from .omim import omim as omim_command
-
-LOG = logging.getLogger(__name__)
 
 
 @click.group()

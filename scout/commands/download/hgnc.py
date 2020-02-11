@@ -17,7 +17,7 @@ def print_hgnc(out_dir):
     """
     file_name = "hgnc.txt"
     file_path = out_dir / file_name
-    LOG.info("Print HGNC genes to %s", file_path)
+    LOG.info("Downloads HGNC genes to %s", file_path)
     with file_path.open("w", encoding="utf-8") as outfile:
         for line in fetch_hgnc():
             outfile.write(line + "\n")

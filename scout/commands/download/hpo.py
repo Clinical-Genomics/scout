@@ -19,28 +19,28 @@ def print_hpo(out_dir):
     """
     hpo_file_name = "hpo.obo"
     hpo_file_path = out_dir / hpo_file_name
-    LOG.info("Print HPO terms to %s", hpo_file_path)
+    LOG.info("Download HPO terms to %s", hpo_file_path)
     with hpo_file_path.open("w", encoding="utf-8") as outfile:
         for line in fetch_hpo_terms():
             outfile.write(line + "\n")
 
     hpo_file_name = "ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
     hpo_file_path = out_dir / hpo_file_name
-    LOG.info("Print HPO genes to %s", hpo_file_path)
+    LOG.info("Download HPO genes to %s", hpo_file_path)
     with hpo_file_path.open("w", encoding="utf-8") as outfile:
         for line in fetch_hpo_genes():
             outfile.write(line + "\n")
 
     hpo_file_name = "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
     hpo_file_path = out_dir / hpo_file_name
-    LOG.info("Print HPO TO genes to %s", hpo_file_path)
+    LOG.info("Download HPO TO genes to %s", hpo_file_path)
     with hpo_file_path.open("w", encoding="utf-8") as outfile:
         for line in fetch_hpo_to_genes():
             outfile.write(line + "\n")
 
     hpo_file_name = "ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt"
     hpo_file_path = out_dir / hpo_file_name
-    LOG.info("Print HPO disease %s", hpo_file_path)
+    LOG.info("Download HPO disease %s", hpo_file_path)
     with hpo_file_path.open("w", encoding="utf-8") as outfile:
         for line in fetch_hpo_phenotype_to_terms():
             outfile.write(line + "\n")

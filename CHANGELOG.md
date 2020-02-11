@@ -8,7 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
-- Accepts `alignemnt_path` in load config to pass bam/cram files
+- Accepts `alignment_path` in load config to pass bam/cram files
 - Display all phenotypes on variant page
 - Display hgvs coordinates on pinned and causatives
 - Clear panel pending changes

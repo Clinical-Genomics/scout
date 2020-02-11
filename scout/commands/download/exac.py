@@ -17,7 +17,7 @@ def print_exac(out_dir):
     """
     file_name = "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt"
     file_path = out_dir / file_name
-    LOG.info("Print ExAC gene info to %s", file_path)
+    LOG.info("Download ExAC gene info to %s", file_path)
     with file_path.open("w", encoding="utf-8") as outfile:
         for line in fetch_exac_constraint():
             outfile.write(line + "\n")

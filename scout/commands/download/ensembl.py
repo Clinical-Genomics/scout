@@ -11,11 +11,31 @@ from scout.utils.scout_requests import (fetch_ensembl_exons,
 LOG = logging.getLogger(__name__)
 
 
-def print_ensembl(file_name, out_dir, fetch_function, genome_build=None):
-    """Fetch and print ensembl info to file"""
+def print_ensembl(out_dir, resource_type, genome_build=None):
+    """Fetch and print ensembl info to file
+
+    If no genome build is used both builds will be fetched
+
+    Args:
+        out_dir(Path): Path to existing directory
+        resource_type(str): inb ['genes', 'transcripts', 'exons']
+        genome_build
+
+    """
     builds = ["37", "38"]
     if genome_build:
         builds = [genome_build]
+
+    LOG.info("Fetching ensembl %s, build: %s", resource_type, ",".join(builds))
+    if resource_type == "genes":
+        file_name = "ensembl_genes_{}.txt"
+        fetch_function = fetch_ensembl_genes
+    elif resource_type == "transcripts":
+        file_name = "ensembl_transcripts_{}.txt"
+        fetch_function = fetch_ensembl_transcripts
+    else:
+        file_name = "ensembl_exons_{}.txt"
+        fetch_function = fetch_ensembl_exons
 
     for build in builds:
         file_path = out_dir / file_name.format(build)
@@ -23,44 +43,13 @@ def print_ensembl(file_name, out_dir, fetch_function, genome_build=None):
         with file_path.open("w", encoding="utf-8") as outfile:
             for line in fetch_function(build=build):
                 outfile.write(line + "\n")
-        LOG.info("Ensembl info printed")
-
-
-def print_ensembl_genes(out_dir, build=None):
-    """Print ensembl gene files to a directory
-
-    Args:
-        out_dir(Path)
-        build(str): If only one build should be printed
-    """
-    file_name = "ensembl_genes_{}.txt"
-    print_ensembl(file_name, out_dir, fetch_ensembl_genes, build)
-
-
-def print_ensembl_transcripts(out_dir, build=None):
-    """Print ensembl transcript files to a directory
-
-    Args:
-        out_dir(Path)
-    """
-    file_name = "ensembl_transcripts_{}.txt"
-    print_ensembl(file_name, out_dir, fetch_ensembl_transcripts, build)
-
-
-def print_ensembl_exons(out_dir, build=None):
-    """Print ensembl exon files to a directory
-
-    Args:
-        out_dir(Path)
-    """
-    file_name = "ensembl_exons_{}.txt"
-    print_ensembl(file_name, out_dir, fetch_ensembl_exons, build)
+        LOG.info("Ensembl info saved")
 
 
 @click.command("ensembl", help="Download files with ensembl info")
 @click.option("-o", "--out-dir", default="./", show_default=True)
 @click.option(
-    "--skip-tx", is_flag=True, help="If only ensembl genes should be downloaded"
+    "--skip-tx", is_flag=True, help="Only download ensembl genes, skip transcripts"
 )
 @click.option("--exons", is_flag=True, help="If ensembl exons should be downloaded")
 @click.option(
@@ -71,10 +60,10 @@ def ensembl(out_dir, skip_tx, exons, build):
     out_dir = pathlib.Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    print_ensembl_genes(out_dir, build)
+    print_ensembl(out_dir, "genes", build)
 
     if not skip_tx:
-        print_ensembl_transcripts(out_dir, build)
+        print_ensembl(out_dir, "transcripts", build)
 
     if exons:
-        print_ensembl_exons(out_dir, build)
+        print_ensembl(out_dir, "exons", build)

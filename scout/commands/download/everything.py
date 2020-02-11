@@ -6,8 +6,7 @@ import pathlib
 
 import click
 
-from .ensembl import (print_ensembl_exons, print_ensembl_genes,
-                      print_ensembl_transcripts)
+from .ensembl import print_ensembl
 from .exac import print_exac
 from .hgnc import print_hgnc
 from .hpo import print_hpo
@@ -20,7 +19,7 @@ LOG = logging.getLogger(__name__)
 @click.option("--api-key", help="Specify the api key")
 @click.option("-o", "--out-dir", default="./", show_default=True)
 @click.option(
-    "--skip-tx", is_flag=True, help="If only ensembl genes should be downloaded"
+    "--skip-tx", is_flag=True, help="Only download ensembl genes, skip transcripts"
 )
 @click.option("--exons", is_flag=True, help="If ensembl exons should be downloaded")
 @click.option(
@@ -39,10 +38,10 @@ def everything(out_dir, api_key, skip_tx, exons, build):
     print_hpo(out_dir)
     print_hgnc(out_dir)
 
-    print_ensembl_genes(out_dir, build)
+    print_ensembl(out_dir, "genes", build)
 
     if not skip_tx:
-        print_ensembl_transcripts(out_dir, build)
+        print_ensembl(out_dir, "transcripts", build)
 
     if exons:
-        print_ensembl_exons(out_dir, build)
+        print_ensembl(out_dir, "exons", build)
