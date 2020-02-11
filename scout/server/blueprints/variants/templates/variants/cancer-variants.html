@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
-{% from "variants/utils.html" import cancer_filters, tier_cell %}
+{% from "variants/utils.html" import cancer_filters, tier_cell, cell_rank %}
 
 
 {% block title %}
@@ -68,7 +68,7 @@
           {% else %}
             <tr>
           {% endif %}
-              <td>{{ variant.variant_rank }}</td>
+              <td class="text-left">{{cell_rank(variant, institute, case, form)}}</td>
             <td>
               <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
                                   variant_id=variant._id, cancer='yes') }}">
