@@ -18,10 +18,14 @@ def print_ensembl(out_dir, resource_type, genome_build=None):
 
     Args:
         out_dir(Path): Path to existing directory
-        resource_type(str): inb ['genes', 'transcripts', 'exons']
+        resource_type(str): in ['genes', 'transcripts', 'exons']
         genome_build
 
     """
+    if not resource_type in ["genes", "transcripts", "exons"]:
+        LOG.error("Invalid resource type")
+        raise SyntaxError()
+
     builds = ["37", "38"]
     if genome_build:
         builds = [genome_build]
