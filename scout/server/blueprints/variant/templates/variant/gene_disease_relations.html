@@ -1,0 +1,136 @@
+
+{% macro omim_phenotypes(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">OMIM</div>
+    <div class="card-body">
+      <div class="table-responsive fixed-panel">
+        <table class="table table-bordered table-condensed table-sm">
+          <thead class="thead-light">
+            <tr>
+              <th>Gene</th>
+              <th>Phenotype</th>
+              <th>Inheritance model</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for gene in variant.genes %}
+              {% if gene.common %}
+                {% for disease_term in gene.common.phenotypes %}
+                  <tr>
+                    <td>
+                        <a href="http://omim.org/entry/{{ gene.common.omim_id }}" target="_blank">
+                          {{ gene.common.hgnc_symbol }}
+                        </a>
+                    </td>
+                    <td>
+                      <a href="http://omim.org/entry/{{ disease_term.mim_number|replace('OMIM:', '') }}" target="_blank">
+                        {{ disease_term.description }}
+                      </a>
+                    </td>
+                    <td>{{ disease_term.inheritance_models|join(', ') }}</td>
+                  </tr>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro inheritance_panel(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Gene annotations</div>
+    <div class="card-body">
+      <ul class="list-group">
+        <li class="list-group-item">
+          Variant inheritance models
+          <span class="float-right">
+            {% for model in variant.genetic_models|sort %}
+              <span class="badge badge-info">{{ model }}</span>
+            {% else %}
+              <span class="badge badge-warning">No models followed</span>
+            {% endfor %}
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro autozygosity_panel(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Autozygous region</div>
+    <div class="card-body">
+      <table class="table table-bordered table-fixed table-sm">
+        <tbody>
+          <tr>
+            <td>
+              Length
+              <span class="float-right">{{ variant.azlength }}</span>
+            </td>
+            <td>
+              Qual
+              <span class="float-right">{{ variant.azqual }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro genemodels_panel(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Gene models</div>
+    <div class="card-body">
+      <table class="table table-bordered table-sm">
+        <thead class="thead-light">
+          <tr>
+            <th rowspan="2">Gene</th>
+            <th colspan="2">Inheritance</th>
+            <th colspan="2">Penetrance</th>
+          </tr>
+          <tr>
+            <th>OMIM</th>
+            <th>Manual</th>
+            <th>OMIM</th>
+            <th>Manual</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for gene in variant.genes %}
+            <tr>
+              <td>{{ gene.hgnc_symbol }}</td>
+              <td>
+                {% for model in gene.omim_inheritance %}
+                  <span class="badge badge-info">{{ model }}</span>
+                {% endfor %}
+              </td>
+              <td>
+                {% for model in gene.manual_inheritance %}
+                  <span class="badge badge-info">{{ model }}</span>
+                {% endfor %}
+              </td>
+              <td>
+                {% if gene.omim_penetrance %}
+                  <span class="badge badge-success">yes</span>
+                {% else %}
+                  <span class="badge badge-secondary">no</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if gene.manual_penetrance %}
+                  <span class="badge badge-success">yes</span>
+                {% else %}
+                  <span class="badge badge-secondary">no</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endmacro %}

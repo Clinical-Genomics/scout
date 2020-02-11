@@ -4,20 +4,36 @@ from datetime import date
 from flask import url_for
 from flask_login import current_user
 
-from scout.constants import (ACMG_COMPLETE_MAP, ACMG_CRITERIA, ACMG_MAP,
-                             ACMG_OPTIONS, CALLERS, CANCER_TIER_OPTIONS,
-                             DISMISS_VARIANT_OPTIONS, MANUAL_RANK_OPTIONS,
-                             MOSAICISM_OPTIONS, VERBS_MAP,
-                             CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS)
+from scout.constants import (
+    ACMG_COMPLETE_MAP,
+    ACMG_CRITERIA,
+    ACMG_MAP,
+    ACMG_OPTIONS,
+    CALLERS,
+    CANCER_TIER_OPTIONS,
+    DISMISS_VARIANT_OPTIONS,
+    MANUAL_RANK_OPTIONS,
+    MOSAICISM_OPTIONS,
+    VERBS_MAP,
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+)
 from scout.parse.variant.ids import parse_document_id
 from scout.server.links import ensembl, get_variant_links
-from scout.server.utils import (institute_and_case, user_institutes,
-                                variant_case)
-from scout.utils.requests import fetch_refseq_version
+from scout.server.utils import institute_and_case, user_institutes, variant_case
+from scout.utils.scout_requests import fetch_refseq_version
 
-from .utils import (add_gene_info, callers, clinsig_human, default_panels,
-                    end_position, evaluation, frequency, is_affected,
-                    predictions, sv_frequencies)
+from .utils import (
+    add_gene_info,
+    callers,
+    clinsig_human,
+    default_panels,
+    end_position,
+    evaluation,
+    frequency,
+    is_affected,
+    predictions,
+    frequencies,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -134,9 +150,8 @@ def variant(
 
     # Add general variant links
     variant_obj.update(get_variant_links(variant_obj, int(genome_build)))
-    if variant_type == "sv":
-        variant_obj["frequencies"] = sv_frequencies(variant_obj)
-    elif variant_type in ["snv", "cancer"]:
+    variant_obj["frequencies"] = frequencies(variant_obj)
+    if variant_type in ["snv", "cancer"]:
         # This is to convert a summary of frequencies to a string
         variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
@@ -183,8 +198,11 @@ def variant(
     variant_obj["end_chrom"] = variant_obj.get("end_chrom", variant_obj["chromosome"])
 
     dismiss_options = DISMISS_VARIANT_OPTIONS
-    if case_obj.get('track') == 'cancer':
-        dismiss_options = {**DISMISS_VARIANT_OPTIONS, **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS}
+    if case_obj.get("track") == "cancer":
+        dismiss_options = {
+            **DISMISS_VARIANT_OPTIONS,
+            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+        }
 
     return {
         "institute": institute_obj,

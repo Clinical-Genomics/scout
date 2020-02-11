@@ -18,7 +18,8 @@ Uses 'DV' to describe number of paired ends that supports the event and
 
 """
 
-GENOTYPE_MAP = {0: '0', 1: '1', -1:'.'}
+GENOTYPE_MAP = {0: "0", 1: "1", -1: "."}
+
 
 def parse_genotypes(variant, individuals, individual_positions):
     """Parse the genotype calls for a variant
@@ -32,9 +33,10 @@ def parse_genotypes(variant, individuals, individual_positions):
     """
     genotypes = []
     for ind in individuals:
-        pos = individual_positions[ind['individual_id']]
+        pos = individual_positions[ind["individual_id"]]
         genotypes.append(parse_genotype(variant, ind, pos))
     return genotypes
+
 
 def parse_genotype(variant, ind, pos):
     """Get the genotype information in the proper format
@@ -79,19 +81,20 @@ def parse_genotype(variant, ind, pos):
 
     """
     gt_call = {}
-    ind_id = ind['individual_id']
+    ind_id = ind["individual_id"]
 
-    gt_call['individual_id'] = ind_id
-    gt_call['display_name'] = ind['display_name']
+    gt_call["individual_id"] = ind_id
+    gt_call["display_name"] = ind["display_name"]
 
     # Fill the object with the relevant information:
-    if 'GT' in variant.FORMAT:
+    if "GT" in variant.FORMAT:
         genotype = variant.genotypes[pos]
         ref_call = genotype[0]
         alt_call = genotype[1]
 
-        gt_call['genotype_call'] = '/'.join([GENOTYPE_MAP[ref_call],
-                                             GENOTYPE_MAP[alt_call]])
+        gt_call["genotype_call"] = "/".join(
+            [GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]]
+        )
 
     paired_end_alt = None
     paired_end_ref = None
@@ -100,9 +103,9 @@ def parse_genotype(variant, ind, pos):
 
     # Check if PE is annotated
     # This is the number of paired end reads that supports the variant
-    if 'PE' in variant.FORMAT:
+    if "PE" in variant.FORMAT:
         try:
-            value = int(variant.format('PE')[pos])
+            value = int(variant.format("PE")[pos])
             if not value < 0:
                 paired_end_alt = value
         except ValueError as e:
@@ -110,8 +113,8 @@ def parse_genotype(variant, ind, pos):
 
     # Check if PR is annotated
     # Number of paired end reads that supports ref and alt
-    if 'PR' in variant.FORMAT:
-        values = variant.format('PR')[pos]
+    if "PR" in variant.FORMAT:
+        values = variant.format("PR")[pos]
         try:
             alt_value = int(values[1])
             ref_value = int(values[0])
@@ -123,8 +126,8 @@ def parse_genotype(variant, ind, pos):
             pass
 
     # Check if 'SR' is annotated
-    if 'SR' in variant.FORMAT:
-        values = variant.format('SR')[pos]
+    if "SR" in variant.FORMAT:
+        values = variant.format("SR")[pos]
         alt_value = 0
         ref_value = 0
         if len(values) == 1:
@@ -138,80 +141,79 @@ def parse_genotype(variant, ind, pos):
             split_read_ref = ref_value
 
     # Number of paired ends that supports the event
-    if 'DV' in variant.FORMAT:
-        values = variant.format('DV')[pos]
+    if "DV" in variant.FORMAT:
+        values = variant.format("DV")[pos]
         alt_value = int(values[0])
         if not alt_value < 0:
             paired_end_alt = alt_value
 
     # Number of paired ends that supports the reference
-    if 'DR' in variant.FORMAT:
-        values = variant.format('DR')[pos]
+    if "DR" in variant.FORMAT:
+        values = variant.format("DR")[pos]
         ref_value = int(values[0])
         if not alt_value < 0:
             paired_end_ref = ref_value
 
     # Number of split reads that supports the event
-    if 'RV' in variant.FORMAT:
-        values = variant.format('RV')[pos]
+    if "RV" in variant.FORMAT:
+        values = variant.format("RV")[pos]
         alt_value = int(values[0])
         if not alt_value < 0:
             split_read_alt = alt_value
 
     # Number of split reads that supports the reference
-    if 'RR' in variant.FORMAT:
-        values = variant.format('RR')[pos]
+    if "RR" in variant.FORMAT:
+        values = variant.format("RR")[pos]
         ref_value = int(values[0])
         if not ref_value < 0:
             split_read_ref = ref_value
 
-
     alt_depth = int(variant.gt_alt_depths[pos])
     if alt_depth == -1:
-        if 'VD' in variant.FORMAT:
-            alt_depth = int(variant.format('VD')[pos][0])
+        if "VD" in variant.FORMAT:
+            alt_depth = int(variant.format("VD")[pos][0])
 
-        if (paired_end_alt != None or split_read_alt != None):
+        if paired_end_alt != None or split_read_alt != None:
             alt_depth = 0
             if paired_end_alt:
                 alt_depth += paired_end_alt
             if split_read_alt:
                 alt_depth += split_read_alt
 
-    gt_call['alt_depth'] = alt_depth
+    gt_call["alt_depth"] = alt_depth
 
     ref_depth = int(variant.gt_ref_depths[pos])
     if ref_depth == -1:
-        if (paired_end_ref != None or split_read_ref != None):
+        if paired_end_ref != None or split_read_ref != None:
             ref_depth = 0
             if paired_end_ref:
                 ref_depth += paired_end_ref
             if split_read_ref:
                 ref_depth += split_read_ref
 
-    gt_call['ref_depth'] = ref_depth
+    gt_call["ref_depth"] = ref_depth
 
     alt_frequency = float(variant.gt_alt_freqs[pos])
     if alt_frequency == -1:
-        if 'AF' in variant.FORMAT:
-            alt_frequency = float(variant.format('AF')[pos][0])
+        if "AF" in variant.FORMAT:
+            alt_frequency = float(variant.format("AF")[pos][0])
 
     read_depth = int(variant.gt_depths[pos])
     if read_depth == -1:
         # If read depth could not be parsed by cyvcf2, try to get it manually
-        if 'DP' in variant.FORMAT:
-            read_depth = int(variant.format('DP')[pos][0])
-        elif (alt_depth != -1 or ref_depth != -1):
+        if "DP" in variant.FORMAT:
+            read_depth = int(variant.format("DP")[pos][0])
+        elif alt_depth != -1 or ref_depth != -1:
             read_depth = 0
             if alt_depth != -1:
                 read_depth += alt_depth
             if ref_depth != -1:
                 read_depth += alt_depth
 
-    gt_call['read_depth'] = read_depth
+    gt_call["read_depth"] = read_depth
 
-    gt_call['alt_frequency'] = alt_frequency
+    gt_call["alt_frequency"] = alt_frequency
 
-    gt_call['genotype_quality'] = int(variant.gt_quals[pos])
+    gt_call["genotype_quality"] = int(variant.gt_quals[pos])
 
     return gt_call

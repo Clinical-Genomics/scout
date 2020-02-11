@@ -11,27 +11,22 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 
-@click.command('cases', short_help='Display cases')
-@click.option('-i', '--institute',
-    help="Which institute to show cases from"
+@click.command("cases", short_help="Display cases")
+@click.option("-i", "--institute", help="Which institute to show cases from")
+@click.option("-d", "--display-name", help="Search with display name")
+@click.option("-c", "--case-id", help="Search for a specific case")
+@click.option(
+    "--nr-variants", is_flag=True, help="Show number of clinical and research variants"
 )
-@click.option('-d', '--display-name',
-    help="Search with display name"
-)
-@click.option('-c', '--case-id',
-    help="Search for a specific case"
-)
-@click.option('--nr-variants',
+@click.option(
+    "--similar",
     is_flag=True,
-    help="Show number of clinical and research variants"
+    help="Show the cases that are phenotypic similar to a given case",
 )
-@click.option('--similar',
-    is_flag=True,
-    help="Show the cases that are phenotypic similar to a given case"
-)
-@click.option('--variants-treshold',
+@click.option(
+    "--variants-treshold",
     default=0,
-    help="Only show cases with more variants than treshold"
+    help="Only show cases with more variants than treshold",
 )
 @with_appcontext
 def cases(institute, display_name, case_id, nr_variants, variants_treshold, similar):
@@ -51,7 +46,7 @@ def cases(institute, display_name, case_id, nr_variants, variants_treshold, simi
                 return
             click.echo("#case_id\tscore")
             for i in similar:
-                click.echo('\t'.join([i[0], str(i[1])]))
+                click.echo("\t".join([i[0], str(i[1])]))
             return
 
     else:
@@ -62,7 +57,7 @@ def cases(institute, display_name, case_id, nr_variants, variants_treshold, simi
         LOG.info("No cases could be found")
         return
 
-    header = ['case_id', 'display_name', 'institute']
+    header = ["case_id", "display_name", "institute"]
 
     if variants_treshold:
         LOG.info("Only show cases with more than %s variants", variants_treshold)
@@ -70,29 +65,28 @@ def cases(institute, display_name, case_id, nr_variants, variants_treshold, simi
 
     if nr_variants:
         LOG.info("Displaying number of variants for each case")
-        header.append('clinical')
-        header.append('research')
+        header.append("clinical")
+        header.append("research")
 
-
-    click.echo("#"+'\t'.join(header))
+    click.echo("#" + "\t".join(header))
     for model in models:
         output_str = "{:<12}\t{:<12}\t{:<12}"
-        output_values = [model['_id'],model['display_name'],model['owner']]
+        output_values = [model["_id"], model["display_name"], model["owner"]]
         if nr_variants:
             output_str += "\t{:<12}\t{:<12}"
             nr_clinical = 0
             nr_research = 0
-            variants = adapter.variant_collection.find({'case_id':model['_id']})
+            variants = adapter.variant_collection.find({"case_id": model["_id"]})
             i = 0
             for i, var in enumerate(variants, 1):
-                if var['variant_type'] == 'clinical':
+                if var["variant_type"] == "clinical":
                     nr_clinical += 1
                 else:
                     nr_research += 1
             output_values.extend([nr_clinical, nr_research])
 
             if variants_treshold and i < variants_treshold:
-                LOG.debug("Case %s had to few variants, skipping", model['_id'])
+                LOG.debug("Case %s had to few variants, skipping", model["_id"])
                 continue
 
         click.echo(output_str.format(*output_values))

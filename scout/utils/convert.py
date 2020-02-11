@@ -6,6 +6,7 @@ def isfloat(x):
     else:
         return True
 
+
 def isint(x):
     try:
         a = float(x)
@@ -15,11 +16,13 @@ def isint(x):
     else:
         return a == b
 
+
 def make_bool(string):
     """Convert a string to boolean"""
-    if str(string).lower() in ['yes', 'true', '1', 't']:
+    if str(string).lower() in ["yes", "true", "1", "t"]:
         return True
     return False
+
 
 def convert_number(string):
     """Convert a string to number

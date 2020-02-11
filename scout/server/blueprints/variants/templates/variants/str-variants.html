@@ -1,5 +1,4 @@
 {% extends "layout_bs4.html" %}
-{% from "variants/utils.html" import compounds_table %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 {% from "utils.html" import comments_table %}
 
@@ -32,7 +31,6 @@
 {% endblock %}
 
 {% block content_main %}
-<form>
   <div class="card mt-3">
     <table class="table table-bordered table-hover">
       <thead>
@@ -87,7 +85,7 @@
             <td>
               {{ variant.position }}
               {% if case.bam_files %}
-                <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
+                <form name="form_{{variant._id}}" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
                   <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
                   <input type="hidden" name="build" value="{{case.genome_build}}">
                   <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
@@ -113,7 +111,6 @@
   </div>
   <br>
   {{ footer() }}
-</form>
 {% endblock %}
 
 {% macro cell_rank(variant) %}
@@ -147,6 +144,7 @@
 {% endmacro %}
 
 {% macro footer() %}
+<form>
   <div class="container-fluid">
     <div class="form-group text-center">
       {% if more_variants %}
@@ -170,6 +168,7 @@
       {% endif %}
     </div>
   </div>
+</form>
 {% endmacro %}
 
 {% block scripts %}

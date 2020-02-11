@@ -52,6 +52,7 @@ def execute_command(cmd):
         line (str): line of output from command
     """
     output = ""
+    LOG.info("Running: %s" % " ".join(cmd))
     try:
         output = subprocess.check_output(cmd, shell=False)
     except CalledProcessError as err:

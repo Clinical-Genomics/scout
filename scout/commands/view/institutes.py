@@ -7,14 +7,10 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
-@click.command('institutes', short_help='Display institutes')
-@click.option('-i', '--institute-id',
-    help="What institute to show"
-)
-@click.option('--json',
-    help="Show json format",
-    is_flag=True
-)
+
+@click.command("institutes", short_help="Display institutes")
+@click.option("-i", "--institute-id", help="What institute to show")
+@click.option("--json", help="Show json format", is_flag=True)
 @with_appcontext
 def institutes(institute_id, json):
     """Show all institutes in the database"""
@@ -35,7 +31,7 @@ def institutes(institute_id, json):
         click.echo("No institutes found")
         raise click.Abort()
 
-    header = ''
+    header = ""
     if not json:
         for key in institute_objs[0].keys():
             header = header + "{0}\t".format(key)
@@ -47,7 +43,7 @@ def institutes(institute_id, json):
             click.echo(institute_obj)
             continue
 
-        row = ''
+        row = ""
         for value in institute_obj.values():
             row = row + "{0}\t".format(value)
 
