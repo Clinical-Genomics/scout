@@ -21,9 +21,9 @@
                     {% set display_genes = [] %}
                     {% for gene in variant.genes %}
                       {% if 'hgvs_identifier' in gene %}
-                        {{ display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier) }}
+                        {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier) }}
                       {% else %}
-                        {{ display_genes.append(gene.hgnc_symbol) }}
+                        {{ "" if display_genes.append(gene.hgnc_symbol) }}
                       {% endif %}
                     {% endfor %}
                     {{ display_genes|join(", ") }}
@@ -155,9 +155,9 @@
                       {% set display_genes = [] %}
                       {% for gene in variant.genes %}
                         {% if 'hgvs_identifier' in gene %}
-                          {{ display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier) }}
+                          {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier) }}
                         {% else %}
-                          {{ display_genes.append(gene.hgnc_symbol) }}
+                          {{ "" if display_genes.append(gene.hgnc_symbol) }}
                         {% endif %}
                       {% endfor %}
                       {{ display_genes|join(", ") }}
