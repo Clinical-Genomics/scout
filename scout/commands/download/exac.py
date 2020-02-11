@@ -29,5 +29,6 @@ def exac(out_dir):
     """Download a file with ExAC gene info"""
     out_dir = pathlib.Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    LOG.info("Download ExAC gene info")
 
     print_exac(out_dir)
