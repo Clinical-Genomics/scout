@@ -31,86 +31,88 @@
 {% endblock %}
 
 {% block content_main %}
-<div class="card mt-3">
-  <table class="table table-bordered table-hover">
-    <thead>
-      <tr>
-        <th style="width:8%" title="Index">Index</th>
-        <th style="width:8%" title="Repeat ID">Repeat locus</th>
-        <th style="width:12%" title="Repeat unit">Reference repeat unit</th>
-        <th style="width:8%" title="ALT">Estimated size</th>
-        <th style="width:8%" title="ReferenceSize">Reference size</th>
-        <th style="width:10%" title="Status">Status</th>
-        <th style="width:8%" title="Max normal">Max normal</th>
-        <th style="width:8%" title="Min pathologic">Min pathologic</th>
-        <th style="width:14%" title="GT">Genotype</th>
-        <th style="width:6%" title="Chromosome">Chr.</th>
-        <th style="width:10%" title="Position">Position</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% set ns = namespace(allele0='') %}
-      {% for variant in variants %}
-        {% if variant.chromosome + variant.position|string != ns.allele0 %}
-          <tr style="height:10px;"></tr>
-        {% endif %}
-        {% set ns.allele0 = variant.chromosome + variant.position|string %}
-        {% if variant.dismiss_variant %}
-            <tr class="dismiss">
-        {% elif variant.str_status == 'normal' %}
-            <tr class="bg-success">
-        {% elif variant.str_status == 'full_mutation' %}
-            <tr class="bg-danger">
-        {% elif variant.str_status == 'pre_mutation' %}
-            <tr class="bg-warning">
-        {% else %}
-            <tr>
-        {% endif %}
-          <td>{{ cell_rank(variant) }}</td>
-          <td>{{ variant.str_repid }}</td>
-          <td class="text-right">{{ variant.str_ru }}</td>
-          <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
-          <td class="text-right">{{ variant.str_ref }}</td>
-          <td>{{ variant.str_status }}</td>
-          <td>{{ variant.str_normal_max }}</td>
-          <td>{{ variant.str_pathologic_min }}</td>
-          <td>{% for sample in variant.samples %}
-                {% if sample.genotype_call != "./." %}
-                  <div class="float-left">{{ sample.display_name }}</div>
-                  <div class="float-right">{{ sample.genotype_call }}</div><br>
-                {% endif %}
-              {% endfor %}
-          </td>
-          <td>{{ variant.chromosome }}</td>
-          <td>
-            {{ variant.position }}
-            {% if case.bam_files %}
-              <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
-                <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
-                <input type="hidden" name="build" value="{{case.genome_build}}">
-                <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
-                <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
-                <input type="hidden" name="contig" value="{{variant.chromosome}}">
-                <input type="hidden" name="start" value="{{variant.position - 50}}">
-                <input type="hidden" name="stop" value="{{variant.position + 50}}">
-                <input type="hidden" name="center_guide" value="T">
-                <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
-              </form>
-            {% endif %}
-          </td>
-      </tr>
-      {% else %}
+<form>
+  <div class="card mt-3">
+    <table class="table table-bordered table-hover">
+      <thead>
         <tr>
-          <td colspan="9">
-            No matching variants
-          </td>
+          <th style="width:8%" title="Index">Index</th>
+          <th style="width:8%" title="Repeat ID">Repeat locus</th>
+          <th style="width:12%" title="Repeat unit">Reference repeat unit</th>
+          <th style="width:8%" title="ALT">Estimated size</th>
+          <th style="width:8%" title="ReferenceSize">Reference size</th>
+          <th style="width:10%" title="Status">Status</th>
+          <th style="width:8%" title="Max normal">Max normal</th>
+          <th style="width:8%" title="Min pathologic">Min pathologic</th>
+          <th style="width:14%" title="GT">Genotype</th>
+          <th style="width:6%" title="Chromosome">Chr.</th>
+          <th style="width:10%" title="Position">Position</th>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-<br>
-{{ footer() }}
+      </thead>
+      <tbody>
+        {% set ns = namespace(allele0='') %}
+        {% for variant in variants %}
+          {% if variant.chromosome + variant.position|string != ns.allele0 %}
+            <tr style="height:10px;"></tr>
+          {% endif %}
+          {% set ns.allele0 = variant.chromosome + variant.position|string %}
+          {% if variant.dismiss_variant %}
+              <tr class="dismiss">
+          {% elif variant.str_status == 'normal' %}
+              <tr class="bg-success">
+          {% elif variant.str_status == 'full_mutation' %}
+              <tr class="bg-danger">
+          {% elif variant.str_status == 'pre_mutation' %}
+              <tr class="bg-warning">
+	        {% else %}
+	            <tr>
+	        {% endif %}
+            <td>{{ cell_rank(variant) }}</td>
+            <td>{{ variant.str_repid }}</td>
+	          <td class="text-right">{{ variant.str_ru }}</td>
+            <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
+            <td class="text-right">{{ variant.str_ref }}</td>
+            <td>{{ variant.str_status }}</td>
+            <td>{{ variant.str_normal_max }}</td>
+            <td>{{ variant.str_pathologic_min }}</td>
+            <td>{% for sample in variant.samples %}
+                  {% if sample.genotype_call != "./." %}
+                    <div class="float-left">{{ sample.display_name }}</div>
+                    <div class="float-right">{{ sample.genotype_call }}</div><br>
+                  {% endif %}
+                {% endfor %}
+            </td>
+            <td>{{ variant.chromosome }}</td>
+            <td>
+              {{ variant.position }}
+              {% if case.bam_files %}
+                <form name="form_{{variant._id}}" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
+                  <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
+                  <input type="hidden" name="build" value="{{case.genome_build}}">
+                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
+                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
+                  <input type="hidden" name="contig" value="{{variant.chromosome}}">
+                  <input type="hidden" name="start" value="{{variant.position - 50}}">
+                  <input type="hidden" name="stop" value="{{variant.position + 50}}">
+                  <input type="hidden" name="center_guide" value="T">
+                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit" formmethod="post" formaction="{{ url_for('alignviewers.igv') }}">IGV viewer</button>
+                </form>
+              {% endif %}
+            </td>
+        </tr>
+        {% else %}
+          <tr>
+            <td colspan="9">
+              No matching variants
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <br>
+  {{ footer() }}
+</form>
 {% endblock %}
 
 {% macro cell_rank(variant) %}
@@ -144,6 +146,7 @@
 {% endmacro %}
 
 {% macro footer() %}
+<form>
   <div class="container-fluid">
     <div class="form-group text-center">
       {% if more_variants %}
@@ -167,6 +170,7 @@
       {% endif %}
     </div>
   </div>
+</form>
 {% endmacro %}
 
 {% block scripts %}
