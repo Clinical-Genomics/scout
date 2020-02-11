@@ -108,7 +108,7 @@
     <div class="card-body">
       <ul class="list-group">
         {% for hpo_term in case.phenotype_groups %}
-          {{ hpo_group_item(hpo_term) }}
+          {{ hpo_group_item(hpo_term, institute) }}
         {% else %}
           <li class="list-group-item">No HPO groups added yet.</li>
         {% endfor %}
@@ -156,7 +156,7 @@
   </div>
 {% endmacro %}
 
-{% macro hpo_group_item(hpo_term) %}
+{% macro hpo_group_item(hpo_term, institute) %}
   <li class="list-group-item">
     <div class="row d-flex justify-content-between">
       <div class="flex-fill">
