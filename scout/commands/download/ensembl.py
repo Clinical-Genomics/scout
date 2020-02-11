@@ -59,6 +59,7 @@ def ensembl(out_dir, skip_tx, exons, build):
     """Download the Ensembl information"""
     out_dir = pathlib.Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    LOG.info("Download ensembl results to %s", out_dir)
 
     print_ensembl(out_dir, "genes", build)
 
