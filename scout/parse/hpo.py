@@ -159,7 +159,7 @@ def parse_hpo_to_genes(hpo_lines):
         hpo_to_gene(dict): A dictionary with information on how a term map to a hgnc symbol
     """
     for line in hpo_lines:
-        if line.startswith("#") or len(line) < 1:
+        if line.startswith("#") or len(line) < 5:
             continue
         line = line.rstrip().split("\t")
         hpo_id = line[0]
