@@ -1,6 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 {% from "utils.html" import comments_table %}
+{% from "variants/utils.html" import cell_rank %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - STR variants
@@ -67,7 +68,7 @@
 	        {% else %}
 	            <tr>
 	        {% endif %}
-            <td>{{ cell_rank(variant) }}</td>
+            <td>{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
             <td>{{ variant.str_repid }}</td>
 	          <td class="text-right">{{ variant.str_ru }}</td>
             <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
@@ -115,36 +116,6 @@
 </form>
 {% endblock %}
 
-{% macro cell_rank(variant) %}
-  <a class="variants-row-item flex-small layout"
-     href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
-                      variant_id=variant._id, str='yes') }}">
-    {{ variant.variant_rank }}
-  </a>
-  {% set comment_count = variant.comments.count() %}
-  {% if variant.manual_rank %}
-    <span class="badge float-right" title="Manual rank">{{ variant.manual_rank }}</span>
-  {% endif %}
-  {% if comment_count > 0 %}
-    {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
-    <a href="#"
-       class="badge float-right"
-       data-toggle="popover"
-       data-placement="right"
-       data-html="true"
-       data-trigger="hover click"
-       data-content="{{ comments_content }}"
-       title=""
-       >
-      {{ comment_count }}
-      <i class="fa fa-comment"></i>
-      {% if 'GLOBAL' in comments_content %}
-        <i class="fa fa-globe" aria-hidden="true"></i>
-      {% endif %}
-    </a>
-  {% endif %}
-{% endmacro %}
-
 {% macro footer() %}
   <div class="container-fluid">
     <div class="form-group text-center">
@@ -173,12 +144,15 @@
 
 {% block scripts %}
   {{ super() }}
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
   <script>
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
       $('[data-toggle="popover"]').popover({
+        sanitizeFn: function (content) {
+          return DOMPurify.sanitize(content)
+        },
         container: 'body',
       });
 
