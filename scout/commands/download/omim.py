@@ -38,5 +38,6 @@ def omim(out_dir, api_key):
     """Download the OMIM genes"""
     out_dir = pathlib.Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    LOG.info("Download OMIM resources to %s", out_dir)
 
     print_omim(out_dir, api_key)

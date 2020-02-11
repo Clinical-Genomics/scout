@@ -29,5 +29,6 @@ def hgnc(out_dir):
     """Download the HGNC genes"""
     out_dir = pathlib.Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    LOG.info("Download HGNC gene info")
 
     print_hgnc(out_dir)

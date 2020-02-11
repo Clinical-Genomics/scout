@@ -52,5 +52,6 @@ def hpo(out_dir):
     """Download all files necessary for HPO"""
     out_dir = pathlib.Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    LOG.info("Download HPO resources to %s", out_dir)
 
     print_hpo(out_dir)
