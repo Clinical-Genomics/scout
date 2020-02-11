@@ -11,13 +11,13 @@ def test_setup_database_invalid_omim_key(mock_app):
 
     # test the CLI command with non-valid API key
     result = runner.invoke(
-        cli, ["setup", "database", "--api-key", "not_a_valid_key"], input="y"
+        cli, ["setup", "database", "--api-key", "not_a_valid_key", "--yes"]
     )
     # Make sure that setup enters in setup function correctly but stops because
     # there is no valid OMIM API KEY
     assert result.exit_code != 0
     assert (
-        "Seems like url https://data.omim.org/downloads/not_a_valid_key/morbidmap.txt does not exist"
+        "https://data.omim.org/downloads/not_a_valid_key/genemap2.txt does not"
         in result.output
     )
 
