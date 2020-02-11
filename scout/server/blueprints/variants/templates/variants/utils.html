@@ -548,7 +548,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro cell_rank(variant, institute, case, form) %}
+{% macro cell_rank(variant, institute, case, form, manual_rank_options) %}
   <a class="variants-row-item flex-small layout"
      href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
                       variant_id=variant._id) }}">

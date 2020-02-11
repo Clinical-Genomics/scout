@@ -68,7 +68,7 @@
           {% else %}
             <tr>
           {% endif %}
-              <td class="text-left">{{cell_rank(variant, institute, case, form)}}</td>
+              <td class="text-left">{{cell_rank(variant, institute, case, form, manual_rank_options)}}</td>
             <td>
               <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
                                   variant_id=variant._id, cancer='yes') }}">
