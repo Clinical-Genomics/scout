@@ -277,6 +277,16 @@ def cancer_variants(institute_id, case_name):
         page = int(request.args.get("page", 1))
         form = CancerFiltersForm(request.args)
 
+    # update status of case if visited for the first time
+    if case_obj["status"] == "inactive" and not current_user.is_admin:
+        flash("You just activated this case!", "info")
+        case_link = url_for(
+            "cases.case",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
+        )
+        store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
+
     # populate filters dropdown
     available_filters = store.filters(institute_id, category)
     form.filters.choices = [
