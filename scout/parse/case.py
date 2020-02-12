@@ -11,6 +11,7 @@ from scout.constants import (PHENOTYPE_MAP, REV_PHENOTYPE_MAP, REV_SEX_MAP,
 from scout.exceptions import ConfigError, PedigreeError
 from scout.parse.peddy import (parse_peddy_ped, parse_peddy_ped_check,
                                parse_peddy_sex_check)
+from scout.parse.smn import parse_smn_file
 from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
@@ -170,7 +171,11 @@ def add_smn_info(config_data):
     for ind in config_data["samples"]:
         ind_id = ind["sample_id"]
         analysis_inds[ind_id] = ind
-        analysis_inds[ind_id].update(smn_info[ind_id])
+        try:
+            LOG.debug("Test: ind {} smn1cn {}".format(smn_info[ind_id]["sample_id"],smn_info[ind_id]["smn1_cn"]))
+            analysis_inds[ind_id].update(smn_info[ind_id])
+        except KeyError as e:
+            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
 
 def add_peddy_information(config_data):
     """Add information from peddy outfiles to the individuals

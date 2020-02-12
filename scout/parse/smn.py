@@ -19,7 +19,7 @@ def parse_smn_file(lines):
             header = line.split("\t")
         else:
             ind_info = dict(zip(header, line.split("\t")))
-
+            smn_ind_info = {}
             smn_ind_info["sample_id"] = ind_info["Sample"]
             smn_ind_info["is_sma"] = make_bool(ind_info["isSMA"])
             smn_ind_info["is_sma_carrier"] = make_bool(ind_info["isCarrier"])
