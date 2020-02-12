@@ -75,15 +75,7 @@ def variants(institute_id, case_name):
     form.gene_panels.choices = panel_choices
 
     # update status of case if visited for the first time
-    if case_obj["status"] == "inactive" and not current_user.is_admin:
-        flash("You just activated this case!", "info")
-        user_obj = store.user(current_user.email)
-        case_link = url_for(
-            "cases.case",
-            institute_id=institute_obj["_id"],
-            case_name=case_obj["display_name"],
-        )
-        store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
+    controllers.activate_case(store, institute_obj, case_obj, current_user)
 
     # upload gene panel if symbol file exists
     if request.files:
@@ -184,6 +176,8 @@ def str_variants(institute_id, case_name):
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
+    controllers.activate_case(store, institute_obj, case_obj, current_user)
+
     query = form.data
     query["variant_type"] = variant_type
 
@@ -225,15 +219,7 @@ def sv_variants(institute_id, case_name):
         case_obj["hpo_clinical_filter"] = True
 
     # update status of case if visited for the first time
-    if case_obj["status"] == "inactive" and not current_user.is_admin:
-        flash("You just activated this case!", "info")
-        user_obj = store.user(current_user.email)
-        case_link = url_for(
-            "cases.case",
-            institute_id=institute_obj["_id"],
-            case_name=case_obj["display_name"],
-        )
-        store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
+    controllers.activate_case(store, institute_obj, case_obj, current_user)
 
     form = controllers.populate_sv_filters_form(
         store, institute_obj, case_obj, category, request
@@ -278,6 +264,9 @@ def cancer_variants(institute_id, case_name):
         page = int(request.args.get("page", 1))
         form = CancerFiltersForm(request.args)
 
+    # update status of case if visited for the first time
+    controllers.activate_case(store, institute_obj, case_obj, current_user)
+
     # populate filters dropdown
     available_filters = store.filters(institute_id, category)
     form.filters.choices = [
@@ -315,15 +304,7 @@ def cancer_sv_variants(institute_id, case_name):
         case_obj["hpo_clinical_filter"] = True
 
     # update status of case if visited for the first time
-    if case_obj["status"] == "inactive" and not current_user.is_admin:
-        flash("You just activated this case!", "info")
-        user_obj = store.user(current_user.email)
-        case_link = url_for(
-            "cases.case",
-            institute_id=institute_obj["_id"],
-            case_name=case_obj["display_name"],
-        )
-        store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
+    controllers.activate_case(store, institute_obj, case_obj, current_user)
 
     form = controllers.populate_sv_filters_form(
         store, institute_obj, case_obj, category, request
