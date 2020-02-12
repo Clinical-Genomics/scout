@@ -49,7 +49,6 @@ STATUS_MAP = {"solved": "bg-success", "archived": "bg-warning"}
 
 TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
 
-
 def cases(store, case_query, prioritized_cases_query=None, limit=100):
     """Preprocess case objects.
 
@@ -1058,3 +1057,25 @@ def mme_match(
                 }
                 server_responses.append(resp_obj)
     return server_responses
+
+def activate_case(store, institute_obj, case_obj, current_user):
+    """ Activate case when visited for the first time.
+
+        Args:
+            store(adapter.MongoAdapter)
+            institute_obj(dict) a scout institutet object
+            case_obj(dict) a scout case object
+            current_user(UserMixin): a scout user
+    """
+
+    # update status of case if visited for the first time
+    if case_obj["status"] == "inactive" and not current_user.is_admin]:
+        flash("You just activated this case!", "info")
+
+        user_obj = store.user(current_user.email)
+        case_link = url_for(
+            "cases.case",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
+        )
+        store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
