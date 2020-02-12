@@ -90,13 +90,41 @@
         </div>
       </div>
 
+
+
+      <div class="row">
+        <div class="card panel-default col-md-12">
+            <div class="panel-heading"><i class="fa fa-user-md"></i>&nbsp;Diagnoses</div>
+            <div class="card-body">
+              <div class="col-6">
+                {{ diagnosis_phenotypes(case, institute) }}
+              </div>
+              <div class="col-md-6">
+                {{ diagnosis_genes(case, institute) }}
+              </div>
+            </div><!--end of card body-->
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
+      <br><br><br><br><br><br><br><br><br><br><br>
+
+
+
+
         <div class="row">
           <div class="col-md-6">{{ cohort_panel(case, institute, cohort_tags) }}</div>
           <div class="col-md-6">{{ phenotype_groups_panel(case, institute, hpo_groups) }}</div>
         </div>
 
         <div class="row">
-          <div class="col-md-6">{{ diagnosis_phenotypes(case, institute) }}</div>
           <div class="col-md-6">{{ diagnosis_genes(case, institute) }}</div>
         </div>
 
@@ -109,6 +137,8 @@
           <div class="col-md-6">{{ genepanels_table(case, institute) }}</div>
           <div class="col-md-6">{{ hpo_genelist_panel(case, institute, config) }}</div>
         </div>
+
+        <br><br><br><br><br><br><br><br><br><br><br>
 
         <!-- data sharing panels -->
         <div class="row">
@@ -415,7 +445,8 @@
 
 <script>
 $(function () {
-      function getTerms(query, process) {
+
+      function getHpoTerms(query, process) {
         $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
           process(data)
         });
@@ -425,15 +456,24 @@ $(function () {
           process(data)
         });
       }
+      function getOmimTerms(query, process) {
+        alert("hello")
+      }
 
       $(".typeahead_hpo").typeahead({
         name: 'hpo_term',
-        source: getTerms,
+        source: getHpoTerms,
         minLength: 3,
       });
 
       $(".typeahead_gene").typeahead({
         name: 'dynamic_gene_add',
+        source: getNameTerms,
+        minLength: 3,
+      });
+
+      $(".typeahead_gene").typeahead({
+        name: 'omim_term',
         source: getNameTerms,
         minLength: 3,
       });

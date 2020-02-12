@@ -40,9 +40,9 @@
 {% endmacro %}
 
 {% macro diagnosis_phenotypes(case, institute) %}
-  <div class="card panel-default">
-    <div class="panel-heading">Diagnosis phenotypes</div>
-    <div class="card-body">{{ diagnosis_form('phenotype', case, institute) }}</div>
+
+  <div class="mt-3 ml-3">OMIM Phenotypes</div>
+      {{ diagnosis_form('phenotype', case, institute) }}</div>
     <div class="card-footer">
       <ul class="list-group">
         {% for omim_id in case.diagnosis_phenotypes %}
@@ -59,13 +59,11 @@
         {% endfor %}
       </ul>
     </div>
-  </div>
 {% endmacro %}
 
 {% macro diagnosis_genes(case, institute) %}
-  <div class="card panel-default">
-    <div class="panel-heading">Diagnosis genes</div>
-    <div class="card-body">{{ diagnosis_form('gene', case, institute) }}</div>
+    <div class="mt-3 ml-3">OMIM Genes</div>
+    {{ diagnosis_form('gene', case, institute) }}</div>
     <div class="card-footer">
       <ul class="list-group">
         {% for omim_id in case.diagnosis_genes %}
@@ -84,17 +82,17 @@
         {% endfor %}
       </ul>
     </div>
-  </div>
 {% endmacro %}
 
 {% macro diagnosis_form(type, case, institute) %}
   <form action="{{ url_for('cases.case_diagnosis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-    <div class="row">
-      <div class="col-xs-8">
-        <input class="form-control" name="omim_id" placeholder="OMIM:XXX" required pattern="OMIM:[0-9]+">
+    <div class="row data-width="100%">
+      <div class="col-md-8">
+        <input class="form-control" name="omim_term" class="typeahead_omim form-control" data-provide="typeahead" autocomplete="off"
+          required placeholder="Search..."">
       </div>
-      <div class="col-xs-4">
-        <button class="btn btn-outline-secondary form-control" type="submit" name="{{ type }}">
+      <div class="col-dm-4">
+        <button class="btn btn-outline-secondary form-control" type="submit">
           Add
         </button>
       </div>
