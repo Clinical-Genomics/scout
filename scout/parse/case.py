@@ -167,13 +167,11 @@ def add_smn_info(config_data):
     for smn_ind_info in parse_smn_file(file_handle):
         smn_info[smn_ind_info["sample_id"]] = smn_ind_info
 
-    analysis_inds = {}
     for ind in config_data["samples"]:
         ind_id = ind["sample_id"]
-        analysis_inds[ind_id] = ind
         try:
             LOG.debug("Test: ind {} smn1cn {}".format(smn_info[ind_id]["sample_id"],smn_info[ind_id]["smn1_cn"]))
-            analysis_inds[ind_id].update(smn_info[ind_id])
+            ind.update(smn_info[ind_id])
         except KeyError as e:
             LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
 
