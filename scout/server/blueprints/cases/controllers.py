@@ -49,7 +49,6 @@ STATUS_MAP = {"solved": "bg-success", "archived": "bg-warning"}
 
 TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
 
-
 def cases(store, case_query, prioritized_cases_query=None, limit=100):
     """Preprocess case objects.
 
