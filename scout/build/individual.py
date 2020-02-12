@@ -38,6 +38,14 @@ def build_individual(ind):
             upd_regions_bed = str, # Path to a UPD regions bed marking UPD calls
             upd_sites_bed = str, # Path to a UPD sites bed, showing UPD info for vars
             vcf2cytosure = str, # Path to CGH file
+            smn_tsv = str, # path to an SMN TSV file
+            is_sma = boolean,
+            is_sma_carrier = boolean,
+            smn1_cn = int,
+            smn2_cn = int,
+            smn2delta78_cn = int,
+            smn_27134_cn = int,
+            predicted_ancestry = str,
             analysis_type = str, # choices=ANALYSIS_TYPES
         )
     """
@@ -94,7 +102,6 @@ def build_individual(ind):
     ind_obj['confirmed_parent'] = ind.get('confirmed_parent')
     ind_obj['predicted_ancestry'] = ind.get('predicted_ancestry')
 
-
     # Check if the analysis type is ok
     # Can be anyone of ('wgs', 'wes', 'mixed', 'unknown')
     analysis_type = ind.get('analysis_type', 'unknown')
@@ -115,5 +122,14 @@ def build_individual(ind):
         ind_obj['tumor_type'] = ind['tumor_type']
 
     ind_obj['tissue_type'] = ind.get('tissue_type', 'unknown')
+
+    # SMA
+    ind_obj['smn_tsv'] =ind.get('smn_tsv', None)
+    ind_obj['is_sma'] = ind.get('is_sma',None)
+    ind_obj['is_sma_carrier'] = ind.get('is_sma_carrier',None)
+    ind_obj['smn1_cn'] = ind.get('smn1_cn',None)
+    ind_obj['smn2_cn'] = ind.get('smn2_cn',None)
+    ind_obj['smn2delta78_cn'] = ind.get('smn2delta78_cn',None)
+    ind_obj['smn_27134_cn'] = ind.get('smn_27134_cn',None)
 
     return ind_obj

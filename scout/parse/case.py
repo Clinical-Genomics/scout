@@ -50,6 +50,7 @@ def parse_case_data(
     vcf_cancer=None,
     vcf_cancer_sv=None,
     vcf_str=None,
+    smn_tsv=None,
     peddy_ped=None,
     peddy_sex=None,
     peddy_check=None,
@@ -71,6 +72,7 @@ def parse_case_data(
         vcf_sv(str): Path to a vcf file
         vcf_cancer(str): Path to a vcf file
         vcf_cancer_sv(str): Path to a vcf file
+        smn_tsv(str): Path to an SMN tsv file
         peddy_ped(str): Path to a peddy ped
         multiqc(str): Path to dir with multiqc information
 
@@ -120,6 +122,10 @@ def parse_case_data(
     config_data["vcf_sv"] = vcf_sv if vcf_sv else config_data.get("vcf_sv")
     config_data["vcf_str"] = vcf_str if vcf_str else config_data.get("vcf_str")
     LOG.debug("Config vcf_str set to {0}".format(config_data["vcf_str"]))
+    config_data["smn_tsv"] = smn_tsv if smn_tsv else config_data.get("smn_tsv")
+
+    if config_data["smn_tsv"]:
+        add_smn_info(config_data)
 
     config_data["vcf_cancer"] = (
         vcf_cancer if vcf_cancer else config_data.get("vcf_cancer")
@@ -145,6 +151,26 @@ def parse_case_data(
 
     return config_data
 
+def add_smn_info(config_data):
+    """Add SMN CN / SMA prediction from TSV files to individuals
+
+    Args:
+        config_data(dict)
+    """
+
+    if not config_data.get("smn_tsv"):
+        return
+
+    file_handle = open(config_data["smn_tsv"], "r")
+    smn_info = {}
+    for smn_ind_info in parse_smn_file(file_handle):
+        smn_info[smn_ind_info["sample_id"]] = smn_ind_info
+
+    analysis_inds = {}
+    for ind in config_data["samples"]:
+        ind_id = ind["sample_id"]
+        analysis_inds[ind_id] = ind
+        analysis_inds[ind_id].update(smn_info[ind_id])
 
 def add_peddy_information(config_data):
     """Add information from peddy outfiles to the individuals
