@@ -73,7 +73,7 @@
                 {{ omim_id }} - {{ omim_terms[omim_id].description }}
             </a>
             {% if omim_terms[omim_id].genes %}
-              <a class="text-white" target="_blank" href=""><span class="badge badge-secondary badge-pill text-white">
+              <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_id=omim_terms[omim_id]._id)}}"><span class="badge badge-secondary badge-pill text-white">
                 {{omim_terms[omim_id].genes|length}}
                 </span>
               </a>

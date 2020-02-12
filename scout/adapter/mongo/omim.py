@@ -7,7 +7,7 @@ LOG = logging.getLogger(__name__)
 
 class DiagnoseHandler(object):
 
-    def omim_terms(self, query=None, omim_term=None, text=None, limit=None):
+    def omim_terms(self, query=None, text=None, limit=None):
         """Return all OMIM terms
 
         If a query is sent omim_id will try to match with regex on term or
@@ -43,15 +43,31 @@ class DiagnoseHandler(object):
             LOG.info("Search OMIM terms with %s", new_string)
             query_dict["$text"] = {"$search": new_string}
             search_term = text
-        elif hpo_term:
-            query_dict["disease_id"] = hpo_term
-            search_term = hpo_term
 
         limit = limit or int(10e10)
         res = (
             self.disease_term_collection.find(query_dict)
             .limit(limit)
             .sort("disease_nr", ASCENDING)
+        )
+        return res
+
+    def omim_term(self, term):
+        """Return one OMIM term
+
+        Args:
+            term(str): Search for a specific OMIM term
+
+        Returns:
+            res(obj)
+
+        """
+        res = (
+            self.disease_term_collection.find_one(
+                {
+                    '_id' : term
+                }
+            )
         )
         return res
 
@@ -78,3 +94,16 @@ class DiagnoseHandler(object):
             .sort("disease_nr", ASCENDING)
         )
         return res
+
+    def omim_genes(self, gene_list):
+        """Gets all genes associated to an OMIM term
+
+        Args:
+            gene_list(list): a list of hgnc ids
+
+        Returns:
+            gene_objs(list): a list of gene objects
+
+        """
+        gene_objs = [ self.hgnc_gene(hgnc_id) for hgnc_id in gene_list ]
+        return gene_objs
