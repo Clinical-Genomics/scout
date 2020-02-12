@@ -184,6 +184,17 @@ def str_variants(institute_id, case_name):
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
+    # update status of case if visited for the first time
+    if case_obj["status"] == "inactive" and not current_user.is_admin:
+        flash("You just activated this case!", "info")
+        user_obj = store.user(current_user.email)
+        case_link = url_for(
+            "cases.case",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
+        )
+        store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
+
     query = form.data
     query["variant_type"] = variant_type
 
