@@ -35,7 +35,7 @@
         </li>
         <li class="list-group-item">
           Associated phenotypes:
-          <ul class="list-group">
+          <ul class="list-group list-group-flush">
             {% for pheno in hpo_complete %}
               <li class="list-group-item">
                 <a href="http://hpo.jax.org/app/browse/term/{{pheno.hpo_id}}" target="_blank">{{ pheno.hpo_id }}</a>
