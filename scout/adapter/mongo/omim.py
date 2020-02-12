@@ -54,3 +54,27 @@ class DiagnoseHandler(object):
             .sort("disease_nr", ASCENDING)
         )
         return res
+
+    def case_omim_diagnoses(self, case_obj):
+        """Return all complete OMIM diagnoses for a case
+
+        Args:
+            case_obj(dict)
+
+        Returns:
+            result(pymongo.Cursor): A cursor with OMIM terms
+
+        """
+        result = None
+
+        # Collect OMIM terms from case 'diagnosis_phenotypes' and 'diagnosis_genes'
+        omim_ids = case_obj.get('diagnosis_phenotypes') + case_obj.get('diagnosis_genes')
+        res = (
+            self.disease_term_collection.find({
+                'disease_nr' : {
+                    '$in' : omim_ids
+                }}
+            )
+            .sort("disease_nr", ASCENDING)
+        )
+        return res

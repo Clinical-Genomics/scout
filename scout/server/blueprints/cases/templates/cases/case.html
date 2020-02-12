@@ -90,7 +90,7 @@
         </div>
       </div>
 
-
+      {{omim_terms}}
 
       <br><br><br><br><br><br><br><br><br><br><br>
 
@@ -101,10 +101,10 @@
                 <div class="panel-heading"><i class="fa fa-user-md"></i>&nbsp;Diagnoses</div>
                 <div class="card-body d-flex flex-row">
                   <div class="col-sm-6">
-                    {{ diagnosis_phenotypes(case, institute) }}
+                    {{ diagnosis_phenotypes(case, institute, omim_terms) }}
                   </div>
                   <div class="col-sm-6">
-                    {{ diagnosis_genes(case, institute) }}
+                    {{ diagnosis_genes(case, institute, omim_terms) }}
                   </div>
                 </div><!--end of card body-->
             </div><!--end of card-->

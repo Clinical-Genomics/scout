@@ -39,14 +39,16 @@
   </div>
 {% endmacro %}
 
-{% macro diagnosis_phenotypes(case, institute) %}
+{% macro diagnosis_phenotypes(case, institute, omim_terms) %}
   <div>OMIM Phenotypes</div>
     {{ diagnosis_form('phenotype', case, institute) }}
   <div>
     <ul class="list-group">
       {% for omim_id in case.diagnosis_phenotypes %}
         <li class="list-group-item">
-          <a target="_blank" href="http://omim.org/entry/{{ omim_id }}">{{ omim_id }}</a>
+          <a target="_blank" href="http://omim.org/entry/{{ omim_id }}">
+            {{ omim_id }} - {{ omim_terms[omim_id].description }}</a>
+
           <span class="pull-right">
             {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
                                   case_name=case.display_name, remove='yes'),
@@ -60,17 +62,24 @@
   </div>
 {% endmacro %}
 
-{% macro diagnosis_genes(case, institute) %}
+{% macro diagnosis_genes(case, institute, omim_terms) %}
     <div>OMIM Genes</div>
     {{ diagnosis_form('gene', case, institute) }}
     <div>
       <ul class="list-group">
         {% for omim_id in case.diagnosis_genes %}
-          <li class="list-group-item">
-            <a target="_blank" href="http://omim.org/entry/{{ omim_id }}">
-              {{ omim_id }}
+          <li class="list-group-item d-flex">
+            <a class="flex-fill" target="_blank" href="http://omim.org/entry/{{ omim_id }}">
+                {{ omim_id }} - {{ omim_terms[omim_id].description }}
             </a>
-            <span class="pull-right">
+            {% if omim_terms[omim_id].genes %}
+              <a class="text-white" target="_blank" href=""><span class="badge badge-secondary badge-pill text-white">
+                {{omim_terms[omim_id].genes|length}}
+                </span>
+              </a>
+            &nbsp;&nbsp;&nbsp;
+            {% endif %}
+            <span>
               {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
                                      case_name=case.display_name, remove='yes'),
                              hidden_input=('omim_id', omim_id), button_name='gene') }}

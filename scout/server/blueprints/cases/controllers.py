@@ -242,6 +242,9 @@ def case(store, institute_obj, case_obj):
     # Phenotype groups can be specific for an institute, there are some default groups
     pheno_groups = institute_obj.get("phenotype_groups") or PHENOTYPE_GROUPS
 
+    # complete OMIM diagnoses specific for this case
+    omim_terms = { term['disease_nr']:term for term in store.case_omim_diagnoses(case_obj) }
+
     data = {
         "status_class": STATUS_MAP.get(case_obj["status"]),
         "other_causatives": [var for var in store.check_causatives(case_obj=case_obj)],
@@ -253,6 +256,7 @@ def case(store, institute_obj, case_obj):
         "partial_causatives": partial_causatives,
         "collaborators": collab_ids,
         "cohort_tags": institute_obj.get("cohorts", []),
+        "omim_terms" : omim_terms,
         "manual_rank_options": MANUAL_RANK_OPTIONS,
         "cancer_tier_options": CANCER_TIER_OPTIONS,
     }
