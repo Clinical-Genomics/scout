@@ -107,7 +107,7 @@
                   </div>
               </div>
             </div>
-            {% if case.phenotype_terms|length == 0 and diagnosis_phenotypes|length == 0 %}
+            {% if case.phenotype_terms|length == 0 and case.diagnosis_phenotypes|length == 0 %}
               <h5 class="text-danger small">Assign at least an OMIM diagnosis or a HPO phenotype term to this case to mark this variant as partial causative</h5>
             {% endif %}
             <div id="partial_phenotypes" class="collapse mt-2">
