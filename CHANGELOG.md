@@ -20,6 +20,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cancer case HPO panel variants link
 - Fix so that some drop downs have correct size
 - First IGV button in str variants page
+- Cancer case activates on SNV variants
+- Cases activate when STR variants are viewed
 
 ### Changed
 - Renamed `requests` file to `scout_requests`
