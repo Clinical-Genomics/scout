@@ -1,21 +1,16 @@
+import datetime as dt
 import logging
 import math
-
-from pprint import pprint as pp
 from copy import deepcopy
-
-import datetime as dt
-
+from pprint import pprint as pp
 
 import pymongo
 from bson import ObjectId
 
-from scout.parse.panel import parse_gene_panel, get_omim_panel_genes
 from scout.build import build_panel
-from scout.utils.scout_requests import fetch_mim_files
-from scout.utils.date import get_date
-
 from scout.exceptions import IntegrityError
+from scout.parse.panel import get_omim_panel_genes, parse_gene_panel
+from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
 
@@ -48,8 +43,15 @@ class PanelHandler(object):
 
         self.add_gene_panel(panel_obj)
 
-    def load_omim_panel(self, api_key, institute=None):
-        """Create and load the OMIM-AUTO panel"""
+    def load_omim_panel(self, genemap2_lines, mim2gene_lines, institute=None):
+        """Create and load the OMIM-AUTO panel
+
+        If the panel already exists, update with new information and increase version
+
+        Args:
+            genemap_lines(iterable(str)): The genemap2 file information
+            mim2gene_lines(iterable(str)): The mim2genes file information
+        """
         existing_panel = self.gene_panel(panel_id="OMIM-AUTO")
         if not existing_panel:
             LOG.warning("OMIM-AUTO does not exists in database")
@@ -61,16 +63,13 @@ class PanelHandler(object):
 
         LOG.info("Setting version to %s", version)
 
-        try:
-            mim_files = fetch_mim_files(api_key=api_key, genemap2=True, mim2genes=True)
-        except Exception as err:
-            raise err
-
         date_string = None
         # Get the correct date when omim files where released
-        for line in mim_files["genemap2"]:
+        for line in genemap2_lines:
             if "Generated" in line:
                 date_string = line.split(":")[-1].lstrip().rstrip()
+                break
+
         date_obj = get_date(date_string)
 
         if existing_panel:
@@ -91,27 +90,26 @@ class PanelHandler(object):
         alias_genes = self.genes_by_alias()
 
         genes = get_omim_panel_genes(
-            genemap2_lines=mim_files["genemap2"],
-            mim2gene_lines=mim_files["mim2genes"],
+            genemap2_lines=genemap2_lines,
+            mim2gene_lines=mim2gene_lines,
             alias_genes=alias_genes,
         )
 
-        for gene in genes:
+        nr_genes = 0
+        for nr_genes, gene in enumerate(genes):
             panel_data["genes"].append(gene)
 
         panel_obj = build_panel(panel_data, self)
 
         if existing_panel:
-
             new_genes = self.compare_mim_panels(existing_panel, panel_obj)
-            if new_genes:
-                self.update_mim_version(
-                    new_genes, panel_obj, old_version=existing_panel["version"]
-                )
-            else:
+            if not new_genes:
                 LOG.info("The new version of omim does not differ from the old one")
                 LOG.info("No update is added")
                 return
+            self.update_mim_version(
+                new_genes, panel_obj, old_version=existing_panel["version"]
+            )
 
         self.add_gene_panel(panel_obj)
 
@@ -142,7 +140,8 @@ class PanelHandler(object):
         """
         LOG.info("Updating versions for new genes")
         version = new_panel["version"]
-        for gene in new_panel["genes"]:
+        nr_genes = 0
+        for nr_genes, gene in enumerate(new_panel["genes"]):
             gene_symbol = gene["hgnc_id"]
             # If the gene is new we add the version
             if gene_symbol in new_genes:
@@ -150,6 +149,8 @@ class PanelHandler(object):
                 continue
             # If the gene is old it will have the previous version
             gene["database_entry_version"] = old_version
+
+        LOG.info("Updated %s genes", nr_genes)
 
         return
 
@@ -173,6 +174,7 @@ class PanelHandler(object):
                 display_name, panel_version
             )
         )
+        LOG.info("Nr genes in panel: %s", len(panel_obj.get("genes", [])))
         result = self.panel_collection.insert_one(panel_obj)
         LOG.debug("Panel saved")
         return result.inserted_id

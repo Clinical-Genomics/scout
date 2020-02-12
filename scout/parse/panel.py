@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
+"""Code to parse panel information"""
 import logging
-
-from pprint import pprint as pp
 from datetime import datetime
 
 from scout.utils.date import get_date
@@ -196,63 +194,66 @@ def parse_genes(gene_lines):
         if not len(line) > 0:
             continue
         if line.startswith("#"):
-            if not line.startswith("##"):
-                # We need to try delimiters
-                # We prefer ';' or '\t' byt should accept ' '
-                line_length = 0
-                delimiter = None
-                for alt in delimiters:
-                    head_line = line.split(alt)
-                    if len(head_line) > line_length:
-                        line_length = len(head_line)
-                        delimiter = alt
-
-                header = [word.lower() for word in line[1:].split(delimiter)]
-        else:
-            # If no header symbol(#) assume first line is header
-            if i == 0:
-                line_length = 0
-                for alt in delimiters:
-                    head_line = line.split(alt)
-                    if len(head_line) > line_length:
-                        line_length = len(head_line)
-                        delimiter = alt
-
-                if "hgnc" in line or "HGNC" in line:
-                    header = [word.lower() for word in line.split(delimiter)]
-                    continue
-                # If first line is not a header try to sniff what the first
-                # columns holds
-                if line.split(delimiter)[0].isdigit():
-                    header = ["hgnc_id"]
-                else:
-                    header = ["hgnc_symbol"]
-
-            splitted_line = line.split(delimiter)
-            gene_info = dict(zip(header, splitted_line))
-
-            # There are cases when excel exports empty lines that looks like
-            # ;;;;;;;. This is a exception to handle these
-            info_found = False
-            for key in gene_info:
-                if gene_info[key]:
-                    info_found = True
-                    break
-            # If no info was found we skip that line
-            if not info_found:
+            if line.startswith("##"):
                 continue
+            # We need to try delimiters
+            # We prefer ';' or '\t' byt should accept ' '
+            line_length = 0
+            delimiter = None
+            for alt in delimiters:
+                head_line = line.split(alt)
+                if len(head_line) <= line_length:
+                    continue
+                line_length = len(head_line)
+                delimiter = alt
 
-            try:
-                gene = parse_gene(gene_info)
-            except Exception as e:
-                LOG.warning(e)
-                raise SyntaxError("Line {0} is malformed".format(i + 1))
+            header = [word.lower() for word in line[1:].split(delimiter)]
+            continue
+        # If no header symbol(#) assume first line is header
+        if i == 0:
+            line_length = 0
+            for alt in delimiters:
+                head_line = line.split(alt)
+                if len(head_line) <= line_length:
+                    continue
+                line_length = len(head_line)
+                delimiter = alt
 
-            identifier = gene.pop("identifier")
+            if "hgnc" in line or "HGNC" in line:
+                header = [word.lower() for word in line.split(delimiter)]
+                continue
+            # If first line is not a header try to sniff what the first
+            # columns holds
+            if line.split(delimiter)[0].isdigit():
+                header = ["hgnc_id"]
+            else:
+                header = ["hgnc_symbol"]
 
-            if not identifier in hgnc_identifiers:
-                hgnc_identifiers.add(identifier)
-                genes.append(gene)
+        splitted_line = line.split(delimiter)
+        gene_info = dict(zip(header, splitted_line))
+
+        # There are cases when excel exports empty lines that looks like
+        # ;;;;;;;. This is a exception to handle these
+        info_found = False
+        for key in gene_info:
+            if gene_info[key]:
+                info_found = True
+                break
+        # If no info was found we skip that line
+        if not info_found:
+            continue
+
+        try:
+            gene = parse_gene(gene_info)
+        except Exception as err:
+            LOG.warning(err)
+            raise SyntaxError("Line {0} is malformed".format(i + 1))
+
+        identifier = gene.pop("identifier")
+
+        if identifier not in hgnc_identifiers:
+            hgnc_identifiers.add(identifier)
+            genes.append(gene)
 
     return genes
 
@@ -403,28 +404,30 @@ def get_omim_panel_genes(genemap2_lines, mim2gene_lines, alias_genes):
     """
     parsed_genes = get_mim_genes(genemap2_lines, mim2gene_lines)
 
-    STATUS_TO_ADD = set(["established", "provisional"])
+    status_to_add = set(["established", "provisional"])
 
     for hgnc_symbol in parsed_genes:
-        try:
-            gene = parsed_genes[hgnc_symbol]
-            keep = False
-            for phenotype_info in gene.get("phenotypes", []):
-                if phenotype_info["status"] in STATUS_TO_ADD:
-                    keep = True
-                    break
-            if keep:
-                hgnc_id_info = alias_genes.get(hgnc_symbol)
-                if not hgnc_id_info:
-                    for symbol in gene.get("hgnc_symbols", []):
-                        if symbol in alias_genes:
-                            hgnc_id_info = alias_genes[symbol]
-                            break
+        gene = parsed_genes.get(hgnc_symbol)
+        if gene is None:
+            continue
+        keep = False
+        for phenotype_info in gene.get("phenotypes", []):
+            if not phenotype_info.get("status") in status_to_add:
+                continue
+            keep = True
+            break
+        if not keep:
+            continue
 
-                if hgnc_id_info:
-                    yield {"hgnc_id": hgnc_id_info["true"], "hgnc_symbol": hgnc_symbol}
-                else:
-                    LOG.warning("Gene symbol %s does not exist", hgnc_symbol)
+        hgnc_id_info = alias_genes.get(hgnc_symbol)
+        if not hgnc_id_info:
+            for symbol in gene.get("hgnc_symbols", []):
+                hgnc_id_info = alias_genes.get(symbol)
+                if hgnc_id_info is None:
+                    continue
+                break
 
-        except KeyError:
-            pass
+        if hgnc_id_info:
+            yield {"hgnc_id": hgnc_id_info["true"], "hgnc_symbol": hgnc_symbol}
+        else:
+            LOG.warning("Gene symbol %s does not exist", hgnc_symbol)
