@@ -74,8 +74,8 @@ def panel(
         mim_files = None
         if genemap2 and mim2genes:
             mim_files = {
-                "genemap2": [line for line in get_file_handle(genemap2)],
-                "mim2genes": [line for line in get_file_handle(mim2genes)],
+                "genemap2": list(get_file_handle(genemap2)),
+                "mim2genes": list(get_file_handle(mim2genes)),
             }
 
         api_key = api_key or current_app.config.get("OMIM_API_KEY")
