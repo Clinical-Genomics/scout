@@ -5,39 +5,19 @@ This means add a default institute, a user and the internal definitions such as 
 transcripts, hpo terms etc
 
 """
-import logging
 import datetime
+import logging
+
 import yaml
-
-from pprint import pprint as pp
-
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
-### Import demo files ###
-# Resources
-from scout.demo.resources import (
-    hgnc_reduced_path,
-    exac_reduced_path,
-    transcripts37_reduced_path,
-    transcripts38_reduced_path,
-    mim2gene_reduced_path,
-    genemap2_reduced_path,
-    hpogenes_reduced_path,
-    hpo_to_genes_reduced_path,
-    hpoterms_reduced_path,
-    hpo_phenotype_to_terms_reduced_path,
-    madeline_path,
-    genes37_reduced_path,
-    genes38_reduced_path,
-)
-
-# Gene panel
-from scout.demo import panel_path
-
+from scout.build import build_institute
 # Case files
-from scout.demo import load_path
-
-# Import the functions to setup scout
+# Gene panel
+from scout.demo import load_path, panel_path
+### Import demo files ###
+from scout.demo.resources import demo_files
+# Resources
 from scout.parse.panel import parse_gene_panel
 
 from scout.build import build_institute
@@ -66,31 +46,42 @@ def setup_scout(
     user_mail="clark.kent@mail.com",
     api_key=None,
     demo=False,
+    resource_files=None,
 ):
-    """docstring for setup_scout"""
-    ########################## Delete previous information ##########################
-    LOG.info("Deleting previous database")
-    for collection_name in adapter.db.collection_names():
-        if not collection_name.startswith("system"):
-            LOG.info("Deleting collection %s", collection_name)
-            adapter.db.drop_collection(collection_name)
-    LOG.info("Database deleted")
+    """Function to setup a working scout instance.
 
-    ########################## Add a institute ##########################
-    #####################################################################
-    # Build a institute with id institute_name
+    WARNING: If the instance is populated all collections will be deleted
+
+    Build insert a institute and an admin user.
+    There are multiple sources of information that is used by scout and that needs to exist for
+    scout to work proper.
+
+    Genes:
+         Scout uses HGNC as the source for gene identifiers en ensembl as source for coordinates.
+         Additional information of disease connections for genes if fetched from OMIM.
+         Link between hpo terms and genes is fetched from HPO
+         For more details check the documentation.
+
+    """
+    LOG.info("Check if there was a database, delet if existing")
+    existing_database = False
+    for collection_name in adapter.db.collection_names():
+        if collection_name.startswith("system"):
+            continue
+        LOG.info("Deleting collection %s", collection_name)
+        adapter.db.drop_collection(collection_name)
+        existing_database = True
+
+    if existing_database:
+        LOG.info("Database deleted")
+
     institute_obj = build_institute(
         internal_id=institute_id,
         display_name=institute_id,
         sanger_recipients=[user_mail],
     )
-
-    # Add the institute to database
     adapter.add_institute(institute_obj)
 
-    ########################## Add a User ###############################
-    #####################################################################
-    # Build a user obj
     user_obj = dict(
         _id=user_mail,
         email=user_mail,
@@ -101,50 +92,52 @@ def setup_scout(
 
     adapter.add_user(user_obj)
 
-    ### Get the mim information ###
+    resource_files = resource_files or {}
+    if demo:
+        resource_files = demo_files
+
     mim2gene_lines = None
     genemap_lines = None
-    if not demo:
-        # Fetch the mim files
-        if api_key:
-            try:
-                mim_files = fetch_mim_files(
-                    api_key, mim2genes=True, morbidmap=True, genemap2=True
-                )
-            except Exception as err:
-                LOG.warning(err)
-                raise err
-            mim2gene_lines = mim_files["mim2genes"]
-            genemap_lines = mim_files["genemap2"]
+    mim2gene_path = resource_files.get("mim2gene_path")
+    genemap_path = resource_files.get("genemap_path")
+    if genemap_path and mim2gene_path:
+        mim2gene_lines = [line for line in get_file_handle(mim2gene_path)]
+        genemap_lines = [line for line in get_file_handle(genemap_path)]
 
-        # Fetch the genes to hpo information
+    if (genemap_lines is None) and api_key:
+        try:
+            mim_files = fetch_mim_files(api_key, mim2genes=True, genemap2=True)
+        except Exception as err:
+            LOG.warning(err)
+            raise err
+        mim2gene_lines = mim_files["mim2genes"]
+        genemap_lines = mim_files["genemap2"]
+
+    if resource_files.get("hpogenes_path"):
+        hpo_gene_lines = [
+            line for line in get_file_handle(resource_files.get("hpogenes_path"))
+        ]
+    else:
         hpo_gene_lines = fetch_hpo_genes()
-        # Fetch the latest version of the hgnc information
+
+    if resource_files.get("hgnc_path"):
+        hgnc_lines = [line for line in get_file_handle(resource_files.get("hgnc_path"))]
+    else:
         hgnc_lines = fetch_hgnc()
-        # Fetch the latest exac pli score information
+
+    if resource_files.get("exac_path"):
+        exac_lines = [line for line in get_file_handle(resource_files.get("exac_path"))]
+    else:
         exac_lines = fetch_exac_constraint()
 
-    else:
-        mim2gene_lines = [line for line in get_file_handle(mim2gene_reduced_path)]
-        genemap_lines = [line for line in get_file_handle(genemap2_reduced_path)]
-
-        # Fetch the genes to hpo information
-        hpo_gene_lines = [line for line in get_file_handle(hpogenes_reduced_path)]
-        # Fetch the reduced hgnc information
-        hgnc_lines = [line for line in get_file_handle(hgnc_reduced_path)]
-        # Fetch the latest exac pli score information
-        exac_lines = [line for line in get_file_handle(exac_reduced_path)]
-
     builds = ["37", "38"]
-    ################## Load Genes and transcripts #######################
-    #####################################################################
     for build in builds:
-        # Fetch the ensembl information
-        if not demo:
-            ensembl_genes = fetch_ensembl_genes(build=build)
+        genes_path = "genes{}_path".format(build)
+        if resource_files.get(genes_path):
+            ensembl_genes = get_file_handle(resource_files[genes_path])
         else:
-            ensembl_genes = get_file_handle(genes37_reduced_path)
-        # load the genes
+            ensembl_genes = fetch_ensembl_genes(build=build)
+
         hgnc_genes = load_hgnc_genes(
             adapter=adapter,
             ensembl_lines=ensembl_genes,
@@ -162,23 +155,27 @@ def setup_scout(
             ensembl_id = gene_obj["ensembl_id"]
             ensembl_genes[ensembl_id] = gene_obj
 
-        # Fetch the transcripts from ensembl
-        if not demo:
-            ensembl_transcripts = fetch_ensembl_transcripts(build=build)
+        tx_path = "transcripts{}_path".format(build)
+        if resource_files.get(tx_path):
+            ensembl_transcripts = get_file_handle(resource_files[tx_path])
         else:
-            ensembl_transcripts = get_file_handle(transcripts37_reduced_path)
+            ensembl_transcripts = fetch_ensembl_transcripts(build=build)
         # Load the transcripts for a certain build
         transcripts = load_transcripts(
             adapter, ensembl_transcripts, build, ensembl_genes
         )
 
     hpo_terms_handle = None
+    if resource_files.get("hpoterms_path"):
+        hpo_terms_handle = get_file_handle(resource_files["hpoterms_path"])
+
     hpo_to_genes_handle = None
+    if resource_files.get("hpo_to_genes_path"):
+        hpo_to_genes_handle = get_file_handle(resource_files["hpo_to_genes_path"])
+
     hpo_disease_handle = None
-    if demo:
-        hpo_terms_handle = get_file_handle(hpoterms_reduced_path)
-        hpo_to_genes_handle = get_file_handle(hpo_to_genes_reduced_path)
-        hpo_disease_handle = get_file_handle(hpo_phenotype_to_terms_reduced_path)
+    if resource_files.get("hpo_disease_path"):
+        hpo_disease_handle = get_file_handle(resource_files["hpo_disease_path"])
 
     load_hpo(
         adapter=adapter,
