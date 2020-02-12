@@ -36,6 +36,7 @@ from .case import CaseHandler
 from .institute import InstituteHandler
 from .event import EventHandler
 from .hpo import HpoHandler
+from .omim import DiagnoseHandler
 from .panel import PanelHandler
 from .query import QueryHandler
 from .variant import VariantHandler
@@ -55,6 +56,7 @@ class MongoAdapter(
     InstituteHandler,
     EventHandler,
     HpoHandler,
+    DiagnoseHandler,
     PanelHandler,
     QueryHandler,
     VariantHandler,

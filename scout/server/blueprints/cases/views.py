@@ -711,7 +711,7 @@ def case_diagnosis(institute_id, case_name):
     """Add or remove a diagnosis for a case."""
 
     return "I've ended up here:{}".format(request.form)
-    
+
     """
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
@@ -944,6 +944,19 @@ def hpoterms():
         for term in terms[:7]
     ]
 
+    return jsonify(json_terms)
+
+
+@cases_bp.route("/api/v1/omim-terms")
+def omimterms():
+    query = request.args.get("query")
+    if query is None:
+        return abort(500)
+    terms = store.omim_terms(query=query)
+    json_terms = [
+        {"name": "{} | {}".format(term["_id"], term["description"]), "id": term["_id"]}
+        for term in terms[:7]
+    ]
     return jsonify(json_terms)
 
 

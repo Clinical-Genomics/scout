@@ -92,31 +92,27 @@
 
 
 
+      <br><br><br><br><br><br><br><br><br><br><br>
+
+
       <div class="row">
-        <div class="card panel-default col-md-12">
-            <div class="panel-heading"><i class="fa fa-user-md"></i>&nbsp;Diagnoses</div>
-            <div class="card-body">
-              <div class="col-6">
-                {{ diagnosis_phenotypes(case, institute) }}
-              </div>
-              <div class="col-md-6">
-                {{ diagnosis_genes(case, institute) }}
-              </div>
-            </div><!--end of card body-->
+        <div class="col-sm-12">
+          <div class="card panel-default ">
+              <div class="panel-heading"><i class="fa fa-user-md"></i>&nbsp;Diagnoses</div>
+              <div class="card-body d-flex flex-row">
+                <div class="col-sm-6">
+                  {{ diagnosis_phenotypes(case, institute) }}
+                </div>
+                <div class="col-sm-6">
+                  {{ diagnosis_genes(case, institute) }}
+                </div>
+              </div><!--end of card body-->
+          </div><!--end of card-->
         </div>
       </div>
 
 
-
-
-
-
-
-
-
       <br><br><br><br><br><br><br><br><br><br><br>
-
-
 
 
         <div class="row">
@@ -457,7 +453,9 @@ $(function () {
         });
       }
       function getOmimTerms(query, process) {
-        alert("hello")
+        $.get("{{ url_for('cases.omimterms') }}", {query: query}, function(data) {
+          process(data)
+        });
       }
 
       $(".typeahead_hpo").typeahead({
@@ -472,9 +470,9 @@ $(function () {
         minLength: 3,
       });
 
-      $(".typeahead_gene").typeahead({
+      $(".typeahead_omim").typeahead({
         name: 'omim_term',
-        source: getNameTerms,
+        source: getOmimTerms,
         minLength: 3,
       });
 
