@@ -75,7 +75,7 @@ def variants(institute_id, case_name):
     form.gene_panels.choices = panel_choices
 
     # update status of case if visited for the first time
-    activate_case(store, institute_obj, case_obj, current_user)
+    controllers.activate_case(store, institute_obj, case_obj, current_user)
 
     # upload gene panel if symbol file exists
     if request.files:
@@ -176,7 +176,7 @@ def str_variants(institute_id, case_name):
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
-    activate_case(store, institute_obj, case_obj, current_user)
+    controllers.activate_case(store, institute_obj, case_obj, current_user)
 
     query = form.data
     query["variant_type"] = variant_type
@@ -218,7 +218,7 @@ def sv_variants(institute_id, case_name):
         case_obj["hpo_clinical_filter"] = True
 
     # update status of case if visited for the first time
-    activate_case(store, institute_obj, case_obj, current_user)
+    controllers.activate_case(store, institute_obj, case_obj, current_user)
 
     form = controllers.populate_sv_filters_form(
         store, institute_obj, case_obj, category, request
@@ -264,7 +264,7 @@ def cancer_variants(institute_id, case_name):
         form = CancerFiltersForm(request.args)
 
     # update status of case if visited for the first time
-    activate_case(store, institute_obj, case_obj, current_user)
+    controllers.activate_case(store, institute_obj, case_obj, current_user)
 
     # populate filters dropdown
     available_filters = store.filters(institute_id, category)
@@ -303,7 +303,7 @@ def cancer_sv_variants(institute_id, case_name):
         case_obj["hpo_clinical_filter"] = True
 
     # update status of case if visited for the first time
-    activate_case(store, institute_obj, case_obj, current_user)
+    controllers.activate_case(store, institute_obj, case_obj, current_user)
 
     form = controllers.populate_sv_filters_form(
         store, institute_obj, case_obj, category, request
