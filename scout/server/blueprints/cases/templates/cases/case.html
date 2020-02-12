@@ -95,21 +95,21 @@
       <br><br><br><br><br><br><br><br><br><br><br>
 
 
-      <div class="row">
-        <div class="col-sm-12">
-          <div class="card panel-default ">
-              <div class="panel-heading"><i class="fa fa-user-md"></i>&nbsp;Diagnoses</div>
-              <div class="card-body d-flex flex-row">
-                <div class="col-sm-6">
-                  {{ diagnosis_phenotypes(case, institute) }}
-                </div>
-                <div class="col-sm-6">
-                  {{ diagnosis_genes(case, institute) }}
-                </div>
-              </div><!--end of card body-->
-          </div><!--end of card-->
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="card panel-default ">
+                <div class="panel-heading"><i class="fa fa-user-md"></i>&nbsp;Diagnoses</div>
+                <div class="card-body d-flex flex-row">
+                  <div class="col-sm-6">
+                    {{ diagnosis_phenotypes(case, institute) }}
+                  </div>
+                  <div class="col-sm-6">
+                    {{ diagnosis_genes(case, institute) }}
+                  </div>
+                </div><!--end of card body-->
+            </div><!--end of card-->
+          </div>
         </div>
-      </div>
 
 
       <br><br><br><br><br><br><br><br><br><br><br>
@@ -118,11 +118,6 @@
           <div class="col-md-6">{{ cohort_panel(case, institute, cohort_tags) }}</div>
           <div class="col-md-6">{{ phenotype_groups_panel(case, institute, hpo_groups) }}</div>
         </div>
-
-        <div class="row">
-          <div class="col-md-6">{{ diagnosis_genes(case, institute) }}</div>
-        </div>
-
         <div class="row">
           <div class="col-md-6">{{ phenotype_terms_panel(case, institute) }}</div>
           <div class="col-md-6">{{ phenotypes_panel(case, institute, config) }}</div>
@@ -132,8 +127,6 @@
           <div class="col-md-6">{{ genepanels_table(case, institute) }}</div>
           <div class="col-md-6">{{ hpo_genelist_panel(case, institute, config) }}</div>
         </div>
-
-        <br><br><br><br><br><br><br><br><br><br><br>
 
         <!-- data sharing panels -->
         <div class="row">

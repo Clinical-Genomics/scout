@@ -710,14 +710,11 @@ def mt_report(institute_id, case_name):
 def case_diagnosis(institute_id, case_name):
     """Add or remove a diagnosis for a case."""
 
-    return "I've ended up here:{}".format(request.form)
-
-    """
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
     level = "phenotype" if "phenotype" in request.form else "gene"
-    omim_id = request.form["omim_id"]
+    omim_id = request.form["omim_term"].split('|')[0]
     remove = True if request.args.get("remove") == "yes" else False
     store.diagnose(
         institute_obj,
@@ -729,7 +726,6 @@ def case_diagnosis(institute_id, case_name):
         remove=remove,
     )
     return redirect(request.referrer)
-    """
 
 
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes", methods=["POST"])
