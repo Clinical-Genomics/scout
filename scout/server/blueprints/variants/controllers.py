@@ -39,7 +39,7 @@ from scout.server.utils import (
 )
 from scout.server.links import add_gene_links, ensembl, add_tx_links
 from scout.server.blueprints.genes.controllers import gene
-from scout.utils.requests import fetch_refseq_version
+from scout.utils.scout_requests import fetch_refseq_version
 
 from scout.server.blueprints.variant.utils import predictions
 from .forms import (
@@ -787,3 +787,25 @@ def verified_excel_file(store, institute_list, temp_excel_dir):
             written_files += 1
 
     return written_files
+
+def activate_case(store, institute_obj, case_obj, current_user):
+    """ Activate case when visited for the first time.
+
+        Args:
+            store(adapter.MongoAdapter)
+            institute_obj(dict) a scout institutet object
+            case_obj(dict) a scout case object
+            current_user(UserMixin): a scout user
+    """
+
+    # update status of case if visited for the first time
+    if case_obj["status"] == "inactive" and not current_user.is_admin:
+        flash("You just activated this case!", "info")
+
+        user_obj = store.user(current_user.email)
+        case_link = url_for(
+            "cases.case",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
+        )
+        store.update_status(institute_obj, case_obj, user_obj, "active", case_link)

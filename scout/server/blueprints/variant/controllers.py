@@ -20,7 +20,7 @@ from scout.constants import (
 from scout.parse.variant.ids import parse_document_id
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import institute_and_case, user_institutes, variant_case
-from scout.utils.requests import fetch_refseq_version
+from scout.utils.scout_requests import fetch_refseq_version
 
 from .utils import (
     add_gene_info,

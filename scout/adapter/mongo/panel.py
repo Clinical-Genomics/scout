@@ -12,7 +12,7 @@ from bson import ObjectId
 
 from scout.parse.panel import parse_gene_panel, get_omim_panel_genes
 from scout.build import build_panel
-from scout.utils.requests import fetch_mim_files
+from scout.utils.scout_requests import fetch_mim_files
 from scout.utils.date import get_date
 
 from scout.exceptions import IntegrityError
@@ -383,6 +383,26 @@ class PanelHandler(object):
             return_document=pymongo.ReturnDocument.AFTER,
         )
 
+        return updated_panel
+
+    def reset_pending(self, panel_obj):
+        """Reset the pending status of a gene panel
+
+        Args:
+            panel_obj(dict): panel in database to update
+
+        Returns:
+            updated_panel(dict): the updated gene panel
+        """
+
+        if "pending" in panel_obj:
+            del panel_obj["pending"]
+
+        updated_panel = self.panel_collection.find_one_and_replace(
+            {"_id": panel_obj["_id"]},
+            panel_obj,
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
         return updated_panel
 
     def apply_pending(self, panel_obj, version):

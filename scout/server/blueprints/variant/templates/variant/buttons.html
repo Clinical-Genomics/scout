@@ -1,0 +1,82 @@
+
+{% macro variant_tag_button(variant, institute, case, manual_rank_options) %}
+  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+    <label class="mt-3">Variant tag</label>
+    <div class="row">
+      <div class="col-8">
+        <select name="manual_rank" class="form-control">
+          <option value="-1">Select a tag...</option>
+          {% for rank, data in manual_rank_options.items() %}
+            <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
+              {{ data.label }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-4">
+        <button type="submit" name="manual_rank" class="btn btn-outline-secondary form-control">Save</button>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro variant_tier_button(variant, institute, case, cancer_tier_options) %}
+  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+    <label class="mt-3">Variant tier</label>
+    <div class="row">
+      <div class="col-8">
+        <select name="cancer_tier" class="form-control" data-width="100%">
+          <option value="-1">Select a tag...</option>
+          {% for rank, data in cancer_tier_options.items() %}
+            <option {% if rank == variant.cancer_tier %} selected {% endif %} value="{{ rank }}">
+              {{ data.label }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-4">
+        <button type="submit" name="manual_rank" class="btn btn-outline-secondary form-control">Save</button>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro dismiss_variant_button(variant, institute, case, dismiss_variant_options) %}
+  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+    <label class="mt-3">Dismiss variant</label>
+    <div class="row">
+      <div class="col-8">
+        <select multiple="multiple" name="dismiss_variant" id="dismiss_variant" class="selectpicker" data-width="100%">
+          {% for rank, data in dismiss_variant_options.items() %}
+            <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
+              {{ data.label }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-4">
+        <button type="submit" name="dismiss" class="btn btn-outline-secondary form-control">Save</button>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro mosaic_variant_button(variant, institute, case, mosaic_variant_options) %}
+  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+    <label class="mt-3">Mosaic Tags</label>
+    <div class="row">
+      <div class="col-8">
+        <select multiple="multiple" name="mosaic_tags" id="mosaic_tags" class="selectpicker" data-width="100%">
+          {% for rank, data in mosaic_variant_options.items() %}
+            <option {% if rank~"" in variant.mosaic_tags %} selected {% endif %} value="{{ rank }}">
+              {{ data.label }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-4">
+        <button type="submit" name="mosaic" class="btn btn-outline-secondary form-control">Save</button>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
