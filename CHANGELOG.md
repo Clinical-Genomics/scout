@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clear panel pending changes
 - Adds option to setup the database with static files
 - Adds cli command to download the resources from CLI that scout needs
+- Adds dummy files for merged somatic SV and CNV; as well as merged SNV, and INDEL part of #1279
 
 ### Fixed
 - Cancer case HPO panel variants link
