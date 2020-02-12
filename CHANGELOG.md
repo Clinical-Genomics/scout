@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - First IGV button in str variants page
 - Cancer case activates on SNV variants
 - Cases activate when STR variants are viewed
+- Always calculate code coverage
 
 ### Changed
 - Renamed `requests` file to `scout_requests`
