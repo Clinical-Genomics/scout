@@ -99,7 +99,7 @@
                     <div>
                       <input type="checkbox" class="ios8-switch" id="partial_causative" name="partial_causative"
                         data-toggle='collapse' data-target='#partial_phenotypes'
-                          {% if case.phenotype_terms|length == 0 and diagnosis_phenotypes|length == 0 %}
+                          {% if case.phenotype_terms|length == 0 and case.diagnosis_phenotypes|length == 0 %}
                             disabled
                           {% endif %}>
                       <label for="partial_causative"></label>
