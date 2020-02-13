@@ -197,6 +197,7 @@ def str_variants(institute_id, case_name):
         institute=institute_obj,
         case=case_obj,
         variant_type=variant_type,
+        manual_rank_options=MANUAL_RANK_OPTIONS,
         form=form,
         page=page,
         **data

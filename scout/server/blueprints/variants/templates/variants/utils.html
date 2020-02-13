@@ -1,4 +1,5 @@
 {% import "bootstrap/wtf.html" as wtf %}
+{% from "utils.html" import comments_table %}
 
 {% macro compounds_table(institute, case, compounds) %}
   <table class='table table-condensed table-bordered table-sm'>
@@ -545,4 +546,66 @@
       title="Manual rank: {{ manual_rank_options[variant.manual_rank].description }}">
       {{ manual_rank_options[variant.manual_rank].label }}</span>
   {% endif %}
+{% endmacro %}
+
+{% macro cell_rank(variant, institute, case, form, manual_rank_options) %}
+  <a class="variants-row-item flex-small layout"
+     href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
+                      variant_id=variant._id) }}">
+    {{ variant.variant_rank }}&nbsp;
+  </a>
+  {% set comment_count = variant.comments.count() %}
+
+  {% if variant.acmg_classification %}
+    <span class="badge badge-primary" data-toggle="tooltip" data-placement="right" title="ACMG: {{ variant.acmg_classification.label }}">
+      {{ variant.acmg_classification.short }}
+    </span>
+  {% endif %}
+  {% if variant.manual_rank %}
+    <span class="badge badge-primary" data-toggle="tooltip" data-placement="right"
+        title="Manual rank: {{ manual_rank_options[variant.manual_rank].description }}">
+        {{ manual_rank_options[variant.manual_rank].label }}</span>
+  {% endif %}
+  {% if variant.evaluations %}
+    {% for evaluation in (variant.evaluations or []) %}
+      <span class="badge badge-secondary" style="margin-left:1px" data-toggle="tooltip" data-placement="right"
+      title="Previously classified as {{ evaluation.classification.label }}">
+      {{ evaluation.classification.short }}
+      </span>
+    {% endfor %}
+  {% endif %}
+  {% if form.variant_type.data == 'research' %}
+    {% if variant.clinical_assessments %}
+      {% for assessment in variant.clinical_assessments %}
+        <span class="badge badge-secondary" data-toggle="tooltip" data-placement="right"
+            title="{{ assessment.title }}">
+            {{ assessment.label }}</span>
+      {% endfor %}
+    {% endif %}
+  {% endif %}
+
+  {% if comment_count > 0 %}
+    {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
+    <a href="#"
+       class="badge badge-info"
+       data-toggle="popover"
+       data-placement="right"
+       data-html="true"
+       data-trigger="hover click"
+       data-content="{{ comments_content }}"
+       title=""
+       style="color:white;"
+       >
+      {{ comment_count }}
+      <i class="fa fa-comment"></i>
+      {% if 'GLOBAL' in comments_content %}
+        <i class="fa fa-globe" aria-hidden="true"></i>
+      {% endif %}
+    </a>
+  {% endif %}
+
+  {% if variant._id in case.suspects %}
+    <i class="fa fa-map-pin"></i>
+  {% endif %}
+
 {% endmacro %}
