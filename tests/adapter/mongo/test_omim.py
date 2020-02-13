@@ -2,6 +2,7 @@
 import datetime
 import pymongo
 
+
 def test_omim_term(adapter, test_omim_term):
     """Test search for one OMIM term"""
 
@@ -39,7 +40,7 @@ def test_omim_genes(adapter, test_omim_term):
     omim_gene_id = test_omim_term["genes"][0]
 
     # GIVEN a database with a the same gene of the OMIM term
-    test_gene = {"hgnc_id": omim_gene_id, "build" : "37"}
+    test_gene = {"hgnc_id": omim_gene_id, "build": "37"}
     adapter.hgnc_collection.insert_one(test_gene)
 
     # WHEN the database queried for the OMIM genes
