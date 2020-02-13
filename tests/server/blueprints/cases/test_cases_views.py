@@ -141,6 +141,26 @@ def test_case(app, case_obj, institute_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
+def test_case_sma(app, case_obj, institute_obj):
+    # GIVEN an initialized app
+    # GIVEN a valid user, case and institute
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN accessing the case SMN CN page
+        resp = client.get(
+            url_for(
+                "cases.sma",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+
+        # THEN it should return a page
+        assert resp.status_code == 200
 
 def test_update_individual(app, user_obj, institute_obj, case_obj):
     # GIVEN an initialized app
