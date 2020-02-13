@@ -7,7 +7,7 @@ LOG = logging.getLogger(__name__)
 
 
 class DiagnosisHandler(object):
-    def omim_terms(self, query=None, text=None, limit=None):
+    def omim_terms(self, query=None, limit=None):
         """Return all OMIM terms
 
         If a query is sent omim_id will try to match with regex on term or
@@ -15,8 +15,6 @@ class DiagnosisHandler(object):
 
         Args:
             query(str): Part of a OMIM term or description
-            omim_term(str): Search for a specific OMIM term
-            text(str): Text search terms separated by space
             limit(int): the number of desired results
 
         Returns:
@@ -33,16 +31,6 @@ class DiagnosisHandler(object):
                 ]
             }
             search_term = query
-        elif text:
-            new_string = ""
-            for i, word in enumerate(text.split(" ")):
-                if i == 0:
-                    new_string += word
-                else:
-                    new_string += ' "{0}"'.format(word)
-            LOG.info("Search OMIM terms with %s", new_string)
-            query_dict["$text"] = {"$search": new_string}
-            search_term = text
 
         limit = limit or int(10e10)
         res = (

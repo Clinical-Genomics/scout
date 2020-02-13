@@ -3,7 +3,6 @@ import pytest
 import copy
 import pymongo
 import logging
-import datetime
 from pprint import pprint as pp
 
 from scout.constants import INDEXES

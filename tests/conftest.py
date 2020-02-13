@@ -244,7 +244,6 @@ def test_hpo_terms(request):
 ################# OMIM terms fixtures #######################
 #############################################################
 
-
 @pytest.fixture
 def test_omim_term(request):
     """Return a test OMIM object"""
