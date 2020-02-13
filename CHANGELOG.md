@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cancer case activates on SNV variants
 - Cases activate when STR variants are viewed
 - Always calculate code coverage
+- Pinned/Classification/comments in all types of variants pages
 
 ### Changed
 - Renamed `requests` file to `scout_requests`
