@@ -84,7 +84,7 @@ class DiagnoseHandler(object):
         result = None
 
         # Collect OMIM terms from case 'diagnosis_phenotypes' and 'diagnosis_genes'
-        omim_ids = case_obj.get('diagnosis_phenotypes') + case_obj.get('diagnosis_genes')
+        omim_ids = case_obj.get('diagnosis_phenotypes',[]) + case_obj.get('diagnosis_genes',[])
         res = (
             self.disease_term_collection.find({
                 'disease_nr' : {
