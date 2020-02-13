@@ -1,21 +1,23 @@
+"""Code to handle panels in the mongo database"""
 import datetime as dt
 import logging
 import math
 from copy import deepcopy
-from pprint import pprint as pp
 
 import pymongo
 from bson import ObjectId
 
 from scout.build import build_panel
 from scout.exceptions import IntegrityError
-from scout.parse.panel import get_omim_panel_genes, parse_gene_panel
+from scout.parse.panel import get_omim_panel_genes
 from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
 
 
-class PanelHandler(object):
+class PanelHandler:
+    """Code to handle interactions with the mongo database for panels"""
+
     def load_panel(self, parsed_panel):
         """Load a gene panel based on the info sent
         A panel object is built and integrity checks are made.
@@ -51,13 +53,16 @@ class PanelHandler(object):
         Args:
             genemap_lines(iterable(str)): The genemap2 file information
             mim2gene_lines(iterable(str)): The mim2genes file information
+            institute(str): What institute that is responsible. Default: 'cust002'
+
         """
+        institute = institute or "cust002"
         existing_panel = self.gene_panel(panel_id="OMIM-AUTO")
         if not existing_panel:
             LOG.warning("OMIM-AUTO does not exists in database")
             LOG.info("Creating a first version")
-            version = 1.0
 
+        version = 1.0
         if existing_panel:
             version = float(math.floor(existing_panel["version"]) + 1)
 
@@ -67,7 +72,7 @@ class PanelHandler(object):
         # Get the correct date when omim files where released
         for line in genemap2_lines:
             if "Generated" in line:
-                date_string = line.split(":")[-1].lstrip().rstrip()
+                date_string = line.split(":")[-1].strip()
                 break
 
         date_obj = get_date(date_string)
@@ -77,15 +82,16 @@ class PanelHandler(object):
                 LOG.warning("There is no new version of OMIM")
                 return
 
-        panel_data = {}
-        panel_data["path"] = None
-        panel_data["type"] = "clinical"
-        panel_data["date"] = date_obj
-        panel_data["panel_id"] = "OMIM-AUTO"
-        panel_data["institute"] = institute or "cust002"
-        panel_data["version"] = version
-        panel_data["display_name"] = "OMIM-AUTO"
-        panel_data["genes"] = []
+        panel_data = {
+            "path": None,
+            "type": "clinical",
+            "date": date_obj,
+            "panel_id": "OMIM-AUTO",
+            "institute": institute,
+            "version": version,
+            "display_name": "OMIM-AUTO",
+            "genes": [],
+        }
 
         alias_genes = self.genes_by_alias()
 
@@ -95,8 +101,7 @@ class PanelHandler(object):
             alias_genes=alias_genes,
         )
 
-        nr_genes = 0
-        for nr_genes, gene in enumerate(genes):
+        for gene in genes:
             panel_data["genes"].append(gene)
 
         panel_obj = build_panel(panel_data, self)
@@ -113,7 +118,8 @@ class PanelHandler(object):
 
         self.add_gene_panel(panel_obj)
 
-    def compare_mim_panels(self, existing_panel, new_panel):
+    @staticmethod
+    def compare_mim_panels(existing_panel, new_panel):
         """Check if the latest version of OMIM differs from the most recent in database
            Return all genes that where not in the previous version.
 
@@ -124,12 +130,13 @@ class PanelHandler(object):
         Returns:
             new_genes(set(str))
         """
-        existing_genes = set([gene["hgnc_id"] for gene in existing_panel["genes"]])
-        new_genes = set([gene["hgnc_id"] for gene in new_panel["genes"]])
+        existing_genes = {gene["hgnc_id"] for gene in existing_panel["genes"]}
+        new_genes = {gene["hgnc_id"] for gene in new_panel["genes"]}
 
         return new_genes.difference(existing_genes)
 
-    def update_mim_version(self, new_genes, new_panel, old_version):
+    @staticmethod
+    def update_mim_version(new_genes, new_panel, old_version):
         """Set the correct version for each gene
         Loop over the genes in the new panel
 
@@ -152,8 +159,6 @@ class PanelHandler(object):
 
         LOG.info("Updated %s genes", nr_genes)
 
-        return
-
     def add_gene_panel(self, panel_obj):
         """Add a gene panel to the database
 
@@ -170,9 +175,7 @@ class PanelHandler(object):
                 " exist in database".format(panel_name, panel_version)
             )
         LOG.info(
-            "loading panel {0}, version {1} to database".format(
-                display_name, panel_version
-            )
+            "loading panel %s, version %s to database", display_name, panel_version
         )
         LOG.info("Nr genes in panel: %s", len(panel_obj.get("genes", [])))
         result = self.panel_collection.insert_one(panel_obj)
@@ -329,9 +332,7 @@ class PanelHandler(object):
         date = panel_obj["date"]
         if version:
             LOG.info(
-                "Updating version from {0} to version {1}".format(
-                    panel_obj["version"], version
-                )
+                "Updating version from %s to version %s", panel_obj["version"], version
             )
             panel_obj["version"] = version
             # Updating version should not update date
@@ -463,7 +464,7 @@ class PanelHandler(object):
             if action == "delete":
                 continue
 
-            elif action == "edit":
+            if action == "edit":
                 for field in info_fields:
                     if field in info:
                         gene[field] = info[field]

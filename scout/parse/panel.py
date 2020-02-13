@@ -29,14 +29,7 @@ MODELS_MAP = {
 INCOMPLETE_PENETRANCE_MAP = {"unknown": None, "Complete": None, "Incomplete": True}
 
 
-def get_panel_info(
-    panel_lines=None,
-    panel_id=None,
-    institute=None,
-    version=None,
-    date=None,
-    display_name=None,
-):
+def get_panel_info(panel_lines=None, panel_id=None, institute=None, **kwargs):
     """Parse metadata for a gene panel
 
     For historical reasons it is possible to include all information about a gene panel in the
@@ -44,6 +37,8 @@ def get_panel_info(
 
     Args:
         panel_lines(iterable(str))
+        panel_id(str)
+        institute(str)
 
     Returns:
         panel_info(dict): Dictionary with panel information
@@ -51,9 +46,9 @@ def get_panel_info(
     panel_info = {
         "panel_id": panel_id,
         "institute": institute,
-        "version": version,
-        "date": date,
-        "display_name": display_name,
+        "version": kwargs.get("version"),
+        "date": kwargs.get("date"),
+        "display_name": kwargs.get("display_name"),
     }
 
     if panel_lines:
@@ -72,6 +67,30 @@ def get_panel_info(
     panel_info["date"] = get_date(panel_info["date"])
 
     return panel_info
+
+
+def get_hgnc_identifier(gene_info, id_type="hgnc_id"):
+    """Fetch the hgncid from a gene
+
+    Args:
+        gene_info(dict): Dictionary with gene information from a panel file
+        id_type(str): in ['hgnc_id', 'hgnc_symbol']
+
+    Returns:
+        hgnc_identifier(str)
+    """
+    hgnc_id_identifiers = ["hgnc_id", "hgnc_idnumber", "hgncid"]
+    hgnc_symbol_identifiers = ["hgnc_symbol", "hgncsymbol", "symbol"]
+
+    identifiers = hgnc_id_identifiers
+    if id_type == "hgnc_symbol":
+        identifiers = hgnc_symbol_identifiers
+
+    for identifier in identifiers:
+        if identifier in gene_info:
+            return gene_info[identifier]
+
+    return None
 
 
 def parse_gene(gene_info):
@@ -94,39 +113,19 @@ def parse_gene(gene_info):
 
     """
     gene = {}
-    # This is either hgnc id or hgnc symbol
-    identifier = None
 
-    hgnc_id = None
-    try:
-        if "hgnc_id" in gene_info:
-            hgnc_id = int(gene_info["hgnc_id"])
-        elif "hgnc_idnumber" in gene_info:
-            hgnc_id = int(gene_info["hgnc_idnumber"])
-        elif "hgncid" in gene_info:
-            hgnc_id = int(gene_info["hgncid"])
-    except ValueError as e:
-        raise SyntaxError("Invalid hgnc id: {0}".format(hgnc_id))
+    hgnc_id = get_hgnc_identifier(gene_info, id_type="hgnc_id")
+    if hgnc_id is not None:
+        try:
+            hgnc_id = int(hgnc_id)
+        except ValueError:
+            raise SyntaxError("Invalid hgnc id: {0}".format(hgnc_id))
 
     gene["hgnc_id"] = hgnc_id
-    identifier = hgnc_id
 
-    hgnc_symbol = None
-    if "hgnc_symbol" in gene_info:
-        hgnc_symbol = gene_info["hgnc_symbol"]
-    elif "hgncsymbol" in gene_info:
-        hgnc_symbol = gene_info["hgncsymbol"]
-    elif "symbol" in gene_info:
-        hgnc_symbol = gene_info["symbol"]
+    gene["hgnc_symbol"] = get_hgnc_identifier(gene_info, id_type="hgnc_symbol")
+    gene["identifier"] = hgnc_id or gene["hgnc_symbol"]
 
-    gene["hgnc_symbol"] = hgnc_symbol
-
-    if not identifier:
-        if hgnc_symbol:
-            identifier = hgnc_symbol
-        else:
-            raise SyntaxError("No gene identifier could be found")
-    gene["identifier"] = identifier
     # Disease associated transcripts is a ','-separated list of
     # manually curated transcripts
     transcripts = ""
@@ -158,16 +157,31 @@ def parse_gene(gene_info):
     ]
 
     # If a gene is known to be associated with mosaicism this is annotated
-    gene["mosaicism"] = True if gene_info.get("mosaicism") else False
+    gene["mosaicism"] = bool(gene_info.get("mosaicism"))
 
     # If a gene is known to have reduced penetrance this is annotated
-    gene["reduced_penetrance"] = True if gene_info.get("reduced_penetrance") else False
+    gene["reduced_penetrance"] = bool(gene_info.get("reduced_penetrance"))
 
     # The database entry version is a way to track when a a gene was added or
     # modified, optional
     gene["database_entry_version"] = gene_info.get("database_entry_version")
 
     return gene
+
+
+def get_delimiter(line):
+    """Try to find out what delimiter to use"""
+    delimiters = ["\t", " ", ";"]
+    line_length = 0
+    delimiter = None
+
+    for alt in delimiters:
+        head_line = line.split(alt)
+        if len(head_line) <= line_length:
+            continue
+        line_length = len(head_line)
+        delimiter = alt
+    return delimiter
 
 
 def parse_genes(gene_lines):
@@ -184,40 +198,24 @@ def parse_genes(gene_lines):
     hgnc_identifiers = set()
     delimiter = "\t"
     # This can be '\t' or ';'
-    delimiters = ["\t", " ", ";"]
 
     # There are files that have '#' to indicate headers
     # There are some files that start with a header line without
     # any special symbol
     for i, line in enumerate(gene_lines):
         line = line.strip()
-        if not len(line) > 0:
+        if line.startswith("##") or len(line) < 1:
             continue
+
         if line.startswith("#"):
-            if line.startswith("##"):
-                continue
             # We need to try delimiters
             # We prefer ';' or '\t' byt should accept ' '
-            line_length = 0
-            delimiter = None
-            for alt in delimiters:
-                head_line = line.split(alt)
-                if len(head_line) <= line_length:
-                    continue
-                line_length = len(head_line)
-                delimiter = alt
-
+            delimiter = get_delimiter(line)
             header = [word.lower() for word in line[1:].split(delimiter)]
             continue
         # If no header symbol(#) assume first line is header
         if i == 0:
-            line_length = 0
-            for alt in delimiters:
-                head_line = line.split(alt)
-                if len(head_line) <= line_length:
-                    continue
-                line_length = len(head_line)
-                delimiter = alt
+            delimiter = get_delimiter(line)
 
             if "hgnc" in line or "HGNC" in line:
                 header = [word.lower() for word in line.split(delimiter)]
@@ -229,18 +227,11 @@ def parse_genes(gene_lines):
             else:
                 header = ["hgnc_symbol"]
 
-        splitted_line = line.split(delimiter)
-        gene_info = dict(zip(header, splitted_line))
+        gene_info = dict(zip(header, line.split(delimiter)))
 
         # There are cases when excel exports empty lines that looks like
-        # ;;;;;;;. This is a exception to handle these
-        info_found = False
-        for key in gene_info:
-            if gene_info[key]:
-                info_found = True
-                break
-        # If no info was found we skip that line
-        if not info_found:
+        # ;;;;;;;. This is a exception to handle these empty lines
+        if not any(gene_info.values()):
             continue
 
         try:
@@ -263,10 +254,8 @@ def parse_gene_panel(
     institute="cust000",
     panel_id="test",
     panel_type="clinical",
-    date=datetime.now(),
-    version=1.0,
-    display_name=None,
     genes=None,
+    **kwargs
 ):
     """Parse the panel info and return a gene panel
 
@@ -285,13 +274,12 @@ def parse_gene_panel(
     gene_panel = {}
 
     gene_panel["path"] = path
-    gene_panel["type"] = panel_type
-    gene_panel["date"] = date
-    gene_panel["panel_id"] = panel_id
     gene_panel["institute"] = institute
-    version = version or 1.0
-    gene_panel["version"] = float(version)
-    gene_panel["display_name"] = display_name or panel_id
+    gene_panel["panel_id"] = panel_id
+    gene_panel["type"] = panel_type
+    gene_panel["date"] = kwargs.get("date") or datetime.now()
+    gene_panel["version"] = float(kwargs.get("version") or 1.0)
+    gene_panel["display_name"] = kwargs.get("display_name") or panel_id
 
     if not path:
         panel_handle = genes
