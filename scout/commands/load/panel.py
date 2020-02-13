@@ -45,7 +45,7 @@ LOG = logging.getLogger(__name__)
     is_flag=True,
     help=(
         "Load the OMIM-AUTO panel into scout."
-        " A OMIM api key is required to do this(https://omim.org/api)."
+        " AN OMIM api key is required to do this(https://omim.org/api)."
     ),
 )
 @click.option("--api-key", help="A OMIM api key, see https://omim.org/api.")
