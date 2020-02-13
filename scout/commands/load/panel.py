@@ -1,18 +1,13 @@
-# -*- coding: utf-8 -*-
+"""Code for scout load panel CLI functionality"""
 import logging
 
-from pprint import pprint as pp
-
 import click
-from flask.cli import with_appcontext, current_app
+from flask.cli import current_app, with_appcontext
+
+from scout.load.panel import load_panel, load_panel_app
 from scout.server.extensions import store
-
+from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import fetch_mim_files
-from scout.utils.date import get_date
-
-from scout.load.panel import load_panel_app, load_panel
-
-from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
 
@@ -36,9 +31,22 @@ LOG = logging.getLogger(__name__)
     type=click.Choice(["clinical", "research"]),
 )
 @click.option(
+    "--genemap2",
+    type=click.Path(exists=True),
+    help="Path to file in omim genemap2 format",
+)
+@click.option(
+    "--mim2genes",
+    type=click.Path(exists=True),
+    help="Path to file in omim mim2genes format",
+)
+@click.option(
     "--omim",
     is_flag=True,
-    help="Load the OMIM-AUTO panel into scout. A OMIM api key is required to do this(https://omim.org/api).",
+    help=(
+        "Load the OMIM-AUTO panel into scout."
+        " AN OMIM api key is required to do this(https://omim.org/api)."
+    ),
 )
 @click.option("--api-key", help="A OMIM api key, see https://omim.org/api.")
 @click.option("--panel-app", is_flag=True, help="Load all PanelApp panels into scout.")
@@ -52,6 +60,8 @@ def panel(
     panel_id,
     institute,
     omim,
+    genemap2,
+    mim2genes,
     api_key,
     panel_app,
 ):
@@ -61,8 +71,15 @@ def panel(
     institute = institute or "cust000"
 
     if omim:
+        mim_files = None
+        if genemap2 and mim2genes:
+            mim_files = {
+                "genemap2": list(get_file_handle(genemap2)),
+                "mim2genes": list(get_file_handle(mim2genes)),
+            }
+
         api_key = api_key or current_app.config.get("OMIM_API_KEY")
-        if not api_key:
+        if not api_key and mim_files is None:
             LOG.warning("Please provide a omim api key to load the omim gene panel")
             raise click.Abort()
         # Check if OMIM-AUTO exists
@@ -71,9 +88,21 @@ def panel(
             LOG.info("To create a new version use scout update omim")
             return
 
+        if not mim_files:
+            try:
+                mim_files = fetch_mim_files(
+                    api_key=api_key, genemap2=True, mim2genes=True
+                )
+            except Exception as err:
+                raise err
+
         # Here we know that there is no panel loaded
         try:
-            adapter.load_omim_panel(api_key, institute=institute)
+            adapter.load_omim_panel(
+                genemap2_lines=mim_files["genemap2"],
+                mim2gene_lines=mim_files["mim2genes"],
+                institute=institute,
+            )
         except Exception as err:
             LOG.error(err)
             raise click.Abort()
