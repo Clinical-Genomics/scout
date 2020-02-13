@@ -220,6 +220,7 @@ def build_case(case_data, adapter):
     case_obj['madeline_info'] = case_data.get('madeline_info')
     case_obj['chromograph_image_files'] = case_data.get('chromograph_image_files')
     case_obj['chromograph_prefixes'] = case_data.get('chromograph_prefixes')
+    case_obj['smn_tsv'] = case_data.get('smn_tsv')
 
     if 'multiqc' in case_data:
         case_obj['multiqc'] = case_data.get('multiqc')
@@ -233,6 +234,8 @@ def build_case(case_data, adapter):
     case_obj['has_strvariants'] = False
     if (case_obj['vcf_files'].get('vcf_str')):
         case_obj['has_strvariants'] = True
+
+
 
     case_obj['is_migrated'] = False
 
