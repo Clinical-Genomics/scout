@@ -31,6 +31,12 @@ individual = dict(
     analysis_type=str,  # choices=ANALYSIS_TYPES
     confirmed_sex=bool,  # True or False. None if no check has been done
     confirmed_parent=bool,
+    is_sma = boolean, # True / False if SMA status determined - None if not done.
+    is_sma_carrier = boolean,  # True / False if SMA carriership determined - None if not done.
+    smn1_cn = int, # CopyNumber
+    smn2_cn = int, # CopyNumber
+    smn2delta78_cn = int,# CopyNumber
+    smn_27134_cn = int, # CopyNumber
     predicted_ancestry=str,  # one of AFR AMR EAS EUR SAS UNKNOWN
 )
 
@@ -72,6 +78,7 @@ case = dict(
     chromograph_prefixes=list,  # path to dir
     delivery_report=str,  # delivery report is a path to html file
     vcf_files=dict,  # A dictionary with vcf files
+    smn_tsv = str, # path to an SMN TSV file
     diagnosis_phenotypes=list,  # List of references to diseases
     diagnosis_genes=list,  # List of references to genes
     has_svvariants=bool,  # default=False
