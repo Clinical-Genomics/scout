@@ -24,7 +24,7 @@
       {{ institute.display_name }}
     </a>
   </li>
-  <li class="nav-item" href="{{ url_for('cases.case', institute_id=institute._id, case_id=case.case_id) }}">
+  <li class="nav-item" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
     <span class="navbar-text">{{ case.display_name }}</span>
   </li>
   <li class="nav-item ">
@@ -77,7 +77,7 @@
 {% macro smn_individuals_table(case, institute, tissues) %}
 <form method="POST" action="{{ url_for('cases.update_individual', institute_id=institute._id, case_name=case.display_name) }}">
   <div class="card panel-default">
-    <div class="panel-heading">Individuals</div>
+    <div class="panel-heading">SMN Copy Number status - Individuals</div>
     <div class="table-responsive">
       <table class="table table-sm">
         <thead>
@@ -85,19 +85,19 @@
             <th data-toggle='tooltip' data-container='body' style="width: 20%"
              title="Display name of sample">Sample</th>
             <th data-toggle='tooltip' style="width: 5%" title="Sample sex">Sex</th>
-            <th data-toggle='tooltip' style="width: 10%" title="Phenotype of sample">Phenotype</th>
+            <th data-toggle='tooltip' style="width: 5%" title="Phenotype of sample">Phenotype</th>
             <th data-toggle='tooltip' data-toggle='tooltip' data-container='body'
-              style="width: 10%" title="SMA affected status prediction">SMA</th>
+              style="width: 5%" title="SMA affected status prediction">SMA</th>
               <th data-toggle='tooltip' data-toggle='tooltip' data-container='body'
-                style="width: 10%" title="SMA carrier status prediction">Carrier</th>
+                style="width: 5%" title="SMA carrier status prediction">Carrier</th>
             <th data-toggle='tooltip' data-container='body'
              title="SMN1 Estimated Copy Number" style="width: 5%">SMN1 CN</th>
              <th data-toggle='tooltip' data-container='body'
               title="SMN2 Estimated Copy Number" style="width: 5%">SMN2 CN</th>
               <th data-toggle='tooltip' data-container='body'
-               title="SMN2delta7-8 Estimated Copy Number" style="width: 5%">SMN2delta(7-8)_CN</th>
+               title="SMN2delta7-8 Estimated Copy Number" style="width: 10%">SMN2delta(7-8)_CN</th>
                <th data-toggle='tooltip' data-container='body'
-                title="g.27134T>G_CN Estimated Copy Number" style="width: 5%">g.27134T>G CN</th>
+                title="g.27134T>G_CN Estimated Copy Number" style="width: 10%">g.27134T>G CN</th>
             <th data-toggle='tooltip' data-container='body'
              title="Ancestry prediction from peddy" style="width: 10%">Ancestry (pred.)</th>
              <th data-toggle='tooltip' data-container='body'

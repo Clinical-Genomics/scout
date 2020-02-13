@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clear panel pending changes
 - Adds option to setup the database with static files
 - Adds cli command to download the resources from CLI that scout needs
+- Add SMA view with SMN Copy Number data
 
 ### Fixed
 - Cancer case HPO panel variants link
