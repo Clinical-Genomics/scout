@@ -5,8 +5,8 @@ from pymongo import ASCENDING
 
 LOG = logging.getLogger(__name__)
 
-class DiagnoseHandler(object):
 
+class DiagnosisHandler(object):
     def omim_terms(self, query=None, text=None, limit=None):
         """Return all OMIM terms
 
@@ -62,13 +62,7 @@ class DiagnoseHandler(object):
             res(obj)
 
         """
-        res = (
-            self.disease_term_collection.find_one(
-                {
-                    '_id' : term
-                }
-            )
-        )
+        res = self.disease_term_collection.find_one({"_id": term})
         return res
 
     def case_omim_diagnoses(self, case_obj):
@@ -84,14 +78,11 @@ class DiagnoseHandler(object):
         result = None
 
         # Collect OMIM terms from case 'diagnosis_phenotypes' and 'diagnosis_genes'
-        omim_ids = case_obj.get('diagnosis_phenotypes',[]) + case_obj.get('diagnosis_genes',[])
-        res = (
-            self.disease_term_collection.find({
-                'disease_nr' : {
-                    '$in' : omim_ids
-                }}
-            )
-            .sort("disease_nr", ASCENDING)
+        omim_ids = case_obj.get("diagnosis_phenotypes", []) + case_obj.get(
+            "diagnosis_genes", []
+        )
+        res = self.disease_term_collection.find({"disease_nr": {"$in": omim_ids}}).sort(
+            "disease_nr", ASCENDING
         )
         return res
 
@@ -105,5 +96,5 @@ class DiagnoseHandler(object):
             gene_objs(list): a list of gene objects
 
         """
-        gene_objs = [ self.hgnc_gene(hgnc_id) for hgnc_id in gene_list ]
+        gene_objs = [self.hgnc_gene(hgnc_id) for hgnc_id in gene_list]
         return gene_objs

@@ -84,4 +84,4 @@ SOURCES = [
 ]
 
 
-SAMPLE_SOURCE = dict((i,el) for i,el in enumerate(SOURCES))
+SAMPLE_SOURCE = dict((i, el) for i, el in enumerate(SOURCES))

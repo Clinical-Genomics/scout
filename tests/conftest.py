@@ -9,6 +9,7 @@ import pytest
 import yaml
 from cyvcf2 import VCF
 from flask_login import login_user, logout_user
+
 # Adapter stuff
 from mongomock import MongoClient
 
@@ -18,34 +19,53 @@ from scout.build.genes.hgnc_gene import build_hgnc_gene
 from scout.build.genes.transcript import build_transcript
 from scout.build.user import build_user
 from scout.build.variant import build_variant
-from scout.demo import (cancer_load_path, cancer_sv_path, clinical_snv_path,
-                        clinical_str_path, clinical_sv_path,
-                        customannotation_snv_path, empty_sv_clinical_path,
-                        load_path, panel_path, ped_path, research_snv_path,
-                        research_sv_path, vep_97_annotated_path)
+from scout.demo import (
+    cancer_load_path,
+    cancer_sv_path,
+    clinical_snv_path,
+    clinical_str_path,
+    clinical_sv_path,
+    customannotation_snv_path,
+    empty_sv_clinical_path,
+    load_path,
+    panel_path,
+    ped_path,
+    research_snv_path,
+    research_sv_path,
+    vep_97_annotated_path,
+)
+
 # These are the reduced data files
-from scout.demo.resources import (exac_reduced_path, exons37_reduced_path,
-                                  exons38_reduced_path, genemap2_reduced_path,
-                                  genes37_reduced_path, genes38_reduced_path,
-                                  hgnc_reduced_path,
-                                  hpo_phenotype_to_terms_reduced_path,
-                                  hpo_to_genes_reduced_path,
-                                  hpogenes_reduced_path, hpoterms_reduced_path,
-                                  mim2gene_reduced_path,
-                                  transcripts37_reduced_path,
-                                  transcripts38_reduced_path)
+from scout.demo.resources import (
+    exac_reduced_path,
+    exons37_reduced_path,
+    exons38_reduced_path,
+    genemap2_reduced_path,
+    genes37_reduced_path,
+    genes38_reduced_path,
+    hgnc_reduced_path,
+    hpo_phenotype_to_terms_reduced_path,
+    hpo_to_genes_reduced_path,
+    hpogenes_reduced_path,
+    hpoterms_reduced_path,
+    mim2gene_reduced_path,
+    transcripts37_reduced_path,
+    transcripts38_reduced_path,
+)
 from scout.load import load_hgnc_genes
 from scout.load.hpo import load_hpo
 from scout.load.transcript import load_transcripts
 from scout.log import init_log
 from scout.models.hgnc_map import HgncGene
 from scout.parse.case import parse_case
-from scout.parse.ensembl import (parse_ensembl_exons,
-                                 parse_ensembl_transcripts, parse_transcripts)
+from scout.parse.ensembl import (
+    parse_ensembl_exons,
+    parse_ensembl_transcripts,
+    parse_transcripts,
+)
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hgnc import parse_hgnc_genes
-from scout.parse.hpo import (parse_hpo_diseases, parse_hpo_genes,
-                             parse_hpo_phenotypes)
+from scout.parse.hpo import parse_hpo_diseases, parse_hpo_genes, parse_hpo_phenotypes
 from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
 from scout.parse.variant.headers import parse_rank_results_header

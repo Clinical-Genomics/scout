@@ -714,7 +714,7 @@ def case_diagnosis(institute_id, case_name):
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
     level = "phenotype" if "phenotype" in request.form else "gene"
-    omim_id = request.form["omim_term"].split('|')[0]
+    omim_id = request.form["omim_term"].split("|")[0]
     remove = True if request.args.get("remove") == "yes" else False
     store.diagnose(
         institute_obj,

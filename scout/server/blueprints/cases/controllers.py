@@ -49,6 +49,7 @@ STATUS_MAP = {"solved": "bg-success", "archived": "bg-warning"}
 
 TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
 
+
 def cases(store, case_query, prioritized_cases_query=None, limit=100):
     """Preprocess case objects.
 
@@ -242,7 +243,9 @@ def case(store, institute_obj, case_obj):
     pheno_groups = institute_obj.get("phenotype_groups") or PHENOTYPE_GROUPS
 
     # complete OMIM diagnoses specific for this case
-    omim_terms = { term['disease_nr']:term for term in store.case_omim_diagnoses(case_obj) }
+    omim_terms = {
+        term["disease_nr"]: term for term in store.case_omim_diagnoses(case_obj)
+    }
 
     data = {
         "status_class": STATUS_MAP.get(case_obj["status"]),
@@ -255,7 +258,7 @@ def case(store, institute_obj, case_obj):
         "partial_causatives": partial_causatives,
         "collaborators": collab_ids,
         "cohort_tags": institute_obj.get("cohorts", []),
-        "omim_terms" : omim_terms,
+        "omim_terms": omim_terms,
         "manual_rank_options": MANUAL_RANK_OPTIONS,
         "cancer_tier_options": CANCER_TIER_OPTIONS,
     }

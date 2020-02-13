@@ -6,6 +6,7 @@ from . import controllers
 
 omim_bp = Blueprint("diagnoses", __name__, template_folder="templates")
 
+
 @omim_bp.route("/diagnoses/<omim_id>", methods=["GET"])
 @templated("diagnoses/omim_genes.html")
 def omim_diagnosis(omim_id):
