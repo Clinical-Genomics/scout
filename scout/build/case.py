@@ -215,7 +215,6 @@ def build_case(case_data, adapter):
     if phenotype_groups:
         case_obj['phenotype_groups'] = phenotype_groups
 
-
     # Files
     case_obj['madeline_info'] = case_data.get('madeline_info')
     case_obj['chromograph_image_files'] = case_data.get('chromograph_image_files')
@@ -235,12 +234,9 @@ def build_case(case_data, adapter):
     if (case_obj['vcf_files'].get('vcf_str')):
         case_obj['has_strvariants'] = True
 
-
-
     case_obj['is_migrated'] = False
 
     # What experiment is used, alternatives are rare (rare disease) or cancer
     case_obj['track'] = case_data.get('track', 'rare')
-
 
     return case_obj

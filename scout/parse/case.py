@@ -122,7 +122,6 @@ def parse_case_data(
     config_data["vcf_snv"] = vcf_snv if vcf_snv else config_data.get("vcf_snv")
     config_data["vcf_sv"] = vcf_sv if vcf_sv else config_data.get("vcf_sv")
     config_data["vcf_str"] = vcf_str if vcf_str else config_data.get("vcf_str")
-    LOG.debug("Config vcf_str set to {0}".format(config_data["vcf_str"]))
     config_data["smn_tsv"] = smn_tsv if smn_tsv else config_data.get("smn_tsv")
 
     if config_data["smn_tsv"]:
@@ -170,10 +169,11 @@ def add_smn_info(config_data):
     for ind in config_data["samples"]:
         ind_id = ind["sample_id"]
         try:
-            LOG.debug("Test: ind {} smn1cn {}".format(smn_info[ind_id]["sample_id"],smn_info[ind_id]["smn1_cn"]))
-            ind.update(smn_info[ind_id])
+            for key in ["is_sma", "is_sma_carrier", "smn1_cn", "smn2_cn", "smn2delta78_cn", "smn_27134_cn"]:
+                ind[key] = smn_info[ind_id][key]
         except KeyError as e:
             LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
+
 
 def add_peddy_information(config_data):
     """Add information from peddy outfiles to the individuals
@@ -262,6 +262,21 @@ def parse_individual(sample):
                 'vcf2cytosure': str,
                 'capture_kits': list(str),
 
+                'upd_sites_bed': str,
+                'upd_regions_bed': str,
+                'rhocall_bed': str,
+                'rhocall_wig': str,
+                tiddit_coverage_wig': str,
+
+                'predicted_ancestry' = str,
+
+                'is_sma': boolean,
+                'is_sma_carrier': boolean,
+                'smn1_cn' = int,
+                'smn2_cn' = int,
+                'smn2delta78_cn' = int,
+                'smn_27134_cn' = int,
+
                 'tumor_type': str,
                 'tmb': str,
                 'msi': str,
@@ -329,6 +344,13 @@ def parse_individual(sample):
 
     # Path to downloadable vcf2cytosure file
     ind_info["vcf2cytosure"] = sample.get("vcf2cytosure")
+
+    ind_info["is_sma"] = sample.get("is_sma")
+    ind_info["is_sma_carrier"] = sample.get("is_sma_carrier")
+    ind_info["smn1_cn"] = sample.get("smn1_cn")
+    ind_info["smn2_cn"] = sample.get("smn2_cn")
+    ind_info["smn2delta78_cn"] = sample.get("smn2delta78_cn")
+    ind_info["smn_27134_cn"] = sample.get("smn_27134_cn")
 
     ind_info["capture_kits"] = (
         [sample.get("capture_kit")] if "capture_kit" in sample else []
@@ -419,6 +441,7 @@ def parse_case(config):
             "vcf_cancer_research": config.get("vcf_cancer_research"),
             "vcf_cancer_sv_research": config.get("vcf_cancer_sv_research"),
         },
+        "smn_tsv": config.get("smn_tsv"),
         "default_panels": config.get("default_gene_panels", []),
         "gene_panels": config.get("gene_panels", []),
         "assignee": config.get("assignee"),
