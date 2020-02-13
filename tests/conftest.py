@@ -241,6 +241,28 @@ def test_hpo_terms(request):
 
 
 #############################################################
+################# OMIM terms fixtures #######################
+#############################################################
+
+
+@pytest.fixture
+def test_omim_term(request):
+    """Return a test OMIM object"""
+
+    omim_term = {
+        "_id": "OMIM:260005",
+        "disease_id": "OMIM:260005",
+        "disease_nr": 260005,
+        "description": "5-oxoprolinase deficiency",
+        "source": "OMIM",
+        "genes": [8149],
+        "inheritance": ["AR", "AD"],
+        "HPO_terms": ["HP:00022027", "HP:0008672"],
+    }
+    return omim_term
+
+
+#############################################################
 ##################### Case fixtures #########################
 #############################################################
 @pytest.fixture(scope="function")
