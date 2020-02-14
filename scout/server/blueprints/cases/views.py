@@ -518,10 +518,10 @@ def causatives(institute_id):
 
         if variant_obj["variant_id"] not in all_variants:
             all_variants[variant_obj["variant_id"]] = []
-            
+
         all_variants[variant_obj["variant_id"]].append((case_obj, variant_obj))
 
-    acmg_map = { key:ACMG_COMPLETE_MAP[value] for key,value in ACMG_MAP.items() }
+    acmg_map = {key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()}
 
     return dict(institute=institute_obj, variant_groups=all_variants, acmg_map=acmg_map)
 
