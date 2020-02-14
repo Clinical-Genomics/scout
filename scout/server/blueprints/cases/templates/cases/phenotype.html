@@ -45,10 +45,16 @@
   <div>
     <ul class="list-group">
       {% for omim_id in case.diagnosis_phenotypes %}
-        <li class="list-group-item">
-          <a target="_blank" href="http://omim.org/entry/{{ omim_id }}">
+        <li class="list-group-item d-flex">
+          <a class="flex-fill" target="_blank" href="http://omim.org/entry/{{ omim_id }}">
             {{ omim_id }} - {{ omim_terms[omim_id].description }}</a>
-
+          {% if omim_terms[omim_id].genes %}
+            <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_id=omim_terms[omim_id]._id)}}"><span class="badge badge-secondary badge-pill text-white">
+              {{omim_terms[omim_id].genes|length}}
+              </span>
+            </a>
+          &nbsp;&nbsp;&nbsp;
+          {% endif %}
           <span class="pull-right">
             {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
                                   case_name=case.display_name, remove='yes'),
