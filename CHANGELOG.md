@@ -25,6 +25,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cases activate when STR variants are viewed
 - Always calculate code coverage
 - Pinned/Classification/comments in all types of variants pages
+- ACMG classification not showing for some causatives
+
 
 ### Changed
 - Renamed `requests` file to `scout_requests`
