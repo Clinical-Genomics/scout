@@ -154,7 +154,7 @@
 
 {% macro allele_cell(allele) %}
   {% if 'alt_freq' in allele %}
-    {{ (allele.alt_freq * 100)|round(4)  }}%
+    {{ (allele.alt_freq * 100)|round(2)  }}%
   {% else %}
     <span class="text-muted">N/A</span>
   {% endif %}
