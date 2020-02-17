@@ -4,9 +4,22 @@
     <div class="panel-heading" data-toggle='tooltip' title="Transcripts described as disease associated in any of the gene panels">Disease associated transcripts</div>
     <div class=card-body>
       <table class="table table-bordered table-hover table-sm">
-        <tr>
-          <td>{{ variant.disease_associated_transcripts|join(', ') if variant.disease_associated_transcripts else '-' }}</td>
-        </tr>
+        {% set ns = namespace(gene='') %}
+        {% for transcript in variant.disease_associated_transcripts -%}
+          <tr>
+            <td>
+            {% set ns.gene = transcript.split(":")[0] != ns.gene -%} <!-- is this a different gene? -->
+            {% if ns.gene-%}<!--new line-->
+              <strong>{{transcript.split(":")[0]}}:</strong> &nbsp;{{transcript.split(":")[1]}} &nbsp; <!--print gene -->
+            {% else %}
+              {{transcript.split(":")[1]}} &nbsp;<!-- print transcript-->
+            {% endif %}
+            {% set ns.gene = transcript.split(":")[0] %}
+            </td>
+          </tr>
+        {% else %}
+          <tr><td>-</td></tr>
+        {% endfor %}
       </table>
     </div>
   </div>
