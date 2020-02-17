@@ -140,7 +140,6 @@ def panel(panel_id):
         elif action == "delete":
             LOG.debug("marking gene to be deleted: %s", hgnc_id)
             panel_obj = store.add_pending(panel_obj, gene_obj, action="delete")
-
     data = controllers.panel(store, panel_obj)
     if request.args.get("case_id"):
         data["case"] = store.case(request.args["case_id"])
@@ -189,23 +188,34 @@ def panel_export(panel_id):
 @templated("panels/gene-edit.html")
 def gene_edit(panel_id, hgnc_id):
     """Edit additional information about a panel gene."""
+
     panel_obj = store.panel(panel_id)
     hgnc_gene = store.hgnc_gene(hgnc_id)
     panel_gene = controllers.existing_gene(store, panel_obj, hgnc_id)
 
     form = PanelGeneForm()
     transcript_choices = []
+
     for transcript in hgnc_gene["transcripts"]:
         if transcript.get("refseq_id"):
             refseq_id = transcript.get("refseq_id")
             transcript_choices.append((refseq_id, refseq_id))
+
+    # collect even refseq version provided by user for this transcript (might have a version)
+    if panel_obj.get('genes'):
+        genes_dict = { gene_obj["symbol"]:gene_obj for gene_obj in panel_obj['genes'] }
+        gene_obj = genes_dict.get(hgnc_gene['hgnc_symbol'])
+        for transcript in gene_obj.get("disease_associated_transcripts", []):
+            if (transcript,transcript) not in transcript_choices:
+                transcript_choices.append((transcript,transcript))
+
     form.disease_associated_transcripts.choices = transcript_choices
     if form.validate_on_submit():
         action = "edit" if panel_gene else "add"
         info_data = form.data.copy()
         if "csrf_token" in info_data:
             del info_data["csrf_token"]
-        if "custom_inheritance_models" in info_data:
+        if info_data["custom_inheritance_models"] != "":
             info_data["custom_inheritance_models"] = info_data[
                 "custom_inheritance_models"
             ].split(",")
