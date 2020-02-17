@@ -8,7 +8,6 @@ from flask_login import current_user
 
 from scout.server.extensions import store
 from scout.server.utils import templated, user_institutes
-from scout.utils.scout_requests import fetch_refseq_version
 from .forms import PanelGeneForm
 from . import controllers
 
@@ -202,19 +201,13 @@ def gene_edit(panel_id, hgnc_id):
             refseq_id = transcript.get("refseq_id")
             transcript_choices.append((refseq_id, refseq_id))
 
-            # collect latest refseq version for this transcript
-            refseq_id_version = fetch_refseq_version(refseq_id)
-            if refseq_id_version:
-                transcript_choices.append((refseq_id_version, refseq_id_version))
-
     # collect even refseq version provided by user for this transcript (might be an older one)
-    if panel_obj.get("gene_objects"):
-        gene_obj = panel_obj["gene_objects"].get(hgnc_gene['hgnc_symbol'])
-        if gene_obj:
-            for transcript in gene_obj.get("disease_associated_transcripts", []):
-                if (transcript,transcript) not in transcript_choices:
-                    transcript_choices.append((transcript,transcript))
-
+    if panel_obj.get('genes'):
+        genes_dict = { gene_obj["symbol"]:gene_obj for gene_obj in panel_obj['genes'] }
+        gene_obj = genes_dict.get(hgnc_gene['hgnc_symbol'])
+        for transcript in gene_obj.get("disease_associated_transcripts", []):
+            if (transcript,transcript) not in transcript_choices:
+                transcript_choices.append((transcript,transcript))
 
     form.disease_associated_transcripts.choices = transcript_choices
     if form.validate_on_submit():
