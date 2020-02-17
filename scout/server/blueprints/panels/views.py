@@ -99,6 +99,7 @@ def panels():
         institutes=institutes,
     )
 
+
 @panels_bp.route("/panels/<panel_id>", methods=["GET", "POST"])
 @templated("panels/panel.html")
 def panel(panel_id):
