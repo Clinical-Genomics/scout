@@ -201,7 +201,7 @@ def gene_edit(panel_id, hgnc_id):
             refseq_id = transcript.get("refseq_id")
             transcript_choices.append((refseq_id, refseq_id))
 
-    # collect even refseq version provided by user for this transcript (might be an older one)
+    # collect even refseq version provided by user for this transcript (might have a version)
     if panel_obj.get('genes'):
         genes_dict = { gene_obj["symbol"]:gene_obj for gene_obj in panel_obj['genes'] }
         gene_obj = genes_dict.get(hgnc_gene['hgnc_symbol'])
