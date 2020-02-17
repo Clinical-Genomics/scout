@@ -20,7 +20,7 @@
                                       variant_id=variant._id) }}">
                     {% set display_genes = [] %}
                     {% for gene in variant.genes %}
-                      {% if 'hgvs_identifier' in gene %}
+                      {% if 'hgvs_identifier' in gene and gene.hgvs_identifier%}
                         {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier) }}
                       {% else %}
                         {{ "" if display_genes.append(gene.hgnc_symbol) }}
@@ -154,7 +154,7 @@
                                         variant_id=variant._id) }}">
                       {% set display_genes = [] %}
                       {% for gene in variant.genes %}
-                        {% if 'hgvs_identifier' in gene %}
+                        {% if 'hgvs_identifier' in gene and gene.hgvs_identifier %}
                           {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier) }}
                         {% else %}
                           {{ "" if display_genes.append(gene.hgnc_symbol) }}
