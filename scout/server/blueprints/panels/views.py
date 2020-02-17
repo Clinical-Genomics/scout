@@ -105,7 +105,6 @@ def panel(panel_id):
     """Display (and add pending updates to) a specific gene panel."""
     panel_obj = store.gene_panel(panel_id) or store.panel(panel_id)
 
-    flash("HERE")
     if request.method == "POST":
         if request.form.get("update_description"):
             panel_obj["description"] = request.form["panel_description"]
