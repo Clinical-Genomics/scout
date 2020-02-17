@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Pinned/Classification/comments in all types of variants pages
 - Null values for panel's custom_inheritance_models
 - Discrepancy between the manual disease transcripts and those in database in gene-edit page
+- ACMG classification not showing for some causatives
 
 ### Changed
 - Renamed `requests` file to `scout_requests`
