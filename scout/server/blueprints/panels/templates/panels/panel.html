@@ -130,7 +130,11 @@
               <td>{{ 'Yes' if gene.reduced_penetrance }}</td>
               <td>{{ 'Yes' if gene.mosaicism }}</td>
               <td>{{ gene.database_entry_version }}</td>
-              <td>{{ (gene.inheritance_models|list + gene.custom_inheritance_models|list)|join(', ') }}</td>
+              {% if gene.custom_inheritance_models|list != [''] %}
+                <td>{{ (gene.inheritance_models|list + gene.custom_inheritance_models|list)|join(', ') }}</td>
+              {% else %}
+                <td>{{ gene.inheritance_models|list }}</td>
+              {% endif %}
               <td>{{ gene.comment }}</td>
               <td>
                 {% if not panel.is_archived %}

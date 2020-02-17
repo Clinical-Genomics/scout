@@ -38,8 +38,7 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-4">
-                {{ form.inheritance_models.label(class="control-label") }}
-                (OMIM: {{ gene.inheritance_models|join(', ') if gene.inheritance_models else 'unknown' }})
+                {{ form.inheritance_models.label(class="control-label") }}<br>
                 {{ form.inheritance_models(class="selectpicker") }}
               </div>
               <div class="col-md-4">
@@ -52,7 +51,7 @@
                 {{ form.database_entry_version(class="form-control") }}
               </div>
             </div>
-            <div class="row">
+            <div class="row mt-3">
               <div class="col-md-12">
                 {{ form.comment.label(class="control-label") }}
                 {{ form.comment(class="form-control") }}
