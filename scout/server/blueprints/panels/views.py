@@ -8,6 +8,7 @@ from flask_login import current_user
 
 from scout.server.extensions import store
 from scout.server.utils import templated, user_institutes
+from scout.utils.scout_requests import fetch_refseq_version
 from .forms import PanelGeneForm
 from . import controllers
 
@@ -98,13 +99,13 @@ def panels():
         institutes=institutes,
     )
 
-
 @panels_bp.route("/panels/<panel_id>", methods=["GET", "POST"])
 @templated("panels/panel.html")
 def panel(panel_id):
     """Display (and add pending updates to) a specific gene panel."""
     panel_obj = store.gene_panel(panel_id) or store.panel(panel_id)
 
+    flash("HERE")
     if request.method == "POST":
         if request.form.get("update_description"):
             panel_obj["description"] = request.form["panel_description"]
@@ -140,7 +141,6 @@ def panel(panel_id):
         elif action == "delete":
             LOG.debug("marking gene to be deleted: %s", hgnc_id)
             panel_obj = store.add_pending(panel_obj, gene_obj, action="delete")
-
     data = controllers.panel(store, panel_obj)
     if request.args.get("case_id"):
         data["case"] = store.case(request.args["case_id"])
@@ -196,10 +196,17 @@ def gene_edit(panel_id, hgnc_id):
 
     form = PanelGeneForm()
     transcript_choices = []
+
     for transcript in hgnc_gene["transcripts"]:
         if transcript.get("refseq_id"):
             refseq_id = transcript.get("refseq_id")
             transcript_choices.append((refseq_id, refseq_id))
+
+            # collect available refseq version for this transcript
+            refseq_id_version = fetch_refseq_version(refseq_id)
+            if refseq_id_version:
+                transcript_choices.append((refseq_id_version, refseq_id_version))
+
     form.disease_associated_transcripts.choices = transcript_choices
     if form.validate_on_submit():
         action = "edit" if panel_gene else "add"
@@ -216,7 +223,7 @@ def gene_edit(panel_id, hgnc_id):
 
     if panel_gene:
         form.custom_inheritance_models.data = ", ".join(
-            panel_gene.get("custom_inheritance_models", None)
+            panel_gene.get("custom_inheritance_models", [])
         )
         for field_key in [
             "disease_associated_transcripts",
