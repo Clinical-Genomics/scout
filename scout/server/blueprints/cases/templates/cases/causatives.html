@@ -34,7 +34,6 @@
 </li>
 {% endblock %}
 {% block content_main %}
-
 <div class="card mt-3">
   <div class="card-body">
       <table id="causatives_table" class="table display table-sm" cellspacing="0" width="100%">
@@ -98,7 +97,7 @@
               <a href="#" data-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)"
                 style="text-decoration: none; color: #000;">ACMG:
                 {% if 'acmg_classification' in variant %}
-                <span class="badge badge-{{variant.acmg_classification.color}}">{{variant.acmg_classification.short}}</span>
+                <span class="badge badge-{{acmg_map[variant.acmg_classification].color}}">{{acmg_map[variant.acmg_classification].short}}</span>
                 {% else %}
                 -
                 {% endif %}
