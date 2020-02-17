@@ -526,15 +526,13 @@ def causatives(institute_id):
             case_obj = all_cases[variant_obj["case_id"]]
 
         if variant_obj["variant_id"] not in all_variants:
-            # capture ACMG classification for this variant
-            if isinstance(variant_obj.get("acmg_classification"), int):
-                acmg_code = ACMG_MAP[variant_obj["acmg_classification"]]
-                variant_obj["acmg_classification"] = ACMG_COMPLETE_MAP[acmg_code]
-
             all_variants[variant_obj["variant_id"]] = []
+
         all_variants[variant_obj["variant_id"]].append((case_obj, variant_obj))
 
-    return dict(institute=institute_obj, variant_groups=all_variants)
+    acmg_map = {key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()}
+
+    return dict(institute=institute_obj, variant_groups=all_variants, acmg_map=acmg_map)
 
 
 @cases_bp.route("/<institute_id>/gene_variants", methods=["GET", "POST"])
