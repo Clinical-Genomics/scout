@@ -189,6 +189,7 @@ def panel_export(panel_id):
 @templated("panels/gene-edit.html")
 def gene_edit(panel_id, hgnc_id):
     """Edit additional information about a panel gene."""
+
     panel_obj = store.panel(panel_id)
     hgnc_gene = store.hgnc_gene(hgnc_id)
     panel_gene = controllers.existing_gene(store, panel_obj, hgnc_id)
@@ -205,7 +206,7 @@ def gene_edit(panel_id, hgnc_id):
         info_data = form.data.copy()
         if "csrf_token" in info_data:
             del info_data["csrf_token"]
-        if "custom_inheritance_models" in info_data:
+        if info_data["custom_inheritance_models"] != "":
             info_data["custom_inheritance_models"] = info_data[
                 "custom_inheritance_models"
             ].split(",")
@@ -215,7 +216,7 @@ def gene_edit(panel_id, hgnc_id):
 
     if panel_gene:
         form.custom_inheritance_models.data = ", ".join(
-            panel_gene.get("custom_inheritance_models", [])
+            panel_gene.get("custom_inheritance_models", None)
         )
         for field_key in [
             "disease_associated_transcripts",
