@@ -4,24 +4,25 @@
     <div class="panel-heading" data-toggle='tooltip' title="Transcripts described as disease associated in any of the gene panels">Disease associated transcripts</div>
     <div class=card-body>
       <table class="table table-bordered table-hover table-sm">
-        {% set ns = namespace(gene='') %}
-        {% for transcript in variant.disease_associated_transcripts -%}
-          <tr>
-            <td>
-            {% set ns.gene = transcript.split(":")[0] != ns.gene -%} <!-- is this a different gene? -->
-            {% if ns.gene-%}<!--new line-->
-              <strong>{{transcript.split(":")[0]}}:</strong> &nbsp;{{transcript.split(":")[1]}} &nbsp; <!--print gene -->
-            {% else %}
-              {{transcript.split(":")[1]}} &nbsp;<!-- print transcript-->
+        <tr>
+          <td>
+          {% set ns = namespace(gene='') %}
+          {% for transcript in variant.disease_associated_transcripts %}
+            {% set ns.gene = transcript.split(":")[0] != ns.gene %} <!-- is this a different gene? -->
+            {% if ns.gene and loop.index > 1%}<!--new line-->
+              <br><strong>{{transcript.split(":")[0]}}:</strong> &nbsp;<!--print gene -->
+            {% elif ns.gene %} <!--first gene-->
+              <strong>{{transcript.split(":")[0]}}:</strong> &nbsp;
             {% endif %}
+            {{transcript.split(":")[1]}} &nbsp;<!-- print transcript-->
             {% set ns.gene = transcript.split(":")[0] %}
-            </td>
-          </tr>
-        {% else %}
-          <tr><td>-</td></tr>
-        {% endfor %}
-      </table>
-    </div>
+          {% else %}
+            -
+          {% endfor %}
+          </td>
+      </tr>
+    </table>
+  </div>
   </div>
 {% endmacro %}
 
