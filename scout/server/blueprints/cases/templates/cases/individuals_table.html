@@ -9,7 +9,7 @@
           <tr>
             <th data-toggle='tooltip' data-container='body' class="col-xs-1"
              title="Sample display name">Sample</th>
-            <th class="col-xs-2" title="Tumor type">Tumor Type</th>
+            <th class="col-xs-2" title="Tumor type">Tumor diagnosis</th>
             <th class="col-xs-1" title="Phenotype">Phenotype</th>
             <th data-toggle='tooltip' data-container='body' class="col-xs-1"
              title="Type of sequencing (e.g panel, wes)">Sequencing</th>
@@ -31,8 +31,7 @@
               {% if ind.phenotype_human == "normal" %}
                 <td>N/A</td>
               {% else %}
-                <td><input name="tumor_type.{{ind.individual_id}}" class="typeahead_omim form-control col-10" data-provide="typeahead" autocomplete="off"
-                  required placeholder="Search..." value="{{ ind.tumor_type or 'unknown'}}"></td>
+                <td><input name="tumor_type.{{ind.individual_id}}" class="form-control col-10" value="{{ ind.tumor_type or 'unknown'}}"></td>
               {% endif %}
               <td>{{ ind.phenotype_human }}</td>
               <td>{{ ind.analysis_type|upper }}</td>

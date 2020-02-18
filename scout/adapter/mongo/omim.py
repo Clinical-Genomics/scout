@@ -8,42 +8,6 @@ LOG = logging.getLogger(__name__)
 class DiagnosisHandler(object):
     """Class for handling OMIM and disease-related database objects"""
     
-    def omim_terms(self, query=None, limit=None):
-        """Return all OMIM terms
-
-        If a query is sent omim_id will try to match with regex on term or
-        description.
-
-        Args:
-            query(str): Part of a OMIM term or description
-            limit(int): the number of desired results
-
-        Returns:
-            result(pymongo.Cursor): A cursor with OMIM terms
-        """
-
-        query_dict = {}
-        search_term = None
-        if query:
-            query_dict = {
-                "$or": [
-                    {"disease_nr": {"$regex": query, "$options": "i"}}, #case insensitive
-                    {"description": {"$regex": query, "$options": "i"}}, #case insensitive
-                ]
-            }
-            search_term = query
-
-        LOG.info('IN ADAPTER, query is {}'.format(query_dict))
-
-        limit = limit or int(10e10)
-        res = (
-            self.disease_term_collection.find(query_dict)
-            .limit(limit)
-            .sort("disease_nr", ASCENDING)
-        )
-
-        return res
-
     def disease_term(self, disease_identifier):
         """Return a disease term
 

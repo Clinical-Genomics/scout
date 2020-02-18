@@ -428,12 +428,6 @@ $(function () {
         });
       }
 
-      function getOmimTerms(query, process) {
-        $.get("{{ url_for('cases.omimterms') }}", {query: query}, function(data) {
-          process(data)
-        });
-      }
-
       $(".typeahead_hpo").typeahead({
         name: 'hpo_term',
         source: getHpoTerms,
@@ -443,12 +437,6 @@ $(function () {
       $(".typeahead_gene").typeahead({
         name: 'dynamic_gene_add',
         source: getNameTerms,
-        minLength: 3,
-      });
-
-      $(".typeahead_omim").typeahead({
-        name: 'omim_term',
-        source: getOmimTerms,
         minLength: 3,
       });
 
