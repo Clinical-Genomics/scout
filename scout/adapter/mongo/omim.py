@@ -2,12 +2,15 @@
 import logging
 
 from pymongo import ASCENDING
+from pymongo.errors import DuplicateKeyError
+
+from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
 
 class DiagnosisHandler(object):
     """Class for handling OMIM and disease-related database objects"""
-    
+
     def disease_term(self, disease_identifier):
         """Return a disease term
 
