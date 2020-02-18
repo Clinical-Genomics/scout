@@ -2,6 +2,7 @@
 import pytest
 from scout.exceptions import IntegrityError
 
+
 def test_add_disease_term(adapter):
     ## GIVEN a empty adapter
     assert len([term for term in adapter.disease_terms()]) == 0

@@ -56,7 +56,7 @@ VERBS_MAP = {
     "mme_add": "Exported to MatchMaker patient",
     "mme_remove": "Removed from MatchMaker patient",
     "filter_stash": "stored a filter for ",
-    "update_sample": "updated sample data for" 
+    "update_sample": "updated sample data for",
 }
 
 VERBS = list(VERBS_MAP.keys())
@@ -85,4 +85,4 @@ SOURCES = [
 ]
 
 
-SAMPLE_SOURCE = dict((i,el) for i,el in enumerate(SOURCES))
+SAMPLE_SOURCE = dict((i, el) for i, el in enumerate(SOURCES))

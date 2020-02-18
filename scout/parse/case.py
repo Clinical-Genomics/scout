@@ -7,11 +7,13 @@ from fractions import Fraction
 
 from ped_parser import FamilyParser
 
-from scout.constants import (PHENOTYPE_MAP, REV_PHENOTYPE_MAP, REV_SEX_MAP,
-                             SEX_MAP)
+from scout.constants import PHENOTYPE_MAP, REV_PHENOTYPE_MAP, REV_SEX_MAP, SEX_MAP
 from scout.exceptions import ConfigError, PedigreeError
-from scout.parse.peddy import (parse_peddy_ped, parse_peddy_ped_check,
-                               parse_peddy_sex_check)
+from scout.parse.peddy import (
+    parse_peddy_ped,
+    parse_peddy_ped_check,
+    parse_peddy_sex_check,
+)
 from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)

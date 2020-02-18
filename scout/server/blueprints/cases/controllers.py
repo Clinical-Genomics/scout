@@ -49,6 +49,7 @@ STATUS_MAP = {"solved": "bg-success", "archived": "bg-warning"}
 
 TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
 
+
 def cases(store, case_query, prioritized_cases_query=None, limit=100):
     """Preprocess case objects.
 
@@ -542,7 +543,9 @@ def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissu
     )
 
 
-def update_cancer_samples(store, institute_obj, case_obj, user_obj, ind, tissue, tumor_type, tumor_purity):
+def update_cancer_samples(
+    store, institute_obj, case_obj, user_obj, ind, tissue, tumor_type, tumor_purity
+):
     """Handle update of sample data data (tissue, tumor_type, tumor_purity) for a cancer case"""
 
     case_samples = case_obj.get("individuals")
@@ -579,6 +582,7 @@ def update_cancer_samples(store, institute_obj, case_obj, user_obj, ind, tissue,
         verb="update_sample",
         subject=case_obj["display_name"],
     )
+
 
 def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
     """Return the list of HGNC symbols that match annotated HPO terms.

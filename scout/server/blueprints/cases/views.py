@@ -605,8 +605,13 @@ def update_individual(institute_id, case_name):
     age = request.form.get("_".join(["age", ind_id]))
     tissue = request.form.get("_".join(["tissue", ind_id]))
     controllers.update_individuals(
-        store=store, institute_obj=institute_obj, case_obj=case_obj, user_obj=user_obj,
-        ind=ind_id, age=age, tissue=tissue
+        store=store,
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        user_obj=user_obj,
+        ind=ind_id,
+        age=age,
+        tissue=tissue,
     )
     return redirect(request.referrer)
 
@@ -619,13 +624,19 @@ def update_cancer_sample(institute_id, case_name):
     user_obj = store.user(current_user.email)
     ind_id = request.form.get("update_ind")
 
-    tumor_type =  request.form.get(".".join(["tumor_type", ind_id]))
+    tumor_type = request.form.get(".".join(["tumor_type", ind_id]))
     tissue_type = request.form.get(".".join(["tissue_type", ind_id]))
     tumor_purity = request.form.get(".".join(["tumor_purity", ind_id]))
 
     controllers.update_cancer_samples(
-        store=store, institute_obj=institute_obj, case_obj=case_obj, user_obj=user_obj,
-            ind=ind_id, tissue=tissue_type, tumor_type=tumor_type, tumor_purity=tumor_purity
+        store=store,
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        user_obj=user_obj,
+        ind=ind_id,
+        tissue=tissue_type,
+        tumor_type=tumor_type,
+        tumor_purity=tumor_purity,
     )
     return redirect(request.referrer)
 

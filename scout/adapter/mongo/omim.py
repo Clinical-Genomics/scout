@@ -8,6 +8,7 @@ from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
 
+
 class DiagnosisHandler(object):
     """Class for handling OMIM and disease-related database objects"""
 

@@ -7,19 +7,20 @@ from scout.demo import delivery_report_path
 from scout.server.blueprints.cases import controllers
 from scout.server.extensions import store
 
+
 def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
     # And a cancer case with cancer samples data
-    old_tumor_purity = cancer_case_obj['individuals'][0]['tumor_purity']
-    old_tumor_type = cancer_case_obj['individuals'][0]['tumor_type']
+    old_tumor_purity = cancer_case_obj["individuals"][0]["tumor_purity"]
+    old_tumor_type = cancer_case_obj["individuals"][0]["tumor_type"]
     old_tissue_type = "unknown"
     assert old_tumor_purity
     assert old_tumor_type
 
-    cancer_case_obj['individuals'][0]['tissue_type'] = old_tissue_type
-    cancer_case_obj['updated_at'] = datetime.now()
+    cancer_case_obj["individuals"][0]["tissue_type"] = old_tissue_type
+    cancer_case_obj["updated_at"] = datetime.now()
     store.case_collection.insert_one(cancer_case_obj)
 
     with app.test_client() as client:
@@ -56,7 +57,7 @@ def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj
         assert updated_sample["tumor_purity"] != old_tumor_purity
         assert updated_sample["tumor_type"] != old_tumor_type
         assert updated_sample["tissue_type"] != old_tissue_type
-        
+
 
 def test_cases(app, institute_obj):
     # GIVEN an initialized app
@@ -191,6 +192,7 @@ def test_case(app, case_obj, institute_obj):
 
         # THEN it should return a page
         assert resp.status_code == 200
+
 
 def test_update_individual(app, user_obj, institute_obj, case_obj):
     # GIVEN an initialized app
