@@ -3,14 +3,17 @@ import datetime
 import logging
 from pathlib import Path
 from pprint import pprint as pp
+from fractions import Fraction
 
 from ped_parser import FamilyParser
 
-from scout.constants import (PHENOTYPE_MAP, REV_PHENOTYPE_MAP, REV_SEX_MAP,
-                             SEX_MAP)
+from scout.constants import PHENOTYPE_MAP, REV_PHENOTYPE_MAP, REV_SEX_MAP, SEX_MAP
 from scout.exceptions import ConfigError, PedigreeError
-from scout.parse.peddy import (parse_peddy_ped, parse_peddy_ped_check,
-                               parse_peddy_sex_check)
+from scout.parse.peddy import (
+    parse_peddy_ped,
+    parse_peddy_ped_check,
+    parse_peddy_sex_check,
+)
 from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
@@ -236,7 +239,7 @@ def parse_individual(sample):
                 'tumor_type': str,
                 'tmb': str,
                 'msi': str,
-                'tumor_purity': str,
+                'tumor_purity': float,
                 'tissue_type': str,
             }
 
@@ -310,7 +313,12 @@ def parse_individual(sample):
     # tumor_mutational_burden
     ind_info["tmb"] = sample.get("tmb")
     ind_info["msi"] = sample.get("msi")
+
     ind_info["tumor_purity"] = sample.get("tumor_purity")
+    # might be a string-formatted fraction, example: 30/90
+    if isinstance(ind_info["tumor_purity"], str):
+        ind_info["tumor_purity"] = float(Fraction(ind_info["tumor_purity"]))
+
     ind_info["tissue_type"] = sample.get("tissue_type")
 
     # Remove key-value pairs from ind_info where key==None and return
