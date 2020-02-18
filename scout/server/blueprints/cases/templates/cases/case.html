@@ -415,22 +415,20 @@
 
 <script>
 $(function () {
-
+      function getTerms(query, process) {
+        $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
+          process(data)
+        });
+      }
       function getNameTerms(query, process) {
         $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
           process(data)
         });
       }
 
-      function getHpoTerms(query, process) {
-        $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
-          process(data)
-        });
-      }
-
       $(".typeahead_hpo").typeahead({
         name: 'hpo_term',
-        source: getHpoTerms,
+        source: getTerms,
         minLength: 3,
       });
 
