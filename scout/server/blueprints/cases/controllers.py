@@ -542,6 +542,42 @@ def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissu
     )
 
 
+def update_cancer_samples(store, institute_obj, case_obj, user_obj, ind, tissue, tumor_type, tumor_purity):
+    """Handle update of sample data data (tissue, tumor_type, tumor_purity) for a cancer case"""
+
+    case_samples = case_obj.get("individuals")
+    for sample in case_samples:
+        if sample["individual_id"] == ind:
+            if tissue:
+                sample["tissue_type"] = tissue
+            if tumor_type:
+                sample["tumor_type"] = tumor_type
+            else:
+                sample["tumor_type"] = None
+            if tumor_purity:
+                sample["tumor_purity"] = float(tumor_purity)
+
+    case_obj["individuals"] = case_samples
+    # update case with new sample data
+    store.update_case(case_obj, keep_date=True)
+
+    # create an associated event
+    link = url_for(
+        "cases.case",
+        institute_id=institute_obj["_id"],
+        case_name=case_obj["display_name"],
+    )
+
+    store.create_event(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        category="case",
+        verb="update_sample",
+        subject=case_obj["display_name"],
+    )
+
 def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
     """Return the list of HGNC symbols that match annotated HPO terms.
 

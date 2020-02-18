@@ -9,7 +9,7 @@
           <tr>
             <th data-toggle='tooltip' data-container='body' class="col-xs-1"
              title="Sample display name">Sample</th>
-            <th class="col-xs-2" title="Tumor type">Tumor diagnosis</th>
+            <th class="col-xs-2" title="Tumor type">Tumor type</th>
             <th class="col-xs-1" title="Phenotype">Phenotype</th>
             <th data-toggle='tooltip' data-container='body' class="col-xs-1"
              title="Type of sequencing (e.g panel, wes)">Sequencing</th>
@@ -39,14 +39,14 @@
               <td>{{ ind.msi or 'N/A' }}</td>
               {% if ind.phenotype_human == "tumor" %}
                 <td class="d-flex flex-row align-items-center"><input name="tumor_purity.{{ind.individual_id}}" type="number" step="0.01" min="0.1" max=1
-                    class="form-control col-5" value="{{ind.tumor_purity}}">
+                    class="form-control col-7" value="{{ind.tumor_purity}}">
                 {% if ind.tumor_purity|float <0.2 %} &nbsp;&nbsp; <i class="fa fa-exclamation" data-toggle='tooltip' data-container='body'
                 title="Low tumor purity"></i> {% endif %}</td>
               {% else %}
                 <td>N/A</td>
               {% endif %}
               <td>
-                <select class="form-control col-6" name="tissue_{{ind.individual_id}}">
+                <select class="form-control col-6" name="tissue_type.{{ind.individual_id}}">
                   {% for key,tissue in tissues.items() %}
                     <option value="{{tissue}}" {{ 'selected' if ind.tissue_type == tissue }}>{{tissue}}</option>
                   {% endfor %}
