@@ -3,6 +3,7 @@ import datetime
 import logging
 from pathlib import Path
 from pprint import pprint as pp
+from fractions import Fraction
 
 from ped_parser import FamilyParser
 
@@ -236,7 +237,7 @@ def parse_individual(sample):
                 'tumor_type': str,
                 'tmb': str,
                 'msi': str,
-                'tumor_purity': str,
+                'tumor_purity': float,
                 'tissue_type': str,
             }
 
@@ -310,7 +311,12 @@ def parse_individual(sample):
     # tumor_mutational_burden
     ind_info["tmb"] = sample.get("tmb")
     ind_info["msi"] = sample.get("msi")
+
     ind_info["tumor_purity"] = sample.get("tumor_purity")
+    # might be a string-formatted fraction, example: 30/90
+    if isinstance(ind_info["tumor_purity"], str):
+        ind_info["tumor_purity"] = float(Fraction(ind_info["tumor_purity"]))
+
     ind_info["tissue_type"] = sample.get("tissue_type")
 
     # Remove key-value pairs from ind_info where key==None and return

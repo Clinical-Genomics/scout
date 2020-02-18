@@ -610,6 +610,15 @@ def update_individual(institute_id, case_name):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/<institute_id>/<case_name>/samples", methods=["POST"])
+def update_cancer_sample(institute_id, case_name):
+    """Manual update of of cancer samples: tumor purity/tissue type/tumor type"""
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    return "IM HERE BITCHES:{}".format(request.form)
+
+
 @cases_bp.route("/<institute_id>/<case_name>/synopsis", methods=["POST"])
 def case_synopsis(institute_id, case_name):
     """Update (PUT) synopsis of a specific case."""
