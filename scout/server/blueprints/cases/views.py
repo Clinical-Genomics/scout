@@ -734,6 +734,22 @@ def case_diagnosis(institute_id, case_name):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/api/v1/omim-terms")
+def omimterms():
+    """Look for OMIM diagnoses matching the provided substring"""
+    query = request.args.get("query")
+    LOG.error("OMIM query uis:{}".format(query))
+    if query is None:
+        return abort(500)
+    terms = store.omim_terms(query=query)
+    json_terms = [
+        {"name": "{} | {}".format(term["_id"], term["description"]), "id": term["_id"]}
+        for term in terms[:7]
+    ]
+    LOG.error("returning:{}".format(json_terms))
+    return jsonify(json_terms)
+
+
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes", methods=["POST"])
 @cases_bp.route(
     "/<institute_id>/<case_name>/phenotypes/<phenotype_id>", methods=["POST"]

@@ -31,7 +31,8 @@
               {% if ind.phenotype_human == "normal" %}
                 <td>N/A</td>
               {% else %}
-                <td>{{ ind.tumor_type or 'unknown'}}</td>
+                <td><input name="tumor_type.{{ind.individual_id}}" class="typeahead_omim form-control col-10" data-provide="typeahead" autocomplete="off"
+                  required placeholder="Search..." value="{{ ind.tumor_type or 'unknown'}}"></td>
               {% endif %}
               <td>{{ ind.phenotype_human }}</td>
               <td>{{ ind.analysis_type|upper }}</td>
@@ -40,7 +41,7 @@
               {% if ind.phenotype_human == "tumor" %}
                 <td class="d-flex flex-row align-items-center"><input name="tumor_purity.{{ind.individual_id}}" type="number" step="0.01" min="0.1" max=1
                     class="form-control col-5" value="{{ind.tumor_purity}}">
-                {% if ind.tumor_purity|float <0.2 %} &nbsp; <i class="fa fa-exclamation" data-toggle='tooltip' data-container='body'
+                {% if ind.tumor_purity|float <0.2 %} &nbsp;&nbsp; <i class="fa fa-exclamation" data-toggle='tooltip' data-container='body'
                 title="Low tumor purity"></i> {% endif %}</td>
               {% else %}
                 <td>N/A</td>

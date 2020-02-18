@@ -415,26 +415,40 @@
 
 <script>
 $(function () {
-      function getTerms(query, process) {
-        $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
-          process(data)
-        });
-      }
+
       function getNameTerms(query, process) {
         $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
           process(data)
         });
       }
 
+      function getHpoTerms(query, process) {
+        $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
+          process(data)
+        });
+      }
+
+      function getOmimTerms(query, process) {
+        $.get("{{ url_for('cases.omimterms') }}", {query: query}, function(data) {
+          process(data)
+        });
+      }
+
       $(".typeahead_hpo").typeahead({
         name: 'hpo_term',
-        source: getTerms,
+        source: getHpoTerms,
         minLength: 3,
       });
 
       $(".typeahead_gene").typeahead({
         name: 'dynamic_gene_add',
         source: getNameTerms,
+        minLength: 3,
+      });
+
+      $(".typeahead_omim").typeahead({
+        name: 'omim_term',
+        source: getOmimTerms,
         minLength: 3,
       });
 
