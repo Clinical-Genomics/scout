@@ -556,6 +556,8 @@ def update_cancer_samples(store, institute_obj, case_obj, user_obj, ind, tissue,
                 sample["tumor_type"] = None
             if tumor_purity:
                 sample["tumor_purity"] = float(tumor_purity)
+            else:
+                sample["tumor_purity"] = None
 
     case_obj["individuals"] = case_samples
     # update case with new sample data
