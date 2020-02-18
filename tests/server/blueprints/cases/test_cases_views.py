@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 from flask import url_for, current_app
 from flask_login import current_user
 
@@ -6,6 +7,56 @@ from scout.demo import delivery_report_path
 from scout.server.blueprints.cases import controllers
 from scout.server.extensions import store
 
+def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj):
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+
+    # And a cancer case with cancer samples data
+    old_tumor_purity = cancer_case_obj['individuals'][0]['tumor_purity']
+    old_tumor_type = cancer_case_obj['individuals'][0]['tumor_type']
+    old_tissue_type = "unknown"
+    assert old_tumor_purity
+    assert old_tumor_type
+
+    cancer_case_obj['individuals'][0]['tissue_type'] = old_tissue_type
+    cancer_case_obj['updated_at'] = datetime.now()
+    store.case_collection.insert_one(cancer_case_obj)
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN posting a request with info for updating one of the case samples:
+        ind_id = cancer_case_obj["individuals"][0]["individual_id"]
+
+        form_data = {
+            "update_ind": ind_id,
+            ".".join(["tumor_type.", ind_id]): "Desmoid Tumor",
+            ".".join(["tissue_type", ind_id]): "cell line",
+            ".".join(["tumor_purity", ind_id]): "0.4",
+        }
+
+        resp = client.post(
+            url_for(
+                "cases.update_cancer_sample",
+                institute_id=institute_obj["internal_id"],
+                case_name=cancer_case_obj["display_name"],
+            ),
+            data=form_data,
+        )
+
+        # THEN the returned HTML page should redirect
+        assert resp.status_code == 302
+
+        # AND sample in case obj should have been updated
+        updated_case = store.case_collection.find_one({"_id": cancer_case_obj["_id"]})
+        updated_sample = updated_case["individuals"][0]
+
+        assert updated_sample["tumor_purity"] != old_tumor_purity
+        assert updated_sample["tumor_type"] != old_tumor_type
+        assert updated_sample["tissue_type"] != old_tissue_type
+        
 
 def test_cases(app, institute_obj):
     # GIVEN an initialized app
@@ -140,7 +191,6 @@ def test_case(app, case_obj, institute_obj):
 
         # THEN it should return a page
         assert resp.status_code == 200
-
 
 def test_update_individual(app, user_obj, institute_obj, case_obj):
     # GIVEN an initialized app
