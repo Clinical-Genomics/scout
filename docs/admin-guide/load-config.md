@@ -32,7 +32,7 @@ samples:
     tumor_type: str(optional)
     tmb: str(optional) # Tumor mutational burder [0,1000]
     msi: str(optional) # Microsatellite instability [0,60]
-    tumor_purity: str(optional) # [0,1]
+    tumor_purity: float # [0.1,1]
 
 vcf_snv: str(optional)
 vcf_sv: str(optional)
