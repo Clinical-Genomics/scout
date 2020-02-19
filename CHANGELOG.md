@@ -8,6 +8,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+### Fixed
+### Changed
+
+
+## [4.12.1]
+
+### Added
 
 ### Fixed
 - Bug in variant.gene when gene has no HGVS description
