@@ -78,9 +78,10 @@ class DiagnosisHandler(object):
         """
         gene_objs = []
         if omim_obj:
-            gene_objs = [self.hgnc_gene(hgnc_id) for hgnc_id in omim_obj.get("genes",[])]
+            gene_objs = [
+                self.hgnc_gene(hgnc_id) for hgnc_id in omim_obj.get("genes", [])
+            ]
         return gene_objs
-
 
     def disease_term(self, disease_identifier):
         """Return a disease term
