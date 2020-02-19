@@ -32,6 +32,11 @@ individual = dict(
     confirmed_sex=bool,  # True or False. None if no check has been done
     confirmed_parent=bool,
     predicted_ancestry=str,  # one of AFR AMR EAS EUR SAS UNKNOWN
+    tumor_type=str,
+    tmb=str,
+    msi=str,
+    tumor_purity=float,
+    tissue_type=str,
 )
 
 case = dict(
