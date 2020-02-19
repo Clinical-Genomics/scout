@@ -4,17 +4,17 @@
 def event_rank(count):
     """Determine event ranking."""
     if count < 10:
-        return 'constable'
+        return "constable"
     elif count < 100:
-        return 'sergeant'
+        return "sergeant"
     elif count < 250:
-        return 'inspector'
+        return "inspector"
     elif count < 500:
-        return 'superintendent'
+        return "superintendent"
     elif count < 1000:
-        return 'commander'
+        return "commander"
     else:
-        return 'commissioner'
+        return "commissioner"
 
 
 def users(store):
@@ -22,13 +22,15 @@ def users(store):
     user_objs = list(store.users())
     total_events = store.user_events().count()
     for user_obj in user_objs:
-        if user_obj.get('institutes'):
-            user_obj['institutes'] = [store.institute(inst_id) for inst_id in user_obj.get('institutes')]
+        if user_obj.get("institutes"):
+            user_obj["institutes"] = [
+                store.institute(inst_id) for inst_id in user_obj.get("institutes")
+            ]
         else:
-            user_obj['institutes'] = []
-        user_obj['events'] = store.user_events(user_obj).count()
-        user_obj['events_rank'] = event_rank(user_obj['events'])
+            user_obj["institutes"] = []
+        user_obj["events"] = store.user_events(user_obj).count()
+        user_obj["events_rank"] = event_rank(user_obj["events"])
     return dict(
-        users=sorted(user_objs, key=lambda user: -user['events']),
+        users=sorted(user_objs, key=lambda user: -user["events"]),
         total_events=total_events,
     )

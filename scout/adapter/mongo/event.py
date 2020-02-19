@@ -6,12 +6,13 @@ import pymongo
 
 from scout.constants import CASE_STATUSES, REV_ACMG_MAP
 
-COMMENT_LEVELS = ['global', 'specific']
+COMMENT_LEVELS = ["global", "specific"]
 
 LOG = logging.getLogger(__name__)
 
 from .case_events import CaseEventHandler
 from .variant_events import VariantEventHandler
+
 
 class EventHandler(CaseEventHandler, VariantEventHandler):
     """Class to handle events for the mongo adapter"""
@@ -25,12 +26,23 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         LOG.info("Deleting event{0}".format(event_id))
         if not isinstance(event_id, ObjectId):
             event_id = ObjectId(event_id)
-        self.event_collection.delete_one({'_id': event_id})
+        self.event_collection.delete_one({"_id": event_id})
         LOG.debug("Event {0} deleted".format(event_id))
 
-    def create_event(self, institute, case, user, link, category, verb,
-                     subject, level='specific', variant=None, content=None,
-                     panel=None):
+    def create_event(
+        self,
+        institute,
+        case,
+        user,
+        link,
+        category,
+        verb,
+        subject,
+        level="specific",
+        variant=None,
+        content=None,
+        panel=None,
+    ):
         """Create a Event with the parameters given.
 
         Arguments:
@@ -50,16 +62,16 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         """
         variant = variant or {}
         event = dict(
-            institute=institute['_id'],
-            case=case['_id'],
-            user_id=user['_id'],
-            user_name=user['name'],
+            institute=institute["_id"],
+            case=case["_id"],
+            user_id=user["_id"],
+            user_name=user["name"],
             link=link,
             category=category,
             verb=verb,
             subject=subject,
             level=level,
-            variant_id=variant.get('variant_id'),
+            variant_id=variant.get("variant_id"),
             content=content,
             panel=panel,
             created_at=datetime.now(),
@@ -71,8 +83,15 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         LOG.debug("Event Saved")
         return event
 
-    def events(self, institute, case=None, variant_id=None, level=None,
-               comments=False, panel=None):
+    def events(
+        self,
+        institute,
+        case=None,
+        variant_id=None,
+        level=None,
+        comments=False,
+        panel=None,
+    ):
         """Fetch events from the database.
 
           Args:
@@ -92,55 +111,58 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         if variant_id:
             if comments:
                 # If it's comment-related event collect global and variant-specific comment events
-                LOG.debug("Fetching all comments for institute {0} case {1} variant {2}".format(
-                          institute['_id'], case['_id'], variant_id))
+                LOG.debug(
+                    "Fetching all comments for institute {0} case {1} variant {2}".format(
+                        institute["_id"], case["_id"], variant_id
+                    )
+                )
                 query = {
-                    '$or': [
+                    "$or": [
                         {
-                            'category' : 'variant',
-                            'variant_id' : variant_id,
-                            'verb' : 'comment',
-                            'level' : 'global'
+                            "category": "variant",
+                            "variant_id": variant_id,
+                            "verb": "comment",
+                            "level": "global",
                         },
                         {
-                            'category' : 'variant',
-                            'variant_id' : variant_id,
-                            'institute' : institute['_id'],
-                            'case' : case['_id'],
-                            'verb' : 'comment',
-                            'level' : 'specific'
-                        }
+                            "category": "variant",
+                            "variant_id": variant_id,
+                            "institute": institute["_id"],
+                            "case": case["_id"],
+                            "verb": "comment",
+                            "level": "specific",
+                        },
                     ]
                 }
-            else: # Collect other variant-specific events which are not comments
-                query['institute'] = institute['_id']
-                query['category'] = 'variant'
-                query['variant_id'] = variant_id
-                query['case'] = case['_id']
+            else:  # Collect other variant-specific events which are not comments
+                query["institute"] = institute["_id"]
+                query["category"] = "variant"
+                query["variant_id"] = variant_id
+                query["case"] = case["_id"]
         else:
-            query['institute'] = institute['_id']
+            query["institute"] = institute["_id"]
             if panel:
-                query['panel'] = panel
+                query["panel"] = panel
             # If no variant_id or panel we know that it is a case level comment
             else:
-                query['category'] = 'case'
+                query["category"] = "case"
 
                 if case:
-                    query['case'] = case['_id']
+                    query["case"] = case["_id"]
 
                 if comments:
-                    query['verb'] = 'comment'
+                    query["verb"] = "comment"
 
-
-        return self.event_collection.find(query).sort('created_at', pymongo.DESCENDING)
+        return self.event_collection.find(query).sort("created_at", pymongo.DESCENDING)
 
     def user_events(self, user_obj=None):
         """Fetch all events by a specific user."""
-        query = dict(user_id=user_obj['_id']) if user_obj else dict()
+        query = dict(user_id=user_obj["_id"]) if user_obj else dict()
         return self.event_collection.find(query)
 
-    def add_phenotype(self, institute, case, user, link, hpo_term=None,
-                      omim_term=None, is_group=False):
+    def add_phenotype(
+        self, institute, case, user, link, hpo_term=None, omim_term=None, is_group=False
+    ):
         """Add a new phenotype term to a case
 
             Create a phenotype term and event with the given information
@@ -163,16 +185,17 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
                 LOG.debug("Fetching info for mim term {0}".format(omim_term))
                 disease_obj = self.disease_term(omim_term)
                 if disease_obj:
-                    for hpo_term in disease_obj.get('hpo_terms', []):
+                    for hpo_term in disease_obj.get("hpo_terms", []):
                         hpo_results.append(hpo_term)
             else:
-                raise ValueError('Must supply either hpo or omim term')
+                raise ValueError("Must supply either hpo or omim term")
         except ValueError as e:
             ## TODO Should ve raise a more proper exception here?
             raise e
 
-        existing_terms = set(term['phenotype_id'] for term in
-                             case.get('phenotype_terms', []))
+        existing_terms = set(
+            term["phenotype_id"] for term in case.get("phenotype_terms", [])
+        )
 
         updated_case = case
         phenotype_terms = []
@@ -182,53 +205,52 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             if hpo_obj is None:
                 raise ValueError("Hpo term: %s does not exist in database" % hpo_term)
 
-            phenotype_id = hpo_obj['_id']
-            description = hpo_obj['description']
+            phenotype_id = hpo_obj["_id"]
+            description = hpo_obj["description"]
             if phenotype_id not in existing_terms:
                 phenotype_term = dict(phenotype_id=phenotype_id, feature=description)
                 phenotype_terms.append(phenotype_term)
 
-                LOG.info("Creating event for adding phenotype term for case"
-                            " {0}".format(case['display_name']))
+                LOG.info(
+                    "Creating event for adding phenotype term for case"
+                    " {0}".format(case["display_name"])
+                )
 
                 self.create_event(
                     institute=institute,
                     case=case,
                     user=user,
                     link=link,
-                    category='case',
-                    verb='add_phenotype',
-                    subject=case['display_name'],
-                    content=phenotype_id
+                    category="case",
+                    verb="add_phenotype",
+                    subject=case["display_name"],
+                    content=phenotype_id,
                 )
 
             if is_group:
                 updated_case = self.case_collection.find_one_and_update(
-                    {'_id': case['_id']},
+                    {"_id": case["_id"]},
                     {
-                        '$addToSet': {
-                            'phenotype_terms': {'$each': phenotype_terms},
-                            'phenotype_groups': {'$each': phenotype_terms},
-                        },
+                        "$addToSet": {
+                            "phenotype_terms": {"$each": phenotype_terms},
+                            "phenotype_groups": {"$each": phenotype_terms},
+                        }
                     },
-                    return_document=pymongo.ReturnDocument.AFTER
+                    return_document=pymongo.ReturnDocument.AFTER,
                 )
             else:
                 updated_case = self.case_collection.find_one_and_update(
-                    {'_id': case['_id']},
-                    {
-                        '$addToSet': {
-                            'phenotype_terms': {'$each': phenotype_terms},
-                        },
-                    },
-                    return_document=pymongo.ReturnDocument.AFTER
+                    {"_id": case["_id"]},
+                    {"$addToSet": {"phenotype_terms": {"$each": phenotype_terms}}},
+                    return_document=pymongo.ReturnDocument.AFTER,
                 )
 
         LOG.debug("Case updated")
         return updated_case
 
-    def remove_phenotype(self, institute, case, user, link, phenotype_id,
-                         is_group=False):
+    def remove_phenotype(
+        self, institute, case, user, link, phenotype_id, is_group=False
+    ):
         """Remove an existing phenotype from a case
 
         Args:
@@ -241,49 +263,55 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         Returns:
             updated_case(dict)
         """
-        LOG.info("Removing HPO term from case {0}".format(case['display_name']))
+        LOG.info("Removing HPO term from case {0}".format(case["display_name"]))
 
         if is_group:
             updated_case = self.case_collection.find_one_and_update(
-                {'_id': case['_id']},
+                {"_id": case["_id"]},
                 {
-                    '$pull': {
-                        'phenotype_terms': {'phenotype_id': phenotype_id},
-                        'phenotype_groups': {'phenotype_id': phenotype_id},
-                    },
+                    "$pull": {
+                        "phenotype_terms": {"phenotype_id": phenotype_id},
+                        "phenotype_groups": {"phenotype_id": phenotype_id},
+                    }
                 },
-                return_document=pymongo.ReturnDocument.AFTER
+                return_document=pymongo.ReturnDocument.AFTER,
             )
 
         else:
             updated_case = self.case_collection.find_one_and_update(
-                {'_id': case['_id']},
-                {
-                    '$pull': {
-                        'phenotype_terms': {'phenotype_id': phenotype_id},
-                    },
-                },
-                return_document=pymongo.ReturnDocument.AFTER
+                {"_id": case["_id"]},
+                {"$pull": {"phenotype_terms": {"phenotype_id": phenotype_id}}},
+                return_document=pymongo.ReturnDocument.AFTER,
             )
 
-        LOG.info("Creating event for removing phenotype term {0}" \
-                    " from case {1}".format(phenotype_id, case['display_name']))
+        LOG.info(
+            "Creating event for removing phenotype term {0}"
+            " from case {1}".format(phenotype_id, case["display_name"])
+        )
 
         self.create_event(
             institute=institute,
             case=case,
             user=user,
             link=link,
-            category='case',
-            verb='remove_phenotype',
-            subject=case['display_name']
+            category="case",
+            verb="remove_phenotype",
+            subject=case["display_name"],
         )
 
         LOG.debug("Case updated")
         return updated_case
 
-    def comment(self, institute, case, user, link, variant=None,
-                content="", comment_level="specific"):
+    def comment(
+        self,
+        institute,
+        case,
+        user,
+        link,
+        variant=None,
+        content="",
+        comment_level="specific",
+    ):
         """Add a comment to a variant or a case.
 
         This function will create an Event to log that a user have commented on
@@ -306,37 +334,43 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             comment(dict): The comment event that was inserted
         """
         if not comment_level in COMMENT_LEVELS:
-            raise SyntaxError("Comment levels can only be in {}".format(','.join(COMMENT_LEVELS)))
+            raise SyntaxError(
+                "Comment levels can only be in {}".format(",".join(COMMENT_LEVELS))
+            )
 
         if variant:
-            LOG.info("Creating event for a {0} comment on variant {1}".format(
-                comment_level, variant['display_name']))
+            LOG.info(
+                "Creating event for a {0} comment on variant {1}".format(
+                    comment_level, variant["display_name"]
+                )
+            )
 
             comment = self.create_event(
                 institute=institute,
                 case=case,
                 user=user,
                 link=link,
-                category='variant',
-                verb='comment',
+                category="variant",
+                verb="comment",
                 level=comment_level,
                 variant=variant,
-                subject=variant['display_name'],
-                content=content
+                subject=variant["display_name"],
+                content=content,
             )
 
         else:
-            LOG.info("Creating event for a comment on case {0}".format(
-                case['display_name']))
+            LOG.info(
+                "Creating event for a comment on case {0}".format(case["display_name"])
+            )
 
             comment = self.create_event(
                 institute=institute,
                 case=case,
                 user=user,
                 link=link,
-                category='case',
-                verb='comment',
-                subject=case['display_name'],
-                content=content
+                category="case",
+                verb="comment",
+                subject=case["display_name"],
+                content=content,
             )
         return comment

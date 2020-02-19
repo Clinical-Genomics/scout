@@ -1,6 +1,7 @@
 # everything the developer needs in addition to the production requirements
 
 # testing
+pytest-mock
 pytest>=3.7.1
 pytest-flask
 pytest-cov
@@ -16,4 +17,19 @@ invoke
 
 # docs
 mkdocs
-mkdocs-material
+mkdocs-material==4.6.1
+
+# PEP8 Compliance
+pre-commit
+black
+
+# Pylint Rating
+pylint
+six>=1.12                   # due to astroid 2.3.3 needed by pylint
+
+# Lint Free
+git-lint
+pycodestyle
+yamllint
+docutils
+html-linter

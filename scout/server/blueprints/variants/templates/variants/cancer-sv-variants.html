@@ -1,0 +1,268 @@
+{% extends "layout_bs4.html" %}
+{% from "utils.html" import comments_table %}
+{% from "variants/utils.html" import sv_filters,cell_rank %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li class="nav-item active">
+    <span class="navbar-text">{{ variant_type|capitalize }}  Structural variants</span>
+  </li>
+{% endblock %}
+
+{% block top_nav_right %}
+  <li class="nav-item text-nowrap"><p class="navbar-text">Panels: {{ (form.gene_panels.data or ['All'])|join(',') }}</p></li>
+  {{ super() }}
+{% endblock %}
+
+{% block content_main %}
+<form method="POST" id="filters_form" action="{{url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name)}}" >
+  <div class="container-float">
+    <div class="card panel-default" id="accordion">
+      <div class="card-header">
+        <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">SvFilters</a></strong>
+      </div>
+      <div id="collapseFilters" class="card-body panel-collapse collapse">
+        <div class="card-body">{{ sv_filters(form, institute, case) }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="card mt-3">
+    <table id="variantsTable" class="table table-hover table-bordered">
+      <thead>
+        <tr>
+          <th>Index</th>
+          <th>Score</th>
+          <th>Type</th>
+          <th>Chr</th>
+          <th>Start loc</th>
+          <th>Stop loc</th>
+          <th>Length</th>
+          <th>Region</th>
+          <th>Function</th>
+          <th>Frequency</th>
+          <th>Gene(s)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for variant in variants %}
+          {{ variant_row(variant) }}
+        {% else %}
+          <tr>
+              <td colspan="10">No matching variants</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="container-fluid">
+    {{ pagination() }}
+  </div>
+</form>
+{% endblock %}
+
+{% macro filters_form() %}
+    <input type="hidden" name="variant_type" value="{{ variant_type }}">
+      <div class="row">
+        <div class="col-2">
+          {{ form.gene_panels.label(class="control-label") }}
+          <div class="btn-group d-flex">
+            <a class="btn btn-outline-secondary btn-sm " href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id,
+              case_name=case.display_name, variant_type=form.variant_type.data,
+              gene_panels=['hpo']) }}">HPO gene list</a>
+          </div>
+        </div>
+        <div class="col-2">
+          {{ form.gene_panels(class="selectpicker") }}
+        </div>
+        <div class="col-3">
+          {{ form.region_annotations.label(class="control-label") }}
+          {{ form.region_annotations(class="selectpicker") }}
+        </div>
+        <div class="col-2">
+          {{ form.functional_annotations.label(class="control-label") }}
+          {{ form.functional_annotations(class="selectpicker") }}
+        </div>
+        <div class="col-3">
+          {{ form.genetic_models.label(class="control-label") }}
+          {{ form.genetic_models(class="selectpicker") }}
+        </div>
+      </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-3">
+          {{ form.hgnc_symbols.label(class="control-label") }}
+          {{ form.hgnc_symbols(class="form-control") }}
+        </div>
+        <div class="col-2">
+          {{ form.size.label(class="control-label") }}
+          {{ form.size(class="form-control", type="number") }}
+        </div>
+        <div class="col-2">
+          {{ form.size_shorter.label(class="control-label") }}
+          <div>{{ form.size_shorter() }}</div>
+        </div>
+        <div class="col-2">
+          {{ form.decipher.label(class="control-label") }}
+          <div>{{ form.decipher() }}</div>
+        </div>
+        <div class="col-3">
+          {{ form.clinsig.label(class="control-label") }}
+          {{ form.clinsig(class="selectpicker") }}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-3">
+          {{ form.chrom.label(class="control-label") }}
+          {{ form.chrom(class="form-control") }}
+        </div>
+        <div class="col-2">
+          {{ form.gnomad_frequency.label(class="control-label") }}
+          {{ form.gnomad_frequency(class="form-control") }}
+        </div>
+        <div class="col-2">
+	         {{ form.clingen_ngi.label(class="control-label") }}
+	          {{ form.clingen_ngi(class="form-control") }}
+        </div>
+        <div class="col-2">
+          {{ form.swegen.label(class="control-label") }}
+          {{ form.swegen(class="form-control") }}
+        </div>
+        <div class="col-3">
+          {{ form.svtype.label(class="control-label") }}
+          {{ form.svtype(class="form-control selectpicker") }}
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-2">
+        <a href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id,
+          case_name=case.display_name, variant_type='clinical',
+          gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
+          class="btn btn-secondary btn-sm" style="color: #ffffff !important;">
+          reset filters
+        </a>
+      </div>
+      <div class="col-10 form-group d-flex">
+        {{ form.filter_variants(class_="btn btn-primary form-control") }}
+        {{ form.clinical_filter(class_="btn btn-outline-secondary form-control") }}
+        {{ form.export(class_="btn btn-warning form-control") }}
+      </div>
+    </div>
+{% endmacro %}
+
+{% macro variant_row(variant) %}
+  {% if variant.dismiss_variant %}
+  <tr class="dismiss">
+  {% else %}
+  <tr>
+  {% endif %}
+    <td>
+      {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
+    </td>
+    <td>{{ variant.rank_score|int }}</td>
+    <td>{{ variant.sub_category|upper }}</td>
+    <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
+    <td>{{ variant.position }}</td>
+    <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
+    <td>{{ variant.length }}</td>
+    <td>
+      {% if 'region_annotations' in variant %}
+        {% for annotation in variant.region_annotations[:3] %}
+          <div>{{ annotation }}</div>
+        {% endfor %}
+      {% endif %}
+    </td>
+    <td>
+      {% if 'functional_annotations' in variant %}
+        {% for annotation in variant.functional_annotations[:3] %}
+          <div>{{ annotation }}</div>
+        {% endfor %}
+      {% endif %}
+    </td>
+    <td>
+      {% if variant.gnomad_frequency %}
+        {{ variant.gnomad_frequency|human_decimal }}
+      {% endif %}
+    </td>
+    <td>
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          {% if variant.hgnc_symbols|length >= 5 %}
+            {{ variant.hgnc_symbols[:2]|join(', ') }} [...] {{ variant.hgnc_symbols[-2:]|join(', ') }}
+          {% else %}
+            {% for symbol in variant.hgnc_symbols %}
+              <div>{{ symbol }}</div>
+            {% endfor %}
+          {% endif %}
+        </div>
+        {% if variant.hgnc_symbols %}
+          <span class="badge badge-secondary">{{ variant.hgnc_symbols|length }}</span>
+        {% endif %}
+      </div>
+    </td>
+  </tr>
+{% endmacro %}
+
+{% macro pagination() %}
+  <div class="container-fluid">
+    {% if more_variants %}
+    <div class="d-flex justify-content-around">
+       <div>
+          <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value={{ page + 1 }}>Next page</button>
+         </div>
+       <div>
+        <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
+    </div>
+    </div>
+    {% else %}
+      <i class="text-muted">No more variants to display</i>
+      <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+  <script>
+    $('select[multiple]').selectpicker({
+      width: '100%'
+    });
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+      $('[data-toggle="popover"]').popover({
+        sanitizeFn: function (content) {
+          return DOMPurify.sanitize(content)
+        },
+        container: 'body',
+      });
+    })
+  </script>
+{% endblock %}

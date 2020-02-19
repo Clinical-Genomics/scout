@@ -1,36 +1,41 @@
+"""Code to handle updates of the OMIM-AUTO gene panel via scout CLI"""
 import logging
+
 import click
-import urllib.request
+from flask.cli import current_app, with_appcontext
 
-from flask.cli import with_appcontext, current_app
-
-from pprint import pprint as pp
-
-from scout.parse.omim import (parse_genemap2, parse_mim2gene, parse_omim_morbid, parse_mim_titles,
-                              get_mim_genes, get_mim_phenotypes)
 from scout.server.extensions import store
+from scout.utils.handle import get_file_handle
+from scout.utils.scout_requests import fetch_mim_files
 
 LOG = logging.getLogger(__name__)
 
-@click.command('omim', short_help='Update omim gene panel')
-@click.option('--api-key', help='Specify the api key')
-@click.option('--institute',
-    help='Specify the owner of the omim panel',
-    default='cust002',
+
+@click.command("omim", short_help="Update omim gene panel")
+@click.option("--api-key", help="Specify the api key")
+@click.option(
+    "--institute",
+    help="Specify the owner of the omim panel",
+    default="cust002",
     show_default=True,
 )
+@click.option(
+    "--genemap2",
+    type=click.Path(exists=True),
+    help="Path to file in omim genemap2 format",
+)
+@click.option(
+    "--mim2genes",
+    type=click.Path(exists=True),
+    help="Path to file in omim mim2genes format",
+)
 @with_appcontext
-def omim(api_key, institute):
+def omim(api_key, institute, genemap2, mim2genes):
     """
     Update the automate generated omim gene panel in the database.
     """
     LOG.info("Running scout update omim")
     adapter = store
-
-    api_key = api_key or current_app.config.get('OMIM_API_KEY')
-    if not api_key:
-        LOG.warning("Please provide a omim api key to load the omim gene panel")
-        raise click.Abort()
 
     institute_obj = adapter.institute(institute)
     if not institute_obj:
@@ -38,8 +43,30 @@ def omim(api_key, institute):
         LOG.warning("Please specify an existing institute")
         raise click.Abort()
 
+    mim_files = None
+    if genemap2 and mim2genes:
+        mim_files = {
+            "genemap2": list(get_file_handle(genemap2)),
+            "mim2genes": list(get_file_handle(mim2genes)),
+        }
+
+    api_key = api_key or current_app.config.get("OMIM_API_KEY")
+    if not api_key and mim_files is None:
+        LOG.warning("Please provide a omim api key to load the omim gene panel")
+        raise click.Abort()
+
+    if not mim_files:
+        try:
+            mim_files = fetch_mim_files(api_key=api_key, genemap2=True, mim2genes=True)
+        except Exception as err:
+            raise err
+
     try:
-        adapter.load_omim_panel(api_key, institute=institute)
+        adapter.load_omim_panel(
+            genemap2_lines=mim_files["genemap2"],
+            mim2gene_lines=mim_files["mim2genes"],
+            institute=institute,
+        )
     except Exception as err:
         LOG.error(err)
         raise click.Abort()

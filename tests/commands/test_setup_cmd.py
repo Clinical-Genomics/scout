@@ -2,6 +2,7 @@
 
 from scout.commands import cli
 
+
 def test_setup_database_invalid_omim_key(mock_app):
     """Testing the cli to setup a full scale database"""
 
@@ -9,12 +10,17 @@ def test_setup_database_invalid_omim_key(mock_app):
     assert runner
 
     # test the CLI command with non-valid API key
-    result =  runner.invoke(cli, ['setup', 'database',
-        '--api-key', 'not_a_valid_key'], input='y')
+    result = runner.invoke(
+        cli, ["setup", "database", "--api-key", "not_a_valid_key", "--yes"]
+    )
     # Make sure that setup enters in setup function correctly but stops because
     # there is no valid OMIM API KEY
     assert result.exit_code != 0
-    assert 'Seems like url https://data.omim.org/downloads/not_a_valid_key/morbidmap.txt does not exist' in result.output
+    assert (
+        "https://data.omim.org/downloads/not_a_valid_key/genemap2.txt does not"
+        in result.output
+    )
+
 
 def test_setup_database(mock_app):
     """Testing the cli to setup a full scale database"""
@@ -23,8 +29,7 @@ def test_setup_database(mock_app):
     assert runner
 
     # test the CLI command for seting up scout
-    result =  runner.invoke(cli, ['setup', 'demo'], input='y')
+    result = runner.invoke(cli, ["setup", "demo"], input="y")
     # Make sure that setup function works correctly
     assert result.exit_code == 0
-    assert 'Scout instance setup successful' in result.output
-    
+    assert "Scout instance setup successful" in result.output

@@ -41,10 +41,17 @@
 </a>
 <!-- Submenu content -->
 <div id='submenu1' class="collapse sidebar-submenu">
-    <a href="{{ url_for('cases.case_report', institute_id=institute._id,
-                      case_name=case.display_name) }}" target="_blank" class="list-group-item list-group-item-action bg-dark text-white">
-        <span class="menu-collapsed">General</span>
-    </a>
+    <div href="#" class="bg-dark list-group-item text-white">
+      <div class="d-flex flex-row flex-fill bd-highlight">
+        <span class="menu-collapsed ml-2">General</span>
+        <a href="{{ url_for('cases.case_report', institute_id=institute._id,
+                              case_name=case.display_name) }}" target="_blank">
+                            <i class="fa fa-link"></i></a>
+        <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id,
+                              case_name=case.display_name) }}">
+                            <i class="fa fa-file-pdf-o"></i></a>
+      </div>
+    </div>
     {% if case.multiqc %}
       <a href="{{ url_for('cases.multiqc', institute_id=institute._id,
                           case_name=case.display_name) }}" class="list-group-item list-group-item-action bg-dark text-white">
@@ -52,45 +59,43 @@
       </a>
     {% endif %}
     {% if config.SQLALCHEMY_DATABASE_URI %}
-      <form method="POST" id="coverage_form" target="_blank" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
-        <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
-        <a href="javascript:;" onclick="document.getElementById('coverage_form').submit();" class="list-group-item list-group-item-action bg-dark text-white">
-            <span class="menu-collapsed">Coverage report</span>
-        </a>
-      </form>
-    {% endif %}
-    <a href="{{ url_for('cases.mt_report', institute_id=institute._id,
-                      case_name=case.display_name) }}" class="list-group-item list-group-item-action bg-dark text-white">
-        <span class="menu-collapsed">mtDNA report</span>
-    </a>
-    {% if case.delivery_report %}
       <div href="#" class="bg-dark list-group-item text-white">
-        <div class="d-flex align-items-center justify-content-start">
-            <div><span class="menu-collapsed ml-2">Delivery</span></div>
-            <div>
-              <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                              case_name=case.display_name) }}" target="_blank">
-                              <i class="fa fa-link"></i></a>
-              <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                              case_name=case.display_name, format='pdf') }}">
-                              <i class="fa fa-file-pdf-o"></i></a>
-            </div>
+        <div class="d-flex flex-row flex-fill bd-highlight">
+          <span class="menu-collapsed ml-2">Coverage</span>
+            <form method="POST" id="coverage_html" target="_blank" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
+              <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
+              <a href="javascript:;" onclick="document.getElementById('coverage_html').submit();" target="_blank">
+                <i class="fa fa-link"></i></a>
+            </form>
+            <form method="POST" id="coverage_pdf" target="_blank" action="{{ url_for('report.pdf', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
+              <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
+              <a href="javascript:;" onclick="document.getElementById('coverage_pdf').submit();" target="_blank">
+                <i class="fa fa-file-pdf-o"></i></a>
+            </form>
         </div>
       </div>
+    {% endif %}
+    <div href="#" class="bg-dark list-group-item text-white">
+      <div class="d-flex flex-row flex-fill bd-highlight">
+        <span class="menu-collapsed ml-2">mtDNA report</span>
+          <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-file-excel-o"></i></a>
+      </div>
+    </div>
+    {% if case.analyses %}
       {% for analysis in case.analyses %}
-        <div href="#" class="bg-dark list-group-item text-white">
-          <div class="d-flex align-items-center justify-content-start ">
-            <div><span class="menu-collapsed ml-2">{{ analysis.date.date()}}</span></div>
-            <div>
-              <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                                          case_name=case.display_name, date=analysis.date) }}" target="_blank">
-                              <i class="fa fa-link"></i></a>
-              <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                                          case_name=case.display_name, date=analysis.date, format='pdf') }}">
-                              <i class="fa fa-file-pdf-o"></i></a>
+        {% if analysis.delivery_report %}
+          <div href="#" class="bg-dark list-group-item text-white">
+            <div class="d-flex flex-row flex-fill bd-highlight"></span>
+              <span class="menu-collapsed ml-2">Delivery ({{analysis.date.date()}})
+                <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                                              case_name=case.display_name, date=analysis.date) }}" target="_blank">
+                                  <i class="fa fa-link"></i></a>
+                <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                                              case_name=case.display_name, date=analysis.date, format='pdf') }}">
+                                  <i class="fa fa-file-pdf-o"></i></a>
             </div>
           </div>
-        </div>
+        {% endif %}
       {% endfor %}
     {% endif %}
 </div>
@@ -203,7 +208,7 @@
 {% endmacro %}
 
 {% macro research(case) %}
-<a href="#submenu2" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+<a href="#submenu2" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="submenu2" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fa fa-graduation-cap fa-fw mr-3"></span>
     <span class="menu-collapsed">Research list</span>
@@ -211,13 +216,15 @@
   </div>
 </a>
 <!-- Submenu content -->
-<div id='submenu2' class="collapse sidebar-submenu">
   {% if case.research_requested %}
-    <i class="text-white">Research pending</i>
+    <div id='submenu2' class="collapse-show">
+      <div class="card card-body">Research pending</div>
+    </div>
   {% else %}
-    <button type="button" class="btn btn-danger btn-sm form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
+    <div id='submenu2' class="collapse">
+      <button type="button" class="btn btn-danger btn-sm form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
+    </div>
   {% endif %}
-</div>
 {% endmacro %}
 
 {% macro rerun(case) %}

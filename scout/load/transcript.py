@@ -4,15 +4,16 @@ from pprint import pprint as pp
 
 from click import progressbar
 
-from scout.utils.requests import fetch_ensembl_transcripts
+from scout.utils.scout_requests import fetch_ensembl_transcripts
 from scout.parse.ensembl import parse_transcripts
 from scout.build.genes.transcript import build_transcript
 
 LOG = logging.getLogger(__name__)
 
-TRANSCRIPT_CATEGORIES = ['mrna', 'nc_rna', 'mrna_predicted']
+TRANSCRIPT_CATEGORIES = ["mrna", "nc_rna", "mrna_predicted"]
 
-def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=None):
+
+def load_transcripts(adapter, transcripts_lines=None, build="37", ensembl_genes=None):
     """Load all the transcripts
 
     Transcript information is from ensembl.
@@ -37,7 +38,7 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
     for ens_tx_id in list(transcripts_dict):
         parsed_tx = transcripts_dict[ens_tx_id]
         # Get the ens gene id
-        ens_gene_id = parsed_tx['ensembl_gene_id']
+        ens_gene_id = parsed_tx["ensembl_gene_id"]
 
         # Fetch the internal gene object to find out the correct hgnc id
         gene_obj = ensembl_genes.get(ens_gene_id)
@@ -48,10 +49,9 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
             continue
 
         # Add the correct hgnc id
-        parsed_tx['hgnc_id'] = gene_obj['hgnc_id']
+        parsed_tx["hgnc_id"] = gene_obj["hgnc_id"]
         # Primary transcript information is collected from HGNC
-        parsed_tx['primary_transcripts'] = set(gene_obj.get('primary_transcripts', []))
-
+        parsed_tx["primary_transcripts"] = set(gene_obj.get("primary_transcripts", []))
 
     ref_seq_transcripts = 0
     nr_primary_transcripts = 0
@@ -59,19 +59,21 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
 
     transcript_objs = []
 
-    with progressbar(transcripts_dict.values(), label="Building transcripts", length=nr_transcripts) as bar:
+    with progressbar(
+        transcripts_dict.values(), label="Building transcripts", length=nr_transcripts
+    ) as bar:
         for tx_data in bar:
 
             #################### Get the correct refseq identifier ####################
-            # We need to decide one refseq identifier for each transcript, if there are any to 
+            # We need to decide one refseq identifier for each transcript, if there are any to
             # choose from. The algorithm is as follows:
             # If there is ONE mrna this is choosen
             # If there are several mrna the one that is in 'primary_transcripts' is choosen
             # Else one is choosen at random
             # The same follows for the other categories where nc_rna has precedense over mrna_predicted
             # We will store all refseq identifiers in a "refseq_identifiers" list as well
-            tx_data['is_primary'] = False
-            primary_transcripts = tx_data['primary_transcripts']
+            tx_data["is_primary"] = False
+            primary_transcripts = tx_data["primary_transcripts"]
             refseq_identifier = None
             refseq_identifiers = []
             for category in TRANSCRIPT_CATEGORIES:
@@ -86,16 +88,16 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
 
                     if refseq_id in primary_transcripts:
                         refseq_identifier = refseq_id
-                        tx_data['is_primary'] = True
+                        tx_data["is_primary"] = True
                         nr_primary_transcripts += 1
-                    
+
                     if not refseq_identifier:
                         refseq_identifier = refseq_id
 
             if refseq_identifier:
-                tx_data['refseq_id'] = refseq_identifier
+                tx_data["refseq_id"] = refseq_identifier
             if refseq_identifiers:
-                tx_data['refseq_identifiers'] = refseq_identifiers
+                tx_data["refseq_identifiers"] = refseq_identifiers
 
             ####################  ####################  ####################
             # Build the transcript object
@@ -107,8 +109,8 @@ def load_transcripts(adapter, transcripts_lines=None, build='37', ensembl_genes=
     if len(transcript_objs) > 0:
         adapter.load_transcript_bulk(transcript_objs)
 
-    LOG.info('Number of transcripts in build %s: %s', build, nr_transcripts)
-    LOG.info('Number of transcripts with refseq identifier: %s', ref_seq_transcripts)
-    LOG.info('Number of primary transcripts: %s', nr_primary_transcripts)
+    LOG.info("Number of transcripts in build %s: %s", build, nr_transcripts)
+    LOG.info("Number of transcripts with refseq identifier: %s", ref_seq_transcripts)
+    LOG.info("Number of primary transcripts: %s", nr_primary_transcripts)
 
     return transcript_objs

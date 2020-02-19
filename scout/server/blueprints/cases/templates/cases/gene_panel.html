@@ -1,0 +1,135 @@
+{% macro genepanels_table(case, institute) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Gene panels</div>
+          <div class="table-responsive fixed-panel">
+      <table id="panel-table" class="table" style="width:100%">
+        <thead>
+          <tr>
+            <th>Panel</th>
+            <th>Version</th>
+            <th>Genes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for panel in case.panels %}
+            <tr {% if panel.is_default %} class="bg-info-light" {% endif %}>
+              <td>
+                <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
+                  {{ panel.display_name|truncate(30, True) }}
+                </a>
+                {% if panel.is_default %}
+                  <span class="badge badgel-default pull-right">Default</span>
+                {% endif %}
+              </td>
+              <td>{{ panel.version }} <small class="text-muted">({{ panel.updated_at.date() }})</small></td>
+              <td>{{ panel.nr_genes }}</td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5">No panels linked to case</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="card-body">
+      <form action="{{ url_for('cases.default_panels', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+        <div class="form-group">
+          <label>Change default gene panels</label>
+        </div>
+        <div class="row">
+          <div class="col-xs-8">
+            <select name="panel_ids" class="form-control" multiple>
+              {% for panel in case.panels %}
+                <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>{{ panel.display_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-xs-4">
+            <button class="btn btn-outline-secondary form-control">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro change_default_panels(case, institute) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Change default gene panels</div>
+    <div class="card-body">
+      <form action="{{ url_for('cases.default_panels', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+        <div class="row">
+          <div class="col-xs-4">
+            <select name="panel_ids" class="form-control" multiple>
+              {% for panel in case.panels %}
+                <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>{{ panel.display_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-xs-4">
+            <button class="btn btn-outline-secondary form-control">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro hpo_genelist_panel(case, institute, config) %}
+  <div class="card panel-default">
+    <div class="panel-heading">
+      HPO gene panel ({{ case.dynamic_gene_list|length }} genes)
+      {%- if case.dynamic_panel_phenotypes %},
+      <span data-toggle="tooltip" data-placement="bottom" title="{{ case.dynamic_panel_phenotypes|join(', ') }}">
+          {{ case.dynamic_panel_phenotypes|length }} phenotypes</span>
+      {% endif %})
+      {% if config.SQLALCHEMY_DATABASE_URI and case.dynamic_gene_list|length > 0 %}
+        <a class="pull-right text-white" href="#" onclick="document.getElementById('hpo-report-form').submit();">Coverage</a>
+        <form id="hpo-report-form" action="{{ url_for('report.report', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
+          <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
+        </form>
+      {% endif %}
+    </div>
+    <ul class="list-group fixed-panel list-scroll">
+      {% for hpo_gene in case.dynamic_gene_list %}
+        <li class="list-group-item" title="{{ hpo_gene.description }}">
+          {{ hpo_gene.hgnc_symbol }}
+        </li>
+      {% else %}
+        <li class="list-group-item">No gene list generated</li>
+      {% endfor %}
+    </ul>
+    {% if case.dynamic_gene_list %}
+      <div class="card-footer">
+        <div class="d-flex mt-1">
+          <div class="mr-2">
+            <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name)+'#hpo_clinical_filter' }}" method="POST">
+              <input type="checkbox" class="ios8-switch" id="hpo_clinical_filter" onChange="this.form.submit()" name="hpo_clinical_filter"{% if case.hpo_clinical_filter %}checked{% endif %}>
+              <label for="hpo_clinical_filter"></label>
+            </form>
+          </div>
+          <div data-placement="top" data-toggle='tooltip' title="Toggle on to use dynamic (HPO) panel instead of default gene panel for searching with clinical filter.">
+            Use HPO list for clinical filter</div>
+        </div>
+        <div>
+          {% if case.track == 'cancer' %}
+            <a class="btn btn-outline-secondary form-control"
+              href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
+                               case_name=case.display_name, variant_type='clinical',
+                               gene_panels=['hpo']) }}">
+               Clinical HPO SNV variants
+             </a>
+          {% else %}
+            <a class="btn btn-outline-secondary form-control"
+              href="{{ url_for('variants.variants', institute_id=institute._id,
+                               case_name=case.display_name, variant_type='clinical',
+                               gene_panels=['hpo']) }}">
+               Clinical HPO SNV variants
+             </a>
+           {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}

@@ -3,7 +3,6 @@ from flask_login import UserMixin
 
 
 class LoginUser(UserMixin):
-
     def __init__(self, user_data):
         """Create a new user object."""
         self.roles = []
@@ -16,7 +15,7 @@ class LoginUser(UserMixin):
     @property
     def is_admin(self):
         """Check if the user is admin."""
-        return 'admin' in self.roles
+        return "admin" in self.roles
 
 
 class LdapUser(UserMixin):

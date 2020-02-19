@@ -10,6 +10,7 @@ class TlsSMTPHandler(logging.handlers.SMTPHandler):
         """
         try:
             import smtplib
+
             try:
                 from email.utils import formatdate
             except ImportError:
@@ -23,9 +24,10 @@ class TlsSMTPHandler(logging.handlers.SMTPHandler):
             msg = self.format(record)
             msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\nDate: %s\r\n\r\n%s" % (
                 self.fromaddr,
-                ','.join(self.toaddrs),
+                ",".join(self.toaddrs),
                 self.getSubject(record),
-                formatdate(), msg
+                formatdate(),
+                msg,
             )
 
             if self.username:

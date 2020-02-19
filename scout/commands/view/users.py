@@ -8,7 +8,7 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 
-@click.command('users', short_help='Display users')
+@click.command("users", short_help="Display users")
 @with_appcontext
 def users():
     """Show all users in the database"""
@@ -22,10 +22,11 @@ def users():
 
     click.echo("#name\temail\troles\tinstitutes")
     for user_obj in user_objs:
-        click.echo("{0}\t{1}\t{2}\t{3}\t".format(
-            user_obj['name'],
-            user_obj.get('mail', user_obj['_id']),
-            ', '.join(user_obj.get('roles', [])),
-            ', '.join(user_obj.get('institutes', [])),
-        )
+        click.echo(
+            "{0}\t{1}\t{2}\t{3}\t".format(
+                user_obj["name"],
+                user_obj.get("mail", user_obj["_id"]),
+                ", ".join(user_obj.get("roles", [])),
+                ", ".join(user_obj.get("institutes", [])),
+            )
         )

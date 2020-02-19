@@ -1,4 +1,5 @@
 {% extends "layout_bs4.html" %}
+{% from "overview/utils.html" import institute_macro %}
 
 {% block title %}
   {{ super() }} - Institutes
@@ -6,42 +7,23 @@
 
 {% block top_nav %}
   {{ super() }}
-  <li class="active">
-    <span class="navbar-text">Institutes Overview</span>
+  <li class="nav-item active">
+    <span class="navbar-text">Institutes</span>
   </li>
 {% endblock %}
 
 {% block content_main %}
 <div class="container-float">
   <div class="card-columns">
-    {% for institute in institutes %}
-      <div class="card mt-3">
-        <h5 class="card-title"><a href="{{ url_for('cases.cases', institute_id=institute.internal_id) }}"> {{ institute.display_name }}</a></h5>
-        {% if current_user.is_admin %}
-          <h6 class="card-subtitle mb-2 text-muted"> ({{ institute.internal_id }})</h6>
-        {% endif %}
-        <div class="card-body">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              Coverage Cutoff
-              <span class="float-right">{{ institute.coverage_cutoff }}</span>
-            </li>
-            <div class="list-group-item">
-              Sanger Recipients
-              <span class="float-right">{{ institute.sanger_recipients|join(', ') or '-' }}</span>
-            </div>
-            <li class="list-group-item">
-              Frequency Cutoff
-              <span class="float-right">{{ institute.frequency_cutoff }}</span>
-            </li>
-            <li class="list-group-item">
-              Number of Cases
-              <span class="float-right">{{ institute.case_count }}</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    {% endfor %}
+  <!-- visualize first users's institutes and make info editable -->
+  {% for institute in institutes if institute.internal_id in current_user.institutes %}
+    {{ institute_macro(institute, current_user) }}
+  {% endfor %}
+
+  <!-- Then show all other institutes -->
+  {% for institute in institutes if institute.internal_id not in current_user.institutes %}
+    {{ institute_macro(institute, current_user) }}
+  {% endfor %}
   </div>
 </div>
 {% endblock %}

@@ -8,13 +8,65 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+- Accepts `alignment_path` in load config to pass bam/cram files
+- Display all phenotypes on variant page
+- Display hgvs coordinates on pinned and causatives
+- Clear panel pending changes
+- Adds option to setup the database with static files
+- Adds cli command to download the resources from CLI that scout needs
+- Adds dummy files for merged somatic SV and CNV; as well as merged SNV, and INDEL part of #1279
+- Allows for upload of OMIM-AUTO gene panel from static files without api-key
+
+### Fixed
+- Cancer case HPO panel variants link
+- Fix so that some drop downs have correct size
+- First IGV button in str variants page
+- Cancer case activates on SNV variants
+- Cases activate when STR variants are viewed
+- Always calculate code coverage
+- Pinned/Classification/comments in all types of variants pages
+- Null values for panel's custom_inheritance_models
+- Discrepancy between the manual disease transcripts and those in database in gene-edit page
+- ACMG classification not showing for some causatives
+
+### Changed
+- Renamed `requests` file to `scout_requests`
+- Cancer variant view shows two, instead of four, decimals for allele and normal
+
+## [4.11.1]
+
+### Fixed
+- Institute settings page
+- Link institute settings to sharing institutes choices
+
+## [4.11.0]
+
+### Added
 - Display locus name on STR variant page
 - Alternative key `GNOMADAF_popmax` for Gnomad popmax allele frequency
 - Automatic suggestions on how to improve the code on Pull Requests
 - Parse GERP, phastCons and phyloP annotations from vep annotated CSQ fields
+- Avoid flickering comment popovers in variant list
+- Parse REVEL score from vep annotated CSQ fields
+- Allow users to modify general institute settings
+- Optionally format code automatically on commit
+- Adds command to backup vital parts `scout export database`
+- Parsing and displaying cancer SV variants from Manta annotated VCF files
+- Dismiss cancer snv variants with cancer-specific options
+- Add IGV.js UPD, RHO and TIDDIT coverage wig tracks.
 
 
 ### Fixed
+- Slightly darker page background
+- Fixed an issued with parsed conservation values from CSQ
+- Clinvar submissions accessible to all users of an institute
+- Header toolbar when on Clinvar page now shows institute name correctly
+- Case should not always inactivate upon update
+- Show dismissed snv cancer variants as grey on the cancer variants page
+- Improved style of mappability link and local observations on variant page
+- Convert all the GET requests to the igv view to POST request
+- Error when updating gene panels using a file containing BOM chars
+- Add/replace gene radio button not working in gene panels
 
 
 ## [4.10.1]
@@ -42,6 +94,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display GC and allele depth in causatives table.
 - Included primary reference transcript in general report
 - Included partial causative variants in general report
+- Remove dependency of loqusdb by utilising the CLI
 
 ### Fixed
 - Fixed update OMIM command bug due to change in the header of the genemap2 file
@@ -52,7 +105,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed missing path import by importing pathlib.Path
 - Handle index inconsistencies in the update index functions
 - Fixed layout problems
-- Slightly darker page background
 
 
 ## [4.9.0]
