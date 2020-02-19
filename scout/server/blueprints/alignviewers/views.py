@@ -111,7 +111,7 @@ def igv():
     gene_track_URL = ""
     gene_track_indexURL = ""
 
-    if chromosome_build == "GRCh38" or chrom == "M":
+    if chromosome_build in ["GRCh38", "38"] or chrom == "M":
         fastaURL = (
             "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa"
         )
