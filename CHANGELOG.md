@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 ### Fixed
+- Bug in variant.gene when gene has no HGVS description
 
 ### Changed
 
