@@ -29,7 +29,10 @@ from scout.constants import ACMG_CRITERIA, ACMG_MAP
 LOG = logging.getLogger(__name__)
 
 variant_bp = Blueprint(
-    "variant", __name__, static_folder="static", template_folder="templates"
+    "variant", __name__,
+    static_folder="static",
+    template_folder="templates",
+    static_url_path="/variant/static",
 )
 
 

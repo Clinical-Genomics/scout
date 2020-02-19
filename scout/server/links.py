@@ -291,7 +291,6 @@ def get_variant_links(variant_obj, build=None):
         cosmic_link=cosmic_link(variant_obj),
         beacon_link=beacon_link(variant_obj, build),
         ucsc_link=ucsc_link(variant_obj, build),
-        alamut_link=alamut_link(variant_obj),
         spidex_human=spidex_human(variant_obj),
     )
     return links
@@ -400,14 +399,6 @@ def ucsc_link(variant_obj, build=None):
             "-{this[position]}&dgv=pack&knownGene=pack&omimGene=pack"
         )
 
-    return url_template.format(this=variant_obj)
-
-
-def alamut_link(variant_obj):
-    url_template = (
-        "http://localhost:10000/show?request={this[chromosome]}:"
-        "{this[position]}{this[reference]}>{this[alternative]}"
-    )
     return url_template.format(this=variant_obj)
 
 
