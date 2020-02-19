@@ -33,6 +33,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Renamed `requests` file to `scout_requests`
 - Cancer variant view shows two, instead of four, decimals for allele and normal
+- Cancer variant view has cleaner table data entries for "N/A" data 
 
 ## [4.11.1]
 
