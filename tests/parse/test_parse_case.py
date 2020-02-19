@@ -5,14 +5,8 @@ import pytest
 
 from scout.constants import REV_SEX_MAP
 from scout.exceptions import PedigreeError
-from scout.parse.case import (
-    parse_case,
-    parse_case_data,
-    parse_individual,
-    parse_individuals,
-    parse_ped,
-    removeNoneValues,
-)
+from scout.parse.case import (parse_case, parse_case_data, parse_individual,
+                              parse_individuals, parse_ped, removeNoneValues)
 
 
 def test_parse_case_no_date(scout_config):

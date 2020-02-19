@@ -609,7 +609,7 @@ def test_gene_predictions_two_genes():
 
 def test_sv_frequencies_empty():
     ## GIVEN a variant object with gnomad annotation
-    var = {"category": "sv"}
+    var = {"category":"sv"}
     ## WHEN parsing the sv frequencies
     freq = frequencies(var)
     ## THEN assert the correct tuple is returned
@@ -619,7 +619,7 @@ def test_sv_frequencies_empty():
 
 def test_sv_frequencies_gnomad():
     ## GIVEN a variant object with gnomad annotation
-    var = {"gnomad_frequency": 0.01, "category": "sv"}
+    var = {"gnomad_frequency": 0.01, "category":"sv"}
     ## WHEN parsing the sv frequencies
     freq = frequencies(var)
     ## THEN assert the correct tuple is returned
@@ -629,7 +629,7 @@ def test_sv_frequencies_gnomad():
 
 def test_sv_frequencies_gnomad_exac():
     ## GIVEN a variant object with gnomad annotation
-    var = {"exac_frequency": 0.01, "category": "sv"}
+    var = {"exac_frequency": 0.01, "category":"sv"}
     ## WHEN parsing the sv frequencies
     freq = frequencies(var)
     ## THEN assert the correct tuple is returned
@@ -648,7 +648,7 @@ def test_sv_frequencies_all():
         "swegen": 0.02,
         "decipher": 0.02,
         "thousand_genomes_frequency": 0.02,
-        "category": "sv",
+        "category":"sv"
     }
     ## WHEN parsing the sv frequencies
     freq = frequencies(var)

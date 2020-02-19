@@ -12,14 +12,11 @@ import yaml
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
 from scout.build import build_institute
-
 # Case files
 # Gene panel
 from scout.demo import load_path, panel_path
-
 ### Import demo files ###
 from scout.demo.resources import demo_files
-
 # Resources
 from scout.parse.panel import parse_gene_panel
 

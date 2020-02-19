@@ -977,7 +977,7 @@ def omimterms():
     query = request.args.get("query")
     if query is None:
         return abort(500)
-    terms = store.omim_terms(query=query)
+    terms = store.query_omim(query=query)
     json_terms = [
         {"name": "{} | {}".format(term["_id"], term["description"]), "id": term["_id"]}
         for term in terms[:7]

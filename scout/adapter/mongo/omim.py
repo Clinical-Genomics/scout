@@ -10,9 +10,9 @@ LOG = logging.getLogger(__name__)
 
 
 class DiagnosisHandler(object):
-  """Class for handling OMIM and disease-related database objects"""
-  
-    def omim_terms(self, query=None, limit=None):
+    """Class for handling OMIM and disease-related database objects"""
+
+    def query_omim(self, query=None, limit=None):
         """Return all OMIM terms
 
         If a query is sent omim_id will try to match with regex on term or
@@ -45,19 +45,6 @@ class DiagnosisHandler(object):
         )
         return res
 
-    def omim_term(self, term):
-        """Return one OMIM term
-
-        Args:
-            term(str): Search for a specific OMIM term
-
-        Returns:
-            res(obj)
-
-        """
-        res = self.disease_term_collection.find_one({"_id": term})
-        return res
-
     def case_omim_diagnoses(self, case_obj):
         """Return all complete OMIM diagnoses for a case
 
@@ -79,19 +66,21 @@ class DiagnosisHandler(object):
         )
         return res
 
-    def omim_genes(self, gene_list):
+    def omim_to_genes(self, omim_obj):
         """Gets all genes associated to an OMIM term
 
         Args:
-            gene_list(list): a list of hgnc ids
+            omim_obj(dict): an OMIM object
 
         Returns:
             gene_objs(list): a list of gene objects
 
         """
-        gene_objs = [self.hgnc_gene(hgnc_id) for hgnc_id in gene_list]
-        return gene_obj
-    
+        gene_objs = []
+        if omim_obj:
+            gene_objs = [self.hgnc_gene(hgnc_id) for hgnc_id in omim_obj.get("genes",[])]
+        return gene_objs
+
 
     def disease_term(self, disease_identifier):
         """Return a disease term
