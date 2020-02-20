@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Bug in variant.gene when gene has no HGVS description
 - SV variant links now take you to the SV variant page again
+- cancer variants show correct alt/ref reads mirroring alt frequency now 
 
 ### Changed
 
