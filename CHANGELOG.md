@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - SV variant links now take you to the SV variant page again
 - Cancer variant view has cleaner table data entries for "N/A" data
 - cancer variants show correct alt/ref reads mirroring alt frequency now
+- Pinned variant case level display hotfix for cancer and str - more on this later
 
 ### Changed
 
