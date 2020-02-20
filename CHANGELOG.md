@@ -20,13 +20,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bug in variant.gene when gene has no HGVS description
 - SV variant links now take you to the SV variant page again
 - Cancer variant view has cleaner table data entries for "N/A" data
+- Pinned variant case level display hotfix for cancer and str - more on this later
 - Cancer variants show correct alt/ref reads mirroring alt frequency now
 - Always load all clinical STR variants even if a region load is attempted - index may be missing
 - Came case repetition in variant local observations
 
-
 ### Changed
-
 
 ## [4.12]
 
