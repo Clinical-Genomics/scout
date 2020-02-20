@@ -13,14 +13,14 @@
             <div class="row align-items-between align-items-center">
               <div class="col-10">
                 <i class="fa fa-check-circle-o"></i>
-		            {% if variant.category == "snv" %}
+		            {% if variant.category in ("snv", "cancer", "str") %}
                   <a href="{{ url_for('variant.variant',
                                       institute_id=variant.institute,
                                       case_name=case.display_name,
                                       variant_id=variant._id) }}">
                     {% set display_genes = [] %}
                     {% for gene in variant.genes %}
-                      {% if gene.hgvs_identifier %}
+                      {% if gene.hgvs_identifier and gene.hgnc_symbol  %}
                         {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier) }}
                       {% elif gene.hgnc_symbol %}
                           {{ "" if display_genes.append(gene.hgnc_symbol) }}
