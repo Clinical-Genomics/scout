@@ -20,11 +20,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bug in variant.gene when gene has no HGVS description
 - SV variant links now take you to the SV variant page again
 - Cancer variant view has cleaner table data entries for "N/A" data
-- cancer variants show correct alt/ref reads mirroring alt frequency now
 - Pinned variant case level display hotfix for cancer and str - more on this later
+- Cancer variants show correct alt/ref reads mirroring alt frequency now
+- Always load all clinical STR variants even if a region load is attempted - index may be missing
 
 ### Changed
-
 
 ## [4.12]
 
@@ -51,6 +51,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ACMG classification not showing for some causatives
 - Fix bug which caused IGV.js to use hg19 reference files for hg38 data
 - Bug when multiple bam files sources with non-null values are available
+
 
 ### Changed
 - Renamed `requests` file to `scout_requests`
