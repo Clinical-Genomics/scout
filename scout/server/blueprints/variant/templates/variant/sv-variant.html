@@ -49,6 +49,7 @@
 {% endblock %}
 
 {% block content_main %}
+<div class="container-float">
   {% if variant.missing_data %}
     <div class="alert alert-warning">Showing only first 30 genes!</div>
   {% endif %}
@@ -150,9 +151,7 @@
   </div> <!-- end of row -->
 
   <div class="row">
-    <div class="col-md-8">
-      {{ gtcall_panel(variant) }}
-    </div>
+    <div class="col-md-8">{{ gtcall_panel(variant) }}</div>
     {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
     {% if has_pedigree %}
       <div class="col-md-4">{{ pedigree_panel(case) }}</div>
@@ -206,9 +205,7 @@
   </div>
 
   <div class="row">
-    <div class="col-md-12">
-      {{ ext_links(variant) }}
-    </div>
+    <div class="col-12">{{ ext_links(variant) }}</div>
   </div>
 
   {% if config['MAIL_USERNAME'] %}
@@ -220,6 +217,7 @@
     {# Email setting must be setup #}
     {{ modal_cancel_verify() }}
   {% endif %}
+</div>
 {{ modal_causative(case, institute, variant) }}
 {% endblock %}
 
