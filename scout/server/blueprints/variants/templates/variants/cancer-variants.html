@@ -156,7 +156,7 @@
   {% if 'alt_freq' in allele %}
     {{ (allele.alt_freq * 100)|round(2)  }}%
     <br>
-    <small class="text-muted">{{ allele.alt_depth }} / {{ allele.ref_depth }}</small>
+    <small class="text-muted">{{ allele.alt_depth }} | {{ allele.ref_depth }}</small>
   {% else %}
     <span class="text-muted">N/A</span>
   {% endif %}
