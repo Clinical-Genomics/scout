@@ -121,6 +121,7 @@
     {% if observations['cases'] %}
         <strong>Cases</strong>
         {% for data in observations['cases'] %}
+          {{ data }}
           {% if variant %}
             <a class="ml-3" href="{{ url_for('variant.variant', institute_id=case.owner, case_name=case.display_name, variant_id=variant._id) }}">{{ case.display_name }}</a>
           {% else %}
