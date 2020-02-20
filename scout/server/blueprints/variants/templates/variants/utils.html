@@ -549,11 +549,19 @@
 {% endmacro %}
 
 {% macro cell_rank(variant, institute, case, form, manual_rank_options) %}
+{% if variant.category == "sv" %}
+  <a class="variants-row-item flex-small layout"
+      href="{{ url_for('variant.sv_variant', institute_id=institute._id,
+                       case_name=case.display_name, variant_id=variant._id) }}">
+     {{ variant.variant_rank }}&nbsp;
+   </a>
+{% else %}
   <a class="variants-row-item flex-small layout"
      href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
                       variant_id=variant._id) }}">
     {{ variant.variant_rank }}&nbsp;
   </a>
+{% endif %}
   {% set comment_count = variant.comments.count() %}
 
   {% if variant.acmg_classification %}
