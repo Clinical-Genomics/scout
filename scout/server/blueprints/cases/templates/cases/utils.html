@@ -162,6 +162,11 @@
                           {{ "" if display_genes.append( gene.hgnc_id|string + ' ' + gene.hgvs_identifier) }}
                         {% endif %}
                       {% endfor %}
+
+                      {% if not display_genes %}
+                          {{ "" if display_genes.append( variant.simple_id ) }}
+                      {% endif %}
+                      
                       {{ display_genes|join(", ") }}
 
                   {% else %}
