@@ -159,7 +159,7 @@
     <span class="text-muted">N/A</span>
   {% endif %}
   <br>
-  <small class="text-muted">{{ allele.ref_depth }} / {{ allele.alt_depth }}</small>
+  <small class="text-muted">{{ allele.alt_depth } / allele.ref_depth }}}</small>
 {% endmacro %}
 
 {% block scripts %}
