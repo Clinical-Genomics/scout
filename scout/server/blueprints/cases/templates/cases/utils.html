@@ -22,10 +22,17 @@
                     {% for gene in variant.genes %}
                       {% if gene.hgvs_identifier %}
                         {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier) }}
-                      {% else %}
-                        {{ "" if display_genes.append(gene.hgnc_symbol) }}
+                      {% elif gene.hgnc_symbol %}
+                          {{ "" if display_genes.append(gene.hgnc_symbol) }}
+                      {% elif gene.hgvs_identifier and gene.hgnc_id %}
+                          {{ "" if display_genes.append( gene.hgnc_id|string + ' ' + gene.hgvs_identifier) }}
                       {% endif %}
                     {% endfor %}
+
+                    {% if not display_genes %}
+                        {{ "" if display_genes.append( variant.simple_id ) }}
+                    {% endif %}
+
                     {{ display_genes|join(", ") }}
 		             {% else %}
         		      <a href="{{ url_for('variant.sv_variant',
@@ -166,7 +173,7 @@
                       {% if not display_genes %}
                           {{ "" if display_genes.append( variant.simple_id ) }}
                       {% endif %}
-                      
+
                       {{ display_genes|join(", ") }}
 
                   {% else %}
