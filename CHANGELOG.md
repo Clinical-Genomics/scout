@@ -7,15 +7,16 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+### Fixed
+### Changed
+
+## [4.12.3]
 
 ### Fixed
 - Case report when causative or pinned SVs have non null allele frequencies
 
-### Changed
-
 ## [4.12.2]
 
-### Added
 ### Fixed
 - SV variant links now take you to the SV variant page again
 - Cancer variant view has cleaner table data entries for "N/A" data
@@ -24,16 +25,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Always load all clinical STR variants even if a region load is attempted - index may be missing
 - Same case repetition in variant local observations
 
-### Changed
-
 ## [4.12.1]
-
-### Added
 
 ### Fixed
 - Bug in variant.gene when gene has no HGVS description
 
-### Changed
 
 ## [4.12]
 
