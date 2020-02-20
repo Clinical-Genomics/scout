@@ -5,10 +5,24 @@
     <div class=card-body>
       <table class="table table-bordered table-hover table-sm">
         <tr>
-          <td>{{ variant.disease_associated_transcripts|join(', ') if variant.disease_associated_transcripts else '-' }}</td>
-        </tr>
-      </table>
-    </div>
+          <td>
+          {% set ns = namespace(gene='') %}
+          {% for transcript in variant.disease_associated_transcripts %}
+            {% set ns.gene = transcript.split(":")[0] != ns.gene %} <!-- is this a different gene? -->
+            {% if ns.gene and loop.index > 1%}<!--new line-->
+              <br><strong>{{transcript.split(":")[0]}}:</strong> &nbsp;<!--print gene -->
+            {% elif ns.gene %} <!--first gene-->
+              <strong>{{transcript.split(":")[0]}}:</strong> &nbsp;
+            {% endif %}
+            {{transcript.split(":")[1]}} &nbsp;<!-- print transcript-->
+            {% set ns.gene = transcript.split(":")[0] %}
+          {% else %}
+            -
+          {% endfor %}
+          </td>
+      </tr>
+    </table>
+  </div>
   </div>
 {% endmacro %}
 

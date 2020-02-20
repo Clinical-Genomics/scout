@@ -8,6 +8,24 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+### Fixed
+### Changed
+
+
+## [4.12.1]
+
+### Added
+
+### Fixed
+- Bug in variant.gene when gene has no HGVS description
+- SV variant links now take you to the SV variant page again
+
+### Changed
+
+
+## [4.12]
+
+### Added
 - Accepts `alignment_path` in load config to pass bam/cram files
 - Display all phenotypes on variant page
 - Display hgvs coordinates on pinned and causatives
@@ -29,6 +47,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Discrepancy between the manual disease transcripts and those in database in gene-edit page
 - ACMG classification not showing for some causatives
 - Fix bug which caused IGV.js to use hg19 reference files for hg38 data
+- Bug when multiple bam files sources with non-null values are available
 - Fix so that new cosmic identifier is also acceptable #1304
 
 ### Changed
