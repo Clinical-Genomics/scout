@@ -82,73 +82,72 @@
                 </div>
               </div>
               <div class="list-group mt-3">
-                <div>
-                  {{ dismiss_variant_button(variant, institute, case, dismiss_variant_options) }}
-                </div>
-              </ul>
-            </div> <!-- end of card -->
-          </div> <!-- end of col -->
-        </div> <!-- end of row -->
+                <div>{{ dismiss_variant_button(variant, institute, case, dismiss_variant_options) }}</div>
+              </div>
+            </ul>
+            </div> <!-- end of card body -->
+        </div> <!-- end of card -->
+      </div> <!-- end of col -->
 
-    <div class="col-md-6">
-      <div class="card panel-default">
-        <div class="panel-heading">Summary</div>
-        <div class="card-body">
-          <ul class="list-group">
-            <li class="list-group-item">
-              <div class="row d-flex justify-content-between">
-                <div>Position</div>
-                <div>
-                  {{ variant.chromosome }}:{{ variant.position }} {{ "-" if variant.end_chrom == variant.chromosome else " / " + variant.end_chrom+":" }}{{ variant.end }}
+      <div class="col-md-6">
+        <div class="card panel-default">
+          <div class="panel-heading">Summary</div>
+          <div class="card-body">
+            <ul class="list-group">
+              <li class="list-group-item">
+                <div class="row d-flex justify-content-between">
+                  <div>Position</div>
+                  <div>
+                    {{ variant.chromosome }}:{{ variant.position }} {{ "-" if variant.end_chrom == variant.chromosome else " / " + variant.end_chrom+":" }}{{ variant.end }}
+                  </div>
                 </div>
-              </div>
-            </li>
-            <li class="list-group-item">
-              <div class="row d-flex justify-content-between">
-                <div>Breakpoint 1</div>
-                {{ sv_alignments(variant, case, "start") }}
-              </div>
-            </li>
-            <li class="list-group-item">
-              <div class="row d-flex justify-content-between">
-                <div>Breakpoint 2</div>
-                {{ sv_alignments(variant, case, "end") }}
-              </div>
-            </li>
+              </li>
+              <li class="list-group-item">
+                <div class="row d-flex justify-content-between">
+                  <div>Breakpoint 1</div>
+                  {{ sv_alignments(variant, case, "start") }}
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="row d-flex justify-content-between">
+                  <div>Breakpoint 2</div>
+                  {{ sv_alignments(variant, case, "end") }}
+                </div>
+              </li>
+  	          <li class="list-group-item">
+                <div class="row d-flex justify-content-between">
+  	            <div>Cytoband</div>
+                  <div>
+                    {% if variant.end_chrom == variant.chromosome %}
+                      {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end if variant.cytoband_end != variant.cytoband_start else "" }}
+                    {% else %}
+                      ({{ variant.chromosome + ";" + variant.end_chrom}})({{ variant.cytoband_start + ";" + variant.cytoband_end }})
+                    {% endif %}
+                  </div>
+                </div>
+  	          </li>
+  	          <li class="list-group-item">
+  	            <div class="row d-flex justify-content-between">
+                  <div>Length</div>
+                  {{ sv_alignments(variant, case, "length") }}
+                </div>
+              </li>
   	        <li class="list-group-item">
               <div class="row d-flex justify-content-between">
-  	          <div>Cytoband</div>
-                <div>
-                  {% if variant.end_chrom == variant.chromosome %}
-                    {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end if variant.cytoband_end != variant.cytoband_start else "" }}
-                  {% else %}
-                    ({{ variant.chromosome + ";" + variant.end_chrom}})({{ variant.cytoband_start + ";" + variant.cytoband_end }})
-                  {% endif %}
-                </div>
+  	            <div>Type</div><div class="float-right">{{ variant.sub_category|upper }}</div>
               </div>
   	        </li>
-  	        <li class="list-group-item">
-  	          <div class="row d-flex justify-content-between">
-                <div>Length</div>
-                {{ sv_alignments(variant, case, "length") }}
-              </div>
-            </li>
-  	      <li class="list-group-item">
-            <div class="row d-flex justify-content-between">
-  	          <div>Type</div><div class="float-right">{{ variant.sub_category|upper }}</div>
-            </div>
-  	      </li>
-          {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
-            <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control" target="_blank">Submit to ClinVar</a>
-          {% endif %}
-          {% if variant.clinvar_clinsig%}
-            <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-default form-control">Modify clinvar submission</a>
-          {% endif %}
-          </ul>
-        </div> <!-- end of card body -->
-      </div> <!-- end of card -->
-    </div> <!-- end of col -->
-  </div> <!-- end of row -->
+            {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
+              <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control" target="_blank">Submit to ClinVar</a>
+            {% endif %}
+            {% if variant.clinvar_clinsig%}
+              <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-default form-control">Modify clinvar submission</a>
+            {% endif %}
+            </ul>
+          </div> <!-- end of card body -->
+        </div> <!-- end of card -->
+      </div> <!-- end of col -->
+    </div> <!-- end of row -->
 
   <div class="row">
     <div class="col-md-8">{{ gtcall_panel(variant) }}</div>
@@ -168,9 +167,7 @@
   </div>
 
   <div class="row">
-    <div class="col-md-4">
-    {{ frequencies(variant) }}
-    </div>
+    <div class="col-md-4">{{ frequencies(variant) }}</div>
     {% if config['LOQUSDB_SETTINGS'] %}
       <div class="col">{{ observations_panel(variant, observations, case) }}</div>
       <div class="col">{{ old_observations(variant) }}</div>
@@ -182,23 +179,25 @@
   </div>
 
   <div class="row">
-    <div class="col-md-12">
-      {{ overlapping_panel(variant, overlapping_vars, case, institute) }}
-    </div>
+    <div class="col-12">{{ overlapping_panel(variant, overlapping_vars, case, institute) }}</div>
   </div>
 
   <div class="row">
     <div class="col-12">
-      <div class="card">
-        <nav>
-          <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <a class="nav-item nav-link active" id="nav-genes-tab" data-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
-            <a class="nav-item nav-link" id="nav-transcripts-tab" data-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
+      <div class="card mt-3 panel-default">
+        <div class="panel-heading">
+          <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <a class="nav-item nav-link active" id="nav-genes-tab" data-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
+              <a class="nav-item nav-link" id="nav-transcripts-tab" data-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
+            </div>
+          </nav>
+        </div>
+        <div class="card-body">
+          <div class="tab-content mt-3" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-genes" role="tabpanel" aria-labelledby="nav-genes-tab">{{ genes_panel(variant) }}</div>
+            <div class="tab-pane fade" id="nav-transcripts" role="tabpanel" aria-labelledby="nav-transcripts-tab">{{ transcripts_panel(variant) }}</div>
           </div>
-        </nav>
-        <div class="tab-content mt-3" id="nav-tabContent">
-          <div class="tab-pane fade show active" id="nav-genes" role="tabpanel" aria-labelledby="nav-genes-tab">{{ genes_panel(variant) }}</div>
-          <div class="tab-pane fade" id="nav-transcripts" role="tabpanel" aria-labelledby="nav-transcripts-tab">{{ transcripts_panel(variant) }}</div>
         </div>
       </div>
     </div>
