@@ -1,47 +1,34 @@
 # -*- coding: utf-8 -*-
-import os
-import itertools
-import requests
 import datetime
-
+import itertools
 import logging
+import os
 
-from bs4 import BeautifulSoup
-from xlsxwriter import Workbook
-from flask import url_for, current_app
-from flask_mail import Message
 import query_phenomizer
+import requests
+from bs4 import BeautifulSoup
+from flask import current_app, url_for
 from flask_login import current_user
+from flask_mail import Message
+from xlsxwriter import Workbook
 
-from scout.constants import (
-    CASE_STATUSES,
-    PHENOTYPE_GROUPS,
-    SEX_MAP,
-    PHENOTYPE_MAP,
-    CANCER_PHENOTYPE_MAP,
-    VERBS_MAP,
-    MT_EXPORT_HEADER,
-)
+from scout.constants import (CANCER_PHENOTYPE_MAP, CASE_STATUSES,
+                             MT_EXPORT_HEADER, PHENOTYPE_GROUPS, PHENOTYPE_MAP,
+                             SEX_MAP, VERBS_MAP)
 from scout.constants.variant_tags import (
-    MANUAL_RANK_OPTIONS,
-    CANCER_TIER_OPTIONS,
-    DISMISS_VARIANT_OPTIONS,
-    GENETIC_MODELS,
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-)
+				CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS, CANCER_TIER_OPTIONS,
+				DISMISS_VARIANT_OPTIONS, GENETIC_MODELS, MANUAL_RANK_OPTIONS)
 from scout.export.variant import export_mt_variants
-from scout.server.utils import institute_and_case, user_institutes
-from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
-from scout.server.blueprints.variant.controllers import variant as variant_decorator
-from scout.parse.matchmaker import (
-    hpo_terms,
-    omim_terms,
-    genomic_features,
-    parse_matches,
-)
-from scout.utils.matchmaker import matchmaker_request
-from scout.server.blueprints.variant.utils import predictions
+from scout.parse.clinvar import (clinvar_submission_header,
+                                 clinvar_submission_lines)
+from scout.parse.matchmaker import (genomic_features, hpo_terms, omim_terms,
+                                    parse_matches)
 from scout.server.blueprints.genes.controllers import gene
+from scout.server.blueprints.variant.controllers import \
+				variant as variant_decorator
+from scout.server.blueprints.variant.utils import predictions
+from scout.server.utils import institute_and_case, user_institutes
+from scout.utils.matchmaker import matchmaker_request
 
 LOG = logging.getLogger(__name__)
 
@@ -173,13 +160,24 @@ def case(store, institute_obj, case_obj):
     for panel_info in case_obj.get("panels", []):
         if not panel_info.get("is_default"):
             continue
-        panel_obj = store.gene_panel(
-            panel_info["panel_name"], version=panel_info.get("version")
-        )
+        panel_name = panel_info["panel_name"]
+        panel_version = panel_info.get("version")
+        panel_obj = store.gene_panel(panel_name, version=panel_version)
+        if not panel_obj:
+            LOG.warning(
+                "Could not fetch gene panel %s, version %s", panel_name, panel_version
+            )
+            LOG.info("Try to fetch latest existing version")
+            panel_obj = store.gene_panel(panel_name)
+            if not panel_obj:
+                LOG.warning("Could not find any version of gene panel %s", panel_name)
+                continue
+            LOG.info("Using panel %s, version %s", panel_name, panel_obj["version"])
         distinct_genes.update([gene["hgnc_id"] for gene in panel_obj.get("genes", [])])
         full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
         case_obj["panel_names"].append(full_name)
     case_obj["default_genes"] = list(distinct_genes)
+
     for hpo_term in itertools.chain(
         case_obj.get("phenotype_groups", []), case_obj.get("phenotype_terms", [])
     ):
