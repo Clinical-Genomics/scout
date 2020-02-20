@@ -7,7 +7,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+
 ### Fixed
+- Case report when causative or pinned SVs have non null allele frequencies
+
 ### Changed
 
 ## [4.12.2]
