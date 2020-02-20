@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cancer variant view has cleaner table data entries for "N/A" data
 - Cancer variants show correct alt/ref reads mirroring alt frequency now
 - Always load all clinical STR variants even if a region load is attempted - index may be missing
+- Came case repetition in variant local observations
 
 
 ### Changed
