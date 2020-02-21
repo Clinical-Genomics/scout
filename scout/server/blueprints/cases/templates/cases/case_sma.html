@@ -24,10 +24,12 @@
       {{ institute.display_name }}
     </a>
   </li>
-  <li class="nav-item" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
-    <span class="navbar-text">{{ case.display_name }}</span>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
   </li>
-  <li class="nav-item ">
+  <li class="nav-item active">
     <span class="navbar-text">SMN CN</span>
   </li>
 {% endblock %}
