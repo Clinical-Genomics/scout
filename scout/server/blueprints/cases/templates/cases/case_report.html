@@ -987,7 +987,7 @@
               <th colspan=2>Frequencies</th>
             </thead>
             <tbody>
-              {% for freq_name, value in variant.frequencies %}
+              {% for freq_name, value, link in variant.frequencies %}
                 <tr>
                   <td>{{ freq_name }}</td>
                   <td>

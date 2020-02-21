@@ -585,7 +585,9 @@
           <a href="{{ gene.reactome_link }}" class="btn btn-outline-secondary" target="_blank">Reactome</a>
           <a href="{{ gene.expression_atlas_link }}" class="btn btn-outline-secondary" target="_blank">Expr. Atlas</a>
           <a href="{{ gene.clingen_link }}" class="btn btn-outline-secondary" target="_blank">ClinGen</a>
-          <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
+          {% if case.mt_bams or case.bam_files %}
+            <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
+          {% endif %}
           <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
           {% if variant.chromosome == 'MT' %}
             <a href="https://www.mitomap.org/foswiki/bin/view////Main/SearchAllele" target="_blank">MitoMap</a>

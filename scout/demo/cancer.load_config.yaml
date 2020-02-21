@@ -16,7 +16,7 @@ samples:
     mt_bam: scout/demo/reduced_mt.bam
     tmb: 7
     msi: 15
-    tumor_purity: 90/90
+    tumor_purity: 1
 
   - analysis_type: panel
     sample_id: 998-99

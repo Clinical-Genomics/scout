@@ -38,6 +38,11 @@ individual = dict(
     smn2delta78_cn = int,# CopyNumber
     smn_27134_cn = int, # CopyNumber
     predicted_ancestry=str,  # one of AFR AMR EAS EUR SAS UNKNOWN
+    tumor_type=str,
+    tmb=str,
+    msi=str,
+    tumor_purity=float,
+    tissue_type=str,
 )
 
 case = dict(

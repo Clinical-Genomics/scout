@@ -13,19 +13,26 @@
             <div class="row align-items-between align-items-center">
               <div class="col-10">
                 <i class="fa fa-check-circle-o"></i>
-		            {% if variant.category == "snv" %}
+		            {% if variant.category in ("snv", "cancer", "str") %}
                   <a href="{{ url_for('variant.variant',
                                       institute_id=variant.institute,
                                       case_name=case.display_name,
                                       variant_id=variant._id) }}">
                     {% set display_genes = [] %}
                     {% for gene in variant.genes %}
-                      {% if 'hgvs_identifier' in gene %}
+                      {% if gene.hgvs_identifier and gene.hgnc_symbol  %}
                         {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier) }}
-                      {% else %}
-                        {{ "" if display_genes.append(gene.hgnc_symbol) }}
+                      {% elif gene.hgnc_symbol %}
+                          {{ "" if display_genes.append(gene.hgnc_symbol) }}
+                      {% elif gene.hgvs_identifier and gene.hgnc_id %}
+                          {{ "" if display_genes.append( gene.hgnc_id|string + ' ' + gene.hgvs_identifier) }}
                       {% endif %}
                     {% endfor %}
+
+                    {% if not display_genes %}
+                        {{ "" if display_genes.append( variant.simple_id ) }}
+                    {% endif %}
+
                     {{ display_genes|join(", ") }}
 		             {% else %}
         		      <a href="{{ url_for('variant.sv_variant',
@@ -147,20 +154,28 @@
                 <div class="form-group row justify-content-between align-items-center">
                 <div class="ml-3">
                   <i class="fa fa-bookmark"></i>
-                  {% if variant.category == "snv" %}
+                  {% if variant.category in ("snv", "cancer", "str") %}
                     <a href="{{ url_for('variant.variant',
                                         institute_id=variant.institute,
                                         case_name=case.display_name,
                                         variant_id=variant._id) }}">
                       {% set display_genes = [] %}
                       {% for gene in variant.genes %}
-                        {% if 'hgvs_identifier' in gene %}
+                        {% if gene.hgvs_identifier and gene.hgnc_symbol %}
                           {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier) }}
-                        {% else %}
+                        {% elif gene.hgnc_symbol %}
                           {{ "" if display_genes.append(gene.hgnc_symbol) }}
+                        {% elif gene.hgvs_identifier and gene.hgnc_id %}
+                          {{ "" if display_genes.append( gene.hgnc_id|string + ' ' + gene.hgvs_identifier) }}
                         {% endif %}
                       {% endfor %}
+
+                      {% if not display_genes %}
+                          {{ "" if display_genes.append( variant.simple_id ) }}
+                      {% endif %}
+
                       {{ display_genes|join(", ") }}
+
                   {% else %}
                     <a href="{{ url_for('variant.sv_variant',
                                               institute_id=variant.institute,
