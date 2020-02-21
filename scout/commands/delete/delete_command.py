@@ -120,6 +120,8 @@ def case(institute, case_id, display_name):
                 "deleted with flag '-i/--institute'."
             )
             raise click.Abort()
+        case_obj = adapter.case(display_name=display_name, institute_id=institute)
+    else:
         case_obj = adapter.case(case_id=case_id)
 
     if not case_obj:
@@ -130,12 +132,11 @@ def case(institute, case_id, display_name):
     case = adapter.delete_case(case_id=case_obj["_id"])
 
     if case.deleted_count == 1:
-        adapter.delete_variants(case_id=case_id, variant_type="clinical")
-        adapter.delete_variants(case_id=case_id, variant_type="research")
+        adapter.delete_variants(case_id=case_obj["_id"], variant_type="clinical")
+        adapter.delete_variants(case_id=case_obj["_id"], variant_type="research")
     else:
         LOG.warning("Case does not exist in database")
         raise click.Abort()
-
 
 # @click.command('diseases', short_help='Display all diseases')
 # @click.pass_context
