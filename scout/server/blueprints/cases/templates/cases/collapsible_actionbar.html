@@ -71,11 +71,6 @@
               <a href="javascript:;" onclick="document.getElementById('coverage_html').submit();">
                 <i class="fa fa-link"></i></a>
             </form>
-            <form method="POST" id="coverage_pdf" target="_blank" action="{{ url_for('report.pdf', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
-              <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
-              <a href="javascript:;" onclick="document.getElementById('coverage_pdf').submit();">
-                <i class="fa fa-file-pdf-o"></i></a>
-            </form>
         </div>
       </div>
     {% endif %}
