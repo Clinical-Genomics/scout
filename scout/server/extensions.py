@@ -115,6 +115,12 @@ class LoqusDB:
         variant_call.extend(["variants", "--to-json", "--variant-id", loqus_id])
         # If sv we need some more info
         if variant_info.get("category", "snv") in ["sv"]:
+            sv_type = variant_info["variant_type"]
+            start = variant_info["pos"]
+            end = variant_info["end"]
+            # Insertions have same start and end positions
+            if sv_type == "INS":
+                end = start + variant_info["length"]
             variant_call.extend(
                 [
                     "-t",
@@ -122,13 +128,13 @@ class LoqusDB:
                     "-c",
                     variant_info["chrom"],
                     "-s",
-                    str(variant_info["pos"]),
+                    str(start),
                     "-e",
-                    str(variant_info["end"]),
+                    str(end),
                     "--end-chromosome",
                     variant_info["end_chrom"],
                     "--sv-type",
-                    variant_info["variant_type"],
+                    sv_type,
                 ]
             )
 
