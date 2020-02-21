@@ -283,7 +283,7 @@ def test_delete_case_wrong_id(empty_mock_app, case_obj):
     )
 
     ## THEN assert the correct information is communicated
-    assert "Case does not exist in database" in result.output
+    assert "Coudn't find any case in database matching the provided parameters" in result.output
     ## THEN assert the cli exits with error
     assert result.exit_code == 1
     ## THEN assert there is a case left
