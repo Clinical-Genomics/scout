@@ -53,10 +53,14 @@
       </div>
     </div>
     {% if case.multiqc %}
-      <a href="{{ url_for('cases.multiqc', institute_id=institute._id,
-                          case_name=case.display_name) }}" class="list-group-item list-group-item-action bg-dark text-white">
-          <span class="menu-collapsed">MultiQC</span>
-      </a>
+      <div href="#" class="bg-dark list-group-item text-white">
+        <div class="d-flex flex-row flex-fill bd-highlight">
+          <span class="menu-collapsed ml-2">MultiQC</span>
+          <a href="{{ url_for('cases.multiqc', institute_id=institute._id,
+                              case_name=case.display_name) }}" target="_blank">
+                              <i class="fa fa-link"></i></a>
+        </div>
+      </div>
     {% endif %}
     {% if config.SQLALCHEMY_DATABASE_URI %}
       <div href="#" class="bg-dark list-group-item text-white">
