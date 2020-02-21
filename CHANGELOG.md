@@ -4,23 +4,38 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-
 ## [x.x.x]
 
 ### Added
 ### Fixed
 ### Changed
 
+## [4.12.4]
+
+### Added
+### Fixed
+- Layout on SV page when local observations without cases are present
+### Changed
+
+## [4.12.3]
+
+### Fixed
+- Case report when causative or pinned SVs have non null allele frequencies
+
+## [4.12.2]
+
+### Fixed
+- SV variant links now take you to the SV variant page again
+- Cancer variant view has cleaner table data entries for "N/A" data
+- Pinned variant case level display hotfix for cancer and str - more on this later
+- Cancer variants show correct alt/ref reads mirroring alt frequency now
+- Always load all clinical STR variants even if a region load is attempted - index may be missing
+- Same case repetition in variant local observations
 
 ## [4.12.1]
 
-### Added
-
 ### Fixed
 - Bug in variant.gene when gene has no HGVS description
-- SV variant links now take you to the SV variant page again
-
-### Changed
 
 
 ## [4.12]
@@ -50,9 +65,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bug when multiple bam files sources with non-null values are available
 - Fix so that new cosmic identifier is also acceptable #1304
 
+
 ### Changed
 - Renamed `requests` file to `scout_requests`
 - Cancer variant view shows two, instead of four, decimals for allele and normal
+
 
 ## [4.11.1]
 
