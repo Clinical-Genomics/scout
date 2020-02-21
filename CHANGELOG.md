@@ -10,11 +10,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 ### Changed
 
+## [4.12.4]
+
+### Added
+### Fixed
+- Layout on SV page when local observations without cases are present
+### Changed
+
 ## [4.12.3]
 
 ### Fixed
 - Case report when causative or pinned SVs have non null allele frequencies
-- Layout on SV page when local observations without cases are present
 
 ## [4.12.2]
 
