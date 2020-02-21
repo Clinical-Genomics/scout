@@ -478,10 +478,11 @@ class CaseHandler(object):
 
         return self.case_collection.find({"individuals.disply_name": ind_id})
 
-    def delete_case(self, case_id):
+    def delete_case(self, case_id=None, institute_id=None, display_name=None):
         """Delete a single case from database
 
         Args:
+            institute_id(str)
             case_id(str)
 
         Returns:
@@ -491,7 +492,13 @@ class CaseHandler(object):
         if case_id:
             query["_id"] = case_id
             LOG.info("Deleting case %s", case_id)
-        
+        else:
+            if not (institute_id and display_name):
+                raise ValueError("Have to provide both institute_id and display_name")
+            LOG.info("Deleting case %s institute %s", display_name, institute_id)
+            query["owner"] = institute_id
+            query["display_name"] = display_name
+
         result = self.case_collection.delete_one(query)
         return result
 
