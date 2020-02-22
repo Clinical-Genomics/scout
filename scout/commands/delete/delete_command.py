@@ -125,7 +125,9 @@ def case(institute, case_id, display_name):
         case_obj = adapter.case(case_id=case_id)
 
     if not case_obj:
-        click.echo("Coudn't find any case in database matching the provided parameters.")
+        click.echo(
+            "Coudn't find any case in database matching the provided parameters."
+        )
         raise click.Abort()
 
     LOG.info("Running deleting case {0}".format(case_id))
