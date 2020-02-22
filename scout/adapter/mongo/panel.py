@@ -233,16 +233,16 @@ class PanelHandler:
             )
             query["version"] = version
             return self.panel_collection.find_one(query)
-        else:
-            LOG.info("Fetching gene panels %s from database", panel_id)
-            res = self.panel_collection.find(query).sort("version", -1)
 
-            for panel in res:
-                return panel
+        LOG.info("Fetching gene panels %s from database", panel_id)
+        res = self.panel_collection.find(query).sort("version", -1)
 
-            LOG.info("No gene panel found")
+        for panel in res:
+            return panel
 
-            return None
+        LOG.info("No gene panel found")
+
+        return None
 
     def gene_panels(self, panel_id=None, institute_id=None, version=None):
         """Return all gene panels
