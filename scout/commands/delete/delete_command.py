@@ -134,9 +134,7 @@ def case(institute, case_id, display_name):
     if case.deleted_count == 1:
         adapter.delete_variants(case_id=case_obj["_id"], variant_type="clinical")
         adapter.delete_variants(case_id=case_obj["_id"], variant_type="research")
-    else:
-        LOG.warning("Case does not exist in database")
-        raise click.Abort()
+
 
 # @click.command('diseases', short_help='Display all diseases')
 # @click.pass_context
