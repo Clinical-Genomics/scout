@@ -7,7 +7,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+
 ### Fixed
+- Deleting cases using display_name and institute not deleting its variants
+
 ### Changed
 
 ## [4.12.4]
