@@ -698,7 +698,7 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
         clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
-                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
+                hgnc_gene = store.hgnc_gene(int(hgnc_symbol), case_obj["genome_build"])
                 if hgnc_gene is None:
                     not_found_ids.append(hgnc_symbol)
                 else:
