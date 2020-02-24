@@ -254,7 +254,7 @@ def test_case_synopsis(app, institute_obj, case_obj):
         req_data = {"synopsis": "test synopsis"}
 
         # WHEN updating the synopsis of a case
-        resp = client.get(
+        resp = client.post(
             url_for(
                 "cases.case_synopsis",
                 institute_id=institute_obj["internal_id"],
@@ -358,7 +358,7 @@ def test_case_diagnosis(app, institute_obj, case_obj):
         req_data = {"omim_id": "OMIM:615349"}
 
         # When updating an OMIM diagnosis for a case
-        resp = client.get(
+        resp = client.post(
             url_for(
                 "cases.case_diagnosis",
                 institute_id=institute_obj["internal_id"],
