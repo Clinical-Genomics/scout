@@ -1,4 +1,4 @@
-// Check here for documentation : https://www.interactive-biosoftware.com/doc/alamut-visual/2.7/programmatic-access.html
+// Check here for documentation : https://www.interactive-biosoftware.com/doc/alamut-visual/2.8/programmatic-access.html
 
 function httpGetLoadBam(region, bamFile) {
 	var xmlHttp = null;
