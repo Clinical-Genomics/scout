@@ -34,39 +34,38 @@
 {% macro comments_panel(institute, case, current_user, comments, variant_id=None) %}
   <div class="card panel-default">
     <div class="panel-heading">Comments</div>
-    <div class="list-group" style="max-height:200px; overflow-y: scroll;">
-      {% for comment in comments %}
-        <a class="list-group-item">
-          <div class="row">
-            <div class="col-xs-12">{{ comment.content }}</div>
-          </div>
-          <div class="row">
-            <div class="d-flex justify-content-between align-items-center">
-              <form method="POST"
-                    action="{{ url_for('cases.events', institute_id=institute._id,
-                                       case_name=case.display_name,
-                                       event_id=comment._id) }}">
-                <small>
-                  <br>
-                  <strong>{{ comment.user_name }}</strong>
-                  on {{ comment.created_at.date() }}
-                  {% if comment.level == 'global' %}
-                    <span class="badge badge-info">GLOBAL</span>
-                  {% endif %}
-                  {% if comment.created_at < case.updated_at %}
-                    <span class="badge badge-warning">OLD</span>
-                  {% endif %}
-                  {% if comment.user_id == current_user.email %}
-                    <button class="btn btn-link btn-sm" type="submit"><i class="fa fa-remove"></i></button>
-                  {% endif %}
-                </small>
-              </form>
+    <div class="card-body">
+      <div class="list-group" style="max-height:200px; overflow-y: scroll;">
+        {% for comment in comments %}
+          <a class="list-group-item">
+            <div class="row">
+              <div class="col-xs-12">{{ comment.content }}</div>
             </div>
-          </div>
-        </a>
-      {% else %}
-        <a class="list-group-item">No comments yet</a>
-      {% endfor %}
+            <div class="row">
+              <div class="d-flex justify-content-between align-items-center">
+                <form method="POST" action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, event_id=comment._id) }}">
+                  <small>
+                    <br>
+                    <strong>{{ comment.user_name }}</strong>
+                    on {{ comment.created_at.date() }}
+                    {% if comment.level == 'global' %}
+                      <span class="badge badge-info">GLOBAL</span>
+                    {% endif %}
+                    {% if comment.created_at < case.updated_at %}
+                      <span class="badge badge-warning">OLD</span>
+                    {% endif %}
+                    {% if comment.user_id == current_user.email %}
+                      <button class="btn btn-link btn-sm" type="submit"><i class="fa fa-remove"></i></button>
+                    {% endif %}
+                  </small>
+                </form>
+              </div>
+            </div>
+          </a>
+        {% else %}
+          <a class="list-group-item">No comments yet</a>
+        {% endfor %}
+      </div>
     </div>
     <div class="card-footer">
       <form action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) }}" method="POST">
@@ -115,12 +114,16 @@
 {% macro pedigree_panel(case) %}
   <div class="card panel-default">
     <div class="panel-heading">Pedigree</div>
-    <div class="card-body table-responsive">
+    <div class="card-body">
+      <div class="table-responsive">
       {% if case.individuals|length == 1 %}
         <p>Single sample case: {{ case.individuals.0.display_name }}</p>
       {% else %}
+        <div class="d-flex justify-content-center align-items-center" >
         {{ case.madeline_info|safe }}
+        </div>
       {% endif %}
+      </div>
     </div>
   </div>
 {% endmacro %}

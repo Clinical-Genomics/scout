@@ -130,7 +130,11 @@
               <td>{{ 'Yes' if gene.reduced_penetrance }}</td>
               <td>{{ 'Yes' if gene.mosaicism }}</td>
               <td>{{ gene.database_entry_version }}</td>
-              <td>{{ (gene.inheritance_models|list + gene.custom_inheritance_models|list)|join(', ') }}</td>
+              {% if gene.custom_inheritance_models|list != [''] %}
+                <td>{{ (gene.inheritance_models|list + gene.custom_inheritance_models|list)|join(', ') }}</td>
+              {% else %}
+                <td>{{ gene.inheritance_models|list }}</td>
+              {% endif %}
               <td>{{ gene.comment }}</td>
               <td>
                 {% if not panel.is_archived %}
@@ -157,10 +161,10 @@
         <form action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
           <div class="row search_form mt-3">
             <div class="input-group">
-              <div class="col-md-6 col-xs-6"">
+              <div class="col-md-6 col-sm-6"">
                 <input name="hgnc_id" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for gene...">
               </div>
-              <div class="col-xs-4">
+              <div class="col-sm-4">
                 <button type="submit" name="action" value="add" class="btn btn-outline-secondary form-control">
                   Add gene
                 </button>
@@ -190,11 +194,11 @@
             {{ gene.symbol }}
           </span>
           {% if gene.action == 'add' %}
-            <span class="badge badge-primary badge-pill float-right">{{ gene.action }}</span>
+            <span class="badge badge-primary badge-pill float-right">{{ gene.action-}}ed</span>
           {% elif gene.action == 'delete' %}
-            <span class="badge badge-danger badge-pill float-right">{{ gene.action }}</span>
+            <span class="badge badge-danger badge-pill float-right">{{ gene.action-}}ed</span>
           {% else %}
-            <span class="badge badge-secondary badge-pill float-right">{{ gene.action }}</span>
+            <span class="badge badge-secondary badge-pill float-right">{{ gene.action-}}ed</span>
           {% endif %}
         </li>
       {% else %}
@@ -206,11 +210,14 @@
         <form action="{{ url_for('panels.panel_update', panel_id=panel._id) }}" method="POST">
           <div class="form-group">
             <div class="row">
-              <div class="form-group col-xs-3">
+              <div class="form-group col-sm-3">
                 <label class="col-form-label">Version</label>
               </div>
               <div class="form-group col-sm-3 text-center">
                 <input class="form-control" name="version" type="number" min="{{panel.version}}" value="{{ panel.version + 1 }}">
+              </div>
+              <div class="form-group col-sm-6 text-center">
+                <button type="submit" class="btn btn-warning form-control" name="cancel_pending" value="cancel_pending">Cancel pending actions</button>
               </div>
             </div>
           </div>

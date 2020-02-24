@@ -8,7 +8,7 @@ from click import progressbar
 from scout.build import build_hgnc_gene
 from scout.utils.link import link_genes
 
-from scout.utils.requests import (
+from scout.utils.scout_requests import (
     fetch_ensembl_genes,
     fetch_hgnc,
     fetch_mim_files,
@@ -37,9 +37,9 @@ def load_hgnc(
     omim_api_key="",
 ):
     """Load Genes and transcripts into the database
-              
+
     If no resources are provided the correct ones will be fetched.
-    
+
     Args:
         adapter(scout.adapter.MongoAdapter)
         genes(dict): If genes are already parsed
@@ -91,8 +91,8 @@ def load_hgnc_genes(
     omim_api_key="",
 ):
     """Load genes into the database
-        
-    link_genes will collect information from all the different sources and 
+
+    link_genes will collect information from all the different sources and
     merge it into a dictionary with hgnc_id as key and gene information as values.
 
     Args:

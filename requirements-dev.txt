@@ -17,7 +17,7 @@ invoke
 
 # docs
 mkdocs
-mkdocs-material
+mkdocs-material==4.6.1
 
 # PEP8 Compliance
 pre-commit
