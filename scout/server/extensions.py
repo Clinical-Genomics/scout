@@ -118,9 +118,11 @@ class LoqusDB:
             sv_type = variant_info["variant_type"]
             start = variant_info["pos"]
             end = variant_info["end"]
+            length = variant_info["length"]
             # Insertions have same start and end positions
-            if sv_type == "INS":
-                end = start + variant_info["length"]
+            if sv_type == "INS" and length > 0:
+                end = start + length
+
             variant_call.extend(
                 [
                     "-t",
