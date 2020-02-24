@@ -53,6 +53,8 @@ class GeneHandler(object):
             Returns:
                 gene_obj(HgncGene)
         """
+        if build:
+            build = str(build)
         if not build in ["37", "38"]:
             build = "37"
         query = {}
