@@ -7,8 +7,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+
 ### Fixed
+- Bug when adding a new gene to a panel
+
 ### Changed
+
 
 ## [4.12.4]
 
