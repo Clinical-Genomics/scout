@@ -118,17 +118,17 @@
       </table>
     </div>
     <div class="card-footer">
-    {% if observations['cases'] %}
-        <strong>Cases</strong>
-        {% for data in observations['cases'] %}
-          {% if variant %}
-            <a class="ml-3" href="{{ url_for('variant.variant', institute_id=case.owner, case_name=case.display_name, variant_id=variant._id) }}">{{ case.display_name }}</a>
-          {% else %}
-            <span class="text-muted ml-3">{{ case.display_name }}</span>
-          {% endif %}
-        {% endfor %}
-      </div>
-    {% endif %}
+      <strong>Cases</strong>
+        {% if observations['cases'] %}
+          {% for data in observations['cases'] %}
+            {% if data.variant %}
+              <a class="ml-3" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+            {% else %}
+              <span class="text-muted ml-3">{{ data.case.display_name }}</span>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+    </div>
   </div>
 {% endmacro %}
 
