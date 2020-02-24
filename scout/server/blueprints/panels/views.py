@@ -205,9 +205,10 @@ def gene_edit(panel_id, hgnc_id):
     if panel_obj.get('genes'):
         genes_dict = { gene_obj["symbol"]:gene_obj for gene_obj in panel_obj['genes'] }
         gene_obj = genes_dict.get(hgnc_gene['hgnc_symbol'])
-        for transcript in gene_obj.get("disease_associated_transcripts", []):
-            if (transcript,transcript) not in transcript_choices:
-                transcript_choices.append((transcript,transcript))
+        if gene_obj:
+            for transcript in gene_obj.get("disease_associated_transcripts", []):
+                if (transcript,transcript) not in transcript_choices:
+                    transcript_choices.append((transcript,transcript))
 
     form.disease_associated_transcripts.choices = transcript_choices
     if form.validate_on_submit():
