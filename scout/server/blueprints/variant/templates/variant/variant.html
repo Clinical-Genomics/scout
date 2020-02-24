@@ -585,9 +585,15 @@
           <a href="{{ gene.reactome_link }}" class="btn btn-outline-secondary" target="_blank">Reactome</a>
           <a href="{{ gene.expression_atlas_link }}" class="btn btn-outline-secondary" target="_blank">Expr. Atlas</a>
           <a href="{{ gene.clingen_link }}" class="btn btn-outline-secondary" target="_blank">ClinGen</a>
+
+
           <form>
             <input type="button" class="btn btn-outline-secondary" value='Alamut' onclick='httpGetLoadBam("MLH1","http://rd-connect.interactive-biosoftware.com/BAM/example.bam");' />
           </form>
+
+
+
+
           <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
           {% if variant.chromosome == 'MT' %}
             <a href="https://www.mitomap.org/foswiki/bin/view////Main/SearchAllele" target="_blank">MitoMap</a>
