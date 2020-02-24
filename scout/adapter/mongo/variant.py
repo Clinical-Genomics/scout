@@ -40,12 +40,15 @@ class VariantHandler(VariantLoader):
         Args:
             variant_obj(dict): A variant from the database
             gene_panels(list(dict)): List of panels from database
-            build(str): chromosome build "37" or "38"
+            build(str): chromosome build 37 or 38
         """
         gene_panels = gene_panels or []
 
         # Add a variable that checks if there are any refseq transcripts
         variant_obj["has_refseq"] = False
+
+        if build:
+            build=str(build)
 
         # We need to check if there are any additional information in the gene panels
 
@@ -268,9 +271,10 @@ class VariantHandler(VariantLoader):
 
         if variant_obj:
             if case_obj:
-                variant_obj = self.add_gene_info(variant_obj, gene_panels, build=case_obj["genome_build"])
+                variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels,
+                    build=case_obj["genome_build"])
             else:
-                variant_obj = self.add_gene_info(variant_obj, gene_panels)
+                variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels)
 
             if variant_obj["chromosome"] in ["X", "Y"]:
                 ## TODO add the build here
@@ -590,7 +594,7 @@ class VariantHandler(VariantLoader):
         variants = {}
         case_obj = self.case(case_id=case_id) # case exists since it's used in the query above
         for var in self.variant_collection.find(query):
-            variants[var["variant_id"]] = self.add_gene_info(var, case_obj["genome_build"])
+            variants[var["variant_id"]] = self.add_gene_info(variant_obj=var, build=case_obj["genome_build"])
 
         # Collect all variant comments from the case
         event_query = {

@@ -48,6 +48,7 @@ class GeneHandler(object):
 
             Args:
                 hgnc_identifier(int)
+                build(str)
 
             Returns:
                 gene_obj(HgncGene)
