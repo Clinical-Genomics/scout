@@ -120,6 +120,8 @@ def build_case(case_data, adapter):
     if case_data.get('assignee'):
         case_obj['assignees'] = [case_data['assignee']]
 
+    case_obj['smn_tsv'] = case_data.get('smn_tsv')
+
     # Individuals
     ind_objs = []
     try:
@@ -219,7 +221,6 @@ def build_case(case_data, adapter):
     case_obj['madeline_info'] = case_data.get('madeline_info')
     case_obj['chromograph_image_files'] = case_data.get('chromograph_image_files')
     case_obj['chromograph_prefixes'] = case_data.get('chromograph_prefixes')
-    case_obj['smn_tsv'] = case_data.get('smn_tsv')
 
     if 'multiqc' in case_data:
         case_obj['multiqc'] = case_data.get('multiqc')

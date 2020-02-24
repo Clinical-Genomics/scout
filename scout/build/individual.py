@@ -38,7 +38,6 @@ def build_individual(ind):
             upd_regions_bed = str, # Path to a UPD regions bed marking UPD calls
             upd_sites_bed = str, # Path to a UPD sites bed, showing UPD info for vars
             vcf2cytosure = str, # Path to CGH file
-            smn_tsv = str, # path to an SMN TSV file
             is_sma = boolean,
             is_sma_carrier = boolean,
             smn1_cn = int,
@@ -124,7 +123,6 @@ def build_individual(ind):
     ind_obj['tissue_type'] = ind.get('tissue_type', 'unknown')
 
     # SMA
-    ind_obj['smn_tsv'] =ind.get('smn_tsv', None)
     ind_obj['is_sma'] = ind.get('is_sma',None)
     ind_obj['is_sma_carrier'] = ind.get('is_sma_carrier',None)
     ind_obj['smn1_cn'] = ind.get('smn1_cn',None)

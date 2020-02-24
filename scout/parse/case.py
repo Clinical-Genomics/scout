@@ -125,7 +125,9 @@ def parse_case_data(
     config_data["vcf_str"] = vcf_str if vcf_str else config_data.get("vcf_str")
     config_data["smn_tsv"] = smn_tsv if smn_tsv else config_data.get("smn_tsv")
 
+    LOG.DEBUG("Checking for SMN TSV..")
     if config_data["smn_tsv"]:
+        LOG.info("Adding SMN info from {}.".format(config_data["smn_tsv"]))
         add_smn_info(config_data)
 
     config_data["vcf_cancer"] = (
@@ -160,6 +162,7 @@ def add_smn_info(config_data):
     """
 
     if not config_data.get("smn_tsv"):
+        LOG.warning("No smn_tsv though add_smn_info called. This is odd.")
         return
 
     file_handle = open(config_data["smn_tsv"], "r")
@@ -349,12 +352,13 @@ def parse_individual(sample):
     # Path to downloadable vcf2cytosure file
     ind_info["vcf2cytosure"] = sample.get("vcf2cytosure")
 
-    ind_info["is_sma"] = sample.get("is_sma")
-    ind_info["is_sma_carrier"] = sample.get("is_sma_carrier")
-    ind_info["smn1_cn"] = sample.get("smn1_cn")
-    ind_info["smn2_cn"] = sample.get("smn2_cn")
-    ind_info["smn2delta78_cn"] = sample.get("smn2delta78_cn")
-    ind_info["smn_27134_cn"] = sample.get("smn_27134_cn")
+    # load sma file if it is not done at this point!
+    ind_info["is_sma"] = sample.get("is_sma", None)
+    ind_info["is_sma_carrier"] = sample.get("is_sma_carrier", None)
+    ind_info["smn1_cn"] = sample.get("smn1_cn", None)
+    ind_info["smn2_cn"] = sample.get("smn2_cn", None)
+    ind_info["smn2delta78_cn"] = sample.get("smn2delta78_cn", None)
+    ind_info["smn_27134_cn"] = sample.get("smn_27134_cn", None)
 
     ind_info["capture_kits"] = (
         [sample.get("capture_kit")] if "capture_kit" in sample else []
@@ -428,6 +432,12 @@ def parse_case(config):
         raise ConfigError("A case has to have a 'family'")
 
     individuals = parse_individuals(config["samples"])
+
+    LOG.DEBUG("Checking for SMN TSV..")
+    if config_data["smn_tsv"]:
+        LOG.info("Adding SMN info from {}.".format(config_data["smn_tsv"]))
+        add_smn_info(config_data)
+
     case_data = {
         "owner": config["owner"],
         "collaborators": [config["owner"]],
