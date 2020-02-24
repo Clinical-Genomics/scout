@@ -572,7 +572,7 @@
         External links: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
       </div>
       <div class="panel-body">
-        <div class="btn-group-justified">
+        <div class="d-flex align-items-start">
           <a href="{{ gene.ensembl_link }}" class="btn btn-outline-secondary" target="_blank">Ensembl</a>
           <a href="{{ gene.hpa_link }}" class="btn btn-outline-secondary" target="_blank">HPA</a>
           <a href="{{ gene.string_link }}" class="btn btn-outline-secondary" target="_blank">STRING</a>
@@ -585,28 +585,26 @@
           <a href="{{ gene.reactome_link }}" class="btn btn-outline-secondary" target="_blank">Reactome</a>
           <a href="{{ gene.expression_atlas_link }}" class="btn btn-outline-secondary" target="_blank">Expr. Atlas</a>
           <a href="{{ gene.clingen_link }}" class="btn btn-outline-secondary" target="_blank">ClinGen</a>
-          {% if case.mt_bams or case.bam_files %}
-            <form>
-              <input type="button" class="btn btn-outline-secondary" value='Alamut' onclick='httpGetLoadBam("MLH1","http://rd-connect.interactive-biosoftware.com/BAM/example.bam");' />
-            </form>
-          {% endif %}
+          <form>
+            <input type="button" class="btn btn-outline-secondary" value='Alamut' onclick='httpGetLoadBam("MLH1","http://rd-connect.interactive-biosoftware.com/BAM/example.bam");' />
+          </form>
           <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
           {% if variant.chromosome == 'MT' %}
             <a href="https://www.mitomap.org/foswiki/bin/view////Main/SearchAllele" target="_blank">MitoMap</a>
           {% endif %}
+          <div>
+            <form action="http://marrvel.org/search" method="POST" target="_blank">
+              <button type="submit" class="btn btn-outline-secondary">MARRVEL</button>
+              <input type="hidden" name="variantGeneId" value="{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{ variant.alternative }}">
+              <input type="hidden" name="inGeneSymbol" value="{{ gene.common.hgnc_symbol if gene.common }}">
+              <input type="hidden" name="OMIMdbCheck" value="on">
+              <input type="hidden" name="ExACdbCheck" value="on">
+              <input type="hidden" name="Geno2MPdbCheck" value="on">
+              <input type="hidden" name="DGVdbCheck" value="on">
+              <input type="hidden" name="DECIPHERdbCheck" value="on">
+            </form>
+          </div>
         </div>
-      </div>
-      <div class="panel-body">
-        <form action="http://marrvel.org/search" method="POST" target="_blank">
-          <button type="submit" class="btn btn-outline-secondary">MARRVEL</button>
-          <input type="hidden" name="variantGeneId" value="{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{ variant.alternative }}">
-          <input type="hidden" name="inGeneSymbol" value="{{ gene.common.hgnc_symbol if gene.common }}">
-          <input type="hidden" name="OMIMdbCheck" value="on">
-          <input type="hidden" name="ExACdbCheck" value="on">
-          <input type="hidden" name="Geno2MPdbCheck" value="on">
-          <input type="hidden" name="DGVdbCheck" value="on">
-          <input type="hidden" name="DECIPHERdbCheck" value="on">
-        </form>
       </div>
     {% endfor %}
   </div>
