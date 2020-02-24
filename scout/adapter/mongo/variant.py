@@ -46,10 +46,6 @@ class VariantHandler(VariantLoader):
 
         # Add a variable that checks if there are any refseq transcripts
         variant_obj["has_refseq"] = False
-
-        if build:
-            build=str(build)
-
         # We need to check if there are any additional information in the gene panels
 
         # extra_info will hold information from gene panels
