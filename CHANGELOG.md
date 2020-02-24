@@ -9,9 +9,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 ### Fixed
+- Bug when adding a new gene to a panel
 - Deleting cases using display_name and institute not deleting its variants
 
 ### Changed
+
 
 ## [4.12.4]
 
