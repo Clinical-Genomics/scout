@@ -589,7 +589,7 @@
           {% if case.mt_bams or case.bam_files %}
             {% set alamut_position = [ "GRCh38:" if case.genome_build == 38 ,  variant.chromosome, ":", variant.position, variant.reference, ">", variant.alternative]  %}
             <form>
-            {% if variant.chromosome == "MT" %}
+            {% if variant.chromosome == "MT" and case.mt_bams %}
               <input type="button" class="btn btn-outline-secondary" value='Alamut' onclick='httpGetLoadBam({{ alamut_position|join() }} ,
                 {{ case.mt_bams[0] }});' />
             {% elif case.bam_files %} <!-- not a MT variant and bam file available -->
