@@ -53,10 +53,14 @@
       </div>
     </div>
     {% if case.multiqc %}
-      <a href="{{ url_for('cases.multiqc', institute_id=institute._id,
-                          case_name=case.display_name) }}" class="list-group-item list-group-item-action bg-dark text-white">
-          <span class="menu-collapsed">MultiQC</span>
-      </a>
+      <div href="#" class="bg-dark list-group-item text-white">
+        <div class="d-flex flex-row flex-fill bd-highlight">
+          <span class="menu-collapsed ml-2">MultiQC</span>
+          <a href="{{ url_for('cases.multiqc', institute_id=institute._id,
+                              case_name=case.display_name) }}" target="_blank">
+                              <i class="fa fa-link"></i></a>
+        </div>
+      </div>
     {% endif %}
     {% if config.SQLALCHEMY_DATABASE_URI %}
       <div href="#" class="bg-dark list-group-item text-white">
@@ -64,13 +68,8 @@
           <span class="menu-collapsed ml-2">Coverage</span>
             <form method="POST" id="coverage_html" target="_blank" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
               <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
-              <a href="javascript:;" onclick="document.getElementById('coverage_html').submit();" target="_blank">
+              <a href="javascript:;" onclick="document.getElementById('coverage_html').submit();">
                 <i class="fa fa-link"></i></a>
-            </form>
-            <form method="POST" id="coverage_pdf" target="_blank" action="{{ url_for('report.pdf', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
-              <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
-              <a href="javascript:;" onclick="document.getElementById('coverage_pdf').submit();" target="_blank">
-                <i class="fa fa-file-pdf-o"></i></a>
             </form>
         </div>
       </div>
@@ -97,6 +96,16 @@
           </div>
         {% endif %}
       {% endfor %}
+    {% elif case.delivery_report %}
+      <div href="#" class="bg-dark list-group-item text-white">
+        <div class="d-flex flex-row flex-fill bd-highlight"></span>
+          <span class="menu-collapsed ml-2">Delivery ({{case.analysis_date.date()}})
+            <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                              case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
+            <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                              case_name=case.display_name, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
+        </div>
+      </div>
     {% endif %}
 </div>
 {% endmacro %}

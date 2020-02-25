@@ -7,9 +7,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+- ClinVar SNVs track in IGV
 
 ### Fixed
 - Bug when adding a new gene to a panel
+- Restored missing recent delivery reports
+- Fixed style and links to other reports in case side panel
 
 ### Changed
 
