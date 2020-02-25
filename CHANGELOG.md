@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Bug when adding a new gene to a panel
+- Restored missing recent delivery reports
+- Fixed style and links to other reports in case side panel
 - Deleting cases using display_name and institute not deleting its variants
 
 ### Changed
