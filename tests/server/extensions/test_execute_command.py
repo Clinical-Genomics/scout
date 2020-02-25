@@ -1,4 +1,5 @@
 """Tests for execute commands function"""
+import os
 import subprocess
 
 import pytest
