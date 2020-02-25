@@ -61,14 +61,15 @@ class LoqusDB:
         )
         LOG.info("Use loqusdb: %s", self.loqusdb_binary)
         self.loqusdb_config = app.config["LOQUSDB_SETTINGS"].get("config_path")
-        if self.loqusdb_config:
-            LOG.info("Use loqusdb config file %s", self.loqusdb_config)
 
         self.base_call = [self.loqusdb_binary]
         if self.loqusdb_config:
+            LOG.info("Use loqusdb config file %s", self.loqusdb_config)
             self.base_call.extend(["--config", self.loqusdb_config])
 
-        self.version = self.get_version()
+        self.version = app.config["LOQUSDB_SETTINGS"].get("version")
+        if not self.version:
+            self.version = self.get_version()
 
     @staticmethod
     def set_coordinates(variant_info):
@@ -94,17 +95,19 @@ class LoqusDB:
             LOG.info("Updating length to %s", end)
         variant_info["end"] = end
 
-    def _fetch_variant(self, variant_info):
-        """Query loqusdb for variant information
+    def get_variant(self, variant_info):
+        """Return information for a variant from loqusdb
+
+        SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
+        with coordinates.
 
         Args:
-            variant_info(dict): The variant id in loqusdb format
+            variant_info(dict)
 
         Returns:
-            res
+            loqus_variant(dict)
         """
         loqus_id = variant_info["_id"]
-        res = {}
         variant_call = copy.deepcopy(self.base_call)
         variant_call.extend(["variants", "--to-json", "--variant-id", loqus_id])
         # If sv we need some more info
@@ -138,40 +141,17 @@ class LoqusDB:
             LOG.warning("Something went wrong with loqus")
             raise err
 
-        if not output:
-            return res
-
-        res = json.loads(output)
+        res = {}
+        if output:
+            res = json.loads(output)
 
         if self.version < 2.5:
-            res["total"] = self._case_count()
+            res["total"] = self.case_count()
 
         return res
 
-    def get_variant(self, variant_info):
-        """Return information for a variant from loqusdb
-
-
-        Args:
-            variant_info(dict)
-
-        Returns:
-            loqus_variant(dict)
-        """
-        loqus_variant = self._fetch_variant(variant_info)
-
-        return loqus_variant
-
     def case_count(self):
         """Returns number of cases in loqus instance
-
-        Returns:
-            nr_cases(int)
-        """
-        return self._case_count()
-
-    def _case_count(self):
-        """Return number of cases that the observation is based on
 
         Returns:
             nr_cases(int)
