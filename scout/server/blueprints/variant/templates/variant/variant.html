@@ -592,10 +592,10 @@
             <form>
             {% if variant.chromosome == "MT" and case.mt_bams %}
               <input type="button" class="btn btn-outline-secondary" value='Alamut' onclick='httpGetLoadBam({{ alamut_position|join() }} ,
-                {{ case.mt_bams[0] }});' />
+                {{url_for("alignviewers.unindexed_remote_static", file=case.mt_bams[0])}} );' />
             {% elif case.bam_files %} <!-- not a MT variant and bam file available -->
             <input type="button" class="btn btn-outline-secondary" value='Alamut' onclick='httpGetLoadBam({{ alamut_position|join() }} ,
-              {{ case.bam_files[0] }});' />
+              {{url_for("alignviewers.unindexed_remote_static", file=case.mt_bams[0])}} );' />
             {% endif %}
             </form>
           {% endif %}
