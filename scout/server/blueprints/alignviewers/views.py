@@ -112,7 +112,7 @@ def igv():
     gene_track_indexURL = ""
     clinvar_snvs_url = ""
     clinvar_cnvs_url = ""
-    clinvar_track_format = "bigBed"
+    clinvar_track_format = "bigbed"
 
     if chromosome_build in ["GRCh38", "38"] or chrom == "M":
         fastaURL = (
