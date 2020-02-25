@@ -133,9 +133,8 @@ def case(institute, case_id, display_name):
     LOG.info("Running deleting case {0}".format(case_id))
     case = adapter.delete_case(case_id=case_obj["_id"])
 
-    if case.deleted_count == 1:
-        adapter.delete_variants(case_id=case_obj["_id"], variant_type="clinical")
-        adapter.delete_variants(case_id=case_obj["_id"], variant_type="research")
+    adapter.delete_variants(case_id=case_obj["_id"], variant_type="clinical")
+    adapter.delete_variants(case_id=case_obj["_id"], variant_type="research")
 
 
 # @click.command('diseases', short_help='Display all diseases')
