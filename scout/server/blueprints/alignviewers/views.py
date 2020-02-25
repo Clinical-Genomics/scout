@@ -154,7 +154,7 @@ def igv():
 
     display_obj["clinvar_snvs"] = {
         "name": "ClinVar",
-        "type": "bigBed",
+        "type": "annotation",
         "format": clinvar_track_format,
         "sourceType": "file",
         "url": clinvar_snvs_url,
@@ -165,7 +165,7 @@ def igv():
 
     display_obj["clinvar_cnvs"] = {
         "name": "ClinVar CNVs",
-        "type": "bigBed",
+        "type": "annotation",
         "format": clinvar_track_format,
         "sourceType": "file",
         "url": clinvar_cnvs_url,
