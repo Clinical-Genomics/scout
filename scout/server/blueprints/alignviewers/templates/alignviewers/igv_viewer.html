@@ -69,6 +69,16 @@
                           order: Number.MIN_VALUE,
                           visibilityWindow: 300000000
                       },
+                      {
+                          name: "{{ clinvar_cnvs.name }}",
+                          type: "{{ clinvar_cnvs.type }}",
+                          format: "{{ clinvar_cnvs.format }}",
+                          sourceType: "{{ clinvar_cnvs.sourceType }}",
+                          url: "{{ clinvar_cnvs.url|replace('%2F','/') }}",
+                          displayMode: "{{ clinvar_cnvs.displayMode }}",
+                          order: Number.MIN_VALUE,
+                          visibilityWindow: 300000000
+                      },
                       {% for wtrack in rhocall_wig_tracks %}
                       {
                         type: "wig",

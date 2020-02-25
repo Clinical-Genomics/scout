@@ -111,6 +111,7 @@ def igv():
     gene_track_URL = ""
     gene_track_indexURL = ""
     clinvar_snvs_url = ""
+    clinvar_cnvs_url = ""
     clinvar_track_format = "bigBed"
 
     if chromosome_build in ["GRCh38", "38"] or chrom == "M":
@@ -123,6 +124,7 @@ def igv():
         gene_track_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz"
         gene_track_indexURL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi"
         clinvar_snvs_url = "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarMain.bb"
+        clinvar_cnvs_url = "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarCnv.bb "
 
     else:
         fastaURL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta"
@@ -132,6 +134,7 @@ def igv():
         gene_track_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz"
         gene_track_indexURL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi"
         clinvar_snvs_url = "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarMain.bb"
+        clinvar_cnvs_url = "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarCnv.bb"
 
     display_obj["reference_track"] = {
         "fastaURL": fastaURL,
@@ -157,6 +160,16 @@ def igv():
         "url": clinvar_snvs_url,
         "displayMode": "COLLAPSED",
     }
+
+    display_obj["clinvar_cnvs"] = {
+        "name": "Clinvar CNVs",
+        "type": "annotation",
+        "format": clinvar_track_format,
+        "sourceType": "file",
+        "url": clinvar_cnvs_url,
+        "displayMode": "COLLAPSED",
+    }
+    
     # Init upcoming igv-tracks
     sample_tracks = []
     upd_regions_bed_tracks = []
