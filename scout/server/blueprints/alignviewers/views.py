@@ -153,23 +153,25 @@ def igv():
     }
 
     display_obj["clinvar_snvs"] = {
-        "name": "Clinvar SNVs",
+        "name": "ClinVar",
         "type": "annotation",
         "format": clinvar_track_format,
         "sourceType": "file",
         "url": clinvar_snvs_url,
         "displayMode": "COLLAPSED",
+        "height": 150,
     }
 
     display_obj["clinvar_cnvs"] = {
-        "name": "Clinvar CNVs",
+        "name": "ClinVar CNVs",
         "type": "annotation",
         "format": clinvar_track_format,
         "sourceType": "file",
         "url": clinvar_cnvs_url,
         "displayMode": "COLLAPSED",
+        "height": 150,
     }
-    
+
     # Init upcoming igv-tracks
     sample_tracks = []
     upd_regions_bed_tracks = []
