@@ -5,6 +5,8 @@ import pytest
 
 from scout.server.extensions.loqus_extension import execute_command
 
+TRAVIS = os.getenv("TRAVIS")
+
 
 def test_run_execute_command():
     """Test run echo with execute command"""
@@ -21,8 +23,11 @@ def test_run_failing_command():
     """Test run a failing command with execute command"""
     # GIVEN a command that will fail when run in the shell
     cmd = ["cd", "nonexistingdirectory"]
+    exception = subprocess.CalledProcessError
+    if TRAVIS:
+        exception = FileNotFoundError
     # WHEN running it with execute command
-    with pytest.raises(subprocess.CalledProcessError):
+    with pytest.raises(exception):
         # THEN assert that an exception is raised
         execute_command(cmd)
 
