@@ -158,7 +158,7 @@ def igv():
         "format": clinvar_track_format,
         "sourceType": "file",
         "url": clinvar_snvs_url,
-        "displayMode": "COLLAPSED",
+        "displayMode": "EXPANDED",
         "height": 150,
     }
 
@@ -168,7 +168,7 @@ def igv():
         "format": clinvar_track_format,
         "sourceType": "file",
         "url": clinvar_cnvs_url,
-        "displayMode": "COLLAPSED",
+        "displayMode": "EXPANDED",
         "height": 150,
     }
 
