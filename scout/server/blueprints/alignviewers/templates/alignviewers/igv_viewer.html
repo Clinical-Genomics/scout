@@ -49,17 +49,6 @@
                     locus: "{{locus}}",
                     tracks: [
                       {
-                            name: "{{ genes_track.name }}",
-                            type: "{{ genes_track.type }}",
-                            format: "{{ genes_track.format }}",
-                            sourceType: "{{ genes_track.sourceType }}",
-                            url: "{{ genes_track.url|replace('%2F','/') }}",
-                            indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
-                            displayMode: "{{ genes_track.displayMode }}",
-                            order: Number.MIN_VALUE,
-                            visibilityWindow: 300000000,
-                      },
-                      {
                           name: "{{ clinvar_snvs.name }}",
                           type: "{{ clinvar_snvs.type }}",
                           format: "{{ clinvar_snvs.format }}",
@@ -78,6 +67,17 @@
                           displayMode: "{{ clinvar_cnvs.displayMode }}",
                           order: Number.MIN_VALUE,
                           height: "{{clinvar_cnvs.height}}"
+                      },
+                      {
+                            name: "{{ genes_track.name }}",
+                            type: "{{ genes_track.type }}",
+                            format: "{{ genes_track.format }}",
+                            sourceType: "{{ genes_track.sourceType }}",
+                            url: "{{ genes_track.url|replace('%2F','/') }}",
+                            indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
+                            displayMode: "{{ genes_track.displayMode }}",
+                            order: Number.MIN_VALUE,
+                            visibilityWindow: 300000000,
                       },
                       {% for wtrack in rhocall_wig_tracks %}
                       {
