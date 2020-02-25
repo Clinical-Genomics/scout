@@ -57,7 +57,7 @@
                             indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
                             displayMode: "{{ genes_track.displayMode }}",
                             order: Number.MIN_VALUE,
-                            visibilityWindow: 300000000
+                            visibilityWindow: 300000000,
                       },
                       {
                           name: "{{ clinvar_snvs.name }}",
@@ -67,7 +67,7 @@
                           url: "{{ clinvar_snvs.url|replace('%2F','/') }}",
                           displayMode: "{{ clinvar_snvs.displayMode }}",
                           order: Number.MIN_VALUE,
-                          visibilityWindow: 300000000
+                          height: "{{clinvar_snvs.height}}"
                       },
                       {
                           name: "{{ clinvar_cnvs.name }}",
@@ -77,7 +77,7 @@
                           url: "{{ clinvar_cnvs.url|replace('%2F','/') }}",
                           displayMode: "{{ clinvar_cnvs.displayMode }}",
                           order: Number.MIN_VALUE,
-                          visibilityWindow: 300000000
+                          height: "{{clinvar_cnvs.height}}"
                       },
                       {% for wtrack in rhocall_wig_tracks %}
                       {
