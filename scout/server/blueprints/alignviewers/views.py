@@ -159,7 +159,8 @@ def igv():
         "sourceType": "file",
         "url": clinvar_snvs_url,
         "displayMode": "EXPANDED",
-        "height": 150,
+        "maxRows": 50,
+        "height": 100,
     }
 
     display_obj["clinvar_cnvs"] = {
@@ -169,7 +170,8 @@ def igv():
         "sourceType": "file",
         "url": clinvar_cnvs_url,
         "displayMode": "EXPANDED",
-        "height": 150,
+        "maxRows": 500,
+        "height": 250,
     }
 
     # Init upcoming igv-tracks

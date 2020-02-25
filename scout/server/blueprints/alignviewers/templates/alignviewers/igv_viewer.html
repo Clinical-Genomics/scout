@@ -56,7 +56,8 @@
                           url: "{{ clinvar_snvs.url|replace('%2F','/') }}",
                           displayMode: "{{ clinvar_snvs.displayMode }}",
                           order: Number.MIN_VALUE,
-                          height: "{{clinvar_snvs.height}}"
+                          height: "{{clinvar_snvs.height}}",
+                          maxRows: "{{clinvar_snvs.maxRows}}",
                       },
                       {
                           name: "{{ clinvar_cnvs.name }}",
@@ -66,18 +67,19 @@
                           url: "{{ clinvar_cnvs.url|replace('%2F','/') }}",
                           displayMode: "{{ clinvar_cnvs.displayMode }}",
                           order: Number.MIN_VALUE,
-                          height: "{{clinvar_cnvs.height}}"
+                          height: "{{clinvar_cnvs.height}}",
+                          maxRows: "{{clinvar_cnvs.maxRows}}",
                       },
                       {
-                            name: "{{ genes_track.name }}",
-                            type: "{{ genes_track.type }}",
-                            format: "{{ genes_track.format }}",
-                            sourceType: "{{ genes_track.sourceType }}",
-                            url: "{{ genes_track.url|replace('%2F','/') }}",
-                            indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
-                            displayMode: "{{ genes_track.displayMode }}",
-                            order: Number.MIN_VALUE,
-                            visibilityWindow: 300000000,
+                          name: "{{ genes_track.name }}",
+                          type: "{{ genes_track.type }}",
+                          format: "{{ genes_track.format }}",
+                          sourceType: "{{ genes_track.sourceType }}",
+                          url: "{{ genes_track.url|replace('%2F','/') }}",
+                          indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
+                          displayMode: "{{ genes_track.displayMode }}",
+                          order: Number.MIN_VALUE,
+                          visibilityWindow: 300000000,
                       },
                       {% for wtrack in rhocall_wig_tracks %}
                       {
