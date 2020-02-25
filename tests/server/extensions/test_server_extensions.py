@@ -1,8 +1,8 @@
-import subprocess
-import itertools
 import copy
+import itertools
+import subprocess
 
-from scout.server.extensions import LoqusDB
+from scout.server.extensions.loqus_extension import LoqusDB
 
 
 def test_loqusdb_variant(minimal_app, mocker):

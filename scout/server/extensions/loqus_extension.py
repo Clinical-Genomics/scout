@@ -27,10 +27,11 @@ def execute_command(cmd):
         LOG.warning("Something went wrong with loqusdb")
         raise err
 
+    output = output.decode("utf-8")
+
     if not output:
         return output
 
-    output = output.decode("utf-8")
     return output
 
 
