@@ -111,7 +111,6 @@ def igv():
     gene_track_URL = ""
     gene_track_indexURL = ""
     clinvar_snvs_url = ""
-    clinvar_cnvs_url = ""
     clinvar_track_format = "bigBed"
 
     if chromosome_build in ["GRCh38", "38"] or chrom == "M":
@@ -124,7 +123,6 @@ def igv():
         gene_track_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz"
         gene_track_indexURL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi"
         clinvar_snvs_url = "http://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarMain.bb"
-        clinvar_cnvs_url = "http://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarCnv.bb"
 
     else:
         fastaURL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta"
