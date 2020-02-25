@@ -49,15 +49,26 @@
                     locus: "{{locus}}",
                     tracks: [
                       {
-                            name: "{{ genes_track.name }}",
-                            type: "{{ genes_track.type }}",
-                            format: "{{ genes_track.format }}",
-                            sourceType: "{{ genes_track.sourceType }}",
-                            url: "{{ genes_track.url|replace('%2F','/') }}",
-                            indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
-                            displayMode: "{{ genes_track.displayMode }}",
-                            order: Number.MIN_VALUE,
-                            visibilityWindow: 300000000
+                          name: "{{ clinvar_snvs.name }}",
+                          type: "{{ clinvar_snvs.type }}",
+                          format: "{{ clinvar_snvs.format }}",
+                          sourceType: "{{ clinvar_snvs.sourceType }}",
+                          url: "{{ clinvar_snvs.url|replace('%2F','/') }}",
+                          displayMode: "{{ clinvar_snvs.displayMode }}",
+                          order: Number.MIN_VALUE,
+                          height: "{{clinvar_snvs.height}}",
+                          maxRows: "{{clinvar_snvs.maxRows}}",
+                      },
+                      {
+                          name: "{{ genes_track.name }}",
+                          type: "{{ genes_track.type }}",
+                          format: "{{ genes_track.format }}",
+                          sourceType: "{{ genes_track.sourceType }}",
+                          url: "{{ genes_track.url|replace('%2F','/') }}",
+                          indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
+                          displayMode: "{{ genes_track.displayMode }}",
+                          order: Number.MIN_VALUE,
+                          visibilityWindow: 300000000,
                       },
                       {% for wtrack in rhocall_wig_tracks %}
                       {
