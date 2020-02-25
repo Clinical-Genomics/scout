@@ -1,6 +1,7 @@
 // Check here for documentation : https://www.interactive-biosoftware.com/doc/alamut-visual/2.8/programmatic-access.html
 
 function httpGetLoadBam(region, bamFile) {
+	alert("BEGINNING OF httpGetLoadBam");
 	var xmlHttp = null;
 	xmlHttp = new XMLHttpRequest();
 	var bamXmlHttp = null;
@@ -16,4 +17,5 @@ function httpGetLoadBam(region, bamFile) {
 			}
 		}
 	}
+	alert("END OF httpGetLoadBam");
 }
