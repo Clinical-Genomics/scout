@@ -107,6 +107,8 @@ def exons(build):
 def case(institute, case_id, display_name):
     """Delete a case and it's variants from the database"""
     adapter = store
+    case_obj = None
+
     if not (case_id or display_name):
         click.echo("Please specify what case to delete")
         raise click.Abort()
@@ -118,18 +120,21 @@ def case(institute, case_id, display_name):
                 "deleted with flag '-i/--institute'."
             )
             raise click.Abort()
+        case_obj = adapter.case(display_name=display_name, institute_id=institute)
+    else:
+        case_obj = adapter.case(case_id=case_id)
+
+    if not case_obj:
+        click.echo(
+            "Coudn't find any case in database matching the provided parameters."
+        )
+        raise click.Abort()
 
     LOG.info("Running deleting case {0}".format(case_id))
-    case = adapter.delete_case(
-        case_id=case_id, institute_id=institute, display_name=display_name
-    )
+    case = adapter.delete_case(case_id=case_obj["_id"])
 
-    if case.deleted_count == 1:
-        adapter.delete_variants(case_id=case_id, variant_type="clinical")
-        adapter.delete_variants(case_id=case_id, variant_type="research")
-    else:
-        LOG.warning("Case does not exist in database")
-        raise click.Abort()
+    adapter.delete_variants(case_id=case_obj["_id"], variant_type="clinical")
+    adapter.delete_variants(case_id=case_obj["_id"], variant_type="research")
 
 
 # @click.command('diseases', short_help='Display all diseases')
