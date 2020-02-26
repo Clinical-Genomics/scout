@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Restored missing recent delivery reports
 - Fixed style and links to other reports in case side panel
 - Deleting cases using display_name and institute not deleting its variants
+- General report visualization error when SNVs display names are very long
 
 ### Changed
 
