@@ -61,7 +61,7 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
     more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
-    genome_build = case_obj.get("genome_build", "37")
+    genome_build = str(case_obj.get("genome_build", "37"))
     if genome_build not in ["37", "38"]:
         genome_build = "37"
 
@@ -125,7 +125,7 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variants_query.count() > (skip_count + per_page) else False
 
-    genome_build = case_obj.get("genome_build", "37")
+    genome_build = str(case_obj.get("genome_build", "37"))
     if genome_build not in ["37", "38"]:
         genome_build = "37"
 
