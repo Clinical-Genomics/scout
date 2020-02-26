@@ -100,7 +100,7 @@ class DiagnosisHandler(object):
             query["disease_nr"] = disease_identifier
         except ValueError:
             query["_id"] = disease_identifier
-
+            
         return self.disease_term_collection.find_one(query)
 
     def disease_terms(self, hgnc_id=None):

@@ -730,6 +730,16 @@ def case_diagnosis(institute_id, case_name):
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
     level = "phenotype" if "phenotype" in request.form else "gene"
     omim_id = request.form["omim_term"].split("|")[0]
+
+    if not "OMIM:" in omim_id: # Could be an omim number provided by user
+        omim_id = ":".join(["OMIM", omim_id])
+
+    # Make sure omim term exists in database:
+    omim_obj = store.disease_term(omim_id.strip())
+    if not omim_obj:
+        flash("Couldn't find any disease term with id: {}".format(omim_id), "warning")
+        return redirect(request.referrer)
+
     remove = True if request.args.get("remove") == "yes" else False
     store.diagnose(
         institute_obj,
