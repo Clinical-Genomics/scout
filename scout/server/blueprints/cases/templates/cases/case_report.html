@@ -425,7 +425,7 @@
   <div class="card" style="border-width: 5px;">
     <div class="card-header">
       <div class="row d-flex align-items-center">
-        # <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></a>&nbsp;
+        # <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a>&nbsp;
           <span class="badge badge-pill badge-success">SNV</span>&nbsp;
           {% if variant.sanger_ordered and variant.validation %}
             <span class="badge badge-pill badge-info" title="verif-status">Verification:{{variant.validation}}</span>
@@ -744,7 +744,7 @@
             <tr>
               <td width="5%">#{{loop.index}}</td>
               {% if variant.category == 'snv' %}
-                <td width="25%"><a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name}}</strong></a></td>
+                <td width="25%"><a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a></td>
               {% else %}
                 <td width="25%"><a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a></td>
               {% endif %}
