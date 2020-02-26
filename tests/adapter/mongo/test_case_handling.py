@@ -350,15 +350,26 @@ def test_get_non_existing_case(adapter, case_obj):
     assert result is None
 
 
-def test_delete_case(adapter, case_obj):
+def test_delete_case_by_id(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
-    assert adapter.case_collection.find_one()
-    logger.info("Testing to delete case")
 
-    # WHEN deleting a case from the database
+    # WHEN deleting a case from the database using case _id
     result = adapter.delete_case(case_id=case_obj["_id"])
+    # THEN there should be no cases left in the database
+    assert sum(1 for i in adapter.cases()) == 0
+
+
+def test_delete_case_by_display_name(adapter, case_obj):
+    # GIVEN an empty database (no cases)
+    assert adapter.case_collection.find_one() is None
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN deleting a case from the database using display_name
+    result = adapter.delete_case(
+        institute_id=case_obj["owner"], display_name=case_obj["display_name"]
+    )
     # THEN there should be no cases left in the database
     assert sum(1 for i in adapter.cases()) == 0
 
