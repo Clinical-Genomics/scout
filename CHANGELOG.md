@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Deleting cases using display_name and institute not deleting its variants
 - Fixed bug that caused coordinates filter to override other filters
 - Fixed a problem with finding some INS in loqsudb
+- Layout on SV page when local observations without cases are present
 
 ### Changed
 
@@ -28,7 +29,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Case report when causative or pinned SVs have non null allele frequencies
-- Layout on SV page when local observations without cases are present
 
 ## [4.12.2]
 
