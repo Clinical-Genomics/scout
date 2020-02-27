@@ -1,6 +1,11 @@
 {% extends "layout_bs4.html" %}
 
 {% block top_nav %}
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('diagnoses.omim_diagnoses') }}">
+      {{ OMIM terms }}
+    </a>
+  </li>
   <li class="nav-item active">
     <span class="navbar-text">{{_id}}</span>
   </li>
