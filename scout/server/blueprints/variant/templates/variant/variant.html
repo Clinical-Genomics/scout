@@ -265,21 +265,23 @@
             </td>
             <td>
               Change
-              <span><strong>
+              <span>
                 {%- if variant.reference|length > 8 -%}
-                  {{ variant.reference[:1] }}..{{variant.reference[-1:]}}<button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+                  <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
                     style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.reference}}" title="Copy to clipboard">
+                  </button>
                 {%- else -%}
-                  {{ variant.reference }}
+                  <strong>{{ variant.reference }}</strong>
                 {%- endif -%}
                   →
                 {%- if variant.alternative|length > 8 -%}
-                  {{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}<button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+                  <strong>{{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
                     style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.alternative}}" title="Copy to clipboard">
+                    </button>
                 {%- else -%}
-                  {{ variant.alternative }}
+                  <strong>{{ variant.alternative }}</strong>
                 {%- endif -%}
-                </strong></span>
+                </span>
             </td>
           </tr>
           {% if variant.str_repid %}
