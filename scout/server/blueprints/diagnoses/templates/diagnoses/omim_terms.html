@@ -1,0 +1,53 @@
+{% extends "layout_bs4.html" %}
+
+{% block top_nav %}
+  <li class="nav-item active">
+    <span class="navbar-text">OMIM terms</span>
+  </li>
+{% endblock %}
+
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row mt-3">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">OMIM terms</div>
+        <div class="card-body">
+          {% if terms|length == 0 %}
+            The search didn't return any OMIM term
+          {% else %}
+            <table id="diagnoses_table" class="table table-sm">
+              <thead>
+                <th>OMIM term</th>
+                <th>Phenotype description</th>
+                <th></th>
+                <th>Inheritance</th>
+                <th>Number of associated genes</th
+                <th>Number of associated HPO terms</th>
+              </thead>
+              {% for omim in terms %}
+                <tr>
+                  <td><a href="http://omim.org/entry/{{ omim.disease_nr }}}" target="_blank">{{ omim.disease_nr }}</a></td>
+                  <td><a href="{{ url_for('diagnoses.omim_diagnosis', omim_nr=omim.disease_nr) }}" target="_blank"><i class="fa fa-link"></i></a></td>
+                  <td>{{ omim.description }}</td>
+                  <td><!-- inheritance-->
+                    {% for model in omim.inheritance %}
+                      <span class="badge badge-info">{{model}}</span>
+                    {% endfor %}
+                    {% else %}
+                      -
+                    {% endfor %}
+                  </td><!--end of inheritance-->
+                  <td>{{ omim.genes|length }}</td>
+                  <td>{{ omim.hpo_terms|length }}</td>
+                </tr>
+              {% endfor %}
+            </table>
+          {% endif %}
+        </div><!--end of card body-->
+      </div><!--end of card-->
+    </div>
+  </div>
+</div>
+{% endblock %}
