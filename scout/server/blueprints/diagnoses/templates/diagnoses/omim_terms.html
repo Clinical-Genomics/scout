@@ -23,12 +23,12 @@
                 <th>Phenotype description</th>
                 <th></th>
                 <th>Inheritance</th>
-                <th>Number of associated genes</th
+                <th>Number of associated genes</th>
                 <th>Number of associated HPO terms</th>
               </thead>
               {% for omim in terms %}
                 <tr>
-                  <td><a href="http://omim.org/entry/{{ omim.disease_nr }}}" target="_blank">{{ omim.disease_nr }}</a></td>
+                  <td><a href="http://omim.org/entry/{{omim.disease_nr}}" target="_blank">{{ omim.disease_nr }}</a></td>
                   <td><a href="{{ url_for('diagnoses.omim_diagnosis', omim_nr=omim.disease_nr) }}" target="_blank"><i class="fa fa-link"></i></a></td>
                   <td>{{ omim.description }}</td>
                   <td><!-- inheritance-->
