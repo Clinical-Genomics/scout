@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - ClinVar SNVs track in IGV
+- Option to use alternative flask config when running `scout serve`
 
 ### Fixed
 - Bug when adding a new gene to a panel
