@@ -50,6 +50,10 @@ def get_app(ctx):
         with open(options.params["config"], "r") as in_handle:
             cli_config = yaml.load(in_handle, Loader=yaml.FullLoader)
 
+    flask_conf = None
+    if options.params.get("flask_config"):
+        flask_conf = options.params["flask_config"]
+
     if options.params.get("demo"):
         cli_config["demo"] = "scout-demo"
 
@@ -66,7 +70,8 @@ def get_app(ctx):
             MONGO_USERNAME=options.params.get("username") or cli_config.get("username"),
             MONGO_PASSWORD=options.params.get("password") or cli_config.get("password"),
             OMIM_API_KEY=cli_config.get("omim_api_key"),
-        )
+        ),
+        config_file=flask_conf,
     )
     return app
 
@@ -99,6 +104,9 @@ def get_app(ctx):
 @click.option("-a", "--authdb", help="database to use for authentication")
 @click.option("-port", "--port", help="Specify on what port to listen for the mongod")
 @click.option("-h", "--host", help="Specify the host for the mongo database.")
+@click.option(
+    "-f", "--flask_config", type=click.Path(exists=True), help="Path to flask config."
+)
 @with_appcontext
 def cli(**_):
     """scout: manage interactions with a scout instance."""
