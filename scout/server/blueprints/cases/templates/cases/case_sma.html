@@ -108,7 +108,11 @@
         </thead>
         <tbody>
           {% for ind in case.individuals %}
-            <tr {% if ind.phenotype_human == 'affected' %} class="bg-danger-light" {% endif %}>
+            <tr {% if ind.is_sma  %}
+                  class="bg-danger"
+                {% elif ind.is_sma_carrier %}
+                  class="bg-warning"
+                {% endif %}>
               <td>{{ ind.display_name }}</td>
               <td>
                 {% if ind.sex_human in ['female','male'] %}
