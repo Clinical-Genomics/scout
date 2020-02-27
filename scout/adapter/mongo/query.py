@@ -268,7 +268,7 @@ class QueryHandler(object):
 
         # if chromosome coordinates exist in query, add them as first element of the mongo_query['$and']
         if coordinate_query:
-            if mongo_query.get("query") or mongo_query.get("$and"):
+            if mongo_query.get("$and"):
                 mongo_query["$and"] = coordinate_query + mongo_query["$and"]
             else:
                 mongo_query["$and"] = coordinate_query
