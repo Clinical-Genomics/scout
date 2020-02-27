@@ -33,14 +33,9 @@ class DiagnosisHandler(object):
                 "$or": [
                     {"disease_nr": {"$regex": query, "$options": "i"}},
                     {"description": {"$regex": query, "$options": "i"}},
+                    {"genes":{"$in":[query]}}
                 ]
             }
-            # if search term coresponds to a valid gene add it to the query
-            query_gene = self.to_hgnc(hgnc_alias)
-            if query_gene:
-                query_dict["$or"].append(
-                    {"genes":{"$in":{[query_gene]}}}
-                )
 
         limit = limit or int(10e10)
         res = (
