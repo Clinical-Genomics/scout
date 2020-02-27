@@ -16,6 +16,7 @@ import pathlib
 import click
 from flask.cli import current_app, with_appcontext
 from pymongo.errors import ServerSelectionTimeoutError
+
 # Adapter stuff
 from scout.adapter import MongoAdapter
 from scout.load.setup import setup_scout

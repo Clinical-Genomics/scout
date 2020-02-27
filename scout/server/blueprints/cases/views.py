@@ -11,15 +11,31 @@ from operator import itemgetter
 
 import pymongo
 from dateutil.parser import parse as parse_date
-from flask import (Blueprint, Response, abort, current_app, flash, jsonify,
-                   redirect, render_template, request, send_file,
-                   send_from_directory, url_for)
+from flask import (
+    Blueprint,
+    Response,
+    abort,
+    current_app,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    send_from_directory,
+    url_for,
+)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 
-from scout.constants import (ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER,
-                             CLINVAR_HEADER, SAMPLE_SOURCE)
+from scout.constants import (
+    ACMG_COMPLETE_MAP,
+    ACMG_MAP,
+    CASEDATA_HEADER,
+    CLINVAR_HEADER,
+    SAMPLE_SOURCE,
+)
 from scout.server.extensions import mail, store
 from scout.server.utils import institute_and_case, templated, user_institutes
 
@@ -653,6 +669,7 @@ def case_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case_report_content(store, institute_obj, case_obj)
     return dict(institute=institute_obj, case=case_obj, format="html", **data)
+
 
 @cases_bp.route("/<institute_id>/<case_name>/pdf_report", methods=["GET"])
 def pdf_case_report(institute_id, case_name):

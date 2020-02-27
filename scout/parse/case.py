@@ -10,8 +10,11 @@ from ped_parser import FamilyParser
 from scout.constants import PHENOTYPE_MAP, REV_PHENOTYPE_MAP, REV_SEX_MAP, SEX_MAP
 from scout.exceptions import ConfigError, PedigreeError
 
-from scout.parse.peddy import (parse_peddy_ped, parse_peddy_ped_check,
-                               parse_peddy_sex_check)
+from scout.parse.peddy import (
+    parse_peddy_ped,
+    parse_peddy_ped_check,
+    parse_peddy_sex_check,
+)
 from scout.parse.smn import parse_smn_file
 from scout.utils.date import get_date
 
@@ -154,6 +157,7 @@ def parse_case_data(
 
     return config_data
 
+
 def add_smn_info(config_data):
     """Add SMN CN / SMA prediction from TSV files to individuals
 
@@ -173,10 +177,20 @@ def add_smn_info(config_data):
     for ind in config_data["samples"]:
         ind_id = ind["sample_id"]
         try:
-            for key in ["is_sma", "is_sma_carrier", "smn1_cn", "smn2_cn", "smn2delta78_cn", "smn_27134_cn"]:
+            for key in [
+                "is_sma",
+                "is_sma_carrier",
+                "smn1_cn",
+                "smn2_cn",
+                "smn2delta78_cn",
+                "smn_27134_cn",
+            ]:
                 ind[key] = smn_info[ind_id][key]
         except KeyError as e:
-            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
+            LOG.warning(
+                "Individual {} has no SMN info to update: {}.".format(ind_id, e)
+            )
+
 
 def add_smn_info_case(case_data):
     """Add SMN CN / SMA prediction from TSV files to individuals in a yaml load case context
@@ -197,10 +211,20 @@ def add_smn_info_case(case_data):
     for ind in case_data["individuals"]:
         ind_id = ind["individual_id"]
         try:
-            for key in ["is_sma", "is_sma_carrier", "smn1_cn", "smn2_cn", "smn2delta78_cn", "smn_27134_cn"]:
+            for key in [
+                "is_sma",
+                "is_sma_carrier",
+                "smn1_cn",
+                "smn2_cn",
+                "smn2delta78_cn",
+                "smn_27134_cn",
+            ]:
                 ind[key] = smn_info[ind_id][key]
         except KeyError as e:
-            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
+            LOG.warning(
+                "Individual {} has no SMN info to update: {}.".format(ind_id, e)
+            )
+
 
 def add_peddy_information(config_data):
     """Add information from peddy outfiles to the individuals

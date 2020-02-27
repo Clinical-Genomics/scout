@@ -193,6 +193,7 @@ def test_case(app, case_obj, institute_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
+
 def test_case_sma(app, case_obj, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user, case and institute
@@ -213,6 +214,7 @@ def test_case_sma(app, case_obj, institute_obj):
 
         # THEN it should return a page
         assert resp.status_code == 200
+
 
 def test_update_individual(app, user_obj, institute_obj, case_obj):
     # GIVEN an initialized app

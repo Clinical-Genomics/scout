@@ -31,6 +31,7 @@ variants_bp = Blueprint(
     "variants", __name__, static_folder="static", template_folder="templates"
 )
 
+
 @variants_bp.route("/<institute_id>/<case_name>/variants", methods=["GET", "POST"])
 @templated("variants/variants.html")
 def variants(institute_id, case_name):
