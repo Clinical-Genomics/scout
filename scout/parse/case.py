@@ -125,7 +125,7 @@ def parse_case_data(
     config_data["vcf_str"] = vcf_str if vcf_str else config_data.get("vcf_str")
     config_data["smn_tsv"] = smn_tsv if smn_tsv else config_data.get("smn_tsv")
 
-    LOG.DEBUG("Checking for SMN TSV..")
+    LOG.debug("Checking for SMN TSV..")
     if config_data["smn_tsv"]:
         LOG.info("Adding SMN info from {}.".format(config_data["smn_tsv"]))
         add_smn_info(config_data)
@@ -178,6 +178,29 @@ def add_smn_info(config_data):
         except KeyError as e:
             LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
 
+def add_smn_info_case(case_data):
+    """Add SMN CN / SMA prediction from TSV files to individuals in a yaml load case context
+
+    Args:
+        case_data(dict)
+    """
+
+    if not case_data.get("smn_tsv"):
+        LOG.warning("No smn_tsv though add_smn_info_case called. This is odd.")
+        return
+
+    file_handle = open(case_data["smn_tsv"], "r")
+    smn_info = {}
+    for smn_ind_info in parse_smn_file(file_handle):
+        smn_info[smn_ind_info["sample_id"]] = smn_ind_info
+
+    for ind in case_data["individuals"]:
+        ind_id = ind["individual_id"]
+        try:
+            for key in ["is_sma", "is_sma_carrier", "smn1_cn", "smn2_cn", "smn2delta78_cn", "smn_27134_cn"]:
+                ind[key] = smn_info[ind_id][key]
+        except KeyError as e:
+            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
 
 def add_peddy_information(config_data):
     """Add information from peddy outfiles to the individuals
@@ -433,11 +456,6 @@ def parse_case(config):
 
     individuals = parse_individuals(config["samples"])
 
-    LOG.DEBUG("Checking for SMN TSV..")
-    if config_data["smn_tsv"]:
-        LOG.info("Adding SMN info from {}.".format(config_data["smn_tsv"]))
-        add_smn_info(config_data)
-
     case_data = {
         "owner": config["owner"],
         "collaborators": [config["owner"]],
@@ -473,6 +491,12 @@ def parse_case(config):
         "chromograph_image_files": config.get("chromograph_image_files"),
         "chromograph_prefixes": config.get("chromograph_prefixes"),
     }
+
+    # add SMN info
+    LOG.debug("Checking for SMN TSV..")
+    if case_data["smn_tsv"]:
+        LOG.info("Adding SMN info from {}.".format(case_data["smn_tsv"]))
+        add_smn_info_case(case_data)
 
     # add the pedigree figure, this is a xml file which is dumped in the db
     if "madeline" in config:
