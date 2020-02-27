@@ -1,47 +1,29 @@
 # -*- coding: utf-8 -*-
-import os.path
-import shutil
 import datetime
-import pymongo
-
-import zipfile
 import io
+import logging
+import os.path
 import pathlib
 import re
-
-import logging
-
+import shutil
+import zipfile
 from operator import itemgetter
 
-from flask import (
-    abort,
-    Blueprint,
-    current_app,
-    redirect,
-    render_template,
-    request,
-    url_for,
-    send_from_directory,
-    jsonify,
-    Response,
-    flash,
-    send_file,
-)
+import pymongo
+from dateutil.parser import parse as parse_date
+from flask import (Blueprint, Response, abort, current_app, flash, jsonify,
+                   redirect, render_template, request, send_file,
+                   send_from_directory, url_for)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
-from dateutil.parser import parse as parse_date
-from scout.constants import (
-    CLINVAR_HEADER,
-    CASEDATA_HEADER,
-    ACMG_MAP,
-    ACMG_COMPLETE_MAP,
-    SAMPLE_SOURCE,
-)
-from scout.server.extensions import store, mail
-from scout.server.utils import templated, institute_and_case, user_institutes
-from . import controllers
 
+from scout.constants import (ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER,
+                             CLINVAR_HEADER, SAMPLE_SOURCE)
+from scout.server.extensions import mail, store
+from scout.server.utils import institute_and_case, templated, user_institutes
+
+from . import controllers
 from .forms import GeneVariantFiltersForm
 
 LOG = logging.getLogger(__name__)
@@ -131,6 +113,10 @@ def cases(institute_id):
 def case(institute_id, case_name):
     """Display one case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    if not case_obj:
+        flash("Case {} does not exist in database!".format(case_name))
+        return redirect(request.referrer)
+
     data = controllers.case(store, institute_obj, case_obj)
     return dict(
         institute=institute_obj,
