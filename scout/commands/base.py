@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
+"""Code for CLI base"""
 import logging
-import sys
+import pathlib
 
 import click
 import coloredlogs
 import yaml
-from flask.cli import FlaskGroup, current_app, with_appcontext
+from flask.cli import FlaskGroup, with_appcontext
 
 # General, logging
 from scout import __version__
@@ -21,7 +21,6 @@ from scout.commands.setup import setup as setup_command
 from scout.commands.update import update as update_command
 from scout.commands.view import view as view_command
 from scout.commands.wipe_database import wipe
-from scout.server import extensions
 from scout.server.app import create_app
 
 LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
@@ -31,9 +30,9 @@ LOG = logging.getLogger(__name__)
 @click.pass_context
 def loglevel(ctx):
     """Set app cli log level"""
-    loglevel = ctx.find_root().params["loglevel"]
+    log_level = ctx.find_root().params["loglevel"]
     log_format = None
-    coloredlogs.install(level=loglevel, fmt=log_format)
+    coloredlogs.install(level=log_level, fmt=log_format)
     LOG.info("Running scout version %s", __version__)
     LOG.debug("Debug logging enabled.")
 
@@ -52,7 +51,7 @@ def get_app(ctx):
 
     flask_conf = None
     if options.params.get("flask_config"):
-        flask_conf = options.params["flask_config"]
+        flask_conf = pathlib.Path(options.params["flask_config"]).absolute()
 
     if options.params.get("demo"):
         cli_config["demo"] = "scout-demo"
@@ -111,7 +110,6 @@ def get_app(ctx):
 def cli(**_):
     """scout: manage interactions with a scout instance."""
     loglevel()
-    pass
 
 
 cli.add_command(load_command)
