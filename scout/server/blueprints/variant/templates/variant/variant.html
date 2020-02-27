@@ -265,7 +265,21 @@
             </td>
             <td>
               Change
-              <span><strong>{{ variant.reference }} → {{ variant.alternative }}</strong></span>
+              <span><strong>
+                {%- if variant.reference|length > 8 -%}
+                  {{ variant.reference[:1] }}..{{variant.reference[-1:]}}<button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+                    style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.reference}}" title="Copy to clipboard">
+                {%- else -%}
+                  {{ variant.reference }}
+                {%- endif -%}
+                  →
+                {%- if variant.alternative|length > 8 -%}
+                  {{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}<button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+                    style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.alternative}}" title="Copy to clipboard">
+                {%- else -%}
+                  {{ variant.alternative }}
+                {%- endif -%}
+                </strong></span>
             </td>
           </tr>
           {% if variant.str_repid %}
@@ -706,5 +720,37 @@
         }
       }
     }
+
+    $('.js-copy').click(function() {
+      var text = $(this).attr('data-copy');
+      var el = $(this);
+      copyToClipboard(text, el);
+    });
+
+    // Code from https://codepen.io/nathanlong/pen/ZpAmjv
+    function copyToClipboard(text, el) {
+    var copyTest = document.queryCommandSupported('copy');
+    var elOriginalText = el.attr('data-original-title');
+
+    if (copyTest === true) {
+      var copyTextArea = document.createElement("textarea");
+      copyTextArea.value = text;
+      document.body.appendChild(copyTextArea);
+      copyTextArea.select();
+      try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'Copied!' : 'Whoops, not copied!';
+        el.attr('data-original-title', msg).tooltip('show');
+      } catch (err) {
+        console.log('Oops, unable to copy');
+      }
+      document.body.removeChild(copyTextArea);
+      el.attr('data-original-title', elOriginalText);
+    } else {
+      // Fallback if browser doesn't support .execCommand('copy')
+      window.prompt("Copy to clipboard: Ctrl+C or Command+C, Enter", text);
+    }
+  }
+
   </script>
 {% endblock %}
