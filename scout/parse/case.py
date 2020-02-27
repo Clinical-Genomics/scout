@@ -317,7 +317,7 @@ def parse_individual(sample):
                 'upd_regions_bed': str,
                 'rhocall_bed': str,
                 'rhocall_wig': str,
-                tiddit_coverage_wig': str,
+                'tiddit_coverage_wig': str,
 
                 'predicted_ancestry' = str,
 
