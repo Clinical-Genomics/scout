@@ -158,12 +158,12 @@ def fetch_hpo_phenotype_to_terms():
 
 def fetch_ensembl_biomart(attributes, filters, build=None):
     """Fetch data from ensembl biomart
-    
+
     Args:
         attributes(list): List of selected attributes
         filters(dict): Select what filters to use
         build(str): '37' or '38'
-    
+
     Returns:
         client(EnsemblBiomartClient)
     """
@@ -178,10 +178,10 @@ def fetch_ensembl_biomart(attributes, filters, build=None):
 
 def fetch_ensembl_genes(build=None):
     """Fetch the ensembl genes
-    
+
     Args:
         build(str): ['37', '38']
-    
+
     Returns:
         result(iterable): Ensembl formated gene lines
     """
@@ -322,7 +322,7 @@ def fetch_hpo_files(
 
     LOG.info("Fetching HPO information from http://compbio.charite.de")
     base_url = (
-        "http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/"
+        "http://compbio.charite.de/jenkins/job/hpo.annotations.current/"
         "lastStableBuild/artifact/annotation/{}"
     )
     hpogenes_url = base_url.format("ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt")
