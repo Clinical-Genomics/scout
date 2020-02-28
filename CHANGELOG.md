@@ -17,9 +17,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed bug that caused coordinates filter to override other filters
 - Fixed a problem with finding some INS in loqsudb
 - Layout on SV page when local observations without cases are present
+- URL for HPO download at Charite changed
 
 ### Changed
-
 
 ## [4.12.4]
 
