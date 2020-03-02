@@ -104,7 +104,6 @@ def database(
     api_key,
     mim2gene,
     genemap,
-    hpogenes,
     hgnc,
     exac,
     ensgenes37,
