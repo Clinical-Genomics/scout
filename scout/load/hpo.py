@@ -13,7 +13,7 @@ from scout.parse.hpo import (
 )
 from scout.utils.scout_requests2 import (
     fetch_hpo_terms,
-    fetch_hpo_to_genes,
+    fetch_hpo_to_genes_to_disease,
 )
 
 from scout.parse.omim import get_mim_phenotypes
@@ -46,7 +46,7 @@ def load_hpo(
 
     # Fetch the hpo gene information if no file
     if not hpo_gene_lines:
-        hpo_gene_lines = fetch_hpo_to_genes()
+        hpo_gene_lines = fetch_hpo_to_genes_to_disease()
 
     load_hpo_terms(adapter, hpo_lines, hpo_gene_lines, alias_genes)
 
@@ -61,7 +61,7 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
     Args:
         adapter(MongoAdapter)
         hpo_lines(iterable(str)): lines from file http://purl.obolibrary.org/obo/hp.obo
-        hpo_gene_lines(iterable(str))lines from file
+        hpo_gene_lines(iterable(str)): lines from file
             http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/phenotype_to_genes.txt
         alias_genes
     """
@@ -75,7 +75,7 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
 
     # Fetch the hpo gene information if no file
     if not hpo_gene_lines:
-        hpo_gene_lines = fetch_hpo_to_genes()
+        hpo_gene_lines = fetch_hpo_to_genes_to_disease()
 
     # Get a map with hgnc symbols to hgnc ids from scout
     if not alias_genes:
@@ -126,17 +126,17 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
     LOG.info("Time to load terms: {0}".format(datetime.now() - start_time))
 
 
-def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=None):
+def load_disease_terms(adapter, genemap_lines, genes=None, hpo_gene_lines=None):
     """Load the omim phenotypes into the database
 
     Parse the phenotypes from genemap2.txt and find the associated hpo terms
-    from ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt.
+    from http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/phenotype_to_genes.txt
 
     Args:
         adapter(MongoAdapter)
         genemap_lines(iterable(str))
         genes(dict): Dictionary with all genes found in database
-        hpo_disease_lines(iterable(str))
+        hpo_gene_lines(iterable(str))
 
     """
     # Get a map with hgnc symbols to hgnc ids from scout
@@ -146,8 +146,8 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=Non
     # Fetch the disease terms from omim
     disease_terms = get_mim_phenotypes(genemap_lines=genemap_lines)
 
-    if not hpo_disease_lines:
-        hpo_disease_lines = fetch_hpo_phenotype_to_terms()
+    if not hpo_gene_lines:
+        hpo_gene_lines = fetch_hpo_to_genes()
     hpo_diseases = parse_hpo_diseases(hpo_disease_lines)
 
     start_time = datetime.now()

@@ -45,11 +45,21 @@ def parse_hpo_disease(hpo_line):
     """Parse hpo disease line
 
         Args:
-            hpo_line(str)
+            hpo_line(str) a line with the following formatting:
+
+            #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol<tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
+            HP:0000002	Abnormality of body height	3954	LETM1	-	mim2gene	OMIM:194190
+            HP:0000002	Abnormality of body height	197131	UBR1	-	mim2gene	OMIM:243800
+            HP:0000002	Abnormality of body height	79633	FAT4		orphadata	ORPHA:314679
     """
+
     hpo_line = hpo_line.rstrip().split("\t")
     hpo_info = {}
-    disease = hpo_line[0].split(":")
+    gd_source = hpo_line[5] # mim2gene or orphadata
+    if gd_source == "orphadata":
+        return
+
+    disease = hpo_line[6].split(":")
 
     hpo_info["source"] = disease[0]
     hpo_info["disease_nr"] = int(disease[1])

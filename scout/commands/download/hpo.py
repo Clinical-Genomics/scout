@@ -4,9 +4,8 @@ import pathlib
 
 import click
 
-from scout.utils.scout_requests import (fetch_hpo_genes,
-                                        fetch_hpo_phenotype_to_terms,
-                                        fetch_hpo_terms, fetch_hpo_to_genes)
+from scout.utils.scout_requests2 import (fetch_hpo_terms, fetch_hpo_to_genes_to_disease,
+    fetch_genes_to_hpo_to_disease)
 
 LOG = logging.getLogger(__name__)
 
@@ -24,25 +23,18 @@ def print_hpo(out_dir):
         for line in fetch_hpo_terms():
             outfile.write(line + "\n")
 
-    hpo_file_name = "ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
+    hpo_file_name = "genes_to_phenotype.txt"
     hpo_file_path = out_dir / hpo_file_name
     LOG.info("Download HPO genes to %s", hpo_file_path)
     with hpo_file_path.open("w", encoding="utf-8") as outfile:
-        for line in fetch_hpo_genes():
+        for line in fetch_genes_to_hpo_to_disease():
             outfile.write(line + "\n")
 
-    hpo_file_name = "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
+    hpo_file_name = "phenotype_to_genes.txt"
     hpo_file_path = out_dir / hpo_file_name
     LOG.info("Download HPO TO genes to %s", hpo_file_path)
     with hpo_file_path.open("w", encoding="utf-8") as outfile:
-        for line in fetch_hpo_to_genes():
-            outfile.write(line + "\n")
-
-    hpo_file_name = "ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt"
-    hpo_file_path = out_dir / hpo_file_name
-    LOG.info("Download HPO disease %s", hpo_file_path)
-    with hpo_file_path.open("w", encoding="utf-8") as outfile:
-        for line in fetch_hpo_phenotype_to_terms():
+        for line in fetch_hpo_to_genes_to_disease():
             outfile.write(line + "\n")
 
 

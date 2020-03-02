@@ -6,7 +6,7 @@ from socket import timeout
 
 LOG = logging.getLogger(__name__)
 
-HPO_URL = "http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/artifact/util/annotation/phenotype_to_genes.txt"
+HPO_URL = "http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/artifact/util/annotation/{0}"
 
 def get_request(url):
     """Return a requests response from url
@@ -53,7 +53,7 @@ def fetch_hpo_terms():
     return fetch_resource(url)
 
 
-def fetch_hpo_to_genes():
+def fetch_hpo_to_genes_to_disease():
     """Fetch the latest version of the map from phenotypes to genes
 
     Returns:
@@ -62,8 +62,25 @@ def fetch_hpo_to_genes():
         #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol<tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
         HP:0000002	Abnormality of body height	3954	LETM1	-	mim2gene	OMIM:194190
         HP:0000002	Abnormality of body height	197131	UBR1	-	mim2gene	OMIM:243800
+        HP:0000002	Abnormality of body height	79633	FAT4		orphadata	ORPHA:314679
     """
-    return fetch_resource(HPO_URL)
+    url = HPO_URL.format("phenotype_to_genes.txt")
+    return fetch_resource(url)
+
+
+def fetch_genes_to_hpo_to_disease():
+    """Fetch the latest version of the map from genes to phenotypes
+
+    Returns:
+        res(list(str)): A list with the lines formatted this way:
+
+        #Format: entrez-gene-id<tab>entrez-gene-symbol<tab>HPO-Term-Name<tab>HPO-Term-ID<tab>Frequency-Raw<tab>Frequency-HPO<tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
+        72	ACTG2	HP:0002027	Abdominal pain			-	mim2gene	OMIM:155310
+        72	ACTG2	HP:0000368	Low-set, posteriorly rotated ears		HP:0040283		orphadata	ORPHA:2604
+    """
+    url = HPO_URL.format("genes_to_phenotype.txt")
+    return fetch_resource(url)
+
 
 def fetch_resource(url):
     """Fetch a resource and return the resulting lines in a list
