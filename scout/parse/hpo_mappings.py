@@ -1,5 +1,5 @@
 """
-Methods for parsing HPO terms extracted by the following files:
+Methods for parsing HPO terms extracted from the following files:
 http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/artifact/util/annotation/genes_to_phenotype.txt
 http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/artifact/util/annotation/phenotype_to_genes.txt
 """
