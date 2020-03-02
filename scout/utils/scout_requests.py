@@ -290,42 +290,26 @@ def fetch_exac_constraint():
 
     return exac_lines
 
-
-def fetch_hpo_files(
-    hpogenes=False, hpoterms=False, phenotype_to_terms=False, hpodisease=False
-):
-    """Fetch the necessary mim files using a api key
+def fetch_hpo_files(genes_to_phenotype=False, phenotype_to_genes=False):
+    """
+    Fetch the necessary HPO files from http://compbio.charite.de
 
     Args:
-        api_key(str): A api key necessary to fetch mim data
+        genes_to_phenotype(bool): if file genes_to_phenotype.txt is required
+        phenotype_to_genes(bool): if file phenotype_to_genes.txt is required
 
     Returns:
-        mim_files(dict): A dictionary with the neccesary files
+        hpo_files(dict): A dictionary with the necessary files
     """
-
     LOG.info("Fetching HPO information from http://compbio.charite.de")
-    base_url = (
-        "http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/"
-        "lastStableBuild/artifact/annotation/{}"
-    )
-    hpogenes_url = base_url.format("ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt")
-    hpoterms_url = base_url.format("ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt")
-    hpo_phenotype_to_terms_url = base_url.format(
-        "ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt"
-    )
-    hpodisease_url = base_url.format("diseases_to_genes.txt")
 
     hpo_files = {}
     hpo_urls = {}
 
-    if hpogenes is True:
-        hpo_urls["hpogenes"] = hpogenes_url
-    if hpoterms is True:
-        hpo_urls["hpoterms"] = hpoterms_url
-    if phenotype_to_terms is True:
-        hpo_urls["phenotype_to_terms"] = hpo_phenotype_to_terms_url
-    if hpodisease is True:
-        hpo_urls["hpodisease"] = hpodisease_url
+    if genes_to_phenotype is True:
+        hpo_urls["genes_to_phenotype"] = base_url.format("genes_to_phenotype.txt")
+    if phenotype_to_genes is True:
+        hpo_urls["phenotype_to_genes"] = base_url.format("phenotype_to_genes.txt")
 
     for file_name in hpo_urls:
         url = hpo_urls[file_name]

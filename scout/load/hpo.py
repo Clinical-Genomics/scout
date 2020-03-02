@@ -4,13 +4,10 @@ from datetime import datetime
 
 from click import progressbar
 
-from scout.parse.hpo import (
-    parse_hpo_phenotypes,
-    parse_hpo_diseases,
-    parse_hpo_obo,
-    parse_hpo_to_genes,
-    build_hpo_tree,
-)
+from scout.parse.hpo_terms import parse_hpo_obo, build_hpo_tree
+
+from scout.parse.hpo_mappings import parse_hpo_to_genes, parse_hpo_diseases
+
 from scout.utils.scout_requests import (
     fetch_hpo_terms,
     fetch_hpo_to_genes_to_disease,
