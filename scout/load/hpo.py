@@ -26,12 +26,13 @@ LOG = logging.getLogger(__name__)
 
 
 def load_hpo(
-    adapter, hpo_lines=None, hpo_gene_lines=None
+    adapter, disease_lines=None, hpo_lines=None, hpo_gene_lines=None,
 ):
     """Load the hpo terms and hpo diseases into database
 
     Args:
-        adapter(MongoAdapter)
+        adapter(MongoAdapter
+        disease_lines(iterable(str)): These are the omim genemap2 information
         hpo_lines(iterable(str)): lines from file http://purl.obolibrary.org/obo/hp.obo
         hpo_gene_lines(iterable(str)): lines from file
             http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/phenotype_to_genes.txt
@@ -50,7 +51,7 @@ def load_hpo(
 
     load_hpo_terms(adapter, hpo_lines, hpo_gene_lines, alias_genes)
 
-    load_disease_terms(adapter, disease_lines, alias_genes, hpo_disease_lines)
+    load_disease_terms(adapter=adapter, genemap_lines=disease_lines, genes=alias_genes, hpo_disease_lines=hpo_gene_lines)
 
 
 def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=None):
@@ -139,6 +140,10 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=Non
         hpo_disease_lines(iterable(str))
 
     """
+
+    LOG.error('----->IN LOAD DISEASE TERMS: genemap_lines:{}'.format(genemap_lines))
+    LOG.error('----->IN LOAD DISEASE TERMS: hpo disease lines:{}'.format(hpo_disease_lines))
+
     # Get a map with hgnc symbols to hgnc ids from scout
     if not genes:
         genes = adapter.genes_by_alias()
