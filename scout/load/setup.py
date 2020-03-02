@@ -62,10 +62,7 @@ def setup_scout(
          For more details check the documentation.
 
     """
-    LOG.error('--------------->SETUP FILES ARE:{}'.format(resource_files))
-    quit()
-
-
+    
     LOG.info("Check if there was a database, delete if existing")
     existing_database = False
     for collection_name in adapter.db.collection_names():
