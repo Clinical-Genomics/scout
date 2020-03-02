@@ -81,7 +81,10 @@ def parse_hpo_phenotypes(hpo_lines):
         Group the genes that a phenotype is associated to in 'genes'
 
     Args:
-        hpo_lines(iterable(str)): A file handle to the hpo phenotypes file
+        hpo_lines(iterable(str)): A file handle to the hpo phenotypes file. Format:
+        HP:0000006	Autosomal dominant inheritance	4624	MYH6	-	mim2gene	OMIM:613251
+        HP:0000006	Autosomal dominant inheritance	23405	DICER1	-	mim2gene	OMIM:601200
+        HP:0000006	Autosomal dominant inheritance	1406	CRX	-	mim2gene	OMIM:120970
 
     Returns:
         hpo_terms(dict): A dictionary with hpo_ids as keys and terms as values

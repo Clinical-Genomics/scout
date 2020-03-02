@@ -126,7 +126,7 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
     LOG.info("Time to load terms: {0}".format(datetime.now() - start_time))
 
 
-def load_disease_terms(adapter, genemap_lines, genes=None, hpo_gene_lines=None):
+def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=None):
     """Load the omim phenotypes into the database
 
     Parse the phenotypes from genemap2.txt and find the associated hpo terms
@@ -136,7 +136,7 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_gene_lines=None):
         adapter(MongoAdapter)
         genemap_lines(iterable(str))
         genes(dict): Dictionary with all genes found in database
-        hpo_gene_lines(iterable(str))
+        hpo_disease_lines(iterable(str))
 
     """
     # Get a map with hgnc symbols to hgnc ids from scout
@@ -146,8 +146,8 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_gene_lines=None):
     # Fetch the disease terms from omim
     disease_terms = get_mim_phenotypes(genemap_lines=genemap_lines)
 
-    if not hpo_gene_lines:
-        hpo_gene_lines = fetch_hpo_to_genes()
+    if not hpo_disease_lines:
+        hpo_disease_lines = fetch_hpo_to_genes_to_disease()
     hpo_diseases = parse_hpo_diseases(hpo_disease_lines)
 
     start_time = datetime.now()
