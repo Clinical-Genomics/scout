@@ -82,6 +82,43 @@ def fetch_genes_to_hpo_to_disease():
     return fetch_resource(url)
 
 
+def fetch_mim_files(
+    api_key, mim2genes=False, mimtitles=False, morbidmap=False, genemap2=False
+):
+    """Fetch the necessary mim files using a api key
+
+    Args:
+        api_key(str): A api key necessary to fetch mim data
+
+    Returns:
+        mim_files(dict): A dictionary with the neccesary files
+    """
+
+    LOG.info("Fetching OMIM files from https://omim.org/")
+    mim2genes_url = "https://omim.org/static/omim/data/mim2gene.txt"
+    mimtitles_url = "https://data.omim.org/downloads/{0}/mimTitles.txt".format(api_key)
+    morbidmap_url = "https://data.omim.org/downloads/{0}/morbidmap.txt".format(api_key)
+    genemap2_url = "https://data.omim.org/downloads/{0}/genemap2.txt".format(api_key)
+
+    mim_files = {}
+    mim_urls = {}
+
+    if mim2genes is True:
+        mim_urls["mim2genes"] = mim2genes_url
+    if mimtitles is True:
+        mim_urls["mimtitles"] = mimtitles_url
+    if morbidmap is True:
+        mim_urls["morbidmap"] = morbidmap_url
+    if genemap2 is True:
+        mim_urls["genemap2"] = genemap2_url
+
+    for file_name in mim_urls:
+        url = mim_urls[file_name]
+        mim_files[file_name] = fetch_resource(url)
+
+    return mim_files
+
+
 def fetch_resource(url):
     """Fetch a resource and return the resulting lines in a list
     Send file_name to get more clean log messages
