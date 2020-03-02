@@ -12,6 +12,7 @@ LOG = logging.getLogger(__name__)
 
 HPO_URL = "http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/artifact/util/annotation/{0}"
 
+
 def get_request(url):
     """Return a requests response from url
 
@@ -138,6 +139,7 @@ def fetch_mim_files(
         mim_files[file_name] = fetch_resource(url)
 
     return mim_files
+
 
 def fetch_ensembl_biomart(attributes, filters, build=None):
     """Fetch data from ensembl biomart
@@ -289,6 +291,7 @@ def fetch_exac_constraint():
         exac_lines = fetch_resource(url)
 
     return exac_lines
+
 
 def fetch_hpo_files(genes_to_phenotype=False, phenotype_to_genes=False):
     """

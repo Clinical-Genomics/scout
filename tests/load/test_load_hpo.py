@@ -46,10 +46,7 @@ def test_load_hpo_terms(gene_database, hpo_terms_handle, hpo_disease_handle):
 
 
 def test_load_hpo(
-    gene_database,
-    hpo_terms_handle,
-    hpo_disease_handle,
-    genemap_file,
+    gene_database, hpo_terms_handle, hpo_disease_handle, genemap_file,
 ):
     adapter = gene_database
 

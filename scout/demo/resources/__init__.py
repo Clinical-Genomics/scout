@@ -17,11 +17,11 @@ mim2gene_file = "demo/resources/mim2gene_reduced.txt"
 genemap2_file = "demo/resources/genemap2_reduced.txt"
 
 # Hpo resources
-genes_to_phenotype_to_diseases_file = (
-    "demo/resources/genes_to_phenotype_reduced.txt"
-)
+genes_to_phenotype_to_diseases_file = "demo/resources/genes_to_phenotype_reduced.txt"
 hpoterms_file = "demo/resources/reduced.hpo.obo"
-hpo_phenotype_to_genes_to_diseases_file = "demo/resources/phenotype_to_genes_reduced.txt"
+hpo_phenotype_to_genes_to_diseases_file = (
+    "demo/resources/phenotype_to_genes_reduced.txt"
+)
 
 hpo_terms_def_file = "demo/resources/hpo_terms.csv"
 
@@ -50,7 +50,9 @@ genemap2_reduced_path = pkg_resources.resource_filename("scout", genemap2_file)
 
 # HPO paths
 hpoterms_reduced_path = pkg_resources.resource_filename("scout", hpoterms_file)
-genes_to_phenotype_reduced_path = pkg_resources.resource_filename("scout", genes_to_phenotype_to_diseases_file)
+genes_to_phenotype_reduced_path = pkg_resources.resource_filename(
+    "scout", genes_to_phenotype_to_diseases_file
+)
 phenotype_to_genes_reduced_path = pkg_resources.resource_filename(
     "scout", hpo_phenotype_to_genes_to_diseases_file
 )

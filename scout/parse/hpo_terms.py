@@ -4,7 +4,9 @@ http://purl.obolibrary.org/obo/hp.obo
 """
 
 import logging
+
 LOG = logging.getLogger(__name__)
+
 
 def build_hpo_tree(hpo_lines):
     """Build a tree with all hpo terms
@@ -161,6 +163,7 @@ def parse_hpo_gene(hpo_line):
     hpo_info["hpo_id"] = hpo_line[3]
 
     return hpo_info
+
 
 def get_incomplete_penetrance_genes(hpo_lines):
     """Get a set with all genes that have incomplete penetrance according to HPO

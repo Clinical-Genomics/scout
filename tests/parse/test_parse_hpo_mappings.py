@@ -12,6 +12,7 @@ def test_parse_hpo_to_genes(hpo_disease_handle):
         assert item["hpo_id"]
         assert item["hgnc_symbol"]
 
+
 def test_parse_hpo_diseases(hpo_disease_handle):
     """Test function that extracts disease mapping info from phenotype_to_genes.txt file"""
 

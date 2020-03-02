@@ -1,5 +1,6 @@
 from scout.parse.hpo_terms import build_hpo_tree, get_incomplete_penetrance_genes
 
+
 def test_build_hpo_tree(hpo_terms_handle):
     """Test function that creates the HPO terms tree from the HPO term lines"""
 

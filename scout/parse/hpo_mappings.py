@@ -4,7 +4,9 @@ http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/artifact/u
 http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/artifact/util/annotation/phenotype_to_genes.txt
 """
 import logging
+
 LOG = logging.getLogger(__name__)
+
 
 def parse_hpo_to_genes(lines):
     """Parse the map from hpo term to hgnc symbol
@@ -93,7 +95,7 @@ def parse_hpo_disease(hpo_line):
 
     hpo_line = hpo_line.rstrip().split("\t")
     hpo_info = {}
-    gd_source = hpo_line[5] # mim2gene or orphadata
+    gd_source = hpo_line[5]  # mim2gene or orphadata
     if gd_source == "orphadata":
         return
 

@@ -4,7 +4,11 @@ import pathlib
 
 import click
 
-from scout.utils.scout_requests import (fetch_hpo_terms, fetch_genes_to_hpo_to_disease, fetch_hpo_to_genes_to_disease)
+from scout.utils.scout_requests import (
+    fetch_hpo_terms,
+    fetch_genes_to_hpo_to_disease,
+    fetch_hpo_to_genes_to_disease,
+)
 
 LOG = logging.getLogger(__name__)
 

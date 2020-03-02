@@ -52,7 +52,12 @@ def load_hpo(
         LOG.warning("No omim information, skipping to load disease terms")
         return
 
-    load_disease_terms(adapter=adapter, genemap_lines=disease_lines, genes=alias_genes, hpo_disease_lines=hpo_gene_lines)
+    load_disease_terms(
+        adapter=adapter,
+        genemap_lines=disease_lines,
+        genes=alias_genes,
+        hpo_disease_lines=hpo_gene_lines,
+    )
 
 
 def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=None):

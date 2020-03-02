@@ -17,6 +17,7 @@ def test_setup_database_invalid_omim_key(mock_app):
     # there is no valid OMIM API KEY
     assert result.exit_code != 0
 
+
 def test_setup_database(mock_app):
     """Testing the cli to setup a full scale database"""
 
