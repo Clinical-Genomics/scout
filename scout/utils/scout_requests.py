@@ -1,20 +1,12 @@
-import xml.etree.ElementTree as et
 import logging
-import gzip
+
 import urllib.request
 from urllib.error import HTTPError, URLError
 from socket import timeout
 
-from scout.constants import CHROMOSOMES
-from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
-
 LOG = logging.getLogger(__name__)
 
-HPO_URL = (
-    "http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/"
-    "lastStableBuild/artifact/annotation/{0}"
-)
-
+HPO_URL = "http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/artifact/util/annotation/{0}"
 
 def get_request(url):
     """Return a requests response from url
@@ -27,7 +19,7 @@ def get_request(url):
     """
     try:
         LOG.info("Requesting %s", url)
-        response = urllib.request.urlopen(url, timeout=10)
+        response = urllib.request.urlopen(url, timeout=25)
         if url.endswith(".gz"):
             LOG.info("Decompress zipped file")
             data = gzip.decompress(response.read())  # a `bytes` object
@@ -69,6 +61,32 @@ def fetch_resource(url):
     return lines
 
 
+def fetch_hpo_terms():
+    """Fetch the latest version of the hpo terms in .obo format
+
+    Returns:
+        res(list(str)): A list with the lines
+    """
+    url = "http://purl.obolibrary.org/obo/hp.obo"
+
+    return fetch_resource(url)
+
+
+def fetch_hpo_to_genes_to_disease():
+    """Fetch the latest version of the map from phenotypes to genes
+
+    Returns:
+        res(list(str)): A list with the lines formatted this way:
+
+        #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol<tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
+        HP:0000002	Abnormality of body height	3954	LETM1	-	mim2gene	OMIM:194190
+        HP:0000002	Abnormality of body height	197131	UBR1	-	mim2gene	OMIM:243800
+        HP:0000002	Abnormality of body height	79633	FAT4		orphadata	ORPHA:314679
+    """
+    url = HPO_URL.format("phenotype_to_genes.txt")
+    return fetch_resource(url)
+
+
 def fetch_mim_files(
     api_key, mim2genes=False, mimtitles=False, morbidmap=False, genemap2=False
 ):
@@ -104,57 +122,6 @@ def fetch_mim_files(
         mim_files[file_name] = fetch_resource(url)
 
     return mim_files
-
-
-def fetch_hpo_terms():
-    """Fetch the latest version of the hpo terms in .obo format
-
-    Returns:
-        res(list(str)): A list with the lines
-    """
-    url = "http://purl.obolibrary.org/obo/hp.obo"
-
-    return fetch_resource(url)
-
-
-def fetch_hpo_to_genes():
-    """Fetch the latest version of the map from phenotypes to genes
-
-    Returns:
-        res(list(str)): A list with the lines
-
-    """
-    file_name = "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
-    url = HPO_URL.format(file_name)
-
-    return fetch_resource(url)
-
-
-def fetch_hpo_genes():
-    """Fetch the latest version of the map from genes to hpo terms
-
-    Returns:
-        res(list(str)): A list with the lines
-
-    """
-    file_name = "ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
-    url = HPO_URL.format(file_name)
-
-    return fetch_resource(url)
-
-
-def fetch_hpo_phenotype_to_terms():
-    """Fetch the latest version of the map from phenotype to terms
-
-    Returns:
-        res(list(str)): A list with the lines
-
-    """
-    file_name = "ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt"
-    url = HPO_URL.format(file_name)
-
-    return fetch_resource(url)
-
 
 def fetch_ensembl_biomart(attributes, filters, build=None):
     """Fetch data from ensembl biomart
