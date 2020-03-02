@@ -111,6 +111,7 @@ def database(
     ensgenes38,
     enstx37,
     enstx38,
+    hpogenes,
     hpoterms,
     hpo_to_genes,
     files,
@@ -141,6 +142,7 @@ def database(
         "genes38_path": ensgenes38,
         "transcripts37_path": enstx37,
         "transcripts38_path": enstx38,
+        "hpogenes_path": hpogenes,
         "hpoterms_path": hpoterms,
         "hpo_to_genes_path": hpo_to_genes,
     }
