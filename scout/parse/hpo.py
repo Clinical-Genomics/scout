@@ -67,10 +67,10 @@ def parse_hpo_disease(hpo_line):
     hpo_info["hpo_term"] = None
 
     if len(hpo_line) >= 3:
-        hpo_info["hgnc_symbol"] = hpo_line[2]
+        hpo_info["hgnc_symbol"] = hpo_line[3]
 
         if len(hpo_line) >= 4:
-            hpo_info["hpo_term"] = hpo_line[3]
+            hpo_info["hpo_term"] = hpo_line[0]
 
     return hpo_info
 
