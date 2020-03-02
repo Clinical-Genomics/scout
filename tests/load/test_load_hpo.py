@@ -50,7 +50,6 @@ def test_load_hpo(
     hpo_terms_handle,
     hpo_to_genes_handle,
     genemap_file,
-    hpo_disease_handle,
 ):
     adapter = gene_database
 
@@ -64,7 +63,6 @@ def test_load_hpo(
         hpo_lines=hpo_terms_handle,
         hpo_gene_lines=hpo_to_genes_handle,
         disease_lines=genemap_handle,
-        hpo_disease_lines=hpo_disease_handle,
     )
 
     # THEN make sure that the disease terms are in the database

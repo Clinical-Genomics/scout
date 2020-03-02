@@ -28,8 +28,7 @@ from scout.demo.resources import (exac_reduced_path, exons37_reduced_path,
                                   exons38_reduced_path, genemap2_reduced_path,
                                   genes37_reduced_path, genes38_reduced_path,
                                   hgnc_reduced_path,
-                                  hpo_phenotype_to_terms_reduced_path,
-                                  hpo_to_genes_reduced_path,
+                                  hpo_phenotype_to_genes_to_diseases_reduced_path,
                                   hpogenes_reduced_path, hpoterms_reduced_path,
                                   mim2gene_reduced_path,
                                   transcripts37_reduced_path,
@@ -583,10 +582,9 @@ def hpo_database(
 
     load_hpo(
         adapter=gene_database,
-        hpo_lines=get_file_handle(hpoterms_reduced_path),
-        hpo_gene_lines=get_file_handle(hpo_to_genes_reduced_path),
         disease_lines=get_file_handle(genemap2_reduced_path),
-        hpo_disease_lines=get_file_handle(hpo_phenotype_to_terms_reduced_path),
+        hpo_lines=get_file_handle(hpoterms_reduced_path),
+        hpo_gene_lines=get_file_handle(hpo_phenotype_to_genes_to_diseases_reduced_path),
     )
 
     return adapter
@@ -1155,7 +1153,7 @@ def hpo_genes_file(request):
 def hpo_to_genes_file(request):
     """Get the path to the hpo to genes file"""
     print("")
-    return hpo_to_genes_reduced_path
+    return hpo_phenotype_to_genes_to_diseases_reduced_path
 
 
 @pytest.fixture
@@ -1169,7 +1167,7 @@ def hpo_terms_file(request):
 def hpo_disease_file(request):
     """Get the path to the hpo disease file"""
     print("")
-    return hpo_phenotype_to_terms_reduced_path
+    return hpo_phenotype_to_genes_to_diseases_reduced_path
 
 
 @pytest.fixture

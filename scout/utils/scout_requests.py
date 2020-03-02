@@ -1,8 +1,12 @@
+import xml.etree.ElementTree as et
 import logging
-
+import gzip
 import urllib.request
 from urllib.error import HTTPError, URLError
 from socket import timeout
+
+from scout.constants import CHROMOSOMES
+from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
 
 LOG = logging.getLogger(__name__)
 
@@ -82,6 +86,7 @@ def fetch_genes_to_hpo_to_disease():
     """
     url = HPO_URL.format("genes_to_phenotype.txt")
     return fetch_resource(url)
+
 
 def fetch_hpo_to_genes_to_disease():
     """Fetch the latest version of the map from phenotypes to genes

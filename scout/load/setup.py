@@ -28,7 +28,6 @@ from scout.utils.handle import get_file_handle
 
 from scout.utils.scout_requests import (
     fetch_mim_files,
-    fetch_genes_to_hpo_to_disease,
     fetch_ensembl_genes,
     fetch_ensembl_transcripts,
     fetch_hgnc,
@@ -62,7 +61,7 @@ def setup_scout(
          For more details check the documentation.
 
     """
-    
+
     LOG.info("Check if there was a database, delete if existing")
     existing_database = False
     for collection_name in adapter.db.collection_names():

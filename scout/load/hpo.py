@@ -51,6 +51,10 @@ def load_hpo(
 
     load_hpo_terms(adapter, hpo_lines, hpo_gene_lines, alias_genes)
 
+    if not disease_lines:
+        LOG.warning("No omim information, skipping to load disease terms")
+        return
+
     load_disease_terms(adapter=adapter, genemap_lines=disease_lines, genes=alias_genes, hpo_disease_lines=hpo_gene_lines)
 
 
@@ -140,10 +144,6 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=Non
         hpo_disease_lines(iterable(str))
 
     """
-
-    LOG.error('----->IN LOAD DISEASE TERMS: genemap_lines:{}'.format(genemap_lines))
-    LOG.error('----->IN LOAD DISEASE TERMS: hpo disease lines:{}'.format(hpo_disease_lines))
-
     # Get a map with hgnc symbols to hgnc ids from scout
     if not genes:
         genes = adapter.genes_by_alias()
