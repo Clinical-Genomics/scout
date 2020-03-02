@@ -32,6 +32,7 @@ from scout.utils.scout_requests import (
     fetch_ensembl_transcripts,
     fetch_hgnc,
     fetch_exac_constraint,
+    fetch_genes_to_hpo_to_disease
 )
 
 LOG = logging.getLogger(__name__)
@@ -117,7 +118,7 @@ def setup_scout(
             line for line in get_file_handle(resource_files.get("hpogenes_path"))
         ]
     else:
-        hpo_gene_lines = fetch_hpo_genes()
+        hpo_gene_lines = fetch_genes_to_hpo_to_disease()
 
     if resource_files.get("hgnc_path"):
         hgnc_lines = [line for line in get_file_handle(resource_files.get("hgnc_path"))]
