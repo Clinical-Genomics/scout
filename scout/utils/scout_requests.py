@@ -23,7 +23,7 @@ def get_request(url):
     """
     try:
         LOG.info("Requesting %s", url)
-        response = urllib.request.urlopen(url, timeout=15)
+        response = urllib.request.urlopen(url, timeout=20)
         if url.endswith(".gz"):
             LOG.info("Decompress zipped file")
             data = gzip.decompress(response.read())  # a `bytes` object
