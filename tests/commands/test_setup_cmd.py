@@ -16,10 +16,6 @@ def test_setup_database_invalid_omim_key(mock_app):
     # Make sure that setup enters in setup function correctly but stops because
     # there is no valid OMIM API KEY
     assert result.exit_code != 0
-    assert (
-        "https://data.omim.org/downloads/not_a_valid_key/genemap2.txt does not"
-        in result.output
-    )
 
 
 def test_setup_database(mock_app):

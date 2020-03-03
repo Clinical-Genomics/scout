@@ -10,10 +10,7 @@ from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
 
 LOG = logging.getLogger(__name__)
 
-HPO_URL = (
-    "http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/"
-    "lastStableBuild/artifact/annotation/{0}"
-)
+HPO_URL = "http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/artifact/util/annotation/{0}"
 
 
 def get_request(url):
@@ -27,7 +24,7 @@ def get_request(url):
     """
     try:
         LOG.info("Requesting %s", url)
-        response = urllib.request.urlopen(url, timeout=10)
+        response = urllib.request.urlopen(url, timeout=20)
         if url.endswith(".gz"):
             LOG.info("Decompress zipped file")
             data = gzip.decompress(response.read())  # a `bytes` object
@@ -69,6 +66,44 @@ def fetch_resource(url):
     return lines
 
 
+def fetch_hpo_terms():
+    """Fetch the latest version of the hpo terms in .obo format
+
+    Returns:
+        res(list(str)): A list with the lines
+    """
+    url = "http://purl.obolibrary.org/obo/hp.obo"
+
+    return fetch_resource(url)
+
+
+def fetch_genes_to_hpo_to_disease():
+    """Fetch the latest version of the map from genes to phenotypes
+    Returns:
+        res(list(str)): A list with the lines formatted this way:
+        #Format: entrez-gene-id<tab>entrez-gene-symbol<tab>HPO-Term-Name<tab>HPO-Term-ID<tab>Frequency-Raw<tab>Frequency-HPO<tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
+        72	ACTG2	HP:0002027	Abdominal pain			-	mim2gene	OMIM:155310
+        72	ACTG2	HP:0000368	Low-set, posteriorly rotated ears		HP:0040283		orphadata	ORPHA:2604
+    """
+    url = HPO_URL.format("genes_to_phenotype.txt")
+    return fetch_resource(url)
+
+
+def fetch_hpo_to_genes_to_disease():
+    """Fetch the latest version of the map from phenotypes to genes
+
+    Returns:
+        res(list(str)): A list with the lines formatted this way:
+
+        #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol<tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
+        HP:0000002	Abnormality of body height	3954	LETM1	-	mim2gene	OMIM:194190
+        HP:0000002	Abnormality of body height	197131	UBR1	-	mim2gene	OMIM:243800
+        HP:0000002	Abnormality of body height	79633	FAT4		orphadata	ORPHA:314679
+    """
+    url = HPO_URL.format("phenotype_to_genes.txt")
+    return fetch_resource(url)
+
+
 def fetch_mim_files(
     api_key, mim2genes=False, mimtitles=False, morbidmap=False, genemap2=False
 ):
@@ -106,64 +141,14 @@ def fetch_mim_files(
     return mim_files
 
 
-def fetch_hpo_terms():
-    """Fetch the latest version of the hpo terms in .obo format
-
-    Returns:
-        res(list(str)): A list with the lines
-    """
-    url = "http://purl.obolibrary.org/obo/hp.obo"
-
-    return fetch_resource(url)
-
-
-def fetch_hpo_to_genes():
-    """Fetch the latest version of the map from phenotypes to genes
-
-    Returns:
-        res(list(str)): A list with the lines
-
-    """
-    file_name = "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
-    url = HPO_URL.format(file_name)
-
-    return fetch_resource(url)
-
-
-def fetch_hpo_genes():
-    """Fetch the latest version of the map from genes to hpo terms
-
-    Returns:
-        res(list(str)): A list with the lines
-
-    """
-    file_name = "ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
-    url = HPO_URL.format(file_name)
-
-    return fetch_resource(url)
-
-
-def fetch_hpo_phenotype_to_terms():
-    """Fetch the latest version of the map from phenotype to terms
-
-    Returns:
-        res(list(str)): A list with the lines
-
-    """
-    file_name = "ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt"
-    url = HPO_URL.format(file_name)
-
-    return fetch_resource(url)
-
-
 def fetch_ensembl_biomart(attributes, filters, build=None):
     """Fetch data from ensembl biomart
-    
+
     Args:
         attributes(list): List of selected attributes
         filters(dict): Select what filters to use
         build(str): '37' or '38'
-    
+
     Returns:
         client(EnsemblBiomartClient)
     """
@@ -178,10 +163,10 @@ def fetch_ensembl_biomart(attributes, filters, build=None):
 
 def fetch_ensembl_genes(build=None):
     """Fetch the ensembl genes
-    
+
     Args:
         build(str): ['37', '38']
-    
+
     Returns:
         result(iterable): Ensembl formated gene lines
     """
@@ -308,41 +293,26 @@ def fetch_exac_constraint():
     return exac_lines
 
 
-def fetch_hpo_files(
-    hpogenes=False, hpoterms=False, phenotype_to_terms=False, hpodisease=False
-):
-    """Fetch the necessary mim files using a api key
+def fetch_hpo_files(genes_to_phenotype=False, phenotype_to_genes=False):
+    """
+    Fetch the necessary HPO files from http://compbio.charite.de
 
     Args:
-        api_key(str): A api key necessary to fetch mim data
+        genes_to_phenotype(bool): if file genes_to_phenotype.txt is required
+        phenotype_to_genes(bool): if file phenotype_to_genes.txt is required
 
     Returns:
-        mim_files(dict): A dictionary with the neccesary files
+        hpo_files(dict): A dictionary with the necessary files
     """
-
     LOG.info("Fetching HPO information from http://compbio.charite.de")
-    base_url = (
-        "http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/"
-        "lastStableBuild/artifact/annotation/{}"
-    )
-    hpogenes_url = base_url.format("ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt")
-    hpoterms_url = base_url.format("ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt")
-    hpo_phenotype_to_terms_url = base_url.format(
-        "ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt"
-    )
-    hpodisease_url = base_url.format("diseases_to_genes.txt")
 
     hpo_files = {}
     hpo_urls = {}
 
-    if hpogenes is True:
-        hpo_urls["hpogenes"] = hpogenes_url
-    if hpoterms is True:
-        hpo_urls["hpoterms"] = hpoterms_url
-    if phenotype_to_terms is True:
-        hpo_urls["phenotype_to_terms"] = hpo_phenotype_to_terms_url
-    if hpodisease is True:
-        hpo_urls["hpodisease"] = hpodisease_url
+    if genes_to_phenotype is True:
+        hpo_urls["genes_to_phenotype"] = base_url.format("genes_to_phenotype.txt")
+    if phenotype_to_genes is True:
+        hpo_urls["phenotype_to_genes"] = base_url.format("phenotype_to_genes.txt")
 
     for file_name in hpo_urls:
         url = hpo_urls[file_name]
