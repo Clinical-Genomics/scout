@@ -763,7 +763,6 @@ def case_diagnosis(institute_id, case_name):
     omim_obj = store.disease_term(omim_id.strip())
     if not omim_obj:
         flash("Couldn't find any disease term with id: {}".format(omim_id), "warning")
-        return redirect(request.referrer)
 
     remove = True if request.args.get("remove") == "yes" else False
     store.diagnose(
