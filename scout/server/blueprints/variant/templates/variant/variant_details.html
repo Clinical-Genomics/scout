@@ -1,0 +1,232 @@
+{% macro gtcall_panel(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">
+      GT call
+      {% if variant.is_par %}
+        <span class="badge badge-info">PAR</span>
+      {% endif %}
+    </div>
+    <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th rowspan="2">Sample</th>
+            <th rowspan="2">Genotype (GT)</th>
+            <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
+            <th rowspan="2" colspan="1" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+            <tr>
+              <th>Reference</th>
+              <th>Alternative</th>
+            </tr>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sample in variant.samples %}
+            <tr {{ 'class="danger"' if sample.is_affected }}>
+              <td>{{ sample.display_name }}</td>
+              <td class="text-center">{{ sample.genotype_call }}</td>
+              {% if sample.allele_depths %}
+                  {% for number in sample.allele_depths %}
+                    <td class="text-right">{{ number }}</td>
+                  {% endfor %}
+              {% else %}
+                  <td class="text-right"><small>N/A</small></td>
+                  <td class="text-right"><small>N/A</small></td>
+              {% endif %}
+              <td class="text-right">{{ sample.genotype_quality }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="panel-footer">
+      {% for name, caller in variant.callers %}
+        <span class="badge badge-secondary">{{ name }}: {{ caller }}</span>
+      {% endfor %}
+    </div>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro frequencies(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Frequencies</div>
+    <div class="card-body">
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Source</th>
+            <th scope="col">Frequency</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for freq_name, value, link in variant.frequencies %}
+          <tr>
+            <td>
+              {% if link %}
+                <a href="{{ link }}" target="_blank">{{ freq_name }}</a>
+              {% else %}
+                {{ freq_name }}
+              {% endif %}
+            </td>
+            <td>
+              {% if value %}
+                <span class="badge badge-secondary">{{ value|human_decimal }}</span>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer">
+      <a href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
+      <a href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
+      {% if variant.cosmic_link %}
+        <a href="{{ variant.cosmic_link }}" target="_blank">COSMIC</a>
+      {% else %}
+        COSMIC
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro observations_panel(variant, observations, case) %}
+  <div class="card panel-default">
+    <div class="panel-heading">
+      <a class="text-white" href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
+    </div>
+    <div class="card-body">
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Nr obs.</th>
+            <th scope="col">Nr homo.</th>
+            <th scope="col">Total nr.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ observations.observations|default('N/A') }}</td>
+            <td>{{ observations.homozygote|default('N/A') }}</td>
+            <td>{{ observations.total }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer">
+      <a href="#" data-toggle="tooltip" title="Show maximum 10 cases"><strong>Cases</strong></a>
+        {% if observations['cases'] %}
+          {% for data in observations['cases'] %}
+            {% if data.variant %}
+              <a class="ml-3" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+            {% else %}
+              <span class="text-muted ml-3">{{ data.case.display_name }}</span>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro old_observations(variant, obs_date) %}
+  <div class="card panel-default">
+    <div class="panel-heading">
+      <a class="text-white" href="https://github.com/moonso/loqusdb" target="_blank">Local observations (archive {{obs_date or '2017-05-31'}})</a>
+    </div>
+    <div class="card-body">
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Nr obs.</th>
+            <th scope="col">Nr homo.</th>
+            <th scope="col">Total nr.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ variant.local_obs_old or 'N/A' }}</td>
+            <td>{{ variant.local_obs_hom_old or 'N/A' }}</td>
+            <td>{{ variant.local_obs_total_old or 638 }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro severity_list(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Severity</div>
+    <div class="card-body">
+      <ul class="list-group">
+        <li class="list-group-item">
+          <a href="https://sift.bii.a-star.edu.sg/www/SIFT_help.html" target="_blank">SIFT</a>
+          <span class="float-right">{{ variant.sift_predictions|join(', ') }}</span>
+        </li>
+        <li class="list-group-item">
+          <a href="https://sites.google.com/site/revelgenomics/about" target="_blank">REVEL</a>
+          <span class="float-right">{{ variant.revel_score or "-" }}</span>
+        </li>
+        <li class="list-group-item">
+          <a href="http://genetics.bwh.harvard.edu/pph2/" target="_blank">Polyphen</a>
+          <span class="float-right">{{ variant.polyphen_predictions|join(', ') }}</span>
+        </li>
+        <li class="list-group-item">
+          SPIDEX
+          <span class="float-right">{{ variant.spidex_human }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro conservations(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Conservation</div>
+    <div class="card-body">
+      <ul class="list-group">
+        <li class="list-group-item">
+          PHAST
+          <span class="float-right">{{ variant.phast_conservation|join(', ') or '-' }}</span>
+        </li>
+        <li class="list-group-item">
+          GERP
+          <span class="float-right">{{ variant.gerp_conservation|join(', ') or '-' }}</span>
+        </li>
+        <li class="list-group-item">
+          phyloP
+          <span class="float-right">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+{% endmacro %}
+
+
+{% macro mappability(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Mappability (<a class="text-white" href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
+    {% set superdups_fracmatches = [] %}
+    {% for gene in variant.genes %}
+      {% for transcript in gene.transcripts %}
+        {% if transcript.superdups_fracmatch %}
+          {% for superdup in transcript.superdups_fracmatch %}
+            {% do superdups_fracmatches.append(superdup) %}
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    {% set superdups_fracmatches = superdups_fracmatches|sort %}
+    <div class="panel-body">
+      {% if superdups_fracmatches %}
+        <span>mapping to {{superdups_fracmatches|length}} segm. dups. (min matching:{{ superdups_fracmatches|first|float|round(3) }}, max matching:{{ superdups_fracmatches|last|float|round(3) }})</span>
+      {% else %}
+        <p class="card-text">-</p>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}

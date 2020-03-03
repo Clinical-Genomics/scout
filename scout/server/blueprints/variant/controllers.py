@@ -10,17 +10,17 @@ from scout.constants import (
     ACMG_MAP,
     ACMG_OPTIONS,
     CALLERS,
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     VERBS_MAP,
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
 )
 from scout.parse.variant.ids import parse_document_id
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import institute_and_case, user_institutes, variant_case
-from scout.utils.requests import fetch_refseq_version
+from scout.utils.scout_requests import fetch_refseq_version
 
 from .utils import (
     add_gene_info,
@@ -29,10 +29,10 @@ from .utils import (
     default_panels,
     end_position,
     evaluation,
+    frequencies,
     frequency,
     is_affected,
     predictions,
-    sv_frequencies,
 )
 
 LOG = logging.getLogger(__name__)
@@ -150,9 +150,8 @@ def variant(
 
     # Add general variant links
     variant_obj.update(get_variant_links(variant_obj, int(genome_build)))
-    if variant_type == "sv":
-        variant_obj["frequencies"] = sv_frequencies(variant_obj)
-    elif variant_type in ["snv", "cancer"]:
+    variant_obj["frequencies"] = frequencies(variant_obj)
+    if variant_type in ["snv", "cancer"]:
         # This is to convert a summary of frequencies to a string
         variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
@@ -257,6 +256,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
         "end_chrom": variant_obj.get("end_chrom", chrom),
         "pos": pos,
         "end": variant_obj["end"],
+        "length": variant_obj.get("length", 0),
         "variant_type": variant_obj.get("sub_category", "").upper(),
         "category": variant_obj["category"],
     }
@@ -272,7 +272,9 @@ def observations(store, loqusdb, case_obj, variant_obj):
 
     obs_data["cases"] = []
     institute_id = variant_obj["institute"]
-    for case_id in obs_data.get("families", []):
+    for i, case_id in enumerate(obs_data.get("families", [])):
+        if i > 10:
+            break
         if case_id == var_case_id:
             continue
         # other case might belong to same institute, collaborators or other institutes

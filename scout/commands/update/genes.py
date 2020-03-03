@@ -26,9 +26,9 @@ from scout.load import load_hgnc_genes, load_transcripts, load_exons
 from scout.server.extensions import store
 from scout.utils.link import link_genes
 from scout.utils.handle import get_file_handle
-from scout.utils.requests import (
+from scout.utils.scout_requests import (
     fetch_mim_files,
-    fetch_hpo_genes,
+    fetch_genes_to_hpo_to_disease,
     fetch_hgnc,
     fetch_ensembl_genes,
     fetch_exac_constraint,
@@ -77,7 +77,7 @@ def genes(build, api_key):
     adapter.drop_transcripts(build)
     LOG.info("transcripts dropped")
 
-    hpo_genes = fetch_hpo_genes()
+    hpo_genes = fetch_genes_to_hpo_to_disease()
 
     if build:
         builds = [build]

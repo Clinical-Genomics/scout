@@ -1,47 +1,45 @@
 # -*- coding: utf-8 -*-
-import os.path
-import shutil
 import datetime
-import pymongo
-
-import zipfile
 import io
+import logging
+import os.path
 import pathlib
 import re
-
-import logging
-
+import shutil
+import zipfile
 from operator import itemgetter
 
+import pymongo
+from dateutil.parser import parse as parse_date
 from flask import (
-    abort,
     Blueprint,
+    Response,
+    abort,
     current_app,
+    flash,
+    jsonify,
     redirect,
     render_template,
     request,
-    url_for,
-    send_from_directory,
-    jsonify,
-    Response,
-    flash,
     send_file,
+    send_from_directory,
+    url_for,
 )
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
-from dateutil.parser import parse as parse_date
+
 from scout.constants import (
-    CLINVAR_HEADER,
-    CASEDATA_HEADER,
-    ACMG_MAP,
     ACMG_COMPLETE_MAP,
+    ACMG_MAP,
+    CASEDATA_HEADER,
+    CLINVAR_HEADER,
     SAMPLE_SOURCE,
 )
-from scout.server.extensions import store, mail
-from scout.server.utils import templated, institute_and_case, user_institutes
-from . import controllers
+from scout.server.extensions import mail, store
+from scout.server.utils import institute_and_case, templated, user_institutes
 
+from . import controllers
 from .forms import GeneVariantFiltersForm
 
 LOG = logging.getLogger(__name__)
@@ -131,6 +129,10 @@ def cases(institute_id):
 def case(institute_id, case_name):
     """Display one case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    if not case_obj:
+        flash("Case {} does not exist in database!".format(case_name))
+        return redirect(request.referrer)
+
     data = controllers.case(store, institute_obj, case_obj)
     return dict(
         institute=institute_obj,
@@ -139,6 +141,15 @@ def case(institute_id, case_name):
         tissue_types=SAMPLE_SOURCE,
         **data
     )
+
+
+@cases_bp.route("/<institute_id>/<case_name>/sma", methods=["GET"])
+@templated("cases/case_sma.html")
+def sma(institute_id, case_name):
+    """Visualize case SMA data - SMN CN calls"""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = controllers.case(store, institute_obj, case_obj)
+    return dict(institute=institute_obj, case=case_obj, format="html", **data)
 
 
 @cases_bp.route("/<institute_id>/clinvar_submissions", methods=["GET", "POST"])
@@ -517,15 +528,13 @@ def causatives(institute_id):
             case_obj = all_cases[variant_obj["case_id"]]
 
         if variant_obj["variant_id"] not in all_variants:
-            # capture ACMG classification for this variant
-            if isinstance(variant_obj.get("acmg_classification"), int):
-                acmg_code = ACMG_MAP[variant_obj["acmg_classification"]]
-                variant_obj["acmg_classification"] = ACMG_COMPLETE_MAP[acmg_code]
-
             all_variants[variant_obj["variant_id"]] = []
+
         all_variants[variant_obj["variant_id"]].append((case_obj, variant_obj))
 
-    return dict(institute=institute_obj, variant_groups=all_variants)
+    acmg_map = {key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()}
+
+    return dict(institute=institute_obj, variant_groups=all_variants, acmg_map=acmg_map)
 
 
 @cases_bp.route("/<institute_id>/gene_variants", methods=["GET", "POST"])
@@ -607,7 +616,38 @@ def update_individual(institute_id, case_name):
     age = request.form.get("_".join(["age", ind_id]))
     tissue = request.form.get("_".join(["tissue", ind_id]))
     controllers.update_individuals(
-        store, institute_obj, case_obj, user_obj, ind_id, age, tissue
+        store=store,
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        user_obj=user_obj,
+        ind=ind_id,
+        age=age,
+        tissue=tissue,
+    )
+    return redirect(request.referrer)
+
+
+@cases_bp.route("/<institute_id>/<case_name>/samples", methods=["POST"])
+def update_cancer_sample(institute_id, case_name):
+    """Update cancer sample-associated data: tumor purity, tissue type, tumor type"""
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    ind_id = request.form.get("update_ind")
+
+    tumor_type = request.form.get(".".join(["tumor_type", ind_id]))
+    tissue_type = request.form.get(".".join(["tissue_type", ind_id]))
+    tumor_purity = request.form.get(".".join(["tumor_purity", ind_id]))
+
+    controllers.update_cancer_samples(
+        store=store,
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        user_obj=user_obj,
+        ind=ind_id,
+        tissue=tissue_type,
+        tumor_type=tumor_type,
+        tumor_purity=tumor_purity,
     )
     return redirect(request.referrer)
 

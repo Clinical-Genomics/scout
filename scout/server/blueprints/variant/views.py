@@ -24,7 +24,7 @@ from scout.server.blueprints.variant.verification_controllers import (
 
 from scout.parse.clinvar import set_submission_objects
 
-from scout.constants import ACMG_MAP, ACMG_CRITERIA
+from scout.constants import ACMG_CRITERIA, ACMG_MAP
 
 LOG = logging.getLogger(__name__)
 
@@ -75,6 +75,8 @@ def sv_variant(institute_id, case_name, variant_id):
             store, loqusdb, data["case"], data["variant"]
         )
 
+    data["cancer"] = request.args.get("cancer") == "yes"
+    data["str"] = request.args.get("str") == "yes"
     return data
 
 

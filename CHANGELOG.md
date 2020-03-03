@@ -4,14 +4,81 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-
 ## [x.x.x]
 
 ### Added
-- Accepts `alignemnt_path` in load config to pass bam/cram files
+- ClinVar SNVs track in IGV
+- Add SMA view with SMN Copy Number data
+
+### Fixed
+- Bug when adding a new gene to a panel
+- Restored missing recent delivery reports
+- Fixed style and links to other reports in case side panel
+- Deleting cases using display_name and institute not deleting its variants
+- Fixed bug that caused coordinates filter to override other filters
+- Fixed a problem with finding some INS in loqusdb
+- Layout on SV page when local observations without cases are present
+- Make scout compatible with the new HPO definition files from `http://compbio.charite.de/jenkins/`
+
+### Changed
+
+## [4.12.4]
+
+### Fixed
+- Layout on SV page when local observations without cases are present
+
+## [4.12.3]
+
+### Fixed
+- Case report when causative or pinned SVs have non null allele frequencies
+
+## [4.12.2]
+
+### Fixed
+- SV variant links now take you to the SV variant page again
+- Cancer variant view has cleaner table data entries for "N/A" data
+- Pinned variant case level display hotfix for cancer and str - more on this later
+- Cancer variants show correct alt/ref reads mirroring alt frequency now
+- Always load all clinical STR variants even if a region load is attempted - index may be missing
+- Same case repetition in variant local observations
+
+## [4.12.1]
+
+### Fixed
+- Bug in variant.gene when gene has no HGVS description
+
+
+## [4.12]
+
+### Added
+- Accepts `alignment_path` in load config to pass bam/cram files
+- Display all phenotypes on variant page
+- Display hgvs coordinates on pinned and causatives
+- Clear panel pending changes
+- Adds option to setup the database with static files
+- Adds cli command to download the resources from CLI that scout needs
+- Adds dummy files for merged somatic SV and CNV; as well as merged SNV, and INDEL part of #1279
+- Allows for upload of OMIM-AUTO gene panel from static files without api-key
 
 ### Fixed
 - Cancer case HPO panel variants link
+- Fix so that some drop downs have correct size
+- First IGV button in str variants page
+- Cancer case activates on SNV variants
+- Cases activate when STR variants are viewed
+- Always calculate code coverage
+- Pinned/Classification/comments in all types of variants pages
+- Null values for panel's custom_inheritance_models
+- Discrepancy between the manual disease transcripts and those in database in gene-edit page
+- ACMG classification not showing for some causatives
+- Fix bug which caused IGV.js to use hg19 reference files for hg38 data
+- Bug when multiple bam files sources with non-null values are available
+
+
+### Changed
+- Renamed `requests` file to `scout_requests`
+- Cancer variant view shows two, instead of four, decimals for allele and normal
+
 
 ## [4.11.1]
 
@@ -34,6 +101,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parsing and displaying cancer SV variants from Manta annotated VCF files
 - Dismiss cancer snv variants with cancer-specific options
 - Add IGV.js UPD, RHO and TIDDIT coverage wig tracks.
+
 
 ### Fixed
 - Slightly darker page background

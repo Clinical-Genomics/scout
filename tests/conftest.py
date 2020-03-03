@@ -1,86 +1,75 @@
 # -*- coding: utf-8 -*-
-import os
-import pytest
-import logging
 import datetime
-
-from flask_login import login_user, logout_user
-from scout.server.blueprints.login.models import LoginUser
-
+import logging
+import os
 from pprint import pprint as pp
 
-from cyvcf2 import VCF
-import yaml
 import pymongo
+import pytest
+import yaml
+from cyvcf2 import VCF
+from flask_login import login_user, logout_user
 
 # Adapter stuff
 from mongomock import MongoClient
 
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
-
-from scout.utils.handle import get_file_handle
-
-from scout.parse.case import parse_case
-from scout.parse.panel import parse_gene_panel
-from scout.parse.variant import parse_variant
-from scout.parse.variant.headers import parse_rank_results_header
-from scout.parse.hgnc import parse_hgnc_genes
-from scout.parse.ensembl import (
-    parse_ensembl_transcripts,
-    parse_transcripts,
-    parse_ensembl_exons,
-)
-from scout.parse.exac import parse_exac_genes
-from scout.parse.hpo import parse_hpo_phenotypes, parse_hpo_genes, parse_hpo_diseases
-
-from scout.utils.link import link_genes
-from scout.log import init_log
-from scout.build import build_institute, build_case, build_panel
-from scout.build.variant import build_variant
+from scout.build import build_case, build_institute, build_panel
 from scout.build.genes.hgnc_gene import build_hgnc_gene
 from scout.build.genes.transcript import build_transcript
 from scout.build.user import build_user
-from scout.load import load_hgnc_genes
-from scout.load.hpo import load_hpo
-from scout.load.transcript import load_transcripts
-
-# These are the reduced data files
-from scout.demo.resources import (
-    hgnc_reduced_path,
-    transcripts37_reduced_path,
-    genes37_reduced_path,
-    exac_reduced_path,
-    hpogenes_reduced_path,
-    hpoterms_reduced_path,
-    hpo_to_genes_reduced_path,
-    hpo_phenotype_to_terms_reduced_path,
-    mim2gene_reduced_path,
-    genemap2_reduced_path,
-    transcripts38_reduced_path,
-    genes38_reduced_path,
-    exons37_reduced_path,
-    exons37_reduced_path,
-    exons38_reduced_path,
-)
-
+from scout.build.variant import build_variant
 from scout.demo import (
-    research_snv_path,
-    research_sv_path,
+    cancer_load_path,
+    cancer_sv_path,
     clinical_snv_path,
     clinical_str_path,
     clinical_sv_path,
-    ped_path,
+    customannotation_snv_path,
+    empty_sv_clinical_path,
     load_path,
     panel_path,
-    empty_sv_clinical_path,
-    customannotation_snv_path,
+    ped_path,
+    research_snv_path,
+    research_sv_path,
     vep_97_annotated_path,
-    cancer_sv_path,
-    cancer_load_path,
 )
 
+# These are the reduced data files
+from scout.demo.resources import (
+    exac_reduced_path,
+    exons37_reduced_path,
+    exons38_reduced_path,
+    genemap2_reduced_path,
+    genes37_reduced_path,
+    genes38_reduced_path,
+    hgnc_reduced_path,
+    mim2gene_reduced_path,
+    transcripts37_reduced_path,
+    transcripts38_reduced_path,
+    genes_to_phenotype_reduced_path,
+    hpoterms_reduced_path,
+    phenotype_to_genes_reduced_path,
+)
+from scout.load import load_hgnc_genes
+from scout.load.hpo import load_hpo
+from scout.load.transcript import load_transcripts
+from scout.log import init_log
 from scout.models.hgnc_map import HgncGene
-
+from scout.parse.case import parse_case
+from scout.parse.ensembl import (
+    parse_ensembl_exons,
+    parse_ensembl_transcripts,
+    parse_transcripts,
+)
+from scout.parse.exac import parse_exac_genes
+from scout.parse.hgnc import parse_hgnc_genes
+from scout.parse.panel import parse_gene_panel
+from scout.parse.variant import parse_variant
+from scout.parse.variant.headers import parse_rank_results_header
+from scout.server.blueprints.login.models import LoginUser
+from scout.utils.handle import get_file_handle
+from scout.utils.link import link_genes
 
 DATABASE = "testdb"
 REAL_DATABASE = "realtestdb"
@@ -204,37 +193,18 @@ def transcript_objs(request, parsed_transcripts):
 #############################################################
 ################# Hpo terms fixtures ########################
 #############################################################
-@pytest.fixture
-def hpo_terms_handle(request, hpo_terms_file):
-    """Get a file handle to a hpo terms file"""
-    print("")
-    hpo_lines = get_file_handle(hpo_terms_file)
-    return hpo_lines
 
 
 @pytest.fixture
-def hpo_terms(request, hpo_terms_file):
-    """Get a dictionary with the hpo terms"""
-    print("")
-    hpo_terms_handle = get_file_handle(hpo_terms_file)
-    return parse_hpo_phenotypes(hpo_terms_handle)
+def hpo_genes_handle(request, hpo_genes_file):
+    """Get a file handle to a genes_to_phenotypes HPO mapping file"""
+    return get_file_handle(hpo_genes_file)
 
 
 @pytest.fixture
-def hpo_disease_handle(request, hpo_disease_file):
-    """Get a file handle to a hpo disease file"""
-    print("")
-    handle = get_file_handle(hpo_disease_file)
-    return handle
-
-
-@pytest.fixture
-def test_pheno_terms(request, hpo_disease_file):
-    """Get a file handle to a hpo disease file"""
-    print("")
-    hpo_disease_handle = get_file_handle(hpo_disease_file)
-    diseases = parse_hpo_diseases(hpo_disease_handle)
-    return diseases
+def hpo_genes_file(request):
+    """Get the path to the genes_to_phenotypes HPO mapping file"""
+    return genes_to_phenotype_reduced_path
 
 
 @pytest.fixture
@@ -247,6 +217,55 @@ def test_hpo_terms(request):
         {"phenotype_id": "HP:0000543", "feature": "Optic disc pallor"},
     ]
     return pheno_terms
+
+
+@pytest.fixture
+def phenotype_to_genes_file(request):
+    """Get the path to the phenotypes_to_genes mapping file"""
+    return phenotype_to_genes_reduced_path
+
+
+@pytest.fixture
+def hpo_terms_handle(request, hpo_terms_file):
+    """Get a file handle to a hpo terms file (http://purl.obolibrary.org/obo/hp.obo)
+
+    """
+    hpo_lines = get_file_handle(hpo_terms_file)
+    return hpo_lines
+
+
+@pytest.fixture
+def hpo_terms_file(request):
+    """Get the path to the hpo terms file"""
+    return hpoterms_reduced_path
+
+
+@pytest.fixture
+def hpo_disease_handle(request, phenotype_to_genes_file):
+    """Get a file handle to a phenotypes_to_genes mapping file"""
+    handle = get_file_handle(phenotype_to_genes_file)
+    return handle
+
+
+@pytest.fixture(scope="function")
+def hpo_database(
+    request,
+    gene_database,
+    hpo_terms_handle,
+    hpo_genes_handle,
+    hpo_disease_handle,
+    phenotype_to_genes_file,
+):
+    "Returns an adapter to a database populated with hpo terms"
+    adapter = gene_database
+
+    load_hpo(
+        adapter=gene_database,
+        disease_lines=get_file_handle(genemap2_reduced_path),
+        hpo_lines=get_file_handle(hpoterms_reduced_path),
+        hpo_gene_lines=get_file_handle(phenotype_to_genes_file),
+    )
+    return adapter
 
 
 #############################################################
@@ -599,47 +618,6 @@ def real_gene_database(
         [("build", pymongo.ASCENDING), ("hgnc_symbol", pymongo.ASCENDING)]
     )
     LOG.info("Index done")
-
-    return adapter
-
-
-@pytest.fixture(scope="function")
-def hpo_database(
-    request, gene_database, hpo_terms_handle, hpo_to_genes_handle, hpo_disease_handle
-):
-    "Returns an adapter to a database populated with hpo terms"
-    adapter = gene_database
-
-    load_hpo(
-        adapter=gene_database,
-        hpo_lines=get_file_handle(hpoterms_reduced_path),
-        hpo_gene_lines=get_file_handle(hpo_to_genes_reduced_path),
-        disease_lines=get_file_handle(genemap2_reduced_path),
-        hpo_disease_lines=get_file_handle(hpo_phenotype_to_terms_reduced_path),
-    )
-
-    return adapter
-
-
-@pytest.fixture(scope="function")
-def real_hpo_database(
-    request,
-    real_gene_database,
-    hpo_terms_handle,
-    hpo_to_genes_handle,
-    genemap_handle,
-    hpo_disease_handle,
-):
-    "Returns an adapter to a database populated with hpo terms"
-    adapter = real_gene_database
-
-    load_hpo(
-        adapter=gene_database,
-        hpo_lines=hpo_terms_handle,
-        hpo_gene_lines=hpo_to_genes_handle,
-        disease_lines=genemap_handle,
-        hpo_disease_lines=hpo_disease_handle,
-    )
 
     return adapter
 
@@ -1174,34 +1152,6 @@ def exac_file(request):
 
 
 @pytest.fixture
-def hpo_genes_file(request):
-    """Get the path to the hpo genes file"""
-    print("")
-    return hpogenes_reduced_path
-
-
-@pytest.fixture
-def hpo_to_genes_file(request):
-    """Get the path to the hpo to genes file"""
-    print("")
-    return hpo_to_genes_reduced_path
-
-
-@pytest.fixture
-def hpo_terms_file(request):
-    """Get the path to the hpo terms file"""
-    print("")
-    return hpoterms_reduced_path
-
-
-@pytest.fixture
-def hpo_disease_file(request):
-    """Get the path to the hpo disease file"""
-    print("")
-    return hpo_phenotype_to_terms_reduced_path
-
-
-@pytest.fixture
 def mim2gene_file(request):
     """Get the path to the mim2genes file"""
     print("")
@@ -1398,57 +1348,29 @@ def parsed_transcripts(request, transcripts_handle, ensembl_genes):
 @pytest.fixture
 def exac_handle(request, exac_file):
     """Get a file handle to a ensembl gene file"""
-    print("")
+
     return get_file_handle(exac_file)
 
 
 @pytest.fixture
 def exac_genes(request, exac_handle):
     """Get the parsed exac genes"""
-    print("")
+
     return parse_exac_genes(exac_handle)
-
-
-@pytest.fixture
-def hpo_genes_handle(request, hpo_genes_file):
-    """Get a file handle to a hpo gene file"""
-    print("")
-    return get_file_handle(hpo_genes_file)
-
-
-@pytest.fixture
-def hpo_to_genes_handle(request, hpo_to_genes_file):
-    """Get a file handle to a hpo to gene file"""
-    print("")
-    return get_file_handle(hpo_to_genes_file)
-
-
-@pytest.fixture
-def hpo_disease_handle(request, hpo_disease_file):
-    """Get a file handle to a hpo disease file"""
-    print("")
-    return get_file_handle(hpo_disease_file)
 
 
 @pytest.fixture
 def mim2gene_handle(request, mim2gene_file):
     """Get a file handle to a mim2genes file"""
-    print("")
+
     return get_file_handle(mim2gene_file)
 
 
 @pytest.fixture
 def genemap_handle(request, genemap_file):
     """Get a file handle to a mim2genes file"""
-    print("")
+
     return get_file_handle(genemap_file)
-
-
-@pytest.fixture
-def hpo_genes(request, hpo_genes_handle):
-    """Get the exac genes"""
-    print("")
-    return parse_hpo_genes(hpo_genes_handle)
 
 
 #############################################################

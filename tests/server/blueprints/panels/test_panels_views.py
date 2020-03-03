@@ -131,3 +131,22 @@ def test_panel_export(client, real_panel_database):
     resp = client.get(url_for("panels.panel_export", panel_id=panel_obj["_id"]))
     # THEN it should display the panel with all the genes
     assert resp.status_code == 200
+
+
+def test_gene_edit(client, real_panel_database):
+    """Test interface that allows gene panel editing, GET method"""
+    adapter = real_panel_database
+
+    # GIVEN a panel in the database
+    panel_obj = adapter.gene_panels()[0]
+
+    # WITH at least a gene
+    gene = panel_obj["genes"][0]
+    assert gene
+
+    # WHEN accessing the panel gene_edit view
+    resp = client.get(
+        url_for("panels.gene_edit", panel_id=panel_obj["_id"], hgnc_id=gene["hgnc_id"])
+    )
+    # THEN it should return a valid page
+    assert resp.status_code == 200

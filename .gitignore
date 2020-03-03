@@ -70,6 +70,7 @@ pylintrc
 
 # Other
 /local
+scripts/local
 *sqlite
 certs/*
 

@@ -3,14 +3,19 @@ import datetime
 import logging
 from pathlib import Path
 from pprint import pprint as pp
+from fractions import Fraction
 
 from ped_parser import FamilyParser
 
-from scout.constants import (PHENOTYPE_MAP, REV_PHENOTYPE_MAP, REV_SEX_MAP,
-                             SEX_MAP)
+from scout.constants import PHENOTYPE_MAP, REV_PHENOTYPE_MAP, REV_SEX_MAP, SEX_MAP
 from scout.exceptions import ConfigError, PedigreeError
-from scout.parse.peddy import (parse_peddy_ped, parse_peddy_ped_check,
-                               parse_peddy_sex_check)
+
+from scout.parse.peddy import (
+    parse_peddy_ped,
+    parse_peddy_ped_check,
+    parse_peddy_sex_check,
+)
+from scout.parse.smn import parse_smn_file
 from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
@@ -50,6 +55,7 @@ def parse_case_data(
     vcf_cancer=None,
     vcf_cancer_sv=None,
     vcf_str=None,
+    smn_tsv=None,
     peddy_ped=None,
     peddy_sex=None,
     peddy_check=None,
@@ -71,6 +77,7 @@ def parse_case_data(
         vcf_sv(str): Path to a vcf file
         vcf_cancer(str): Path to a vcf file
         vcf_cancer_sv(str): Path to a vcf file
+        smn_tsv(str): Path to an SMN tsv file
         peddy_ped(str): Path to a peddy ped
         multiqc(str): Path to dir with multiqc information
 
@@ -119,7 +126,12 @@ def parse_case_data(
     config_data["vcf_snv"] = vcf_snv if vcf_snv else config_data.get("vcf_snv")
     config_data["vcf_sv"] = vcf_sv if vcf_sv else config_data.get("vcf_sv")
     config_data["vcf_str"] = vcf_str if vcf_str else config_data.get("vcf_str")
-    LOG.debug("Config vcf_str set to {0}".format(config_data["vcf_str"]))
+    config_data["smn_tsv"] = smn_tsv if smn_tsv else config_data.get("smn_tsv")
+
+    LOG.debug("Checking for SMN TSV..")
+    if config_data["smn_tsv"]:
+        LOG.info("Adding SMN info from {}.".format(config_data["smn_tsv"]))
+        add_smn_info(config_data)
 
     config_data["vcf_cancer"] = (
         vcf_cancer if vcf_cancer else config_data.get("vcf_cancer")
@@ -144,6 +156,74 @@ def parse_case_data(
         config_data["track"] = "cancer"
 
     return config_data
+
+
+def add_smn_info(config_data):
+    """Add SMN CN / SMA prediction from TSV files to individuals
+
+    Args:
+        config_data(dict)
+    """
+
+    if not config_data.get("smn_tsv"):
+        LOG.warning("No smn_tsv though add_smn_info called. This is odd.")
+        return
+
+    file_handle = open(config_data["smn_tsv"], "r")
+    smn_info = {}
+    for smn_ind_info in parse_smn_file(file_handle):
+        smn_info[smn_ind_info["sample_id"]] = smn_ind_info
+
+    for ind in config_data["samples"]:
+        ind_id = ind["sample_id"]
+        try:
+            for key in [
+                "is_sma",
+                "is_sma_carrier",
+                "smn1_cn",
+                "smn2_cn",
+                "smn2delta78_cn",
+                "smn_27134_cn",
+            ]:
+                ind[key] = smn_info[ind_id][key]
+        except KeyError as e:
+            LOG.warning(
+                "Individual {} has no SMN info to update: {}.".format(ind_id, e)
+            )
+
+
+def add_smn_info_case(case_data):
+    """Add SMN CN / SMA prediction from TSV files to individuals in a yaml load case context
+
+    Args:
+        case_data(dict)
+    """
+
+    if not case_data.get("smn_tsv"):
+        LOG.warning("No smn_tsv though add_smn_info_case called. This is odd.")
+        return
+
+    file_handle = open(case_data["smn_tsv"], "r")
+    smn_info = {}
+    for smn_ind_info in parse_smn_file(file_handle):
+        smn_info[smn_ind_info["sample_id"]] = smn_ind_info
+
+    for ind in case_data["individuals"]:
+        ind_id = ind["individual_id"]
+        try:
+            for key in [
+                "is_sma",
+                "is_sma_carrier",
+                "smn1_cn",
+                "smn2_cn",
+                "smn2delta78_cn",
+                "smn_27134_cn",
+            ]:
+                ind[key] = smn_info[ind_id][key]
+        except KeyError as e:
+            LOG.warning(
+                "Individual {} has no SMN info to update: {}.".format(ind_id, e)
+            )
 
 
 def add_peddy_information(config_data):
@@ -233,10 +313,25 @@ def parse_individual(sample):
                 'vcf2cytosure': str,
                 'capture_kits': list(str),
 
+                'upd_sites_bed': str,
+                'upd_regions_bed': str,
+                'rhocall_bed': str,
+                'rhocall_wig': str,
+                'tiddit_coverage_wig': str,
+
+                'predicted_ancestry' = str,
+
+                'is_sma': boolean,
+                'is_sma_carrier': boolean,
+                'smn1_cn' = int,
+                'smn2_cn' = int,
+                'smn2delta78_cn' = int,
+                'smn_27134_cn' = int,
+
                 'tumor_type': str,
                 'tmb': str,
                 'msi': str,
-                'tumor_purity': str,
+                'tumor_purity': float,
                 'tissue_type': str,
             }
 
@@ -283,9 +378,12 @@ def parse_individual(sample):
     ind_info["predicted_ancestry"] = sample.get("predicted_ancestry")
 
     # IGV files these can be bam or cram format
-    ind_info["bam_file"] = sample.get(
-        "bam_path", sample.get("bam_file", sample.get("alignment_path"))
-    )
+    bam_path_options = ["bam_path", "bam_file", "alignment_path"]
+    for option in bam_path_options:
+        if sample.get(option) and not sample.get(option).strip() == "":
+            ind_info["bam_file"] = sample[option]
+            break
+
     ind_info["rhocall_bed"] = sample.get("rhocall_bed", sample.get("rhocall_bed"))
     ind_info["rhocall_wig"] = sample.get("rhocall_wig", sample.get("rhocall_wig"))
     ind_info["tiddit_coverage_wig"] = sample.get(
@@ -301,6 +399,14 @@ def parse_individual(sample):
     # Path to downloadable vcf2cytosure file
     ind_info["vcf2cytosure"] = sample.get("vcf2cytosure")
 
+    # load sma file if it is not done at this point!
+    ind_info["is_sma"] = sample.get("is_sma", None)
+    ind_info["is_sma_carrier"] = sample.get("is_sma_carrier", None)
+    ind_info["smn1_cn"] = sample.get("smn1_cn", None)
+    ind_info["smn2_cn"] = sample.get("smn2_cn", None)
+    ind_info["smn2delta78_cn"] = sample.get("smn2delta78_cn", None)
+    ind_info["smn_27134_cn"] = sample.get("smn_27134_cn", None)
+
     ind_info["capture_kits"] = (
         [sample.get("capture_kit")] if "capture_kit" in sample else []
     )
@@ -310,7 +416,12 @@ def parse_individual(sample):
     # tumor_mutational_burden
     ind_info["tmb"] = sample.get("tmb")
     ind_info["msi"] = sample.get("msi")
+
     ind_info["tumor_purity"] = sample.get("tumor_purity")
+    # might be a string-formatted fraction, example: 30/90
+    if isinstance(ind_info["tumor_purity"], str):
+        ind_info["tumor_purity"] = float(Fraction(ind_info["tumor_purity"]))
+
     ind_info["tissue_type"] = sample.get("tissue_type")
 
     # Remove key-value pairs from ind_info where key==None and return
@@ -368,6 +479,7 @@ def parse_case(config):
         raise ConfigError("A case has to have a 'family'")
 
     individuals = parse_individuals(config["samples"])
+
     case_data = {
         "owner": config["owner"],
         "collaborators": [config["owner"]],
@@ -390,6 +502,7 @@ def parse_case(config):
             "vcf_cancer_research": config.get("vcf_cancer_research"),
             "vcf_cancer_sv_research": config.get("vcf_cancer_sv_research"),
         },
+        "smn_tsv": config.get("smn_tsv"),
         "default_panels": config.get("default_gene_panels", []),
         "gene_panels": config.get("gene_panels", []),
         "assignee": config.get("assignee"),
@@ -402,6 +515,12 @@ def parse_case(config):
         "chromograph_image_files": config.get("chromograph_image_files"),
         "chromograph_prefixes": config.get("chromograph_prefixes"),
     }
+
+    # add SMN info
+    LOG.debug("Checking for SMN TSV..")
+    if case_data["smn_tsv"]:
+        LOG.info("Adding SMN info from {}.".format(case_data["smn_tsv"]))
+        add_smn_info_case(case_data)
 
     # add the pedigree figure, this is a xml file which is dumped in the db
     if "madeline" in config:

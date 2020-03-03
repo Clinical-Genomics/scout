@@ -1,42 +1,9 @@
-# -*- coding: utf-8 -*-
+"""Code for loqus flask extension"""
 import copy
 import json
 import logging
 import subprocess
 from subprocess import CalledProcessError
-
-from flask_bootstrap import Bootstrap
-from flask_debugtoolbar import DebugToolbarExtension
-from flask_ldap3_login import LDAP3LoginManager
-from flask_login import LoginManager
-from flask_mail import Mail
-from flask_oauthlib.client import OAuth
-from pymongo.errors import ConnectionFailure
-
-from scout.adapter import MongoAdapter
-from scout.adapter.client import get_connection
-
-toolbar = DebugToolbarExtension()
-
-
-bootstrap = Bootstrap()
-
-
-store = MongoAdapter()
-
-
-login_manager = LoginManager()
-ldap_manager = LDAP3LoginManager()
-
-oauth = OAuth()
-# use Google as remote application
-# you must configure 3 values from Google APIs console
-# https://code.google.com/apis/console
-google = oauth.remote_app("google", app_key="GOOGLE")
-
-
-mail = Mail()
-
 
 LOG = logging.getLogger(__name__)
 
@@ -52,29 +19,34 @@ def execute_command(cmd):
         line (str): line of output from command
     """
     output = ""
+    message = " ".join(cmd)
+    LOG.info("Running: %s", message)
     try:
         output = subprocess.check_output(cmd, shell=False)
     except CalledProcessError as err:
         LOG.warning("Something went wrong with loqusdb")
         raise err
 
+    output = output.decode("utf-8")
+
     if not output:
         return output
 
-    output = output.decode("utf-8")
     return output
 
 
 class LoqusDB:
+    """Interface to loqusdb from Scout"""
+
     def __init__(self, loqusdb_binary=None, loqusdb_config=None, version=None):
         """Initialise from args"""
         self.loqusdb_binary = loqusdb_binary
         self.loqusdb_config = loqusdb_config
         self.version = version or 0.0
         LOG.info(
-            "Initializing loqus extension with binary: {}, version: {}".format(
-                self.loqusdb_binary, self.version
-            )
+            "Initializing loqus extension with binary: %s, version: %d",
+            self.loqusdb_binary,
+            self.version,
         )
 
         self.base_call = [self.loqusdb_binary]
@@ -89,31 +61,59 @@ class LoqusDB:
         )
         LOG.info("Use loqusdb: %s", self.loqusdb_binary)
         self.loqusdb_config = app.config["LOQUSDB_SETTINGS"].get("config_path")
-        if self.loqusdb_config:
-            LOG.info("Use loqusdb config file %s", self.loqusdb_config)
 
         self.base_call = [self.loqusdb_binary]
         if self.loqusdb_config:
+            LOG.info("Use loqusdb config file %s", self.loqusdb_config)
             self.base_call.extend(["--config", self.loqusdb_config])
 
-        self.version = self._version()
-        return
+        self.version = app.config["LOQUSDB_SETTINGS"].get("version")
+        if not self.version:
+            self.version = self.get_version()
 
-    def _fetch_variant(self, variant_info):
-        """Query loqusdb for variant information
+    @staticmethod
+    def set_coordinates(variant_info):
+        """Update coordinates depending on variant type
+
+        Some SVs have tricky ways to represent coordinates.
+
+        - Insertions have the same start and end position but they have a length
+        - Some of them have a unknown length which will then be -1.
+
+        This function will calculate the end position based on these assumptions.
 
         Args:
-            variant_info(dict): The variant id in loqusdb format
+            variant_info(dict)
+        """
+        sv_type = variant_info.get("variant_type")
+        start = variant_info["pos"]
+        end = variant_info["end"]
+        length = variant_info.get("length", -1)
+        # Insertions have same start and end positions
+        if sv_type == "INS" and length > 0:
+            end = start + length
+            LOG.info("Updating length to %s", end)
+        variant_info["end"] = end
+
+    def get_variant(self, variant_info):
+        """Return information for a variant from loqusdb
+
+        SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
+        with coordinates.
+
+        Args:
+            variant_info(dict)
 
         Returns:
-            res
+            loqus_variant(dict)
         """
         loqus_id = variant_info["_id"]
-        res = {}
         variant_call = copy.deepcopy(self.base_call)
         variant_call.extend(["variants", "--to-json", "--variant-id", loqus_id])
         # If sv we need some more info
         if variant_info.get("category", "snv") in ["sv"]:
+            self.set_coordinates(variant_info)
+
             variant_call.extend(
                 [
                     "-t",
@@ -139,42 +139,19 @@ class LoqusDB:
             output = execute_command(variant_call)
         except CalledProcessError as err:
             LOG.warning("Something went wrong with loqus")
-            return
+            raise err
 
-        if not output:
-            return res
-
-        res = json.loads(output)
+        res = {}
+        if output:
+            res = json.loads(output)
 
         if self.version < 2.5:
-            res["total"] = self._case_count()
+            res["total"] = self.case_count()
 
         return res
 
-    def get_variant(self, variant_info):
-        """Return information for a variant from loqusdb
-
-
-        Args:
-            variant_info(dict)
-
-        Returns:
-            loqus_variant(dict)
-        """
-        loqus_variant = self._fetch_variant(variant_info)
-
-        return loqus_variant
-
     def case_count(self):
         """Returns number of cases in loqus instance
-
-        Returns:
-            nr_cases(int)
-        """
-        return self._case_count()
-
-    def _case_count(self):
-        """Return number of cases that the observation is based on
 
         Returns:
             nr_cases(int)
@@ -186,9 +163,9 @@ class LoqusDB:
         output = ""
         try:
             output = execute_command(case_call)
-        except CalledProcessError as err:
+        except CalledProcessError:
             LOG.warning("Something went wrong with loqus")
-            return
+            return nr_cases
 
         if not output:
             LOG.info("Could not find information about loqusdb cases")
@@ -196,12 +173,12 @@ class LoqusDB:
 
         try:
             nr_cases = int(output.strip())
-        except Exception:
+        except ValueError:
             pass
 
         return nr_cases
 
-    def _version(self):
+    def get_version(self):
         """Test if loqus version"""
         version_call = copy.deepcopy(self.base_call)
         version_call.extend(["--version"])
@@ -209,40 +186,15 @@ class LoqusDB:
 
         try:
             output = execute_command(version_call)
-        except CalledProcessError as err:
+        except CalledProcessError:
             LOG.warning("Something went wrong with loqus")
-            return
+            return loqus_version
+
         version = output.rstrip().split(" ")[-1]
         if version:
             return float(version)
+
         return loqus_version
 
     def __repr__(self):
         return f"LoqusDB(binary={self.loqusdb_binary}," f"config={self.loqusdb_config})"
-
-
-class MongoDB(object):
-    def init_app(self, app):
-        """Initialize from flask"""
-        uri = app.config.get("MONGO_URI", None)
-
-        db_name = app.config.get("MONGO_DBNAME", "scout")
-
-        try:
-            client = get_connection(
-                host=app.config.get("MONGO_HOST", "localhost"),
-                port=app.config.get("MONGO_PORT", 27017),
-                username=app.config.get("MONGO_USERNAME", None),
-                password=app.config.get("MONGO_PASSWORD", None),
-                uri=uri,
-                mongodb=db_name,
-            )
-        except ConnectionFailure:
-            context.abort()
-
-        app.config["MONGO_DATABASE"] = client[db_name]
-        app.config["MONGO_CLIENT"] = client
-
-
-loqusdb = LoqusDB()
-mongo = MongoDB()

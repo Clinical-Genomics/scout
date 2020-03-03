@@ -2,9 +2,10 @@ import logging
 
 from .transcript import build_transcript
 
-from scout.constants import (CONSEQUENCE, FEATURE_TYPES, SO_TERM_KEYS)
+from scout.constants import CONSEQUENCE, FEATURE_TYPES, SO_TERM_KEYS
 
 LOG = logging.getLogger(__name__)
+
 
 def build_gene(gene, hgncid_to_gene=None):
     """Build a gene object
@@ -41,8 +42,8 @@ def build_gene(gene, hgncid_to_gene=None):
 
     # This id is collected from the VCF
     # Typically annotated by VEP or snpEFF
-    hgnc_id = int(gene['hgnc_id'])
-    gene_obj['hgnc_id'] = hgnc_id
+    hgnc_id = int(gene["hgnc_id"])
+    gene_obj["hgnc_id"] = hgnc_id
 
     # Get the gene information from database
     hgnc_gene = hgncid_to_gene.get(hgnc_id)
@@ -51,51 +52,51 @@ def build_gene(gene, hgncid_to_gene=None):
     hgnc_transcripts = []
     if hgnc_gene:
         # Set the hgnc symbol etc to the one internally in Scout
-        gene_obj['hgnc_symbol'] = hgnc_gene['hgnc_symbol']
-        gene_obj['ensembl_id'] = hgnc_gene['ensembl_id']
-        gene_obj['description'] = hgnc_gene['description']
+        gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
+        gene_obj["ensembl_id"] = hgnc_gene["ensembl_id"]
+        gene_obj["description"] = hgnc_gene["description"]
 
-        if hgnc_gene.get('inheritance_models'):
-            gene_obj['inheritance'] = hgnc_gene['inheritance_models']
-        if hgnc_gene.get('phenotypes'):
-            gene_obj['phenotypes'] = hgnc_gene['phenotypes']
+        if hgnc_gene.get("inheritance_models"):
+            gene_obj["inheritance"] = hgnc_gene["inheritance_models"]
+        if hgnc_gene.get("phenotypes"):
+            gene_obj["phenotypes"] = hgnc_gene["phenotypes"]
 
     transcripts = []
-    for transcript in gene['transcripts']:
+    for transcript in gene["transcripts"]:
         transcript_obj = build_transcript(transcript)
         transcripts.append(transcript_obj)
-    gene_obj['transcripts'] = transcripts
+    gene_obj["transcripts"] = transcripts
 
-    functional_annotation = gene.get('most_severe_consequence')
+    functional_annotation = gene.get("most_severe_consequence")
     if functional_annotation:
         if not functional_annotation in SO_TERM_KEYS:
             LOG.warning("Invalid functional annotation %s", functional_annotation)
         else:
-            gene_obj['functional_annotation'] = functional_annotation
+            gene_obj["functional_annotation"] = functional_annotation
 
-    region_annotation = gene.get('region_annotation')
+    region_annotation = gene.get("region_annotation")
     if region_annotation:
         if not region_annotation in FEATURE_TYPES:
             LOG.warning("Invalid region annotation %s", region_annotation)
         else:
-            gene_obj['region_annotation'] = region_annotation
+            gene_obj["region_annotation"] = region_annotation
 
-    sift_prediction = gene.get('most_severe_sift')
+    sift_prediction = gene.get("most_severe_sift")
     if sift_prediction:
         if not sift_prediction in CONSEQUENCE:
             LOG.warning("Invalid sift prediction %s", sift_prediction)
         else:
-            gene_obj['sift_prediction'] = sift_prediction
+            gene_obj["sift_prediction"] = sift_prediction
 
-    polyphen_prediction = gene.get('most_severe_polyphen')
+    polyphen_prediction = gene.get("most_severe_polyphen")
     if polyphen_prediction:
         if not polyphen_prediction in CONSEQUENCE:
             LOG.warning("Invalid polyphen prediction %s", polyphen_prediction)
         else:
-            gene_obj['polyphen_prediction'] = polyphen_prediction
+            gene_obj["polyphen_prediction"] = polyphen_prediction
 
-    gene_obj['hgvs_identifier'] = gene.get('hgvs_identifier')
-    gene_obj['canonical_transcript'] = gene.get('canonical_transcript')
-    gene_obj['exon'] = gene.get('exon')
+    gene_obj["hgvs_identifier"] = gene.get("hgvs_identifier")
+    gene_obj["canonical_transcript"] = gene.get("canonical_transcript")
+    gene_obj["exon"] = gene.get("exon")
 
     return gene_obj

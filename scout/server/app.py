@@ -1,20 +1,35 @@
-# -*- coding: utf-8 -*-
-import os
+"""Code for flask app"""
 import logging
+
+import coloredlogs
+from flask import Flask, current_app, redirect, request, url_for
+from flask_babel import Babel
+from flask_login import current_user
+from flaskext.markdown import Markdown
+
+from scout.utils.matchmaker import mme_nodes
+
+from . import extensions
+from .blueprints import (
+    alignviewers,
+    api,
+    cases,
+    dashboard,
+    genes,
+    institutes,
+    login,
+    panels,
+    phenotypes,
+    public,
+    variant,
+    variants,
+)
 
 try:
     from urllib.parse import unquote
 except ImportError:
     from urllib2 import unquote
 
-from pprint import pprint as pp
-
-import coloredlogs
-from flask import current_app, Flask, redirect, request, url_for
-from flask_babel import Babel
-from flask_login import current_user
-from flaskext.markdown import Markdown
-from scout.utils.matchmaker import mme_nodes
 
 LOG = logging.getLogger(__name__)
 
@@ -27,22 +42,6 @@ except ImportError:
     report_bp = None
     configure_template_filters = None
     LOG.info("chanjo report not installed!")
-
-from . import extensions
-from .blueprints import (
-    alignviewers,
-    public,
-    genes,
-    cases,
-    login,
-    variant,
-    variants,
-    panels,
-    dashboard,
-    api,
-    phenotypes,
-    institutes,
-)
 
 
 def create_app(config_file=None, config=None):

@@ -17,13 +17,10 @@ mim2gene_file = "demo/resources/mim2gene_reduced.txt"
 genemap2_file = "demo/resources/genemap2_reduced.txt"
 
 # Hpo resources
-hpogenes_file = (
-    "demo/resources/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype_reduced.txt"
-)
+genes_to_phenotype_to_diseases_file = "demo/resources/genes_to_phenotype_reduced.txt"
 hpoterms_file = "demo/resources/reduced.hpo.obo"
-hpo_phenotype_to_terms = "demo/resources/ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes_reduced.txt"
-hpo_to_genes = (
-    "demo/resources/ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes_reduced.txt"
+hpo_phenotype_to_genes_to_diseases_file = (
+    "demo/resources/phenotype_to_genes_reduced.txt"
 )
 
 hpo_terms_def_file = "demo/resources/hpo_terms.csv"
@@ -51,16 +48,32 @@ exons38_reduced_path = pkg_resources.resource_filename("scout", exons38_file)
 mim2gene_reduced_path = pkg_resources.resource_filename("scout", mim2gene_file)
 genemap2_reduced_path = pkg_resources.resource_filename("scout", genemap2_file)
 
-# Hpo paths
-hpogenes_reduced_path = pkg_resources.resource_filename("scout", hpogenes_file)
+# HPO paths
 hpoterms_reduced_path = pkg_resources.resource_filename("scout", hpoterms_file)
-hpo_phenotype_to_terms_reduced_path = pkg_resources.resource_filename(
-    "scout", hpo_phenotype_to_terms
+genes_to_phenotype_reduced_path = pkg_resources.resource_filename(
+    "scout", genes_to_phenotype_to_diseases_file
 )
-hpo_to_genes_reduced_path = pkg_resources.resource_filename("scout", hpo_to_genes)
-
+phenotype_to_genes_reduced_path = pkg_resources.resource_filename(
+    "scout", hpo_phenotype_to_genes_to_diseases_file
+)
 hpo_terms_def_path = pkg_resources.resource_filename("scout", hpo_terms_def_file)
 
 
 # Additional paths
 madeline_path = pkg_resources.resource_filename("scout", madeline_file)
+
+demo_files = {
+    "exac_path": exac_reduced_path,
+    "genemap2_path": genemap2_reduced_path,
+    "mim2gene_path": mim2gene_reduced_path,
+    "genes37_path": genes37_reduced_path,
+    "genes38_path": genes38_reduced_path,
+    "hgnc_path": hgnc_reduced_path,
+    "phenotype_to_genes_reduced_path": phenotype_to_genes_reduced_path,
+    "genes_to_phenotype_reduced_path": genes_to_phenotype_reduced_path,
+    "hpoterms_path": hpoterms_reduced_path,
+    "madeline_path": madeline_path,
+    "transcripts37_path": transcripts37_reduced_path,
+    "transcripts38_path": transcripts38_reduced_path,
+    "panel_path": transcripts38_reduced_path,
+}

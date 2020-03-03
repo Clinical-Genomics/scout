@@ -1,47 +1,46 @@
 # -*- coding: utf-8 -*-
-import os
-import itertools
-import requests
 import datetime
-
+import itertools
 import logging
+import os
 
-from bs4 import BeautifulSoup
-from xlsxwriter import Workbook
-from flask import url_for, current_app
-from flask_mail import Message
 import query_phenomizer
+import requests
+from bs4 import BeautifulSoup
+from flask import current_app, url_for
 from flask_login import current_user
+from flask_mail import Message
+from xlsxwriter import Workbook
 
 from scout.constants import (
-    CASE_STATUSES,
-    PHENOTYPE_GROUPS,
-    SEX_MAP,
-    PHENOTYPE_MAP,
     CANCER_PHENOTYPE_MAP,
-    VERBS_MAP,
+    CASE_STATUSES,
     MT_EXPORT_HEADER,
+    PHENOTYPE_GROUPS,
+    PHENOTYPE_MAP,
+    SEX_MAP,
+    VERBS_MAP,
 )
 from scout.constants.variant_tags import (
-    MANUAL_RANK_OPTIONS,
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
     GENETIC_MODELS,
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+    MANUAL_RANK_OPTIONS,
 )
 from scout.export.variant import export_mt_variants
-from scout.server.utils import institute_and_case, user_institutes
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
-from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.parse.matchmaker import (
+    genomic_features,
     hpo_terms,
     omim_terms,
-    genomic_features,
     parse_matches,
 )
-from scout.utils.matchmaker import matchmaker_request
-from scout.server.blueprints.variant.utils import predictions
 from scout.server.blueprints.genes.controllers import gene
+from scout.server.blueprints.variant.controllers import variant as variant_decorator
+from scout.server.blueprints.variant.utils import predictions
+from scout.server.utils import institute_and_case, user_institutes
+from scout.utils.matchmaker import matchmaker_request
 
 LOG = logging.getLogger(__name__)
 
@@ -173,13 +172,24 @@ def case(store, institute_obj, case_obj):
     for panel_info in case_obj.get("panels", []):
         if not panel_info.get("is_default"):
             continue
-        panel_obj = store.gene_panel(
-            panel_info["panel_name"], version=panel_info.get("version")
-        )
+        panel_name = panel_info["panel_name"]
+        panel_version = panel_info.get("version")
+        panel_obj = store.gene_panel(panel_name, version=panel_version)
+        if not panel_obj:
+            LOG.warning(
+                "Could not fetch gene panel %s, version %s", panel_name, panel_version
+            )
+            LOG.info("Try to fetch latest existing version")
+            panel_obj = store.gene_panel(panel_name)
+            if not panel_obj:
+                LOG.warning("Could not find any version of gene panel %s", panel_name)
+                continue
+            LOG.info("Using panel %s, version %s", panel_name, panel_obj["version"])
         distinct_genes.update([gene["hgnc_id"] for gene in panel_obj.get("genes", [])])
         full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
         case_obj["panel_names"].append(full_name)
     case_obj["default_genes"] = list(distinct_genes)
+
     for hpo_term in itertools.chain(
         case_obj.get("phenotype_groups", []), case_obj.get("phenotype_terms", [])
     ):
@@ -187,16 +197,18 @@ def case(store, institute_obj, case_obj):
             hpo_term["phenotype_id"]
         )
 
-    rank_model_link_prefix = current_app.config.get("RANK_MODEL_LINK_PREFIX")
+    rank_model_link_prefix = current_app.config.get("RANK_MODEL_LINK_PREFIX", "")
     if case_obj.get("rank_model_version"):
         rank_model_link_postfix = current_app.config.get("RANK_MODEL_LINK_POSTFIX", "")
-        case_obj["rank_model_link"] = "".join(
+        rank_model_link = "".join(
             [
                 rank_model_link_prefix,
                 str(case_obj["rank_model_version"]),
                 rank_model_link_postfix,
             ]
         )
+        print(rank_model_link)
+        case_obj["rank_model_link"] = rank_model_link
     sv_rank_model_link_prefix = current_app.config.get("SV_RANK_MODEL_LINK_PREFIX", "")
     if case_obj.get("sv_rank_model_version"):
         sv_rank_model_link_postfix = current_app.config.get(
@@ -244,7 +256,7 @@ def case(store, institute_obj, case_obj):
 
     data = {
         "status_class": STATUS_MAP.get(case_obj["status"]),
-        "other_causatives": store.check_causatives(case_obj=case_obj),
+        "other_causatives": [var for var in store.check_causatives(case_obj=case_obj)],
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "hpo_groups": pheno_groups,
         "events": events,
@@ -539,6 +551,47 @@ def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissu
         link=link,
         category="case",
         verb="update_individual",
+        subject=case_obj["display_name"],
+    )
+
+
+def update_cancer_samples(
+    store, institute_obj, case_obj, user_obj, ind, tissue, tumor_type, tumor_purity
+):
+    """Handle update of sample data data (tissue, tumor_type, tumor_purity) for a cancer case"""
+
+    case_samples = case_obj.get("individuals")
+    for sample in case_samples:
+        if sample["individual_id"] == ind:
+            if tissue:
+                sample["tissue_type"] = tissue
+            if tumor_type:
+                sample["tumor_type"] = tumor_type
+            else:
+                sample["tumor_type"] = None
+            if tumor_purity:
+                sample["tumor_purity"] = float(tumor_purity)
+            else:
+                sample["tumor_purity"] = None
+
+    case_obj["individuals"] = case_samples
+    # update case with new sample data
+    store.update_case(case_obj, keep_date=True)
+
+    # create an associated event
+    link = url_for(
+        "cases.case",
+        institute_id=institute_obj["_id"],
+        case_name=case_obj["display_name"],
+    )
+
+    store.create_event(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        category="case",
+        verb="update_sample",
         subject=case_obj["display_name"],
     )
 

@@ -1,29 +1,29 @@
 # -*- coding: utf-8 -*-
-import sys
 import logging
+import sys
 
 import click
 import coloredlogs
 import yaml
-
 from flask.cli import FlaskGroup, current_app, with_appcontext
-from scout.server.app import create_app
 
 # General, logging
 from scout import __version__
+from scout.commands.convert import convert
+from scout.commands.delete import delete
+from scout.commands.download import download as download_command
+from scout.commands.export import export
+from scout.commands.index_command import index as index_command
 
 # Commands
 from scout.commands.load import load as load_command
-from scout.commands.export import export
-from scout.commands.wipe_database import wipe
-from scout.commands.setup import setup as setup_command
-from scout.commands.convert import convert
-from scout.commands.view import view as view_command
-from scout.commands.delete import delete
 from scout.commands.serve import serve
+from scout.commands.setup import setup as setup_command
 from scout.commands.update import update as update_command
-from scout.commands.index_command import index as index_command
+from scout.commands.view import view as view_command
+from scout.commands.wipe_database import wipe
 from scout.server import extensions
+from scout.server.app import create_app
 
 LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 LOG = logging.getLogger(__name__)
@@ -116,4 +116,5 @@ cli.add_command(convert)
 cli.add_command(index_command)
 cli.add_command(view_command)
 cli.add_command(update_command)
+cli.add_command(download_command)
 cli.add_command(serve)

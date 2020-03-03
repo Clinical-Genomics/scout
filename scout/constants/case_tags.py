@@ -56,25 +56,33 @@ VERBS_MAP = {
     "mme_add": "Exported to MatchMaker patient",
     "mme_remove": "Removed from MatchMaker patient",
     "filter_stash": "stored a filter for ",
+    "update_sample": "updated sample data for",
 }
 
 VERBS = list(VERBS_MAP.keys())
 
 # Tissue types for rare disease samples and controls
-SAMPLE_SOURCE = {
-    0: "blood",
-    1: "bone marrow",
-    2: "buccal swab",
-    3: "cell line",
-    4: "cell-free DNA",
-    5: "cytology (FFPE)",
-    6: "cytology (not fixed/fresh)",
-    7: "muscle",
-    8: "nail",
-    9: "saliva",
-    10: "skin",
-    11: "tissue (FFPE)",
-    12: "tissue (fresh frozen)",
-    13: "other",
-    14: "unknown",
-}
+
+SOURCES = [
+    "blood",
+    "bone marrow",
+    "buccal swab",
+    "cell line",
+    "cell-free DNA",
+    "cytology (FFPE)",
+    "cytology (not fixed/fresh)",
+    "muscle",
+    "nail",
+    "saliva",
+    "skin",
+    "tissue (FFPE)",
+    "tissue (fresh frozen)",
+    "CVB",
+    "AC",
+    "other fetal tissue",
+    "other",
+    "unknown",
+]
+
+
+SAMPLE_SOURCE = dict((i, el) for i, el in enumerate(SOURCES))
