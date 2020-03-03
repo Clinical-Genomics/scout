@@ -11,15 +11,31 @@ from operator import itemgetter
 
 import pymongo
 from dateutil.parser import parse as parse_date
-from flask import (Blueprint, Response, abort, current_app, flash, jsonify,
-                   redirect, render_template, request, send_file,
-                   send_from_directory, url_for)
+from flask import (
+    Blueprint,
+    Response,
+    abort,
+    current_app,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    send_from_directory,
+    url_for,
+)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 
-from scout.constants import (ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER,
-                             CLINVAR_HEADER, SAMPLE_SOURCE)
+from scout.constants import (
+    ACMG_COMPLETE_MAP,
+    ACMG_MAP,
+    CASEDATA_HEADER,
+    CLINVAR_HEADER,
+    SAMPLE_SOURCE,
+)
 from scout.server.extensions import mail, store
 from scout.server.utils import institute_and_case, templated, user_institutes
 
@@ -125,6 +141,15 @@ def case(institute_id, case_name):
         tissue_types=SAMPLE_SOURCE,
         **data
     )
+
+
+@cases_bp.route("/<institute_id>/<case_name>/sma", methods=["GET"])
+@templated("cases/case_sma.html")
+def sma(institute_id, case_name):
+    """Visualize case SMA data - SMN CN calls"""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = controllers.case(store, institute_obj, case_obj)
+    return dict(institute=institute_obj, case=case_obj, format="html", **data)
 
 
 @cases_bp.route("/<institute_id>/clinvar_submissions", methods=["GET", "POST"])
