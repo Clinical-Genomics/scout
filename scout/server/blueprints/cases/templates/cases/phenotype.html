@@ -45,21 +45,23 @@
   <div>
     <ul class="list-group">
       {% for omim_id in case.diagnosis_phenotypes %}
-        <li class="list-group-item d-flex">
-          <a class="flex-fill" target="_blank" href="http://omim.org/entry/{{ omim_id }}">
-            {{ omim_id }} - {{ omim_terms[omim_id].description }}
-          </a>
-          <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_nr=omim_terms[omim_id].disease_nr)}}">
-            <span class="badge badge-secondary badge-pill text-white">genes:{{omim_terms[omim_id].genes|length}}</span>
-            <span class="badge badge-info badge-pill text-white">hpo:{{omim_terms[omim_id].hpo_terms|length}}</span>
-          </a>
-          &nbsp;&nbsp;&nbsp;
-          <span class="pull-right">
-            {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
-                                  case_name=case.display_name, remove='yes'),
-                         hidden_input=('omim_term', omim_id), button_name='phenotype') }}
-          </span>
-        </li>
+        {% if omim_id in omim_terms %}
+          <li class="list-group-item d-flex">
+            <a class="flex-fill" target="_blank" href="http://omim.org/entry/{{ omim_id }}">
+              {{ omim_id }} - {{ omim_terms[omim_id].description }}
+            </a>
+            <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_nr=omim_terms[omim_id].disease_nr)}}">
+              <span class="badge badge-secondary badge-pill text-white">genes:{{omim_terms[omim_id].genes|length}}</span>
+              <span class="badge badge-info badge-pill text-white">hpo:{{omim_terms[omim_id].hpo_terms|length}}</span>
+            </a>
+            &nbsp;&nbsp;&nbsp;
+            <span class="pull-right">
+              {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
+                                    case_name=case.display_name, remove='yes'),
+                           hidden_input=('omim_term', omim_id), button_name='phenotype') }}
+            </span>
+          </li>
+        {% endif %}
       {% else %}
         <li class="list-group-item">No phenotypes added</li>
       {% endfor %}
@@ -73,21 +75,23 @@
     <div>
       <ul class="list-group">
         {% for omim_id in case.diagnosis_genes %}
-          <li class="list-group-item d-flex">
-            <a class="flex-fill" target="_blank" href="http://omim.org/entry/{{ omim_id }}">
+          {% if omim_id in omim_terms %}
+            <li class="list-group-item d-flex">
+              <a class="flex-fill" target="_blank" href="http://omim.org/entry/{{ omim_id }}">
                 {{ omim_id }} - {{ omim_terms[omim_id].description }}
-            </a>
-            <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_nr=omim_terms[omim_id].disease_nr)}}">
-              <span class="badge badge-secondary badge-pill text-white">genes:{{omim_terms[omim_id].genes|length}}</span>
-              <span class="badge badge-info badge-pill text-white">hpo:{{omim_terms[omim_id].hpo_terms|length}}</span>
-            </a>
-            &nbsp;&nbsp;&nbsp;
-            <span>
-              {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
-                                     case_name=case.display_name, remove='yes'),
-                             hidden_input=('omim_term', omim_id), button_name='gene') }}
-            </span>
-          </li>
+              </a>
+              <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_nr=omim_terms[omim_id].disease_nr)}}">
+                <span class="badge badge-secondary badge-pill text-white">genes:{{omim_terms[omim_id].genes|length}}</span>
+                <span class="badge badge-info badge-pill text-white">hpo:{{omim_terms[omim_id].hpo_terms|length}}</span>
+              </a>
+              &nbsp;&nbsp;&nbsp;
+              <span>
+                {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
+                                       case_name=case.display_name, remove='yes'),
+                               hidden_input=('omim_term', omim_id), button_name='gene') }}
+              </span>
+            </li>
+          {% endif %}
         {% else %}
           <li class="list-group-item">No genes added</li>
         {% endfor %}
