@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7]
-        mongodb-version: [4.0]
+        mongodb-version: ["3.6", "4.0"]
 
     steps:
     
@@ -24,9 +24,9 @@ jobs:
     
     # Set up mongodb
     - name: Start MongoDB
-      uses: superchargejs/mongodb-github-action@v1
+      uses: wbari/start-mongoDB@v0.2
       with:
-        mongodb-version: ${{ matrix.mongodb-version}}
+        mongoDBVersion: ${{ matrix.mongodb-version}}
     
     - name: Install dependencies
       run: |
@@ -45,4 +45,9 @@ jobs:
     - name: Test with pytest
       run: |
         pip install pytest
-        pytest -rxs tests/
+        py.test --cov=scout -rxs tests/
+    
+    - name: Package Install
+      run: |
+        pip check
+    
