@@ -31,13 +31,12 @@ from scout.utils.handle import get_file_handle
 
 from scout.utils.scout_requests import (
     fetch_mim_files,
-    fetch_hpo_genes,
     fetch_ensembl_genes,
     fetch_ensembl_transcripts,
     fetch_hgnc,
     fetch_exac_constraint,
+    fetch_genes_to_hpo_to_disease,
 )
-
 
 LOG = logging.getLogger(__name__)
 
@@ -66,7 +65,8 @@ def setup_scout(
          For more details check the documentation.
 
     """
-    LOG.info("Check if there was a database, delet if existing")
+
+    LOG.info("Check if there was a database, delete if existing")
     existing_database = False
     for collection_name in adapter.db.collection_names():
         if collection_name.startswith("system"):
@@ -121,7 +121,7 @@ def setup_scout(
             line for line in get_file_handle(resource_files.get("hpogenes_path"))
         ]
     else:
-        hpo_gene_lines = fetch_hpo_genes()
+        hpo_gene_lines = fetch_genes_to_hpo_to_disease()
 
     if resource_files.get("hgnc_path"):
         hgnc_lines = [line for line in get_file_handle(resource_files.get("hgnc_path"))]
@@ -182,10 +182,9 @@ def setup_scout(
 
     load_hpo(
         adapter=adapter,
+        disease_lines=genemap_lines,
         hpo_lines=hpo_terms_handle,
         hpo_gene_lines=hpo_to_genes_handle,
-        disease_lines=genemap_lines,
-        hpo_disease_lines=hpo_disease_handle,
     )
 
     # If demo we load a gene panel and some case information
