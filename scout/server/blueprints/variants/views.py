@@ -1,30 +1,25 @@
-# -*- coding: utf-8 -*-
-import io
-import os.path
-import shutil
-import logging
+"""Views for the variants"""
 import datetime
-import zipfile
+import io
+import logging
+import os.path
 import pathlib
-import pymongo
+import shutil
+import zipfile
 
-from flask import (
-    Blueprint,
-    request,
-    redirect,
-    abort,
-    flash,
-    current_app,
-    url_for,
-    send_file,
-)
+import pymongo
+from flask import (Blueprint, abort, current_app, flash, redirect, request,
+                   send_file, url_for)
 from flask_login import current_user
 
-from scout.constants import SEVERE_SO_TERMS, MANUAL_RANK_OPTIONS, CANCER_TIER_OPTIONS
+from scout.constants import (CANCER_TIER_OPTIONS, MANUAL_RANK_OPTIONS,
+                             SEVERE_SO_TERMS)
 from scout.server.extensions import store
-from scout.server.utils import templated, institute_and_case
+from scout.server.utils import institute_and_case, templated
+
 from . import controllers
-from .forms import FiltersForm, SvFiltersForm, StrFiltersForm, CancerFiltersForm
+from .forms import (CancerFiltersForm, FiltersForm, StrFiltersForm,
+                    SvFiltersForm)
 
 LOG = logging.getLogger(__name__)
 variants_bp = Blueprint(
@@ -82,7 +77,7 @@ def variants(institute_id, case_name):
         file = request.files[form.symbol_file.name]
 
     if request.files and file and file.filename != "":
-        log.debug("Upload file request files: {0}".format(request.files.to_dict()))
+        LOG.debug("Upload file request files: {0}".format(request.files.to_dict()))
         try:
             stream = io.StringIO(file.stream.read().decode("utf-8"), newline=None)
         except UnicodeDecodeError as error:
@@ -90,7 +85,7 @@ def variants(institute_id, case_name):
             return redirect(request.referrer)
 
         hgnc_symbols_set = set(form.hgnc_symbols.data)
-        log.debug("Symbols prior to upload: {0}".format(hgnc_symbols_set))
+        LOG.debug("Symbols prior to upload: {0}".format(hgnc_symbols_set))
         new_hgnc_symbols = controllers.upload_panel(
             store, institute_id, case_name, stream
         )
@@ -333,14 +328,14 @@ def cancer_sv_variants(institute_id, case_name):
 @variants_bp.route("/<institute_id>/<case_name>/upload", methods=["POST"])
 def upload_panel(institute_id, case_name):
     """Parse gene panel file and fill in HGNC symbols for filter."""
-    file = form.symbol_file.data
+    panel_file = request.form.symbol_file.data
 
-    if file.filename == "":
+    if panel_file.filename == "":
         flash("No selected file", "warning")
         return redirect(request.referrer)
 
     try:
-        stream = io.StringIO(file.stream.read().decode("utf-8"), newline=None)
+        stream = io.StringIO(panel_file.stream.read().decode("utf-8"), newline=None)
     except UnicodeDecodeError as error:
         flash("Only text files are supported!", "warning")
         return redirect(request.referrer)

@@ -1,55 +1,35 @@
 # -*- coding: utf-8 -*-
+import datetime
 import logging
 import os.path
 import urllib.parse
-
+from datetime import date
 from pprint import pprint as pp
 
+from flask import Response, flash, request, url_for
+from flask_login import current_user
+from flask_mail import Message
+from werkzeug.datastructures import Headers, MultiDict
 from xlsxwriter import Workbook
 
-from datetime import date
-import datetime
-from flask_login import current_user
-from flask import url_for, flash, request, Response
-from flask_mail import Message
-from werkzeug.datastructures import MultiDict, Headers
-
-from scout.constants import (
-    CLINSIG_MAP,
-    ACMG_MAP,
-    ACMG_OPTIONS,
-    ACMG_COMPLETE_MAP,
-    CALLERS,
-    SPIDEX_HUMAN,
-    VERBS_MAP,
-    MOSAICISM_OPTIONS,
-    SEVERE_SO_TERMS,
-    MANUAL_RANK_OPTIONS,
-    CANCER_TIER_OPTIONS,
-    DISMISS_VARIANT_OPTIONS,
-)
+from scout.constants import (ACMG_COMPLETE_MAP, ACMG_MAP, ACMG_OPTIONS,
+                             CALLERS, CANCER_TIER_OPTIONS, CLINSIG_MAP,
+                             DISMISS_VARIANT_OPTIONS, MANUAL_RANK_OPTIONS,
+                             MOSAICISM_OPTIONS, SEVERE_SO_TERMS, SPIDEX_HUMAN,
+                             VERBS_MAP)
 from scout.constants.acmg import ACMG_CRITERIA
-from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
+from scout.constants.variants_export import (EXPORT_HEADER,
+                                             VERIFIED_VARIANTS_HEADER)
 from scout.export.variant import export_verified_variants
-from scout.server.utils import (
-    institute_and_case,
-    user_institutes,
-    case_append_alignments,
-    variant_case,
-)
-from scout.server.links import add_gene_links, ensembl, add_tx_links
 from scout.server.blueprints.genes.controllers import gene
+from scout.server.blueprints.variant.utils import predictions
+from scout.server.links import add_gene_links, add_tx_links, ensembl
+from scout.server.utils import (case_append_alignments, institute_and_case,
+                                user_institutes, variant_case)
 from scout.utils.scout_requests import fetch_refseq_version
 
-from scout.server.blueprints.variant.utils import predictions
-from .forms import (
-    FiltersForm,
-    SvFiltersForm,
-    StrFiltersForm,
-    CancerFiltersForm,
-    VariantFiltersForm,
-)
-
+from .forms import (CancerFiltersForm, FiltersForm, StrFiltersForm,
+                    SvFiltersForm, VariantFiltersForm)
 
 LOG = logging.getLogger(__name__)
 
@@ -417,6 +397,7 @@ def variant_export_lines(store, case_obj, variants_query):
             variant_line.append(";".join(str(x) for x in gene_names))
             variant_line.append(";".join(str(x) for x in hgvs_c))
         else:
+            i = 0
             while i < 4:
                 variant_line.append("-")  # instead of gene ids
                 i = i + 1

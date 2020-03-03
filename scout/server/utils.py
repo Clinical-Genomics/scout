@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
+"""Common utilities for the server code"""
 import logging
 import os
 from functools import wraps
 
-from flask import render_template, request, abort, flash
+from flask import abort, flash, render_template, request
 from flask_login import current_user
 
 LOG = logging.getLogger(__name__)
@@ -14,13 +14,13 @@ def templated(template=None):
     Ref: http://flask.pocoo.org/docs/patterns/viewdecorators/
     """
 
-    def decorator(f):
-        @wraps(f)
+    def decorator(func):
+        @wraps(func)
         def decorated_function(*args, **kwargs):
             template_name = template
             if template_name is None:
                 template_name = request.endpoint.replace(".", "/") + ".html"
-            context = f(*args, **kwargs)
+            context = func(*args, **kwargs)
             if context is None:
                 context = {}
             elif not isinstance(context, dict):
@@ -33,6 +33,7 @@ def templated(template=None):
 
 
 def public_endpoint(function):
+    """Renders public endpoint"""
     function.is_public = True
     return function
 
@@ -64,8 +65,7 @@ def institute_and_case(store, institute_id, case_name=None):
     # you have access!
     if case_name:
         return institute_obj, case_obj
-    else:
-        return institute_obj
+    return institute_obj
 
 
 def user_institutes(store, login_user):
@@ -91,33 +91,34 @@ def variant_case(store, case_obj, variant_obj):
 
     case_append_alignments(case_obj)
 
-    try:
-        chrom = None
-        starts = []
-        ends = []
-        for gene in variant_obj.get("genes", []):
-            chrom = gene["common"]["chromosome"]
-            starts.append(gene["common"]["start"])
-            ends.append(gene["common"]["end"])
+    chrom = None
+    starts = []
+    ends = []
+    for gene in variant_obj.get("genes", []):
+        common_info = gene.get("common")
+        if not common_info:
+            continue
+        chrom = common_info.get["chromosome"]
+        starts.append(common_info.get("start"))
+        ends.append(common_info.get("end"))
 
-        if crom and starts and ends:
-            vcf_path = store.get_region_vcf(
-                case_obj, chrom=chrom, start=min(starts), end=max(ends)
-            )
+    if chrom and starts and ends:
+        vcf_path = store.get_region_vcf(
+            case_obj, chrom=chrom, start=min(starts), end=max(ends)
+        )
 
-            # Create a reduced VCF with variants in the region
-            case_obj["region_vcf_file"] = vcf_path
-    except (SyntaxError, Exception):
-        LOG.warning("skip VCF region for alignment view")
+        # Create a reduced VCF with variants in the region
+        case_obj["region_vcf_file"] = vcf_path
 
 
 def case_append_alignments(case_obj):
     """Deconvolute information about files to case_obj.
 
-    This function prepares the bam/cram files in a certain way so that they are easily accessed in the
-    templates.
+    This function prepares the bam/cram files in a certain way so that they are easily accessed in
+    the templates.
 
-    Loops over the the individuals and gather bam/cram files, indexes and sample display names in lists
+    Loops over the the individuals and gather bam/cram files, indexes and sample display names in
+    lists
 
     Args:
         case_obj(scout.models.Case)
@@ -161,7 +162,7 @@ def append_safe(obj, obj_index, elem):
     the KeyError raised."""
     try:
         obj[obj_index].append(elem)
-    except:
+    except KeyError:
         obj[obj_index] = [elem]
 
 
