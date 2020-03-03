@@ -98,7 +98,7 @@ def variant_case(store, case_obj, variant_obj):
         common_info = gene.get("common")
         if not common_info:
             continue
-        chrom = common_info.get["chromosome"]
+        chrom = common_info.get("chromosome")
         starts.append(common_info.get("start"))
         ends.append(common_info.get("end"))
 

@@ -11,31 +11,15 @@ from operator import itemgetter
 
 import pymongo
 from dateutil.parser import parse as parse_date
-from flask import (
-    Blueprint,
-    Response,
-    abort,
-    current_app,
-    flash,
-    jsonify,
-    redirect,
-    render_template,
-    request,
-    send_file,
-    send_from_directory,
-    url_for,
-)
+from flask import (Blueprint, Response, abort, current_app, flash, jsonify,
+                   redirect, render_template, request, send_file,
+                   send_from_directory, url_for)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 
-from scout.constants import (
-    ACMG_COMPLETE_MAP,
-    ACMG_MAP,
-    CASEDATA_HEADER,
-    CLINVAR_HEADER,
-    SAMPLE_SOURCE,
-)
+from scout.constants import (ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER,
+                             CLINVAR_HEADER, SAMPLE_SOURCE)
 from scout.server.extensions import mail, store
 from scout.server.utils import institute_and_case, templated, user_institutes
 
@@ -543,7 +527,7 @@ def gene_variants(institute_id):
     """Display a list of SNV variants."""
     page = int(request.form.get("page", 1))
 
-    institute_obj, case_obj = institute_and_case(store, institute_id)
+    institute_obj = institute_and_case(store, institute_id)
 
     # populate form, conditional on request method
     if request.method == "POST":
@@ -561,7 +545,7 @@ def gene_variants(institute_id):
     data = {}
     if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
         is_clinical = form.data.get("variant_type", "clinical") == "clinical"
-        clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+        # clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
                 hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
@@ -571,8 +555,8 @@ def gene_variants(institute_id):
                     hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
             elif store.hgnc_genes(hgnc_symbol).count() == 0:
                 not_found_symbols.append(hgnc_symbol)
-            elif is_clinical and (hgnc_symbol not in clinical_symbols):
-                non_clinical_symbols.append(hgnc_symbol)
+            # elif is_clinical and (hgnc_symbol not in clinical_symbols):
+            #     non_clinical_symbols.append(hgnc_symbol)
             else:
                 hgnc_symbols.append(hgnc_symbol)
 
