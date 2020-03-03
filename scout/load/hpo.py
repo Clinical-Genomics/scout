@@ -28,7 +28,7 @@ def load_hpo(
     """Load the hpo terms and hpo diseases into database
 
     Args:
-        adapter(MongoAdapter
+        adapter(MongoAdapter)
         disease_lines(iterable(str)): These are the omim genemap2 information
         hpo_lines(iterable(str)): lines from file http://purl.obolibrary.org/obo/hp.obo
         hpo_gene_lines(iterable(str)): lines from file
