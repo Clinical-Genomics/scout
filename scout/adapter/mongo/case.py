@@ -690,6 +690,7 @@ class CaseHandler(object):
                     "madeline_info": case_obj.get("madeline_info"),
                     "chromograph_image_files": case_obj.get("chromograph_image_files"),
                     "chromograph_prefixes": case_obj.get("chromograph_prefixes"),
+                    "smn_tsv": case_obj.get("smn_tsv"),
                     "vcf_files": case_obj.get("vcf_files"),
                     "has_svvariants": case_obj.get("has_svvariants"),
                     "has_strvariants": case_obj.get("has_strvariants"),

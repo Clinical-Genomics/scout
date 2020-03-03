@@ -65,7 +65,7 @@ chromograph_prefixes:
     'roh': "roh_chr"
     'upd': "upd_chr"
     'chr': "cytoband.txt.chr"
-
+smn_tsv: scout/demo/643594.solo.smn.tsv
 
 # meta data
 rank_model_version: '1.20'

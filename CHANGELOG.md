@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - ClinVar SNVs track in IGV
+- Add SMA view with SMN Copy Number data
 
 ### Fixed
 - Bug when adding a new gene to a panel
@@ -23,10 +24,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Changed
 
-
 ## [4.12.4]
 
-### Changed
+### Fixed
+- Layout on SV page when local observations without cases are present
 
 ## [4.12.3]
 
