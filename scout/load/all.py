@@ -101,13 +101,9 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
 
     vcf_str_file = case_obj["vcf_files"].get("vcf_str")
     if vcf_str_file:
-        LOG.info(
-            "Load all clinical STR variants for case: {0}."
-        )
+        LOG.info("Load all clinical STR variants for case: {0}.")
         adapter.load_variants(
-            case_obj=case_obj,
-            variant_type="clinical",
-            category="str",
+            case_obj=case_obj, variant_type="clinical", category="str"
         )
 
     if case_obj["is_research"]:

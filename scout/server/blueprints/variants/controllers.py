@@ -788,6 +788,7 @@ def verified_excel_file(store, institute_list, temp_excel_dir):
 
     return written_files
 
+
 def activate_case(store, institute_obj, case_obj, current_user):
     """ Activate case when visited for the first time.
 
