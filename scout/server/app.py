@@ -10,9 +10,20 @@ from flaskext.markdown import Markdown
 from scout.utils.matchmaker import mme_nodes
 
 from . import extensions
-from .blueprints import (alignviewers, api, cases, dashboard, genes,
-                         institutes, login, panels, phenotypes, public,
-                         variant, variants)
+from .blueprints import (
+    alignviewers,
+    api,
+    cases,
+    dashboard,
+    genes,
+    institutes,
+    login,
+    panels,
+    phenotypes,
+    public,
+    variant,
+    variants,
+)
 
 try:
     from urllib.parse import unquote
@@ -48,6 +59,7 @@ from .blueprints import (
     diagnoses,
     institutes,
 )
+
 
 def create_app(config_file=None, config=None):
     """Flask app factory function."""

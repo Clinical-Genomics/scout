@@ -21,5 +21,5 @@ def omim_diagnosis(omim_nr):
 def omim_diagnoses():
     """Display all OMIM diagnoses available in database"""
 
-    data = { "terms" : store.disease_terms() }
+    data = {"terms": store.disease_terms()}
     return data
