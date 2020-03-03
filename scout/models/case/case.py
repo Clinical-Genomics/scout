@@ -31,8 +31,8 @@ individual = dict(
     analysis_type=str,  # choices=ANALYSIS_TYPES
     confirmed_sex=bool,  # True or False. None if no check has been done
     confirmed_parent=bool,
-    is_sma=boolean,  # True / False if SMA status determined - None if not done.
-    is_sma_carrier=boolean,  # True / False if SMA carriership determined - None if not done.
+    is_sma=bool,  # True / False if SMA status determined - None if not done.
+    is_sma_carrier=bool,  # True / False if SMA carriership determined - None if not done.
     smn1_cn=int,  # CopyNumber
     smn2_cn=int,  # CopyNumber
     smn2delta78_cn=int,  # CopyNumber
