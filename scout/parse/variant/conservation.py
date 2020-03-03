@@ -83,8 +83,11 @@ def parse_conservation_csq(transcript, field_key):
     conservations = []
 
     try:
-        scores = transcript.get(field_key, "").split("&")
-        for score in scores:
+        scores = transcript.get(field_key)
+        if not scores:
+            return conservations
+
+        for score in scores.split("&"):
             # fields may consist of multiple numeric values
             score = float(score)
             if score >= CONSERVATION[field_key]["conserved_min"]:
