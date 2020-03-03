@@ -1,0 +1,230 @@
+{% extends "layout_bs4.html" %}
+{% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal %}
+{% from "utils.html" import comments_panel, activity_panel %}
+{% from "cases/utils.html" import individuals_table %}
+{% from "cases/case_ideograms.html" import case_ideograms %}
+{% from "variants/utils.html" import tier_cell %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li class="nav-item active">
+    <span class="navbar-text">SMN CN</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    {{ smn_case_page() }}
+  </div> <!-- end of div id body-row -->
+</div>
+{% endblock %}
+
+{% macro smn_case_page() %}
+<div class="container_spaced">
+  <div class="card col-md-12">
+    <h4 class="mt-3">Case: {{case.display_name}}</h4>
+    <div class="card-body">
+
+      <div class="row">
+            <div class="col-xs-12 col-md-12">{{ smn_individuals_table(case, institute, tissue_types) }}</div>
+        </div> <!-- <div class="row" -->
+        <div class="row">
+          <div class="col-md-4">
+            {% if case.madeline_info and case.individuals|length > 1 %}
+              {{ pedigree_panel() }}
+            {% else %}
+              <p>No pedigree picture available.</p>
+            {% endif %}
+          </div>
+          <div class="col-md-8">
+            {{ synopsis_panel() }}
+            {{ comments_panel(institute, case, current_user, comments) }}
+          </div>
+        </div> <!-- end of   <div class="row"> -->
+
+        <div class="row">
+          <div class="col-sm-12">{{activity_panel(events)}}</div>
+        </div>
+
+        {{ modal_synopsis() }}
+    </div> <!-- end of card body -->
+  </div> <!-- end of card div-->
+</div>
+</div> <!-- end of <div class="col"> -->
+{% endmacro %}
+
+{% macro smn_individuals_table(case, institute, tissues) %}
+<form method="POST" action="{{ url_for('cases.update_individual', institute_id=institute._id, case_name=case.display_name) }}">
+  <div class="card panel-default">
+    <div class="panel-heading">SMN Copy Number status - Individuals</div>
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th data-toggle='tooltip' data-container='body' style="width: 20%"
+             title="Display name of sample">Sample</th>
+            <th data-toggle='tooltip' style="width: 5%" title="Sample sex">Sex</th>
+            <th data-toggle='tooltip' style="width: 5%" title="Phenotype of sample">Phenotype</th>
+            <th data-toggle='tooltip' data-toggle='tooltip' data-container='body'
+              style="width: 5%" title="SMA affected status prediction">SMA</th>
+              <th data-toggle='tooltip' data-toggle='tooltip' data-container='body'
+                style="width: 5%" title="SMA carrier status prediction">Carrier</th>
+            <th data-toggle='tooltip' data-container='body'
+             title="SMN1 Estimated Copy Number (None means no-call)" style="width: 5%">SMN1 CN</th>
+             <th data-toggle='tooltip' data-container='body'
+              title="SMN2 Estimated Copy Number" style="width: 5%">SMN2 CN</th>
+              <th data-toggle='tooltip' data-container='body'
+               title="SMN2Δ7–8 (SMN2 with deletion of Exon 7-8) Estimated Copy Number" style="width: 10%">SMN2Δ7–8_CN</th>
+               <th data-toggle='tooltip' data-container='body'
+                title="g.27134T>G_CN Estimated Copy Number - an SNP associated with 2+0 silent carrier" style="width: 10%">g.27134T>G CN</th>
+            <th data-toggle='tooltip' data-container='body'
+             title="Ancestry prediction from peddy" style="width: 10%">Ancestry (pred.)</th>
+             <th data-toggle='tooltip' data-container='body'
+              title="Tissue origin for the sample" style="width: 15%">Tissue</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ind in case.individuals %}
+            <tr {% if ind.is_sma  %}
+                  class="bg-danger"
+                {% elif ind.is_sma_carrier %}
+                  class="bg-warning"
+                {% endif %}>
+              <td>{{ ind.display_name }}</td>
+              <td>
+                {% if ind.sex_human in ['female','male'] %}
+                  <i class="fa fa-{{ind.sex_human}}" aria-hidden="true"></i>
+                {% else %}
+                  {{ind.sex_human}}
+                {% endif %}
+                {% if ind.confirmed_sex %}
+                  <i class="fa fa-check"></i>
+                {% endif %}
+              </td>
+              <td>{{ ind.phenotype_human }}</td>
+              <td>{{ ind.is_sma }}</td>
+              <td>{{ ind.is_sma_carrier }}</td>
+              <td>{{ ind.smn1_cn }}</td>
+              <td>{{ ind.smn2_cn }}</td>
+              <td>{{ ind.smn2delta78_cn }}</td>
+              <td>{{ ind.smn_27134_cn }}</td>
+              <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
+              <td>
+                {{ ind.tissue_type }}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</form>
+{% endmacro %}
+
+{% macro pedigree_panel() %}
+  <div class="card panel-default">
+    <div class="panel-heading">Pedigree</div>
+    <div class="card-body text-center">
+      {{ case.madeline_info|safe }}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro synopsis_panel() %}
+  <div class="card panel-default">
+    <div data-toggle='tooltip' class="panel-heading" title="Free text field. Write a summary about
+     the case! Markdown format">
+      Synopsis
+    </div>
+    <div class="card-body">
+      {{ case.synopsis|markdown if case.synopsis else 'Nothing written yet...' }}
+    </div>
+    <div class="card-footer">
+      <button type="button" class="btn btn-outline-secondary form-control" data-toggle="modal" data-target="#edit-synopsis">
+        Edit
+      </button>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro modal_synopsis() %}
+  <form action="{{ url_for('cases.case_synopsis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+    <div class="modal fade" id="edit-synopsis" role="dialog">
+      <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit synopsis</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <textarea name="synopsis" class="form-control" cols="30" rows="10">{{ case.synopsis }}</textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+<script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+
+<script>
+ $('#panel-table').DataTable({
+    scrollY: 350,
+    scrollCollapse: true,
+    paging: false,
+    searching: false,
+    ordering: true,
+    info: false
+        });
+</script>
+
+<script>
+$(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+
+      $('select[multiple]').multiselect({
+        buttonWidth: '100%'
+      });
+      $('table').stickyTableHeaders({
+        scrollableArea: $(".fixed-panel")[0]
+      });
+  });
+</script>
+
+{% endblock %}
