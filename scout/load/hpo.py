@@ -4,17 +4,13 @@ from datetime import datetime
 
 from click import progressbar
 
-from scout.parse.hpo import (
-    parse_hpo_phenotypes,
-    parse_hpo_diseases,
-    parse_hpo_obo,
-    parse_hpo_to_genes,
-    build_hpo_tree,
-)
+from scout.parse.hpo_terms import parse_hpo_obo, build_hpo_tree
+
+from scout.parse.hpo_mappings import parse_hpo_to_genes, parse_hpo_diseases
+
 from scout.utils.scout_requests import (
     fetch_hpo_terms,
-    fetch_hpo_to_genes,
-    fetch_hpo_phenotype_to_terms,
+    fetch_hpo_to_genes_to_disease,
 )
 
 from scout.parse.omim import get_mim_phenotypes
@@ -27,16 +23,17 @@ LOG = logging.getLogger(__name__)
 
 
 def load_hpo(
-    adapter, disease_lines, hpo_disease_lines=None, hpo_lines=None, hpo_gene_lines=None
+    adapter, disease_lines=None, hpo_lines=None, hpo_gene_lines=None,
 ):
     """Load the hpo terms and hpo diseases into database
 
     Args:
         adapter(MongoAdapter)
         disease_lines(iterable(str)): These are the omim genemap2 information
-        hpo_lines(iterable(str))
-        disease_lines(iterable(str))
-        hpo_gene_lines(iterable(str))
+        hpo_lines(iterable(str)): lines from file http://purl.obolibrary.org/obo/hp.obo
+        hpo_gene_lines(iterable(str)): lines from file
+            http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/phenotype_to_genes.txt
+
     """
     # Create a map from gene aliases to gene objects
     alias_genes = adapter.genes_by_alias()
@@ -47,11 +44,7 @@ def load_hpo(
 
     # Fetch the hpo gene information if no file
     if not hpo_gene_lines:
-        hpo_gene_lines = fetch_hpo_to_genes()
-
-    # Fetch the hpo phenotype information if no file
-    if not hpo_disease_lines:
-        hpo_disease_lines = fetch_hpo_phenotype_to_terms()
+        hpo_gene_lines = fetch_hpo_to_genes_to_disease()
 
     load_hpo_terms(adapter, hpo_lines, hpo_gene_lines, alias_genes)
 
@@ -59,7 +52,12 @@ def load_hpo(
         LOG.warning("No omim information, skipping to load disease terms")
         return
 
-    load_disease_terms(adapter, disease_lines, alias_genes, hpo_disease_lines)
+    load_disease_terms(
+        adapter=adapter,
+        genemap_lines=disease_lines,
+        genes=alias_genes,
+        hpo_disease_lines=hpo_gene_lines,
+    )
 
 
 def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=None):
@@ -69,21 +67,22 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
 
     Args:
         adapter(MongoAdapter)
-        hpo_lines(iterable(str))
-        hpo_gene_lines(iterable(str))
+        hpo_lines(iterable(str)): lines from file http://purl.obolibrary.org/obo/hp.obo
+        hpo_gene_lines(iterable(str)): lines from file
+            http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/phenotype_to_genes.txt
+        alias_genes
     """
-
     # Fetch the hpo terms if no file
     if not hpo_lines:
         hpo_lines = fetch_hpo_terms()
 
-    # Fetch the hpo gene information if no file
-    if not hpo_gene_lines:
-        hpo_gene_lines = fetch_hpo_to_genes()
-
     # Parse the terms
     LOG.info("Parsing hpo terms")
     hpo_terms = build_hpo_tree(hpo_lines)
+
+    # Fetch the hpo gene information if no file
+    if not hpo_gene_lines:
+        hpo_gene_lines = fetch_hpo_to_genes_to_disease()
 
     # Get a map with hgnc symbols to hgnc ids from scout
     if not alias_genes:
@@ -138,7 +137,7 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=Non
     """Load the omim phenotypes into the database
 
     Parse the phenotypes from genemap2.txt and find the associated hpo terms
-    from ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt.
+    from http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/phenotype_to_genes.txt
 
     Args:
         adapter(MongoAdapter)
@@ -155,7 +154,7 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=Non
     disease_terms = get_mim_phenotypes(genemap_lines=genemap_lines)
 
     if not hpo_disease_lines:
-        hpo_disease_lines = fetch_hpo_phenotype_to_terms()
+        hpo_disease_lines = fetch_hpo_to_genes_to_disease()
     hpo_diseases = parse_hpo_diseases(hpo_disease_lines)
 
     start_time = datetime.now()

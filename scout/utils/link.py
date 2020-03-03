@@ -10,7 +10,7 @@ from scout.parse.ensembl import (
     parse_ensembl_genes,
 )
 from scout.parse.exac import parse_exac_genes
-from scout.parse.hpo import get_incomplete_penetrance_genes
+from scout.parse.hpo_terms import get_incomplete_penetrance_genes
 from scout.parse.omim import get_mim_genes
 
 LOG = logging.getLogger(__name__)
