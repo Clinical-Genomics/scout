@@ -16,6 +16,7 @@ import pathlib
 import click
 from flask.cli import current_app, with_appcontext
 from pymongo.errors import ServerSelectionTimeoutError
+
 # Adapter stuff
 from scout.adapter import MongoAdapter
 from scout.load.setup import setup_scout
@@ -77,7 +78,7 @@ def abort_if_false(ctx, param, value):
     type=click.Path(exists=True),
     help=(
         "Path to file with HPO to gene information. This is the file called"
-        " ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt"
+        "genes_to_phenotype.txt"
     ),
 )
 @click.option(
@@ -90,15 +91,7 @@ def abort_if_false(ctx, param, value):
     type=click.Path(exists=True),
     help=(
         "Path to file with map from HPO terms to genes. This is the file called "
-        "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes.txt"
-    ),
-)
-@click.option(
-    "--hpo_disease",
-    type=click.Path(exists=True),
-    help=(
-        "Path to file with map from phenotype to HPO terms. This is the file called "
-        "ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes.txt"
+        "phenotype_to_genes.txt"
     ),
 )
 @with_appcontext
@@ -111,16 +104,15 @@ def database(
     api_key,
     mim2gene,
     genemap,
-    hpogenes,
     hgnc,
     exac,
     ensgenes37,
     ensgenes38,
     enstx37,
     enstx38,
+    hpogenes,
     hpoterms,
     hpo_to_genes,
-    hpo_disease,
     files,
 ):
     """Setup a scout database."""
@@ -152,7 +144,6 @@ def database(
         "hpogenes_path": hpogenes,
         "hpoterms_path": hpoterms,
         "hpo_to_genes_path": hpo_to_genes,
-        "hpo_disease_path": hpo_disease,
     }
     LOG.info("Setting up database %s", context.obj["mongodb"])
     if files:
@@ -173,17 +164,12 @@ def database(
                 resource_files["transcripts37_path"] = str(path.resolve())
             if path.stem == "ensembl_transcripts_38":
                 resource_files["transcripts38_path"] = str(path.resolve())
-            if path.stem == "ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype":
+            if path.stem == "genes_to_phenotype":
                 resource_files["hpogenes_path"] = str(path.resolve())
             if path.stem == "hpo":
                 resource_files["hpoterms_path"] = str(path.resolve())
-            if path.stem == "ALL_SOURCES_ALL_FREQUENCIES_phenotype_to_genes":
+            if path.stem == "phenotype_to_genes":
                 resource_files["hpo_to_genes_path"] = str(path.resolve())
-            if (
-                path.stem
-                == "ALL_SOURCES_ALL_FREQUENCIES_diseases_to_genes_to_phenotypes"
-            ):
-                resource_files["hpo_disease_path"] = str(path.resolve())
 
     setup_scout(
         adapter=adapter,
