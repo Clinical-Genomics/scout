@@ -58,10 +58,10 @@ def parse_hpo_diseases(hpo_lines):
         # Skip the line if there where no info
         if not disease_info:
             continue
-        disease_nr = disease_info["disease_nr"]
-        hgnc_symbol = disease_info["hgnc_symbol"]
-        hpo_term = disease_info["hpo_term"]
-        source = disease_info["source"]
+        disease_nr = disease_info.get("disease_nr")
+        hgnc_symbol = disease_info.get("hgnc_symbol")
+        hpo_term = disease_info.get("hpo_term")
+        source = disease_info.get("source")
         disease_id = "{0}:{1}".format(source, disease_nr)
 
         if disease_id not in diseases:
