@@ -7,19 +7,25 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+- ClinVar SNVs track in IGV
+- Add SMA view with SMN Copy Number data
 
 ### Fixed
 - Bug when adding a new gene to a panel
+- Restored missing recent delivery reports
+- Fixed style and links to other reports in case side panel
+- Deleting cases using display_name and institute not deleting its variants
+- Fixed bug that caused coordinates filter to override other filters
+- Fixed a problem with finding some INS in loqusdb
+- Layout on SV page when local observations without cases are present
+- Make scout compatible with the new HPO definition files from `http://compbio.charite.de/jenkins/`
 
 ### Changed
-
 
 ## [4.12.4]
 
-### Added
 ### Fixed
 - Layout on SV page when local observations without cases are present
-### Changed
 
 ## [4.12.3]
 

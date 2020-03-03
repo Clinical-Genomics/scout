@@ -146,6 +146,9 @@
     {% if case.vcf_files.vcf_str %}
       <a class="btn btn-outline-dark" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical STR variants</a>
     {% endif %}
+    {% if case.smn_tsv %}
+      <a class="btn btn-outline-dark" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">SMN CN</a>
+    {% endif %}
     {% if case.vcf_files.vcf_cancer %}
       <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV and INDELs</a>
     {% endif %}
