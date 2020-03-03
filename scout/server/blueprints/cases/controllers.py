@@ -12,20 +12,32 @@ from flask_login import current_user
 from flask_mail import Message
 from xlsxwriter import Workbook
 
-from scout.constants import (CANCER_PHENOTYPE_MAP, CASE_STATUSES,
-                             MT_EXPORT_HEADER, PHENOTYPE_GROUPS, PHENOTYPE_MAP,
-                             SEX_MAP, VERBS_MAP)
+from scout.constants import (
+    CANCER_PHENOTYPE_MAP,
+    CASE_STATUSES,
+    MT_EXPORT_HEADER,
+    PHENOTYPE_GROUPS,
+    PHENOTYPE_MAP,
+    SEX_MAP,
+    VERBS_MAP,
+)
 from scout.constants.variant_tags import (
-				CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS, CANCER_TIER_OPTIONS,
-				DISMISS_VARIANT_OPTIONS, GENETIC_MODELS, MANUAL_RANK_OPTIONS)
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+    CANCER_TIER_OPTIONS,
+    DISMISS_VARIANT_OPTIONS,
+    GENETIC_MODELS,
+    MANUAL_RANK_OPTIONS,
+)
 from scout.export.variant import export_mt_variants
-from scout.parse.clinvar import (clinvar_submission_header,
-                                 clinvar_submission_lines)
-from scout.parse.matchmaker import (genomic_features, hpo_terms, omim_terms,
-                                    parse_matches)
+from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
+from scout.parse.matchmaker import (
+    genomic_features,
+    hpo_terms,
+    omim_terms,
+    parse_matches,
+)
 from scout.server.blueprints.genes.controllers import gene
-from scout.server.blueprints.variant.controllers import \
-				variant as variant_decorator
+from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variant.utils import predictions
 from scout.server.utils import institute_and_case, user_institutes
 from scout.utils.matchmaker import matchmaker_request

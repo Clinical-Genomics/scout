@@ -3,9 +3,7 @@ import copy
 
 from flask import Flask
 
-from scout.server.blueprints.cases.controllers import (case,
-                                                       case_report_content,
-                                                       cases)
+from scout.server.blueprints.cases.controllers import case, case_report_content, cases
 
 
 def test_cases(adapter, case_obj, institute_obj):
