@@ -8,18 +8,24 @@ import shutil
 import zipfile
 
 import pymongo
-from flask import (Blueprint, abort, current_app, flash, redirect, request,
-                   send_file, url_for)
+from flask import (
+    Blueprint,
+    abort,
+    current_app,
+    flash,
+    redirect,
+    request,
+    send_file,
+    url_for,
+)
 from flask_login import current_user
 
-from scout.constants import (CANCER_TIER_OPTIONS, MANUAL_RANK_OPTIONS,
-                             SEVERE_SO_TERMS)
+from scout.constants import CANCER_TIER_OPTIONS, MANUAL_RANK_OPTIONS, SEVERE_SO_TERMS
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated
 
 from . import controllers
-from .forms import (CancerFiltersForm, FiltersForm, StrFiltersForm,
-                    SvFiltersForm)
+from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
 variants_bp = Blueprint(
