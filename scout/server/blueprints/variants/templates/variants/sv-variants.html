@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_table %}
-{% from "variants/utils.html" import sv_filters %}
+{% from "variants/utils.html" import sv_filters, cell_rank %}
 {% from "variants/components.html" import frequency_cell_general %}
 
 {% block title %}
@@ -84,49 +84,6 @@
 </form>
 {% endblock %}
 
-{% macro cell_rank(variant) %}
-  <a
-     href="{{ url_for('variant.sv_variant', institute_id=institute._id,
-                      case_name=case.display_name, variant_id=variant._id) }}">
-    {{ variant.variant_rank }}
-  </a>
-  {% set comment_count = variant.comments.count() %}
-  {% if variant.manual_rank %}
-    <span class="badge badge-primary" data-toggle="tooltip" data-placement="right" title="Manual rank: {{ manual_rank_options[variant.manual_rank].description }}">{{  manual_rank_options[variant.manual_rank]['label'] }}</span>
-  {% endif %}
-
-  {% if comment_count > 0 %}
-    {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
-    <a href="#"
-      class="badge badge-secondary"
-      style="color:white;"
-      data-toggle="popover"
-      data-placement="right"
-      data-html="true"
-      data-trigger="hover click"
-      data-content="<small>{{ comments_content }}</small>">
-      {{ comment_count }}
-      <i class="fa fa-comment"></i>
-      {% if 'GLOBAL' in comments_content %}
-        <i class="fa fa-globe" aria-hidden="true"></i>
-      {% endif %}
-    </a>
-  {% endif %}
-  {% if variant._id in case.suspects %}
-    <i class="fa fa-map-pin"></i>
-  {% endif %}
-  {% if form.variant_type.data == 'research' %}
-    {% if variant.clinical_assessments %}
-      {% for assessment in variant.clinical_assessments %}
-        <span class="badge badge-secondary" data-toggle="tooltip" data-placement="right"
-            title="{{ assessment.title }}">
-            {{ assessment.label }}</span>
-      {% endfor %}
-    {% endif %}
-  {% endif %}
-
-{% endmacro %}
-
 {% macro variant_row(variant) %}
   {% if variant.dismiss_variant %}
   <tr class="dismiss">
@@ -134,7 +91,7 @@
   <tr>
   {% endif %}
     <td class="text-left">
-      {{ cell_rank(variant) }}
+      {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
     <td class="text-right">{{ variant.rank_score|int }}</td>
     <td>{{ variant.sub_category|upper }}</td>
@@ -166,7 +123,7 @@
             {{ variant.hgnc_symbols[:2]|join(', ') }} [...] {{ variant.hgnc_symbols[-2:]|join(', ') }}
           {% else %}
             {% for symbol in variant.hgnc_symbols %}
-              <div>{{ symbol }}</div>
+              <div>{{ symbol }}</div>&nbsp;&nbsp;
             {% endfor %}
           {% endif %}
         </div>
@@ -232,14 +189,17 @@
       return true;
     }
 
-    $('[data-toggle="tooltip"]').tooltip();
-    $(function () {
-      $('[data-toggle="popover"]').popover({
-        container: 'body',
-      });
+    $('select[multiple]').selectpicker({
+      width: '100%'
+    });
 
-      $('select[multiple]').selectpicker({
-        width: '100%'
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip();
+      $('[data-toggle="popover"]').popover({
+        sanitizeFn: function (content) {
+          return DOMPurify.sanitize(content)
+        },
+        container: 'body',
       });
     })
   </script>

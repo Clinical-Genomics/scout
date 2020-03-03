@@ -22,7 +22,7 @@
         {% endif %}
       </div>"
         href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
-      </a>
+      </a>&nbsp;&nbsp;
     {% endfor %}
     {% if variant.panels|count > 0 %}
         <a
@@ -40,7 +40,7 @@
 {% macro frequency_cell_general(variant) %}
   <div data-toggle="tooltip" data-placement="left" data-html="true" title="
       <div class='text-left'>
-        {% for freq_name, value in variant.frequencies %}
+        {% for freq_name, value, link in variant.frequencies %}
           <div>
             <strong>freq_name</strong>: {{ value|human_decimal}}
           </div>

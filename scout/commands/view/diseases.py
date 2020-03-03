@@ -7,7 +7,8 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
-@click.command('diseases', short_help='Display all diseases')
+
+@click.command("diseases", short_help="Display all diseases")
 @with_appcontext
 def diseases():
     """Show all diseases in the database"""
@@ -22,5 +23,5 @@ def diseases():
     else:
         click.echo("Disease")
         for disease_obj in adapter.disease_terms():
-            click.echo("{0}".format(disease_obj['_id']))
+            click.echo("{0}".format(disease_obj["_id"]))
         LOG.info("{0} diseases found".format(nr_diseases))

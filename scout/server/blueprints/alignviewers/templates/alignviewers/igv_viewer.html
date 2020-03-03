@@ -49,16 +49,50 @@
                     locus: "{{locus}}",
                     tracks: [
                       {
-                            name: "{{ genes_track.name }}",
-                            type: "{{ genes_track.type }}",
-                            format: "{{ genes_track.format }}",
-                            sourceType: "{{ genes_track.sourceType }}",
-                            url: "{{ genes_track.url|replace('%2F','/') }}",
-                            indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
-                            displayMode: "{{ genes_track.displayMode }}",
-                            order: Number.MIN_VALUE,
-                            visibilityWindow: 300000000
+                          name: "{{ clinvar_snvs.name }}",
+                          type: "{{ clinvar_snvs.type }}",
+                          format: "{{ clinvar_snvs.format }}",
+                          sourceType: "{{ clinvar_snvs.sourceType }}",
+                          url: "{{ clinvar_snvs.url|replace('%2F','/') }}",
+                          displayMode: "{{ clinvar_snvs.displayMode }}",
+                          order: Number.MIN_VALUE,
+                          height: "{{clinvar_snvs.height}}",
+                          maxRows: "{{clinvar_snvs.maxRows}}",
                       },
+                      {
+                          name: "{{ genes_track.name }}",
+                          type: "{{ genes_track.type }}",
+                          format: "{{ genes_track.format }}",
+                          sourceType: "{{ genes_track.sourceType }}",
+                          url: "{{ genes_track.url|replace('%2F','/') }}",
+                          indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
+                          displayMode: "{{ genes_track.displayMode }}",
+                          order: Number.MIN_VALUE,
+                          visibilityWindow: 300000000,
+                      },
+                      {% for wtrack in rhocall_wig_tracks %}
+                      {
+                        type: "wig",
+                        name: '{{ wtrack.name }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=wtrack.url) }}',
+                        format: 'wig',
+                        {# indexURL: '{{ url_for("alignviewers.remote_static", file=wtrack.url)  }}', #}
+                        color: "rgb(60, 37, 17)",
+                        min: '{{ wtrack.min }}',
+                        max: '{{ wtrack.max }}',
+                        sourceType: 'file'
+                      },
+                      {% endfor %}
+                      {% for btrack in rhocall_bed_tracks %}
+                      {
+                        type: "bed",
+                        name: '{{ btrack.name }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=btrack.url) }}',
+                        format: 'bed',
+                        color: "rgb(65, 31, 30)",
+                        sourceType: 'file'
+                      },
+                      {% endfor %}
                       {% for track in sample_tracks %}
                       {
                         name: "{{ track.name }}",
@@ -68,6 +102,34 @@
                         sourceType: "file",
                         format: "{{ track.format }}",
                         height: "{{track.height}}"
+                      },
+                      {% endfor %}
+                      {% for ttrack in tiddit_wig_tracks %}
+                      {
+                        type: "wig",
+                        name: '{{ ttrack.name }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=ttrack.url) }}',
+                        format: 'wig',
+                        color: "rgb(40, 0, 13)",
+                        sourceType: 'file'
+                      },
+                      {% endfor %}
+                      {% for rtrack in updregion_tracks %}
+                      {
+                        type: "bed",
+                        name: '{{ rtrack.name }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=rtrack.url) }}',
+                        color: "rgb(0, 204, 102)",
+                        sourceType: 'file'
+                      },
+                      {% endfor %}
+                      {% for strack in updsites_tracks %}
+                      {
+                        type: "bed",
+                        name: '{{ strack.name }}',
+                        url: '{{ url_for("alignviewers.remote_static", file=strack.url) }}',
+                        color: "rgb(25, 61, 4)",
+                        sourceType: 'file'
                       },
                       {% endfor %}
                     ]

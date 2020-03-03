@@ -1,0 +1,145 @@
+
+{% macro cancer_individuals_table(case, institute, tissues) %}
+<form method="POST" action="{{ url_for('cases.update_cancer_sample', institute_id=institute._id, case_name=case.display_name) }}">
+  <div class="card panel-default">
+    <div class="panel-heading">Individuals</div>
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+             title="Sample display name">Sample</th>
+            <th class="col-xs-2" title="Tumor Type">Tumor Type</th>
+            <th class="col-xs-1" title="Phenotype">Phenotype</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+             title="Type of sequencing (e.g panel, wes)">Sequencing</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+             title="Measure of the tumor mutational burden">TMB</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+             title="Measure of microsatellite instability">MSI</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+             title="Measure of tumor purity">Tumor Purity</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+             title="Tissue origin for the sample">Tissue</th>
+            <th style="width: 5%"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ind in case.individuals %}
+            <tr {% if ind.phenotype_human == 'tumor' %} class="bg-danger-light" {% endif %}>
+              <td>{{ ind.display_name }}</td>
+              {% if ind.phenotype_human == "normal" %}
+                <td>N/A</td>
+              {% else %}
+                <td><input name="tumor_type.{{ind.individual_id}}" class="form-control col-10" value="{{ ind.tumor_type or 'unknown'}}"></td>
+              {% endif %}
+              <td>{{ ind.phenotype_human }}</td>
+              <td>{{ ind.analysis_type|upper }}</td>
+              <td>{{ ind.tmb or 'N/A' }}</td>
+              <td>{{ ind.msi or 'N/A' }}</td>
+              {% if ind.phenotype_human == "tumor" %}
+                <td class="d-flex flex-row align-items-center"><input name="tumor_purity.{{ind.individual_id}}" type="number" step="0.01" min="0.1" max=1
+                    class="form-control col-7" value="{{ind.tumor_purity}}">
+                {% if ind.tumor_purity|float <0.2 %} &nbsp;&nbsp; <i class="fa fa-exclamation" data-toggle='tooltip' data-container='body'
+                title="Low or missing tumor purity"></i> {% endif %}</td>
+              {% else %}
+                <td>N/A</td>
+              {% endif %}
+              <td>
+                <select class="form-control col-6" name="tissue_type.{{ind.individual_id}}">
+                  {% for key,tissue in tissues.items() %}
+                    <option value="{{tissue}}" {{ 'selected' if ind.tissue_type == tissue }}>{{tissue}}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td>
+                <button class="btn btn-secondary btn-sm form-control" name="update_ind"
+                  type="submit" value="{{ ind.individual_id }}">Save</button>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</form>
+{% endmacro %}
+
+{% macro individuals_table(case, institute, tissues) %}
+<form method="POST" action="{{ url_for('cases.update_individual', institute_id=institute._id, case_name=case.display_name) }}">
+  <div class="card panel-default">
+    <div class="panel-heading">Individuals</div>
+    <div class="panel-body">
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th data-toggle='tooltip' data-container='body' style="width: 20%" title="Display name of sample">Sample</th>
+            <th data-toggle='tooltip' style="width: 5%" title="Sample sex">Sex</th>
+            <th data-toggle='tooltip' style="width: 12%" title="Age at sampling">Age</th>
+            <th data-toggle='tooltip' style="width: 10%" title="Phenotype of sample">Phenotype</th>
+            <th data-toggle='tooltip' data-container='body' title="Type of sequencing (e.g wes, wgs)" style="width: 10%">Sequencing</th>
+            <th data-toggle='tooltip' data-container='body' title="Ancestry prediction from peddy" style="width: 10%">Ancestry (pred.)</th>
+            <th data-toggle='tooltip' data-container='body' title="If parenthood is confirmed by peddy" style="width: 10%">Parenthood</th>
+            <th data-toggle='tooltip' data-container='body' title="Downloadable CytoSure file" style="width: 5%">CGH</th>
+            <th data-toggle='tooltip' data-container='body' title="Tissue origin for the sample" style="width: 13%">Tissue</th>
+            <th style="width: 5%"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ind in case.individuals %}
+            <tr {% if ind.phenotype_human == 'affected' %} class="bg-danger-light" {% endif %}>
+              <td>{{ ind.display_name }}</td>
+              <td>
+                {% if ind.sex_human in ['female','male'] %}
+                  <i class="fa fa-{{ind.sex_human}}" aria-hidden="true"></i>
+                {% else %}
+                  {{ind.sex_human}}
+                {% endif %}
+                {% if ind.confirmed_sex %}
+                  <i class="fa fa-check"></i>
+                {% endif %}
+              </td>
+              <td><input name="age_{{ind.individual_id}}" type="number" step="0.1" min="0"
+                  class="form-control col-8" value="{{ind.age}}"></td>
+              <td>{{ ind.phenotype_human }}</td>
+              <td>{{ ind.analysis_type|upper }}</td>
+              <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
+              <td>
+                {% if ind.confirmed_parent == True %}
+                  <i class="fa fa-check"></i>
+                {% elif ind.confirmed_parent == False %}
+                  <i class="fa fa-exclamation-circle"></i>
+                {% else %}
+                  N/A
+                {% endif %}
+              </td>
+              <td>
+                {% if ind.vcf2cytosure %}
+                <a href="{{ url_for('cases.vcf2cytosure', institute_id=institute._id,
+                      case_name=case.display_name, individual_id=ind.individual_id) }}" class="btn">
+                  <i class="fa fa-download"></i>
+                </a>
+                {% else %}
+                  N/A
+                {% endif %}
+                <td>
+                  <select class="form-control col-10" name="tissue_{{ind.individual_id}}">
+                    {% for key,tissue in tissues.items() %}
+                      <option value="{{tissue}}" {{ 'selected' if ind.tissue_type == tissue }}>{{tissue}}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td>
+                  <button class="btn btn-secondary btn-sm form-control" name="update_ind"
+                    type="submit" value="{{ ind.individual_id }}">Save</button>
+                </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    </div>
+  </div>
+</form>
+{% endmacro %}

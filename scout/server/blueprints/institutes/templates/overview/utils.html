@@ -1,0 +1,59 @@
+{% macro institute_macro(institute, current_user) %}
+<form action="{{ url_for('overview.institute', institute_id=institute.internal_id) }}">
+<div class="card mt-3">
+  <div>
+  <h5 class="card-title"><a href="{{ url_for('cases.cases', institute_id=institute.internal_id) }}"> {{ institute.display_name }}</a>
+  {%- if current_user.is_admin or institute.internal_id in current_user.institutes %}
+    <button class="float-right btn-primary btn-sm" type="submit" class="btn btn-primary btn-sm" title="settings">settings</button>
+  {%- endif -%}
+  </h5>
+  </div>
+  {% if current_user.is_admin %}
+    <h6 class="card-subtitle mb-2 text-muted"> ({{ institute.internal_id }})</h6>
+  {% endif %}
+  <div class="card-body">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        Coverage Cutoff
+        <span class="float-right">{{ institute.coverage_cutoff }}</span>
+      </li>
+      <div class="list-group-item">
+        Sanger Recipients
+        <span class="float-right">{{ institute.sanger_recipients|join(', ') or '-' }}</span>
+      </div>
+      <li class="list-group-item">
+        Frequency Cutoff
+        <span class="float-right">{{ institute.frequency_cutoff }}</span>
+      </li>
+      <li class="list-group-item">
+        Number of Cases
+        <span class="float-right">{{ institute.case_count }}</span>
+      </li>
+    </ul>
+  </div>
+</div>
+</form>
+{% endmacro %}
+
+{% macro users_table(users) %}
+  <table class="table table-striped table-sm">
+    <thead>
+      <th scope="col">#</th>
+      <th scope="col">name</th>
+      <th scope="col">email</th>
+      <th scope="col">roles</th>
+      <th scope="col">last connected</th>
+    </thead>
+    <tbody>
+      {% for user in users %}
+        <tr>
+          <th scope="row">{{loop.index}}</th>
+          <td>{{user.name}}</td>
+          <td>{{user.email}}</td>
+          <td>{{user.roles|join(', ')}}</td>
+          <td>{{user.accessed_at}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endmacro %}

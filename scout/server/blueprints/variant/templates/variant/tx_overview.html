@@ -1,0 +1,103 @@
+
+{% macro disease_associated(variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading" data-toggle='tooltip' title="Transcripts described as disease associated in any of the gene panels">Disease associated transcripts</div>
+    <div class=card-body>
+      <table class="table table-bordered table-hover table-sm">
+        <tr>
+          <td>
+          {% set ns = namespace(gene='') %}
+          {% for transcript in variant.disease_associated_transcripts %}
+            {% set ns.gene = transcript.split(":")[0] != ns.gene %} <!-- is this a different gene? -->
+            {% if ns.gene and loop.index > 1%}<!--new line-->
+              <br><strong>{{transcript.split(":")[0]}}:</strong> &nbsp;<!--print gene -->
+            {% elif ns.gene %} <!--first gene-->
+              <strong>{{transcript.split(":")[0]}}:</strong> &nbsp;
+            {% endif %}
+            {{transcript.split(":")[1]}} &nbsp;<!-- print transcript-->
+            {% set ns.gene = transcript.split(":")[0] %}
+          {% else %}
+            -
+          {% endfor %}
+          </td>
+      </tr>
+    </table>
+  </div>
+  </div>
+{% endmacro %}
+
+{% macro transcripts_overview(variant) %}
+  <div class="card panel-default">
+    <div data-toggle='tooltip' class="panel-heading" title="Displays all transcripts with refseq ids. One ensembl transcript can have multiple refseq ids. Blue color indicates that the ensembl transcript is mapped to a transcript that is canonical according to HGNC">
+      Transcript overview</div>
+    <div class=card-body>
+      <table id="transcript_overview_table" class="table table-bordered table-hover table-sm">
+        <thead class="thead-light">
+          <tr>
+            <th>Gene</th>
+            <th>Transcript</th>
+            <th>HGVS Description</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for gene in variant.genes %}
+          {% if not variant.has_refseq %}
+            {% for transcript in gene.transcripts %}
+              <tr>
+                <td class="d-flex justify-content-between align-items-center">
+                  <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                    {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                  </a>
+                  {% if transcript.is_canonical %}
+                    <span class="badge badge-info" title="vep canonical">C</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <div>
+                    {{ transcript.transcript_id }}
+                  </div>
+                </td>
+                <td title="{{ transcript.coding_sequence_name or '' }}">
+                  {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
+                  <span class="text-muted float-right">
+                    {{ (transcript.protein_sequence_name or '')|url_decode }}
+                  </span>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            {% for transcript in gene.primary_transcripts %}
+              {% for refseq_id in transcript.refseq_identifiers %}
+                <tr {% if transcript.is_primary %} class="bg-info-light" {% endif %}>
+                  <td class="d-flex justify-content-between align-items-center">
+                    <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                      {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                    </a>
+                    {% if transcript.is_canonical %}
+                      <span class="badge badge-info" title="vep canonical">C</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div>
+                      {{ refseq_id }}<span class="text-muted"> ({{ transcript.transcript_id }})</span>
+                      {% if refseq_id in gene.common.primary_transcripts %}
+                      <span class="text-muted">(hgnc-primary)</span>
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td title="{{ transcript.coding_sequence_name or '' }}">
+                    {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
+                    <span class="text-muted float-right">
+                      {{ (transcript.protein_sequence_name or '')|url_decode }}
+                    </span>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        </tbody>
+      </table>
+    </div> <!-- end of card-body -->
+  </div> <!-- end of card div -->
+{% endmacro %}

@@ -1,9 +1,8 @@
-
 def test_load_case(case_obj, adapter):
 
     ## GIVEN a database with no cases
     assert adapter.case_collection.find_one() is None
-    
+
     ## WHEN loading a case
     adapter._add_case(case_obj)
 
@@ -15,13 +14,12 @@ def test_load_case_rank_model_version(case_obj, adapter):
 
     ## GIVEN a database with no cases
     assert adapter.case_collection.find_one() is None
-    
+
     ## WHEN loading a case
     adapter._add_case(case_obj)
 
     ## THEN assert that the case have been loaded with rank_model
-    loaded_case = adapter.case_collection.find_one({'_id': case_obj['_id']})
+    loaded_case = adapter.case_collection.find_one({"_id": case_obj["_id"]})
 
-    assert loaded_case['rank_model_version'] == case_obj['rank_model_version']
-    assert loaded_case['sv_rank_model_version'] == case_obj['sv_rank_model_version']
-
+    assert loaded_case["rank_model_version"] == case_obj["rank_model_version"]
+    assert loaded_case["sv_rank_model_version"] == case_obj["sv_rank_model_version"]

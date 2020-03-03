@@ -1,13 +1,19 @@
-ANALYSIS_TYPES = ('wgs', 'wes', 'mixed', 'unknown', 'panel', 'external')
+ANALYSIS_TYPES = ("wgs", "wes", "mixed", "unknown", "panel", "external")
 
-SEX_MAP = {1: 'male', 2: 'female', 'other': 'unknown', 0: 'unknown',
-          '1': 'male', '2': 'female', '0': 'unknown'}
-REV_SEX_MAP = {'male':'1', 'female': '2', 'unknown': '0'}
+SEX_MAP = {
+    1: "male",
+    2: "female",
+    "other": "unknown",
+    0: "unknown",
+    "1": "male",
+    "2": "female",
+    "0": "unknown",
+}
+REV_SEX_MAP = {"male": "1", "female": "2", "unknown": "0"}
 
-PHENOTYPE_MAP = {1: 'unaffected', 2: 'affected', 0: 'unknown', -9: 'unknown'}
-CANCER_PHENOTYPE_MAP = {1: 'normal', 2: 'tumor', 0: 'unknown', -9: 'unknown'}
+PHENOTYPE_MAP = {1: "unaffected", 2: "affected", 0: "unknown", -9: "unknown"}
+CANCER_PHENOTYPE_MAP = {1: "normal", 2: "tumor", 0: "unknown", -9: "unknown"}
 REV_PHENOTYPE_MAP = {value: key for key, value in PHENOTYPE_MAP.items()}
-
 
 CASE_STATUSES = ("prioritized", "inactive", "active", "solved", "archived")
 
@@ -26,13 +32,14 @@ VERBS_MAP = {
     "mark_causative": "marked causative for",
     "unmark_causative": "unmarked causative for",
     "mark_partial_causative": "mark partial causative for",
-    "unmark_partial_causative" : "unmarked partial causative for",
+    "unmark_partial_causative": "unmarked partial causative for",
     "manual_rank": "updated manual rank for",
     "cancer_tier": "updated cancer tier for",
     "add_phenotype": "added HPO term for",
     "remove_phenotype": "removed HPO term for",
     "add_case": "added case",
     "update_case": "updated case",
+    "update_individual": "updated individuals for",
     "check_case": "marked case as",
     "share": "shared case with",
     "unshare": "revoked access for",
@@ -48,7 +55,34 @@ VERBS_MAP = {
     "update_clinical_filter_hpo": "updated clinical filter HPO status for",
     "mme_add": "Exported to MatchMaker patient",
     "mme_remove": "Removed from MatchMaker patient",
-    "filter_stash": "stored a filter for "
+    "filter_stash": "stored a filter for ",
+    "update_sample": "updated sample data for",
 }
 
 VERBS = list(VERBS_MAP.keys())
+
+# Tissue types for rare disease samples and controls
+
+SOURCES = [
+    "blood",
+    "bone marrow",
+    "buccal swab",
+    "cell line",
+    "cell-free DNA",
+    "cytology (FFPE)",
+    "cytology (not fixed/fresh)",
+    "muscle",
+    "nail",
+    "saliva",
+    "skin",
+    "tissue (FFPE)",
+    "tissue (fresh frozen)",
+    "CVB",
+    "AC",
+    "other fetal tissue",
+    "other",
+    "unknown",
+]
+
+
+SAMPLE_SOURCE = dict((i, el) for i, el in enumerate(SOURCES))

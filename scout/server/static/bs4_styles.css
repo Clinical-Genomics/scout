@@ -43,7 +43,7 @@
 
 table.dataTable {margin-bottom: 0rem}
 
-.dataTables_scrollBody {    
+.dataTables_scrollBody {
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;}
 
@@ -94,7 +94,8 @@ table.dataTable {margin-bottom: 0rem}
 }
 
 .panel-default {
-	margin-top: 5px;
+	margin-top: 15px;
+  background-color: #f6f6f6 !important;
 }
 
 .panel-default > .panel-heading {
@@ -106,6 +107,7 @@ table.dataTable {margin-bottom: 0rem}
 
 .card {
   border-radius: 15px;
+  background: #f6f6f6;
 }
 
 .card-title {
@@ -129,7 +131,8 @@ table.dataTable {margin-bottom: 0rem}
 }
 
 .popover {
-	max-width: none;
+    max-width: none;
+    pointer-events: none;
 }
 
 .popover-content > table {
@@ -240,7 +243,7 @@ body {
     height: 35px;
 }
 .sidebar-separator {
-    background-color: #333;
+    background-color: #333 !important;
     height: 25px;
 }
 .logo-separator {
@@ -317,4 +320,24 @@ input[type="checkbox"].ios8-switch:checked + label:before {
 
 option {
   width: 100%;
+}
+
+.list-group-item {
+  background: #f6f6f6;
+}
+
+textarea.form-control {
+  background-color: #f6f6f6 !important;
+}
+
+input.form-control{
+  background-color: #f6f6f6 !important;
+}
+
+select.form-control {
+  background-color: #f6f6f6 !important;
+}
+
+.nav .nav-item, .nav > .active > a {
+  background-color: #f6f6f6 !important;
 }

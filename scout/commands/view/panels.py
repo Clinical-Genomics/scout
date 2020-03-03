@@ -8,10 +8,8 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 
-@click.command('panels', short_help='Display gene panels')
-@click.option('-i', '--institute',
-              help='institute id'
-              )
+@click.command("panels", short_help="Display gene panels")
+@click.option("-i", "--institute", help="institute id")
 @with_appcontext
 def panels(institute):
     """Show all gene panels in the database"""
@@ -25,9 +23,11 @@ def panels(institute):
     click.echo("#panel_name\tversion\tnr_genes\tdate")
 
     for panel_obj in panel_objs:
-        click.echo("{0}\t{1}\t{2}\t{3}".format(
-            panel_obj['panel_name'],
-            str(panel_obj['version']),
-            len(panel_obj['genes']),
-            str(panel_obj['date'].strftime('%Y-%m-%d'))
-        ))
+        click.echo(
+            "{0}\t{1}\t{2}\t{3}".format(
+                panel_obj["panel_name"],
+                str(panel_obj["version"]),
+                len(panel_obj["genes"]),
+                str(panel_obj["date"].strftime("%Y-%m-%d")),
+            )
+        )
