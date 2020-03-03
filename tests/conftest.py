@@ -44,22 +44,12 @@ from scout.demo.resources import (
     genes37_reduced_path,
     genes38_reduced_path,
     hgnc_reduced_path,
-<<<<<<< HEAD
-    hpo_phenotype_to_terms_reduced_path,
-    hpo_to_genes_reduced_path,
-    hpogenes_reduced_path,
-    hpoterms_reduced_path,
-    mim2gene_reduced_path,
-    transcripts37_reduced_path,
-    transcripts38_reduced_path,
-=======
     mim2gene_reduced_path,
     transcripts37_reduced_path,
     transcripts38_reduced_path,
     genes_to_phenotype_reduced_path,
     hpoterms_reduced_path,
     phenotype_to_genes_reduced_path,
->>>>>>> 5268e5396adb7f23617859f113939d3b885f39f1
 )
 from scout.load import load_hgnc_genes
 from scout.load.hpo import load_hpo
@@ -74,10 +64,6 @@ from scout.parse.ensembl import (
 )
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hgnc import parse_hgnc_genes
-<<<<<<< HEAD
-from scout.parse.hpo import parse_hpo_diseases, parse_hpo_genes, parse_hpo_phenotypes
-=======
->>>>>>> 5268e5396adb7f23617859f113939d3b885f39f1
 from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
 from scout.parse.variant.headers import parse_rank_results_header
