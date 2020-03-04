@@ -4,9 +4,17 @@ from scout.models import Institute
 
 LOG = logging.getLogger(__name__)
 
-def build_institute(internal_id, display_name, sanger_recipients=None,
-                    collaborators=None, phenotype_groups=None, cohorts=None,
-                    coverage_cutoff=None, frequency_cutoff=None):
+
+def build_institute(
+    internal_id,
+    display_name,
+    sanger_recipients=None,
+    collaborators=None,
+    phenotype_groups=None,
+    cohorts=None,
+    coverage_cutoff=None,
+    frequency_cutoff=None,
+):
     """Build a institute object
 
     Args:
@@ -21,17 +29,17 @@ def build_institute(internal_id, display_name, sanger_recipients=None,
 
     """
 
-    LOG.info("Building institute %s with display name %s", internal_id,display_name)
+    LOG.info("Building institute %s with display name %s", internal_id, display_name)
 
     institute_obj = Institute(
         internal_id=internal_id,
         display_name=display_name,
         sanger_recipients=sanger_recipients,
-        collaborators = collaborators,
-        phenotype_groups = phenotype_groups,
-        cohorts = cohorts,
-        coverage_cutoff = coverage_cutoff,
-        frequency_cutoff = frequency_cutoff
+        collaborators=collaborators,
+        phenotype_groups=phenotype_groups,
+        cohorts=cohorts,
+        coverage_cutoff=coverage_cutoff,
+        frequency_cutoff=frequency_cutoff,
     )
 
     for key in list(institute_obj):
