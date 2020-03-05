@@ -12,18 +12,19 @@ from scout.utils.matchmaker import mme_nodes
 from . import extensions
 from .blueprints import (
     alignviewers,
-    public,
-    genes,
+    api,
     cases,
+    dashboard,
+    diagnoses,
+    genes,
+    institutes,
     login,
+    login,
+    panels,
+    phenotypes,
+    public,
     variant,
     variants,
-    panels,
-    dashboard,
-    api,
-    phenotypes,
-    diagnoses,
-    institutes,
 )
 
 try:
