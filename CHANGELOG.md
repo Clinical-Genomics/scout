@@ -7,6 +7,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+### Fixed
+### Changed
+
+
+## [4.13]
+
+### Added
 - ClinVar SNVs track in IGV
 - Add SMA view with SMN Copy Number data
 - Easier to assign OMIM diagnoses from case page
@@ -23,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Make scout compatible with the new HPO definition files from `http://compbio.charite.de/jenkins/`
 
 ### Changed
+
 
 ## [4.12.4]
 
