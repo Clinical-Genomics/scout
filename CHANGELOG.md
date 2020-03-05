@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - ClinVar SNVs track in IGV
 - Add SMA view with SMN Copy Number data
+- Easier to assign OMIM diagnoses from case page
+- OMIM terms and specific OMIM term page
 - Option to use alternative flask config when running `scout serve`
 
 ### Fixed

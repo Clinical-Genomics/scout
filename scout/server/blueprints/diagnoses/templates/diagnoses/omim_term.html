@@ -1,0 +1,56 @@
+{% extends "layout_bs4.html" %}
+
+{% block top_nav %}
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('diagnoses.omim_diagnoses') }}">
+      OMIM terms
+    </a>
+  </li>
+  <li class="nav-item active">
+    <span class="navbar-text">{{_id}}</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+<div class="card mt-3">
+  <div class="card-header">Overview</div>
+    <div class="card-body">
+      <ul class="list-group">
+        <li class="list-group-item">
+          <a target="_blank" href="http://omim.org/entry/{{ disease_nr }}"># {{disease_nr}}</a>
+        </li>
+        <li class="list-group-item">
+          description: <strong>{{description}}</strong>
+        </li>
+        <li class="list-group-item">
+          genes:
+          {% for gene in genes_complete %}
+            <span class="badge badge-secondary">{{gene.hgnc_symbol}}</span>
+          {% else %}
+            -
+          {% endfor %}
+        </li>
+        <li class="list-group-item">
+          inheritance:
+            {% for model in inheritance %}
+              <span class="badge badge-info">{{model}}</span>
+            {% else %}
+              -
+            {% endfor%}
+        </li>
+        <li class="list-group-item">
+          Associated phenotypes:
+          <ul class="list-group list-group-flush">
+            {% for pheno in hpo_complete %}
+              <li class="list-group-item">
+                <a href="http://hpo.jax.org/app/browse/term/{{pheno.hpo_id}}" target="_blank">{{ pheno.hpo_id }}</a>
+                {{pheno.description}}
+              </li>
+            {% else %}
+              -
+            {% endfor %}
+          </ul>
+        </li>
+    </div>
+</div>
+{% endblock %}

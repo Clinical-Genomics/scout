@@ -1,0 +1,21 @@
+# -*- coding: utf-8 -*-
+from flask import url_for
+from scout.server.extensions import store
+
+
+def test_omim_diagnosis(app, test_omim_term):
+    """Test page that displays an OMIM diagnosis info"""
+
+    # GIVEN a database with at least one gene
+    store.disease_term_collection.insert_one(test_omim_term)
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+
+        # WHEN accessing the page of one OMIM diagnosis
+        resp = client.get(
+            url_for("diagnoses.omim_diagnosis", omim_nr=test_omim_term["disease_nr"])
+        )
+
+        # THEN it should return a page
+        assert resp.status_code == 200
