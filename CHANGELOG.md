@@ -21,6 +21,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed a problem with finding some INS in loqusdb
 - Layout on SV page when local observations without cases are present
 - Make scout compatible with the new HPO definition files from `http://compbio.charite.de/jenkins/`
+- General report visualization error when SNVs display names are very long
+
 
 ### Changed
 
