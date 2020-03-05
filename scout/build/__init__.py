@@ -4,7 +4,7 @@ from .variant.compound import build_compound
 from .variant.genotype import build_genotype
 from .variant import build_variant
 
-from .hpo import (build_hpo_term)
+from .hpo import build_hpo_term
 from .institute import build_institute
 from .phenotype import build_phenotype
 from .individual import build_individual

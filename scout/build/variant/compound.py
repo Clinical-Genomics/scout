@@ -1,4 +1,3 @@
-
 def build_compound(compound):
     """Build a compound
     
@@ -27,11 +26,11 @@ def build_compound(compound):
     )
     
     """
-    
+
     compound_obj = dict(
-        variant = compound['variant'],
-        display_name = compound['display_name'],
-        combined_score = float(compound['score'])
+        variant=compound["variant"],
+        display_name=compound["display_name"],
+        combined_score=float(compound["score"]),
     )
-    
+
     return compound_obj
