@@ -12,17 +12,18 @@ from scout.utils.matchmaker import mme_nodes
 from . import extensions
 from .blueprints import (
     alignviewers,
-    api,
-    cases,
-    dashboard,
-    genes,
-    institutes,
-    login,
-    panels,
-    phenotypes,
     public,
+    genes,
+    cases,
+    login,
     variant,
     variants,
+    panels,
+    dashboard,
+    api,
+    phenotypes,
+    diagnoses,
+    institutes,
 )
 
 try:
@@ -42,23 +43,6 @@ except ImportError:
     report_bp = None
     configure_template_filters = None
     LOG.info("chanjo report not installed!")
-
-from . import extensions
-from .blueprints import (
-    alignviewers,
-    public,
-    genes,
-    cases,
-    login,
-    variant,
-    variants,
-    panels,
-    dashboard,
-    api,
-    phenotypes,
-    diagnoses,
-    institutes,
-)
 
 
 def create_app(config_file=None, config=None):
