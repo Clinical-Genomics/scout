@@ -19,7 +19,6 @@ from .blueprints import (
     genes,
     institutes,
     login,
-    login,
     panels,
     phenotypes,
     public,
