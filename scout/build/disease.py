@@ -4,6 +4,7 @@ from scout.models.phenotype_term import DiseaseTerm
 
 LOG = logging.getLogger(__name__)
 
+
 def build_disease_term(disease_info, alias_genes={}):
     """Build a disease phenotype object
     
@@ -29,52 +30,51 @@ def build_disease_term(disease_info, alias_genes={}):
         )
         
     """
-    
+
     try:
-        disease_nr = int(disease_info['mim_number'])
+        disease_nr = int(disease_info["mim_number"])
     except KeyError:
         raise KeyError("Diseases has to have a disease number")
     except ValueError:
         raise KeyError("Diseases nr has to be integer")
 
-    disease_id = "{0}:{1}".format('OMIM', disease_nr)
+    disease_id = "{0}:{1}".format("OMIM", disease_nr)
 
     LOG.debug("Building disease term %s", disease_id)
 
     try:
-        description = disease_info['description']
+        description = disease_info["description"]
     except KeyError:
         raise KeyError("Diseases has to have a description")
-    
+
     disease_obj = DiseaseTerm(
-        disease_id=disease_id, 
-        disease_nr=disease_nr, 
-        description=description, 
-        source='OMIM'
+        disease_id=disease_id,
+        disease_nr=disease_nr,
+        description=description,
+        source="OMIM",
     )
 
     # Check if there where any inheritance information
-    inheritance_models = disease_info.get('inheritance')
+    inheritance_models = disease_info.get("inheritance")
     if inheritance_models:
-        disease_obj['inheritance'] = list(inheritance_models)
+        disease_obj["inheritance"] = list(inheritance_models)
 
     hgnc_ids = set()
-    for hgnc_symbol in disease_info.get('hgnc_symbols', []):
+    for hgnc_symbol in disease_info.get("hgnc_symbols", []):
         ## TODO need to consider genome build here?
         if hgnc_symbol in alias_genes:
             # If the symbol identifies a unique gene we add that
-            if alias_genes[hgnc_symbol]['true']:
-                hgnc_ids.add(alias_genes[hgnc_symbol]['true'])
+            if alias_genes[hgnc_symbol]["true"]:
+                hgnc_ids.add(alias_genes[hgnc_symbol]["true"])
             else:
-                for hgnc_id in alias_genes[hgnc_symbol]['ids']:
+                for hgnc_id in alias_genes[hgnc_symbol]["ids"]:
                     hgnc_ids.add(hgnc_id)
         else:
             LOG.debug("Gene symbol %s could not be found in database", hgnc_symbol)
 
-    disease_obj['genes'] = list(hgnc_ids)
-    
-    if 'hpo_terms' in disease_info:
-        disease_obj['hpo_terms'] = list(disease_info['hpo_terms'])
-    
+    disease_obj["genes"] = list(hgnc_ids)
+
+    if "hpo_terms" in disease_info:
+        disease_obj["hpo_terms"] = list(disease_info["hpo_terms"])
+
     return disease_obj
-    

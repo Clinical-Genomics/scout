@@ -3,8 +3,17 @@ import datetime
 
 LOG = logging.getLogger(__name__)
 
-def build_evaluation(variant_specific, variant_id, user_id, user_name,
-                     institute_id, case_id, classification, criteria):
+
+def build_evaluation(
+    variant_specific,
+    variant_id,
+    user_id,
+    user_name,
+    institute_id,
+    case_id,
+    classification,
+    criteria,
+):
     """Build a evaluation object ready to be inserted to database
 
     Args:
@@ -24,29 +33,27 @@ def build_evaluation(variant_specific, variant_id, user_id, user_name,
     LOG.info("Creating classification: %s for variant %s", classification, variant_id)
     criteria = criteria or []
     evaluation_obj = dict(
-        variant_specific = variant_specific,
-        variant_id = variant_id,
-        institute_id = institute_id,
-        case_id = case_id,
-        classification = classification,
-        user_id = user_id,
-        user_name = user_name,
-        created_at = datetime.datetime.now(),
+        variant_specific=variant_specific,
+        variant_id=variant_id,
+        institute_id=institute_id,
+        case_id=case_id,
+        classification=classification,
+        user_id=user_id,
+        user_name=user_name,
+        created_at=datetime.datetime.now(),
     )
     criteria_objs = []
     for info in criteria:
         criteria_obj = {}
         # This allways has to exist
         # We might want to check if the term is valid here...
-        criteria_obj['term'] = info['term']
-        if 'comment' in info:
-            criteria_obj['comment'] = info['comment']
-        if 'links' in info:
-            criteria_obj['links'] = info['links']
+        criteria_obj["term"] = info["term"]
+        if "comment" in info:
+            criteria_obj["comment"] = info["comment"]
+        if "links" in info:
+            criteria_obj["links"] = info["links"]
         criteria_objs.append(criteria_obj)
 
-    evaluation_obj['criteria'] = criteria_objs
+    evaluation_obj["criteria"] = criteria_objs
 
     return evaluation_obj
-
-

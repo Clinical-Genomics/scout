@@ -15,6 +15,7 @@ from .blueprints import (
     api,
     cases,
     dashboard,
+    diagnoses,
     genes,
     institutes,
     login,
@@ -130,6 +131,7 @@ def register_blueprints(app):
     app.register_blueprint(api.api_bp)
     app.register_blueprint(alignviewers.alignviewers_bp)
     app.register_blueprint(phenotypes.hpo_bp)
+    app.register_blueprint(diagnoses.omim_bp)
     app.register_blueprint(institutes.overview)
 
 
