@@ -2,7 +2,7 @@
 
 # testing
 pytest-mock
-pytest>=3.7.1
+pytest>=5.2
 pytest-flask
 pytest-cov
 mongomock<=3.12
