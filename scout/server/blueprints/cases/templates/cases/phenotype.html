@@ -46,7 +46,7 @@
     <ul class="list-group">
       {% for omim_id in case.diagnosis_phenotypes %}
         <li class="list-group-item d-flex">
-          {% if omim_id in omim_terms %}  
+          {% if omim_id in omim_terms %}
             <a class="flex-fill" target="_blank" href="http://omim.org/entry/{{ omim_id }}">
               {{ omim_id }} - {{ omim_terms[omim_id].description }}
             </a>
@@ -101,7 +101,7 @@
             </span>
           </li>
         {% else %}
-          <li class="list-group-item">No genes added</li>
+          <li class="list-group-item">No phenotypes added</li>
         {% endfor %}
       </ul>
     </div>
@@ -112,7 +112,7 @@
     <div class="row data-width="100%">
       <div class="col-md-10">
         <input name="omim_term" class="typeahead_omim form-control" data-provide="typeahead" autocomplete="off"
-          required placeholder="Search..."">
+          required placeholder="Disease description or OMIM number">
       </div>
       <div class="col-md-2">
         <button class="btn btn-outline-secondary form-control" type="submit" name="{{ type }}">
