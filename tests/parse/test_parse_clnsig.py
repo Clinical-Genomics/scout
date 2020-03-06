@@ -1,5 +1,6 @@
 from pprint import pprint as pp
 from scout.parse.variant.clnsig import parse_clnsig, is_pathogenic
+from scout.parse.variant import parse_variant
 
 
 def test_parse_classic_clnsig(cyvcf2_variant):
@@ -252,4 +253,15 @@ def test_parse_clinsig_vep97(one_vep97_annotated_variant, real_populated_databas
     # THEN the variant is loaded with the fields correctly parsed
     variant = adapter.variant_collection.find_one()
 
-    assert variant["clnsig"]
+    # Clinvar fields shoud be correctly parsed:
+    first_clnsig = variant["clnsig"][0]
+    assert first_clnsig
+
+    # Clinvar accession should be a numberical value
+    assert isinstance(first_clnsig["accession"], int)
+
+    # Value field should be a string (i.e. pathogenic, benign,..)
+    assert isinstance(first_clnsig["value"], str)
+
+    # Revstat field should be also a string string (i.e. criteria_provided, ..)
+    assert isinstance(first_clnsig["revstat"], str)
