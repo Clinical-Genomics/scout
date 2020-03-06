@@ -263,5 +263,5 @@ def test_parse_clinsig_vep97(one_vep97_annotated_variant, real_populated_databas
     # Value field should be a string (i.e. pathogenic, benign,..)
     assert isinstance(first_clnsig["value"], str)
 
-    # Revstat field should be also a string string (i.e. criteria_provided, ..)
+    # Revstat field should be also a string (i.e. criteria_provided, ..)
     assert isinstance(first_clnsig["revstat"], str)
