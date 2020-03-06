@@ -227,3 +227,29 @@ def test_is_pathogenic_no_annotation(cyvcf2_variant):
 
     ## THEN assert that The variant should be loaded
     assert pathogenic == False
+
+
+def test_parse_clinsig_vep97(one_vep97_annotated_variant, real_populated_database, case_obj):
+    """Test Clinsig parsing in a VEP97 formatted VCF"""
+
+    # GIVEN a variant annotated using the following CSQ entry fields
+    csq_header = "Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|CANONICAL|TSL|APPRIS|CCDS|ENSP|SWISSPROT|TREMBL|UNIPARC|REFSEQ_MATCH|SOURCE|GIVEN_REF|USED_REF|BAM_EDIT|SIFT|PolyPhen|DOMAINS|HGVS_OFFSET|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|MOTIF_SCORE_CHANGE|MES-NCSS_downstream_acceptor|MES-NCSS_downstream_donor|MES-NCSS_upstream_acceptor|MES-NCSS_upstream_donor|MES-SWA_acceptor_alt|MES-SWA_acceptor_diff|MES-SWA_acceptor_ref|MES-SWA_acceptor_ref_comp|MES-SWA_donor_alt|MES-SWA_donor_diff|MES-SWA_donor_ref|MES-SWA_donor_ref_comp|MaxEntScan_alt|MaxEntScan_diff|MaxEntScan_ref|GERP++_NR|GERP++_RS|REVEL_rankscore|phastCons100way_vertebrate|phyloP100way_vertebrate|LoFtool|ExACpLI|CLINVAR|CLINVAR_CLNSIG|CLINVAR_CLNVID|CLINVAR_CLNREVSTAT|genomic_superdups_frac_match"
+
+    header = [word.upper() for word in csq_header.split("|")]
+
+    # WHEN parsed using the parse_variant method
+    parsed_vep97_annotated_variant = parse_variant(
+        variant=one_vep97_annotated_variant, vep_header=header, case=case_obj
+    )
+
+    # GIVEN a database without any variants
+    adapter = real_populated_database
+    assert adapter.variant_collection.find_one() is None
+
+    # WHEN loading the variant into the database
+    adapter.load_variant(variant_obj=parsed_vep97_annotated_variant)
+
+    # THEN the variant is loaded with the fields correctly parsed
+    variant = adapter.variant_collection.find_one()
+
+    assert variant["clnsig"]
