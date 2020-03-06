@@ -5,13 +5,13 @@ LOG = logging.getLogger(__name__)
 
 def parse_clnsig(variant, transcripts=None):
     """Get the clnsig information
-    
+
     The clinvar format has changed several times and this function will try to parse all of them.
-    The first format represented the clinical significance terms with numbers. This was then 
-    replaced by strings and the separator changed. At this stage the possibility to connect review 
-    stats to a certain significance term was taken away. So now we can only annotate each 
+    The first format represented the clinical significance terms with numbers. This was then
+    replaced by strings and the separator changed. At this stage the possibility to connect review
+    stats to a certain significance term was taken away. So now we can only annotate each
     significance term with all review stats.
-    Also the clinvar accession number are is some cases annotated with the info key CLNACC and 
+    Also the clinvar accession number are is some cases annotated with the info key CLNACC and
     sometimes with CLNVID.
 
     Args:
@@ -25,9 +25,9 @@ def parse_clnsig(variant, transcripts=None):
         clnsig_accsessions(list(dict)): A list with clnsig accessions
     """
     transcripts = transcripts or []
-    acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", ""))
-    sig = variant.INFO.get("CLNSIG", "").lower()
-    revstat = variant.INFO.get("CLNREVSTAT", "").lower()
+    acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", variant.INFO.get("CLINVAR_CLNVID", "")))
+    sig = variant.INFO.get("CLNSIG", variant.INFO.get("CLINVAR_CLNSIG", "")).lower()
+    revstat = variant.INFO.get("CLNREVSTAT", variant.INFO.get("CLINVAR_CLNREVSTAT", "")).lower()
 
     clnsig_accsessions = []
 
@@ -89,13 +89,13 @@ def parse_clnsig(variant, transcripts=None):
 
 def is_pathogenic(variant):
     """Check if a variant has the clinical significance to be loaded
-    
-    We want to load all variants that are in any of the predefined categories regardless of rank 
+
+    We want to load all variants that are in any of the predefined categories regardless of rank
     scores etc.
-    
+
     Args:
         variant(cyvcf2.Variant)
-    
+
     Returns:
         bool: If variant should be loaded based on clinvar or not
     """
