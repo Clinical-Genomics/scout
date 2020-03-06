@@ -269,10 +269,21 @@ def parse_variant(
     parsed_variant["hgnc_ids"] = list(hgnc_ids)
 
     ################# Add clinsig prediction #################
-    clnsig_predictions = parse_clnsig(variant, transcripts=parsed_transcripts)
+    clnsig_predictions = []
+    if len(parsed_transcripts) > 0:
+        for i, clnvid in enumerate(parsed_transcripts[0].get("clinvar_clnvid", [])):
+            clnsig_item = {}
+            clnsig_item["accession"] = clnvid
+            clnsig_item["value"] = parsed_transcripts[0]["clinvar_clnsig"][i]
+            clnsig_item["revstat"] = parsed_transcripts[0]["clinvar_revstat"][i]
 
-    if clnsig_predictions:
-        parsed_variant["clnsig"] = clnsig_predictions
+            clnsig_predictions.append(clnsig_item)
+
+    if len(clnsig_predictions) == 0:
+        clnsig_predictions = parse_clnsig(variant, transcripts=parsed_transcripts)
+
+        if clnsig_predictions:
+            parsed_variant["clnsig"] = clnsig_predictions
 
     ################# Add the frequencies #################
     frequencies = parse_frequencies(variant, parsed_transcripts)
