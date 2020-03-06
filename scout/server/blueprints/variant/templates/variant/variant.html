@@ -359,6 +359,32 @@
               CADD score
               <span><strong>{{ variant.cadd_score or '-' }}</strong></span>
             </td>
+            <td>
+          </tr>
+          <tr>
+            {% if variant.clinsig_human %}
+              <table class="table table-bordered table-fixed">
+                <tbody>
+                  {% for clinsig in variant.clinsig_human %}
+                    <tr>
+                      <td>
+                        CLINSIG
+                        <span><strong>{{ clinsig.human }}</strong></span>
+                      </td>
+                      <td>
+                        Accession
+                        <span><strong><a href="{{ clinsig.link }}" target="_blank">{{ clinsig.accession }}</a></strong></span>
+                      </td>
+                      <td>
+                        Revstat
+                        <span><strong>{{ clinsig.revstat }}</td></strong></span>
+                    </tr>
+                  {% else %}
+                    <i>No annotations</i>
+                  {% endfor %}
+                </tbody>
+              </table>
+            {% endif %}
           </tr>
         </tbody>
       </table>
