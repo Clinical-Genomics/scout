@@ -7,7 +7,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+
 ### Fixed
+- Reintroduced missing clinsig info on variant page
+
 ### Changed
 
 
