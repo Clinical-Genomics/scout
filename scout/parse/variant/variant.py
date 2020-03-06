@@ -270,6 +270,7 @@ def parse_variant(
 
     ################# Add clinsig prediction #################
     clnsig_predictions = []
+    # Parse VEP-annotated CSQ to collect clnsig info
     if len(parsed_transcripts) > 0:
         for i, clnvid in enumerate(parsed_transcripts[0].get("clinvar_clnvid", [])):
             clnsig_item = {}
@@ -279,7 +280,9 @@ def parse_variant(
 
             clnsig_predictions.append(clnsig_item)
 
+
     if len(clnsig_predictions) == 0:
+        # Parse INFO fielf to collect clnsig info
         clnsig_predictions = parse_clnsig(variant, transcripts=parsed_transcripts)
 
         if clnsig_predictions:
