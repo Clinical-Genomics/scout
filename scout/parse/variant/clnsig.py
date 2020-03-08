@@ -11,7 +11,7 @@ def parse_clnsig(variant, transcripts=None):
     replaced by strings and the separator changed. At this stage the possibility to connect review
     stats to a certain significance term was taken away. So now we can only annotate each
     significance term with all review stats.
-    Also the clinvar accession number are is some cases annotated with the info key CLNACC and
+    Also the clinvar accession numbers are in some cases annotated with the info key CLNACC and
     sometimes with CLNVID.
     This function parses also Clinvar annotations performed by VEP (CSQ field, parsed transcripts required)
 
