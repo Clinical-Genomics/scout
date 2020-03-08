@@ -51,7 +51,9 @@ def parse_clnsig(variant, transcripts=None):
     if isinstance(acc, int) or acc.isdigit():
         revstat_groups = []
         if revstat:
-            revstat_groups = [rev.lstrip("_") for rev in revstat.replace("&",",").split(",")]
+            revstat_groups = [
+                rev.lstrip("_") for rev in revstat.replace("&", ",").split(",")
+            ]
 
         sig_groups = []
         for significance in sig.split(","):
@@ -59,15 +61,12 @@ def parse_clnsig(variant, transcripts=None):
                 sig_groups.append("_".join(term.split(" ")))
 
         for sig_term in sig_groups:
-            clnsig_accession={
-                    "value": sig_term,
-                    "accession": int(acc),
-                    "revstat": ",".join(revstat_groups),
-                }
-            LOG.error("CLINSIG ACCESSION: ----------->{}".format(clnsig_accession))
+            clnsig_accession = {
+                "value": sig_term,
+                "accession": int(acc),
+                "revstat": ",".join(revstat_groups),
+            }
             clnsig_accessions.append(clnsig_accession)
-
-
 
     # Test to parse the older format
     if acc and not clnsig_accessions:

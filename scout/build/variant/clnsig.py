@@ -14,7 +14,6 @@ def build_clnsig(clnsig_info):
         clnsig_obj(dict): Converted and prepared for database
     """
     value = clnsig_info["value"]
-
     if value not in REV_CLINSIG_MAP:
         LOG.warning("Clinsig value %s does not have an internal representation", value)
 

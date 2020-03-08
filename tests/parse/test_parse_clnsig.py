@@ -230,7 +230,9 @@ def test_is_pathogenic_no_annotation(cyvcf2_variant):
     assert pathogenic == False
 
 
-def test_parse_clinsig_vep97(one_vep97_annotated_variant, real_populated_database, case_obj):
+def test_parse_clinsig_vep97(
+    one_vep97_annotated_variant, real_populated_database, case_obj
+):
     """Test Clinsig parsing in a VEP97 formatted VCF"""
 
     # GIVEN a variant annotated using the following CSQ entry fields
