@@ -230,6 +230,15 @@ def test_is_pathogenic_no_annotation(cyvcf2_variant):
     assert pathogenic == False
 
 
+def test_is_pathogenic_VEP97_conflicting(one_vep97_annotated_variant):
+
+    ## WHEN checking if variants should be loaded
+    pathogenic = is_pathogenic(one_vep97_annotated_variant)
+
+    ## THEN assert that The variant should be loaded
+    assert pathogenic == False
+
+
 def test_parse_clinsig_vep97(
     one_vep97_annotated_variant, real_populated_database, case_obj
 ):
