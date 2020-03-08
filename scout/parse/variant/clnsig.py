@@ -25,9 +25,9 @@ def parse_clnsig(variant, transcripts=None):
         clnsig_accsessions(list(dict)): A list with clnsig accessions
     """
     transcripts = transcripts or []
-    acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", variant.INFO.get("CLINVAR_CLNVID", "")))
-    sig = variant.INFO.get("CLNSIG", variant.INFO.get("CLINVAR_CLNSIG", "")).lower()
-    revstat = variant.INFO.get("CLNREVSTAT", variant.INFO.get("CLINVAR_CLNREVSTAT", "")).lower()
+    acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", ""))
+    sig = variant.INFO.get("CLNSIG", "").lower()
+    revstat = variant.INFO.get("CLNREVSTAT", "").lower()
 
     clnsig_accsessions = []
 
