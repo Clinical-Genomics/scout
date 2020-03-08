@@ -30,7 +30,7 @@ def parse_clnsig(variant, transcripts=None):
 
     clnsig_accessions = []
 
-    if not acc and transcripts:
+    if acc=="" and transcripts:
         if transcripts[0].get("clnsig"):
             clnsig = set()
             for transcript in transcripts:
