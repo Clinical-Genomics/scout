@@ -201,9 +201,13 @@ def parse_transcripts(raw_transcripts, allele=None):
             LOG.debug("Only splitted and normalised VEP v90+ is supported")
 
         if entry.get("CLINVAR_CLNVID"):
-            transcript["clinvar_clnvid"] = entry["CLINVAR_CLNVID"].split("&")
-            transcript["clinvar_clnsig"] = entry.get("CLINVAR_CLNSIG").replace("/","&").split("&")
-            transcript["clinvar_revstat"] = entry.get("CLINVAR_CLNREVSTAT").split("&")
+            transcript["clinvar_clnvid"] = entry["CLINVAR_CLNVID"]
+            transcript["clinvar_clnsig"] = entry.get("CLINVAR_CLNSIG").lower()
+            transcript["clinvar_revstat"] = entry.get("CLINVAR_CLNREVSTAT").lower()
+
+        clnsig = entry.get("CLIN_SIG", entry.get("ClinVar_CLNSIG"))
+        if clnsig:
+            transcript["clnsig"] = clnsig.split("&")
 
         transcript["dbsnp"] = []
         transcript["cosmic"] = []

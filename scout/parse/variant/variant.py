@@ -270,23 +270,8 @@ def parse_variant(
 
     ################# Add clinsig prediction #################
     clnsig_predictions = []
-    # Parse VEP-annotated CSQ to collect clnsig info
-    if len(parsed_transcripts) > 0:
-        # one variant might have serveral clinvar accessions:
-        for i, clnvid in enumerate(parsed_transcripts[0].get("clinvar_clnvid", [])):
 
-            # one clinvar id might have several clnsigs (at least one):
-            for sig in parsed_transcripts[0]["clinvar_clnsig"]:
-                clnsig_item = {}
-                clnsig_item["accession"] = int(clnvid)
-                clnsig_item["value"] = sig.lower().strip("_")
-                # remove underscores
-                clnsig_item["revstat"] = ", ".join([revstat.strip("_") for revstat in parsed_transcripts[0]["clinvar_revstat"]])
-
-                clnsig_predictions.append(clnsig_item)
-
-
-    if len(clnsig_predictions) == 0:
+    if len(clnsig_predictions) == 0 and len(parsed_transcripts) > 0:
         # Parse INFO fielf to collect clnsig info
         clnsig_predictions = parse_clnsig(variant, transcripts=parsed_transcripts)
 
