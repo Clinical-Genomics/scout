@@ -15,7 +15,6 @@ def build_clnsig(clnsig_info):
     """
     value = clnsig_info["value"]
 
-    LOG.warning('PASSING:{}'.format(clnsig_info))
     if value and value not in REV_CLINSIG_MAP:
         LOG.warning("Clinsig value %s does not have an internal representation", value)
         quit()

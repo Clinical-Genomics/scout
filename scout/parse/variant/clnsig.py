@@ -25,9 +25,9 @@ def parse_clnsig(variant, transcripts=None):
         clnsig_accsessions(list(dict)): A list with clnsig accessions
     """
     transcripts = transcripts or []
-    acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", ""))
-    sig = variant.INFO.get("CLNSIG", "").lower()
-    revstat = variant.INFO.get("CLNREVSTAT", "").lower()
+    acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", variant.INFO.get("CLINVAR_CLNVID", "")))
+    sig = variant.INFO.get("CLNSIG", variant.INFO.get("CLINVAR_CLNSIG", "")).lower()
+    revstat = variant.INFO.get("CLNREVSTAT", variant.INFO.get("CLINVAR_CLNREVSTAT", "")).lower()
 
     clnsig_accsessions = []
 
@@ -46,7 +46,7 @@ def parse_clnsig(variant, transcripts=None):
     if isinstance(acc, int) or acc.isdigit():
         revstat_groups = []
         if revstat:
-            revstat_groups = [rev.lstrip("_") for rev in revstat.split(",")]
+            revstat_groups = [rev.lstrip("_") for rev in revstat.(replace("&",",")).split(",")]
 
         sig_groups = []
         for significance in sig.split(","):
@@ -103,7 +103,7 @@ def is_pathogenic(variant):
         [
             "pathogenic",
             "likely_pathogenic",
-            "conflicting_interpretations_of_pathogenecity",
+            "conflicting_interpretations_of_pathogenicity",
         ]
     )
     clnsig_accsessions = parse_clnsig(variant)
