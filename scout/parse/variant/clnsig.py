@@ -1,4 +1,5 @@
 import logging
+from .transcript import parse_transcripts
 
 LOG = logging.getLogger(__name__)
 
@@ -110,11 +111,22 @@ def is_pathogenic(variant):
         [
             "pathogenic",
             "likely_pathogenic",
-            "conflicting_interpretations_of_pathogenecity",
+            "conflicting_interpretations_of_pathogenicity",
+            "conflicting_interpretations"
         ]
     )
-    clnsig_accsessions = parse_clnsig(variant)
-    for annotation in clnsig_accsessions:
+
+    # check if VEP-annotated field contains clinvar pathogenicity info
+    vep_info = variant.INFO.get("CSQ")
+    if vep_info:
+        for category in load_categories:
+            if category in vep_info:
+                return True
+
+    # Otherise check if clinvar pathogenicity status is in INFO field
+    clnsig_accessions = parse_clnsig(variant)
+
+    for annotation in clnsig_accessions:
         clnsig = annotation["value"]
         if clnsig in load_categories:
             return True

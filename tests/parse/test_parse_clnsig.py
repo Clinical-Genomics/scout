@@ -235,8 +235,8 @@ def test_is_pathogenic_VEP97_conflicting(one_vep97_annotated_variant):
     ## WHEN checking if variants should be loaded
     pathogenic = is_pathogenic(one_vep97_annotated_variant)
 
-    ## THEN assert that The variant should be loaded
-    assert pathogenic == False
+    ## THEN assert that the variant should be loaded
+    assert pathogenic == True
 
 
 def test_parse_clinsig_vep97(
