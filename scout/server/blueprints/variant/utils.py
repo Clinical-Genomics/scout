@@ -498,13 +498,12 @@ def clinsig_human(variant_obj):
 
         human_str = "not provided"
         clinsig_value = clinsig_obj.get("value")
-        if clinsig_value:
+        if clinsig_value is not None:
             try:
-                # Old version
                 int(clinsig_value)
                 human_str = CLINSIG_MAP.get(clinsig_value, "not provided")
             except ValueError:
-                # New version
+                # old version where clinsig value is a string
                 human_str = clinsig_value
 
         clinsig_obj["human"] = human_str
