@@ -1,5 +1,4 @@
 import logging
-from .transcript import parse_transcripts
 
 LOG = logging.getLogger(__name__)
 
