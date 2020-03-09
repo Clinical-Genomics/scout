@@ -122,7 +122,7 @@ def is_pathogenic(variant):
             if category in vep_info:
                 return True
 
-    # Otherise check if clinvar pathogenicity status is in INFO field
+    # Otherwise check if clinvar pathogenicity status is in INFO field
     clnsig_accessions = parse_clnsig(variant)
 
     for annotation in clnsig_accessions:
