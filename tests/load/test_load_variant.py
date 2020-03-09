@@ -4,7 +4,7 @@ from pprint import pprint as pp
 from scout.exceptions.database import IntegrityError
 from scout.parse.variant import parse_variant
 from scout.server.blueprints.variants.controllers import variants
-from scout.constants import CLINSIG_MAP, REV_CLINSIG_MAP
+from scout.constants import REV_CLINSIG_MAP
 
 from cyvcf2 import VCF
 
