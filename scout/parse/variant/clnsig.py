@@ -30,7 +30,7 @@ def parse_clnsig(variant, transcripts=None):
 
     clnsig_accessions = []
 
-    if acc=="" and transcripts:
+    if acc == "" and transcripts:
         if transcripts[0].get("clnsig"):
             clnsig = set()
             for transcript in transcripts:
@@ -111,7 +111,7 @@ def is_pathogenic(variant):
             "pathogenic",
             "likely_pathogenic",
             "conflicting_interpretations_of_pathogenicity",
-            "conflicting_interpretations"
+            "conflicting_interpretations",
         ]
     )
 
