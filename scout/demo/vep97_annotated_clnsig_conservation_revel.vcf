@@ -1,0 +1,190 @@
+##fileformat=VCFv4.2
+##ALT=<ID=NON_REF,Description="Represents any possible alternative allele at this location">
+##ExACpLI=ExACpLI value for gene
+##FILTER=<ID=LowQual,Description="Low quality">
+##FILTER=<ID=PASS,Description="All filters passed">
+##FILTER=<ID=VQSRTrancheINDEL99.99to100.00+,Description="Truth sensitivity tranche level for INDEL model at VQS Lod < -77264.8954">
+##FILTER=<ID=VQSRTrancheINDEL99.99to100.00,Description="Truth sensitivity tranche level for INDEL model at VQS Lod: -77264.8954 <= x < -22.0533">
+##FILTER=<ID=VQSRTrancheSNP99.99to100.00+,Description="Truth sensitivity tranche level for SNP model at VQS Lod < -145125.3491">
+##FILTER=<ID=VQSRTrancheSNP99.99to100.00,Description="Truth sensitivity tranche level for SNP model at VQS Lod: -145125.3491 <= x < -20.4361">
+##FORMAT=<ID=AD,Number=R,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=MIN_DP,Number=1,Type=Integer,Description="Minimum DP observed within the GVCF block">
+##FORMAT=<ID=PGT,Number=1,Type=String,Description="Physical phasing haplotype information, describing how the alternate alleles are phased in relation to one another">
+##FORMAT=<ID=PID,Number=1,Type=String,Description="Physical phasing ID information, where each unique ID within a given sample (but not across samples) connects records within a phasing group">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
+##FORMAT=<ID=PP,Number=G,Type=Integer,Description="Phred-scaled Posterior Genotype Probabilities">
+##FORMAT=<ID=PS,Number=1,Type=Integer,Description="Phasing set (typically the position of the first variant in the set)">
+##FORMAT=<ID=RGQ,Number=1,Type=Integer,Description="Unconditional reference genotype confidence, encoded as a phred quality -10*log10 p(genotype call is wrong)">
+##FORMAT=<ID=SB,Number=4,Type=Integer,Description="Per-sample component statistics which comprise the Fisher's Exact Test to detect strand bias.">
+##GERP++_NR=(from dbNSFP) GERP++ neutral rate
+##GERP++_RS=(from dbNSFP) GERP++ RS score, the larger the score, the more conserved the site. Scores range from -12.3 to 6.17.
+##INFO=<ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes, for each ALT allele, in the same order as listed">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
+##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
+##INFO=<ID=AZ,Number=0,Type=Flag,Description="Autozygous positon call">
+##INFO=<ID=AZLENGTH,Number=1,Type=String,Description="Autozygous region length">
+##INFO=<ID=AZMARKERS,Number=1,Type=String,Description="Autozygous region length">
+##INFO=<ID=AZQUAL,Number=1,Type=String,Description="Autozygous positon call quality">
+##INFO=<ID=AZTYPE,Number=1,Type=String,Description="Autozygous region type">
+##INFO=<ID=Annotation,Number=.,Type=String,Description="Annotates what feature(s) this variant belongs to.">
+##INFO=<ID=BaseQRankSum,Number=1,Type=Float,Description="Z-score from Wilcoxon rank sum test of Alt Vs. Ref base qualities">
+##INFO=<ID=CADD,Number=1,Type=Integer,Description="The CADD relative score for this alternative.">
+##INFO=<ID=CLINVAR,Number=.,Type=String,Description="/home/proj/stage/rare-disease/references/references_8.0/grch37_clinvar_reformated_-20191013-.vcf.gz (exact)">
+##INFO=<ID=CLINVAR_CLNREVSTAT,Number=.,Type=String,Description="CLNREVSTAT field from /home/proj/stage/rare-disease/references/references_8.0/grch37_clinvar_reformated_-20191013-.vcf.gz">
+##INFO=<ID=CLINVAR_CLNSIG,Number=.,Type=String,Description="CLNSIG field from /home/proj/stage/rare-disease/references/references_8.0/grch37_clinvar_reformated_-20191013-.vcf.gz">
+##INFO=<ID=CLINVAR_CLNVID,Number=.,Type=String,Description="CLNVID field from /home/proj/stage/rare-disease/references/references_8.0/grch37_clinvar_reformated_-20191013-.vcf.gz">
+##INFO=<ID=CSQ,Number=.,Type=String,Description="Consequence annotations from Ensembl VEP. Format: Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|CANONICAL|TSL|APPRIS|CCDS|ENSP|SWISSPROT|TREMBL|UNIPARC|REFSEQ_MATCH|SOURCE|GIVEN_REF|USED_REF|BAM_EDIT|SIFT|PolyPhen|DOMAINS|HGVS_OFFSET|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|MOTIF_SCORE_CHANGE|MES-NCSS_downstream_acceptor|MES-NCSS_downstream_donor|MES-NCSS_upstream_acceptor|MES-NCSS_upstream_donor|MES-SWA_acceptor_alt|MES-SWA_acceptor_diff|MES-SWA_acceptor_ref|MES-SWA_acceptor_ref_comp|MES-SWA_donor_alt|MES-SWA_donor_diff|MES-SWA_donor_ref|MES-SWA_donor_ref_comp|MaxEntScan_alt|MaxEntScan_diff|MaxEntScan_ref|LoFtool|ExACpLI|GERP++_NR|GERP++_RS|REVEL_rankscore|phastCons100way_vertebrate|phyloP100way_vertebrate|CLINVAR|CLINVAR_CLNSIG|CLINVAR_CLNVID|CLINVAR_CLNREVSTAT|genomic_superdups_frac_match">
+##INFO=<ID=Compounds,Number=.,Type=String,Description="List of compound pairs for this variant.The list is splitted on ',' family id is separated with compoundswith ':'. Compounds are separated with '|'.">
+##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP Membership">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth; some reads may have been filtered">
+##INFO=<ID=DS,Number=0,Type=Flag,Description="Were any of the samples downsampled?">
+##INFO=<ID=END,Number=1,Type=Integer,Description="Stop position of the interval">
+##INFO=<ID=ExcessHet,Number=1,Type=Float,Description="Phred-scaled p-value for exact test of excess heterozygosity">
+##INFO=<ID=FS,Number=1,Type=Float,Description="Phred-scaled p-value using Fisher's exact test to detect strand bias">
+##INFO=<ID=GNOMADAF,Number=A,Type=Float,Description="Alternate allele frequency in samples (from /home/proj/stage/rare-disease/references/references_8.0/grch37_gnomad_reformated_-r2.1.1-.vcf.gz)">
+##INFO=<ID=GNOMADAF_popmax,Number=A,Type=Float,Description="Maximum allele frequency across populations (excluding samples of Ashkenazi, Finnish, and indeterminate ancestry) (from /home/proj/stage/rare-disease/references/references_8.0/grch37_gnomad_reformated_-r2.1.1-.vcf.gz)">
+##INFO=<ID=GeneticModels,Number=.,Type=String,Description="':'-separated list of genetic models for this variant.">
+##INFO=<ID=HW,Number=0,Type=Flag,Description="Hardy-Weinberg equilibrium (non-autozyous) positon call">
+##INFO=<ID=Hom,Number=1,Type=Integer,Description="The number of observed homozygotes (from /home/proj/stage/rare-disease/references/references_8.0/grch37_loqusdb_snv_indel_-2019-11-04-.vcf.gz)">
+##INFO=<ID=InbreedingCoeff,Number=1,Type=Float,Description="Inbreeding coefficient as estimated from the genotype likelihoods per-sample when compared against the Hardy-Weinberg expectation">
+##INFO=<ID=MLEAC,Number=A,Type=Integer,Description="Maximum likelihood expectation (MLE) for the allele counts (not necessarily the same as the AC), for each ALT allele, in the same order as listed">
+##INFO=<ID=MLEAF,Number=A,Type=Float,Description="Maximum likelihood expectation (MLE) for the allele frequency (not necessarily the same as the AF), for each ALT allele, in the same order as listed">
+##INFO=<ID=MQ,Number=1,Type=Float,Description="RMS Mapping Quality">
+##INFO=<ID=MQRankSum,Number=1,Type=Float,Description="Z-score From Wilcoxon rank sum test of Alt vs. Ref read mapping qualities">
+##INFO=<ID=MTAF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed (from /home/proj/stage/rare-disease/references/references_8.0/grch37_genbank_haplogroup_-2015-08-01-.vcf.gz)">
+##INFO=<ID=ModelScore,Number=.,Type=String,Description="PHRED score for genotype models.">
+##INFO=<ID=NEGATIVE_TRAIN_SITE,Number=0,Type=Flag,Description="This variant was used to build the negative training set of bad variants">
+##INFO=<ID=OLD_MULTIALLELIC,Number=1,Type=String,Description="Original chr:pos:ref:alt encoding">
+##INFO=<ID=OLD_VARIANT,Number=.,Type=String,Description="Original chr:pos:ref:alt encoding">
+##INFO=<ID=Obs,Number=1,Type=Integer,Description="The number of observations for the variant (from /home/proj/stage/rare-disease/references/references_8.0/grch37_loqusdb_snv_indel_-2019-11-04-.vcf.gz)">
+##INFO=<ID=PG,Number=G,Type=Integer,Description="Genotype Likelihood Prior">
+##INFO=<ID=POSITIVE_TRAIN_SITE,Number=0,Type=Flag,Description="This variant was used to build the positive training set of good variants">
+##INFO=<ID=QD,Number=1,Type=Float,Description="Variant Confidence/Quality by Depth">
+##INFO=<ID=RAW_MQandDP,Number=2,Type=Integer,Description="Raw data (sum of squared MQ and total depth) for improved RMS Mapping Quality calculation. Incompatible with deprecated RAW_MQ formulation.">
+##INFO=<ID=RankResult,Number=.,Type=String,Description="allele_frequency|protein_prediction|gene_intolerance_prediction|inheritance_models|consequence|conservation|variant_call_quality_filter|deleteriousness|clinical_significance|splicing">
+##INFO=<ID=RankScore,Number=.,Type=String,Description="The rank score for this variant in this family. family_id:rank_score.">
+##INFO=<ID=ReadPosRankSum,Number=1,Type=Float,Description="Z-score from Wilcoxon rank sum test of Alt vs. Ref read position bias">
+##INFO=<ID=SOR,Number=1,Type=Float,Description="Symmetric Odds Ratio of 2x2 contingency table to detect strand bias">
+##INFO=<ID=SPIDEX,Number=1,Type=Float,Description="Z score from the spidex database.">
+##INFO=<ID=SWEGENAAC_Hemi,Number=A,Type=Integer,Description="Allele counts in hemizygous genotypes (from /home/proj/stage/rare-disease/references/references_8.0/grch37_anon-swegen_str_nsphs_-1000samples-.vcf.gz)">
+##INFO=<ID=SWEGENAAC_Het,Number=A,Type=Integer,Description="Allele counts in heterozygous genotypes (from /home/proj/stage/rare-disease/references/references_8.0/grch37_anon-swegen_str_nsphs_-1000samples-.vcf.gz)">
+##INFO=<ID=SWEGENAAC_Hom,Number=A,Type=Integer,Description="Allele counts in homozygous genotypes (from /home/proj/stage/rare-disease/references/references_8.0/grch37_anon-swegen_str_nsphs_-1000samples-.vcf.gz)">
+##INFO=<ID=SWEGENAF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed (from /home/proj/stage/rare-disease/references/references_8.0/grch37_anon-swegen_str_nsphs_-1000samples-.vcf.gz)">
+##INFO=<ID=VQSLOD,Number=1,Type=Float,Description="Log odds of being a true variant versus being false under the trained gaussian mixture model">
+##INFO=<ID=culprit,Number=1,Type=String,Description="The annotation which was the worst performing in the Gaussian mixture model, likely the reason why the variant was filtered out">
+##INFO=<ID=genomic_superdups_frac_match,Number=.,Type=String,Description="/home/proj/stage/rare-disease/references/references_8.0/grch37_genomics_super_dups_-20181009.bed.gz (overlap)">
+##INFO=<ID=most_severe_consequence,Number=.,Type=String,Description="Most severe genomic consequence.">
+##LoFtool=LoFtool score for gene
+##MES-NCSS_downstream_acceptor=Nearest downstream canonical splice acceptor sequence score
+##MES-NCSS_downstream_donor=Nearest downstream canonical splice donor sequence score
+##MES-NCSS_upstream_acceptor=Nearest upstream canonical splice acceptor sequence score
+##MES-NCSS_upstream_donor=Nearest upstream canonical splice donor sequence score
+##MES-SWA_acceptor_alt=Highest splice acceptor alternate sequence score
+##MES-SWA_acceptor_diff=Difference between the acceptor reference comparison and alternate sequence scores
+##MES-SWA_acceptor_ref=Highest splice acceptor reference sequence score
+##MES-SWA_acceptor_ref_comp=Acceptor reference comparison sequence score
+##MES-SWA_donor_alt=Highest splice donor alternate sequence score
+##MES-SWA_donor_diff=Difference between the donor reference comparison and alternate sequence scores
+##MES-SWA_donor_ref=Highest splice donor reference sequence score
+##MES-SWA_donor_ref_comp=Donor reference comparison sequence score
+##MaxEntScan_alt=MaxEntScan alternate sequence score
+##MaxEntScan_diff=MaxEntScan score difference
+##MaxEntScan_ref=MaxEntScan reference sequence score
+##REVEL_rankscore=(from dbNSFP) REVEL scores were ranked among all REVEL scores in dbNSFP. The rankscore is the ratio of the rank of the score over the total number of REVEL scores in dbNSFP.
+##VEP="v97" time="2020-02-07 07:54:55" cache="/home/proj/stage/rare-disease/references/references_8.0/ensembl-tools-release-97/cache/homo_sapiens_merged/97_GRCh37" ensembl=97.378db18 ensembl-variation=97.26a059c ensembl-funcgen=97.24f4d3c ensembl-io=97.dc917e1 1000genomes="phase3" COSMIC="86" ClinVar="201810" ESP="20141103" HGMD-PUBLIC="20174" assembly="GRCh37.p13" dbSNP="151" gencode="GENCODE 19" genebuild="2011-04" gnomAD="r2.1" polyphen="2.2.2" refseq="01_2015" regbuild="1.0" sift="sift5.2.2"
+##bcftools_normVersion=1.9+htslib-1.9
+##bcftools_viewVersion=1.9+htslib-1.9
+##contig=<ID=1,length=249250621>
+##contig=<ID=2,length=243199373>
+##contig=<ID=3,length=198022430>
+##contig=<ID=4,length=191154276>
+##contig=<ID=5,length=180915260>
+##contig=<ID=6,length=171115067>
+##contig=<ID=7,length=159138663>
+##contig=<ID=8,length=146364022>
+##contig=<ID=9,length=141213431>
+##contig=<ID=10,length=135534747>
+##contig=<ID=11,length=135006516>
+##contig=<ID=12,length=133851895>
+##contig=<ID=13,length=115169878>
+##contig=<ID=14,length=107349540>
+##contig=<ID=15,length=102531392>
+##contig=<ID=16,length=90354753>
+##contig=<ID=17,length=81195210>
+##contig=<ID=18,length=78077248>
+##contig=<ID=19,length=59128983>
+##contig=<ID=20,length=63025520>
+##contig=<ID=21,length=48129895>
+##contig=<ID=22,length=51304566>
+##contig=<ID=X,length=155270560>
+##contig=<ID=Y,length=59373566>
+##contig=<ID=MT,length=16569>
+##contig=<ID=GL000207.1,length=4262>
+##contig=<ID=GL000226.1,length=15008>
+##contig=<ID=GL000229.1,length=19913>
+##contig=<ID=GL000231.1,length=27386>
+##contig=<ID=GL000210.1,length=27682>
+##contig=<ID=GL000239.1,length=33824>
+##contig=<ID=GL000235.1,length=34474>
+##contig=<ID=GL000201.1,length=36148>
+##contig=<ID=GL000247.1,length=36422>
+##contig=<ID=GL000245.1,length=36651>
+##contig=<ID=GL000197.1,length=37175>
+##contig=<ID=GL000203.1,length=37498>
+##contig=<ID=GL000246.1,length=38154>
+##contig=<ID=GL000249.1,length=38502>
+##contig=<ID=GL000196.1,length=38914>
+##contig=<ID=GL000248.1,length=39786>
+##contig=<ID=GL000244.1,length=39929>
+##contig=<ID=GL000238.1,length=39939>
+##contig=<ID=GL000202.1,length=40103>
+##contig=<ID=GL000234.1,length=40531>
+##contig=<ID=GL000232.1,length=40652>
+##contig=<ID=GL000206.1,length=41001>
+##contig=<ID=GL000240.1,length=41933>
+##contig=<ID=GL000236.1,length=41934>
+##contig=<ID=GL000241.1,length=42152>
+##contig=<ID=GL000243.1,length=43341>
+##contig=<ID=GL000242.1,length=43523>
+##contig=<ID=GL000230.1,length=43691>
+##contig=<ID=GL000237.1,length=45867>
+##contig=<ID=GL000233.1,length=45941>
+##contig=<ID=GL000204.1,length=81310>
+##contig=<ID=GL000198.1,length=90085>
+##contig=<ID=GL000208.1,length=92689>
+##contig=<ID=GL000191.1,length=106433>
+##contig=<ID=GL000227.1,length=128374>
+##contig=<ID=GL000228.1,length=129120>
+##contig=<ID=GL000214.1,length=137718>
+##contig=<ID=GL000221.1,length=155397>
+##contig=<ID=GL000209.1,length=159169>
+##contig=<ID=GL000218.1,length=161147>
+##contig=<ID=GL000220.1,length=161802>
+##contig=<ID=GL000213.1,length=164239>
+##contig=<ID=GL000211.1,length=166566>
+##contig=<ID=GL000199.1,length=169874>
+##contig=<ID=GL000217.1,length=172149>
+##contig=<ID=GL000216.1,length=172294>
+##contig=<ID=GL000215.1,length=172545>
+##contig=<ID=GL000205.1,length=174588>
+##contig=<ID=GL000219.1,length=179198>
+##contig=<ID=GL000224.1,length=179693>
+##contig=<ID=GL000223.1,length=180455>
+##contig=<ID=GL000195.1,length=182896>
+##contig=<ID=GL000212.1,length=186858>
+##contig=<ID=GL000222.1,length=186861>
+##contig=<ID=GL000200.1,length=187035>
+##contig=<ID=GL000193.1,length=189789>
+##contig=<ID=GL000194.1,length=191469>
+##contig=<ID=GL000225.1,length=211173>
+##contig=<ID=GL000192.1,length=547496>
+##contig=<ID=NC_007605,length=171823>
+##contig=<ID=hs37d5,length=35477943>
+##phastCons100way_vertebrate=(from dbNSFP) phastCons conservation score based on the multiple alignments of 100 vertebrate genomes (including human). The larger the score, the more conserved the site. Scores range from 0 to 1.
+##phyloP100way_vertebrate=(from dbNSFP) phyloP (phylogenetic p-values) conservation score based on the multiple alignments of 100 vertebrate genomes (including human). The larger the score, the more conserved the site. Scores range from -20.0 to 10.003 in dbNSFP.
+##source=HaplotypeCaller
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	ADM1059A2	ADM1059A1	ADM1059A3
+1	986732	rs144245019	G	A	335.20	PASS	AC=1;AF=0.167;AN=6;Annotation=AGRN;BaseQRankSum=1.64;CADD=7.483;CSQ=A|missense_variant|MODERATE|AGRN|ENSG00000188157|Transcript|ENST00000379370|protein_coding|31/36||ENST00000379370.2:c.5353G>A|ENSP00000368678.2:p.Asp1785Asn|5403|5353|1785|D/N|Gac/Aac|||1||HGNC|329|YES|||CCDS30551.1|ENSP00000368678|O00468|Q5XG79|UPI00001D7C8B||Ensembl|G|G||tolerated|benign|Gene3D:2.60.120.200&Pfam_domain:PF00054&PROSITE_profiles:PS50025&hmmpanther:PTHR10574&hmmpanther:PTHR10574:SF227&SMART_domains:SM00282&Superfamily_domains:SSF49899||||||9.411|8.137|11.237|10.898|1.245|-0.380|0.865|0.865|-14.247|-2.136|-11.415|-16.383||||0.421|0.00|5.06|-2.07|0.20571|0.000000|0.022000|128314|Conflicting_interpretations_of_pathogenicity|128314|_conflicting_interpretations|,A|missense_variant|MODERATE|AGRN|ENSG00000188157|Transcript|ENST00000419249|protein_coding|4/9||ENST00000419249.1:c.260G>A|ENSP00000400771.1:p.Asp88Asn|260|262|88|D/N|Gac/Aac|||1|cds_start_NF&cds_end_NF|HGNC|329|||||ENSP00000400771|||UPI000059CF46||Ensembl|G|G||tolerated|benign|Gene3D:2.60.120.200&Pfam_domain:PF00054&PROSITE_profiles:PS50025&hmmpanther:PTHR10574&hmmpanther:PTHR10574:SF227&Superfamily_domains:SSF49899||||||9.411|8.137|11.237|8.558|1.245|-0.380|0.865|0.865|-14.247|-2.136|-11.415|-16.383||||0.421|0.00|5.06|-2.07|0.20571|0.000000|0.022000|128314|Conflicting_interpretations_of_pathogenicity|128314|_conflicting_interpretations|,A|upstream_gene_variant|MODIFIER|AGRN|ENSG00000188157|Transcript|ENST00000461111|retained_intron|||||||||||634|1||HGNC|329||||||||||Ensembl|G|G||||||||||||||1.245|-0.380|0.865|0.865|-14.247|-2.136|-11.415|-16.383||||0.421|0.00||||||128314|Conflicting_interpretations_of_pathogenicity|128314|_conflicting_interpretations|,A|downstream_gene_variant|MODIFIER|AGRN|ENSG00000188157|Transcript|ENST00000466223|retained_intron|||||||||||3487|1||HGNC|329||||||||||Ensembl|G|G||||||||||||||1.245|-0.380|0.865|0.865|-14.247|-2.136|-11.415|-16.383||||0.421|0.00||||||128314|Conflicting_interpretations_of_pathogenicity|128314|_conflicting_interpretations|,A|downstream_gene_variant|MODIFIER|AGRN|ENSG00000188157|Transcript|ENST00000478677|retained_intron|||||||||||3514|1||HGNC|329||||||||||Ensembl|G|G||||||||||||||1.245|-0.380|0.865|0.865|-14.247|-2.136|-11.415|-16.383||||0.421|0.00||||||128314|Conflicting_interpretations_of_pathogenicity|128314|_conflicting_interpretations|,A|downstream_gene_variant|MODIFIER|AGRN|ENSG00000188157|Transcript|ENST00000492947|retained_intron|||||||||||1958|1||HGNC|329||||||||||Ensembl|G|G||||||||||||||1.245|-0.380|0.865|0.865|-14.247|-2.136|-11.415|-16.383||||0.421|0.00||||||128314|Conflicting_interpretations_of_pathogenicity|128314|_conflicting_interpretations|,A|missense_variant|MODERATE|AGRN|375790|Transcript|NM_001305275.1|protein_coding|32/39||NM_001305275.1:c.5365G>A|NP_001292204.1:p.Asp1789Asn|5415|5365|1789|D/N|Gac/Aac|||1||EntrezGene|329|YES||||NP_001292204.1||||rseq_mrna_match|RefSeq|G|G||tolerated|benign|||||||9.411|8.137|11.237|8.558|1.245|-0.380|0.865|0.865|-14.247|-2.136|-11.415|-16.383||||0.421|0.00|5.06|-2.07|0.20571|0.000000|0.022000|128314|Conflicting_interpretations_of_pathogenicity|128314|_conflicting_interpretations|,A|missense_variant|MODERATE|AGRN|375790|Transcript|NM_198576.3|protein_coding|31/36||NM_198576.3:c.5353G>A|NP_940978.2:p.Asp1785Asn|5403|5353|1785|D/N|Gac/Aac|||1||EntrezGene|329|||||NP_940978.2|||||RefSeq|G|G|OK|tolerated|benign|||||||9.411|8.137|11.237|10.898|1.245|-0.380|0.865|0.865|-14.247|-2.136|-11.415|-16.383||||0.421|0.00|5.06|-2.07|0.20571|0.000000|0.022000|128314|Conflicting_interpretations_of_pathogenicity|128314|_conflicting_interpretations|;DB;DP=70;ExcessHet=3.0103;FS=0;GNOMADAF=0.0063611;GNOMADAF_popmax=0.010417;MLEAC=1;MLEAF=0.167;MQ=60;MQRankSum=0;Obs=24;QD=14.58;RankResult=-12|0|0|-12|5|0|3|0|5|3;RankScore=testsample:-8;ReadPosRankSum=2.39;SOR=0.627;SPIDEX=-1.129;SWEGENAAC_Hemi=0;SWEGENAAC_Het=22;SWEGENAAC_Hom=0;SWEGENAF=0.011;VQSLOD=22.07;culprit=MQ;most_severe_consequence=329:A|missense_variant	GT:AD:DP:GQ:PL	0/0:22,0:22:63:0,63,945	0/1:13,10:23:99:344,0,408	0/0:25,0:25:44:0,44,869
