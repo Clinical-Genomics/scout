@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Typo that caused not all clinvar conflicting interpretations to be loaded no matter what
 - Parse and retrieve clinvar annotations from VEP-annotated (VEP 97+) CSQ VCF field
+- Variant clinvar significance shown as `not provided` whenever is `Uncertain significance`
+
 ### Changed
 
 
