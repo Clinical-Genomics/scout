@@ -762,6 +762,7 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
                 gene_symbols.append(gene_symbol)
 
                 hgvs_nucleotide = "-"
+                hgvs_protein = ""
                 # gather HGVS info from gene transcripts
                 transcripts_list = gene_obj.get("transcripts")
                 for transcript_obj in transcripts_list:
