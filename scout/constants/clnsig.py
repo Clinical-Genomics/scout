@@ -19,6 +19,7 @@ CLINSIG_MAP = {
 REV_CLINSIG_MAP = {
     "other": 255,
     "not_provided": 1,
+    "no_assertion_criteria_provided": 1,
     "drug_response": 6,
     "association_not_found": 13,
     "risk_factor": 12,

@@ -119,7 +119,7 @@ def is_pathogenic(variant):
     vep_info = variant.INFO.get("CSQ")
     if vep_info:
         for category in load_categories:
-            if category in vep_info:
+            if category in vep_info.lower():
                 return True
 
     # Otherwise check if clinvar pathogenicity status is in INFO field
