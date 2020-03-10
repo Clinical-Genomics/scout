@@ -218,7 +218,8 @@
           </div>
           {% if config.PHENOMIZER_USERNAME %}
             <div class="form-group mb-2 mx-sm-3 col-3">
-              <button class="btn btn-outline-secondary btn-sm form-control" type="submit" name="action" value="PHENOMIZER">Phenomizer</button>
+              <button class="btn btn-secondary btn-sm form-control" type="submit" name="action" value="PHENOMIZER"
+              {%if case.phenotype_terms|length == 0 %} disabled {%endif%}>Phenomizer</button>
             </div>
           {% endif %}
           <div class="form-group mb-2 mx-sm-3 col-2">
