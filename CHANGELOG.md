@@ -8,7 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 ### Fixed
-- Phenomizer query crashing when no HPO terms are provided
+- Phenomizer query crashing when case has no HPO terms assigned
 
 ### Changed
 
