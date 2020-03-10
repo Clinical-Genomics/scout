@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse and retrieve clinvar annotations from VEP-annotated (VEP 97+) CSQ VCF field
 - Variant clinvar significance shown as `not provided` whenever is `Uncertain significance`
 - Phenomizer query crashing when case has no HPO terms assigned
+- Fixed a bug affecting `All SNVs and INDELs` page when variants don't have canonical transcript
 
 ### Changed
 
