@@ -70,7 +70,7 @@ def test_load_vep97_parsed_variant(
     # clinvar fields
     assert isinstance(variant["clnsig"][0]["accession"], int)
     assert variant["clnsig"][0]["value"] in REV_CLINSIG_MAP  # can be str or int
-    assert variant["clnsig"][0]["revstat"] in REV_CLINSIG_MAP  # str
+    assert isinstance(variant["clnsig"][0]["revstat"], str) # str
 
 
 def test_load_cancer_SV_variant(
