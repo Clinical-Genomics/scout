@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 ### Fixed
+- Phenomizer query crashing when no HPO terms are provided
+
 ### Changed
 
 
