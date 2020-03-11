@@ -13,7 +13,7 @@ jobs:
 
     steps:
 
-    # Chgeck out Scout code
+    # Check out Scout code
     - uses: actions/checkout@v1
 
     # Set up python
