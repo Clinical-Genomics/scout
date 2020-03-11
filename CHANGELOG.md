@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
+### Added
+### Fixed
+### Changed
+
+
+## [4.13.1]
+
+### Added
+### Fixed
+- Typo that caused not all clinvar conflicting interpretations to be loaded no matter what
+- Parse and retrieve clinvar annotations from VEP-annotated (VEP 97+) CSQ VCF field
+- Variant clinvar significance shown as `not provided` whenever is `Uncertain significance`
+- Phenomizer query crashing when case has no HPO terms assigned
+- Fixed a bug affecting `All SNVs and INDELs` page when variants don't have canonical transcript
+
+### Changed
+
+
+## [4.13]
 
 ### Added
 - ClinVar SNVs track in IGV
@@ -22,8 +41,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed a problem with finding some INS in loqusdb
 - Layout on SV page when local observations without cases are present
 - Make scout compatible with the new HPO definition files from `http://compbio.charite.de/jenkins/`
+- General report visualization error when SNVs display names are very long
+
 
 ### Changed
+
 
 ## [4.12.4]
 

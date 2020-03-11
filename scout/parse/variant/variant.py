@@ -269,7 +269,11 @@ def parse_variant(
     parsed_variant["hgnc_ids"] = list(hgnc_ids)
 
     ################# Add clinsig prediction #################
-    clnsig_predictions = parse_clnsig(variant, transcripts=parsed_transcripts)
+    clnsig_predictions = []
+
+    if len(clnsig_predictions) == 0 and len(parsed_transcripts) > 0:
+        # Parse INFO fielf to collect clnsig info
+        clnsig_predictions = parse_clnsig(variant, transcripts=parsed_transcripts)
 
     if clnsig_predictions:
         parsed_variant["clnsig"] = clnsig_predictions

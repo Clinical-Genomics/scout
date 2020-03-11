@@ -15,6 +15,7 @@ CLINSIG_MAP = {
     13: "association not found",
     255: "other",
 }
+
 REV_CLINSIG_MAP = {
     "other": 255,
     "not_provided": 1,
@@ -28,6 +29,7 @@ REV_CLINSIG_MAP = {
     "benign": 2,
     "likely_benign": 3,
     "conflicting_interpretations_of_pathogenicity": 8,
+    "conflicting_interpretations": 8,
     "uncertain_significance": 0,
     "likely_pathogenic": 4,
     "pathogenic": 5,
