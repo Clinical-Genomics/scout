@@ -481,11 +481,8 @@ def get_variant_info(genes):
         if len(c_seq) > 20:
             c_seq = c_seq[:20] + "..."
 
-        if len(genes) == 1:
-            value = ":".join([tx_id, exon, c_seq])
-        else:
-            gene_id = gene_obj.get("hgnc_symbol") or str(gene_obj["hgnc_id"])
-            value = ":".join([gene_id, tx_id, exon, c_seq])
+        gene_id = gene_obj.get("hgnc_symbol") or str(gene_obj["hgnc_id"])
+        value = ":".join([gene_id, tx_id, exon, c_seq])
         data["canonical_transcripts"].append(value)
 
     return data
