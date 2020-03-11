@@ -6,10 +6,10 @@ LOG = logging.getLogger(__name__)
 
 def build_clnsig(clnsig_info):
     """Prepare clnsig information for database
-    
+
     Args:
         clnsig_info(dict): Parsed information from clinvar annotation
-    
+
     Returns:
         clnsig_obj(dict): Converted and prepared for database
     """
