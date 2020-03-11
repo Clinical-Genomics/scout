@@ -13,9 +13,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Variant clinvar significance shown as `not provided` whenever is `Uncertain significance`
 - Phenomizer query crashing when case has no HPO terms assigned
 - Fixed a bug affecting `All SNVs and INDELs` page when variants don't have canonical transcript
+- Add gene name or id in cancer variant view
 
 ### Changed
-
+- Cancer Variant view changed "Variant:Transcript:Exon:HGVS" to "Gene:Transcript:Exon:HGVS"
 
 ## [4.13]
 
