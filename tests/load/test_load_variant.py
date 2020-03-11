@@ -4,6 +4,7 @@ from pprint import pprint as pp
 from scout.exceptions.database import IntegrityError
 from scout.parse.variant import parse_variant
 from scout.server.blueprints.variants.controllers import variants
+from scout.constants import REV_CLINSIG_MAP
 
 from cyvcf2 import VCF
 
@@ -41,7 +42,7 @@ def test_load_vep97_parsed_variant(
     """test first parsing and then loading a vep v97 annotated variant"""
 
     # GIVEN a variant annotated using the following CSQ entry fields
-    csq_header = "Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|CANONICAL|TSL|APPRIS|CCDS|ENSP|SWISSPROT|TREMBL|UNIPARC|REFSEQ_MATCH|SOURCE|GIVEN_REF|USED_REF|BAM_EDIT|SIFT|PolyPhen|DOMAINS|HGVS_OFFSET|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|MOTIF_SCORE_CHANGE|MES-NCSS_downstream_acceptor|MES-NCSS_downstream_donor|MES-NCSS_upstream_acceptor|MES-NCSS_upstream_donor|MES-SWA_acceptor_alt|MES-SWA_acceptor_diff|MES-SWA_acceptor_ref|MES-SWA_acceptor_ref_comp|MES-SWA_donor_alt|MES-SWA_donor_diff|MES-SWA_donor_ref|MES-SWA_donor_ref_comp|MaxEntScan_alt|MaxEntScan_diff|MaxEntScan_ref|GERP++_NR|GERP++_RS|REVEL_rankscore|phastCons100way_vertebrate|phyloP100way_vertebrate|LoFtool|ExACpLI|CLINVAR|CLINVAR_CLNSIG|CLINVAR_CLNVID|CLINVAR_CLNREVSTAT|genomic_superdups_frac_match"
+    csq_header = "Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|CANONICAL|TSL|APPRIS|CCDS|ENSP|SWISSPROT|TREMBL|UNIPARC|REFSEQ_MATCH|SOURCE|GIVEN_REF|USED_REF|BAM_EDIT|SIFT|PolyPhen|DOMAINS|HGVS_OFFSET|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|MOTIF_SCORE_CHANGE|MES-NCSS_downstream_acceptor|MES-NCSS_downstream_donor|MES-NCSS_upstream_acceptor|MES-NCSS_upstream_donor|MES-SWA_acceptor_alt|MES-SWA_acceptor_diff|MES-SWA_acceptor_ref|MES-SWA_acceptor_ref_comp|MES-SWA_donor_alt|MES-SWA_donor_diff|MES-SWA_donor_ref|MES-SWA_donor_ref_comp|MaxEntScan_alt|MaxEntScan_diff|MaxEntScan_ref|LoFtool|ExACpLI|GERP++_NR|GERP++_RS|REVEL_rankscore|phastCons100way_vertebrate|phyloP100way_vertebrate|CLINVAR|CLINVAR_CLNSIG|CLINVAR_CLNVID|CLINVAR_CLNREVSTAT|genomic_superdups_frac_match"
 
     header = [word.upper() for word in csq_header.split("|")]
 
@@ -58,11 +59,18 @@ def test_load_vep97_parsed_variant(
     adapter.load_variant(variant_obj=parsed_vep97_annotated_variant)
 
     # THEN the variant is loaded with the fields correctly parsed
+    # revel score
     variant = adapter.variant_collection.find_one()
     assert isinstance(variant["revel_score"], float)
 
+    # conservation fields
     for key, value in variant["conservation"].items():
         assert value == ["NotConserved"]
+
+    # clinvar fields
+    assert isinstance(variant["clnsig"][0]["accession"], int)
+    assert variant["clnsig"][0]["value"] in REV_CLINSIG_MAP  # can be str or int
+    assert isinstance(variant["clnsig"][0]["revstat"], str) # str
 
 
 def test_load_cancer_SV_variant(
