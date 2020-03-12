@@ -12,41 +12,24 @@ from flask_mail import Message
 from werkzeug.datastructures import Headers, MultiDict
 from xlsxwriter import Workbook
 
-from scout.constants import (
-    ACMG_COMPLETE_MAP,
-    ACMG_MAP,
-    ACMG_OPTIONS,
-    CALLERS,
-    CANCER_TIER_OPTIONS,
-    CLINSIG_MAP,
-    DISMISS_VARIANT_OPTIONS,
-    MANUAL_RANK_OPTIONS,
-    MOSAICISM_OPTIONS,
-    SEVERE_SO_TERMS,
-    SPIDEX_HUMAN,
-    VERBS_MAP,
-)
+from scout.constants import (ACMG_COMPLETE_MAP, ACMG_MAP, ACMG_OPTIONS,
+                             CALLERS, CANCER_TIER_OPTIONS, CLINSIG_MAP,
+                             DISMISS_VARIANT_OPTIONS, MANUAL_RANK_OPTIONS,
+                             MOSAICISM_OPTIONS, SEVERE_SO_TERMS, SPIDEX_HUMAN,
+                             VERBS_MAP)
 from scout.constants.acmg import ACMG_CRITERIA
-from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
+from scout.constants.variants_export import (EXPORT_HEADER,
+                                             VERIFIED_VARIANTS_HEADER)
 from scout.export.variant import export_verified_variants
 from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.utils import predictions
 from scout.server.links import add_gene_links, add_tx_links, ensembl
-from scout.server.utils import (
-    case_append_alignments,
-    institute_and_case,
-    user_institutes,
-    variant_case,
-)
+from scout.server.utils import (case_append_alignments, institute_and_case,
+                                user_institutes, variant_case)
 from scout.utils.scout_requests import fetch_refseq_version
 
-from .forms import (
-    CancerFiltersForm,
-    FiltersForm,
-    StrFiltersForm,
-    SvFiltersForm,
-    VariantFiltersForm,
-)
+from .forms import (CancerFiltersForm, FiltersForm, StrFiltersForm,
+                    SvFiltersForm, VariantFiltersForm)
 
 LOG = logging.getLogger(__name__)
 
@@ -97,7 +80,7 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
                 variant_type="clinical",
             )
 
-            if clinical_var_obj != None:
+            if clinical_var_obj is not None:
                 # Get all previous ACMG evalautions of the variant
                 variant_obj["clinical_assessments"] = get_manual_assessments(
                     clinical_var_obj
@@ -139,7 +122,7 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
                 variant_type="clinical",
             )
 
-            if clinical_var_obj != None:
+            if clinical_var_obj is not None:
                 # Get all previous ACMG evalautions of the variant
                 variant_obj["clinical_assessments"] = get_manual_assessments(
                     clinical_var_obj
@@ -170,7 +153,7 @@ def get_manual_assessments(variant_obj):
 
     for assessment_type in assessment_keywords:
         assessment = {}
-        if variant_obj.get(assessment_type) != None:
+        if variant_obj.get(assessment_type) is not None:
             if assessment_type == "manual_rank":
                 manual_rank = variant_obj[assessment_type]
                 LOG.info("Assessement type {}: {}".format(assessment_type, manual_rank))
@@ -590,7 +573,6 @@ def populate_filters_form(
                 "clinsig": [4, 5],
                 "clinsig_confident_always_returned": True,
                 "gnomad_frequency": str(institute_obj["frequency_cutoff"]),
-                "variant_type": "clinical",
                 "gene_panels": clinical_filter_panels,
             }
         )
