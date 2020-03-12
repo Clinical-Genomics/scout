@@ -54,7 +54,7 @@ jobs:
 
         - name: "Lint Free"
           if: type = pull_request
-          install: pip install -r requirements-dev.txt
+          install: pip install . -r requirements-dev.txt
           script: git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git lint || (echo "Linting issues found, please try again after fixing the above lint issues." && false)
 
     allow_failures:
