@@ -2,7 +2,7 @@
 import gzip
 import logging
 import urllib.request
-import xml.etree.ElementTree as et
+import xml
 from socket import timeout
 from urllib.error import HTTPError, URLError
 
@@ -335,20 +335,22 @@ def fetch_refseq_version(refseq_acc):
         version(str) example: NM_020533.3 or NM_020533 if no version associated is found
     """
     version = refseq_acc
-    base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&term={}&idtype=acc".format(
-        refseq_acc
+    base_url = (
+        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&"
+        "term={}&idtype=acc"
     )
+    resp = urllib.request.urlopen(base_url.format(refseq_acc))
 
     try:
         resp = urllib.request.urlopen(base_url)
-        xml_response = et.parse(resp)
+        xml_response = xml.etree.ElementTree.parse(resp)
         version = xml_response.find("IdList").find("Id").text or version
 
-    except HTTPError as err:
+    except HTTPError:
         LOG.warning("Something went wrong, perhaps the refseq accession is not valid?")
-    except URLError as err:
+    except URLError:
         LOG.warning("Something went wrong, are you connected to internet?")
-    except AttributeError as err:
+    except AttributeError:
         LOG.warning("refseq accession not found")
 
     return version

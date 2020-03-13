@@ -1,7 +1,11 @@
-# -*- coding: utf-8 -*-
+"""Tests for scout requests"""
 
 import os
+import tempfile
+
 import pytest
+
+from scout.utils import scout_requests
 from scout.utils.scout_requests import fetch_refseq_version, get_request
 
 TRAVIS = os.getenv("TRAVIS")
@@ -12,36 +16,58 @@ def test_get_request_bad_url():
 
     # test function with a url that is not valid
     url = "fakeyurl"
-    with pytest.raises(ValueError) as err:
+    with pytest.raises(ValueError):
         # function should raise error
         assert get_request(url)
 
 
-@pytest.mark.skipif(TRAVIS, reason="Requests seems to be problematic on travis")
-def test_get_request():
+def test_get_request(mocker):
     """Test functions that accepts an url and returns decoded data from it"""
 
     # test function with url that exists
     url = "http://www.github.com"
-    decoded_resp = get_request(url)
+    mocker.patch.object(scout_requests.urllib.request, "urlopen")
+    with tempfile.TemporaryFile() as temp:
+        temp.write(b"<!DOCTYPE html>")
+        temp.seek(0)
+        scout_requests.urllib.request.urlopen.return_value = temp
+        decoded_resp = get_request(url)
+
     assert "<!DOCTYPE html>" in decoded_resp
 
 
-def test_fetch_refseq_version():
-    """Test eutils service from entrez that retrieves refseq version"""
+def test_fetch_refseq_version(refseq_response, mocker):
+    """Test utils service from entrez that retrieves refseq version"""
 
-    # fetch complete refseq version for accession that has version
+    # GIVEN a refseq accession number
     refseq_acc = "NM_020533"
-    refseq_version = fetch_refseq_version(refseq_acc)
 
-    # entrez eutils might be down the very moment of the test
+    mocker.patch.object(scout_requests.urllib.request, "urlopen")
+    with tempfile.TemporaryFile() as temp:
+        temp.write(refseq_response)
+        temp.seek(0)
+        scout_requests.urllib.request.urlopen.return_value = temp
+        # WHEN fetching complete refseq version for accession that has version
+        refseq_version = fetch_refseq_version(refseq_acc)
+
+    # WHEN fetching the refseq version number
     version_n = refseq_version.split(".")[1]
-    # make sure that contains version number
+    # THEN assert that the version is a digit
     assert version_n.isdigit()
 
-    # fetch complete refseq version for accession without version
-    refseq_acc = "NM_000000"
-    refseq_version = fetch_refseq_version(refseq_acc)
 
-    # make sure that contains version number
+def test_fetch_refseq_version_non_existing(refseq_response_non_existing, mocker):
+    """Test to fetch version for non existing transcript"""
+    # GIVEN a accession without refseq version
+    refseq_acc = "NM_000000"
+    # WHEN fetching the version
+    mocker.patch.object(scout_requests.urllib.request, "urlopen")
+    with tempfile.TemporaryFile() as temp:
+        temp.write(refseq_response_non_existing)
+        temp.seek(0)
+        scout_requests.urllib.request.urlopen.return_value = temp
+        # WHEN fetching complete refseq version for accession that has version
+        refseq_version = fetch_refseq_version(refseq_acc)
+
+    # THEN assert that the same ref seq was returned
     assert refseq_version == refseq_acc
