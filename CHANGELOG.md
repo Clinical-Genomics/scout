@@ -6,6 +6,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Use github actions to run tests
+- Adds CLI command to update individual alignments path
+
 ### Fixed
 ### Changed
 
