@@ -49,7 +49,6 @@ def test_fetch_refseq_version(refseq_response, mocker):
         scout_requests.urllib.request.urlopen.return_value = temp
         # WHEN fetching complete refseq version for accession that has version
         refseq_version = fetch_refseq_version(refseq_acc)
-    print(refseq_version)
     # WHEN fetching the refseq version number
     version_n = refseq_version.split(".")[1]
     # THEN assert that the version is a digit
