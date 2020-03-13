@@ -1,10 +1,16 @@
-# -*- coding: UTF-8 -*-
-import tempfile
+"""Tests for ensembl rest api"""
+
+import os
 from urllib.error import HTTPError
-from urllib.parse import urlencode
+
+import pytest
+
 from scout.utils import ensembl_rest_clients as eracs
 
+GITHUB = os.getenv("GITHUB")
 
+
+@pytest.mark.skipif(GITHUB, reason="Does not test scout code")
 def test_ping_ensemble_37():
     """Test ping ensembl server containing human build 37"""
     client = eracs.EnsemblRestApiClient()
@@ -12,6 +18,7 @@ def test_ping_ensemble_37():
     assert data == {"ping": 1}
 
 
+@pytest.mark.skipif(GITHUB, reason="Does not test scout code")
 def test_ping_ensemble_38():
     """Test ping ensembl server containing human build 38"""
     client = eracs.EnsemblRestApiClient(build="38")
@@ -19,6 +26,7 @@ def test_ping_ensemble_38():
     assert data == {"ping": 1}
 
 
+@pytest.mark.skipif(GITHUB, reason="Does not test scout code")
 def test_send_gene_request():
     """Test send request with correct params and endpoint"""
     url = "https://grch37.rest.ensembl.org/overlap/id/ENSG00000103591?feature=gene"
@@ -31,10 +39,11 @@ def test_send_gene_request():
         assert data[0]["external_name"] == "AAGAB"
         assert data[0]["start"]
         assert data[0]["end"]
-    except Exception as ex:
+    except HTTPError:
         assert isinstance(data, HTTPError)  # service is down
 
 
+@pytest.mark.skipif(GITHUB, reason="Does not test scout code")
 def test_send_request_wrong_url():
     """Successful requests are tested by other tests in this file.
        This test will trigger errors instead.
@@ -42,13 +51,14 @@ def test_send_request_wrong_url():
     url = "fakeyurl"
     client = eracs.EnsemblRestApiClient()
     data = client.send_request(url)
-    assert type(data) == ValueError
+    assert isinstance(data, ValueError)
 
     url = "https://grch37.rest.ensembl.org/fakeyurl"
     data = client.send_request(url)
-    assert type(data) == HTTPError
+    assert isinstance(data, HTTPError)
 
 
+@pytest.mark.skipif(GITHUB, reason="Does not test scout code")
 def test_use_api():
     """Test the use_api method of the EnsemblRestClient"""
 
@@ -65,10 +75,11 @@ def test_use_api():
     assert data[0]["strand"]
 
 
+@pytest.mark.skipif(GITHUB, reason="Does not test scout code")
 def test_xml_filters():
     """test method that creates filter lines for the biomart xml file"""
 
-    ## GIVEN a dictionary of biomart filters
+    # GIVEN a dictionary of biomart filters
     filters = {"string_filter": "string_value", "list_filter": ["1", "X", "MT"]}
 
     client = eracs.EnsemblBiomartClient()
@@ -85,22 +96,26 @@ def test_xml_filters():
     )
 
 
+@pytest.mark.skipif(GITHUB, reason="Does not test scout code")
 def test_xml_attributes():
     """test method that creates attribute lines for the biomart xml file"""
 
-    ## Given a list of  biomart attributes
+    # Given a list of  biomart attributes
     name = ["test_name"]
     client = eracs.EnsemblBiomartClient()
-    ## WHEN creating the xml attribute lines
+    # WHEN creating the xml attribute lines
     attribute_lines = client._xml_attributes(name)
 
-    ## THEN make sure that attributes lines are formatted as they should
+    # THEN make sure that attributes lines are formatted as they should
     assert attribute_lines == ['<Attribute name = "test_name" />']
 
 
+@pytest.mark.skipif(GITHUB, reason="Does not test scout code")
 def test_test_query_biomart_38_xml():
-    """Prepare a test xml document for the biomart service build 38 and query the service using it"""
-    ## GIVEN a xml file in biomart format
+    """Prepare a test xml document for the biomart service build 38
+     and query the service using it
+    """
+    # GIVEN a xml file in biomart format
     build = "38"
     xml = """<?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE Query>
@@ -113,13 +128,13 @@ def test_test_query_biomart_38_xml():
     </Query>
     """
 
-    ## WHEN querying ensembl
+    # WHEN querying ensembl
     client = eracs.EnsemblBiomartClient(build="38", xml=xml, header=False)
 
-    ## THEN assert that the result is correct
-    i = 0
-    for i, line in enumerate(client, 1):
-        ## THEN assert that either the correct gene is fetched or that an HTML page is returned (if the service is down)
+    # THEN assert that the result is correct
+    for line in client:
+        # THEN assert that either the correct gene is fetched or that an
+        # HTML page is returned (if the service is down)
         assert (
             "ACTR3" in line
             or line == "<!doctype html>"
@@ -128,22 +143,23 @@ def test_test_query_biomart_38_xml():
         break
 
 
+@pytest.mark.skipif(GITHUB, reason="Does not test scout code")
 def test_test_query_biomart_37_no_xml():
-    """Prepare a test xml document for the biomart service build 37 and query the service using it"""
-    ## GIVEN defined biomart filters and attributes
-    build = "37"
+    """Prepare a test xml document for the biomart service build 37 and
+    query the service using it
+    """
+    # GIVEN defined biomart filters and attributes
     filters = {"ensembl_gene_id": "ENSG00000115091"}
     attributes = ["hgnc_symbol", "ensembl_transcript_id"]
 
-    ## WHEN querying ensembl
+    # WHEN querying ensembl
     client = eracs.EnsemblBiomartClient(
         build="38", filters=filters, attributes=attributes, header=False
     )
 
-    i = 0
-
-    for i, line in enumerate(client):
-        ## THEN assert that either the correct gene is fetched or that an HTML page is returned (if the service is down)
+    for line in client:
+        # THEN assert that either the correct gene is fetched or that an
+        # HTML page is returned (if the service is down)
         assert (
             "ACTR3" in line
             or line == "<!doctype html>"
