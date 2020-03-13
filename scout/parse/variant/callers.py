@@ -37,4 +37,12 @@ def parse_callers(variant, category="snv"):
             called_by = info.split("|")[0]
             callers[called_by] = "Pass"
 
+    # Assume GATK was used for calling as a default, and report according to vcf FILTER status.
+    if not raw_info or other_info:
+        filter_status = variant.FILTER
+        if filter_status == "PASS":
+            callers["gatk"] = "Pass"
+        else:
+            callers["gatk"] = "Filtered"
+
     return callers
