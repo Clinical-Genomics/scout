@@ -2,7 +2,7 @@
 import gzip
 import logging
 import urllib.request
-import xml
+import xml.etree.ElementTree as ET
 from socket import timeout
 from urllib.error import HTTPError, URLError
 
@@ -343,11 +343,10 @@ def fetch_refseq_version(refseq_acc):
         "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&"
         "term={}&idtype=acc"
     )
-    resp = urllib.request.urlopen(base_url.format(refseq_acc))
 
     try:
-        resp = urllib.request.urlopen(base_url)
-        xml_response = xml.etree.ElementTree.parse(resp)
+        resp = urllib.request.urlopen(base_url.format(refseq_acc))
+        xml_response = ET.parse(resp)
         version = xml_response.find("IdList").find("Id").text or version
 
     except HTTPError:

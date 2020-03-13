@@ -21,19 +21,19 @@ def test_get_request_bad_url():
         assert get_request(url)
 
 
-def test_get_request(mocker):
+def test_get_request(mocker, refseq_response):
     """Test functions that accepts an url and returns decoded data from it"""
 
     # test function with url that exists
     url = "http://www.github.com"
     mocker.patch.object(scout_requests.urllib.request, "urlopen")
     with tempfile.TemporaryFile() as temp:
-        temp.write(b"<!DOCTYPE html>")
+        temp.write(refseq_response)
         temp.seek(0)
         scout_requests.urllib.request.urlopen.return_value = temp
         decoded_resp = get_request(url)
 
-    assert "<!DOCTYPE html>" in decoded_resp
+    assert "<!DOCTYPE" in decoded_resp
 
 
 def test_fetch_refseq_version(refseq_response, mocker):
@@ -49,7 +49,7 @@ def test_fetch_refseq_version(refseq_response, mocker):
         scout_requests.urllib.request.urlopen.return_value = temp
         # WHEN fetching complete refseq version for accession that has version
         refseq_version = fetch_refseq_version(refseq_acc)
-
+    print(refseq_version)
     # WHEN fetching the refseq version number
     version_n = refseq_version.split(".")[1]
     # THEN assert that the version is a digit
