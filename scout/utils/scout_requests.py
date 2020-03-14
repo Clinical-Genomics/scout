@@ -1,10 +1,10 @@
 """Code for performing requests"""
-import gzip
+
 import logging
-import urllib.request
-import xml.etree.ElementTree as ET
-from socket import timeout
-from urllib.error import HTTPError, URLError
+import zlib
+from xml.etree import ElementTree
+
+import requests
 
 from scout.constants import CHROMOSOMES
 from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
@@ -28,30 +28,24 @@ def get_request(url):
     """
     try:
         LOG.info("Requesting %s", url)
-        response = urllib.request.urlopen(url, timeout=20)
-        if url.endswith(".gz"):
-            LOG.info("Decompress zipped file")
-            data = gzip.decompress(response.read())  # a `bytes` object
-        else:
-            data = response.read()  # a `bytes` object
-        decoded_data = data.decode("utf-8")
-    except HTTPError as err:
+        response = requests.get(url, timeout=20)
+        if response.status_code != 200:
+            response.raise_for_status()
+        LOG.info("Encoded to %s", response.encoding)
+    except requests.exceptions.HTTPError as err:
         LOG.warning("Something went wrong, perhaps the api key is not valid?")
         raise err
-    except URLError as err:
-        LOG.warning("Something went wrong, are you connected to internet?")
+    except requests.exceptions.MissingSchema as err:
+        LOG.warning("Something went wrong, perhaps url is invalid?")
         raise err
-    except timeout:
+    except requests.exceptions.Timeout as err:
         LOG.error("socket timed out - URL %s", url)
-        raise ValueError
+        raise err
 
-    if "Error" in decoded_data:
-        raise URLError("Seems like url {} does not exist".format(url))
-
-    return decoded_data
+    return response
 
 
-def fetch_resource(url):
+def fetch_resource(url, json=False):
     """Fetch a resource and return the resulting lines in a list
     Send file_name to get more clean log messages
 
@@ -61,13 +55,25 @@ def fetch_resource(url):
     Returns:
         lines(list(str))
     """
-    try:
-        data = get_request(url)
-        lines = data.split("\n")
-    except Exception as err:
-        raise err
+    response = get_request(url)
+    data = None
+    if json:
+        LOG.info("Return in json")
+        data = response.json()
+    else:
+        content = response.text
+        if response.url.endswith(".gz"):
+            LOG.info("gzipped!")
+            encoded_content = b"".join(
+                chunk for chunk in response.iter_content(chunk_size=128)
+            )
+            content = zlib.decompress(encoded_content, 16 + zlib.MAX_WBITS).decode(
+                "utf-8"
+            )
 
-    return lines
+        data = content.split("\n")
+
+    return data
 
 
 def fetch_hpo_terms():
@@ -262,7 +268,8 @@ def fetch_hgnc():
     """
     file_name = "hgnc_complete_set.txt"
     url = "ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/{0}".format(file_name)
-    LOG.info("Fetching HGNC genes")
+    LOG.info("Fetching HGNC genes from %s", url)
+    print("Fetching HGNC genes from %s" % url)
 
     hgnc_lines = fetch_resource(url)
 
@@ -287,7 +294,7 @@ def fetch_exac_constraint():
 
     try:
         exac_lines = fetch_resource(url)
-    except URLError:
+    except requests.exceptions.HTTPError:
         LOG.info("Failed to fetch exac constraint scores file from ftp server")
         LOG.info("Try to fetch from google bucket...")
         url = (
@@ -345,15 +352,15 @@ def fetch_refseq_version(refseq_acc):
     )
 
     try:
-        resp = urllib.request.urlopen(base_url.format(refseq_acc))
-        xml_response = ET.parse(resp)
-        version = xml_response.find("IdList").find("Id").text or version
+        resp = get_request(base_url.format(refseq_acc))
+        tree = ElementTree.fromstring(resp.content)
+        version = tree.find("IdList").find("Id").text or version
 
-    except HTTPError:
-        LOG.warning("Something went wrong, perhaps the refseq accession is not valid?")
-    except URLError:
-        LOG.warning("Something went wrong, are you connected to internet?")
-    except AttributeError:
+    except (
+        requests.exceptions.HTTPError,
+        requests.exceptions.MissingSchema,
+        AttributeError,
+    ):
         LOG.warning("refseq accession not found")
 
     return version

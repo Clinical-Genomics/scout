@@ -13,7 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not rely on internet connection and services available when running CI tests
 
 ### Changed
-
+- Updates ranges for user ranks to fit todays usage
 
 ## [4.13.1]
 
