@@ -1,4 +1,7 @@
 """Tests for scout requests"""
+import tempfile
+import zlib
+from urllib.error import HTTPError
 
 import pytest
 import requests
@@ -156,6 +159,102 @@ def test_fetch_hpo_to_genes_to_disease(phenotype_to_genes_file):
 
     # THEN assert that the HPO header is there
     assert "#Format: HPO-id" in data[0]
+
+
+@responses.activate
+def test_fetch_hpo_files(phenotype_to_genes_file, hpo_genes_file):
+    """Test fetch hpo files"""
+
+    # GIVEN URLs two hpo files
+    url_1 = scout_requests.HPO_URL.format("phenotype_to_genes.txt")
+    url_2 = scout_requests.HPO_URL.format("genes_to_phenotype.txt")
+
+    with open(phenotype_to_genes_file, "r") as hpo_file:
+        content = hpo_file.read()
+
+    responses.add(
+        responses.GET, url_1, body=content, status=200,
+    )
+
+    with open(hpo_genes_file, "r") as hpo_file:
+        content = hpo_file.read()
+
+    responses.add(
+        responses.GET, url_2, body=content, status=200,
+    )
+
+    # WHEN fetching all hpo files
+    res = scout_requests.fetch_hpo_files(
+        genes_to_phenotype=True, phenotype_to_genes=True
+    )
+
+    # THEN assert that the HPO header is there
+    assert isinstance(res, dict)
+
+
+def test_fetch_hgnc(hgnc_file, mocker):
+    """Test fetch hgnc"""
+
+    # GIVEN file with hgnc info
+    mocker.patch.object(scout_requests.urllib.request, "urlopen")
+    with open(hgnc_file, "rb") as hgnc_handle:
+        hgnc_info = hgnc_handle.read()
+    with tempfile.TemporaryFile() as temp:
+        temp.write(hgnc_info)
+        temp.seek(0)
+        scout_requests.urllib.request.urlopen.return_value = temp
+        # WHEN fetching the resource
+        data = scout_requests.fetch_hgnc()
+
+    # THEN assert that the HGNC header is there
+    assert "hgnc_id\tsymbol" in data[0]
+
+
+def test_fetch_exac_constraint(exac_file, mocker):
+    """Test fetch exac constraint file"""
+
+    # GIVEN file with hgnc info
+    mocker.patch.object(scout_requests.urllib.request, "urlopen")
+    with open(exac_file, "rb") as exac_handle:
+        exac_info = exac_handle.read()
+    with tempfile.TemporaryFile() as temp:
+        temp.write(exac_info)
+        temp.seek(0)
+        scout_requests.urllib.request.urlopen.return_value = temp
+        # WHEN fetching the resource
+        data = scout_requests.fetch_exac_constraint()
+
+    # THEN assert that the exac header is there
+    assert "transcript\tgene" in data[0]
+
+
+@responses.activate
+def test_fetch_exac_constraint_failed_ftp(variant_clinical_file, mocker):
+    """Test fetch exac constraint file when ftp request fails"""
+
+    # GIVEN file with hgnc info
+    # GIVEN a mocked call that raises a HTTPError when fetching from ftp
+    mocker.patch.object(scout_requests.urllib.request, "urlopen")
+    url = (
+        "https://storage.googleapis.com/gnomad-public/legacy/exacv1_downloads/release0.3.1"
+        "/manuscript_data/forweb_cleaned_exac_r03_march16_z_data_pLI.txt.gz"
+    )
+    scout_requests.urllib.request.urlopen.return_value = HTTPError(
+        url, 500, "Internal Error", {}, None
+    )
+    # GIVEN a gzipped file
+    with open(variant_clinical_file, "rb") as zipped_file:
+        content = zipped_file.read()
+
+    responses.add(
+        responses.GET, url, body=content, status=200,
+    )
+
+    # WHEN fetching the resource
+    data = scout_requests.fetch_exac_constraint()
+
+    # THEN some content is returned
+    assert len(data) > 10
 
 
 @responses.activate

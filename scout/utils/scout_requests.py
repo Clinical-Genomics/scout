@@ -1,7 +1,9 @@
 """Code for performing requests"""
 
 import logging
+import urllib.request
 import zlib
+from urllib.error import HTTPError
 from xml.etree import ElementTree
 
 import requests
@@ -55,8 +57,17 @@ def fetch_resource(url, json=False):
     Returns:
         lines(list(str))
     """
-    response = get_request(url)
     data = None
+    if url.startswith("ftp"):
+        # requests do not handle ftp
+        response = urllib.request.urlopen(url, timeout=20)
+        if isinstance(response, Exception):
+            raise response
+        data = response.read().decode("utf-8")
+        return data.split("\n")
+
+    response = get_request(url)
+
     if json:
         LOG.info("Return in json")
         data = response.json()
@@ -269,7 +280,6 @@ def fetch_hgnc():
     file_name = "hgnc_complete_set.txt"
     url = "ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/{0}".format(file_name)
     LOG.info("Fetching HGNC genes from %s", url)
-    print("Fetching HGNC genes from %s" % url)
 
     hgnc_lines = fetch_resource(url)
 
@@ -291,10 +301,12 @@ def fetch_exac_constraint():
     exac_lines = None
 
     LOG.info("Fetching ExAC genes")
+    print("Fetching ExAC genes")
 
     try:
         exac_lines = fetch_resource(url)
-    except requests.exceptions.HTTPError:
+    except HTTPError:
+        print("Error!")
         LOG.info("Failed to fetch exac constraint scores file from ftp server")
         LOG.info("Try to fetch from google bucket...")
         url = (
