@@ -377,7 +377,7 @@ def test_case_diagnosis(app, institute_obj, case_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        req_data = {"omim_id": "OMIM:615349"}
+        req_data = {"omim_term": "OMIM:615349"}
 
         # When updating an OMIM diagnosis for a case
         resp = client.post(
