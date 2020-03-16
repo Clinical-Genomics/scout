@@ -40,7 +40,6 @@ pytest.ini
 *.sublime-*
 dev/
 .vagrant/
-.coverage*
 htmlcov/
 provision/roles/
 .env
