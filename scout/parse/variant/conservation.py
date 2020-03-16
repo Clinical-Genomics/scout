@@ -1,12 +1,13 @@
+"""Code for parsing conservation"""
 import logging
+import numbers
 
 from scout.constants import CONSERVATION
-import numbers
 
 LOG = logging.getLogger(__name__)
 
 
-def parse_conservations(variant, parsed_transcripts=[]):
+def parse_conservations(variant, parsed_transcripts=None):
     """Parse the conservation predictors
 
         Args:
@@ -16,6 +17,7 @@ def parse_conservations(variant, parsed_transcripts=[]):
         Returns:
             conservations(dict): A dictionary with the conservations
     """
+    parsed_transcripts = parsed_transcripts or []
     conservations = {}
 
     conservation_keys = {
@@ -82,20 +84,19 @@ def parse_conservation_csq(transcript, field_key):
 
     try:
         scores = transcript.get(field_key)
-        if scores:
-            for score in scores.split(
-                "&"
-            ):  # fiels may consist of multiple numeric values
-                score = float(score)
-                if score >= CONSERVATION[field_key]["conserved_min"]:
-                    conservations.append("Conserved")
-                else:
-                    conservations.append("NotConserved")
+        if not scores:
+            return conservations
+
+        for score in scores.split("&"):
+            # fields may consist of multiple numeric values
+            score = float(score)
+            if score >= CONSERVATION[field_key]["conserved_min"]:
+                conservations.append("Conserved")
+            else:
+                conservations.append("NotConserved")
     except ValueError:
         LOG.warning(
-            "Error while parsing {} value:{} ".format(
-                field_key, raw_transcript.get(csq_key)
-            )
+            "Error while parsing %s value:%s ", field_key, transcript.get(field_key)
         )
 
     return conservations

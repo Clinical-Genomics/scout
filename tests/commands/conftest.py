@@ -1,7 +1,9 @@
+"""Fixtures for CLI tests"""
+import pathlib
+
 import pytest
 
 from scout.server.app import create_app
-
 
 #############################################################
 ###################### App fixtures #########################
@@ -13,8 +15,15 @@ REAL_DATABASE = "realtestdb"
 
 
 @pytest.fixture(scope="function")
-def empty_mock_app(real_adapter):
+def bam_path():
+    """Return the path to a small existing bam file"""
+    _path = pathlib.Path("tests/fixtures/bams/reduced_mt.bam")
+    return _path
 
+
+@pytest.fixture(scope="function")
+def empty_mock_app(real_adapter):
+    """Return the path to a mocked app object without any data"""
     _mock_app = create_app(
         config=dict(
             TESTING=True,
@@ -29,7 +38,7 @@ def empty_mock_app(real_adapter):
 
 @pytest.fixture
 def mock_app(real_populated_database):
-
+    """Return the path to a mocked app object with data"""
     _mock_app = create_app(
         config=dict(
             TESTING=True,

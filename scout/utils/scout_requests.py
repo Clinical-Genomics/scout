@@ -1,16 +1,20 @@
-import xml.etree.ElementTree as et
-import logging
+"""Code for performing requests"""
 import gzip
+import logging
 import urllib.request
-from urllib.error import HTTPError, URLError
+import xml.etree.ElementTree as et
 from socket import timeout
+from urllib.error import HTTPError, URLError
 
 from scout.constants import CHROMOSOMES
 from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
 
 LOG = logging.getLogger(__name__)
 
-HPO_URL = "http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/artifact/util/annotation/{0}"
+HPO_URL = (
+    "http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/"
+    "artifact/util/annotation/{0}"
+)
 
 
 def get_request(url):
@@ -310,13 +314,13 @@ def fetch_hpo_files(genes_to_phenotype=False, phenotype_to_genes=False):
     hpo_urls = {}
 
     if genes_to_phenotype is True:
-        hpo_urls["genes_to_phenotype"] = base_url.format("genes_to_phenotype.txt")
+        hpo_urls["genes_to_phenotype"] = HPO_URL.format("genes_to_phenotype.txt")
     if phenotype_to_genes is True:
-        hpo_urls["phenotype_to_genes"] = base_url.format("phenotype_to_genes.txt")
+        hpo_urls["phenotype_to_genes"] = HPO_URL.format("phenotype_to_genes.txt")
 
     for file_name in hpo_urls:
         url = hpo_urls[file_name]
-        hpo_files[file_name] = request_file(url)
+        hpo_files[file_name] = fetch_resource(url)
 
     return hpo_files
 
