@@ -11,6 +11,9 @@ DETECTIVES = [
     "Dexter Morgan",
     "Stella Gibson",
     "Dale Cooper",
+    "Jessica Fletcher",
+    "Inspector Closseau",
+    "Columbo",
 ]
 
 

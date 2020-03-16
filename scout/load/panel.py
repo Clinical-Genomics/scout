@@ -43,7 +43,6 @@ def load_panel(panel_path, adapter, **kwargs):
     except Exception as err:
         raise err
 
-    version = None
     if panel_info.get("version"):
         version = float(panel_info["version"])
 

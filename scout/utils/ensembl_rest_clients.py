@@ -154,11 +154,9 @@ class EnsemblBiomartClient:
         """
 
         url = self.build_url(xml)
-        print(url)
         try:
             with requests.get(url, stream=True) as req:
                 for line in req.iter_lines():
-                    print(line)
                     yield line.decode("utf-8")
         except Exception as ex:
             LOG.info("Error downloading data from biomart: %s", ex)
