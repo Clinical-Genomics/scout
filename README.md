@@ -6,12 +6,14 @@
 </p>
 
 [![Build Status][travis-img]][travis-url]
+![Build Status - GitHub](https://github.com/Clinical-Genomics/scout/workflows/Scout%20tests/badge.svg)
 [![PyPI Version][pypi-img]][pypi-url]
 [![Coverage Status](https://coveralls.io/repos/github/Clinical-Genomics/scout/badge.svg?branch=master)](https://coveralls.io/github/Clinical-Genomics/scout?branch=master)
 [![GitHub issues-closed][closed-issues-img]][closed-issues-url]
 [![Average time to resolve an issue][ismaintained-resolve-img]][ismaintained-resolve-url]
 [![Percentage of issues still open][ismaintained-open-rate-img]][ismaintained-open-rate-url]
 [![GitHub commits](https://img.shields.io/github/commits-since/Clinical-Genomics/scout/v4.8.0.svg)](https://GitHub.com/Clinical-Genomics/scout/commit/)
+[![CodeFactor](https://www.codefactor.io/repository/github/clinical-genomics/scout/badge)](https://www.codefactor.io/repository/github/clinical-genomics/scout)
 
 ## What is Scout?
 
@@ -158,8 +160,8 @@ SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 --access-logfi
 
 ### Integration with MatchMaker Exchange
 
-Starting from release 4.4, Scout offers integration for patient data sharing via MatchMaker Exchange. General info about MatchMaker and patient matching could be found in [this paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6016856/).  
-For a technical guideline of our implementation of MatchMaker Exchange at Clinical Genomics and its integration with Scout follow this [link](docs/admin-guide/matchmaker_exchange_integration.md).  
+Starting from release 4.4, Scout offers integration for patient data sharing via MatchMaker Exchange. General info about MatchMaker and patient matching could be found in [this paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6016856/).
+For a technical guideline of our implementation of MatchMaker Exchange at Clinical Genomics and its integration with Scout follow this [link](docs/admin-guide/matchmaker_exchange_integration.md).
 A user-oriented guide describing how to share case and variant data to MatchMaker using Scout can be found [here](docs/user-guide/cases.md#matchmaker-exchange-integration).
 
 

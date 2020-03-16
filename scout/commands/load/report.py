@@ -1,4 +1,6 @@
+"""Code for updating delivery reports"""
 import logging
+
 import click
 from flask.cli import with_appcontext
 
@@ -25,6 +27,6 @@ def delivery_report(case_id, report_path, update):
             adapter=adapter, case_id=case_id, report_path=report_path, update=update
         )
         LOG.info("saved report to case!")
-    except Exception as e:
-        LOG.error(e)
-        context.abort()
+    except Exception as err:
+        LOG.error(err)
+        raise click.Abort()

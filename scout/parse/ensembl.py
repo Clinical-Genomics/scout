@@ -1,13 +1,12 @@
+"""Code for parsing ensembl information"""
 import logging
-
-from pprint import pprint as pp
 
 LOG = logging.getLogger(__name__)
 
 
 def parse_ensembl_line(line, header):
     """Parse an ensembl formated line
-    
+
     This parser should be able to handle any ensembl formated line in tsv format, regardless if
     it is exons, transcripts or genes.
 
@@ -229,22 +228,22 @@ def parse_ensembl_exons(lines):
         }
         try:
             exon["5_utr_start"] = int(exon_info.get("utr_5_start"))
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError):
             exon["5_utr_start"] = None
 
         try:
             exon["5_utr_end"] = int(exon_info.get("utr_5_end"))
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError):
             exon["5_utr_end"] = None
 
         try:
             exon["3_utr_start"] = int(exon_info.get("utr_3_start"))
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError):
             exon["3_utr_start"] = None
 
         try:
             exon["3_utr_end"] = int(exon_info.get("utr_3_end"))
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError):
             exon["3_utr_end"] = None
 
         # Recalculate start and stop (taking UTR regions into account for end exons)
@@ -262,7 +261,8 @@ def parse_ensembl_exons(lines):
 
         exon["start"] = start
         exon["end"] = end
-        exon["exon_id"] = "-".join([str(exon["chrom"]), str(start), str(end)])
+        exon_id = "-".join([str(exon["chrom"]), str(start), str(end)])
+        exon["exon_id"] = exon_id
 
         if start > end:
             raise ValueError("ERROR: %s" % exon_id)
