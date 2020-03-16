@@ -86,7 +86,7 @@
         </div>
         {% endif %}
 
-        <div class="col">
+        <div class="{% if case.track != 'cancer' %}col-8{%else%}col-12{%endif%}">
           {{ synopsis_panel() }}
           {{ comments_panel(institute, case, current_user, comments) }}
         </div>
