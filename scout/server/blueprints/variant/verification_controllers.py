@@ -1,13 +1,14 @@
 import logging
 import urllib
 from pprint import pprint as pp
+
 from flask import url_for
 from flask_login import current_user
 from flask_mail import Message
 
-from .controllers import variant as variant_controller
-
 from scout.server.extensions import mail as ex_mail
+
+from .controllers import variant as variant_controller
 
 LOG = logging.getLogger(__name__)
 
@@ -63,7 +64,7 @@ def variant_verification(
     pp(variant_obj)
     recipients = institute_obj["sanger_recipients"]
     if len(recipients) == 0:
-        raise MissingSangerRecipientError()
+        raise MissingVerificationRecipientError()
 
     view_type = None
     email_subject = None
