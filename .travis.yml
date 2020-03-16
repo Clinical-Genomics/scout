@@ -5,13 +5,13 @@ env: TRAVIS=1
 
 jobs:
     include:
-        - name: "Tests & Coverage"
-          services: mongodb
-          install:
-              - pip install cython
-              - pip install -r requirements-dev.txt -e .
-          script: py.test --cov=scout -rxs tests/
-          after_success: coveralls
+        # - name: "Tests & Coverage"
+        #   services: mongodb
+        #   install:
+        #       - pip install cython
+        #       - pip install -r requirements-dev.txt -e .
+        #   script: py.test --cov=scout -rxs tests/
+        #   after_success: coveralls
 
         - name: "Production Dependencies"
           if: type = pull_request
