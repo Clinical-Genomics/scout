@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Do not display Pedigree panel in cancer view
 - Do not rely on internet connection and services available when running CI tests
+- Variant loading assumes GATK if no caller set given and GATK filter status is seen in FILTER
 
 ### Changed
 - Improved code that sends requests to the external APIs
