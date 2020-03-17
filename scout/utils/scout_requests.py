@@ -17,6 +17,11 @@ HPO_URL = (
     "http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/"
     "artifact/util/annotation/{0}"
 )
+HPO_URL = (
+    "http://compbio.charite.de/jenkins/job/hpo.annotations/lastSuccessfulBuild"
+    "/artifact/util/annotation/{}"
+)
+HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
 
 
 def get_request(url):
@@ -48,14 +53,15 @@ def get_request(url):
 
 
 def fetch_resource(url, json=False):
-    """Fetch a resource and return the resulting lines in a list
+    """Fetch a resource and return the resulting lines in a list or a json object
     Send file_name to get more clean log messages
 
     Args:
         url(str)
+        json(bool): if result should be in json
 
     Returns:
-        lines(list(str))
+        data
     """
     data = None
     if url.startswith("ftp"):
@@ -129,6 +135,34 @@ def fetch_hpo_to_genes_to_disease():
     return fetch_resource(url)
 
 
+def fetch_hpo_files(
+    genes_to_phenotype=False, phenotype_to_genes=False, hpo_terms=False
+):
+    """
+    Fetch the necessary HPO files from http://compbio.charite.de
+
+    Args:
+        genes_to_phenotype(bool): if file genes_to_phenotype.txt is required
+        phenotype_to_genes(bool): if file phenotype_to_genes.txt is required
+        hpo_terms(bool):if file hp.obo is required
+
+    Returns:
+        hpo_files(dict): A dictionary with the necessary files
+    """
+    LOG.info("Fetching HPO information from http://compbio.charite.de")
+
+    hpo_files = {}
+
+    if genes_to_phenotype is True:
+        hpo_files["genes_to_phenotype"] = fetch_genes_to_hpo_to_disease()
+    if phenotype_to_genes is True:
+        hpo_files["phenotype_to_genes"] = fetch_hpo_to_genes_to_disease()
+    if hpo_terms is True:
+        hpo_files["hpo_terms"] = fetch_hpo_terms()
+
+    return hpo_files
+
+
 def fetch_mim_files(
     api_key, mim2genes=False, mimtitles=False, morbidmap=False, genemap2=False
 ):
@@ -186,15 +220,17 @@ def fetch_ensembl_biomart(attributes, filters, build=None):
     return client
 
 
-def fetch_ensembl_genes(build=None):
+def fetch_ensembl_genes(build=None, chromosomes=None):
     """Fetch the ensembl genes
 
     Args:
         build(str): ['37', '38']
+        chromosomes(iterable(str))
 
     Returns:
         result(iterable): Ensembl formated gene lines
     """
+    chromosomes = chromosomes or CHROMOSOMES
     LOG.info("Fetching ensembl genes")
 
     attributes = [
@@ -206,7 +242,7 @@ def fetch_ensembl_genes(build=None):
         "hgnc_id",
     ]
 
-    filters = {"chromosome_name": CHROMOSOMES}
+    filters = {"chromosome_name": chromosomes}
 
     return fetch_ensembl_biomart(attributes, filters, build)
 
@@ -301,12 +337,10 @@ def fetch_exac_constraint():
     exac_lines = None
 
     LOG.info("Fetching ExAC genes")
-    print("Fetching ExAC genes")
 
     try:
         exac_lines = fetch_resource(url)
     except HTTPError:
-        print("Error!")
         LOG.info("Failed to fetch exac constraint scores file from ftp server")
         LOG.info("Try to fetch from google bucket...")
         url = (
@@ -318,34 +352,6 @@ def fetch_exac_constraint():
         exac_lines = fetch_resource(url)
 
     return exac_lines
-
-
-def fetch_hpo_files(genes_to_phenotype=False, phenotype_to_genes=False):
-    """
-    Fetch the necessary HPO files from http://compbio.charite.de
-
-    Args:
-        genes_to_phenotype(bool): if file genes_to_phenotype.txt is required
-        phenotype_to_genes(bool): if file phenotype_to_genes.txt is required
-
-    Returns:
-        hpo_files(dict): A dictionary with the necessary files
-    """
-    LOG.info("Fetching HPO information from http://compbio.charite.de")
-
-    hpo_files = {}
-    hpo_urls = {}
-
-    if genes_to_phenotype is True:
-        hpo_urls["genes_to_phenotype"] = HPO_URL.format("genes_to_phenotype.txt")
-    if phenotype_to_genes is True:
-        hpo_urls["phenotype_to_genes"] = HPO_URL.format("phenotype_to_genes.txt")
-
-    for file_name in hpo_urls:
-        url = hpo_urls[file_name]
-        hpo_files[file_name] = fetch_resource(url)
-
-    return hpo_files
 
 
 def fetch_refseq_version(refseq_acc):

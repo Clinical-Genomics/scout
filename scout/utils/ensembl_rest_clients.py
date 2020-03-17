@@ -96,13 +96,15 @@ class EnsemblRestApiClient:
 
 
 class EnsemblBiomartClient:
+    """Class to handle requests to the ensembl biomart api"""
+
     def __init__(
         self, build="37", xml=None, filters=None, attributes=None, header=True
     ):
+        """Initialise a ensembl biomart client"""
+        self.server = BIOMART_37
         if build == "38":
             self.server = BIOMART_38
-        else:
-            self.server = BIOMART_37
         self.filters = filters or {}
         self.attributes = attributes or []
         self.xml = xml or self._create_biomart_xml(filters, attributes)

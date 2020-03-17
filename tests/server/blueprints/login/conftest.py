@@ -1,4 +1,4 @@
-"""Fixtures for ligin blueprints"""
+"""Fixtures for login blueprints"""
 
 import pytest
 
