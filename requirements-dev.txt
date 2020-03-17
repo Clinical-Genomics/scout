@@ -7,6 +7,7 @@ pytest-flask
 pytest-cov
 mongomock<=3.12
 coveralls
+responses
 
 # packaging
 wheel>=0.23

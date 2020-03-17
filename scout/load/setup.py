@@ -12,31 +12,20 @@ import yaml
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
 from scout.build import build_institute
-
 # Case files
 # Gene panel
 from scout.demo import load_path, panel_path
-
 ### Import demo files ###
 from scout.demo.resources import demo_files
-
+from scout.load import load_hgnc_genes, load_hpo, load_transcripts
 # Resources
 from scout.parse.panel import parse_gene_panel
-
-from scout.build import build_institute
-
-from scout.load import load_hgnc_genes, load_hpo, load_transcripts
-
 from scout.utils.handle import get_file_handle
-
-from scout.utils.scout_requests import (
-    fetch_mim_files,
-    fetch_ensembl_genes,
-    fetch_ensembl_transcripts,
-    fetch_hgnc,
-    fetch_exac_constraint,
-    fetch_genes_to_hpo_to_disease,
-)
+from scout.utils.scout_requests import (fetch_ensembl_genes,
+                                        fetch_ensembl_transcripts,
+                                        fetch_exac_constraint,
+                                        fetch_genes_to_hpo_to_disease,
+                                        fetch_hgnc, fetch_mim_files)
 
 LOG = logging.getLogger(__name__)
 
@@ -98,7 +87,6 @@ def setup_scout(
     resource_files = resource_files or {}
     if demo:
         resource_files = demo_files
-
     mim2gene_lines = None
     genemap_lines = None
     mim2gene_path = resource_files.get("mim2gene_path")
