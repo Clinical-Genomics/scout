@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Use github actions to run tests
 - Adds CLI command to update individual alignments path
 - Update HPO terms using downloaded definitions files
+- Option to use alternative flask config when running `scout serve`
 
 ### Fixed
 - Do not display Pedigree panel in cancer view
