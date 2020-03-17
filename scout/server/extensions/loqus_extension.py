@@ -50,8 +50,10 @@ class LoqusDB:
         )
 
         self.base_call = [self.loqusdb_binary]
+        print(self.version)
         if self.loqusdb_config:
             self.base_call.extend(["--config", self.loqusdb_config])
+        self.version_check()
 
     def init_app(self, app):
         """Initialize from Flask."""
@@ -70,6 +72,13 @@ class LoqusDB:
         self.version = app.config["LOQUSDB_SETTINGS"].get("version")
         if not self.version:
             self.version = self.get_version()
+        self.version_check()
+
+    def version_check(self):
+        """Check if a compatible version is used"""
+        if not self.version >= 2.5:
+            LOG.info("Please update your loqusdb version to >=2.5")
+            raise SyntaxError("Only compatible with loausdb version >= 2.5")
 
     @staticmethod
     def set_coordinates(variant_info):
