@@ -76,6 +76,7 @@
       </div>
 
       <div class="row">
+        {% if case.track != 'cancer' %}
         <div class="col-md-4">
           {% if case.madeline_info and case.individuals|length > 1 %}
             {{ pedigree_panel(case) }}
@@ -83,12 +84,14 @@
             <p>No pedigree picture available.</p>
           {% endif %}
         </div>
+        {% endif %}
 
-        <div class="col-md-8">
+        <div class="{% if case.track != 'cancer' %}col-8{%else%}col-12{%endif%}">
           {{ synopsis_panel() }}
           {{ comments_panel(institute, case, current_user, comments) }}
         </div>
       </div>
+
         <!-- OMIM diagnoses-related code-->
         <div class="row">
           <div class="col-sm-12">
