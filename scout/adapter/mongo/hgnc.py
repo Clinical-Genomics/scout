@@ -48,10 +48,13 @@ class GeneHandler(object):
 
             Args:
                 hgnc_identifier(int)
+                build(str)
 
             Returns:
                 gene_obj(HgncGene)
         """
+        if build:
+            build = str(build)
         if not build in ["37", "38"]:
             build = "37"
         query = {}
@@ -93,7 +96,7 @@ class GeneHandler(object):
             hgnc_id(int)
         """
         # LOG.debug("Fetching gene %s", hgnc_symbol)
-        query = {"hgnc_symbol": hgnc_symbol, "build": build}
+        query = {"hgnc_symbol": hgnc_symbol, "build": str(build)}
         projection = {"hgnc_id": 1, "_id": 0}
         res = self.hgnc_collection.find(query, projection)
         for gene in res:
@@ -122,14 +125,14 @@ class GeneHandler(object):
                     {"aliases": hgnc_symbol},
                     {"hgnc_id": int(hgnc_symbol) if hgnc_symbol.isdigit() else None},
                 ],
-                "build": build,
+                "build": str(build),
             }
             nr_genes = self.nr_genes(query=query)
             if nr_genes != 0:
                 return self.hgnc_collection.find(query)
 
             return self.hgnc_collection.find(
-                {"aliases": {"$regex": hgnc_symbol, "$options": "i"}, "build": build}
+                {"aliases": {"$regex": hgnc_symbol, "$options": "i"}, "build": str(build)}
             )
 
         return self.hgnc_collection.find({"build": build, "aliases": hgnc_symbol})
@@ -156,13 +159,13 @@ class GeneHandler(object):
         hgnc_tx = {}
         if add_transcripts:
             LOG.info("Adding transcripts")
-            for tx in self.transcripts(build=build):
+            for tx in self.transcripts(build=str(build)):
                 hgnc_id = tx["hgnc_id"]
                 if not hgnc_id in hgnc_tx:
                     hgnc_tx[hgnc_id] = []
                 hgnc_tx[hgnc_id].append(tx)
 
-        for i, gene_obj in enumerate(self.hgnc_collection.find({"build": build})):
+        for i, gene_obj in enumerate(self.hgnc_collection.find({"build": str(build)})):
             if i > limit:
                 break
             if add_transcripts:
@@ -185,7 +188,7 @@ class GeneHandler(object):
         query = query or {}
         if build:
             LOG.debug("Fetching all genes from build %s", build)
-            query["build"] = build
+            query["build"] = str(build)
         else:
             LOG.debug("Fetching all genes")
 
@@ -198,7 +201,7 @@ class GeneHandler(object):
         """Delete the genes collection"""
         if build:
             LOG.info("Dropping the hgnc_gene collection, build %s", build)
-            self.hgnc_collection.delete_many({"build": build})
+            self.hgnc_collection.delete_many({"build": str(build)})
         else:
             LOG.info("Dropping the hgnc_gene collection")
             self.hgnc_collection.drop()
@@ -220,7 +223,7 @@ class GeneHandler(object):
         hgnc_dict = {}
         LOG.info("Building hgncid_to_gene")
         if not genes:
-            genes = self.hgnc_collection.find({"build": build})
+            genes = self.hgnc_collection.find({"build": str(build)})
 
         for gene_obj in genes:
             hgnc_dict[gene_obj["hgnc_id"]] = gene_obj
@@ -244,7 +247,7 @@ class GeneHandler(object):
         hgnc_dict = {}
         LOG.info("Building hgncsymbol_to_gene")
         if not genes:
-            genes = self.hgnc_collection.find({"build": build})
+            genes = self.hgnc_collection.find({"build": str(build)})
 
         for gene_obj in genes:
             hgnc_dict[gene_obj["hgnc_symbol"]] = gene_obj
@@ -267,13 +270,13 @@ class GeneHandler(object):
         """
         LOG.debug("Fetch gene by symbol if possible: {}".format(symbol))
 
-        res = self.hgnc_collection.find({"hgnc_symbol": symbol, "build": build})
+        res = self.hgnc_collection.find({"hgnc_symbol": symbol, "build": str(build)})
 
-        if self.hgnc_collection.find_one({"aliases": symbol, "build": build}) is None:
+        if self.hgnc_collection.find_one({"aliases": symbol, "build": str(build)}) is None:
             LOG.debug(
                 "No gene with symbol {} was found. Attempting an alias.".format(symbol)
             )
-            res = self.hgnc_collection.find({"aliases": symbol, "build": build})
+            res = self.hgnc_collection.find({"aliases": symbol, "build": str(build)})
 
         return res
 
@@ -297,7 +300,7 @@ class GeneHandler(object):
         alias_genes = {}
         # Loop over all genes
         if not genes:
-            genes = self.hgnc_collection.find({"build": build})
+            genes = self.hgnc_collection.find({"build": str(build)})
 
         for gene in genes:
             # Collect the hgnc_id
@@ -360,7 +363,7 @@ class GeneHandler(object):
             Returns:
                 hgnc_symbol(str)
         """
-        result = self.hgnc_genes(hgnc_symbol=hgnc_alias, build=build)
+        result = self.hgnc_genes(hgnc_symbol=hgnc_alias, build=str(build))
         if result:
             for gene in result:
                 return gene["hgnc_symbol"]
