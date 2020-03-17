@@ -3,6 +3,7 @@ import pathlib
 
 import pytest
 
+from scout.demo.resources import demo_files
 from scout.server.app import create_app
 
 #############################################################
@@ -12,6 +13,12 @@ from scout.server.app import create_app
 
 DATABASE = "testdb"
 REAL_DATABASE = "realtestdb"
+
+
+@pytest.fixture(scope="function", name="demo_files")
+def fixture_demo_files():
+    """Return a dictionary with paths to the demo files"""
+    return demo_files
 
 
 @pytest.fixture(scope="function")

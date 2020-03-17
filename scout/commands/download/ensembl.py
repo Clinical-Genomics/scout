@@ -4,11 +4,9 @@ import pathlib
 
 import click
 
-from scout.utils.scout_requests import (
-    fetch_ensembl_exons,
-    fetch_ensembl_genes,
-    fetch_ensembl_transcripts,
-)
+from scout.utils.scout_requests import (fetch_ensembl_exons,
+                                        fetch_ensembl_genes,
+                                        fetch_ensembl_transcripts)
 
 LOG = logging.getLogger(__name__)
 
@@ -24,7 +22,7 @@ def print_ensembl(out_dir, resource_type, genome_build=None):
         genome_build
 
     """
-    if not resource_type in ["genes", "transcripts", "exons"]:
+    if resource_type not in ["genes", "transcripts", "exons"]:
         LOG.error("Invalid resource type")
         raise SyntaxError()
 
