@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Do not display Pedigree panel in cancer view
+- Variant loading assumes GATK if no caller set given and GATK filter status is seen in FILTER
+
 ### Changed
 
 
