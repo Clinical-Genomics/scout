@@ -39,7 +39,7 @@ class TranscriptHandler(object):
         """Delete the transcripts collection"""
         if build:
             LOG.info("Dropping the transcripts collection, build %s", build)
-            self.transcript_collection.delete_many({"build": build})
+            self.transcript_collection.delete_many({"build": str(build)})
         else:
             LOG.info("Dropping the transcripts collection")
             self.transcript_collection.drop()
@@ -48,7 +48,7 @@ class TranscriptHandler(object):
         """Delete the exons collection"""
         if build:
             LOG.info("Dropping the exons collection, build %s", build)
-            self.exon_collection.delete_many({"build": build})
+            self.exon_collection.delete_many({"build": str(build)})
         else:
             LOG.info("Dropping the exons collection")
             self.exon_collection.drop()
@@ -64,7 +64,7 @@ class TranscriptHandler(object):
         """
         ensembl_transcripts = {}
         LOG.info("Fetching all transcripts")
-        for transcript_obj in self.transcripts(build):
+        for transcript_obj in self.transcripts(str(build)):
             enst_id = transcript_obj["ensembl_transcript_id"]
             ensembl_transcripts[enst_id] = transcript_obj
         LOG.info("Ensembl transcripts fetched")
@@ -90,7 +90,7 @@ class TranscriptHandler(object):
             LOG.debug("Fetching the id transcripts for gene %s", hgnc_id)
             if not hgnc_id:
                 raise SyntaxError("Need hgnc id to fetch transcripts")
-            transcripts = self.transcripts(build=build, hgnc_id=hgnc_id)
+            transcripts = self.transcripts(build=str(build), hgnc_id=hgnc_id)
 
         identifier_transcripts = set()
 
@@ -147,7 +147,7 @@ class TranscriptHandler(object):
         """
         hgnc_transcripts = {}
         LOG.info("Fetching all transcripts")
-        for transcript in self.transcript_collection.find({"build": build}):
+        for transcript in self.transcript_collection.find({"build": str(build)}):
             hgnc_id = transcript["hgnc_id"]
             if not hgnc_id in hgnc_transcripts:
                 hgnc_transcripts[hgnc_id] = []
@@ -167,9 +167,9 @@ class TranscriptHandler(object):
         """
         hgnc_id_transcripts = {}
         LOG.info("Fetching all id transcripts")
-        for gene_obj in self.hgnc_collection.find({"build": build}):
+        for gene_obj in self.hgnc_collection.find({"build": str(build)}):
             hgnc_id = gene_obj["hgnc_id"]
-            id_transcripts = self.get_id_transcripts(hgnc_id=hgnc_id, build=build)
+            id_transcripts = self.get_id_transcripts(hgnc_id=hgnc_id, build=str(build))
             hgnc_id_transcripts[hgnc_id] = id_transcripts
 
         return hgnc_id_transcripts
@@ -187,7 +187,7 @@ class TranscriptHandler(object):
             iterable(transcript)
         """
 
-        query = {"build": build}
+        query = {"build": str(build)}
         if hgnc_id:
             query["hgnc_id"] = hgnc_id
 
@@ -231,7 +231,7 @@ class TranscriptHandler(object):
         """
         query = {}
         if build:
-            query["build"] = build
+            query["build"] = str(build)
         if hgnc_id:
             query["hgnc_id"] = hgnc_id
         if transcript_id:
@@ -250,6 +250,6 @@ class TranscriptHandler(object):
         """
         query = {}
         if build:
-            query["build"] = build
+            query["build"] = str(build)
 
         return self.exon_collection.find_one(query)
