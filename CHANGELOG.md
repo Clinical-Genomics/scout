@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Use github actions to run tests
 - Adds CLI command to update individual alignments path
+- Adds option to choose what flask config to use
 
 ### Fixed
 - Do not display Pedigree panel in cancer view
