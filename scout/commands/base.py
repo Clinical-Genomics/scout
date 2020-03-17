@@ -14,7 +14,6 @@ from scout.commands.delete import delete
 from scout.commands.download import download as download_command
 from scout.commands.export import export
 from scout.commands.index_command import index as index_command
-
 # Commands
 from scout.commands.load import load as load_command
 from scout.commands.serve import serve
@@ -105,7 +104,7 @@ def get_app(ctx):
 @click.option("-port", "--port", help="Specify on what port to listen for the mongod")
 @click.option("-h", "--host", help="Specify the host for the mongo database.")
 @click.option(
-    "-f", "--flask_config", type=click.Path(exists=True), help="Path to flask config."
+    "-f", "--flask-config", type=click.Path(exists=True), help="Path to flask config."
 )
 @with_appcontext
 def cli(**_):
