@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Use github actions to run tests
 - Adds CLI command to update individual alignments path
 - Update HPO terms using downloaded definitions files
-- Adds option to choose what flask config to use
+- Option to use alternative flask config when running `scout serve`
 
 ### Fixed
 - Do not display Pedigree panel in cancer view
@@ -44,7 +44,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add SMA view with SMN Copy Number data
 - Easier to assign OMIM diagnoses from case page
 - OMIM terms and specific OMIM term page
-- Option to use alternative flask config when running `scout serve`
 
 ### Fixed
 - Bug when adding a new gene to a panel
