@@ -142,7 +142,7 @@ SECRET_KEY = 'secret key'               # override in production!
 Starting the server in now really easy, for the demo and local development we will use the CLI:
 
 ```bash
-scout serve --config ./config.py
+scout --flask-config config.py serve
 ```
 
 ![Scout Interface demo](artwork/scout-variant-demo.png)
