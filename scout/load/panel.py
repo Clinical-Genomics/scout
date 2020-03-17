@@ -5,27 +5,16 @@ functions to load panels into the database
 """
 
 import logging
-import json
 
-from pprint import pprint as pp
-
+from scout.parse.panel import (get_panel_info, parse_gene_panel,
+                               parse_panel_app_panel)
 from scout.utils.handle import get_file_handle
-from scout.parse.panel import get_panel_info, parse_panel_app_panel, parse_gene_panel
-from scout.utils.scout_requests import get_request
+from scout.utils.scout_requests import fetch_resource
 
 LOG = logging.getLogger(__name__)
 
 
-def load_panel(
-    panel_path,
-    adapter,
-    date=None,
-    display_name=None,
-    version=None,
-    panel_type=None,
-    panel_id=None,
-    institute=None,
-):
+def load_panel(panel_path, adapter, **kwargs):
     """Load a manually curated gene panel into scout
 
     Args:
@@ -40,21 +29,20 @@ def load_panel(
 
     """
     panel_lines = get_file_handle(panel_path)
-
+    version = kwargs.get("version")
     try:
         # This will parse panel metadata if includeed in panel file
         panel_info = get_panel_info(
             panel_lines=panel_lines,
-            panel_id=panel_id,
-            institute=institute,
+            panel_id=kwargs.get("panel_id"),
+            institute=kwargs.get("institute"),
             version=version,
-            date=date,
-            display_name=display_name,
+            date=kwargs.get("date"),
+            display_name=kwargs.get("display_name"),
         )
     except Exception as err:
         raise err
 
-    version = None
     if panel_info.get("version"):
         version = float(panel_info["version"])
 
@@ -76,7 +64,7 @@ def load_panel(
     if version:
         existing_panel = adapter.gene_panel(panel_id, version)
     else:
-        ## Assuming version 1.0
+        # Assuming version 1.0
         existing_panel = adapter.gene_panel(panel_id)
         version = 1.0
         LOG.info("Set version to %s", version)
@@ -93,7 +81,7 @@ def load_panel(
     parsed_panel = parse_gene_panel(
         path=panel_path,
         institute=institute,
-        panel_type=panel_type,
+        panel_type=kwargs.get("panel_type"),
         date=date,
         version=version,
         panel_id=panel_id,
@@ -119,33 +107,26 @@ def load_panel_app(adapter, panel_id=None, institute="cust000"):
 
     hgnc_map = adapter.genes_by_alias()
 
-    if panel_id:
-        panel_ids = [panel_id]
+    panel_ids = [panel_id]
 
     if not panel_id:
 
         LOG.info("Fetching all panel app panels")
-        data = get_request(base_url.format("list_panels"))
-
-        json_lines = json.loads(data)
+        json_lines = fetch_resource(base_url.format("list_panels"), json=True)
 
         panel_ids = [panel_info["Panel_Id"] for panel_info in json_lines["result"]]
 
-    for panel_id in panel_ids:
-        panel_data = get_request(base_url.format("get_panel") + panel_id)
+    for _panel_id in panel_ids:
+        json_lines = fetch_resource(base_url.format("get_panel") + _panel_id, json=True)
 
         parsed_panel = parse_panel_app_panel(
-            panel_info=json.loads(panel_data)["result"],
-            hgnc_map=hgnc_map,
-            institute=institute,
+            panel_info=json_lines["result"], hgnc_map=hgnc_map, institute=institute,
         )
-        parsed_panel["panel_id"] = panel_id
+        parsed_panel["panel_id"] = _panel_id
 
         if len(parsed_panel["genes"]) == 0:
             LOG.warning(
-                "Panel {} is missing genes. Skipping.".format(
-                    parsed_panel["display_name"]
-                )
+                "Panel %s is missing genes. Skipping.", parsed_panel["display_name"]
             )
             continue
 

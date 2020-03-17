@@ -1,10 +1,12 @@
 """Code for performing requests"""
-import gzip
+
 import logging
 import urllib.request
-import xml.etree.ElementTree as et
-from socket import timeout
-from urllib.error import HTTPError, URLError
+import zlib
+from urllib.error import HTTPError
+from xml.etree import ElementTree
+
+import requests
 
 from scout.constants import CHROMOSOMES
 from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
@@ -15,6 +17,11 @@ HPO_URL = (
     "http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/"
     "artifact/util/annotation/{0}"
 )
+HPO_URL = (
+    "http://compbio.charite.de/jenkins/job/hpo.annotations/lastSuccessfulBuild"
+    "/artifact/util/annotation/{}"
+)
+HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
 
 
 def get_request(url):
@@ -28,46 +35,62 @@ def get_request(url):
     """
     try:
         LOG.info("Requesting %s", url)
-        response = urllib.request.urlopen(url, timeout=20)
-        if url.endswith(".gz"):
-            LOG.info("Decompress zipped file")
-            data = gzip.decompress(response.read())  # a `bytes` object
-        else:
-            data = response.read()  # a `bytes` object
-        decoded_data = data.decode("utf-8")
-    except HTTPError as err:
+        response = requests.get(url, timeout=20)
+        if response.status_code != 200:
+            response.raise_for_status()
+        LOG.info("Encoded to %s", response.encoding)
+    except requests.exceptions.HTTPError as err:
         LOG.warning("Something went wrong, perhaps the api key is not valid?")
         raise err
-    except URLError as err:
-        LOG.warning("Something went wrong, are you connected to internet?")
+    except requests.exceptions.MissingSchema as err:
+        LOG.warning("Something went wrong, perhaps url is invalid?")
         raise err
-    except timeout:
+    except requests.exceptions.Timeout as err:
         LOG.error("socket timed out - URL %s", url)
-        raise ValueError
+        raise err
 
-    if "Error" in decoded_data:
-        raise URLError("Seems like url {} does not exist".format(url))
-
-    return decoded_data
+    return response
 
 
-def fetch_resource(url):
-    """Fetch a resource and return the resulting lines in a list
+def fetch_resource(url, json=False):
+    """Fetch a resource and return the resulting lines in a list or a json object
     Send file_name to get more clean log messages
 
     Args:
         url(str)
+        json(bool): if result should be in json
 
     Returns:
-        lines(list(str))
+        data
     """
-    try:
-        data = get_request(url)
-        lines = data.split("\n")
-    except Exception as err:
-        raise err
+    data = None
+    if url.startswith("ftp"):
+        # requests do not handle ftp
+        response = urllib.request.urlopen(url, timeout=20)
+        if isinstance(response, Exception):
+            raise response
+        data = response.read().decode("utf-8")
+        return data.split("\n")
 
-    return lines
+    response = get_request(url)
+
+    if json:
+        LOG.info("Return in json")
+        data = response.json()
+    else:
+        content = response.text
+        if response.url.endswith(".gz"):
+            LOG.info("gzipped!")
+            encoded_content = b"".join(
+                chunk for chunk in response.iter_content(chunk_size=128)
+            )
+            content = zlib.decompress(encoded_content, 16 + zlib.MAX_WBITS).decode(
+                "utf-8"
+            )
+
+        data = content.split("\n")
+
+    return data
 
 
 def fetch_hpo_terms():
@@ -85,9 +108,12 @@ def fetch_genes_to_hpo_to_disease():
     """Fetch the latest version of the map from genes to phenotypes
     Returns:
         res(list(str)): A list with the lines formatted this way:
-        #Format: entrez-gene-id<tab>entrez-gene-symbol<tab>HPO-Term-Name<tab>HPO-Term-ID<tab>Frequency-Raw<tab>Frequency-HPO<tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
+        #Format: entrez-gene-id<tab>entrez-gene-symbol<tab>HPO-Term-Name<tab>HPO-Term-ID<tab>
+        Frequency-Raw<tab>Frequency-HPO<tab>Additional Info from G-D source<tab>G-D source<tab>
+        disease-ID for link
         72	ACTG2	HP:0002027	Abdominal pain			-	mim2gene	OMIM:155310
-        72	ACTG2	HP:0000368	Low-set, posteriorly rotated ears		HP:0040283		orphadata	ORPHA:2604
+        72	ACTG2	HP:0000368	Low-set, posteriorly rotated ears		HP:0040283		orphadata
+        ORPHA:2604
     """
     url = HPO_URL.format("genes_to_phenotype.txt")
     return fetch_resource(url)
@@ -99,13 +125,42 @@ def fetch_hpo_to_genes_to_disease():
     Returns:
         res(list(str)): A list with the lines formatted this way:
 
-        #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol<tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
+        #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol<tab>Additional Info
+         from G-D source<tab>G-D source<tab>disease-ID for link
         HP:0000002	Abnormality of body height	3954	LETM1	-	mim2gene	OMIM:194190
         HP:0000002	Abnormality of body height	197131	UBR1	-	mim2gene	OMIM:243800
         HP:0000002	Abnormality of body height	79633	FAT4		orphadata	ORPHA:314679
     """
     url = HPO_URL.format("phenotype_to_genes.txt")
     return fetch_resource(url)
+
+
+def fetch_hpo_files(
+    genes_to_phenotype=False, phenotype_to_genes=False, hpo_terms=False
+):
+    """
+    Fetch the necessary HPO files from http://compbio.charite.de
+
+    Args:
+        genes_to_phenotype(bool): if file genes_to_phenotype.txt is required
+        phenotype_to_genes(bool): if file phenotype_to_genes.txt is required
+        hpo_terms(bool):if file hp.obo is required
+
+    Returns:
+        hpo_files(dict): A dictionary with the necessary files
+    """
+    LOG.info("Fetching HPO information from http://compbio.charite.de")
+
+    hpo_files = {}
+
+    if genes_to_phenotype is True:
+        hpo_files["genes_to_phenotype"] = fetch_genes_to_hpo_to_disease()
+    if phenotype_to_genes is True:
+        hpo_files["phenotype_to_genes"] = fetch_hpo_to_genes_to_disease()
+    if hpo_terms is True:
+        hpo_files["hpo_terms"] = fetch_hpo_terms()
+
+    return hpo_files
 
 
 def fetch_mim_files(
@@ -159,21 +214,23 @@ def fetch_ensembl_biomart(attributes, filters, build=None):
     build = build or "37"
 
     client = EnsemblBiomartClient(build=build, filters=filters, attributes=attributes)
-    LOG.info("Selecting attributes: {0}".format(", ".join(attributes)))
-    LOG.info("Use filter: {0}".format(filters))
+    LOG.info("Selecting attributes: %s", ", ".join(attributes))
+    LOG.info("Use filter: %s", filters)
 
     return client
 
 
-def fetch_ensembl_genes(build=None):
+def fetch_ensembl_genes(build=None, chromosomes=None):
     """Fetch the ensembl genes
 
     Args:
         build(str): ['37', '38']
+        chromosomes(iterable(str))
 
     Returns:
         result(iterable): Ensembl formated gene lines
     """
+    chromosomes = chromosomes or CHROMOSOMES
     LOG.info("Fetching ensembl genes")
 
     attributes = [
@@ -185,7 +242,7 @@ def fetch_ensembl_genes(build=None):
         "hgnc_id",
     ]
 
-    filters = {"chromosome_name": CHROMOSOMES}
+    filters = {"chromosome_name": chromosomes}
 
     return fetch_ensembl_biomart(attributes, filters, build)
 
@@ -258,7 +315,7 @@ def fetch_hgnc():
     """
     file_name = "hgnc_complete_set.txt"
     url = "ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/{0}".format(file_name)
-    LOG.info("Fetching HGNC genes")
+    LOG.info("Fetching HGNC genes from %s", url)
 
     hgnc_lines = fetch_resource(url)
 
@@ -283,7 +340,7 @@ def fetch_exac_constraint():
 
     try:
         exac_lines = fetch_resource(url)
-    except URLError as err:
+    except HTTPError:
         LOG.info("Failed to fetch exac constraint scores file from ftp server")
         LOG.info("Try to fetch from google bucket...")
         url = (
@@ -297,34 +354,6 @@ def fetch_exac_constraint():
     return exac_lines
 
 
-def fetch_hpo_files(genes_to_phenotype=False, phenotype_to_genes=False):
-    """
-    Fetch the necessary HPO files from http://compbio.charite.de
-
-    Args:
-        genes_to_phenotype(bool): if file genes_to_phenotype.txt is required
-        phenotype_to_genes(bool): if file phenotype_to_genes.txt is required
-
-    Returns:
-        hpo_files(dict): A dictionary with the necessary files
-    """
-    LOG.info("Fetching HPO information from http://compbio.charite.de")
-
-    hpo_files = {}
-    hpo_urls = {}
-
-    if genes_to_phenotype is True:
-        hpo_urls["genes_to_phenotype"] = HPO_URL.format("genes_to_phenotype.txt")
-    if phenotype_to_genes is True:
-        hpo_urls["phenotype_to_genes"] = HPO_URL.format("phenotype_to_genes.txt")
-
-    for file_name in hpo_urls:
-        url = hpo_urls[file_name]
-        hpo_files[file_name] = fetch_resource(url)
-
-    return hpo_files
-
-
 def fetch_refseq_version(refseq_acc):
     """Fetch refseq version from entrez and return refseq version
 
@@ -335,20 +364,21 @@ def fetch_refseq_version(refseq_acc):
         version(str) example: NM_020533.3 or NM_020533 if no version associated is found
     """
     version = refseq_acc
-    base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&term={}&idtype=acc".format(
-        refseq_acc
+    base_url = (
+        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&"
+        "term={}&idtype=acc"
     )
 
     try:
-        resp = urllib.request.urlopen(base_url)
-        xml_response = et.parse(resp)
-        version = xml_response.find("IdList").find("Id").text or version
+        resp = get_request(base_url.format(refseq_acc))
+        tree = ElementTree.fromstring(resp.content)
+        version = tree.find("IdList").find("Id").text or version
 
-    except HTTPError as err:
-        LOG.warning("Something went wrong, perhaps the refseq accession is not valid?")
-    except URLError as err:
-        LOG.warning("Something went wrong, are you connected to internet?")
-    except AttributeError as err:
+    except (
+        requests.exceptions.HTTPError,
+        requests.exceptions.MissingSchema,
+        AttributeError,
+    ):
         LOG.warning("refseq accession not found")
 
     return version
