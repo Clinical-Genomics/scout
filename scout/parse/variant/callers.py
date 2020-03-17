@@ -1,4 +1,8 @@
+import logging
+
 from scout.constants import CALLERS
+
+LOG = logging.getLogger(__name__)
 
 
 def parse_callers(variant, category="snv"):
@@ -40,9 +44,10 @@ def parse_callers(variant, category="snv"):
     # Assume GATK was used for calling as a default, and report according to vcf FILTER status.
     if not raw_info or other_info:
         filter_status = variant.FILTER
-        if filter_status == "PASS":
+        # cyvcf2 FILTER is None if VCF file column FILTER is "PASS"
+        if filter_status == None:
             callers["gatk"] = "Pass"
         else:
-            callers["gatk"] = "Filtered"
+            callers["gatk"] = "Filtered - {}".format(filter_status.replace(";", " - "))
 
     return callers
