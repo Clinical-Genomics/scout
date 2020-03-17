@@ -34,18 +34,18 @@ class VariantHandler(VariantLoader):
 
     """Methods to handle variants in the mongo adapter"""
 
-    def add_gene_info(self, variant_obj, gene_panels=None):
+    def add_gene_info(self, variant_obj, gene_panels=None, build=None):
         """Add extra information about genes from gene panels
 
         Args:
             variant_obj(dict): A variant from the database
             gene_panels(list(dict)): List of panels from database
+            build(str): chromosome build 37 or 38
         """
         gene_panels = gene_panels or []
 
         # Add a variable that checks if there are any refseq transcripts
         variant_obj["has_refseq"] = False
-
         # We need to check if there are any additional information in the gene panels
 
         # extra_info will hold information from gene panels
@@ -64,7 +64,7 @@ class VariantHandler(VariantLoader):
         for variant_gene in variant_obj.get("genes", []):
             hgnc_id = variant_gene["hgnc_id"]
             # Get the hgnc_gene
-            hgnc_gene = self.hgnc_gene(hgnc_id)
+            hgnc_gene = self.hgnc_gene(hgnc_id, build)
 
             if not hgnc_gene:
                 continue
@@ -263,8 +263,15 @@ class VariantHandler(VariantLoader):
             query["_id"] = document_id
 
         variant_obj = self.variant_collection.find_one(query)
+        case_obj = self.case(case_id=variant_obj["case_id"])
+
         if variant_obj:
-            variant_obj = self.add_gene_info(variant_obj, gene_panels)
+            if case_obj:
+                variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels,
+                    build=case_obj["genome_build"])
+            else:
+                variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels)
+
             if variant_obj["chromosome"] in ["X", "Y"]:
                 ## TODO add the build here
                 variant_obj["is_par"] = is_par(
@@ -581,8 +588,9 @@ class VariantHandler(VariantLoader):
 
         # Collect the result in a dictionary
         variants = {}
+        case_obj = self.case(case_id=case_id) # case exists since it's used in the query above
         for var in self.variant_collection.find(query):
-            variants[var["variant_id"]] = self.add_gene_info(var)
+            variants[var["variant_id"]] = self.add_gene_info(variant_obj=var, build=case_obj["genome_build"])
 
         # Collect all variant comments from the case
         event_query = {

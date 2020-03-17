@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
+
 ### Added
 - Use github actions to run tests
 - Adds CLI command to update individual alignments path
@@ -14,10 +15,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not display Pedigree panel in cancer view
 - Do not rely on internet connection and services available when running CI tests
 - Variant loading assumes GATK if no caller set given and GATK filter status is seen in FILTER
+- Pass genome build param all the way in order to get the right gene mappings for cases with build 38
 
 ### Changed
 - Improved code that sends requests to the external APIs
 - Updates ranges for user ranks to fit todays usage
+
 
 ## [4.13.1]
 

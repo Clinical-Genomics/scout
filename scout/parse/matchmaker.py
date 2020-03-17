@@ -113,7 +113,7 @@ def genomic_features(store, case_obj, sample_name, genes_only):
         if not hgnc_genes:
             continue
         for hgnc_id in hgnc_genes:
-            gene_obj = store.hgnc_gene(hgnc_id)
+            gene_obj = store.hgnc_gene(hgnc_id, case_obj["genome_build"])
             if not gene_obj:
                 continue
             g_feature = {"gene": {"id": gene_obj.get("hgnc_symbol")}}
