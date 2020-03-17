@@ -122,7 +122,14 @@ def panel(
         return
     try:
         load_panel(
-            path, adapter, date, display_name, version, panel_type, panel_id, institute
+            panel_path=path,
+            adapter=adapter,
+            date=date,
+            display_name=display_name,
+            version=version,
+            panel_type=panel_type,
+            panel_id=panel_id,
+            institute=institute,
         )
     except Exception as err:
         LOG.warning(err)
