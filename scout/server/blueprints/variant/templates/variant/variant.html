@@ -605,13 +605,13 @@
           <!-- Display Alamut link only if bam is available -->
           {% if case.mt_bams or case.bam_files %}
             {% set alamut_position = [ "GRCh38:" if case.genome_build == 38 ,  variant.chromosome, ":", variant.position, variant.reference, ">", variant.alternative]  %}
+
             <form>
             {% if variant.chromosome == "MT" and case.mt_bams %}
-              <input type="button" class="btn btn-outline-secondary" value='Alamut' onclick='httpGetLoadBam({{ alamut_position|join() }} ,
-                {{url_for("alignviewers.unindexed_remote_static", file=case.mt_bams[0])}} );' />
+              <input type="button" class="btn btn-outline-secondary" value='Alamut' onclick='httpGetLoadBam("{{case.genome_build}}",
+                "M", {{variant.position}}, "{{url_for("alignviewers.unindexed_remote_static", file=case.mt_bams[0]|safe)}}");' target="_blank" />
             {% elif case.bam_files %} <!-- not a MT variant and bam file available -->
-            <input type="button" class="btn btn-outline-secondary" value='Alamut' onclick='httpGetLoadBam({{ alamut_position|join() }} ,
-              {{url_for("alignviewers.unindexed_remote_static", file=case.bam_files[0])}} );' />
+              <input type="button" class="btn btn-outline-secondary" value='Alamut' onclick='httpGetLoadBam();' target="_blank" />
             {% endif %}
             </form>
           {% endif %}
@@ -683,9 +683,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
   <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-  <script src="{{ url_for('variant.static', filename='alamut.js') }}"></script>
-
-  <script>
+  <script type="text/javascript">
     function set_scrolly_table(table_id) {
     if (document.getElementById(table_id).rows.length > 5) {
       $('#' + table_id).DataTable({
@@ -763,6 +761,32 @@
     } else {
       // Fallback if browser doesn't support .execCommand('copy')
       window.prompt("Copy to clipboard: Ctrl+C or Command+C, Enter", text);
+    }
+  }
+
+  // trigger Alamut
+  function httpGetLoadBam(build, chrom, start, alignment) {
+    // open Alamut browser
+    alamut_url = "http://localhost:10000/show?request="
+    if (build === "37"){
+      build = "GRCh37";
+    }
+    else {
+      build = "GRCh38";
+    }
+    region = build.concat(":",chrom,":",start);
+
+    // focus on the right region
+    var http_req = new XMLHttpRequest();
+    http_req.open( "GET", alamut_url.concat(region) );
+    http_req.send();
+
+    // load alignment
+    http_req.onreadystatechange=function() {
+      if (http_req.readyState==4) {
+        bamXmlHttp = new XMLHttpRequest();
+        bamXmlHttp.open( "GET", alamut_url.concat("BAM<", alignment.split("%2F").join("/") ) );
+      }
     }
   }
 
