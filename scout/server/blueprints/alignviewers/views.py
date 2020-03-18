@@ -7,6 +7,7 @@ from flask import (
     Blueprint,
     render_template,
     send_file,
+    send_from_directory,
     request,
     current_app,
     flash,
@@ -37,14 +38,12 @@ def remote_static():
     new_resp = send_file_partial(file_path)
     return new_resp
 
-
 @alignviewers_bp.route("/remote/static/unindexed", methods=["OPTIONS", "GET"])
 def unindexed_remote_static():
     file_path = request.args.get("file")
     base_name = os.path.basename(file_path)
     resp = send_file(file_path, attachment_filename=base_name)
     return resp
-
 
 @alignviewers_bp.route("/igv", methods=["POST"])
 def igv():

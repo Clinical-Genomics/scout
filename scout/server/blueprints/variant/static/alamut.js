@@ -4,7 +4,7 @@ function httpGetLoadBam(region, bamFile) {
 
 	alert(region);
 	alert(bamFile);
-	/*
+
 	var xmlHttp = null;
 	xmlHttp = new XMLHttpRequest();
 	var bamXmlHttp = null;
@@ -20,5 +20,4 @@ function httpGetLoadBam(region, bamFile) {
 			}
 		}
 	}
-	*/
 }
