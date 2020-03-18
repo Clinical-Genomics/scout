@@ -785,7 +785,8 @@
     http_req.onreadystatechange=function() {
       if (http_req.readyState==4) {
         bamXmlHttp = new XMLHttpRequest();
-        bamXmlHttp.open( "GET", alamut_url.concat("BAM<", alignment.split("%2F").join("/") ) );
+        bamXmlHttp.open( "GET", alamut_url.concat("BAM%3C", alignment.split("%2F").join("/") ) );
+        bamXmlHttp.send();
       }
     }
   }
