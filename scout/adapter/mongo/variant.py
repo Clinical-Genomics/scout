@@ -667,7 +667,12 @@ class VariantHandler(VariantLoader):
         if not variant_file:
             raise SyntaxError("Vcf file does not seem to exist")
 
-        vcf_obj = VCF(variant_file)
+        try:
+            vcf_obj = VCF(variant_file)
+        except:
+            LOG.error("Cannot read VCF: {0}".format(variant_file))
+            return None
+
         region = ""
 
         if gene_obj:
