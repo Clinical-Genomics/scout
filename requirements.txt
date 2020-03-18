@@ -1,6 +1,5 @@
 # Everything needed in production
 
-gunicorn==19.9.0
 BeautifulSoup4
 werkzeug<1.0 # This can be removed when switching from Flask-OAuthlib
 Flask>=0.10
@@ -24,20 +23,18 @@ xlsxwriter
 click<7.0
 requests-oauthlib<1.2.0
 oauthlib<3.0.0
-pyopenssl
 flask_ldap3_login
 
 # unclear
 Flask-Login
 
 # Parsing
-cyvcf2==0.9.0
+cyvcf2<0.10.0
 PyYaml>=5.1
 ped_parser
 
 # extras
-intervaltree==2.1.0
-certifi
+intervaltree==3.0.2
 
 # chanjo-report
 python-dateutil
