@@ -18,11 +18,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Variant loading assumes GATK if no caller set given and GATK filter status is seen in FILTER
 - Pass genome build param all the way in order to get the right gene mappings for cases with build 38
 - Parse correctly variants with zero frequency values
+- STR and cancer variant navigation back to variants pages could fail
 
 ### Changed
 - Improved code that sends requests to the external APIs
 - Updates ranges for user ranks to fit todays usage
 - Run coveralls on github actions instead of travis
+- Show pinned or causative STR variants a bit more human readable
 
 
 ## [4.13.1]
