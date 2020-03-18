@@ -25,37 +25,37 @@ def parse_frequencies(variant, transcripts):
 
     for test_key in thousand_genomes_keys:
         thousand_g = parse_frequency(variant, test_key)
-        if thousand_g:
+        if thousand_g is not None:
             frequencies["thousand_g"] = thousand_g
             break
 
     for test_key in thousand_genomes_max_keys:
         thousand_g_max = parse_frequency(variant, test_key)
-        if thousand_g_max:
+        if thousand_g_max is not None:
             frequencies["thousand_g_max"] = thousand_g_max
             break
 
     for test_key in exac_keys:
         exac = parse_frequency(variant, test_key)
-        if exac:
+        if exac is not None:
             frequencies["exac"] = exac
             break
 
     for test_key in exac_max_keys:
         exac_max = parse_frequency(variant, test_key)
-        if exac_max:
+        if exac_max is not None:
             frequencies["exac_max"] = exac_max
             break
 
     for test_key in gnomad_keys:
         gnomad = parse_frequency(variant, test_key)
-        if gnomad:
+        if gnomad is not None:
             frequencies["gnomad"] = gnomad
             break
 
     for test_key in gnomad_max_keys:
         gnomad_max = parse_frequency(variant, test_key)
-        if gnomad_max:
+        if gnomad_max is not None:
             frequencies["gnomad_max"] = gnomad_max
             break
 
@@ -85,11 +85,11 @@ def parse_frequencies(variant, transcripts):
 
     # These are SV-specific frequencies
     thousand_g_left = parse_frequency(variant, "left_1000GAF")
-    if thousand_g_left:
+    if thousand_g_left is not None:
         frequencies["thousand_g_left"] = thousand_g_left
 
     thousand_g_right = parse_frequency(variant, "right_1000GAF")
-    if thousand_g_right:
+    if thousand_g_right is not None:
         frequencies["thousand_g_right"] = thousand_g_right
 
     return frequencies
