@@ -74,6 +74,8 @@ FLASK_DEBUG=1 \
 SCOUT_CONFIG="/full/path/to/flask.conf.py" \
 flask run
 ```
+The server can also be started from the scout cli with the command `scout serve`. There are multiple options here. To use a alternative flask config pass the path with option `-f/ --flask_config` like `scout -f path/to/flask.conf.py serve`.
+
 
 ## Production
 
