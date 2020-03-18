@@ -276,7 +276,7 @@ def test_case_synopsis(app, institute_obj, case_obj):
         req_data = {"synopsis": "test synopsis"}
 
         # WHEN updating the synopsis of a case
-        resp = client.get(
+        resp = client.post(
             url_for(
                 "cases.case_synopsis",
                 institute_id=institute_obj["internal_id"],
@@ -377,10 +377,10 @@ def test_case_diagnosis(app, institute_obj, case_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        req_data = {"omim_id": "OMIM:615349"}
+        req_data = {"omim_term": "OMIM:615349"}
 
         # When updating an OMIM diagnosis for a case
-        resp = client.get(
+        resp = client.post(
             url_for(
                 "cases.case_diagnosis",
                 institute_id=institute_obj["internal_id"],
@@ -677,3 +677,25 @@ def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
         assert resp.status_code == 200
         # and it should contain a pdf file, not HTML code
         assert resp.mimetype == "application/pdf"
+
+
+def test_omimterms(app, test_omim_term):
+    """Test The API which returns all OMIM terms when queried from case page"""
+
+    # GIVEN a database containing at least one OMIM term
+    store.disease_term_collection.insert_one(test_omim_term)
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN the API is invoked with a query string containing part of the OMIM term description
+        resp = client.get(url_for("cases.omimterms", query="5-oxo"))
+        # THEN it should return a valid response
+        assert resp.status_code == 200
+
+        # containing the OMIM term
+        assert test_omim_term["_id"] in str(resp.data)

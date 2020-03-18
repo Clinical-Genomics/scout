@@ -1,13 +1,14 @@
-import logging
-import click
+"""CLI to update hpo terms"""
 
-from pprint import pprint as pp
+import logging
+
+import click
 from flask.cli import with_appcontext
 
-from scout.load.hpo import load_hpo_terms
-
 from scout.commands.utils import abort_if_false
+from scout.load.hpo import load_hpo_terms
 from scout.server.extensions import store
+from scout.utils.handle import get_file_handle
 
 LOG = logging.getLogger(__name__)
 
@@ -20,8 +21,21 @@ LOG = logging.getLogger(__name__)
     expose_value=False,
     prompt="Are you sure you want to drop the hpo terms?",
 )
+@click.option(
+    "--hpoterms",
+    type=click.Path(exists=True),
+    help=("Path to file with HPO terms. This is the " "file called hpo.obo"),
+)
+@click.option(
+    "--hpo-to-genes",
+    type=click.Path(exists=True),
+    help=(
+        "Path to file with map from HPO terms to genes. This is the file called "
+        "phenotype_to_genes.txt"
+    ),
+)
 @with_appcontext
-def hpo():
+def hpo(hpoterms, hpo_to_genes):
     """
     Update the hpo terms in the database. Fetch the latest release and update terms.
     """
@@ -31,5 +45,9 @@ def hpo():
     LOG.info("Dropping HPO terms")
     adapter.hpo_term_collection.drop()
     LOG.debug("HPO terms dropped")
+    if hpoterms:
+        hpoterms = get_file_handle(hpoterms)
+    if hpo_to_genes:
+        hpo_to_genes = get_file_handle(hpo_to_genes)
 
-    load_hpo_terms(adapter)
+    load_hpo_terms(adapter, hpo_lines=hpoterms, hpo_gene_lines=hpo_to_genes)

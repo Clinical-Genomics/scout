@@ -5,18 +5,6 @@ env: TRAVIS=1
 
 jobs:
     include:
-        - name: "Tests & Coverage"
-          services: mongodb
-          install:
-              - pip install cython
-              - pip install -r requirements-dev.txt -e .
-          script: py.test --cov=scout -rxs tests/
-          after_success: coveralls
-
-        - name: "Package Install"
-          if: type = pull_request
-          install: python setup.py install
-          script: pip check
 
         - name: "Production Dependencies"
           if: type = pull_request
@@ -54,7 +42,7 @@ jobs:
 
         - name: "Lint Free"
           if: type = pull_request
-          install: pip install -r requirements-dev.txt
+          install: pip install . -r requirements-dev.txt
           script: git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git lint || (echo "Linting issues found, please try again after fixing the above lint issues." && false)
 
     allow_failures:

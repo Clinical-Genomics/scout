@@ -7,8 +7,45 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+- Use github actions to run tests
+- Adds CLI command to update individual alignments path
+- Update HPO terms using downloaded definitions files
+- Option to use alternative flask config when running `scout serve`
+
+### Fixed
+- Do not display Pedigree panel in cancer view
+- Do not rely on internet connection and services available when running CI tests
+- Variant loading assumes GATK if no caller set given and GATK filter status is seen in FILTER
+- Pass genome build param all the way in order to get the right gene mappings for cases with build 38
+- Parse correctly variants with zero frequency values
+
+### Changed
+- Improved code that sends requests to the external APIs
+- Updates ranges for user ranks to fit todays usage
+- Run coveralls on github actions instead of travis
+
+
+## [4.13.1]
+
+### Added
+### Fixed
+- Typo that caused not all clinvar conflicting interpretations to be loaded no matter what
+- Parse and retrieve clinvar annotations from VEP-annotated (VEP 97+) CSQ VCF field
+- Variant clinvar significance shown as `not provided` whenever is `Uncertain significance`
+- Phenomizer query crashing when case has no HPO terms assigned
+- Fixed a bug affecting `All SNVs and INDELs` page when variants don't have canonical transcript
+- Add gene name or id in cancer variant view
+
+### Changed
+- Cancer Variant view changed "Variant:Transcript:Exon:HGVS" to "Gene:Transcript:Exon:HGVS"
+
+## [4.13]
+
+### Added
 - ClinVar SNVs track in IGV
 - Add SMA view with SMN Copy Number data
+- Easier to assign OMIM diagnoses from case page
+- OMIM terms and specific OMIM term page
 
 ### Fixed
 - Bug when adding a new gene to a panel
@@ -19,8 +56,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed a problem with finding some INS in loqusdb
 - Layout on SV page when local observations without cases are present
 - Make scout compatible with the new HPO definition files from `http://compbio.charite.de/jenkins/`
+- General report visualization error when SNVs display names are very long
+
 
 ### Changed
+
 
 ## [4.12.4]
 

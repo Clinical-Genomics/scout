@@ -561,7 +561,7 @@ def gene_variants(institute_id):
     data = {}
     if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
         is_clinical = form.data.get("variant_type", "clinical") == "clinical"
-        clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+        # clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
                 hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
@@ -571,8 +571,8 @@ def gene_variants(institute_id):
                     hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
             elif store.hgnc_genes(hgnc_symbol).count() == 0:
                 not_found_symbols.append(hgnc_symbol)
-            elif is_clinical and (hgnc_symbol not in clinical_symbols):
-                non_clinical_symbols.append(hgnc_symbol)
+            # elif is_clinical and (hgnc_symbol not in clinical_symbols):
+            #     non_clinical_symbols.append(hgnc_symbol)
             else:
                 hgnc_symbols.append(hgnc_symbol)
 
@@ -749,11 +749,21 @@ def mt_report(institute_id, case_name):
 @cases_bp.route("/<institute_id>/<case_name>/diagnose", methods=["POST"])
 def case_diagnosis(institute_id, case_name):
     """Add or remove a diagnosis for a case."""
+
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
     level = "phenotype" if "phenotype" in request.form else "gene"
-    omim_id = request.form["omim_id"]
+    omim_id = request.form["omim_term"].split("|")[0]
+
+    if not "OMIM:" in omim_id:  # Could be an omim number provided by user
+        omim_id = ":".join(["OMIM", omim_id])
+
+    # Make sure omim term exists in database:
+    omim_obj = store.disease_term(omim_id.strip())
+    if not omim_obj:
+        flash("Couldn't find any disease term with id: {}".format(omim_id), "warning")
+
     remove = True if request.args.get("remove") == "yes" else False
     store.diagnose(
         institute_obj,
@@ -979,6 +989,19 @@ def hpoterms():
         for term in terms[:7]
     ]
 
+    return jsonify(json_terms)
+
+
+@cases_bp.route("/api/v1/omim-terms")
+def omimterms():
+    query = request.args.get("query")
+    if query is None:
+        return abort(500)
+    terms = store.query_omim(query=query)
+    json_terms = [
+        {"name": "{} | {}".format(term["_id"], term["description"]), "id": term["_id"]}
+        for term in terms[:7]
+    ]
     return jsonify(json_terms)
 
 

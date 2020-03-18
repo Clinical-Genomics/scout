@@ -1,6 +1,6 @@
 name: Scout tests
 
-on: [push, pull_request]
+on: push
 
 jobs:
   build:
@@ -9,40 +9,42 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7]
-        mongodb-version: [4.0]
+        mongodb-version: ["3.6", "4.0"]
 
     steps:
-    
-    # Chgeck out Scout code
+
+    # Check out Scout code
     - uses: actions/checkout@v1
-    
+
     # Set up python
     - name: Set up Python ${{ matrix.python-version}}
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version}}
-    
+
     # Set up mongodb
     - name: Start MongoDB
-      uses: superchargejs/mongodb-github-action@v1
+      uses: wbari/start-mongoDB@v0.2
       with:
-        mongodb-version: ${{ matrix.mongodb-version}}
-    
+        mongoDBVersion: ${{ matrix.mongodb-version}}
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install cython
+        pip install numpy
         pip install -r requirements-dev.txt -e .
-  
+
     - name: Lint with flake8
       run: |
         pip install flake8
         # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        flake8 scout/ --count --select=E9,F63,F7,F82 --show-source --statistics
 
-    - name: Test with pytest
+    - name: Test with pytest & Coveralls
       run: |
-        pip install pytest
-        pytest -rxs tests/
+        pytest --cov=./
+        coveralls
+      env:
+        GITHUB: 1
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}

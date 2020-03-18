@@ -39,19 +39,65 @@
   </div>
 {% endmacro %}
 
-{% macro diagnosis_phenotypes(case, institute) %}
-  <div class="card panel-default">
-    <div class="panel-heading">Diagnosis phenotypes</div>
-    <div class="card-body">{{ diagnosis_form('phenotype', case, institute) }}</div>
-    <div class="card-footer">
+{% macro diagnosis_phenotypes(case, institute, omim_terms) %}
+  <div>OMIM Phenotypes</div>
+    {{ diagnosis_form('phenotype', case, institute) }}
+  <div>
+    <ul class="list-group">
+      {% for omim_id in case.diagnosis_phenotypes %}
+        <li class="list-group-item d-flex">
+          {% if omim_id in omim_terms %}
+            <a class="flex-fill" target="_blank" href="http://omim.org/entry/{{ omim_id }}">
+              {{ omim_id }} - {{ omim_terms[omim_id].description }}
+            </a>
+            <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_nr=omim_terms[omim_id].disease_nr)}}">
+              <span class="badge badge-secondary badge-pill text-white">genes:{{omim_terms[omim_id].genes|length}}</span>
+              <span class="badge badge-info badge-pill text-white">hpo:{{omim_terms[omim_id].hpo_terms|length}}</span>
+            </a>
+          {% else %}
+            <a class="flex-fill" target="_blank" href="http://omim.org/entry/{{ omim_id }}">
+                {{ omim_id }}
+            </a>
+          {% endif %}
+          &nbsp;&nbsp;&nbsp;
+          <span class="pull-right">
+            {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
+                                  case_name=case.display_name, remove='yes'),
+                         hidden_input=('omim_term', omim_id), button_name='phenotype') }}
+          </span>
+        </li>
+      {% else %}
+        <li class="list-group-item">No phenotypes added</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endmacro %}
+
+{% macro diagnosis_genes(case, institute, omim_terms) %}
+    <div>OMIM Genes</div>
+    {{ diagnosis_form('gene', case, institute) }}
+    <div>
       <ul class="list-group">
-        {% for omim_id in case.diagnosis_phenotypes %}
-          <li class="list-group-item">
-            <a target="_blank" href="http://omim.org/entry/{{ omim_id }}">{{ omim_id }}</a>
-            <span class="pull-right">
+        {% for omim_id in case.diagnosis_genes %}
+          <li class="list-group-item d-flex">
+            {% if omim_id in omim_terms %}
+              <a class="flex-fill" target="_blank" href="http://omim.org/entry/{{ omim_id }}">
+                  {{ omim_id }} - {{ omim_terms[omim_id].description }}
+              </a>
+              <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_nr=omim_terms[omim_id].disease_nr)}}">
+                <span class="badge badge-secondary badge-pill text-white">genes:{{omim_terms[omim_id].genes|length}}</span>
+                <span class="badge badge-info badge-pill text-white">hpo:{{omim_terms[omim_id].hpo_terms|length}}</span>
+              </a>
+            {% else %}
+            <a class="flex-fill" target="_blank" href="http://omim.org/entry/{{ omim_id }}">
+                {{ omim_id }}
+            </a>
+            {% endif %}
+            &nbsp;&nbsp;&nbsp;
+            <span>
               {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
-                                    case_name=case.display_name, remove='yes'),
-                           hidden_input=('omim_id', omim_id), button_name='phenotype') }}
+                                     case_name=case.display_name, remove='yes'),
+                             hidden_input=('omim_term', omim_id), button_name='gene') }}
             </span>
           </li>
         {% else %}
@@ -59,47 +105,23 @@
         {% endfor %}
       </ul>
     </div>
-  </div>
-{% endmacro %}
-
-{% macro diagnosis_genes(case, institute) %}
-  <div class="card panel-default">
-    <div class="panel-heading">Diagnosis genes</div>
-    <div class="card-body">{{ diagnosis_form('gene', case, institute) }}</div>
-    <div class="card-footer">
-      <ul class="list-group">
-        {% for omim_id in case.diagnosis_genes %}
-          <li class="list-group-item">
-            <a target="_blank" href="http://omim.org/entry/{{ omim_id }}">
-              {{ omim_id }}
-            </a>
-            <span class="pull-right">
-              {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
-                                     case_name=case.display_name, remove='yes'),
-                             hidden_input=('omim_id', omim_id), button_name='gene') }}
-            </span>
-          </li>
-        {% else %}
-          <li class="list-group-item">No genes added</li>
-        {% endfor %}
-      </ul>
-    </div>
-  </div>
 {% endmacro %}
 
 {% macro diagnosis_form(type, case, institute) %}
   <form action="{{ url_for('cases.case_diagnosis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-    <div class="row">
-      <div class="col-xs-8">
-        <input class="form-control" name="omim_id" placeholder="OMIM:XXX" required pattern="OMIM:[0-9]+">
+    <div class="row data-width="100%">
+      <div class="col-md-10">
+        <input name="omim_term" class="typeahead_omim form-control" data-provide="typeahead" autocomplete="off"
+          required placeholder="Disease description or OMIM number">
       </div>
-      <div class="col-xs-4">
+      <div class="col-md-2">
         <button class="btn btn-outline-secondary form-control" type="submit" name="{{ type }}">
           Add
         </button>
       </div>
     </div>
   </form>
+  <br>
 {% endmacro %}
 
 {% macro phenotype_groups_panel(case, institute, hpo_groups) %}
@@ -196,7 +218,8 @@
           </div>
           {% if config.PHENOMIZER_USERNAME %}
             <div class="form-group mb-2 mx-sm-3 col-3">
-              <button class="btn btn-outline-secondary btn-sm form-control" type="submit" name="action" value="PHENOMIZER">Phenomizer</button>
+              <button class="btn btn-secondary btn-sm form-control" type="submit" name="action" value="PHENOMIZER"
+              {%if case.phenotype_terms|length == 0 %} disabled {%endif%}>Phenomizer</button>
             </div>
           {% endif %}
           <div class="form-group mb-2 mx-sm-3 col-2">

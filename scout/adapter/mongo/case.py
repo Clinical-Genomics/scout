@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
-from copy import deepcopy
-import logging
 import datetime
+import logging
 import operator
-
+from copy import deepcopy
 from pprint import pprint as pp
 
 import pymongo
 
-from scout.parse.case import parse_case
 from scout.build.case import build_case
+from scout.exceptions import ConfigError, IntegrityError
+from scout.parse.case import parse_case
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
-
-from scout.exceptions import IntegrityError, ConfigError
 
 LOG = logging.getLogger(__name__)
 
@@ -659,12 +657,13 @@ class CaseHandler(object):
         for ind in case_obj.get("individuals"):
             for old_ind in old_individuals:
                 # if the same individual is present in new case and old case
-                if ind["individual_id"] == old_ind["individual_id"]:
-                    # collect user-entered info and save at the individual level in new case_obj
-                    if ind.get("age") is None:
-                        ind["age"] = old_ind.get("age")
-                    if ind.get("tissue_type") is None:
-                        ind["tissue_type"] = old_ind.get("tissue_type")
+                if ind["individual_id"] != old_ind["individual_id"]:
+                    continue
+                # collect user-entered info and save at the individual level in new case_obj
+                if ind.get("age") is None:
+                    ind["age"] = old_ind.get("age")
+                if ind.get("tissue_type") is None:
+                    ind["tissue_type"] = old_ind.get("tissue_type")
 
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
