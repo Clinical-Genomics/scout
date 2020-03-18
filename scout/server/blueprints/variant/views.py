@@ -38,9 +38,8 @@ variant_bp = Blueprint(
 def variant(institute_id, case_name, variant_id):
     """Display a specific SNV variant."""
     LOG.debug("Variants view requesting data for variant %s", variant_id)
-    data = variant_controller(
-        store, institute_id, case_name, variant_id=variant_id, variant_type="snv"
-    )
+
+    data = variant_controller(store, institute_id, case_name, variant_id=variant_id)
     if data is None:
         LOG.warning(
             "An error occurred: variants view requesting data for variant {}".format(
@@ -56,8 +55,16 @@ def variant(institute_id, case_name, variant_id):
             store, loqusdb, data["case"], data["variant"]
         )
 
+    # Default to request args for variant display of non-snvs
     data["cancer"] = request.args.get("cancer") == "yes"
     data["str"] = request.args.get("str") == "yes"
+
+    # request category specific variant display
+    category = data["variant"].get("category", "snv")
+    LOG.debug("Variant category {}".format(category))
+    if category in ("cancer", "str"):
+        data[category] = True
+
     return data
 
 
@@ -93,6 +100,9 @@ def str_variant(institute_id, case_name, variant_id):
         get_overlapping=False,
         variant_type="str",
     )
+
+    data["cancer"] = request.args.get("cancer") == "yes"
+    data["str"] = request.args.get("str") == "yes"
     return data
 
 

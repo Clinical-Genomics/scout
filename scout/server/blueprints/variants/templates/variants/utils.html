@@ -553,6 +553,14 @@
   <a class="variants-row-item flex-small layout"
       href="{{ url_for('variant.sv_variant', institute_id=institute._id,
                        case_name=case.display_name, variant_id=variant._id) }}">
+{% elif variant.category in "str" %}
+<a class="variants-row-item flex-small layout"
+   href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
+                    variant_id=variant._id, str='yes') }}">
+{% elif variant.category in "cancer" %}
+<a class="variants-row-item flex-small layout"
+   href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
+                    variant_id=variant._id, cancer='yes') }}">
 {% else %}
   <a class="variants-row-item flex-small layout"
      href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
