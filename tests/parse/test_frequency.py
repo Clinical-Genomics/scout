@@ -101,6 +101,29 @@ def test_parse_sv_frequencies_clingen(cyvcf2_variant):
     assert frequencies["clingen_mip"] == float(variant.INFO["clinical_genomics_mipAF"])
 
 
+def test_parse_gnomad(one_vep97_annotated_variant):
+    variant = one_vep97_annotated_variant
+
+    # WHEN frequencies are parsed
+    frequencies = parse_frequencies(variant, [])
+
+    # THEN assert that the right frequency is returned
+    assert frequencies["gnomad"] == float(variant.INFO["GNOMADAF"])
+
+
+def test_parse_gnomad_0_freq(one_vep97_annotated_variant):
+    variant = one_vep97_annotated_variant
+
+    # GIVEN a variant with a gnomad frequency set to 0
+    variant.INFO["GNOMADAF"] = "0.000"
+
+    # WHEN frequencies are parsed
+    frequencies = parse_frequencies(variant, [])
+
+    # THEN assert that the right frequency is returned
+    assert frequencies["gnomad"] == float(variant.INFO["GNOMADAF"])
+
+
 def test_parse_sv_gnomad(cyvcf2_variant):
     variant = cyvcf2_variant
     # GIVEN a variant dict with a differenct frequencies

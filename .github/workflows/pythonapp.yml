@@ -41,8 +41,10 @@ jobs:
         # stop the build if there are Python syntax errors or undefined names
         flake8 scout/ --count --select=E9,F63,F7,F82 --show-source --statistics
 
-    - name: Test with pytest
+    - name: Test with pytest & Coveralls
       run: |
-        py.test -rxs tests/
+        pytest --cov=./
+        coveralls
       env:
         GITHUB: 1
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
