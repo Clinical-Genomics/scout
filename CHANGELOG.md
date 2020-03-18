@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Improved code that sends requests to the external APIs
 - Updates ranges for user ranks to fit todays usage
+- Run coveralls on github actions instead of travis
 
 
 ## [4.13.1]
