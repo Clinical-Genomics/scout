@@ -71,7 +71,6 @@ pylintrc
 /local
 scripts/local
 *sqlite
-certs/*
 
 # Emacs (Just so I don't have to see them green in Atom ;-)
 *~
