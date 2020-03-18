@@ -37,6 +37,7 @@
             <th>Gene</th>
             <th>Transcript</th>
             <th>HGVS Description</th>
+            <th>Links</th>
           </tr>
         </thead>
         <tbody>
@@ -62,6 +63,8 @@
                   <span class="text-muted float-right">
                     {{ (transcript.protein_sequence_name or '')|url_decode }}
                   </span>
+                </td>
+                <td>
                 </td>
               </tr>
             {% endfor %}
@@ -90,6 +93,11 @@
                     <span class="text-muted float-right">
                       {{ (transcript.protein_sequence_name or '')|url_decode }}
                     </span>
+                  </td>
+                  <td>
+                    <a target="_blank" href="{{ transcript.varsome_link }}">
+                      Varsome
+                    </a>
                   </td>
                 </tr>
               {% endfor %}
