@@ -786,7 +786,7 @@
 
         // retrieve Scout base location
         base_location = location.protocol + '//' + location.host
-        // format path to static bam file        
+        // format path to static bam file
         alignment = alignment.split("%2F").join("/")
         alert(base_location.concat(alignment))
         bamXmlHttp = new XMLHttpRequest();
