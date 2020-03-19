@@ -340,7 +340,7 @@ def gnomad_link(variant_obj, build=37):
     else:
         url_template = (
             "http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
-            "{this[position]}-{this[reference]}-{this[alternative]}?hej="+str(build)
+            "{this[position]}-{this[reference]}-{this[alternative]}"
         )
 
     return url_template.format(this=variant_obj)
