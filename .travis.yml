@@ -6,11 +6,6 @@ env: TRAVIS=1
 jobs:
     include:
 
-        - name: "PEP8 Compliance"
-          if: type = pull_request
-          install: pip install black
-          script: git --no-pager diff --name-only --diff-filter=AM $TRAVIS_COMMIT_RANGE | grep -F ".py" | xargs black --check
-
         - name: "Pylint Rating"
           if: type = pull_request
           install: pip install pylint
