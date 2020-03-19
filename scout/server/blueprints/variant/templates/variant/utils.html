@@ -51,10 +51,17 @@
           {% for overlapping_variant in overlapping_vars %}
             <tr>
               <td>
-                <a href="{{url_for('variant.sv_variant', institute_id=institute._id,
+                {% if overlapping_variant.category in ("sv", "cancer_sv") %}
+                  <a href="{{url_for('variant.sv_variant', institute_id=institute._id,
                                    case_name=case.display_name, variant_id=overlapping_variant._id)}}">
-                  {{ overlapping_variant.display_name|truncate(20, True) }}
-                </a>
+                    {{ overlapping_variant.display_name|truncate(20, True) }}
+                  </a>
+                {% else %}
+                  <a href="{{url_for('variant.variant', institute_id=institute._id,
+                                 case_name=case.display_name, variant_id=overlapping_variant._id)}}">
+                    {{ overlapping_variant.display_name|truncate(20, True) }}
+                  </a>
+                {% endif %}
               </td>
               <td>{{ overlapping_variant.hgnc_symbols|join(', ')|truncate(40, True) }}</td>
               <td>{{ overlapping_variant.sub_category|upper }}</td>
