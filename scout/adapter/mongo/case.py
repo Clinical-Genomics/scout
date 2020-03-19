@@ -850,6 +850,7 @@ class CaseHandler(object):
             )
         )
 
+        n_status_updated = 0
         for old_var in old_tagged_variants:
             # search for the same variant in newly uploaded vars for this case
             display_name = old_var["display_name"]
@@ -860,7 +861,7 @@ class CaseHandler(object):
             if new_var is None: # same var is no more among case variants, skip it
                 continue
 
-            for tag in updated_variants.keys(): #manual_rank, dismiss_variant, mosaic_tags
+            for tag in list(updated_variants.keys()): #manual_rank, dismiss_variant, mosaic_tags
                 if old_var.get(tag): # tag new variant accordingly
 
                     #collect only the latest associated event:
@@ -897,7 +898,7 @@ class CaseHandler(object):
                             manual_rank = old_var.get(tag)
                         )
 
-                    elif tag == "dismiss_variant":
+                    if tag == "dismiss_variant":
                         updated_variant = self.update_dismiss_variant(
                             institute = institute_obj,
                             case = case_obj,
@@ -907,7 +908,7 @@ class CaseHandler(object):
                             dismiss_variant = old_var.get(tag)
                         )
 
-                    elif tag == "mosaic_tags":
+                    if tag == "mosaic_tags":
                         updated_variant = self.update_mosaic_tags(
                             institute = institute_obj,
                             case = case_obj,
@@ -918,7 +919,10 @@ class CaseHandler(object):
                         )
 
                     if updated_variant:
+                        n_status_updated += 1
                         updated_variants[tag].append(updated_variant["_id"])
+
+            LOG.info("Verification status updated for {} variant(s)".format(n_status_updated))
 
             return updated_variants
 

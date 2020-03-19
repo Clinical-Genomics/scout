@@ -118,7 +118,7 @@ def variants(
     old_tagged_variants = None
 
     if keep_tags: #collect all custom tags for the variants of this case
-        old_tagged_variants = adapter.tagged_variants(case_id)
+        old_tagged_variants = list(adapter.tagged_variants(case_id))
 
     i = 0
     for file_type in files:
@@ -174,5 +174,5 @@ def variants(
         institute_obj, case_obj, old_sanger_variants
     )
 
-    if keep_tags:
+    if keep_tags and old_tagged_variants:
         adapter.update_manual_tagged_variants(institute_obj, case_obj, old_tagged_variants)
