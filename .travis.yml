@@ -6,20 +6,6 @@ env: TRAVIS=1
 jobs:
     include:
 
-        - name: "Production Dependencies"
-          if: type = pull_request
-          install:
-              - pip install cython
-              - pip install .
-          script: pip check
-
-        - name: "Development Dependencies"
-          if: type = pull_request
-          install:
-              - pip install cython
-              - pip install . -r requirements-dev.txt
-          script: pip check
-
         - name: "PEP8 Compliance"
           if: type = pull_request
           install: pip install black

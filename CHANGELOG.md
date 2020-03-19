@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved code that sends requests to the external APIs
 - Updates ranges for user ranks to fit todays usage
 - Run coveralls on github actions instead of travis
+- Run pip checks on github actions instead of coveralls
 - Show pinned or causative STR variants a bit more human readable
 
 
