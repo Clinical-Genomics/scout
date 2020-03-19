@@ -97,7 +97,7 @@ def variant(
     variant_type = variant_type or variant_obj.get("category", "snv")
     variant_id = variant_obj["variant_id"]
 
-    genome_build = case_obj.get("genome_build", "37")
+    genome_build = str( case_obj.get("genome_build", "37") )
     if genome_build not in ["37", "38"]:
         genome_build = "37"
 
