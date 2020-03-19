@@ -1,29 +1,24 @@
 # -*- coding: utf-8 -*-
 # stdlib modules
 import logging
-import re
 import pathlib
+import re
 import tempfile
-
 from datetime import datetime
 from pprint import pprint as pp
 
 # Third party modules
 import pymongo
-
 from cyvcf2 import VCF
 from intervaltree import IntervalTree
+from pymongo.errors import BulkWriteError, DuplicateKeyError
 
+from scout.build import build_variant
+from scout.exceptions import IntegrityError
+from scout.parse.variant import parse_variant
 # Local modules
 from scout.parse.variant.rank_score import parse_rank_score
-
-from scout.parse.variant import parse_variant
-from scout.build import build_variant
-
 from scout.utils.coordinates import is_par
-
-from pymongo.errors import DuplicateKeyError, BulkWriteError
-from scout.exceptions import IntegrityError
 
 from .variant_loader import VariantLoader
 
@@ -267,10 +262,15 @@ class VariantHandler(VariantLoader):
 
         if variant_obj:
             if case_obj:
-                variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels,
-                    build=case_obj["genome_build"])
+                variant_obj = self.add_gene_info(
+                    variant_obj=variant_obj,
+                    gene_panels=gene_panels,
+                    build=case_obj["genome_build"],
+                )
             else:
-                variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels)
+                variant_obj = self.add_gene_info(
+                    variant_obj=variant_obj, gene_panels=gene_panels
+                )
 
             if variant_obj["chromosome"] in ["X", "Y"]:
                 ## TODO add the build here
@@ -588,9 +588,13 @@ class VariantHandler(VariantLoader):
 
         # Collect the result in a dictionary
         variants = {}
-        case_obj = self.case(case_id=case_id) # case exists since it's used in the query above
+        case_obj = self.case(
+            case_id=case_id
+        )  # case exists since it's used in the query above
         for var in self.variant_collection.find(query):
-            variants[var["variant_id"]] = self.add_gene_info(variant_obj=var, build=case_obj["genome_build"])
+            variants[var["variant_id"]] = self.add_gene_info(
+                variant_obj=var, build=case_obj["genome_build"]
+            )
 
         # Collect all variant comments from the case
         event_query = {
@@ -658,6 +662,8 @@ class VariantHandler(VariantLoader):
                 variant_file = case_obj["vcf_files"].get("vcf_sv")
             elif category == "str":
                 variant_file = case_obj["vcf_files"].get("vcf_str")
+            elif category == "cancer":
+                variant_file = case_obj["vcf_files"].get("vcf_cancer")
         elif variant_type == "research":
             if category == "snv":
                 variant_file = case_obj["vcf_files"].get("vcf_snv_research")
@@ -665,9 +671,13 @@ class VariantHandler(VariantLoader):
                 variant_file = case_obj["vcf_files"].get("vcf_sv_research")
 
         if not variant_file:
-            raise SyntaxError("Vcf file does not seem to exist")
+            raise FileNotFoundError("Vcf file does not seem to exist")
 
-        vcf_obj = VCF(variant_file)
+        try:
+            vcf_obj = VCF(variant_file)
+        except Exception:
+            raise FileNotFoundError("Could not access {}".format(variant_file))
+
         region = ""
 
         if gene_obj:

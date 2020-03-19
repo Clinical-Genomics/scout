@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 
 import pytest
 
@@ -231,7 +231,6 @@ def test_load_coordinates(real_populated_database, variant_objs, case_obj):
 
 @pytest.mark.skipif(TRAVIS, reason="Tempfiles seems to be problematic on travis")
 def test_get_region_vcf(populated_database, case_obj):
-    print("Travis", TRAVIS, type(TRAVIS))
     adapter = populated_database
     case_id = case_obj["_id"]
 
@@ -255,3 +254,43 @@ def test_get_region_vcf(populated_database, case_obj):
     os.remove(file_name)
 
     assert nr_variants > 0
+
+
+def test_get_region_vcf_non_existing(adapter, case_obj):
+    """Test to get a region VCF when file does not exist"""
+    # GIVEN a case obj without a cancer VCF
+    assert case_obj["vcf_files"].get("vcf_cancer") is None
+
+    # WHEN creating a region vcf
+    with pytest.raises(FileNotFoundError):
+        # THEN assert a file not found error is raised
+        adapter.get_region_vcf(
+            case_obj,
+            chrom=None,
+            start=None,
+            end=None,
+            gene_obj=None,
+            variant_type="cancer",
+            category="snv",
+            rank_threshold=None,
+        )
+
+
+def test_get_region_vcf_missing_file(adapter, case_obj):
+    """Test to get a region VCF when file does not exist"""
+    # GIVEN a case obj without a cancer VCF
+    case_obj["vcf_files"]["vcf_cancer"] = "afile.vcf"
+
+    # WHEN creating a region vcf
+    with pytest.raises(FileNotFoundError):
+        # THEN assert a file not found error is raised
+        adapter.get_region_vcf(
+            case_obj,
+            chrom=None,
+            start=None,
+            end=None,
+            gene_obj=None,
+            variant_type="cancer",
+            category="snv",
+            rank_threshold=None,
+        )
