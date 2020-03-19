@@ -11,7 +11,6 @@ LOG = logging.getLogger(__name__)
 @click.command(short_help="Upload variants to existing case")
 @click.argument("case-id")
 @click.option("-i", "--institute", help="institute id of related cases")
-@click.option("-f", "--force", is_flag=True, help="upload without request")
 @click.option("--cancer", is_flag=True, help="Upload clinical cancer variants")
 @click.option("--cancer-research", is_flag=True, help="Upload research cancer variants")
 @click.option(
@@ -42,11 +41,12 @@ LOG = logging.getLogger(__name__)
     help="Specify the rank score treshold",
     show_default=True,
 )
+@click.option("-f", "--force", is_flag=True, help="upload without request")
+@click.option("-k", "--keep-tags", is_flag=True, help="Export manual user tags from old variants to the new")
 @with_appcontext
 def variants(
     case_id,
     institute,
-    force,
     cancer,
     cancer_sv,
     cancer_research,
@@ -62,6 +62,8 @@ def variants(
     hgnc_id,
     hgnc_symbol,
     rank_treshold,
+    force,
+    keep_tags
 ):
     """Upload variants to a case
 
@@ -113,6 +115,11 @@ def variants(
             raise click.Abort()
 
     old_sanger_variants = adapter.case_sanger_variants(case_obj["_id"])
+    old_tagged_variants = None
+
+    if keep_tags: #collect all custom tags for the variants of this case
+        old_tagged_variants = adapter.tagged_variants(case_id)
+
     i = 0
     for file_type in files:
         variant_type = file_type["variant_type"]
@@ -166,3 +173,28 @@ def variants(
     sanger_updated = adapter.update_case_sanger_variants(
         institute_obj, case_obj, old_sanger_variants
     )
+
+    if keep_tags:
+        adapter.update_case_tagged_variants(institute_obj, case_obj, old_tagged_variants)
+
+    """
+    if keep_tags: # update newly inserted variants with old custom tags
+        for old_var in old_tagged_variants:
+            new_var = adapter.variant(case_id=case_id, simple_id=old_var.get("simple_id"))
+            if new_var is None:
+                continue
+            # collect user that tagged the old variant
+
+            if old_var.get("manual_rank"):
+                LOG.info("manual rank found!")
+
+                tag_event = adapter.
+                adapter.update_manual_rank(institute=institute_obj, case=case_obj, user=)
+
+
+
+            if old_var.get("dismiss_variant"):
+                LOG.info("dismiss variant!")
+            if old_var.get("mosaic_tags"):
+                LOG.info("mosaic tags!")
+    """

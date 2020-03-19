@@ -826,6 +826,96 @@ class CaseHandler(object):
 
         return case_verif_variants
 
+
+    def update_case_tagged_variants(self, institute_obj, case_obj, old_tagged_variants):
+        """Update existing variants of a case according to the tagged status
+            (manual_rank, dismiss_variant, mosaic_tags) of its previous variants
+
+        Accepts:
+            institute_obj(dict): an institute object
+            case_obj(dict): a case object
+            old_tagged_variants(iterable(Variant))
+
+        Returns:
+            updated_variants(dict): a dictionary like this:
+                'manual_rank' : [list of variant ids],
+                'dismiss_variant' : [list of variant ids],
+                'mosaic_tags' : [list of variant ids]
+        """
+        updated_variants = {"manual_rank": [], "dismiss_variant": [], "mosaic_tags": []}
+
+        LOG.debug(
+            "Updating tagged status for variants in case:{}".format(
+                case_obj["_id"]
+            )
+        )
+
+        for old_var in old_tagged_variants:
+            # search for the same variant in newly uploaded vars for this case
+            display_name = old_var["display_name"]
+
+            new_var = self.variant_collection.find_one(
+                {"case_id": case_obj["_id"], "display_name": display_name}
+            )
+            if new_var is None: # same var is no more among case variants, skip it
+                continue
+
+            for tag in updated_variants.keys(): #manual_rank, dismiss_variant, mosaic_tags
+                if old_var.get(tag): # tag new variant accordingly
+
+                    if tag == "manual_rank": #collect only the latest associated event:
+                        old_event = self.event_collection.find(
+                            {
+                                "case": case_obj["_id"],
+                                "verb": tag,
+                                "variant_id": old_var["variant_id"],
+                                "category" : "variant"
+                            }
+                        ).sort("updated_at", pymongo.pymongo.DESCENDING).limit(1)
+
+                        if old_event is None:
+                            continue
+
+                        user_obj = self.user(old_event[0]["user_id"])
+                        if user_obj is None:
+                            continue
+
+                        # Create link for new variant
+                        # create a link to the new variant for the events
+                        link = "/{0}/{1}/{2}".format(
+                            new_var["institute"], case_obj["display_name"], new_var["_id"]
+                        )
+
+                        updated_variant = adapter.update_manual_rank(
+                            institute = institute_obj,
+                            case = case_obj,
+                            user = user_obj,
+                            link = link,
+                            variant = new_var,
+                            manual_rank = old_var.get(tag)
+                        )
+
+                        if updated_variant:
+                            updated_variants[tag].append(updated_variant["_id"])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
         """Update existing variants for a case according to a previous
             verification status.
