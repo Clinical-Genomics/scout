@@ -604,12 +604,15 @@
           <a href="{{ gene.clingen_link }}" class="btn btn-outline-secondary" target="_blank">ClinGen</a>
           <!-- Display Alamut link only if bam is available -->
           {% if variant.chromosome == "MT" and case.mt_bams %}
-            {% for mt_bam in case.mt_bams%}
-              <input type="button" class="btn btn-outline-secondary" value='Alamut' onclick='httpGetLoadBam("{{case.genome_build}}",
-                "M", "{{variant.position}}", "{{ url_for('alignviewers.unindexed_remote_static', file=mt_bam) }}" );' />
+            {% for ind in case.individuals %}
+              <input type="button" class="btn btn-outline-secondary" value='Alamut ({{ind.display_name}})' onclick='httpGetLoadBam("{{case.genome_build}}",
+                "M", "{{variant.position}}", "{{ url_for('alignviewers.unindexed_remote_static', file=ind.mt_bam) }}" );' />
             {% endfor %}
           {% elif case.bam_files %} <!-- not a MT variant and bam file available -->
-            NON MT FILES
+            {% for ind in case.individuals %}
+              <input type="button" class="btn btn-outline-secondary" value='Alamut ({{ind.display_name}})' onclick='httpGetLoadBam("{{case.genome_build}}",
+                "{{ variant.chromosome }}", "{{variant.position}}", "{{ url_for('alignviewers.unindexed_remote_static', file=ind.bam_file) }}" );' />
+            {% endfor %}
           {% endif %}
 
           <!-- end of Alamut-related code -->
