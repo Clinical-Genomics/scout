@@ -845,24 +845,29 @@ class CaseHandler(object):
         updated_variants = {"manual_rank": [], "dismiss_variant": [], "mosaic_tags": []}
 
         LOG.debug(
-            "Updating tagged status for variants in case:{}".format(
+            "Updating tagged status for {} variants in case:{}".format(
+                len(old_tagged_variants),
                 case_obj["_id"]
             )
         )
 
         n_status_updated = 0
         for old_var in old_tagged_variants:
+
             # search for the same variant in newly uploaded vars for this case
             display_name = old_var["display_name"]
 
             new_var = self.variant_collection.find_one(
                 {"case_id": case_obj["_id"], "display_name": display_name}
             )
+
             if new_var is None: # same var is no more among case variants, skip it
                 continue
 
             for tag in list(updated_variants.keys()): #manual_rank, dismiss_variant, mosaic_tags
                 if old_var.get(tag): # tag new variant accordingly
+
+                    LOG.error("FOUND TAG {} in a variant!!!".format(tag))
 
                     #collect only the latest associated event:
                     old_event = self.event_collection.find(
@@ -885,8 +890,6 @@ class CaseHandler(object):
                     link = "/{0}/{1}/{2}".format(
                         new_var["institute"], case_obj["display_name"], new_var["_id"]
                     )
-
-                    updated_variant = None
 
                     if tag == "manual_rank":
                         updated_variant = self.update_manual_rank(
@@ -924,7 +927,7 @@ class CaseHandler(object):
 
             LOG.info("Verification status updated for {} variant(s)".format(n_status_updated))
 
-            return updated_variants
+        return updated_variants
 
 
     def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
