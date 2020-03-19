@@ -51,14 +51,7 @@ jobs:
       env:
         GITHUB_CONTEXT: ${{ github.event.pull_reques.commits_urs}}
       run: |
-        echo "$GITHUB_CONTEXT"
-        curl -o out.json ${{ github.event.pull_request.commits_url }}
-          
-    - name: Upload artifact
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: commits
-        path: out.json
+        echo $GITHUB_CONTEXT
 
     - name: Run linters
       uses: samuelmeuli/lint-action@v1
