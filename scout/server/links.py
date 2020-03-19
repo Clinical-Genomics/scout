@@ -286,7 +286,7 @@ def get_variant_links(variant_obj, build=None):
     links = dict(
         thousandg_link=thousandg_link(variant_obj, build),
         exac_link=exac_link(variant_obj),
-        gnomad_link=gnomad_link(variant_obj),
+        gnomad_link=gnomad_link(variant_obj, build),
         swegen_link=swegen_link(variant_obj),
         cosmic_link=cosmic_link(variant_obj),
         beacon_link=beacon_link(variant_obj, build),
@@ -328,12 +328,20 @@ def exac_link(variant_obj):
     return url_template.format(this=variant_obj)
 
 
-def gnomad_link(variant_obj):
+def gnomad_link(variant_obj, build=37):
     """Compose link to gnomAD website."""
-    url_template = (
-        "http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
-        "{this[position]}-{this[reference]}-{this[alternative]}"
-    )
+
+    if build == 38:
+        url_template = (
+            "http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
+            "{this[position]}-{this[reference]}-{this[alternative]}?dataset=gnomad_r3"
+        )
+    else:
+        url_template = (
+            "http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
+            "{this[position]}-{this[reference]}-{this[alternative]}"
+        )
+
     return url_template.format(this=variant_obj)
 
 
