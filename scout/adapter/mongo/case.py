@@ -925,8 +925,7 @@ class CaseHandler(object):
                         n_status_updated += 1
                         updated_variants[tag].append(updated_variant["_id"])
 
-            LOG.info("Verification status updated for {} variant(s)".format(n_status_updated))
-
+        LOG.info("Verification status updated {} times".format(n_status_updated))
         return updated_variants
 
 
