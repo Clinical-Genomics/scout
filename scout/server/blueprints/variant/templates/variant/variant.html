@@ -780,7 +780,7 @@
     // focus on the right region
     var http_req = new XMLHttpRequest();
     alert(alamut_url.concat(region))
-    http_req.open( "GET", alamut_url.concat(region));
+    http_req.open( "GET", alamut_url.concat(region, "&synchronous=true"), true);
     http_req.send();
 
     // load alignments
