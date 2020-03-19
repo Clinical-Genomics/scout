@@ -82,6 +82,12 @@ def sv_variant(institute_id, case_name, variant_id):
             store, loqusdb, data["case"], data["variant"]
         )
 
+    # request category specific variant display
+    category = data["variant"].get("category", "sv")
+    LOG.debug("Variant category {}".format(category))
+    if category in ("cancer_sv"):
+        data[category] = True
+
     data["cancer"] = request.args.get("cancer") == "yes"
     data["str"] = request.args.get("str") == "yes"
     return data
