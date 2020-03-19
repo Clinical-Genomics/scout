@@ -42,7 +42,12 @@ LOG = logging.getLogger(__name__)
     show_default=True,
 )
 @click.option("-f", "--force", is_flag=True, help="upload without request")
-@click.option("-k", "--keep-tags", is_flag=True, help="Export manual user tags from old variants to the new")
+@click.option(
+    "-k",
+    "--keep-tags",
+    is_flag=True,
+    help="Export manual user tags from old variants to the new",
+)
 @with_appcontext
 def variants(
     case_id,
@@ -63,7 +68,7 @@ def variants(
     hgnc_symbol,
     rank_treshold,
     force,
-    keep_tags
+    keep_tags,
 ):
     """Upload variants to a case
 
@@ -117,7 +122,7 @@ def variants(
     old_sanger_variants = adapter.case_sanger_variants(case_obj["_id"])
     old_tagged_variants = None
 
-    if keep_tags: #collect all custom tags for the variants of this case
+    if keep_tags:  # collect all custom tags for the variants of this case
         old_tagged_variants = list(adapter.tagged_variants(case_id))
 
     i = 0
@@ -158,7 +163,7 @@ def variants(
                 start=start,
                 end=end,
                 gene_obj=gene_obj,
-                build=case_obj["genome_build"]
+                build=case_obj["genome_build"],
             )
 
         except Exception as e:
@@ -175,4 +180,6 @@ def variants(
     )
 
     if keep_tags and old_tagged_variants:
-        adapter.update_manual_tagged_variants(institute_obj, case_obj, old_tagged_variants)
+        adapter.update_manual_tagged_variants(
+            institute_obj, case_obj, old_tagged_variants
+        )

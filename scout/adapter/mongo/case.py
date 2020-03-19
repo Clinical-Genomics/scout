@@ -826,8 +826,9 @@ class CaseHandler(object):
 
         return case_verif_variants
 
-
-    def update_manual_tagged_variants(self, institute_obj, case_obj, old_tagged_variants):
+    def update_manual_tagged_variants(
+        self, institute_obj, case_obj, old_tagged_variants
+    ):
         """Update existing variants of a case according to the tagged status
             (manual_rank, dismiss_variant, mosaic_tags) of its previous variants
 
@@ -846,8 +847,7 @@ class CaseHandler(object):
 
         LOG.debug(
             "Updating tagged status for {} variants in case:{}".format(
-                len(old_tagged_variants),
-                case_obj["_id"]
+                len(old_tagged_variants), case_obj["_id"]
             )
         )
 
@@ -861,23 +861,29 @@ class CaseHandler(object):
                 {"case_id": case_obj["_id"], "display_name": display_name}
             )
 
-            if new_var is None: # same var is no more among case variants, skip it
+            if new_var is None:  # same var is no more among case variants, skip it
                 continue
 
-            for tag in list(updated_variants.keys()): #manual_rank, dismiss_variant, mosaic_tags
-                if old_var.get(tag): # tag new variant accordingly
+            for tag in list(
+                updated_variants.keys()
+            ):  # manual_rank, dismiss_variant, mosaic_tags
+                if old_var.get(tag):  # tag new variant accordingly
 
                     LOG.error("FOUND TAG {} in a variant!!!".format(tag))
 
-                    #collect only the latest associated event:
-                    old_event = self.event_collection.find(
-                        {
-                            "case": case_obj["_id"],
-                            "verb": tag,
-                            "variant_id": old_var["variant_id"],
-                            "category" : "variant"
-                        }
-                    ).sort("updated_at", pymongo.DESCENDING).limit(1)
+                    # collect only the latest associated event:
+                    old_event = (
+                        self.event_collection.find(
+                            {
+                                "case": case_obj["_id"],
+                                "verb": tag,
+                                "variant_id": old_var["variant_id"],
+                                "category": "variant",
+                            }
+                        )
+                        .sort("updated_at", pymongo.DESCENDING)
+                        .limit(1)
+                    )
 
                     if old_event is None:
                         continue
@@ -893,32 +899,32 @@ class CaseHandler(object):
 
                     if tag == "manual_rank":
                         updated_variant = self.update_manual_rank(
-                            institute = institute_obj,
-                            case = case_obj,
-                            user = user_obj,
-                            link = link,
-                            variant = new_var,
-                            manual_rank = old_var.get(tag)
+                            institute=institute_obj,
+                            case=case_obj,
+                            user=user_obj,
+                            link=link,
+                            variant=new_var,
+                            manual_rank=old_var.get(tag),
                         )
 
                     if tag == "dismiss_variant":
                         updated_variant = self.update_dismiss_variant(
-                            institute = institute_obj,
-                            case = case_obj,
-                            user = user_obj,
-                            link = link,
-                            variant = new_var,
-                            dismiss_variant = old_var.get(tag)
+                            institute=institute_obj,
+                            case=case_obj,
+                            user=user_obj,
+                            link=link,
+                            variant=new_var,
+                            dismiss_variant=old_var.get(tag),
                         )
 
                     if tag == "mosaic_tags":
                         updated_variant = self.update_mosaic_tags(
-                            institute = institute_obj,
-                            case = case_obj,
-                            user = user_obj,
-                            link = link,
-                            variant = new_var,
-                            mosaic_tags = old_var.get(tag)
+                            institute=institute_obj,
+                            case=case_obj,
+                            user=user_obj,
+                            link=link,
+                            variant=new_var,
+                            mosaic_tags=old_var.get(tag),
                         )
 
                     if updated_variant:
@@ -927,7 +933,6 @@ class CaseHandler(object):
 
         LOG.info("Verification status updated {} times".format(n_status_updated))
         return updated_variants
-
 
     def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
         """Update existing variants for a case according to a previous

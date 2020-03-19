@@ -267,10 +267,15 @@ class VariantHandler(VariantLoader):
 
         if variant_obj:
             if case_obj:
-                variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels,
-                    build=case_obj["genome_build"])
+                variant_obj = self.add_gene_info(
+                    variant_obj=variant_obj,
+                    gene_panels=gene_panels,
+                    build=case_obj["genome_build"],
+                )
             else:
-                variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels)
+                variant_obj = self.add_gene_info(
+                    variant_obj=variant_obj, gene_panels=gene_panels
+                )
 
             if variant_obj["chromosome"] in ["X", "Y"]:
                 ## TODO add the build here
@@ -558,7 +563,6 @@ class VariantHandler(VariantLoader):
 
         return variants
 
-
     def tagged_variants(self, case_id):
         """Returns variants that have been tagged, dismissed or tagged as mosaic
 
@@ -593,7 +597,6 @@ class VariantHandler(VariantLoader):
         result = self.variant_collection.find(query)
         return result
 
-
     def evaluated_variants(self, case_id):
         """Returns variants that have been evaluated
 
@@ -624,9 +627,13 @@ class VariantHandler(VariantLoader):
 
         # Collect the result in a dictionary
         variants = {}
-        case_obj = self.case(case_id=case_id) # case exists since it's used in the query above
+        case_obj = self.case(
+            case_id=case_id
+        )  # case exists since it's used in the query above
         for var in self.variant_collection.find(query):
-            variants[var["variant_id"]] = self.add_gene_info(variant_obj=var, build=case_obj["genome_build"])
+            variants[var["variant_id"]] = self.add_gene_info(
+                variant_obj=var, build=case_obj["genome_build"]
+            )
 
         # Collect all variant comments from the case
         event_query = {
