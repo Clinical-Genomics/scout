@@ -28,12 +28,18 @@ jobs:
       with:
         mongoDBVersion: ${{ matrix.mongodb-version}}
 
-    - name: Install dependencies
+    - name: Production Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install cython
         pip install numpy
-        pip install -r requirements-dev.txt -e .
+        pip install -e .
+        pip check
+
+    - name: Development Dependencies
+      run: |
+        pip install -r requirements-dev.txt
+        pip check
 
     - name: Lint with flake8
       run: |
