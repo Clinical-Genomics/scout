@@ -176,25 +176,3 @@ def variants(
 
     if keep_tags:
         adapter.update_case_tagged_variants(institute_obj, case_obj, old_tagged_variants)
-
-    """
-    if keep_tags: # update newly inserted variants with old custom tags
-        for old_var in old_tagged_variants:
-            new_var = adapter.variant(case_id=case_id, simple_id=old_var.get("simple_id"))
-            if new_var is None:
-                continue
-            # collect user that tagged the old variant
-
-            if old_var.get("manual_rank"):
-                LOG.info("manual rank found!")
-
-                tag_event = adapter.
-                adapter.update_manual_rank(institute=institute_obj, case=case_obj, user=)
-
-
-
-            if old_var.get("dismiss_variant"):
-                LOG.info("dismiss variant!")
-            if old_var.get("mosaic_tags"):
-                LOG.info("mosaic tags!")
-    """
