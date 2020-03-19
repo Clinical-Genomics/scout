@@ -23,8 +23,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved code that sends requests to the external APIs
 - Updates ranges for user ranks to fit todays usage
 - Run coveralls on github actions instead of travis
+- Run pip checks on github actions instead of coveralls
 - For hg38 cases, change gnomAD link to point to version 3.0 (which is hg38 based)
-
 
 ## [4.13.1]
 
