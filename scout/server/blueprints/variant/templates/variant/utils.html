@@ -56,6 +56,11 @@
                                    case_name=case.display_name, variant_id=overlapping_variant._id)}}">
                     {{ overlapping_variant.display_name|truncate(20, True) }}
                   </a>
+                {% elif overlapping_variant.category in ("cancer") %}
+                  <a href="{{url_for('variant.variant', institute_id=institute._id,
+                                 case_name=case.display_name, variant_id=overlapping_variant._id, cancer='yes')}}">
+                    {{ overlapping_variant.display_name|truncate(20, True) }}
+                  </a>
                 {% else %}
                   <a href="{{url_for('variant.variant', institute_id=institute._id,
                                  case_name=case.display_name, variant_id=overlapping_variant._id)}}">
