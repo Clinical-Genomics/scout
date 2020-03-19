@@ -10,7 +10,6 @@ from scout.exceptions import IntegrityError
 
 logger = logging.getLogger(__name__)
 
-
 def test_add_cases(adapter, case_obj):
     ## GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
@@ -643,3 +642,141 @@ def test_get_cases_solved_since(
     # WHEN querying for cases solved within 1 day
     # THEN one case is found
     assert len([case for case in adapter.cases(finished=True, within_days=1)]) == 1
+
+
+def test_keep_manual_rank_tag_after_reupload(adapter, case_obj, variant_obj, user_obj,
+    institute_obj):
+    """Test the code that updates custom tags (manual_rank) of new variants according to the old."""
+
+    old_variant = variant_obj
+    old_variant["_id"] = "old_id"
+
+    ## GIVEN a database with a user
+    adapter.user_collection.insert_one(user_obj)
+
+    ## AND a case
+    adapter.case_collection.insert_one(case_obj)
+
+    ## WHEN the variant is manual ranked
+    adapter.variant_collection.insert_one(old_variant)
+    updated_old = adapter.update_manual_rank(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="manual_rank_link",
+        variant=old_variant,
+        manual_rank=8,
+
+    )
+    assert updated_old
+
+    # THEN replaced by a new variant
+    adapter.variant_collection.delete_one(old_variant)
+
+    new_variant = variant_obj
+    new_variant["_id"] = "new_id"
+    adapter.variant_collection.insert_one(new_variant)
+
+    # THE update tags function should return the id of the new variant
+    updated_new_vars = adapter.update_manual_tagged_variants(
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_tagged_variants=[updated_old]
+    )
+    assert updated_new_vars["manual_rank"] == ["new_id"]
+
+    # and the new variant should have a the same manual rank
+    test_variant = adapter.variant_collection.find_one({"_id":"new_id"})
+    assert test_variant["manual_rank"] == 8
+
+
+def test_keep_dismiss_variant_tag_after_reupload(adapter, case_obj, variant_obj, user_obj,
+    institute_obj):
+    """Test the code that updates custom tags (dismiss_variant) of new variants according to the old."""
+
+    old_variant = variant_obj
+    old_variant["_id"] = "old_id"
+
+    ## GIVEN a database with a user
+    adapter.user_collection.insert_one(user_obj)
+
+    ## AND a case
+    adapter.case_collection.insert_one(case_obj)
+
+    ## WHEN the variant is manual dismissed
+    adapter.variant_collection.insert_one(old_variant)
+    updated_old = adapter.update_dismiss_variant(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="manual_dismissed_link",
+        variant=old_variant,
+        dismiss_variant=[2,11] # provide 2 dismiss reasons
+
+    )
+    assert updated_old
+
+    # THEN replaced by a new variant
+    adapter.variant_collection.delete_one(old_variant)
+
+    new_variant = variant_obj
+    new_variant["_id"] = "new_id"
+    adapter.variant_collection.insert_one(new_variant)
+
+    # THE update tags function should return the id of the new variant
+    updated_new_vars = adapter.update_manual_tagged_variants(
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_tagged_variants=[updated_old]
+    )
+    assert updated_new_vars["dismiss_variant"] == ["new_id"]
+
+    # and the new variant should have a the same dismiss_variant
+    test_variant = adapter.variant_collection.find_one({"_id":"new_id"})
+    assert test_variant["dismiss_variant"] == [2,11]
+
+
+def test_keep_mosaic_tags_after_reupload(adapter, case_obj, variant_obj, user_obj,
+    institute_obj):
+    """Test the code that updates custom tags (mosaic tags) of new variants according to the old."""
+
+    old_variant = variant_obj
+    old_variant["_id"] = "old_id"
+
+    ## GIVEN a database with a user
+    adapter.user_collection.insert_one(user_obj)
+
+    ## AND a case
+    adapter.case_collection.insert_one(case_obj)
+
+    ## WHEN mosaic tag(s) are assigned to the variant
+    adapter.variant_collection.insert_one(old_variant)
+    updated_old = adapter.update_mosaic_tags(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="manual_dismissed_link",
+        variant=old_variant,
+        mosaic_tags=[1,3] # provide 2 mosaic tags
+
+    )
+    assert updated_old
+
+    # THEN the variant is replaced by a new variant
+    adapter.variant_collection.delete_one(old_variant)
+
+    new_variant = variant_obj
+    new_variant["_id"] = "new_id"
+    adapter.variant_collection.insert_one(new_variant)
+
+    # THE update tags function should return the id of the new variant
+    updated_new_vars = adapter.update_manual_tagged_variants(
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_tagged_variants=[updated_old]
+    )
+    assert updated_new_vars["mosaic_tags"] == ["new_id"]
+
+    # and the new variant should have a the same mosaic tags
+    test_variant = adapter.variant_collection.find_one({"_id":"new_id"})
+    assert test_variant["mosaic_tags"] == [1,3]

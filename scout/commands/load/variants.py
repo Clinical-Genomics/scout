@@ -175,4 +175,4 @@ def variants(
     )
 
     if keep_tags:
-        adapter.update_case_tagged_variants(institute_obj, case_obj, old_tagged_variants)
+        adapter.update_manual_tagged_variants(institute_obj, case_obj, old_tagged_variants)

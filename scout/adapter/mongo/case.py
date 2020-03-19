@@ -827,7 +827,7 @@ class CaseHandler(object):
         return case_verif_variants
 
 
-    def update_case_tagged_variants(self, institute_obj, case_obj, old_tagged_variants):
+    def update_manual_tagged_variants(self, institute_obj, case_obj, old_tagged_variants):
         """Update existing variants of a case according to the tagged status
             (manual_rank, dismiss_variant, mosaic_tags) of its previous variants
 
@@ -863,30 +863,32 @@ class CaseHandler(object):
             for tag in updated_variants.keys(): #manual_rank, dismiss_variant, mosaic_tags
                 if old_var.get(tag): # tag new variant accordingly
 
-                    if tag == "manual_rank": #collect only the latest associated event:
-                        old_event = self.event_collection.find(
-                            {
-                                "case": case_obj["_id"],
-                                "verb": tag,
-                                "variant_id": old_var["variant_id"],
-                                "category" : "variant"
-                            }
-                        ).sort("updated_at", pymongo.pymongo.DESCENDING).limit(1)
+                    #collect only the latest associated event:
+                    old_event = self.event_collection.find(
+                        {
+                            "case": case_obj["_id"],
+                            "verb": tag,
+                            "variant_id": old_var["variant_id"],
+                            "category" : "variant"
+                        }
+                    ).sort("updated_at", pymongo.DESCENDING).limit(1)
 
-                        if old_event is None:
-                            continue
+                    if old_event is None:
+                        continue
 
-                        user_obj = self.user(old_event[0]["user_id"])
-                        if user_obj is None:
-                            continue
+                    user_obj = self.user(old_event[0]["user_id"])
+                    if user_obj is None:
+                        continue
 
-                        # Create link for new variant
-                        # create a link to the new variant for the events
-                        link = "/{0}/{1}/{2}".format(
-                            new_var["institute"], case_obj["display_name"], new_var["_id"]
-                        )
+                    # create a link to the new variant for the events
+                    link = "/{0}/{1}/{2}".format(
+                        new_var["institute"], case_obj["display_name"], new_var["_id"]
+                    )
 
-                        updated_variant = adapter.update_manual_rank(
+                    updated_variant = None
+
+                    if tag == "manual_rank":
+                        updated_variant = self.update_manual_rank(
                             institute = institute_obj,
                             case = case_obj,
                             user = user_obj,
@@ -895,25 +897,30 @@ class CaseHandler(object):
                             manual_rank = old_var.get(tag)
                         )
 
-                        if updated_variant:
-                            updated_variants[tag].append(updated_variant["_id"])
+                    elif tag == "dismiss_variant":
+                        updated_variant = self.update_dismiss_variant(
+                            institute = institute_obj,
+                            case = case_obj,
+                            user = user_obj,
+                            link = link,
+                            variant = new_var,
+                            dismiss_variant = old_var.get(tag)
+                        )
 
+                    elif tag == "mosaic_tags":
+                        updated_variant = self.update_mosaic_tags(
+                            institute = institute_obj,
+                            case = case_obj,
+                            user = user_obj,
+                            link = link,
+                            variant = new_var,
+                            mosaic_tags = old_var.get(tag)
+                        )
 
+                    if updated_variant:
+                        updated_variants[tag].append(updated_variant["_id"])
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            return updated_variants
 
 
     def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
