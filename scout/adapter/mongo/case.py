@@ -862,7 +862,9 @@ class CaseHandler(object):
             )
 
             if new_var is None:  # same var is no more among case variants, skip it
-                LOG.warning("Trying to propagate tagged status from an old variant to a new, but couldn't find same variant any more")
+                LOG.warning(
+                    "Trying to propagate tagged status from an old variant to a new, but couldn't find same variant any more"
+                )
                 continue
 
             for tag in list(
