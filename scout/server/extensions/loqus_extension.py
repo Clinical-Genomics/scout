@@ -76,7 +76,7 @@ class LoqusDB:
         """Check if a compatible version is used"""
         if not self.version >= 2.5:
             LOG.info("Please update your loqusdb version to >=2.5")
-            raise SyntaxError("Only compatible with loausdb version >= 2.5")
+            raise SyntaxError("Only compatible with loqusdb version >= 2.5")
 
     @staticmethod
     def set_coordinates(variant_info):
