@@ -862,14 +862,13 @@ class CaseHandler(object):
             )
 
             if new_var is None:  # same var is no more among case variants, skip it
+                LOG.warning("Trying to propagate tagged status from an old variant to a new, but couldn't find same variant any more")
                 continue
 
             for tag in list(
                 updated_variants.keys()
             ):  # manual_rank, dismiss_variant, mosaic_tags
                 if old_var.get(tag):  # tag new variant accordingly
-
-                    LOG.error("FOUND TAG {} in a variant!!!".format(tag))
 
                     # collect only the latest associated event:
                     old_event = (
@@ -931,7 +930,7 @@ class CaseHandler(object):
                         n_status_updated += 1
                         updated_variants[tag].append(updated_variant["_id"])
 
-        LOG.info("Verification status updated {} times".format(n_status_updated))
+        LOG.info("Variant tagged status updated {} times".format(n_status_updated))
         return updated_variants
 
     def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
