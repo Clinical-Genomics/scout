@@ -671,7 +671,7 @@ class VariantHandler(VariantLoader):
                 variant_file = case_obj["vcf_files"].get("vcf_sv_research")
 
         if not variant_file:
-            raise FileNotFoundError("Vcf file does not seem to exist")
+            raise FileNotFoundError("VCF file does not seem to exist")
 
         try:
             vcf_obj = VCF(variant_file)
