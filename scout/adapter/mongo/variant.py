@@ -676,7 +676,11 @@ class VariantHandler(VariantLoader):
         try:
             vcf_obj = VCF(variant_file)
         except Exception:
-            raise FileNotFoundError("Could not access {}".format(variant_file))
+            raise FileNotFoundError(
+                "Could not access {}. The file is missing or malformed".format(
+                    variant_file
+                )
+            )
 
         region = ""
 
