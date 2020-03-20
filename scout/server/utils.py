@@ -94,9 +94,7 @@ def variant_case(store, case_obj, variant_obj):
     chrom = None
     starts = []
     ends = []
-    print("HEJ")
     for gene in variant_obj.get("genes", []):
-        print("GENE!", gene["hgnc_id"])
         common_info = gene.get("common")
         if not common_info:
             continue

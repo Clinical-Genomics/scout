@@ -699,8 +699,13 @@ class VariantHandler(VariantLoader):
             for header_line in vcf_obj.raw_header.split("\n"):
                 if len(header_line) > 3:
                     temp.write(header_line + "\n")
-            for variant in vcf_obj(region):
-                temp.write(str(variant))
+            try:
+                for variant in vcf_obj(region):
+                    temp.write(str(variant))
+            except Exception:
+                raise FileNotFoundError(
+                    "Could not find index for {}".format(variant_file)
+                )
 
         return file_name
 
