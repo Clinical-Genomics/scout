@@ -10,16 +10,16 @@ def fixture_loqus_exe():
     return "a/path/to/loqusdb"
 
 
-@pytest.fixture(name="loqus_config")
-def fixture_loqus_config():
-    """Return the path to a loqus config"""
-    return "configs/loqus-config.yaml"
-
-
 @pytest.fixture(name="loqus_version")
 def fixture_loqus_version():
     """Return a loqus version"""
     return 2.5
+
+
+@pytest.fixture(name="loqus_config")
+def fixture_loqus_config():
+    """Return the path to a loqus config"""
+    return "configs/loqus-config.yaml"
 
 
 @pytest.fixture(name="app_config")

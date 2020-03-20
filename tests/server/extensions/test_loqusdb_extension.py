@@ -2,6 +2,8 @@
 
 import subprocess
 
+import pytest
+
 from scout.server.extensions.loqus_extension import LoqusDB
 
 
@@ -97,3 +99,13 @@ def test_loqusdb_cases(mocker, loqus_extension):
     res = loqus_extension.case_count()
     # THEN assert the output is parsed correct
     assert res == nr_cases
+
+
+def test_loqusdb_wrong_version(loqus_exe):
+    """Test to instantiate a loqus extension whe version is to low"""
+    # GIVEN a loqusdb version < 2.5
+    loqus_extension = LoqusDB(loqusdb_binary=loqus_exe, version=1.0)
+    # WHEN instantiating an adapter
+    with pytest.raises(SyntaxError):
+        # THEN assert a syntax error is raised since version is wrong
+        loqus_extension.version_check()
