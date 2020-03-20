@@ -43,7 +43,6 @@ LOG = logging.getLogger(__name__)
 )
 @click.option("-f", "--force", is_flag=True, help="upload without request")
 @click.option(
-    "-k",
     "--keep-tags/--no-keep-tags",
     default=True,
     help="Export manual user tags from old variants to the new",
