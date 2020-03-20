@@ -70,6 +70,13 @@ class LoqusDB:
         self.version = app.config["LOQUSDB_SETTINGS"].get("version")
         if not self.version:
             self.version = self.get_version()
+        self.version_check()
+
+    def version_check(self):
+        """Check if a compatible version is used"""
+        if not self.version >= 2.5:
+            LOG.info("Please update your loqusdb version to >=2.5")
+            raise SyntaxError("Only compatible with loqusdb version >= 2.5")
 
     @staticmethod
     def set_coordinates(variant_info):
