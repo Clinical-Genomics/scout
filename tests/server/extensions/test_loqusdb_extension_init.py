@@ -1,6 +1,7 @@
 """Tests for loqusdb extension"""
 import subprocess
 
+import pytest
 from flask import Flask
 
 from scout.server.extensions.loqus_extension import LoqusDB
@@ -88,6 +89,19 @@ def test_init_loqusextension_init_app_no_version(mocker, loqus_exe, loqus_versio
         assert loqus_obj.version == loqus_version
         # THEN assert that there is no config
         assert loqus_obj.loqusdb_config is None
+
+
+def test_init_loqusextension_init_app_wrong_version(loqus_exe):
+    """Test a init a loqus extension object with flask app"""
+    # GIVEN a loqusdb binary
+    configs = {"LOQUSDB_SETTINGS": {"binary_path": loqus_exe, "version": 1.0}}
+    # WHEN initialising a loqusdb extension with init app
+    app = Flask(__name__)
+    loqus_obj = LoqusDB()
+    with pytest.raises(SyntaxError):
+        with app.app_context():
+            app.config = configs
+            loqus_obj.init_app(app)
 
 
 def test_init_loqusextension_init_app_with_config(loqus_exe, loqus_config):
