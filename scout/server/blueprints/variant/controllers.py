@@ -66,7 +66,7 @@ def variant(
         add_case(bool): If info about files case should be added
         add_other(bool): If information about other causatives should be added
         get_overlapping(bool): If overlapping variants should be collected
-        variant_type(str): in ['snv', 'str', 'sv', 'cancer']
+        variant_type(str): in ['snv', 'str', 'sv', 'cancer', 'cancer_sv']
         institute_obj(scout.models.Institute)
         case_obj(scout.models.Case)
 
