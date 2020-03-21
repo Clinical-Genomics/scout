@@ -47,6 +47,7 @@ def panels():
                 display_name=request.form["display_name"],
                 description=request.form["description"],
                 csv_lines=lines,
+                maintainer=[current_user._id],
             )
             if new_panel_id is None:
                 flash(
@@ -60,12 +61,21 @@ def panels():
 
         else:  # modify an existing panel
             update_option = request.form["modify_option"]
-            panel_obj = controllers.update_panel(
-                store=store,
-                panel_name=request.form["panel_name"],
-                csv_lines=lines,
-                option=update_option,
-            )
+
+            panel_obj = None
+            if panel_write_granted(panel_obj, current_user):
+                panel_obj = controllers.update_panel(
+                    store=store,
+                    panel_name=request.form["panel_name"],
+                    csv_lines=lines,
+                    option=update_option,
+                )
+            else:
+                flash(
+                    "Permission denied: please ask a panel maintainer or admin for help.",
+                    "danger",
+                )
+
             if panel_obj is None:
                 return abort(
                     404, "gene panel not found: {}".format(request.form["panel_name"])
@@ -99,6 +109,10 @@ def panels():
     )
 
 
+def panel_write_granted(panel_obj, user):
+    return user.is_admin or user._id in panel_obj.get("maintainer")
+
+
 @panels_bp.route("/panels/<panel_id>", methods=["GET", "POST"])
 @templated("panels/panel.html")
 def panel(panel_id):
@@ -108,7 +122,14 @@ def panel(panel_id):
     if request.method == "POST":
         if request.form.get("update_description"):
             panel_obj["description"] = request.form["panel_description"]
-            store.update_panel(panel_obj=panel_obj)
+
+            if panel_write_granted(panel_obj, current_user):
+                store.update_panel(panel_obj=panel_obj)
+            else:
+                flash(
+                    "Permission denied: please ask a panel maintainer or admin for help.",
+                    "danger",
+                )
             return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
 
         raw_hgnc_id = request.form["hgnc_id"]
@@ -161,9 +182,17 @@ def panel_update(panel_id):
 
         return redirect(request.referrer)
     else:
-        update_version = request.form.get("version", None)
-        new_panel_id = store.apply_pending(panel_obj, update_version)
-    return redirect(url_for("panels.panel", panel_id=new_panel_id))
+        if panel_write_granted(panel_obj, current_user):
+            update_version = request.form.get("version", None)
+            new_panel_id = store.apply_pending(panel_obj, update_version)
+            panel_id = new_panel_id
+        else:
+            flash(
+                "Permission denied: please ask a panel maintainer or admin for help.",
+                "danger",
+            )
+
+        return redirect(url_for("panels.panel", panel_id=panel_id))
 
 
 @panels_bp.route("/panels/export-panel/<panel_id>", methods=["GET", "POST"])

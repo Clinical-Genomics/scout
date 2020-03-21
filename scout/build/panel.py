@@ -111,6 +111,7 @@ def build_panel(panel_info, adapter):
     gene_panel = dict(
         panel_id = str, # required
         institute = str, # institute_id, required
+        maintainer = list, # list of user._id
         version = float, # required
         date = datetime, # required
         display_name = str, # default is panel_name
@@ -137,6 +138,8 @@ def build_panel(panel_info, adapter):
         raise IntegrityError("Institute %s could not be found" % institute_id)
 
     panel_obj["institute"] = panel_info["institute"]
+
+    panel_obj["maintainer"] = panel_info.get("maintainer", [])
 
     panel_obj["version"] = float(panel_info["version"])
 

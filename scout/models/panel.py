@@ -20,4 +20,5 @@ gene_panel = dict(
     date=datetime,  # required
     display_name=str,  # default is panel_name
     genes=list,  # list of panel genes, sorted on panel_gene['symbol']
+    maintainer=list,  # list of user ids with write access
 )

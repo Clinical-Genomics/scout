@@ -18,6 +18,16 @@ def panel(store, panel_obj):
     panel_obj["institute"] = store.institute(panel_obj["institute"])
     full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
     panel_obj["name_and_version"] = full_name
+
+    panel_obj["maintainer_names"] = [
+        maintainer_obj.get("name")
+        for maintainer_obj in (
+            store.user(user_id=maintainer_id)
+            for maintainer_id in panel_obj.get("maintainer")
+        )
+        if maintainer_obj is not None
+    ]
+
     return dict(panel=panel_obj)
 
 
@@ -112,6 +122,7 @@ def new_panel(
         institute_id(str)
         panel_name(str)
         display_name(str)
+        maintainter(list(user._id))
         csv_lines(iterable(str)): Stream with genes
         description(str)
 
@@ -149,6 +160,7 @@ def new_panel(
                 panel_name=panel_name,
                 institute=institute_obj["_id"],
                 version=1.0,
+                maintainter=maintainer,
                 date=dt.datetime.now(),
                 display_name=display_name,
                 description=description,
