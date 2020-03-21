@@ -1,11 +1,12 @@
-import os
+"""Tests for variant handling"""
 import logging
+import os
 
 import pytest
 
 TRAVIS = os.getenv("TRAVIS")
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 def test_variant(real_variant_database, variant_objs, case_obj):
@@ -58,7 +59,7 @@ def test_query_all_gene_variants(real_variant_database):
         }
     )
     nr_high_ranked_variants_in_gene = sum(1 for i in res)
-    log.info(
+    LOG.info(
         "Number of high ranked variants in %s: %s",
         gene_symbol,
         nr_high_ranked_variants_in_gene,
@@ -86,6 +87,7 @@ def test_load_variants(real_populated_database, variant_objs, case_obj):
     assert sum(1 for i in res) == 0
 
     # WHEN adding a number of variants
+    index = 0
     for index, variant_obj in enumerate(variant_objs):
         # print(variant_obj)
         adapter.load_variant(variant_obj)
@@ -93,7 +95,7 @@ def test_load_variants(real_populated_database, variant_objs, case_obj):
     # THEN the same number of variants should have been loaded
     result = adapter.variants(case_id=case_id, nr_of_variants=-1)
     nr_variants = sum(1 for i in result)
-    log.info("Number of variants loaded:%s", nr_variants)
+    LOG.info("Number of variants loaded:%s", nr_variants)
     assert nr_variants == index + 1
 
 
@@ -107,6 +109,7 @@ def test_load_sv_variants(real_populated_database, sv_variant_objs, case_obj):
     assert sum(1 for i in res) == 0
 
     # WHEN adding a number of sv variants
+    index = 0
     for index, variant_obj in enumerate(sv_variant_objs):
         adapter.load_variant(variant_obj)
 
@@ -231,7 +234,6 @@ def test_load_coordinates(real_populated_database, variant_objs, case_obj):
 
 @pytest.mark.skipif(TRAVIS, reason="Tempfiles seems to be problematic on travis")
 def test_get_region_vcf(populated_database, case_obj):
-    print("Travis", TRAVIS, type(TRAVIS))
     adapter = populated_database
     case_id = case_obj["_id"]
 
@@ -255,3 +257,43 @@ def test_get_region_vcf(populated_database, case_obj):
     os.remove(file_name)
 
     assert nr_variants > 0
+
+
+def test_get_region_vcf_non_existing(adapter, case_obj):
+    """Test to get a region VCF when file does not exist"""
+    # GIVEN a case obj without a cancer VCF
+    assert case_obj["vcf_files"].get("vcf_cancer") is None
+
+    # WHEN creating a region vcf
+    with pytest.raises(FileNotFoundError):
+        # THEN assert a file not found error is raised
+        adapter.get_region_vcf(
+            case_obj,
+            chrom=None,
+            start=None,
+            end=None,
+            gene_obj=None,
+            variant_type="cancer",
+            category="snv",
+            rank_threshold=None,
+        )
+
+
+def test_get_region_vcf_missing_file(adapter, case_obj):
+    """Test to get a region VCF when file does not exist"""
+    # GIVEN a case obj without a cancer VCF
+    case_obj["vcf_files"]["vcf_cancer"] = "afile.vcf"
+
+    # WHEN creating a region vcf
+    with pytest.raises(FileNotFoundError):
+        # THEN assert a file not found error is raised
+        adapter.get_region_vcf(
+            case_obj,
+            chrom=None,
+            start=None,
+            end=None,
+            gene_obj=None,
+            variant_type="cancer",
+            category="snv",
+            rank_threshold=None,
+        )

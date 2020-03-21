@@ -1,29 +1,24 @@
 # -*- coding: utf-8 -*-
 # stdlib modules
 import logging
-import re
 import pathlib
+import re
 import tempfile
-
 from datetime import datetime
 from pprint import pprint as pp
 
 # Third party modules
 import pymongo
-
 from cyvcf2 import VCF
 from intervaltree import IntervalTree
+from pymongo.errors import BulkWriteError, DuplicateKeyError
 
+from scout.build import build_variant
+from scout.exceptions import IntegrityError
+from scout.parse.variant import parse_variant
 # Local modules
 from scout.parse.variant.rank_score import parse_rank_score
-
-from scout.parse.variant import parse_variant
-from scout.build import build_variant
-
 from scout.utils.coordinates import is_par
-
-from pymongo.errors import DuplicateKeyError, BulkWriteError
-from scout.exceptions import IntegrityError
 
 from .variant_loader import VariantLoader
 
@@ -701,6 +696,8 @@ class VariantHandler(VariantLoader):
                 variant_file = case_obj["vcf_files"].get("vcf_sv")
             elif category == "str":
                 variant_file = case_obj["vcf_files"].get("vcf_str")
+            elif category == "cancer":
+                variant_file = case_obj["vcf_files"].get("vcf_cancer")
         elif variant_type == "research":
             if category == "snv":
                 variant_file = case_obj["vcf_files"].get("vcf_snv_research")
@@ -708,9 +705,17 @@ class VariantHandler(VariantLoader):
                 variant_file = case_obj["vcf_files"].get("vcf_sv_research")
 
         if not variant_file:
-            raise SyntaxError("Vcf file does not seem to exist")
+            raise FileNotFoundError("VCF file does not seem to exist")
 
-        vcf_obj = VCF(variant_file)
+        try:
+            vcf_obj = VCF(variant_file)
+        except Exception:
+            raise FileNotFoundError(
+                "Could not access {}. The file is missing or malformed".format(
+                    variant_file
+                )
+            )
+
         region = ""
 
         if gene_obj:
@@ -732,8 +737,13 @@ class VariantHandler(VariantLoader):
             for header_line in vcf_obj.raw_header.split("\n"):
                 if len(header_line) > 3:
                     temp.write(header_line + "\n")
-            for variant in vcf_obj(region):
-                temp.write(str(variant))
+            try:
+                for variant in vcf_obj(region):
+                    temp.write(str(variant))
+            except Exception:
+                raise FileNotFoundError(
+                    "Could not find index for {}".format(variant_file)
+                )
 
         return file_name
 
