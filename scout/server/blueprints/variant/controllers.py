@@ -95,6 +95,11 @@ def variant(
         return None
 
     variant_type = variant_type or variant_obj.get("category", "snv")
+
+    # request category specific variant display
+    variant_category = variant_obj.get("category", "snv")
+    LOG.debug("Variant category {}".format(variant_category))
+
     variant_id = variant_obj["variant_id"]
 
     genome_build = str(case_obj.get("genome_build", "37"))
@@ -162,12 +167,6 @@ def variant(
     # Add display information about callers
     variant_obj["callers"] = callers(variant_obj, category=variant_type)
 
-    # request category specific variant display
-    category = variant_type
-    LOG.debug("Variant category {}".format(category))
-    if category in ("cancer", "str", "cancer_sv"):
-        data[category] = True
-
     # Convert affection status to strings for the template
     is_affected(variant_obj, case_obj)
 
@@ -214,6 +213,7 @@ def variant(
         "institute": institute_obj,
         "case": case_obj,
         "variant": variant_obj,
+        variant_category: True,
         "causatives": other_causatives,
         "events": events,
         "overlapping_vars": overlapping_vars,
