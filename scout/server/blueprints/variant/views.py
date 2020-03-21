@@ -55,11 +55,6 @@ def variant(institute_id, case_name, variant_id):
             store, loqusdb, data["case"], data["variant"]
         )
 
-    # Default to request args for variant display of non-snvs
-    # data["cancer"] = request.args.get("cancer") == "yes"
-    # data["str"] = request.args.get("str") == "yes"
-    # controller assigns based on variant category!
-
     return data
 
 
@@ -77,14 +72,6 @@ def sv_variant(institute_id, case_name, variant_id):
             store, loqusdb, data["case"], data["variant"]
         )
 
-    # request category specific variant display
-    # category = data["variant"].get("category", "sv")
-    # LOG.debug("Variant category {}".format(category))
-    # if category in ("cancer_sv"):
-    #        data[category] = True
-    # data["cancer"] = request.args.get("cancer") == "yes"
-    # data["str"] = request.args.get("str") == "yes"
-    # controller assigns based on variant category!
     return data
 
 
@@ -101,9 +88,6 @@ def str_variant(institute_id, case_name, variant_id):
         get_overlapping=False,
     )
 
-    # data["cancer"] = request.args.get("cancer") == "yes"
-    # data["str"] = request.args.get("str") == "yes"
-    # controller assigns based on variant category!
     return data
 
 
@@ -154,7 +138,7 @@ def variant_update(institute_id, case_name, variant_id):
     if manual_rank:
         try:
             new_manual_rank = int(manual_rank) if manual_rank != "-1" else None
-        except:
+        except ValueError:
             LOG.warning(
                 "Attempt to update manual rank with invalid value {}".format(
                     manual_rank
@@ -176,7 +160,7 @@ def variant_update(institute_id, case_name, variant_id):
     elif cancer_tier:
         try:
             new_cancer_tier = cancer_tier if cancer_tier != "-1" else None
-        except:
+        except ValueError:
             LOG.warning(
                 "Attempt to update cancer tier with invalid value {}".format(
                     cancer_tier

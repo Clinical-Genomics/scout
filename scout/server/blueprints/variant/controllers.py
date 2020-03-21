@@ -48,6 +48,7 @@ def variant(
     add_other=True,
     get_overlapping=True,
     add_compounds=True,
+    variant_category=None,
     variant_type=None,
     case_obj=None,
     institute_obj=None,
@@ -66,7 +67,8 @@ def variant(
         add_case(bool): If info about files case should be added
         add_other(bool): If information about other causatives should be added
         get_overlapping(bool): If overlapping variants should be collected
-        variant_type(str): in ['snv', 'str', 'sv', 'cancer', 'cancer_sv']
+        variant_type(str): in ["clinical", "research"]
+        variant_category(str): ["snv", "str", "sv", "cancer", "cancer_sv"]
         institute_obj(scout.models.Institute)
         case_obj(scout.models.Case)
 
@@ -94,7 +96,7 @@ def variant(
     if variant_obj is None:
         return None
 
-    variant_type = variant_type or variant_obj.get("category", "snv")
+    variant_type = variant_type or variant_obj.get("variant_type", "clinical")
 
     # request category specific variant display
     variant_category = variant_obj.get("category", "snv")
@@ -156,7 +158,7 @@ def variant(
     # Add general variant links
     variant_obj.update(get_variant_links(variant_obj, int(genome_build)))
     variant_obj["frequencies"] = frequencies(variant_obj)
-    if variant_type in ["snv", "cancer"]:
+    if variant_category in ["snv", "cancer"]:
         # This is to convert a summary of frequencies to a string
         variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
@@ -165,7 +167,7 @@ def variant(
     )
 
     # Add display information about callers
-    variant_obj["callers"] = callers(variant_obj, category=variant_type)
+    variant_obj["callers"] = callers(variant_obj, category=variant_category)
 
     # Convert affection status to strings for the template
     is_affected(variant_obj, case_obj)
