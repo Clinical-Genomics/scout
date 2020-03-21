@@ -56,14 +56,9 @@ def variant(institute_id, case_name, variant_id):
         )
 
     # Default to request args for variant display of non-snvs
-    data["cancer"] = request.args.get("cancer") == "yes"
-    data["str"] = request.args.get("str") == "yes"
-
-    # request category specific variant display
-    category = data["variant"].get("category", "snv")
-    LOG.debug("Variant category {}".format(category))
-    if category in ("cancer", "str"):
-        data[category] = True
+    # data["cancer"] = request.args.get("cancer") == "yes"
+    # data["str"] = request.args.get("str") == "yes"
+    # controller assigns based on variant category!
 
     return data
 
@@ -73,7 +68,7 @@ def variant(institute_id, case_name, variant_id):
 def sv_variant(institute_id, case_name, variant_id):
     """Display a specific structural variant."""
     data = variant_controller(
-        store, institute_id, case_name, variant_id, add_other=False, variant_type="sv"
+        store, institute_id, case_name, variant_id, add_other=False
     )
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
@@ -83,13 +78,13 @@ def sv_variant(institute_id, case_name, variant_id):
         )
 
     # request category specific variant display
-    category = data["variant"].get("category", "sv")
-    LOG.debug("Variant category {}".format(category))
-    if category in ("cancer_sv"):
-        data[category] = True
-
-    data["cancer"] = request.args.get("cancer") == "yes"
-    data["str"] = request.args.get("str") == "yes"
+    # category = data["variant"].get("category", "sv")
+    # LOG.debug("Variant category {}".format(category))
+    # if category in ("cancer_sv"):
+    #        data[category] = True
+    # data["cancer"] = request.args.get("cancer") == "yes"
+    # data["str"] = request.args.get("str") == "yes"
+    # controller assigns based on variant category!
     return data
 
 
@@ -104,11 +99,11 @@ def str_variant(institute_id, case_name, variant_id):
         variant_id,
         add_other=False,
         get_overlapping=False,
-        variant_type="str",
     )
 
-    data["cancer"] = request.args.get("cancer") == "yes"
-    data["str"] = request.args.get("str") == "yes"
+    # data["cancer"] = request.args.get("cancer") == "yes"
+    # data["str"] = request.args.get("str") == "yes"
+    # controller assigns based on variant category!
     return data
 
 
