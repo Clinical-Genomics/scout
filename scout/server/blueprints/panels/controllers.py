@@ -113,7 +113,13 @@ def update_panel(store, panel_name, csv_lines, option):
 
 
 def new_panel(
-    store, institute_id, panel_name, display_name, csv_lines, description=None
+    store,
+    institute_id,
+    panel_name,
+    display_name,
+    csv_lines,
+    maintainer=None,
+    description=None,
 ):
     """Create a new gene panel.
 
@@ -122,8 +128,8 @@ def new_panel(
         institute_id(str)
         panel_name(str)
         display_name(str)
-        maintainter(list(user._id))
         csv_lines(iterable(str)): Stream with genes
+        maintainer(list(user._id))
         description(str)
 
     Returns:
@@ -140,7 +146,8 @@ def new_panel(
         flash(
             "panel already exists: {} - {}".format(
                 panel_obj["panel_name"], panel_obj["display_name"]
-            )
+            ),
+            "danger",
         )
         return None
 
@@ -160,7 +167,7 @@ def new_panel(
                 panel_name=panel_name,
                 institute=institute_obj["_id"],
                 version=1.0,
-                maintainter=maintainer,
+                maintainer=maintainer,
                 date=dt.datetime.now(),
                 display_name=display_name,
                 description=description,

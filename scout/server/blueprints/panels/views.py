@@ -45,9 +45,9 @@ def panels():
                 institute_id=request.form["institute"],
                 panel_name=new_panel_name,
                 display_name=request.form["display_name"],
-                description=request.form["description"],
                 csv_lines=lines,
                 maintainer=[current_user._id],
+                description=request.form["description"],
             )
             if new_panel_id is None:
                 flash(
@@ -62,7 +62,12 @@ def panels():
         else:  # modify an existing panel
             update_option = request.form["modify_option"]
 
-            panel_obj = None
+            panel_obj = store.gene_panel(request.form["panel_name"])
+            if panel_obj is None:
+                return abort(
+                    404, "gene panel not found: {}".format(request.form["panel_name"])
+                )
+
             if panel_write_granted(panel_obj, current_user):
                 panel_obj = controllers.update_panel(
                     store=store,
@@ -76,12 +81,7 @@ def panels():
                     "danger",
                 )
 
-            if panel_obj is None:
-                return abort(
-                    404, "gene panel not found: {}".format(request.form["panel_name"])
-                )
-            else:
-                return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
+            return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
 
     institutes = list(user_institutes(store, current_user))
     panel_names = [
@@ -110,7 +110,11 @@ def panels():
 
 
 def panel_write_granted(panel_obj, user):
-    return user.is_admin or user._id in panel_obj.get("maintainer")
+    return (
+        not panel_obj.get("maintainer")
+        or user.is_admin
+        or user._id in panel_obj.get("maintainer")
+    )
 
 
 @panels_bp.route("/panels/<panel_id>", methods=["GET", "POST"])

@@ -139,8 +139,6 @@ def build_panel(panel_info, adapter):
 
     panel_obj["institute"] = panel_info["institute"]
 
-    panel_obj["maintainer"] = panel_info.get("maintainer", [])
-
     panel_obj["version"] = float(panel_info["version"])
 
     try:
@@ -148,6 +146,7 @@ def build_panel(panel_info, adapter):
     except KeyError as err:
         raise KeyError("Panel has to have a date")
 
+    panel_obj["maintainer"] = panel_info.get("maintainer", [])
     panel_obj["display_name"] = panel_info.get("display_name", panel_obj["panel_name"])
     panel_obj["description"] = panel_info.get("description")
 
