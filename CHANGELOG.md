@@ -19,6 +19,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Variant loading assumes GATK if no caller set given and GATK filter status is seen in FILTER
 - Pass genome build param all the way in order to get the right gene mappings for cases with build 38
 - Parse correctly variants with zero frequency values
+- Continue even if there are problems to create a region vcf
+- STR and cancer variant navigation back to variants pages could fail
 
 ### Changed
 - Improved code that sends requests to the external APIs
@@ -26,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Run coveralls on github actions instead of travis
 - Run pip checks on github actions instead of coveralls
 - For hg38 cases, change gnomAD link to point to version 3.0 (which is hg38 based)
+- Show pinned or causative STR variants a bit more human readable
 
 ## [4.13.1]
 
