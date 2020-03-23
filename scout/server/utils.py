@@ -102,13 +102,18 @@ def variant_case(store, case_obj, variant_obj):
         starts.append(common_info.get("start"))
         ends.append(common_info.get("end"))
 
-    if chrom and starts and ends:
+    if not (chrom and starts and ends):
+        return
+
+    try:
         vcf_path = store.get_region_vcf(
             case_obj, chrom=chrom, start=min(starts), end=max(ends)
         )
 
         # Create a reduced VCF with variants in the region
         case_obj["region_vcf_file"] = vcf_path
+    except FileNotFoundError as err:
+        LOG.warning(err)
 
 
 def case_append_alignments(case_obj):
