@@ -151,7 +151,7 @@ def variants(
                 start=start,
                 end=end,
                 gene_obj=gene_obj,
-                build=case_obj["genome_build"]
+                build=case_obj["genome_build"],
             )
 
         except Exception as e:
