@@ -1,4 +1,95 @@
+"""Fixtures for coordinates"""
+
 import pytest
+
+
+class CyvcfVariant:
+    """Mock a cyvcf variant
+
+    Default is to return a variant with three individuals high genotype
+    quality.
+    """
+
+    def __init__(self,):
+        self._chrom = "1"
+        self._position = 80000
+        self._reference = "A"
+        self._alternative = "C"
+        self._end = None
+        self.var_type = "snv"
+        self.INFO = {}
+
+    @property
+    def gt_quals(self):
+        """Get the genotype qualities"""
+        return [60, 60, 60]
+
+    @property
+    def gt_types(self):
+        """Get the genotypes"""
+        return [1, 1, 0]
+
+    @property
+    def CHROM(self):
+        """Get the chrom"""
+        return self._chrom
+
+    @CHROM.setter
+    def CHROM(self, value):
+        """Set the chromosome"""
+        self._chrom = value
+
+    @property
+    def POS(self):
+        """Get the pos"""
+        return self._position
+
+    @POS.setter
+    def POS(self, value):
+        """Set the pos"""
+        self._position = value
+
+    @property
+    def REF(self):
+        """Get the reference"""
+        return self._reference
+
+    @REF.setter
+    def REF(self, value):
+        """Set the reference"""
+        self._reference = value
+
+    @property
+    def ALT(self):
+        """Get the alternative"""
+        return [self._alternative]
+
+    @ALT.setter
+    def ALT(self, value):
+        """Set the alternative"""
+        self._alternative = value
+
+    @property
+    def end(self):
+        """Get the end"""
+        return self._end or self._position
+
+    @end.setter
+    def end(self, value):
+        """Set the end"""
+        self._end = value
+
+    def __repr__(self):
+        return (
+            f"CyvcfVariant:CHROM:{self._chrom},REF:{self._reference},ALT:{self._alternative},POS:"
+            f"{self._position},end:{self._end},INFO:{self.INFO}"
+        )
+
+
+@pytest.fixture
+def mock_variant():
+    """Return a mocked cyvcf2 variant"""
+    return CyvcfVariant()
 
 
 @pytest.fixture
