@@ -44,6 +44,8 @@ jobs:
 
     - name: Run linters
       uses: samuelmeuli/lint-action@v1
+      # Let linters fix problems if they can
+      auto_fix: true
       with:
         github_token: ${{ secrets.github_token }}
         # Enable linters
