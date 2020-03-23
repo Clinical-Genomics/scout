@@ -8,10 +8,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 ### Fixed
-
-- Error when variant found in loqusdb is not loaded for other case
-
 ### Changed
+
+
+## [4.14.1]
+
+### Fixed
+- Error when variant found in loqusdb is not loaded for other case
 
 ## [4.14]
 
