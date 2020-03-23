@@ -237,10 +237,15 @@
       <tbody>
         <tr>
           <td>
-            <a class="btn btn-outline-secondary form-control" href="http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target="_blank">Ensembl</a>
+	    {% if case.genome_build == 38 %}
+              <a class="btn btn-outline-secondary form-control" href="http://www.ensembl.org/Homo_sapiens/Location/View?db=core;r={{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target="_blank">Ensembl</a>
+	    {% else %}
+	      <a class="btn btn-outline-secondary form-control" href="http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target="_blank">Ensembl</a>
+	    {% endif %}
           </td>
 	  <td>
-	    <a class="btn btn-outline-secondary form-control" href="https://decipher.sanger.ac.uk/browser#q/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}%20/location/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target ="_blank">DECIPHER</a>
+	    <a class="btn btn-outline-secondary form-control" href="https://decipher.sanger.ac.uk/browser#q/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}%20/location/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target ="_blank">DECIPHER {% if case.genome_build == 38 %} (GRCh37){% endif %}</a>
+	    
 	  </td>
         </tr>
       </tbody>
