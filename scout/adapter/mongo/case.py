@@ -826,8 +826,8 @@ class CaseHandler(object):
 
         return case_verif_variants
 
-    def update_manual_tagged_variants(
-        self, institute_obj, case_obj, old_tagged_variants
+    def update_variant_actions(
+        self, institute_obj, case_obj, old_eval_variants
     ):
         """Update existing variants of a case according to the tagged status
             (manual_rank, dismiss_variant, mosaic_tags) of its previous variants
@@ -835,15 +835,18 @@ class CaseHandler(object):
         Accepts:
             institute_obj(dict): an institute object
             case_obj(dict): a case object
-            old_tagged_variants(iterable(Variant))
+            old_eval_variants(list(Variant))
 
         Returns:
             updated_variants(dict): a dictionary like this:
                 'manual_rank' : [list of variant ids],
                 'dismiss_variant' : [list of variant ids],
-                'mosaic_tags' : [list of variant ids]
+                'mosaic_tags' : [list of variant ids],
+                'cancer_tier': [list of variant ids],
+                'acmg_classification': [list of variant ids]
         """
-        updated_variants = {"manual_rank": [], "dismiss_variant": [], "mosaic_tags": []}
+        updated_variants = {"manual_rank": [], "dismiss_variant": [], "mosaic_tags": [],
+            "cancer_tier": [], "acmg_classification": []}
 
         LOG.debug(
             "Updating tagged status for {} variants in case:{}".format(

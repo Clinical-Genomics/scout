@@ -43,9 +43,9 @@ LOG = logging.getLogger(__name__)
 )
 @click.option("-f", "--force", is_flag=True, help="upload without request")
 @click.option(
-    "--keep-tags/--no-keep-tags",
+    "--keep-actions/--no-keep-actions",
     default=True,
-    help="Export manual user tags from old variants to the new",
+    help="Export user actions from old variants to the new",
 )
 @with_appcontext
 def variants(
@@ -67,7 +67,7 @@ def variants(
     hgnc_symbol,
     rank_treshold,
     force,
-    keep_tags,
+    keep_actions,
 ):
     """Upload variants to a case
 
@@ -119,10 +119,10 @@ def variants(
             raise click.Abort()
 
     old_sanger_variants = adapter.case_sanger_variants(case_obj["_id"])
-    old_tagged_variants = None
+    old_evaluated_variants = None #acmg, manual rank, cancer tier, dismissed, mosaic, commented
 
-    if keep_tags:  # collect all custom tags for the variants of this case
-        old_tagged_variants = list(adapter.tagged_variants(case_id))
+    if keep_actions:  # collect all custom tags for the variants of this case
+        old_evaluated_variants = list(adapter.evaluated_variants(case_id))
 
     i = 0
     for file_type in files:
@@ -178,7 +178,7 @@ def variants(
         institute_obj, case_obj, old_sanger_variants
     )
 
-    if keep_tags and old_tagged_variants:
-        adapter.update_manual_tagged_variants(
-            institute_obj, case_obj, old_tagged_variants
+    if keep_actions and old_evaluated_variants:
+        adapter.update_variant_actions(
+            institute_obj, case_obj, old_evaluated_variants
         )
