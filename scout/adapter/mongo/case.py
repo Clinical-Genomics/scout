@@ -967,6 +967,7 @@ class CaseHandler(object):
                     if action == "is_commented":
                         updated_comments = self.comments_reupload(old_var, new_var, institute_obj, case_obj)
                         if updated_comments > 0:
+                            LOG.info("Created {} new comments for variant {} after reupload".format(updated_comments, display_name))
                             updated_variant = new_var
 
                     if updated_variant:
