@@ -965,9 +965,15 @@ class CaseHandler(object):
                         )
 
                     if action == "is_commented":
-                        updated_comments = self.comments_reupload(old_var, new_var, institute_obj, case_obj)
+                        updated_comments = self.comments_reupload(
+                            old_var, new_var, institute_obj, case_obj
+                        )
                         if updated_comments > 0:
-                            LOG.info("Created {} new comments for variant {} after reupload".format(updated_comments, display_name))
+                            LOG.info(
+                                "Created {} new comments for variant {} after reupload".format(
+                                    updated_comments, display_name
+                                )
+                            )
                             updated_variant = new_var
 
                     if updated_variant:
@@ -976,7 +982,6 @@ class CaseHandler(object):
 
         LOG.info("Variant actions updated {} times".format(n_status_updated))
         return updated_variants
-
 
     def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
         """Update existing variants for a case according to a previous
