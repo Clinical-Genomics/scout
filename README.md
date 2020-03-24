@@ -5,10 +5,9 @@
 	<h3 align="center">Analyze VCFs and collaborate on solving rare diseases quicker</h3>
 </p>
 
-[![Build Status][travis-img]][travis-url]
-![Build Status - GitHub](https://github.com/Clinical-Genomics/scout/workflows/Scout%20tests/badge.svg)
+![Build Status - GitHub][actions-build-status]
 [![PyPI Version][pypi-img]][pypi-url]
-[![Coverage Status](https://coveralls.io/repos/github/Clinical-Genomics/scout/badge.svg?branch=master)](https://coveralls.io/github/Clinical-Genomics/scout?branch=master)
+[![Coverage Status][coveralls-img]][coveralls-url]
 [![GitHub issues-closed][closed-issues-img]][closed-issues-url]
 [![Average time to resolve an issue][ismaintained-resolve-img]][ismaintained-resolve-url]
 [![Percentage of issues still open][ismaintained-open-rate-img]][ismaintained-open-rate-url]
@@ -214,3 +213,6 @@ be found in [CONTRIBUTING](CONTRIBUTING.md).
 [ismaintained-open-rate-url]: http://isitmaintained.com/project/Clinical-Genomics/scout
 [closed-issues-img]: https://img.shields.io/github/issues-closed/Clinical-Genomics/scout.svg
 [closed-issues-url]: https://GitHub.com/Clinical-Genomics/scout/issues?q=is%3Aissue+is%3Aclosed
+[coveralls-img]: https://coveralls.io/repos/github/Clinical-Genomics/scout/badge.svg?branch=master
+[coveralls-url]: https://coveralls.io/github/Clinical-Genomics/scout?branch=master
+[actions-build-status]: https://github.com/Clinical-Genomics/scout/workflows/Scout%20tests/badge.svg
