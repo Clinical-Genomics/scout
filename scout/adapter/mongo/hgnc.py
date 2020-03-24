@@ -132,7 +132,10 @@ class GeneHandler(object):
                 return self.hgnc_collection.find(query)
 
             return self.hgnc_collection.find(
-                {"aliases": {"$regex": hgnc_symbol, "$options": "i"}, "build": str(build)}
+                {
+                    "aliases": {"$regex": hgnc_symbol, "$options": "i"},
+                    "build": str(build),
+                }
             )
 
         return self.hgnc_collection.find({"build": build, "aliases": hgnc_symbol})
@@ -272,7 +275,10 @@ class GeneHandler(object):
 
         res = self.hgnc_collection.find({"hgnc_symbol": symbol, "build": str(build)})
 
-        if self.hgnc_collection.find_one({"aliases": symbol, "build": str(build)}) is None:
+        if (
+            self.hgnc_collection.find_one({"aliases": symbol, "build": str(build)})
+            is None
+        ):
             LOG.debug(
                 "No gene with symbol {} was found. Attempting an alias.".format(symbol)
             )

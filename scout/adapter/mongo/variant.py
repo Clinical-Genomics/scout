@@ -16,6 +16,7 @@ from pymongo.errors import BulkWriteError, DuplicateKeyError
 from scout.build import build_variant
 from scout.exceptions import IntegrityError
 from scout.parse.variant import parse_variant
+
 # Local modules
 from scout.parse.variant.rank_score import parse_rank_score
 from scout.utils.coordinates import is_par
