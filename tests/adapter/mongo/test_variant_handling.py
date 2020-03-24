@@ -297,3 +297,15 @@ def test_get_region_vcf_missing_file(adapter, case_obj):
             category="snv",
             rank_threshold=None,
         )
+
+
+def test_variant_non_existing(adapter):
+    """Test to get a variant when it does not exist"""
+    # GIVEN a adapter and the id of a non existing variant
+    document_id = "nonexisting"
+
+    # WHEN fetching the non existing variant
+    res = adapter.variant(document_id=document_id)
+
+    # THEN that the variant return is None
+    assert res is None
