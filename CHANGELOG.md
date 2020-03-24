@@ -11,7 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix the link to Ensembl for SV variants when genome build 38.
 
 ### Changed
-
+- Runs all CI checks in github actions
 
 ## [4.14.1]
 
