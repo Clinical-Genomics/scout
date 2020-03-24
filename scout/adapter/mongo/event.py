@@ -375,7 +375,6 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             )
         return comment
 
-
     def comments_reupload(self, old_var, new_var, institute_obj, case_obj):
         """Creates comments for a new variant after variant reupload
 
