@@ -560,39 +560,6 @@ class VariantHandler(VariantLoader):
 
         return variants
 
-    def tagged_variants(self, case_id):
-        """Returns variants that have been tagged, dismissed or tagged as mosaic
-
-        Args:
-            case_id(str)
-
-        Returns:
-            result(iterable(Variant)
-        """
-
-        case_obj = self.case(case_id=case_id)
-        if case_obj is None:
-            LOG.warning("Couldn't find any case with id {}".format(case_id))
-            return
-
-        # Collect the result in a dictionary
-        variants = {}
-
-        query = {
-            "$and": [
-                {"case_id": case_id},
-                {
-                    "$or": [
-                        {"manual_rank": {"$exists": True}},
-                        {"dismiss_variant": {"$exists": True}},
-                        {"mosaic_tags": {"$exists": True}},
-                    ]
-                },
-            ]
-        }
-
-        result = self.variant_collection.find(query)
-        return result
 
     def evaluated_variants(self, case_id):
         """Returns variants that have been evaluated
@@ -617,6 +584,7 @@ class VariantHandler(VariantLoader):
                         {"manual_rank": {"$exists": True}},
                         {"cancer_tier": {"$exists": True}},
                         {"dismiss_variant": {"$exists": True}},
+                        {"mosaic_tags": {"$exists": True}},
                     ]
                 },
             ]
@@ -660,6 +628,7 @@ class VariantHandler(VariantLoader):
 
         # Return a list with the variant objects
         return variants.values()
+
 
     def get_region_vcf(
         self,
