@@ -121,7 +121,7 @@ def variants(
     old_sanger_variants = adapter.case_sanger_variants(case_obj["_id"])
     old_evaluated_variants = None #acmg, manual rank, cancer tier, dismissed, mosaic, commented
 
-    if keep_actions:  # collect all custom tags for the variants of this case
+    if keep_actions:  # collect all variants with user actions for this case
         old_evaluated_variants = list(adapter.evaluated_variants(case_id))
 
     i = 0

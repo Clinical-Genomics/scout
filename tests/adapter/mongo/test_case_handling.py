@@ -5,7 +5,7 @@ import pymongo
 import logging
 from pprint import pprint as pp
 
-from scout.constants import INDEXES
+from scout.constants import INDEXES, REV_ACMG_MAP
 from scout.exceptions import IntegrityError
 
 logger = logging.getLogger(__name__)
@@ -665,7 +665,7 @@ def test_keep_manual_rank_tag_after_reupload(
         institute=institute_obj,
         case=case_obj,
         user=user_obj,
-        link="manual_rank_link",
+        link="variant_link",
         variant=old_variant,
         manual_rank=8,
     )
@@ -678,11 +678,11 @@ def test_keep_manual_rank_tag_after_reupload(
     new_variant["_id"] = "new_id"
     adapter.variant_collection.insert_one(new_variant)
 
-    # THE update tags function should return the id of the new variant
-    updated_new_vars = adapter.update_manual_tagged_variants(
+    # THE update actions function should return the id of the new variant
+    updated_new_vars = adapter.update_variant_actions(
         institute_obj=institute_obj,
         case_obj=case_obj,
-        old_tagged_variants=[updated_old],
+        old_eval_variants=[updated_old],
     )
     assert updated_new_vars["manual_rank"] == ["new_id"]
 
@@ -711,7 +711,7 @@ def test_keep_dismiss_variant_tag_after_reupload(
         institute=institute_obj,
         case=case_obj,
         user=user_obj,
-        link="manual_dismissed_link",
+        link="variant_link",
         variant=old_variant,
         dismiss_variant=[2, 11],  # provide 2 dismiss reasons
     )
@@ -724,11 +724,11 @@ def test_keep_dismiss_variant_tag_after_reupload(
     new_variant["_id"] = "new_id"
     adapter.variant_collection.insert_one(new_variant)
 
-    # THE update tags function should return the id of the new variant
-    updated_new_vars = adapter.update_manual_tagged_variants(
+    # THE update actions function should return the id of the new variant
+    updated_new_vars = adapter.update_variant_actions(
         institute_obj=institute_obj,
         case_obj=case_obj,
-        old_tagged_variants=[updated_old],
+        old_eval_variants=[updated_old],
     )
     assert updated_new_vars["dismiss_variant"] == ["new_id"]
 
@@ -757,7 +757,7 @@ def test_keep_mosaic_tags_after_reupload(
         institute=institute_obj,
         case=case_obj,
         user=user_obj,
-        link="manual_dismissed_link",
+        link="variant_link",
         variant=old_variant,
         mosaic_tags=[1, 3],  # provide 2 mosaic tags
     )
@@ -770,14 +770,102 @@ def test_keep_mosaic_tags_after_reupload(
     new_variant["_id"] = "new_id"
     adapter.variant_collection.insert_one(new_variant)
 
-    # THE update tags function should return the id of the new variant
-    updated_new_vars = adapter.update_manual_tagged_variants(
+    # THE update actions function should return the id of the new variant
+    updated_new_vars = adapter.update_variant_actions(
         institute_obj=institute_obj,
         case_obj=case_obj,
-        old_tagged_variants=[updated_old],
+        old_eval_variants=[updated_old],
     )
     assert updated_new_vars["mosaic_tags"] == ["new_id"]
 
     # and the new variant should have a the same mosaic tags
     test_variant = adapter.variant_collection.find_one({"_id": "new_id"})
     assert test_variant["mosaic_tags"] == [1, 3]
+
+
+def test_keep_cancer_tier_after_reupload(adapter, case_obj, variant_obj, user_obj, institute_obj):
+    """Test the code that updates cancer tier of new variants according to the old."""
+
+    old_variant = variant_obj
+    old_variant["_id"] = "old_id"
+
+    ## GIVEN a database with a user
+    adapter.user_collection.insert_one(user_obj)
+
+    ## AND a case
+    adapter.case_collection.insert_one(case_obj)
+
+    ## WHEN cancer tier is assigned to the variant
+    adapter.variant_collection.insert_one(old_variant)
+    updated_old = adapter.update_cancer_tier(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="variant_link",
+        variant=old_variant,
+        cancer_tier="2C",
+    )
+    assert updated_old
+
+    # THEN the variant is replaced by a new variant
+    adapter.variant_collection.delete_one(old_variant)
+
+    new_variant = variant_obj
+    new_variant["_id"] = "new_id"
+    adapter.variant_collection.insert_one(new_variant)
+
+    # THE update actions function should return the id of the new variant
+    updated_new_vars = adapter.update_variant_actions(
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_eval_variants=[updated_old],
+    )
+    assert updated_new_vars["cancer_tier"] == ["new_id"]
+
+    # and the new variant should have a the same mosaic tags
+    test_variant = adapter.variant_collection.find_one({"_id": "new_id"})
+    assert test_variant["cancer_tier"] == "2C"
+
+
+def test_keep_manual_acmg_after_reupload(adapter, case_obj, variant_obj, user_obj, institute_obj):
+    """Test the code that updates acmg classification of new variants according to the old."""
+
+    old_variant = variant_obj
+    old_variant["_id"] = "old_id"
+
+    ## GIVEN a database with a user
+    adapter.user_collection.insert_one(user_obj)
+
+    ## AND a case
+    adapter.case_collection.insert_one(case_obj)
+
+    ## WHEN manual acmg is assigned to the variant
+    adapter.variant_collection.insert_one(old_variant)
+    updated_old = adapter.update_acmg(
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        user_obj=user_obj,
+        link="variant_link",
+        variant_obj=old_variant,
+        acmg_str="likely_pathogenic",
+    )
+    assert updated_old
+
+    # THEN the variant is replaced by a new variant
+    adapter.variant_collection.delete_one(old_variant)
+
+    new_variant = variant_obj
+    new_variant["_id"] = "new_id"
+    adapter.variant_collection.insert_one(new_variant)
+
+    # THE update actions function should return the id of the new variant
+    updated_new_vars = adapter.update_variant_actions(
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_eval_variants=[updated_old],
+    )
+    assert updated_new_vars["acmg_classification"] == ["new_id"]
+
+    # and the new variant should have a the same classification
+    test_variant = adapter.variant_collection.find_one({"_id": "new_id"})
+    assert test_variant["acmg_classification"] == REV_ACMG_MAP["likely_pathogenic"]
