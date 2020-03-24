@@ -382,6 +382,8 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         Accepts:
             old_var(Variant): the deleted variant
             new_var(Variant): the new variant replacing old_var
+            institute_obj(dict): an institute object
+            case_obj(dict): a case object
 
         Returns:
             new_comments(int): the number of created comments
@@ -400,13 +402,13 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             case=case_obj,
         )
 
+        # and create the same comment for the new variant
         for old_comment in comments_query:
-            # and create the same comment for the new variant
+
             comment_user = self.user(old_comment["user_id"])
             if comment_user is None:
                 continue
 
-            # it's not updating the variant but an updated_variant that is not None is needed later in the code
             updated_comment = self.comment(
                 institute=institute_obj,
                 case=case_obj,
