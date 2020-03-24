@@ -39,13 +39,21 @@ jobs:
     - name: Development Dependencies
       run: |
         pip install -r requirements-dev.txt
+        pip install flake8
         pip check
 
-    - name: Lint with flake8
-      run: |
-        pip install flake8
+    - name: Run linters
+      uses: samuelmeuli/lint-action@v1
+      # Let linters fix problems if they can
+      with:
+        github_token: ${{ secrets.github_token }}
+        auto_fix: true
+        # Enable linters
+        black: true
+        black_args: "--check"
         # stop the build if there are Python syntax errors or undefined names
-        flake8 scout/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8: true
+        flake8_args: "scout/ --count --select=E9,F63,F7,F82 --show-source --statistics"
 
     - name: Test with pytest & Coveralls
       run: |
