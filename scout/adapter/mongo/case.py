@@ -965,32 +965,9 @@ class CaseHandler(object):
                         )
 
                     if action == "is_commented":
-                        # collect all comments for the old variant
-                        comments_query = self.events(
-                            variant_id=old_var["variant_id"],
-                            comments=True,
-                            institute=institute_obj,
-                            case=case_obj,
-                        )
-
-                        for old_comment in comments_query:
-                            # and create the same comment for the new variant
-                            comment_user = self.user(old_comment["user_id"])
-                            if comment_user is None:
-                                continue
-
-                            # it's not updating the variant but an updated_variant that is not None is needed later in the code
-                            updated_comment = self.comment(
-                                institute=institute_obj,
-                                case=case_obj,
-                                user=comment_user,
-                                link=link,
-                                variant=new_var,
-                                content=old_comment.get("content"),
-                                comment_level=old_comment.get("level"),
-                            )
-                            if updated_comment:
-                                updated_variant = new_var
+                        updated_comments = self.comments_reupload(old_var, new_var, institute_obj, case_obj)
+                        if updated_comments > 0:
+                            updated_variant = new_var
 
                     if updated_variant:
                         n_status_updated += 1
@@ -998,6 +975,7 @@ class CaseHandler(object):
 
         LOG.info("Variant actions updated {} times".format(n_status_updated))
         return updated_variants
+
 
     def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
         """Update existing variants for a case according to a previous

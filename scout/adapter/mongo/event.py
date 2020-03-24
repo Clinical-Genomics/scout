@@ -374,3 +374,49 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
                 content=content,
             )
         return comment
+
+
+    def comments_reupload(self, old_var, new_var, institute_obj, case_obj):
+        """Creates comments for a new variant after variant reupload
+
+        Accepts:
+            old_var(Variant): the deleted variant
+            new_var(Variant): the new variant replacing old_var
+
+        Returns:
+            new_comments(int): the number of created comments
+        """
+        new_comments = 0
+
+        link = "/{0}/{1}/{2}".format(
+            new_var["institute"], case_obj["display_name"], new_var["_id"]
+        )
+
+        # collect all comments for the old variant
+        comments_query = self.events(
+            variant_id=old_var["variant_id"],
+            comments=True,
+            institute=institute_obj,
+            case=case_obj,
+        )
+
+        for old_comment in comments_query:
+            # and create the same comment for the new variant
+            comment_user = self.user(old_comment["user_id"])
+            if comment_user is None:
+                continue
+
+            # it's not updating the variant but an updated_variant that is not None is needed later in the code
+            updated_comment = self.comment(
+                institute=institute_obj,
+                case=case_obj,
+                user=comment_user,
+                link=link,
+                variant=new_var,
+                content=old_comment.get("content"),
+                comment_level=old_comment.get("level"),
+            )
+            if updated_comment:
+                new_comments += 1
+
+        return new_comments
