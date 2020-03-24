@@ -8,6 +8,7 @@ from pprint import pprint as pp
 import pymongo
 
 from scout.build.case import build_case
+from scout.constants import ACMG_MAP
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.case import parse_case
 from scout.parse.variant.ids import parse_document_id
@@ -844,18 +845,19 @@ class CaseHandler(object):
                 'mosaic_tags' : [list of variant ids],
                 'cancer_tier': [list of variant ids],
                 'acmg_classification': [list of variant ids]
+                'commented': [list of variant ids]
         """
         updated_variants = {"manual_rank": [], "dismiss_variant": [], "mosaic_tags": [],
-            "cancer_tier": [], "acmg_classification": []}
+            "cancer_tier": [], "acmg_classification": [], "commented":[]}
 
         LOG.debug(
-            "Updating tagged status for {} variants in case:{}".format(
-                len(old_tagged_variants), case_obj["_id"]
+            "Updating action status for {} variants in case:{}".format(
+                len(old_eval_variants), case_obj["_id"]
             )
         )
 
         n_status_updated = 0
-        for old_var in old_tagged_variants:
+        for old_var in old_eval_variants:
 
             # search for the same variant in newly uploaded vars for this case
             display_name = old_var["display_name"]
@@ -866,21 +868,24 @@ class CaseHandler(object):
 
             if new_var is None:  # same var is no more among case variants, skip it
                 LOG.warning(
-                    "Trying to propagate tagged status from an old variant to a new, but couldn't find same variant any more"
+                    "Trying to propagate manual action from an old variant to a new, but couldn't find same variant any more"
                 )
                 continue
 
-            for tag in list(
+            for action in list(
                 updated_variants.keys()
             ):  # manual_rank, dismiss_variant, mosaic_tags
-                if old_var.get(tag):  # tag new variant accordingly
-
+                if old_var.get(action):  # tag new variant accordingly
                     # collect only the latest associated event:
+                    verb = action
+                    if action == "acmg_classification":
+                        verb = "acmg"
+
                     old_event = (
                         self.event_collection.find(
                             {
                                 "case": case_obj["_id"],
-                                "verb": tag,
+                                "verb": verb,
                                 "variant_id": old_var["variant_id"],
                                 "category": "variant",
                             }
@@ -901,41 +906,62 @@ class CaseHandler(object):
                         new_var["institute"], case_obj["display_name"], new_var["_id"]
                     )
 
-                    if tag == "manual_rank":
+                    if action == "manual_rank":
                         updated_variant = self.update_manual_rank(
                             institute=institute_obj,
                             case=case_obj,
                             user=user_obj,
                             link=link,
                             variant=new_var,
-                            manual_rank=old_var.get(tag),
+                            manual_rank=old_var.get(action),
                         )
 
-                    if tag == "dismiss_variant":
+                    if action == "dismiss_variant":
                         updated_variant = self.update_dismiss_variant(
                             institute=institute_obj,
                             case=case_obj,
                             user=user_obj,
                             link=link,
                             variant=new_var,
-                            dismiss_variant=old_var.get(tag),
+                            dismiss_variant=old_var.get(action),
                         )
 
-                    if tag == "mosaic_tags":
+                    if action == "mosaic_tags":
                         updated_variant = self.update_mosaic_tags(
                             institute=institute_obj,
                             case=case_obj,
                             user=user_obj,
                             link=link,
                             variant=new_var,
-                            mosaic_tags=old_var.get(tag),
+                            mosaic_tags=old_var.get(action),
+                        )
+
+                    if action == "cancer_tier":
+                        updated_variant = self.update_cancer_tier(
+                            institute=institute_obj,
+                            case=case_obj,
+                            user=user_obj,
+                            link=link,
+                            variant=new_var,
+                            cancer_tier=old_var.get(action),
+                        )
+
+                    if action == "acmg_classification":
+                        str_classif = ACMG_MAP.get(old_var.get("acmg_classification"))
+                        updated_variant = self.update_acmg(
+                            institute_obj=institute_obj,
+                            case_obj=case_obj,
+                            user_obj=user_obj,
+                            link=link,
+                            variant_obj=new_var,
+                            acmg_str=str_classif
                         )
 
                     if updated_variant:
                         n_status_updated += 1
-                        updated_variants[tag].append(updated_variant["_id"])
+                        updated_variants[action].append(updated_variant["_id"])
 
-        LOG.info("Variant tagged status updated {} times".format(n_status_updated))
+        LOG.info("Variant actions updated {} times".format(n_status_updated))
         return updated_variants
 
     def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
