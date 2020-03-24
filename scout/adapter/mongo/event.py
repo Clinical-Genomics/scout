@@ -95,7 +95,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         """Fetch events from the database.
 
           Args:
-            institute (dict): A institute
+            institute (dict): An institute
             case (dict): A case
             variant_id (str, optional): global variant id
             level (str, optional): restrict comments to 'specific' or 'global'

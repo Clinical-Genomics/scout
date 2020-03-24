@@ -561,7 +561,6 @@ class VariantHandler(VariantLoader):
 
         return variants
 
-
     def evaluated_variants(self, case_id):
         """Returns variants that have been evaluated
 
@@ -629,7 +628,6 @@ class VariantHandler(VariantLoader):
 
         # Return a list with the variant objects
         return variants.values()
-
 
     def get_region_vcf(
         self,

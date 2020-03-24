@@ -119,7 +119,9 @@ def variants(
             raise click.Abort()
 
     old_sanger_variants = adapter.case_sanger_variants(case_obj["_id"])
-    old_evaluated_variants = None #acmg, manual rank, cancer tier, dismissed, mosaic, commented
+    old_evaluated_variants = (
+        None  # acmg, manual rank, cancer tier, dismissed, mosaic, commented
+    )
 
     if keep_actions:  # collect all variants with user actions for this case
         old_evaluated_variants = list(adapter.evaluated_variants(case_id))
@@ -179,6 +181,4 @@ def variants(
     )
 
     if keep_actions and old_evaluated_variants:
-        adapter.update_variant_actions(
-            institute_obj, case_obj, old_evaluated_variants
-        )
+        adapter.update_variant_actions(institute_obj, case_obj, old_evaluated_variants)

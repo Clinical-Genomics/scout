@@ -827,9 +827,7 @@ class CaseHandler(object):
 
         return case_verif_variants
 
-    def update_variant_actions(
-        self, institute_obj, case_obj, old_eval_variants
-    ):
+    def update_variant_actions(self, institute_obj, case_obj, old_eval_variants):
         """Update existing variants of a case according to the tagged status
             (manual_rank, dismiss_variant, mosaic_tags) of its previous variants
 
@@ -845,10 +843,16 @@ class CaseHandler(object):
                 'mosaic_tags' : [list of variant ids],
                 'cancer_tier': [list of variant ids],
                 'acmg_classification': [list of variant ids]
-                'commented': [list of variant ids]
+                'is_commented': [list of variant ids]
         """
-        updated_variants = {"manual_rank": [], "dismiss_variant": [], "mosaic_tags": [],
-            "cancer_tier": [], "acmg_classification": [], "commented":[]}
+        updated_variants = {
+            "manual_rank": [],
+            "dismiss_variant": [],
+            "mosaic_tags": [],
+            "cancer_tier": [],
+            "acmg_classification": [],
+            "is_commented": [],
+        }
 
         LOG.debug(
             "Updating action status for {} variants in case:{}".format(
@@ -875,29 +879,30 @@ class CaseHandler(object):
             for action in list(
                 updated_variants.keys()
             ):  # manual_rank, dismiss_variant, mosaic_tags
-                if old_var.get(action):  # tag new variant accordingly
+                if (
+                    old_var.get(action) or action == "is_commented"
+                ):  # tag new variant accordingly
                     # collect only the latest associated event:
                     verb = action
                     if action == "acmg_classification":
                         verb = "acmg"
+                    elif action == "is_commented":
+                        verb = "comment"
 
-                    old_event = (
-                        self.event_collection.find(
-                            {
-                                "case": case_obj["_id"],
-                                "verb": verb,
-                                "variant_id": old_var["variant_id"],
-                                "category": "variant",
-                            }
-                        )
-                        .sort("updated_at", pymongo.DESCENDING)
-                        .limit(1)
+                    old_event = self.event_collection.find_one(
+                        {
+                            "case": case_obj["_id"],
+                            "verb": verb,
+                            "variant_id": old_var["variant_id"],
+                            "category": "variant",
+                        },
+                        sort=[("updated_at", pymongo.DESCENDING)],
                     )
 
                     if old_event is None:
                         continue
 
-                    user_obj = self.user(old_event[0]["user_id"])
+                    user_obj = self.user(old_event["user_id"])
                     if user_obj is None:
                         continue
 
@@ -905,6 +910,8 @@ class CaseHandler(object):
                     link = "/{0}/{1}/{2}".format(
                         new_var["institute"], case_obj["display_name"], new_var["_id"]
                     )
+
+                    updated_variant = None
 
                     if action == "manual_rank":
                         updated_variant = self.update_manual_rank(
@@ -954,8 +961,36 @@ class CaseHandler(object):
                             user_obj=user_obj,
                             link=link,
                             variant_obj=new_var,
-                            acmg_str=str_classif
+                            acmg_str=str_classif,
                         )
+
+                    if action == "is_commented":
+                        # collect all comments for the old variant
+                        comments_query = self.events(
+                            variant_id=old_var["variant_id"],
+                            comments=True,
+                            institute=institute_obj,
+                            case=case_obj,
+                        )
+
+                        for old_comment in comments_query:
+                            # and create the same comment for the new variant
+                            comment_user = self.user(old_comment["user_id"])
+                            if comment_user is None:
+                                continue
+
+                            # it's not updating the variant but an updated_variant that is not None is needed later in the code
+                            updated_comment = self.comment(
+                                institute=institute_obj,
+                                case=case_obj,
+                                user=comment_user,
+                                link=link,
+                                variant=new_var,
+                                content=old_comment.get("content"),
+                                comment_level=old_comment.get("level"),
+                            )
+                            if updated_comment:
+                                updated_variant = new_var
 
                     if updated_variant:
                         n_status_updated += 1
