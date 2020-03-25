@@ -371,6 +371,10 @@ def cosmic_link(variant_obj):
         return None
     else:
         cosmic_id = cosmic_ids[0]
+
+    if cosmic_id.startswith("COSM") or cosmic_id.startswith("COSV") or cosmic_id.startswith("COSN"):
+        url_template = "https://cancer.sanger.ac.uk/cosmic/search?q={}"
+    else:
         url_template = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}"
 
     return url_template.format(cosmic_id)
