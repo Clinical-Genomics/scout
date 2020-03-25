@@ -446,6 +446,9 @@
           <input type="hidden" name="start" value="{{variant.position - 50}}">
           <input type="hidden" name="stop" value="{{variant.end_position + 50}}">
           <input type="hidden" name="center_guide" value="T">
+          {%if cancer%}
+            <input type="hidden" name="track_type" value="cancer">
+          {% endif %}
           <!--<input type="hidden" name="now" values="{{now}}"-->
         {% endif %}
         <!-- end of general hidden form fields -->
