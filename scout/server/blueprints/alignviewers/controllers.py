@@ -91,7 +91,7 @@ def reference_track(build, chrom):
         reference_track["cytobandURL"] = HG38CYTOBAND_URL
     else:
         reference_track["fastaURL"] = HG19REF_URL
-        reference_track["indexURL"] = HG19EF_URL_INDEX_URL
+        reference_track["indexURL"] = HG19REF_URL_INDEX_URL
         reference_track["cytobandURL"] = HG19CYTOBAND_URL
 
     return reference_track
