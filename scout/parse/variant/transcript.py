@@ -217,6 +217,6 @@ def parse_transcripts(raw_transcripts, allele=None):
                 if variant_id.startswith("rs"):
                     transcript["dbsnp"].append(variant_id)
                 elif variant_id.startswith("COSM") or variant_id.startswith("COSV"):
-                    transcript["cosmic"].append(int(variant_id[4:]))
+                    transcript["cosmic"].append(variant_id)
 
         yield transcript
