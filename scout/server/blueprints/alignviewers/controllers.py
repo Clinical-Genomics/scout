@@ -63,9 +63,9 @@ def clinvar_cnvs_track(build, chrom):
     }
 
     if build in ["GRCh38", "38"] or chrom == "M":
-        clinvar_track["url"] = HG38CLINVAR_CNVS_URL
+        clinvar_cnvs_track["url"] = HG38CLINVAR_CNVS_URL
     else:
-        clinvar_track["url"] = HG19CLINVAR_CNVS_URL
+        clinvar_cnvs_track["url"] = HG19CLINVAR_CNVS_URL
 
     return clinvar_cnvs_track
 
