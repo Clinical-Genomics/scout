@@ -34,7 +34,8 @@ def clinvar_track(build, chrom):
         "type": "annotation",
         "sourceType": "file",
         "displayMode": "EXPANDED",
-        "format" : "bigBed"
+        "format" : "bigBed",
+        "maxRows": 30,
     }
     if build in ["GRCh38", "38"] or chrom == "M":
         clinvar_track["url"] = HG38CLINVAR_URL
@@ -59,7 +60,8 @@ def clinvar_cnvs_track(build, chrom):
         "type": "annotation",
         "sourceType": "file",
         "displayMode": "EXPANDED",
-        "format" : "bigBed"
+        "format" : "bigBed",
+        "maxRows": 100,
     }
 
     if build in ["GRCh38", "38"] or chrom == "M":
