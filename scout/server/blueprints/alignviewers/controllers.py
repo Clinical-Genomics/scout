@@ -15,9 +15,8 @@ HG19GENES_INDEX_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotatio
 HG38CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarMain.bb"
 HG19CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarMain.bb"
 
-HG38COSMIC_CODING = "https://cloud-object-storage-scout-tracks.s3.eu-de.cloud-object-storage.appdomain.cloud/cosmic/CosmicCodingMuts.vcf.gz"
-HG38COSMIC_NON_CODING = "https://cloud-object-storage-scout-tracks.s3.eu-de.cloud-object-storage.appdomain.cloud/cosmic/CosmicNonCodingVariants.vcf.gz"
-
+HG38CLINVAR_CNVS_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarCnv.bb"
+HG19CLINVAR_CNVS_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarCnv.bb"
 
 def clinvar_track(build, chrom):
     """Return a dictionary consisting in the clinVar snvs track
@@ -45,33 +44,30 @@ def clinvar_track(build, chrom):
     return clinvar_track
 
 
-def cosmic_coding_track(build, chrom):
-    """Return a dictionary consisting in the igv.js cosmic coding variants track
+def clinvar_cnvs_track(build, chrom):
+    """Return a dictionary consisting in the clinVar SVs track
 
     Accepts:
         build(str): "37" or "38"
         chrom(str)
 
     Returns:
-        cosmic_coding_track(dict)
-
+        clinvar_cnvs_track(dict)
     """
-
-    cosmic_coding_track = {
-        type: "variant",
-        format: "vcf",
-        name: "Cosmic Coding",
-        squishedCallHeight: 1,
-        expandedCallHeight: 4,
-        displayMode: "squished",
-        visibilityWindow: 1000
+    clinvar_cnvs_track = {
+        "name": "ClinVar CNVs",
+        "type": "annotation",
+        "sourceType": "file",
+        "displayMode": "EXPANDED",
+        "format" : "bigBed"
     }
 
-    #if build in ["GRCh38", "38"] or chrom == "M":
-    cosmic_coding_track["url"] = HG38COSMIC_CODING,
+    if build in ["GRCh38", "38"] or chrom == "M":
+        clinvar_track["url"] = HG38CLINVAR_CNVS_URL
+    else:
+        clinvar_track["url"] = HG19CLINVAR_CNVS_URL
 
-    return cosmic_coding_track
-
+    return clinvar_cnvs_track
 
 def reference_track(build, chrom):
     """Return a dictionary consisting in the igv.js genome reference track

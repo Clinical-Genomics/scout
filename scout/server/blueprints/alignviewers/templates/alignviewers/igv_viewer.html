@@ -56,8 +56,15 @@
                           url: "{{ clinvar_snvs.url|replace('%2F','/') }}",
                           displayMode: "{{ clinvar_snvs.displayMode }}",
                           order: Number.MIN_VALUE,
-                          height: "{{clinvar_snvs.height}}",
-                          maxRows: "{{clinvar_snvs.maxRows}}",
+                      },
+                      {
+                          name: "{{ clinvar_cnvs.name }}",
+                          type: "{{ clinvar_cnvs.type }}",
+                          format: "{{ clinvar_cnvs.format }}",
+                          sourceType: "{{ clinvar_cnvs.sourceType }}",
+                          url: "{{ clinvar_cnvs.url|replace('%2F','/') }}",
+                          displayMode: "{{ clinvar_cnvs.displayMode }}",
+                          order: Number.MIN_VALUE,
                       },
                       {
                           name: "{{ genes_track.name }}",
