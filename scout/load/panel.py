@@ -30,6 +30,7 @@ def load_panel(panel_path, adapter, **kwargs):
     """
     panel_lines = get_file_handle(panel_path)
     version = kwargs.get("version")
+
     try:
         # This will parse panel metadata if includeed in panel file
         panel_info = get_panel_info(
@@ -80,7 +81,8 @@ def load_panel(panel_path, adapter, **kwargs):
         institute = institute or existing_panel["institute"]
 
     # Check if maintainers exist in the user database
-    if maintainer:
+    maintainer = kwargs.get("maintainer")
+    if maintainer is not None:
         scout_users = adapter.users()
         for maintainer_id in maintainer:
             if maintainer_id not in scout_users:

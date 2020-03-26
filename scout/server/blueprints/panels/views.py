@@ -142,7 +142,7 @@ def panel(panel_id):
         hgnc_id = 0
         try:
             hgnc_id = int(raw_hgnc_id)
-        except:
+        except ValueError:
             flash("Provided HGNC is not valid : '{}'".format(raw_hgnc_id), "danger")
             return redirect(request.referrer)
         action = request.form["action"]
