@@ -9,6 +9,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 - Fix the link to Ensembl for SV variants when genome build 38.
+- Arrange information in columns on variant page
+- Fix so that new cosmic identifier (COSV) is also acceptable #1304
+- Fixed COSMIC tag in INFO (outside of CSQ) to be parses as well with `&` splitter.
+- COSMIC stub URL changed to https://cancer.sanger.ac.uk/cosmic/search?q= instead.
 
 ### Changed
 - Runs all CI checks in github actions
