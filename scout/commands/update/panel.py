@@ -64,7 +64,8 @@ def panel(
 
     new_maintainer = None
     if add_maintainer:
-        if add_maintainer not in [user["_id"] for user in adapter.users()]:
+        user_obj = adapter.user(user_id=add_maintainer)
+        if not user_obj:
             # Check if maintainers exist in the user database
             LOG.warning(
                 "Maintainer user id {0} does not exist in user database".format(
