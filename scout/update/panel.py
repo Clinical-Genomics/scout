@@ -7,18 +7,26 @@ from scout.exceptions import IntegrityError
 LOG = logging.getLogger(__name__)
 
 
-def update_panel(adapter, panel_name, panel_version, new_version=None, new_date=None):
+def update_panel(
+    adapter,
+    panel_name,
+    panel_version,
+    new_version=None,
+    new_date=None,
+    new_maintainer=None,
+):
     """Update a gene panel in the database
-    
+
     We need to update the actual gene panel and then all cases that refers to the panel.
-    
+
     Args:
         adapter(scout.adapter.MongoAdapter)
         panel_name(str): Unique name for a gene panel
         panel_version(float)
         new_version(float)
         new_date(datetime.datetime)
-    
+        new_maintainer(list(user_id))
+
     Returns:
         updated_panel(scout.models.GenePanel): The updated gene panel object
     """

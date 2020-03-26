@@ -23,9 +23,23 @@ LOG = logging.getLogger(__name__)
     # There will be more roles in the future
     help="Update the date for a panel",
 )
+@click.option(
+    "--add-maintainer",
+    "-a",
+    # There will be more roles in the future
+    help="Add a maintainter user_id for a panel",
+)
+@click.option(
+    "--revoke-maintainer",
+    "-r",
+    # There will be more roles in the future
+    help="Revoke maintainter status for user_id for a panel",
+)
 @click.option("--update-version", type=float, help="Change the version of a panel")
 @with_appcontext
-def panel(panel, version, update_date, update_version):
+def panel(
+    panel, version, update_date, update_version, add_maintainer, revoke_maintainer
+):
     """
     Update a panel in the database
     """
@@ -46,10 +60,40 @@ def panel(panel, version, update_date, update_version):
             LOG.warning(err)
             click.Abort()
 
+    # Any mintainer updates?
+    new_maintainer = None
+    if add_maintainer:
+        if add_maintainer not in adapter.users():
+            # Check if maintainers exist in the user database
+            raise SyntaxError(
+                "Maintainer user id {0} does not exist in user database".format(
+                    add_maintainer
+                )
+            )
+        else:
+            new_maintainer = panel_obj.get("maintainer", [])
+            new_maintainer.append(add_maintainer)
+
+    if revoke_maintainer:
+        current_maintainers = panel_obj.get("maintainer", [])
+        try:
+            current_maintainers.remove(revoke_maintainer)
+            new_maintainer = current_maintainers
+        except ValueError:
+            raise SyntaxError(
+                (
+                    "Maintainer user id {0} is not a maintainer panel {}.".format(
+                        revoke_maintainer, panel
+                    )
+                    + "Current maintainers: {}.".format(current_maintainers)
+                )
+            )
+
     update_panel(
         adapter,
         panel,
         panel_version=panel_obj["version"],
         new_version=update_version,
+        new_maintainer=new_maintainer,
         new_date=date_obj,
     )
