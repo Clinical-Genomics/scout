@@ -61,7 +61,7 @@ def clinvar_cnvs_track(build, chrom):
         "sourceType": "file",
         "displayMode": "EXPANDED",
         "format" : "bigBed",
-        "maxRows": 100,
+        "height": 150
     }
 
     if build in ["GRCh38", "38"] or chrom == "M":
