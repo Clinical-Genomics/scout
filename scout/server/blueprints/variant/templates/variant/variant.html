@@ -79,12 +79,12 @@
     </div>
 
     <div class="card-columns">
+      {{ omim_phenotypes(variant) }}
+      {{ genemodels_panel(variant) }}
       {{ inheritance_panel(variant) }}
         {% if variant.azlength %}
           {{ autozygosity_panel(variant) }}
         {% endif %}
-      {{ genemodels_panel(variant) }}
-      {{ omim_phenotypes(variant) }}
       {{ frequencies(variant) }}
       {% if config['LOQUSDB_SETTINGS'] %}
         {{ observations_panel(variant, observations, case) }}
