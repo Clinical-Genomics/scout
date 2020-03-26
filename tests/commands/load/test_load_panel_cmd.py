@@ -19,6 +19,15 @@ def test_load_panel(mock_app, institute_obj):
 
     # Test CLI by passing the panel 'OMIM-AUTO':
     result = runner.invoke(
-        cli, ["load", "panel", "--api-key", "not_a_valid_key", "--omim"]
+        cli,
+        [
+            "load",
+            "panel",
+            "--maintainer",
+            "john@doe.com",
+            "--api-key",
+            "not_a_valid_key",
+            "--omim",
+        ],
     )
     assert "OMIM-AUTO already exists in database" in result.output

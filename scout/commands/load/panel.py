@@ -19,6 +19,10 @@ LOG = logging.getLogger(__name__)
     "--institute", help="Specify the owner of the panel. Defaults to cust000."
 )
 @click.option(
+    "--maintainer",
+    help="Specify the maintainer user id of the panel. Defaults to empty (all users can edit).",
+)
+@click.option(
     "-d", "--date", help="date of gene panel on format 2017-12-24, default is today."
 )
 @click.option("-n", "--display-name", help="display name for the panel, optional")
@@ -59,6 +63,7 @@ def panel(
     panel_type,
     panel_id,
     institute,
+    maintainer,
     omim,
     genemap2,
     mim2genes,
@@ -102,6 +107,7 @@ def panel(
                 genemap2_lines=mim_files["genemap2"],
                 mim2gene_lines=mim_files["mim2genes"],
                 institute=institute,
+                maintainer=maintainer,
             )
         except Exception as err:
             LOG.error(err)
@@ -130,6 +136,7 @@ def panel(
             panel_type=panel_type,
             panel_id=panel_id,
             institute=institute,
+            maintainer=maintainer,
         )
     except Exception as err:
         LOG.warning(err)
