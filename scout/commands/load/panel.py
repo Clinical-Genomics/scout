@@ -76,7 +76,7 @@ def panel(
     institute = institute or "cust000"
 
     if omim:
-        _panel_omim(genemap2, mim2genes, api_key, institute, maintainer)
+        _panel_omim(adapter, genemap2, mim2genes, api_key, institute, maintainer)
         return
 
     if panel_app:
@@ -109,7 +109,7 @@ def panel(
     return
 
 
-def _panel_omim(genemap2, mim2genes, api_key, institute, maintainer):
+def _panel_omim(adapter, genemap2, mim2genes, api_key, institute, maintainer):
     """ Add OMIM panel to the database. """
 
     mim_files = None
