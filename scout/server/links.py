@@ -370,7 +370,7 @@ def cosmic_link(variant_obj):
     if not cosmic_ids:
         return None
     else:
-        cosmic_id = cosmic_ids[0]
+        cosmic_id = str(cosmic_ids[0])
 
     if cosmic_id.startswith("COS"):
         url_template = "https://cancer.sanger.ac.uk/cosmic/search?q={}"
