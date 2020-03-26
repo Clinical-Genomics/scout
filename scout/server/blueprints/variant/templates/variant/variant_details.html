@@ -222,11 +222,17 @@
     {% endfor %}
     {% set superdups_fracmatches = superdups_fracmatches|sort %}
     <div class="panel-body">
-      {% if superdups_fracmatches %}
-        <span>mapping to {{superdups_fracmatches|length}} segm. dups. (min matching:{{ superdups_fracmatches|first|float|round(3) }}, max matching:{{ superdups_fracmatches|last|float|round(3) }})</span>
-      {% else %}
-        <p class="card-text">-</p>
-      {% endif %}
+      <ul class="list-group">
+        {% if superdups_fracmatches %}
+          <li class="list-group-item">
+            <span>mapping to {{superdups_fracmatches|length}} segm. dups. (min matching:{{ superdups_fracmatches|first|float|round(3) }}, max matching:{{ superdups_fracmatches|last|float|round(3) }})</span>
+          </li>
+        {% else %}
+          <li class="list-group-item">
+            <p class="card-text">-</p>
+          </li>
+        {% endif %}
+      </ul>
     </div>
   </div>
 {% endmacro %}
