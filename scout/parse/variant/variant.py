@@ -249,7 +249,7 @@ def parse_variant(
 
     cosmic_tag = variant.INFO.get("COSMIC")
     if cosmic_tag:
-        for cosmic_id in cosmic_tag.split("&")
+        for cosmic_id in cosmic_tag.split("&"):
             cosmic_ids.add(cosmic_id)
 
     if dbsnp_ids and not parsed_variant["dbsnp_id"]:
