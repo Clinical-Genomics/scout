@@ -37,7 +37,9 @@ def update_panel(
             "Panel %s version %s does not exist" % (panel_name, panel_version)
         )
 
-    updated_panel = adapter.update_panel(panel_obj, new_version, new_date)
+    updated_panel = adapter.update_panel(
+        panel_obj, new_version, new_date, new_maintainer
+    )
 
     panel_id = updated_panel["_id"]
 
@@ -48,9 +50,12 @@ def update_panel(
     if new_date:
         update["$set"]["panels.$.updated_at"] = updated_panel["date"]
 
-    LOG.info("Updating affected cases with {0}".format(update))
+    # there is however no need to update maintainer for the embedded versions
 
-    query = {"panels": {"$elemMatch": {"panel_name": panel_name}}}
-    adapter.case_collection.update_many(query, update)
+    if update["$set"] != {}:
+        LOG.info("Updating affected cases with {0}".format(update))
+
+        query = {"panels": {"$elemMatch": {"panel_name": panel_name}}}
+        adapter.case_collection.update_many(query, update)
 
     return updated_panel

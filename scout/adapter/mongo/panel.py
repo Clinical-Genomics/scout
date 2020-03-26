@@ -314,7 +314,7 @@ class PanelHandler:
 
         return gene_dict
 
-    def update_panel(self, panel_obj, version=None, date_obj=None):
+    def update_panel(self, panel_obj, version=None, date_obj=None, maintainer=None):
         """Replace a existing gene panel with a new one
 
         Keeps the object id
@@ -338,6 +338,13 @@ class PanelHandler:
             # Updating version should not update date
             if date_obj:
                 date = date_obj
+        elif maintainer:
+            LOG.info(
+                "Updating maintainer from {} to {}".format(
+                    panel_obj.get("maintainer"), maintainer
+                )
+            )
+            panel_obj["maintainer"] = maintainer
         else:
             date = date_obj or dt.datetime.now()
         panel_obj["date"] = date

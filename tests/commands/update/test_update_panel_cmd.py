@@ -27,6 +27,30 @@ def test_update_panel(mock_app):
     )
     assert "panels.$.updated_at" in result.output
 
+    # Test adding a non-existing user
+    result = runner.invoke(
+        cli, ["update", "panel", "-p", "panel1", "-a", "noone@nowhere.no"]
+    )
+    assert "does not exist" in result.output
+
+    # Test adding a real user as maintainer
+    result = runner.invoke(
+        cli, ["update", "panel", "-p", "panel1", "-a", "clark.kent@mail.com"]
+    )
+    assert "Updating maintainer" in result.output
+
+    # Test adding a real user as maintainer AGAIN
+    result = runner.invoke(
+        cli, ["update", "panel", "-p", "panel1", "-a", "clark.kent@mail.com"]
+    )
+    assert "already in maintainer list" in result.output
+
+    # Test removing the same user as panel maintainer
+    result = runner.invoke(
+        cli, ["update", "panel", "-p", "panel1", "-r", "clark.kent@mail.com"]
+    )
+    assert "Updating maintainer" in result.output
+
     # update panel version specifying original panel version
     result = runner.invoke(
         cli,
