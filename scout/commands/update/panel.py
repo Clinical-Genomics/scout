@@ -66,17 +66,18 @@ def panel(
     if add_maintainer:
         if add_maintainer not in [user["_id"] for user in adapter.users()]:
             # Check if maintainers exist in the user database
-            raise SyntaxError(
+            LOG.warning(
                 "Maintainer user id {0} does not exist in user database".format(
                     add_maintainer
                 )
             )
+            click.Abort()
 
         new_maintainer = panel_obj.get("maintainer", [])
         if add_maintainer in new_maintainer:
-            raise ValueError(
-                "User {} already in maintainer list.".format(add_maintainer)
-            )
+            LOG.warning("User {} already in maintainer list.".format(add_maintainer))
+            click.Abort()
+
         new_maintainer.append(add_maintainer)
 
     if revoke_maintainer:
@@ -85,7 +86,7 @@ def panel(
             current_maintainers.remove(revoke_maintainer)
             new_maintainer = current_maintainers
         except ValueError:
-            raise SyntaxError(
+            LOG.warning(
                 (
                     "Maintainer user id {} is not a maintainer for panel {}.".format(
                         revoke_maintainer, panel

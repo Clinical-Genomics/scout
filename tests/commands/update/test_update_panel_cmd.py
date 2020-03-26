@@ -31,7 +31,7 @@ def test_update_panel(mock_app):
     result = runner.invoke(
         cli, ["update", "panel", "-p", "panel1", "-a", "noone@nowhere.no"]
     )
-    assert "does not exist" in str(result.exception)
+    assert "does not exist" in result.output
 
     # Test adding a real user as maintainer
     result = runner.invoke(
@@ -43,7 +43,7 @@ def test_update_panel(mock_app):
     result = runner.invoke(
         cli, ["update", "panel", "-p", "panel1", "-a", "john@doe.com"]
     )
-    assert "already in maintainer" in str(result.exception)
+    assert "already in maintainer" in result.output
 
     # Test removing the same only user as panel maintainer
     result = runner.invoke(
