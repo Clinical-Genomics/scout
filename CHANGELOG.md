@@ -10,6 +10,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Fix the link to Ensembl for SV variants when genome build 38.
 - Arrange information in columns on variant page
+- Fix so that new cosmic identifier is also acceptable #1304
+- Fixed COSMIC tag in INFO (outside of CSQ) to be parses as well with `&` splitter.
+- COSMIC stub URL changed to https://cancer.sanger.ac.uk/cosmic/search?q= instead.
 
 ### Changed
 - Runs all CI checks in github actions
@@ -133,7 +136,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ACMG classification not showing for some causatives
 - Fix bug which caused IGV.js to use hg19 reference files for hg38 data
 - Bug when multiple bam files sources with non-null values are available
-- Fix so that new cosmic identifier is also acceptable #1304
 
 
 ### Changed
