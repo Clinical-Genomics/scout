@@ -78,30 +78,21 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-sm-4">
-        <div class="col-sm-12">{{ inheritance_panel(variant) }}</div>
+    <div class="card-columns">
+      {{ omim_phenotypes(variant) }}
+      {{ genemodels_panel(variant) }}
+      {{ inheritance_panel(variant) }}
         {% if variant.azlength %}
-          <div class="col-sm-12">{{ autozygosity_panel(variant) }}</div>
+          {{ autozygosity_panel(variant) }}
         {% endif %}
-      </div>
-      <div class="col-sm-4">{{ genemodels_panel(variant) }}</div>
-      <div class="col-sm-4">{{ omim_phenotypes(variant) }}</div>
-    </div>
-
-    <div class="row">
-      <div class="col">{{ frequencies(variant) }}</div>
-        {% if config['LOQUSDB_SETTINGS'] %}
-          <div class="col">{{ observations_panel(variant, observations, case) }}</div>
-        {% endif %}
-        <div class="col">{{ old_observations(variant) }}</div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">{{ severity_list(variant) }}</div>
-      <div class="col">{{ conservations(variant) }}</div>
-      <div class="col">{{ mappability(variant) }}</div>
+      {{ frequencies(variant) }}
+      {% if config['LOQUSDB_SETTINGS'] %}
+        {{ observations_panel(variant, observations, case) }}
+      {% endif %}
+      {{ old_observations(variant) }}
+      {{ severity_list(variant) }}
+      {{ conservations(variant) }}
+      {{ mappability(variant) }}
     </div>
 
     <div class="row">
