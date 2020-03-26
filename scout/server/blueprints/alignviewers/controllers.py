@@ -1,9 +1,19 @@
-HG19REF_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta"
-HG19REF_INDEX_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta.fai"
-HG19CYTOBAND_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/cytoBand.txt"
+HG19REF_URL = (
+    "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta"
+)
+HG19REF_INDEX_URL = (
+    "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta.fai"
+)
+HG19CYTOBAND_URL = (
+    "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/cytoBand.txt"
+)
 HG38REF_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa"
-HG38REF_INDEX_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa.fai"
-HG38CYTOBAND_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/cytoBandIdeo.txt"
+HG38REF_INDEX_URL = (
+    "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa.fai"
+)
+HG38CYTOBAND_URL = (
+    "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/cytoBandIdeo.txt"
+)
 
 HG38GENES_FORMAT = "gtf"
 HG38GENES_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz"
@@ -15,8 +25,13 @@ HG19GENES_INDEX_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotatio
 HG38CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarMain.bb"
 HG19CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarMain.bb"
 
-HG38CLINVAR_CNVS_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarCnv.bb"
-HG19CLINVAR_CNVS_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarCnv.bb"
+HG38CLINVAR_CNVS_URL = (
+    "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarCnv.bb"
+)
+HG19CLINVAR_CNVS_URL = (
+    "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarCnv.bb"
+)
+
 
 def clinvar_track(build, chrom):
     """Return a dictionary consisting in the clinVar snvs track
@@ -34,7 +49,7 @@ def clinvar_track(build, chrom):
         "type": "annotation",
         "sourceType": "file",
         "displayMode": "EXPANDED",
-        "format" : "bigBed",
+        "format": "bigBed",
         "maxRows": 30,
     }
     if build in ["GRCh38", "38"] or chrom == "M":
@@ -60,8 +75,8 @@ def clinvar_cnvs_track(build, chrom):
         "type": "annotation",
         "sourceType": "file",
         "displayMode": "EXPANDED",
-        "format" : "bigBed",
-        "height": 150
+        "format": "bigBed",
+        "height": 150,
     }
 
     if build in ["GRCh38", "38"] or chrom == "M":
@@ -70,6 +85,7 @@ def clinvar_cnvs_track(build, chrom):
         clinvar_cnvs_track["url"] = HG19CLINVAR_CNVS_URL
 
     return clinvar_cnvs_track
+
 
 def reference_track(build, chrom):
     """Return a dictionary consisting in the igv.js genome reference track
@@ -94,6 +110,7 @@ def reference_track(build, chrom):
 
     return reference_track
 
+
 def genes_track(build, chrom):
     """Return a dictionary consisting in the igv.js genes track
 
@@ -105,7 +122,7 @@ def genes_track(build, chrom):
         genes_track(dict)
     """
     genes_track = {
-        "name" : "Genes",
+        "name": "Genes",
         "type": "annotation",
         "sourceType": "file",
         "displayMode": "EXPANDED",
