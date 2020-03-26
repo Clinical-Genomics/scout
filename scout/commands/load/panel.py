@@ -76,42 +76,8 @@ def panel(
     institute = institute or "cust000"
 
     if omim:
-        mim_files = None
-        if genemap2 and mim2genes:
-            mim_files = {
-                "genemap2": list(get_file_handle(genemap2)),
-                "mim2genes": list(get_file_handle(mim2genes)),
-            }
-
-        api_key = api_key or current_app.config.get("OMIM_API_KEY")
-        if not api_key and mim_files is None:
-            LOG.warning("Please provide a omim api key to load the omim gene panel")
-            raise click.Abort()
-        # Check if OMIM-AUTO exists
-        if adapter.gene_panel(panel_id="OMIM-AUTO"):
-            LOG.warning("OMIM-AUTO already exists in database")
-            LOG.info("To create a new version use scout update omim")
-            return
-
-        if not mim_files:
-            try:
-                mim_files = fetch_mim_files(
-                    api_key=api_key, genemap2=True, mim2genes=True
-                )
-            except Exception as err:
-                raise err
-
-        # Here we know that there is no panel loaded
-        try:
-            adapter.load_omim_panel(
-                genemap2_lines=mim_files["genemap2"],
-                mim2gene_lines=mim_files["mim2genes"],
-                institute=institute,
-                maintainer=maintainer,
-            )
-        except Exception as err:
-            LOG.error(err)
-            raise click.Abort()
+        _panel_omim(genemap2, mim2genes, api_key, institute, maintainer)
+        return
 
     if panel_app:
         # try:
@@ -119,8 +85,6 @@ def panel(
         # except Exception as err:
         #     LOG.warning(err)
         #     raise click.Abort()
-
-    if omim or panel_app:
         return
 
     if path is None:
@@ -140,4 +104,45 @@ def panel(
         )
     except Exception as err:
         LOG.warning(err)
+        raise click.Abort()
+
+    return
+
+
+def _panel_omim(genemap2, mim2genes, api_key, institute, maintainer):
+    """ Add OMIM panel to the database. """
+
+    mim_files = None
+    if genemap2 and mim2genes:
+        mim_files = {
+            "genemap2": list(get_file_handle(genemap2)),
+            "mim2genes": list(get_file_handle(mim2genes)),
+        }
+
+    api_key = api_key or current_app.config.get("OMIM_API_KEY")
+    if not api_key and mim_files is None:
+        LOG.warning("Please provide a omim api key to load the omim gene panel")
+        raise click.Abort()
+    # Check if OMIM-AUTO exists
+    if adapter.gene_panel(panel_id="OMIM-AUTO"):
+        LOG.warning("OMIM-AUTO already exists in database")
+        LOG.info("To create a new version use scout update omim")
+        return
+
+    if not mim_files:
+        try:
+            mim_files = fetch_mim_files(api_key=api_key, genemap2=True, mim2genes=True)
+        except Exception as err:
+            raise err
+
+    # Here we know that there is no panel loaded
+    try:
+        adapter.load_omim_panel(
+            genemap2_lines=mim_files["genemap2"],
+            mim2gene_lines=mim_files["mim2genes"],
+            institute=institute,
+            maintainer=maintainer,
+        )
+    except Exception as err:
+        LOG.error(err)
         raise click.Abort()

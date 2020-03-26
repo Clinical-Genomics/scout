@@ -55,33 +55,33 @@ def panels():
                     "warning",
                 )
                 return redirect(request.referrer)
-            else:
-                flash("new gene panel added, {}!".format(new_panel_name), "success")
+
+            flash("new gene panel added, {}!".format(new_panel_name), "success")
             return redirect(url_for("panels.panel", panel_id=new_panel_id))
 
-        else:  # modify an existing panel
-            update_option = request.form["modify_option"]
+        # modify an existing panel
+        update_option = request.form["modify_option"]
 
-            panel_obj = store.gene_panel(request.form["panel_name"])
-            if panel_obj is None:
-                return abort(
-                    404, "gene panel not found: {}".format(request.form["panel_name"])
-                )
+        panel_obj = store.gene_panel(request.form["panel_name"])
+        if panel_obj is None:
+            return abort(
+                404, "gene panel not found: {}".format(request.form["panel_name"])
+            )
 
-            if panel_write_granted(panel_obj, current_user):
-                panel_obj = controllers.update_panel(
-                    store=store,
-                    panel_name=request.form["panel_name"],
-                    csv_lines=lines,
-                    option=update_option,
-                )
-            else:
-                flash(
-                    "Permission denied: please ask a panel maintainer or admin for help.",
-                    "danger",
-                )
+        if panel_write_granted(panel_obj, current_user):
+            panel_obj = controllers.update_panel(
+                store=store,
+                panel_name=request.form["panel_name"],
+                csv_lines=lines,
+                option=update_option,
+            )
+        else:
+            flash(
+                "Permission denied: please ask a panel maintainer or admin for help.",
+                "danger",
+            )
 
-            return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
+        return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
 
     institutes = list(user_institutes(store, current_user))
     panel_names = [
@@ -185,18 +185,18 @@ def panel_update(panel_id):
             flash("Pending actions were correctly canceled!", "success")
 
         return redirect(request.referrer)
-    else:
-        if panel_write_granted(panel_obj, current_user):
-            update_version = request.form.get("version", None)
-            new_panel_id = store.apply_pending(panel_obj, update_version)
-            panel_id = new_panel_id
-        else:
-            flash(
-                "Permission denied: please ask a panel maintainer or admin for help.",
-                "danger",
-            )
 
-        return redirect(url_for("panels.panel", panel_id=panel_id))
+    if panel_write_granted(panel_obj, current_user):
+        update_version = request.form.get("version", None)
+        new_panel_id = store.apply_pending(panel_obj, update_version)
+        panel_id = new_panel_id
+    else:
+        flash(
+            "Permission denied: please ask a panel maintainer or admin for help.",
+            "danger",
+        )
+
+    return redirect(url_for("panels.panel", panel_id=panel_id))
 
 
 @panels_bp.route("/panels/export-panel/<panel_id>", methods=["GET", "POST"])

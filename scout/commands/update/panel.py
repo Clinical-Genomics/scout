@@ -71,14 +71,13 @@ def panel(
                     add_maintainer
                 )
             )
-        else:
-            new_maintainer = panel_obj.get("maintainer", [])
-            if add_maintainer in new_maintainer:
-                raise ValueError(
-                    "User {} already in maintainer list.".format(add_maintainer)
-                )
-            else:
-                new_maintainer.append(add_maintainer)
+
+        new_maintainer = panel_obj.get("maintainer", [])
+        if add_maintainer in new_maintainer:
+            raise ValueError(
+                "User {} already in maintainer list.".format(add_maintainer)
+            )
+        new_maintainer.append(add_maintainer)
 
     if revoke_maintainer:
         current_maintainers = panel_obj.get("maintainer", [])
