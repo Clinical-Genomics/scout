@@ -338,7 +338,7 @@ class PanelHandler:
             # Updating version should not update date
             if date_obj:
                 date = date_obj
-        elif maintainer:
+        elif maintainer is not None:
             LOG.info(
                 "Updating maintainer from {} to {}".format(
                     panel_obj.get("maintainer"), maintainer

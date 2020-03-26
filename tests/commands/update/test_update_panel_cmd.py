@@ -31,23 +31,23 @@ def test_update_panel(mock_app):
     result = runner.invoke(
         cli, ["update", "panel", "-p", "panel1", "-a", "noone@nowhere.no"]
     )
-    assert "does not exist" in result.output
+    assert "does not exist" in str(result.exception)
 
     # Test adding a real user as maintainer
     result = runner.invoke(
-        cli, ["update", "panel", "-p", "panel1", "-a", "clark.kent@mail.com"]
+        cli, ["update", "panel", "-p", "panel1", "-a", "john@doe.com"]
     )
     assert "Updating maintainer" in result.output
 
     # Test adding a real user as maintainer AGAIN
     result = runner.invoke(
-        cli, ["update", "panel", "-p", "panel1", "-a", "clark.kent@mail.com"]
+        cli, ["update", "panel", "-p", "panel1", "-a", "john@doe.com"]
     )
-    assert "already in maintainer list" in result.output
+    assert "already in maintainer" in str(result.exception)
 
-    # Test removing the same user as panel maintainer
+    # Test removing the same only user as panel maintainer
     result = runner.invoke(
-        cli, ["update", "panel", "-p", "panel1", "-r", "clark.kent@mail.com"]
+        cli, ["update", "panel", "-p", "panel1", "-r", "john@doe.com"]
     )
     assert "Updating maintainer" in result.output
 
