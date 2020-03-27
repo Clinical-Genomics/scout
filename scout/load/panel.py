@@ -6,6 +6,8 @@ functions to load panels into the database
 
 import logging
 
+from click import Abort
+
 from scout.parse.panel import get_panel_info, parse_gene_panel, parse_panel_app_panel
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import fetch_resource
@@ -83,14 +85,9 @@ def load_panel(panel_path, adapter, **kwargs):
     # Check if maintainers exist in the user database
     maintainer = kwargs.get("maintainer")
     if maintainer is not None:
-        scout_users = adapter.users()
-        for maintainer_id in maintainer:
-            if maintainer_id not in scout_users:
-                raise SyntaxError(
-                    "Maintainer {0} does not exist in user database".format(
-                        maintainer_id
-                    )
-                )
+        if adapter.user(user_id=maintainer) is None:
+            LOG.warning("Maintainer %s does not exist in user database", maintainer)
+            raise Abort()
 
     parsed_panel = parse_gene_panel(
         path=panel_path,
