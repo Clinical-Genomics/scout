@@ -49,8 +49,8 @@ def panel(
     panel_obj = adapter.gene_panel(panel, version=version)
 
     if not panel_obj:
-        LOG.warning("Panel %s (version %s) could not be found" % (panel, version))
-        click.Abort()
+        LOG.warning("Panel %s (version %s) could not be found", panel, version)
+        raise click.Abort()
 
     date_obj = None
     if update_date:
@@ -58,7 +58,7 @@ def panel(
             date_obj = get_date(update_date)
         except Exception as err:
             LOG.warning(err)
-            click.Abort()
+            raise click.Abort()
 
     # Any mintainer updates?
 
@@ -68,16 +68,15 @@ def panel(
         if not user_obj:
             # Check if maintainers exist in the user database
             LOG.warning(
-                "Maintainer user id {0} does not exist in user database".format(
-                    add_maintainer
-                )
+                "Maintainer user id %s does not exist in user database", add_maintainer
             )
-            raise click.Abort
+
+            raise click.Abort()
 
         new_maintainer = panel_obj.get("maintainer", [])
         if add_maintainer in new_maintainer:
-            LOG.warning("User {} already in maintainer list.".format(add_maintainer))
-            click.Abort()
+            LOG.warning("User %s already in maintainer list.", add_maintainer)
+            raise click.Abort()
 
         new_maintainer.append(add_maintainer)
 
@@ -88,12 +87,10 @@ def panel(
             new_maintainer = current_maintainers
         except ValueError:
             LOG.warning(
-                (
-                    "Maintainer user id {} is not a maintainer for panel {}.".format(
-                        revoke_maintainer, panel
-                    )
-                    + " Current maintainers: {}.".format(current_maintainers)
-                )
+                "Maintainer user id %s is not a maintainer for panel %s. Current maintainers: %s",
+                revoke_maintainer,
+                panel,
+                current_maintainers,
             )
 
     update_panel(

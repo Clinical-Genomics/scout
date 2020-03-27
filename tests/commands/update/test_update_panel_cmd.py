@@ -27,6 +27,20 @@ def test_update_panel(mock_app):
     )
     assert "panels.$.updated_at" in result.output
 
+    # update panel version specifying original panel version
+    result = runner.invoke(
+        cli,
+        ["update", "panel", "-p", "panel1", "--version", 1.0, "--update-version", 2.0],
+    )
+    assert "$set': {'panels.$.version': 2.0" in result.output
+
+
+def test_update_panel_maintainer(mock_app):
+    """Tests the CLI that updates a panel with maintainers"""
+
+    runner = mock_app.test_cli_runner()
+    assert runner
+
     # Test adding a non-existing user
     result = runner.invoke(
         cli, ["update", "panel", "-p", "panel1", "-a", "noone@nowhere.no"]
@@ -50,10 +64,3 @@ def test_update_panel(mock_app):
         cli, ["update", "panel", "-p", "panel1", "-r", "john@doe.com"]
     )
     assert "Updating maintainer" in result.output
-
-    # update panel version specifying original panel version
-    result = runner.invoke(
-        cli,
-        ["update", "panel", "-p", "panel1", "--version", 1.0, "--update-version", 2.0],
-    )
-    assert "$set': {'panels.$.version': 2.0" in result.output
