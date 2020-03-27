@@ -74,9 +74,9 @@ def clinvar_cnvs_track(build, chrom):
         "name": "ClinVar CNVs",
         "type": "annotation",
         "sourceType": "file",
-        "displayMode": "EXPANDED",
+        "displayMode": "SQUISHED",
         "format": "bigBed",
-        "height": 150,
+        "height": 100,
     }
 
     if build in ["GRCh38", "38"] or chrom == "M":
