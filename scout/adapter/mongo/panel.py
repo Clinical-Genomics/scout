@@ -323,6 +323,7 @@ class PanelHandler:
             panel_obj(dict)
             version(float)
             date_obj(datetime.datetime)
+            maintainer(list(user._id))
 
         Returns:
             updated_panel(dict)
