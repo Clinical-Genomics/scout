@@ -9,7 +9,7 @@ from flask import (
     send_file,
     request,
     current_app,
-    flash,
+    flash
 )
 
 from .partial import send_file_partial
@@ -112,6 +112,20 @@ def igv():
     display_obj["clinvar_cnvs"] = controllers.clinvar_cnvs_track(
         chromosome_build, chrom
     )
+
+
+    if request.form.get("cancer_annotations"):
+        # cancer sample(s): load cosmic annotations
+        cloud_credentials = [
+            current_app.config.get("REGION_NAME"),
+            current_app.config.get("ACCESS_KEY"),
+            current_app.config.get("SECRET_ACCESS_KEY"),
+            current_app.config.get("BUCKET_NAME")
+        ]
+
+        display_obj["cosmic_coding"] = controllers.cosmic_coding(chromosome_build, chrom, cloud_credentials)
+        #display_obj["cosmic_non_coding"] = controllers.cosmic_non_coding(chromosome_build, chrom), cloud_credentials
+
 
     # Init upcoming igv-tracks
     sample_tracks = []

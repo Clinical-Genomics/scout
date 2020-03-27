@@ -1,3 +1,8 @@
+from flask import current_app
+
+from scout.utils.cloud_resources import s3_resource_url
+
+# Genome reference tracks
 HG19REF_URL = (
     "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta"
 )
@@ -15,6 +20,7 @@ HG38CYTOBAND_URL = (
     "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/cytoBandIdeo.txt"
 )
 
+# Gene tracks
 HG38GENES_FORMAT = "gtf"
 HG38GENES_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz"
 HG38GENES_INDEX_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi"
@@ -22,15 +28,21 @@ HG19GENES_FORMAT = "bed"
 HG19GENES_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz"
 HG19GENES_INDEX_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi"
 
+# Clinvar tracks
 HG38CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarMain.bb"
 HG19CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarMain.bb"
-
 HG38CLINVAR_CNVS_URL = (
     "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarCnv.bb"
 )
 HG19CLINVAR_CNVS_URL = (
     "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarCnv.bb"
 )
+
+# Cosmic tracks
+HG19COSMIC_CODING = "CosmicCodingMuts_v90_hg19.vcf.gz"
+HG19COSMIC_NON_CODING = "CosmicNonCodingVariants_v90_hg19.vcf.gz"
+HG38COSMIC_CODING = "CosmicCodingMuts_v90_hg38.vcf.gz"
+HG38COSMIC_NON_CODING = "CosmicNonCodingVariants_v90_hg38.vcf.gz"
 
 
 def clinvar_track(build, chrom):
@@ -74,9 +86,9 @@ def clinvar_cnvs_track(build, chrom):
         "name": "ClinVar CNVs",
         "type": "annotation",
         "sourceType": "file",
-        "displayMode": "EXPANDED",
+        "displayMode": "SQUISHED",
         "format": "bigBed",
-        "height": 150,
+        "height": 100,
     }
 
     if build in ["GRCh38", "38"] or chrom == "M":
@@ -85,6 +97,41 @@ def clinvar_cnvs_track(build, chrom):
         clinvar_cnvs_track["url"] = HG19CLINVAR_CNVS_URL
 
     return clinvar_cnvs_track
+
+
+def cosmic_coding(build, chrom, cloud_credentials):
+    """Return a dictionary consisting in the cosmic coding track
+
+    Accepts:
+        build(str): "37" or "38"
+        chrom(str)
+        cloud_credentials(list): [endpoint_url, access_key, secrey_access_key, bucket_name]
+
+    Returns:
+        cosmic_coding_track(dict)
+    """
+    cosmic_coding_track = {
+        "name" : "Cosmic coding",
+        "type" : "variant",
+        "format" : "vcf",
+        "displayMode": "squished",
+    }
+    if build in ["GRCh38", "38"] or chrom == "M":
+
+        cosmic_coding_track["url"] = s3_resource_url(
+            cloud_credentials, HG38COSMIC_CODING
+        )
+        cosmic_coding_track["indexURL"] = s3_resource_url(
+            cloud_credentials, ".".join([ HG38COSMIC_CODING, "tbi"])
+        )
+    else:
+        cosmic_coding_track["url"] = s3_resource_url(
+            cloud_credentials, HG19COSMIC_CODING
+        )
+        cosmic_coding_track["indexURL"] = s3_resource_url(
+            cloud_credentials, "{}.tbi".format(HG19COSMIC_CODING)
+        )
+    return cosmic_coding_track
 
 
 def reference_track(build, chrom):

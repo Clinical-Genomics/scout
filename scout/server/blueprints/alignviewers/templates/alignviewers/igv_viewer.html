@@ -67,6 +67,16 @@
                           height: "{{clinvar_cnvs.height}}",
                           order: Number.MIN_VALUE,
                       },
+                      {% if cosmic_coding %}
+                        {
+                          name: "{{ cosmic_coding.name }}",
+                          type: "{{ cosmic_coding.type }}",
+                          format: "{{ cosmic_coding.format }}",
+                          displayMode: "{{ cosmic_coding.displayMode }}",
+                          url: "{{ cosmic_coding.url|safe }}",
+                          indexURL: "{{ cosmic_coding.indexURL|safe }}",
+                        },
+                      {% endif %}
                       {
                           name: "{{ genes_track.name }}",
                           type: "{{ genes_track.type }}",

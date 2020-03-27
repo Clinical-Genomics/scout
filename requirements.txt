@@ -40,6 +40,8 @@ intervaltree==3.0.2
 python-dateutil
 
 # Requesting resources
+boto3
+botocore
 
 # Required by scripts
 tabulate
