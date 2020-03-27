@@ -72,7 +72,7 @@ def panel(
                     add_maintainer
                 )
             )
-            click.Abort()
+            raise click.Abort
 
         new_maintainer = panel_obj.get("maintainer", [])
         if add_maintainer in new_maintainer:
