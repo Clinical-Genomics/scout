@@ -115,7 +115,7 @@ def clinvar_cnvs_track(build, chrom):
     return clinvar_cnvs_track
 
 
-def cosmic_coding(build, chrom):
+def cosmic_coding_track(build, chrom):
     """Return a dictionary consisting in the cosmic coding track
 
     Accepts:
@@ -154,7 +154,7 @@ def cosmic_coding(build, chrom):
     return cosmic_track
 
 
-def cosmic_non_coding(build, chrom):
+def cosmic_non_coding_track(build, chrom):
     """Return a dictionary consisting in the cosmic non coding track
 
     Accepts:
