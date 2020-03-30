@@ -5,7 +5,12 @@ BUILD38 = "38"
 
 CHROM = "22"
 
-MOCK_CLOUD_CREDENTIALS = ["eu-north-1", "MOCK_ACCESS_KEY", "MOCK_SECRET_ACCESS_KEY", "MOCK_BUCKET_NAME"]
+MOCK_CLOUD_CREDENTIALS = [
+    "eu-north-1",
+    "MOCK_ACCESS_KEY",
+    "MOCK_SECRET_ACCESS_KEY",
+    "MOCK_BUCKET_NAME",
+]
 
 
 def test_clinvar_track_build37():
@@ -60,6 +65,7 @@ def test_clinvar_cnvs_track_build_38():
     assert track["displayMode"] == "SQUISHED"
     assert track["sourceType"] == "file"
     assert "hg38" in track["url"]
+
 
 def test_cosmic_coding_track_build37(monkeypatch):
     """Test function that returns cosmic coding track as a dictionary when build is 37"""

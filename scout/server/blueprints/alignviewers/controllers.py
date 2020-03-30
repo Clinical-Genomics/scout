@@ -56,7 +56,7 @@ def _get_cloud_credentials():
         current_app.config.get("REGION_NAME"),
         current_app.config.get("ACCESS_KEY"),
         current_app.config.get("SECRET_ACCESS_KEY"),
-        current_app.config.get("BUCKET_NAME")
+        current_app.config.get("BUCKET_NAME"),
     ]
     return cloud_credentials
 
@@ -131,23 +131,19 @@ def cosmic_coding_track(build, chrom):
         return None
 
     cosmic_track = {
-        "name" : "Cosmic coding",
-        "type" : "variant",
-        "format" : "vcf",
+        "name": "Cosmic coding",
+        "type": "variant",
+        "format": "vcf",
         "displayMode": "squished",
     }
     if build in ["GRCh38", "38"] or chrom == "M":
 
-        cosmic_track["url"] = s3_resource_url(
-            cloud_credentials, HG38COSMIC_CODING
-        )
+        cosmic_track["url"] = s3_resource_url(cloud_credentials, HG38COSMIC_CODING)
         cosmic_track["indexURL"] = s3_resource_url(
-            cloud_credentials, ".".join([ HG38COSMIC_CODING, "tbi"])
+            cloud_credentials, ".".join([HG38COSMIC_CODING, "tbi"])
         )
     else:
-        cosmic_track["url"] = s3_resource_url(
-            cloud_credentials, HG19COSMIC_CODING
-        )
+        cosmic_track["url"] = s3_resource_url(cloud_credentials, HG19COSMIC_CODING)
         cosmic_track["indexURL"] = s3_resource_url(
             cloud_credentials, "{}.tbi".format(HG19COSMIC_CODING)
         )
@@ -166,9 +162,9 @@ def cosmic_non_coding_track(build, chrom):
 
     """
     cosmic_track = {
-        "name" : "Cosmic coding",
-        "type" : "variant",
-        "format" : "vcf",
+        "name": "Cosmic coding",
+        "type": "variant",
+        "format": "vcf",
         "displayMode": "squished",
     }
     cloud_credentials = _get_cloud_credentials()
@@ -178,16 +174,12 @@ def cosmic_non_coding_track(build, chrom):
 
     if build in ["GRCh38", "38"] or chrom == "M":
 
-        cosmic_track["url"] = s3_resource_url(
-            cloud_credentials, HG38COSMIC_NON_CODING
-        )
+        cosmic_track["url"] = s3_resource_url(cloud_credentials, HG38COSMIC_NON_CODING)
         cosmic_track["indexURL"] = s3_resource_url(
-            cloud_credentials, ".".join([ HG38COSMIC_NON_CODING, "tbi"])
+            cloud_credentials, ".".join([HG38COSMIC_NON_CODING, "tbi"])
         )
     else:
-        cosmic_track["url"] = s3_resource_url(
-            cloud_credentials, HG19COSMIC_NON_CODING
-        )
+        cosmic_track["url"] = s3_resource_url(cloud_credentials, HG19COSMIC_NON_CODING)
         cosmic_track["indexURL"] = s3_resource_url(
             cloud_credentials, "{}.tbi".format(HG19COSMIC_NON_CODING)
         )
