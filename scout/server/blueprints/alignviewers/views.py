@@ -111,7 +111,7 @@ def igv():
         if cosmic_coding:
             display_obj["cosmic_coding"] = cosmic_coding
         cosmic_non_coding = controllers.cosmic_non_coding_track(chromosome_build, chrom)
-        if cosmic_non:
+        if cosmic_non_coding:
             display_obj["cosmic_non_coding"] = cosmic_non_coding
 
     # Init upcoming igv-tracks

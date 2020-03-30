@@ -46,7 +46,7 @@ HG38COSMIC_NON_CODING = "CosmicNonCodingVariants_v90_hg38.vcf.gz"
 
 
 def _get_cloud_credentials():
-    """Returns clous S3 storage credentials as a list
+    """Returns cloud S3 storage credentials as a list
 
     Returns:
         cloud_credentials(list): [endpoint_url, access_key, secrey_access_key, bucket_name]
