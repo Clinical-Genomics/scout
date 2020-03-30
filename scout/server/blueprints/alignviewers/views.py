@@ -108,10 +108,10 @@ def igv():
     if request.form.get("cancer_annotations"):
         # cancer sample(s): load cosmic annotations
         cosmic_coding = controllers.cosmic_coding_track(chromosome_build, chrom)
-        if cosmic_coding_track:
+        if cosmic_coding:
             display_obj["cosmic_coding"] = cosmic_coding
         cosmic_non_coding = controllers.cosmic_non_coding_track(chromosome_build, chrom)
-        if cosmic_non_coding:
+        if cosmic_non:
             display_obj["cosmic_non_coding"] = cosmic_non_coding
 
     # Init upcoming igv-tracks
