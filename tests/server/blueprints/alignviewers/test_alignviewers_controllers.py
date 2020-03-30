@@ -41,7 +41,7 @@ def test_clinvar_cnvs_track_build_37():
     # THEN it should return a dictionary with the right keys/values
     assert track["name"] == "ClinVar CNVs"
     assert track["type"] == "annotation"
-    assert track["displayMode"] == "EXPANDED"
+    assert track["displayMode"] == "SQUISHED"
     assert track["sourceType"] == "file"
     assert "hg19" in track["url"]
 
@@ -55,7 +55,7 @@ def test_clinvar_cnvs_track_build_38():
     # THEN it should return a dictionary with the right keys/values
     assert track["name"] == "ClinVar CNVs"
     assert track["type"] == "annotation"
-    assert track["displayMode"] == "EXPANDED"
+    assert track["displayMode"] == "SQUISHED"
     assert track["sourceType"] == "file"
     assert "hg38" in track["url"]
 
