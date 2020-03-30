@@ -116,7 +116,7 @@ def test_cosmic_non_coding_track_build37(monkeypatch):
     track = controllers.cosmic_non_coding_track(BUILD37, CHROM)
 
     # THEN it should return a dictionary with the right keys/values
-    assert track["name"] == "Cosmic coding"
+    assert track["name"] == "Cosmic non-coding"
     assert track["type"] == "variant"
     assert track["format"] == "vcf"
     assert "hg19" in track["url"]
