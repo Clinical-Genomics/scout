@@ -162,7 +162,7 @@ def cosmic_non_coding_track(build, chrom):
 
     """
     cosmic_track = {
-        "name": "Cosmic coding",
+        "name": "Cosmic non-coding",
         "type": "variant",
         "format": "vcf",
         "displayMode": "squished",
