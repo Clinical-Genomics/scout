@@ -45,6 +45,22 @@ HG38COSMIC_CODING = "CosmicCodingMuts_v90_hg38.vcf.gz"
 HG38COSMIC_NON_CODING = "CosmicNonCodingVariants_v90_hg38.vcf.gz"
 
 
+def _get_cloud_credentials():
+    """Returns clous S3 storage credentials as a list
+
+    Returns:
+        cloud_credentials(list): [endpoint_url, access_key, secrey_access_key, bucket_name]
+
+    """
+    cloud_credentials = [
+        current_app.config.get("REGION_NAME"),
+        current_app.config.get("ACCESS_KEY"),
+        current_app.config.get("SECRET_ACCESS_KEY"),
+        current_app.config.get("BUCKET_NAME")
+    ]
+    return cloud_credentials
+
+
 def clinvar_track(build, chrom):
     """Return a dictionary consisting in the clinVar snvs track
 
@@ -99,18 +115,22 @@ def clinvar_cnvs_track(build, chrom):
     return clinvar_cnvs_track
 
 
-def cosmic_coding(build, chrom, cloud_credentials):
+def cosmic_coding(build, chrom):
     """Return a dictionary consisting in the cosmic coding track
 
     Accepts:
         build(str): "37" or "38"
         chrom(str)
-        cloud_credentials(list): [endpoint_url, access_key, secrey_access_key, bucket_name]
 
     Returns:
-        cosmic_coding_track(dict)
+        cosmic_track(dict)
     """
-    cosmic_coding_track = {
+    cloud_credentials = _get_cloud_credentials()
+    if all(cloud_credentials) is False:
+        # one or more cloud params missing
+        return None
+
+    cosmic_track = {
         "name" : "Cosmic coding",
         "type" : "variant",
         "format" : "vcf",
@@ -118,20 +138,60 @@ def cosmic_coding(build, chrom, cloud_credentials):
     }
     if build in ["GRCh38", "38"] or chrom == "M":
 
-        cosmic_coding_track["url"] = s3_resource_url(
+        cosmic_track["url"] = s3_resource_url(
             cloud_credentials, HG38COSMIC_CODING
         )
-        cosmic_coding_track["indexURL"] = s3_resource_url(
+        cosmic_track["indexURL"] = s3_resource_url(
             cloud_credentials, ".".join([ HG38COSMIC_CODING, "tbi"])
         )
     else:
-        cosmic_coding_track["url"] = s3_resource_url(
+        cosmic_track["url"] = s3_resource_url(
             cloud_credentials, HG19COSMIC_CODING
         )
-        cosmic_coding_track["indexURL"] = s3_resource_url(
+        cosmic_track["indexURL"] = s3_resource_url(
             cloud_credentials, "{}.tbi".format(HG19COSMIC_CODING)
         )
-    return cosmic_coding_track
+    return cosmic_track
+
+
+def cosmic_non_coding(build, chrom):
+    """Return a dictionary consisting in the cosmic non coding track
+
+    Accepts:
+        build(str): "37" or "38"
+        chrom(str)
+
+    Returns:
+        cosmic_track(dict)
+
+    """
+    cosmic_track = {
+        "name" : "Cosmic coding",
+        "type" : "variant",
+        "format" : "vcf",
+        "displayMode": "squished",
+    }
+    cloud_credentials = _get_cloud_credentials()
+    if all(cloud_credentials) is False:
+        # one or more cloud params missing
+        return None
+
+    if build in ["GRCh38", "38"] or chrom == "M":
+
+        cosmic_track["url"] = s3_resource_url(
+            cloud_credentials, HG38COSMIC_NON_CODING
+        )
+        cosmic_track["indexURL"] = s3_resource_url(
+            cloud_credentials, ".".join([ HG38COSMIC_NON_CODING, "tbi"])
+        )
+    else:
+        cosmic_track["url"] = s3_resource_url(
+            cloud_credentials, HG19COSMIC_NON_CODING
+        )
+        cosmic_track["indexURL"] = s3_resource_url(
+            cloud_credentials, "{}.tbi".format(HG19COSMIC_NON_CODING)
+        )
+    return cosmic_track
 
 
 def reference_track(build, chrom):

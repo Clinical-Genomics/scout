@@ -8,7 +8,6 @@ from flask import (
     render_template,
     send_file,
     request,
-    current_app,
     flash
 )
 
@@ -116,15 +115,12 @@ def igv():
 
     if request.form.get("cancer_annotations"):
         # cancer sample(s): load cosmic annotations
-        cloud_credentials = [
-            current_app.config.get("REGION_NAME"),
-            current_app.config.get("ACCESS_KEY"),
-            current_app.config.get("SECRET_ACCESS_KEY"),
-            current_app.config.get("BUCKET_NAME")
-        ]
-
-        display_obj["cosmic_coding"] = controllers.cosmic_coding(chromosome_build, chrom, cloud_credentials)
-        #display_obj["cosmic_non_coding"] = controllers.cosmic_non_coding(chromosome_build, chrom), cloud_credentials
+        cosmic_coding_track = controllers.cosmic_coding(chromosome_build, chrom)
+        if cosmic_coding_track:
+            display_obj["cosmic_coding"] = cosmic_coding_track
+        cosmic_non_coding_track = controllers.cosmic_non_coding(chromosome_build, chrom)
+        if cosmic_non_coding_track:
+            display_obj["cosmic_non_coding"] = cosmic_non_coding_track
 
 
     # Init upcoming igv-tracks

@@ -77,6 +77,16 @@
                           indexURL: "{{ cosmic_coding.indexURL|safe }}",
                         },
                       {% endif %}
+                      {% if cosmic_non_coding %}
+                        {
+                          name: "{{ cosmic_non_coding.name }}",
+                          type: "{{ cosmic_non_coding.type }}",
+                          format: "{{ cosmic_non_coding.format }}",
+                          displayMode: "{{ cosmic_non_coding.displayMode }}",
+                          url: "{{ cosmic_non_coding.url|safe }}",
+                          indexURL: "{{ cosmic_non_coding.indexURL|safe }}",
+                        },
+                      {% endif %}
                       {
                           name: "{{ genes_track.name }}",
                           type: "{{ genes_track.type }}",
