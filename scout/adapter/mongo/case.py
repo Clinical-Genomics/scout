@@ -880,7 +880,7 @@ class CaseHandler(object):
                 updated_variants.keys()
             ):  # manual_rank, dismiss_variant, mosaic_tags
                 if (
-                    old_var.get(action) or action == "is_commented"
+                    old_var.get(action) is not None or action == "is_commented"
                 ):  # tag new variant accordingly
                     # collect only the latest associated event:
                     verb = action
