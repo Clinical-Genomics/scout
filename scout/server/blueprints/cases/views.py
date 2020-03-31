@@ -120,7 +120,7 @@ def cases(institute_id):
         skip_assigned=skip_assigned,
         is_research=is_research,
         query=query,
-        **data
+        **data,
     )
 
 
@@ -139,7 +139,7 @@ def case(institute_id, case_name):
         case=case_obj,
         mme_nodes=current_app.mme_nodes,
         tissue_types=SAMPLE_SOURCE,
-        **data
+        **data,
     )
 
 
@@ -235,7 +235,7 @@ def clinvar_submissions(institute_id):
                 headers.add(
                     "Content-Disposition",
                     "attachment",
-                    filename = f"{clinvar_subm_id}_{csv_type}_{download_day}.csv"
+                    filename=f"{clinvar_subm_id}_{csv_type}_{download_day}.csv",
                 )
                 return Response(
                     generate_csv(",".join(csv_header), csv_lines),
@@ -692,7 +692,7 @@ def pdf_case_report(institute_id, case_name):
         institute=institute_obj,
         case=case_obj,
         format="pdf",
-        **data
+        **data,
     )
     return render_pdf(
         HTML(string=html_report),
