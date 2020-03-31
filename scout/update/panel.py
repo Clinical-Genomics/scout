@@ -7,18 +7,26 @@ from scout.exceptions import IntegrityError
 LOG = logging.getLogger(__name__)
 
 
-def update_panel(adapter, panel_name, panel_version, new_version=None, new_date=None):
+def update_panel(
+    adapter,
+    panel_name,
+    panel_version,
+    new_version=None,
+    new_date=None,
+    new_maintainer=None,
+):
     """Update a gene panel in the database
-    
+
     We need to update the actual gene panel and then all cases that refers to the panel.
-    
+
     Args:
         adapter(scout.adapter.MongoAdapter)
         panel_name(str): Unique name for a gene panel
         panel_version(float)
         new_version(float)
         new_date(datetime.datetime)
-    
+        new_maintainer(list(user_id))
+
     Returns:
         updated_panel(scout.models.GenePanel): The updated gene panel object
     """
@@ -29,7 +37,9 @@ def update_panel(adapter, panel_name, panel_version, new_version=None, new_date=
             "Panel %s version %s does not exist" % (panel_name, panel_version)
         )
 
-    updated_panel = adapter.update_panel(panel_obj, new_version, new_date)
+    updated_panel = adapter.update_panel(
+        panel_obj, new_version, new_date, new_maintainer
+    )
 
     panel_id = updated_panel["_id"]
 
@@ -40,9 +50,12 @@ def update_panel(adapter, panel_name, panel_version, new_version=None, new_date=
     if new_date:
         update["$set"]["panels.$.updated_at"] = updated_panel["date"]
 
-    LOG.info("Updating affected cases with {0}".format(update))
+    # there is however no need to update maintainer for the embedded versions
 
-    query = {"panels": {"$elemMatch": {"panel_name": panel_name}}}
-    adapter.case_collection.update_many(query, update)
+    if update["$set"] != {}:
+        LOG.info("Updating affected cases with {0}".format(update))
+
+        query = {"panels": {"$elemMatch": {"panel_name": panel_name}}}
+        adapter.case_collection.update_many(query, update)
 
     return updated_panel
