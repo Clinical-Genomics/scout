@@ -34,6 +34,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update HPO terms using downloaded definitions files
 - Option to use alternative flask config when running `scout serve`
 - Requirement to use loqusdb >= 2.5 if integrated
+- Gene panels can have maintainers
 - Keep variant actions (dismissed, manual rank, mosaic, acmg, comments) upon variant re-upload
 
 ### Fixed

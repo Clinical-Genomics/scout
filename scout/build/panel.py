@@ -111,6 +111,7 @@ def build_panel(panel_info, adapter):
     gene_panel = dict(
         panel_id = str, # required
         institute = str, # institute_id, required
+        maintainer = list, # list of user._id
         version = float, # required
         date = datetime, # required
         display_name = str, # default is panel_name
@@ -145,6 +146,7 @@ def build_panel(panel_info, adapter):
     except KeyError as err:
         raise KeyError("Panel has to have a date")
 
+    panel_obj["maintainer"] = panel_info.get("maintainer", [])
     panel_obj["display_name"] = panel_info.get("display_name", panel_obj["panel_name"])
     panel_obj["description"] = panel_info.get("description")
 
