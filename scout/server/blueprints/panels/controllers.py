@@ -18,6 +18,16 @@ def panel(store, panel_obj):
     panel_obj["institute"] = store.institute(panel_obj["institute"])
     full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
     panel_obj["name_and_version"] = full_name
+
+    panel_obj["maintainer_names"] = [
+        maintainer_obj.get("name")
+        for maintainer_obj in (
+            store.user(user_id=maintainer_id)
+            for maintainer_id in panel_obj.get("maintainer")
+        )
+        if maintainer_obj is not None
+    ]
+
     return dict(panel=panel_obj)
 
 
@@ -103,7 +113,13 @@ def update_panel(store, panel_name, csv_lines, option):
 
 
 def new_panel(
-    store, institute_id, panel_name, display_name, csv_lines, description=None
+    store,
+    institute_id,
+    panel_name,
+    display_name,
+    csv_lines,
+    maintainer=None,
+    description=None,
 ):
     """Create a new gene panel.
 
@@ -113,6 +129,7 @@ def new_panel(
         panel_name(str)
         display_name(str)
         csv_lines(iterable(str)): Stream with genes
+        maintainer(list(user._id))
         description(str)
 
     Returns:
@@ -129,7 +146,8 @@ def new_panel(
         flash(
             "panel already exists: {} - {}".format(
                 panel_obj["panel_name"], panel_obj["display_name"]
-            )
+            ),
+            "danger",
         )
         return None
 
@@ -149,6 +167,7 @@ def new_panel(
                 panel_name=panel_name,
                 institute=institute_obj["_id"],
                 version=1.0,
+                maintainer=maintainer,
                 date=dt.datetime.now(),
                 display_name=display_name,
                 description=description,
