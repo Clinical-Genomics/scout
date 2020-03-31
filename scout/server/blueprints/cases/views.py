@@ -230,21 +230,12 @@ def clinvar_submissions(institute_id):
                 csv_header = [
                     '"' + str(x) + '"' for x in csv_header
                 ]  # quote columns in header for csv rendering
-
+                download_day = str(datetime.datetime.now().strftime("%Y-%m-%d"))
                 headers = Headers()
                 headers.add(
                     "Content-Disposition",
                     "attachment",
-                    filename="".join(
-                        [
-                            clinvar_subm_id,
-                            "_",
-                            csv_type,
-                            "_",
-                            str(datetime.datetime.now().strftime("%Y-%m-%d")),
-                            ".csv",
-                        ]
-                    ),
+                    filename = f"{clinvar_subm_id}_{csv_type}_{download_day}.csv"
                 )
                 return Response(
                     generate_csv(",".join(csv_header), csv_lines),
