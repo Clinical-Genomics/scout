@@ -12,7 +12,6 @@ MOCK_CLOUD_CREDENTIALS = [
     "MOCK_BUCKET_NAME",
 ]
 
-
 def test_clinvar_track_build37():
     """Test function that returns clinVar track as a dictionary when build is 37"""
 
@@ -65,7 +64,6 @@ def test_clinvar_cnvs_track_build_38():
     assert track["displayMode"] == "SQUISHED"
     assert track["sourceType"] == "file"
     assert "hg38" in track["url"]
-
 
 def test_cosmic_coding_track_build37(monkeypatch):
     """Test function that returns cosmic coding track as a dictionary when build is 37"""
@@ -142,7 +140,6 @@ def test_cosmic_non_coding_track_build38(monkeypatch):
     assert "hg38" in track["url"]
     assert "CosmicNonCoding" in track["url"]
     assert "hg38" in track["indexURL"]
-
 
 def test_reference_track_build_37():
     """Test function that returns the reference track as a dictionary when build is 37"""
