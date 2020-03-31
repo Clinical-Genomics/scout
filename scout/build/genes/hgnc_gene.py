@@ -23,20 +23,20 @@ def build_hgnc_gene(gene_info, build="37"):
 
         Returns:
             gene_obj(dict)
-    
+
             {
                 '_id': ObjectId(),
                 # This is the hgnc id, required:
-                'hgnc_id': int, 
-                # The primary symbol, required 
+                'hgnc_id': int,
+                # The primary symbol, required
                 'hgnc_symbol': str,
                 'ensembl_id': str, # required
                 'build': str, # '37' or '38', defaults to '37', required
-                
+
                 'chromosome': str, # required
                 'start': int, # required
                 'end': int, # required
-                
+
                 'description': str, # Gene description
                 'aliases': list(), # Gene symbol aliases, includes hgnc_symbol, str
                 'entrez_id': int,
@@ -47,11 +47,11 @@ def build_hgnc_gene(gene_info, build="37"):
                 'uniprot_ids': list(), # List of str
                 'vega_id': str,
                 'transcripts': list(), # List of hgnc_transcript
-                
+
                 # Inheritance information
                 'inheritance_models': list(), # List of model names
                 'incomplete_penetrance': bool, # Acquired from HPO
-                
+
                 # Phenotype information
                 'phenotypes': list(), # List of dictionaries with phenotype information
             }
@@ -139,6 +139,10 @@ def build_hgnc_gene(gene_info, build="37"):
     phenotype_objs = []
     for phenotype_info in gene_info.get("phenotypes", []):
         phenotype_objs.append(build_phenotype(phenotype_info))
+
+    if hgnc_symbol == "PRODH":
+        LOG.error("----------------------------->BUILD GENES:phenotype_obj is {}".format(phenotype_objs))
+
 
     if phenotype_objs:
         gene_obj["phenotypes"] = phenotype_objs
