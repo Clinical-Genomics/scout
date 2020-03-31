@@ -389,7 +389,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         """
         new_comments = 0
 
-        if new_var[_id] == old_var[_id]:
+        if new_var["_id"] == old_var["_id"]:
             return new_comments
 
         link = "/{0}/{1}/{2}".format(
