@@ -235,14 +235,16 @@ def clinvar_submissions(institute_id):
                 headers.add(
                     "Content-Disposition",
                     "attachment",
-                    filename="".join([
-                        clinvar_subm_id,
-                        "_",
-                        csv_type,
-                        "_",
-                        str(datetime.datetime.now().strftime("%Y-%m-%d")),
-                        ".csv"
-                    ])
+                    filename="".join(
+                        [
+                            clinvar_subm_id,
+                            "_",
+                            csv_type,
+                            "_",
+                            str(datetime.datetime.now().strftime("%Y-%m-%d")),
+                            ".csv",
+                        ]
+                    ),
                 )
                 return Response(
                     generate_csv(",".join(csv_header), csv_lines),
