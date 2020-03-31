@@ -650,7 +650,7 @@ def test_keep_manual_rank_tag_after_reupload(
 ):
     """Test the code that updates custom tags (manual_rank) of new variants according to the old."""
 
-    old_variant = variant_obj
+    old_variant = copy.deepcopy(variant_obj)
     old_variant["_id"] = "old_id"
 
     ## GIVEN a database with a user
@@ -694,7 +694,7 @@ def test_keep_dismiss_variant_tag_after_reupload(
 ):
     """Test the code that updates custom tags (dismiss_variant) of new variants according to the old."""
 
-    old_variant = variant_obj
+    old_variant = copy.deepcopy(variant_obj)
     old_variant["_id"] = "old_id"
 
     ## GIVEN a database with a user
@@ -738,7 +738,7 @@ def test_keep_mosaic_tags_after_reupload(
 ):
     """Test the code that updates custom tags (mosaic tags) of new variants according to the old."""
 
-    old_variant = variant_obj
+    old_variant = copy.deepcopy(variant_obj)
     old_variant["_id"] = "old_id"
 
     ## GIVEN a database with a user
@@ -782,7 +782,7 @@ def test_keep_cancer_tier_after_reupload(
 ):
     """Test the code that updates cancer tier of new variants according to the old."""
 
-    old_variant = variant_obj
+    old_variant = copy.deepcopy(variant_obj)
     old_variant["_id"] = "old_id"
 
     ## GIVEN a database with a user
@@ -826,7 +826,7 @@ def test_keep_manual_acmg_after_reupload(
 ):
     """Test the code that updates acmg classification of new variants according to the old."""
 
-    old_variant = variant_obj
+    old_variant = copy.deepcopy(variant_obj)
     old_variant["_id"] = "old_id"
 
     ## GIVEN a database with a user
@@ -870,7 +870,7 @@ def test_keep_variant_comments_after_reupload(
 ):
     """Test the code that updates comments of new variants according to the old."""
 
-    old_variant = variant_obj
+    old_variant = copy.deepcopy(variant_obj)
     old_variant["_id"] = "old_id"
     old_variant["is_commented"] = True
 

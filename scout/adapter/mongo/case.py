@@ -976,7 +976,7 @@ class CaseHandler(object):
                             )
                             updated_variant = new_var
 
-                    if updated_variant:
+                    if updated_variant is not None:
                         n_status_updated += 1
                         updated_variants[action].append(updated_variant["_id"])
 
