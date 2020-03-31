@@ -114,7 +114,6 @@ def igv():
         if cosmic_non_coding:
             display_obj["cosmic_non_coding"] = cosmic_non_coding
 
-
     # Init upcoming igv-tracks
     sample_tracks = []
     upd_regions_bed_tracks = []
