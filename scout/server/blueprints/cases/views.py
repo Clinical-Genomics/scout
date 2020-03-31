@@ -120,7 +120,7 @@ def cases(institute_id):
         skip_assigned=skip_assigned,
         is_research=is_research,
         query=query,
-        **data
+        **data,
     )
 
 
@@ -139,7 +139,7 @@ def case(institute_id, case_name):
         case=case_obj,
         mme_nodes=current_app.mme_nodes,
         tissue_types=SAMPLE_SOURCE,
-        **data
+        **data,
     )
 
 
@@ -214,8 +214,7 @@ def clinvar_submissions(institute_id):
                 )
                 return redirect(request.referrer)
 
-            csv_type = ""
-            csv_type = request.form.get("csv_type")
+            csv_type = request.form.get("csv_type", "")
 
             submission_objs = store.clinvar_objs(
                 submission_id=submission_id, key_id=csv_type
@@ -231,15 +230,12 @@ def clinvar_submissions(institute_id):
                 csv_header = [
                     '"' + str(x) + '"' for x in csv_header
                 ]  # quote columns in header for csv rendering
-
+                download_day = str(datetime.datetime.now().strftime("%Y-%m-%d"))
                 headers = Headers()
                 headers.add(
                     "Content-Disposition",
                     "attachment",
-                    filename=clinvar_subm_id
-                    + "_"
-                    + str(datetime.datetime.now().strftime("%Y-%m-%d"))
-                    + ".csv",
+                    filename=f"{clinvar_subm_id}_{csv_type}_{download_day}.csv",
                 )
                 return Response(
                     generate_csv(",".join(csv_header), csv_lines),
@@ -696,7 +692,7 @@ def pdf_case_report(institute_id, case_name):
         institute=institute_obj,
         case=case_obj,
         format="pdf",
-        **data
+        **data,
     )
     return render_pdf(
         HTML(string=html_report),
