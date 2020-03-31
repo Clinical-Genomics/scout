@@ -14,6 +14,7 @@ from flask import (
 )
 
 from .partial import send_file_partial
+from . import controllers
 
 alignviewers_bp = Blueprint(
     "alignviewers",
@@ -102,66 +103,14 @@ def igv():
 
     display_obj = {}
 
-    # Add chromosome build info to the track object
-    fastaURL = ""
-    indexURL = ""
-    cytobandURL = ""
-    gene_track_format = ""
-    gene_track_URL = ""
-    gene_track_indexURL = ""
-    clinvar_snvs_url = ""
-    clinvar_track_format = "bigBed"
-
-    if chromosome_build in ["GRCh38", "38"] or chrom == "M":
-        fastaURL = (
-            "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa"
-        )
-        indexURL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa.fai"
-        cytobandURL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/cytoBandIdeo.txt"
-        gene_track_format = "gtf"
-        gene_track_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz"
-        gene_track_indexURL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi"
-        clinvar_snvs_url = (
-            "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarMain.bb"
-        )
-
-    else:
-        fastaURL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta"
-        indexURL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta.fai"
-        cytobandURL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/cytoBand.txt"
-        gene_track_format = "bed"
-        gene_track_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz"
-        gene_track_indexURL = "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi"
-        clinvar_snvs_url = (
-            "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarMain.bb"
-        )
-
-    display_obj["reference_track"] = {
-        "fastaURL": fastaURL,
-        "indexURL": indexURL,
-        "cytobandURL": cytobandURL,
-    }
-
-    display_obj["genes_track"] = {
-        "name": "Genes",
-        "type": "annotation",
-        "format": gene_track_format,
-        "sourceType": "file",
-        "url": gene_track_URL,
-        "indexURL": gene_track_indexURL,
-        "displayMode": "EXPANDED",
-    }
-
-    display_obj["clinvar_snvs"] = {
-        "name": "ClinVar",
-        "type": "annotation",
-        "format": clinvar_track_format,
-        "sourceType": "file",
-        "url": clinvar_snvs_url,
-        "displayMode": "EXPANDED",
-        "maxRows": 50,
-        "height": 100,
-    }
+    display_obj["reference_track"] = controllers.reference_track(
+        chromosome_build, chrom
+    )
+    display_obj["genes_track"] = controllers.genes_track(chromosome_build, chrom)
+    display_obj["clinvar_snvs"] = controllers.clinvar_track(chromosome_build, chrom)
+    display_obj["clinvar_cnvs"] = controllers.clinvar_cnvs_track(
+        chromosome_build, chrom
+    )
 
     # Init upcoming igv-tracks
     sample_tracks = []
