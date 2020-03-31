@@ -214,8 +214,7 @@ def clinvar_submissions(institute_id):
                 )
                 return redirect(request.referrer)
 
-            csv_type = ""
-            csv_type = request.form.get("csv_type")
+            csv_type = request.form.get("csv_type", "")
 
             submission_objs = store.clinvar_objs(
                 submission_id=submission_id, key_id=csv_type
@@ -236,10 +235,14 @@ def clinvar_submissions(institute_id):
                 headers.add(
                     "Content-Disposition",
                     "attachment",
-                    filename=clinvar_subm_id
-                    + "_"
-                    + str(datetime.datetime.now().strftime("%Y-%m-%d"))
-                    + ".csv",
+                    filename="".join([
+                        clinvar_subm_id,
+                        "_",
+                        csv_type,
+                        "_",
+                        str(datetime.datetime.now().strftime("%Y-%m-%d")),
+                        ".csv"
+                    ])
                 )
                 return Response(
                     generate_csv(",".join(csv_header), csv_lines),
