@@ -388,7 +388,8 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             new_comments(int): the number of created comments
         """
         new_comments = 0
-
+if new_var[_id] == old_var[_id]:
+    return new_comments
         link = "/{0}/{1}/{2}".format(
             new_var["institute"], case_obj["display_name"], new_var["_id"]
         )
