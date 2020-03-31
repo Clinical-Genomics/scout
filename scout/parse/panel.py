@@ -39,6 +39,7 @@ def get_panel_info(panel_lines=None, panel_id=None, institute=None, **kwargs):
         panel_lines(iterable(str))
         panel_id(str)
         institute(str)
+        maintainer(list(user._id))
 
     Returns:
         panel_info(dict): Dictionary with panel information
@@ -47,6 +48,7 @@ def get_panel_info(panel_lines=None, panel_id=None, institute=None, **kwargs):
         "panel_id": panel_id,
         "institute": institute,
         "version": kwargs.get("version"),
+        "maintainer": kwargs.get("maintainer"),
         "date": kwargs.get("date"),
         "display_name": kwargs.get("display_name"),
     }
