@@ -528,6 +528,7 @@ class CaseHandler(object):
         old_caseid = "-".join([case_obj["owner"], case_obj["display_name"]])
         old_case = self.case(old_caseid)
         # This is to keep sanger order and validation status
+
         old_sanger_variants = self.case_sanger_variants(case_obj["_id"])
 
         if old_case:
@@ -544,10 +545,12 @@ class CaseHandler(object):
         if existing_case and not update:
             raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
 
-        if (
-            existing_case and keep_actions
-        ):  # collect all variants with user actions for this case
-            old_evaluated_variants = list(adapter.evaluated_variants(case_id))
+        old_evaluated_variants = (
+            None  # acmg, manual rank, cancer tier, dismissed, mosaic, commented
+        )
+        if existing_case and keep_actions:
+            # collect all variants with user actions for this case
+            old_evaluated_variants = list(self.evaluated_variants(case_obj["_id"]))
 
         files = [
             {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
@@ -602,7 +605,7 @@ class CaseHandler(object):
                 institute_obj, case_obj, old_sanger_variants
             )
 
-            if keep_actions and old_evaluated_variants:
+            if keep_actions and old_evaluated_variants is not None:
                 self.update_variant_actions(
                     institute_obj, case_obj, old_evaluated_variants
                 )
