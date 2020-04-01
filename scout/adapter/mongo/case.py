@@ -593,7 +593,7 @@ class CaseHandler(object):
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
             LOG.warning(error)
 
-        if existing_case and update:
+        if existing_case:
             case_obj["rerun_requested"] = False
             if case_obj["status"] in ["active", "archived"]:
                 case_obj["status"] = "inactive"
