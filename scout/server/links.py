@@ -268,6 +268,9 @@ def smart(smart_domain):
 
 
 def varsome(build, refseq_id, protein_sequence_name):
+    if not all([refseq_id, protein_sequence_name]):
+        return None
+
     link = "https://varsome.com/variant/hg{}/{}:{}"
 
     return link.format(build, refseq_id, protein_sequence_name)
