@@ -605,7 +605,7 @@ class CaseHandler(object):
                 institute_obj, case_obj, old_sanger_variants
             )
 
-            if keep_actions and old_evaluated_variants is not None:
+            if keep_actions and old_evaluated_variants:
                 self.update_variant_actions(
                     institute_obj, case_obj, old_evaluated_variants
                 )
