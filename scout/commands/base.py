@@ -14,6 +14,7 @@ from scout.commands.delete import delete
 from scout.commands.download import download as download_command
 from scout.commands.export import export
 from scout.commands.index_command import index as index_command
+
 # Commands
 from scout.commands.load import load as load_command
 from scout.commands.serve import serve
@@ -56,22 +57,30 @@ def get_app(ctx):
     if options.params.get("demo"):
         cli_config["demo"] = "scout-demo"
 
-    app = create_app(
-        config=dict(
-            MONGO_DBNAME=cli_config.get("demo")
-            or options.params.get("mongodb")
-            or cli_config.get("mongodb")
-            or "scout",
-            MONGO_HOST=options.params.get("host")
-            or cli_config.get("host")
-            or "localhost",
-            MONGO_PORT=options.params.get("port") or cli_config.get("port") or 27017,
-            MONGO_USERNAME=options.params.get("username") or cli_config.get("username"),
-            MONGO_PASSWORD=options.params.get("password") or cli_config.get("password"),
-            OMIM_API_KEY=cli_config.get("omim_api_key"),
-        ),
-        config_file=flask_conf,
-    )
+    try:
+        app = create_app(
+            config=dict(
+                MONGO_DBNAME=cli_config.get("demo")
+                or options.params.get("mongodb")
+                or cli_config.get("mongodb")
+                or "scout",
+                MONGO_HOST=options.params.get("host")
+                or cli_config.get("host")
+                or "localhost",
+                MONGO_PORT=options.params.get("port")
+                or cli_config.get("port")
+                or 27017,
+                MONGO_USERNAME=options.params.get("username")
+                or cli_config.get("username"),
+                MONGO_PASSWORD=options.params.get("password")
+                or cli_config.get("password"),
+                OMIM_API_KEY=cli_config.get("omim_api_key"),
+            ),
+            config_file=flask_conf,
+        )
+    except SyntaxError as err:
+        LOG.error(err)
+        raise click.Abort
     return app
 
 

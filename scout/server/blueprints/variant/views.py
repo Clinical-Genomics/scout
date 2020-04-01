@@ -38,9 +38,8 @@ variant_bp = Blueprint(
 def variant(institute_id, case_name, variant_id):
     """Display a specific SNV variant."""
     LOG.debug("Variants view requesting data for variant %s", variant_id)
-    data = variant_controller(
-        store, institute_id, case_name, variant_id=variant_id, variant_type="snv"
-    )
+
+    data = variant_controller(store, institute_id, case_name, variant_id=variant_id)
     if data is None:
         LOG.warning(
             "An error occurred: variants view requesting data for variant {}".format(
@@ -56,8 +55,6 @@ def variant(institute_id, case_name, variant_id):
             store, loqusdb, data["case"], data["variant"]
         )
 
-    data["cancer"] = request.args.get("cancer") == "yes"
-    data["str"] = request.args.get("str") == "yes"
     return data
 
 
@@ -66,7 +63,7 @@ def variant(institute_id, case_name, variant_id):
 def sv_variant(institute_id, case_name, variant_id):
     """Display a specific structural variant."""
     data = variant_controller(
-        store, institute_id, case_name, variant_id, add_other=False, variant_type="sv"
+        store, institute_id, case_name, variant_id, add_other=False
     )
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
@@ -75,8 +72,6 @@ def sv_variant(institute_id, case_name, variant_id):
             store, loqusdb, data["case"], data["variant"]
         )
 
-    data["cancer"] = request.args.get("cancer") == "yes"
-    data["str"] = request.args.get("str") == "yes"
     return data
 
 
@@ -91,8 +86,8 @@ def str_variant(institute_id, case_name, variant_id):
         variant_id,
         add_other=False,
         get_overlapping=False,
-        variant_type="str",
     )
+
     return data
 
 
@@ -143,7 +138,7 @@ def variant_update(institute_id, case_name, variant_id):
     if manual_rank:
         try:
             new_manual_rank = int(manual_rank) if manual_rank != "-1" else None
-        except:
+        except ValueError:
             LOG.warning(
                 "Attempt to update manual rank with invalid value {}".format(
                     manual_rank
@@ -165,7 +160,7 @@ def variant_update(institute_id, case_name, variant_id):
     elif cancer_tier:
         try:
             new_cancer_tier = cancer_tier if cancer_tier != "-1" else None
-        except:
+        except ValueError:
             LOG.warning(
                 "Attempt to update cancer tier with invalid value {}".format(
                     cancer_tier

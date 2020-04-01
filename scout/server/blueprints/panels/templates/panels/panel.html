@@ -69,6 +69,10 @@
         <label for="date">Date</label>
         <span class="float-right" id="date">{{ panel.date.date() }}</span>
       </li>
+      <li class="list-group-item">
+          <label for="mainainer">Maintainers</label>
+          <span class="float-right" id="maintainer"> {{ panel.maintainer_names|join(", ") }}</span>
+      </li>
       {% if config.SQLALCHEMY_DATABASE_URI and case %}
         <li class="list-group-item">
           <label for="coverage_report">Coverage report</label>
@@ -196,7 +200,7 @@
           {% if gene.action == 'add' %}
             <span class="badge badge-primary badge-pill float-right">{{ gene.action-}}ed</span>
           {% elif gene.action == 'delete' %}
-            <span class="badge badge-danger badge-pill float-right">{{ gene.action-}}ed</span>
+            <span class="badge badge-danger badge-pill float-right">{{ gene.action-}}d</span>
           {% else %}
             <span class="badge badge-secondary badge-pill float-right">{{ gene.action-}}ed</span>
           {% endif %}

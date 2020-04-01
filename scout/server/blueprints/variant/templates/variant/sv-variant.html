@@ -18,6 +18,7 @@
 {% endblock %}
 
 {% block top_nav %}
+  {{ super() }}
   <li class="nav-item">
     <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
@@ -29,9 +30,15 @@
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
-      {{ variant.variant_type|capitalize }} structural variants
-    </a>
+    {% if variant.category == "cancer_sv" %}
+      <a class="nav-link text-nowrap" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
+        {{ variant.variant_type|capitalize }} cancer structural variants
+      </a>
+    {% else %}
+      <a class="nav-link text-nowrap" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
+        {{ variant.variant_type|capitalize }} structural variants
+      </a>
+    {% endif %}
   </li>
   <li class="active nav-item">
     <p class="navbar-text text-nowrap">{{ variant.display_name|truncate(20, True) }}</p>
@@ -237,10 +244,15 @@
       <tbody>
         <tr>
           <td>
-            <a class="btn btn-outline-secondary form-control" href="http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target="_blank">Ensembl</a>
+	    {% if case.genome_build == 38 %}
+              <a class="btn btn-outline-secondary form-control" href="http://www.ensembl.org/Homo_sapiens/Location/View?db=core;r={{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target="_blank">Ensembl</a>
+	    {% else %}
+	      <a class="btn btn-outline-secondary form-control" href="http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target="_blank">Ensembl</a>
+	    {% endif %}
           </td>
 	  <td>
-	    <a class="btn btn-outline-secondary form-control" href="https://decipher.sanger.ac.uk/browser#q/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}%20/location/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target ="_blank">DECIPHER</a>
+	    <a class="btn btn-outline-secondary form-control" href="https://decipher.sanger.ac.uk/browser#q/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}%20/location/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target ="_blank">DECIPHER {% if case.genome_build == 38 %} (GRCh37){% endif %}</a>
+	    
 	  </td>
         </tr>
       </tbody>

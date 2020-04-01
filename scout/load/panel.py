@@ -6,8 +6,9 @@ functions to load panels into the database
 
 import logging
 
-from scout.parse.panel import (get_panel_info, parse_gene_panel,
-                               parse_panel_app_panel)
+from click import Abort
+
+from scout.parse.panel import get_panel_info, parse_gene_panel, parse_panel_app_panel
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import fetch_resource
 
@@ -26,10 +27,12 @@ def load_panel(panel_path, adapter, **kwargs):
         panel_type(str)
         panel_id(str)
         institute(str)
+        maintainer(str)
 
     """
     panel_lines = get_file_handle(panel_path)
     version = kwargs.get("version")
+
     try:
         # This will parse panel metadata if includeed in panel file
         panel_info = get_panel_info(
@@ -38,6 +41,7 @@ def load_panel(panel_path, adapter, **kwargs):
             institute=kwargs.get("institute"),
             version=version,
             date=kwargs.get("date"),
+            maintatiner=kwargs.get("maintainer"),
             display_name=kwargs.get("display_name"),
         )
     except Exception as err:
@@ -78,6 +82,13 @@ def load_panel(panel_path, adapter, **kwargs):
         display_name = display_name or existing_panel["display_name"]
         institute = institute or existing_panel["institute"]
 
+    # Check if maintainers exist in the user database
+    maintainer = kwargs.get("maintainer")
+    if maintainer is not None:
+        if adapter.user(user_id=maintainer) is None:
+            LOG.warning("Maintainer %s does not exist in user database", maintainer)
+            raise Abort()
+
     parsed_panel = parse_gene_panel(
         path=panel_path,
         institute=institute,
@@ -85,6 +96,7 @@ def load_panel(panel_path, adapter, **kwargs):
         date=date,
         version=version,
         panel_id=panel_id,
+        maintainer=maintainer,
         display_name=display_name,
     )
 
@@ -120,7 +132,7 @@ def load_panel_app(adapter, panel_id=None, institute="cust000"):
         json_lines = fetch_resource(base_url.format("get_panel") + _panel_id, json=True)
 
         parsed_panel = parse_panel_app_panel(
-            panel_info=json_lines["result"], hgnc_map=hgnc_map, institute=institute,
+            panel_info=json_lines["result"], hgnc_map=hgnc_map, institute=institute
         )
         parsed_panel["panel_id"] = _panel_id
 

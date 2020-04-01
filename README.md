@@ -5,10 +5,9 @@
 	<h3 align="center">Analyze VCFs and collaborate on solving rare diseases quicker</h3>
 </p>
 
-[![Build Status][travis-img]][travis-url]
-![Build Status - GitHub](https://github.com/Clinical-Genomics/scout/workflows/Scout%20tests/badge.svg)
+![Build Status - GitHub][actions-build-status]
 [![PyPI Version][pypi-img]][pypi-url]
-[![Coverage Status](https://coveralls.io/repos/github/Clinical-Genomics/scout/badge.svg?branch=master)](https://coveralls.io/github/Clinical-Genomics/scout?branch=master)
+[![Coverage Status][coveralls-img]][coveralls-url]
 [![GitHub issues-closed][closed-issues-img]][closed-issues-url]
 [![Average time to resolve an issue][ismaintained-resolve-img]][ismaintained-resolve-url]
 [![Percentage of issues still open][ismaintained-open-rate-img]][ismaintained-open-rate-url]
@@ -90,11 +89,20 @@ scout load case scout/demo/643594.config.yaml
 
 ## Integration with chanjo for coverage report visualization
 
-Scout may be configured to visualize coverage reports produced by [Chanjo][chanjo]. Instructions on how to enable this feature can be found in the document [chanjo_coverage_integration](docs/admin-guide/chanjo_coverage_integration.md).
+Scout may be configured to visualize coverage reports produced by [Chanjo][chanjo]. Instructions on
+how to enable this feature can be found in the document [chanjo_coverage_integration][chanjo-scout].
+
+## Integration with loqusdb for integrating local variant frequencies
+
+Scout may be configured to visualize local variant frequencies monitored by [Loqusdb][loqusdb].
+Instructions on how to enable this feature can be found in the document
+[loqusdb integration][loqusdb-scout].
 
 ## Server setup
 
-Scout needs a server config to know which databases to connect to etc. Depending on which information you provide you activate different parts of the interface automatically, including user authentication, coverage, and local observations.
+Scout needs a server config to know which databases to connect to etc. Depending on which
+information you provide you activate different parts of the interface automatically,
+including user authentication, coverage, and local observations.
 
 This is an example of the config file:
 
@@ -149,10 +157,13 @@ scout --flask-config config.py serve
 
 ### Hosting a production server
 
-When running the server in production you will likely want to use a proper Python server solution such as Gunicorn. This is also how we can multiprocess the server and use encrypted HTTPS connections.
+When running the server in production you will likely want to use a proper Python server solution
+such as Gunicorn.
+This is also how we can multiprocess the server and use encrypted HTTPS connections.
 
 ```bash
-SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 --access-logfile - --error-logfile - --keyfile /tmp/myserver.key --certfile /tmp/server.crt wsgi_gunicorn:app
+SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 --access-logfile - --error-logfile
+ - --keyfile /tmp/myserver.key --certfile /tmp/server.crt wsgi_gunicorn:app
 ```
 
 > The `wsgi_gunicorn.py` file is included in the repo and configures Flask to work with Gunicorn.
@@ -160,9 +171,13 @@ SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 --access-logfi
 
 ### Integration with MatchMaker Exchange
 
-Starting from release 4.4, Scout offers integration for patient data sharing via MatchMaker Exchange. General info about MatchMaker and patient matching could be found in [this paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6016856/).
-For a technical guideline of our implementation of MatchMaker Exchange at Clinical Genomics and its integration with Scout follow this [link](docs/admin-guide/matchmaker_exchange_integration.md).
-A user-oriented guide describing how to share case and variant data to MatchMaker using Scout can be found [here](docs/user-guide/cases.md#matchmaker-exchange-integration).
+Starting from release 4.4, Scout offers integration for patient data sharing via MatchMaker
+Exchange.
+General info about MatchMaker and patient matching could be found in [this paper][matchmaker-pub].
+For a technical guideline of our implementation of MatchMaker Exchange at Clinical Genomics and its
+integration with Scout check scouts [matchmaker docs][matchmaker-scout].
+A user-oriented guide describing how to share case and variant data to MatchMaker using Scout can
+be found [here][matchmaker-scout-sharing].
 
 
 ## Example of analysis config
@@ -172,13 +187,22 @@ TODO.
 
 ### Contributing to Scout
 
-If you want to contribute and make Scout better, you help is very appreciated! Bug reports or feature requests are really helpful and can be submitted via github issues.
-Feel free to open a pull request to add a new functionality or fixing a bug, we welcome any help, regardless of the amount of code provided or your skills as a programmer.
-More info on how to contribute to the project and a description of the Scout branching workflow can be found [here](CONTRIBUTING.md).
+If you want to contribute and make Scout better, you help is very appreciated! Bug reports or
+feature requests are really helpful and can be submitted via github issues.
+Feel free to open a pull request to add a new functionality or fixing a bug, we welcome any help,
+regardless of the amount of code provided or your skills as a programmer.
+More info on how to contribute to the project and a description of the Scout branching workflow can
+be found in [CONTRIBUTING](CONTRIBUTING.md).
 
 
 
 [chanjo]: https://github.com/Clinical-Genomics/chanjo
+[chanjo-scout]: docs/admin-guide/chanjo_coverage_integration.md
+[loqusdb]: https://github.com/moonso/loqusdb
+[loqusdb-scout]: docs/admin-guide/loqusdb_integration.md
+[matchmaker-pub]: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6016856/
+[matchmaker-scout]: docs/admin-guide/matchmaker_exchange_integration.md
+[matchmaker-scout-sharing]: docs/user-guide/cases.md#matchmaker-exchange-integration
 [travis-img]: https://img.shields.io/travis/Clinical-Genomics/scout/develop.svg?style=flat-square
 [travis-url]: https://travis-ci.org/Clinical-Genomics/scout
 [pypi-img]: https://img.shields.io/pypi/v/scout-browser.svg?style=flat-square
@@ -189,3 +213,6 @@ More info on how to contribute to the project and a description of the Scout bra
 [ismaintained-open-rate-url]: http://isitmaintained.com/project/Clinical-Genomics/scout
 [closed-issues-img]: https://img.shields.io/github/issues-closed/Clinical-Genomics/scout.svg
 [closed-issues-url]: https://GitHub.com/Clinical-Genomics/scout/issues?q=is%3Aissue+is%3Aclosed
+[coveralls-img]: https://coveralls.io/repos/github/Clinical-Genomics/scout/badge.svg?branch=master
+[coveralls-url]: https://coveralls.io/github/Clinical-Genomics/scout?branch=master
+[actions-build-status]: https://github.com/Clinical-Genomics/scout/workflows/Scout%20tests/badge.svg

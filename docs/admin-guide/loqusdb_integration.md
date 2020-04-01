@@ -1,6 +1,6 @@
 # Loqusdb integration
 
-[Loqusdb][loqus] is a tool to keep track of local observation of genomic variants. Local frequencies/observations has been shown to add value to the analysis of genomic data both for rare disease and cancer. Scout integrates with loqusdb by fetching data from a given instance of loqusdb via the CLI.
+[Loqusdb][loqus] is a tool to keep track of local observation of genomic variants. Local frequencies/observations has been shown to add value to the analysis of genomic data both for rare disease and cancer. Scout integrates with loqusdb by fetching data from a given instance of loqusdb via the CLI. Please note that loqusdb version >= 2.5 needs to be installed.
 
 ## Setup
 

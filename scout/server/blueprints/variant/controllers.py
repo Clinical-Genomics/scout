@@ -48,6 +48,7 @@ def variant(
     add_other=True,
     get_overlapping=True,
     add_compounds=True,
+    variant_category=None,
     variant_type=None,
     case_obj=None,
     institute_obj=None,
@@ -66,7 +67,8 @@ def variant(
         add_case(bool): If info about files case should be added
         add_other(bool): If information about other causatives should be added
         get_overlapping(bool): If overlapping variants should be collected
-        variant_type(str): in ['snv', 'str', 'sv', 'cancer']
+        variant_type(str): in ["clinical", "research"]
+        variant_category(str): ["snv", "str", "sv", "cancer", "cancer_sv"]
         institute_obj(scout.models.Institute)
         case_obj(scout.models.Case)
 
@@ -94,10 +96,15 @@ def variant(
     if variant_obj is None:
         return None
 
-    variant_type = variant_type or variant_obj.get("category", "snv")
+    variant_type = variant_type or variant_obj.get("variant_type", "clinical")
+
+    # request category specific variant display
+    variant_category = variant_obj.get("category", "snv")
+    LOG.debug("Variant category {}".format(variant_category))
+
     variant_id = variant_obj["variant_id"]
 
-    genome_build = case_obj.get("genome_build", "37")
+    genome_build = str(case_obj.get("genome_build", "37"))
     if genome_build not in ["37", "38"]:
         genome_build = "37"
 
@@ -151,7 +158,7 @@ def variant(
     # Add general variant links
     variant_obj.update(get_variant_links(variant_obj, int(genome_build)))
     variant_obj["frequencies"] = frequencies(variant_obj)
-    if variant_type in ["snv", "cancer"]:
+    if variant_category in ["snv", "cancer"]:
         # This is to convert a summary of frequencies to a string
         variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
@@ -160,7 +167,7 @@ def variant(
     )
 
     # Add display information about callers
-    variant_obj["callers"] = callers(variant_obj, category=variant_type)
+    variant_obj["callers"] = callers(variant_obj, category=variant_category)
 
     # Convert affection status to strings for the template
     is_affected(variant_obj, case_obj)
@@ -208,6 +215,7 @@ def variant(
         "institute": institute_obj,
         "case": case_obj,
         "variant": variant_obj,
+        variant_category: True,
         "causatives": other_causatives,
         "events": events,
         "overlapping_vars": overlapping_vars,
@@ -291,6 +299,9 @@ def observations(store, loqusdb, case_obj, variant_obj):
             continue
         document_id = parse_document_id(chrom, str(pos), ref, alt, var_type, case_id)
         other_variant = store.variant(document_id=document_id)
+        # If the other variant is not loaded we skip it
+        if not other_variant:
+            continue
         obs_data["cases"].append(dict(case=other_case, variant=other_variant))
 
     return obs_data
