@@ -8,6 +8,7 @@ from pprint import pprint as pp
 import pymongo
 
 from scout.build.case import build_case
+from scout.constants import ACMG_MAP
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.case import parse_case
 from scout.parse.variant.ids import parse_document_id
@@ -825,6 +826,162 @@ class CaseHandler(object):
         )
 
         return case_verif_variants
+
+    def update_variant_actions(self, institute_obj, case_obj, old_eval_variants):
+        """Update existing variants of a case according to the tagged status
+            (manual_rank, dismiss_variant, mosaic_tags) of its previous variants
+
+        Accepts:
+            institute_obj(dict): an institute object
+            case_obj(dict): a case object
+            old_eval_variants(list(Variant))
+
+        Returns:
+            updated_variants(dict): a dictionary like this:
+                'manual_rank' : [list of variant ids],
+                'dismiss_variant' : [list of variant ids],
+                'mosaic_tags' : [list of variant ids],
+                'cancer_tier': [list of variant ids],
+                'acmg_classification': [list of variant ids]
+                'is_commented': [list of variant ids]
+        """
+        updated_variants = {
+            "manual_rank": [],
+            "dismiss_variant": [],
+            "mosaic_tags": [],
+            "cancer_tier": [],
+            "acmg_classification": [],
+            "is_commented": [],
+        }
+
+        LOG.debug(
+            "Updating action status for {} variants in case:{}".format(
+                len(old_eval_variants), case_obj["_id"]
+            )
+        )
+
+        n_status_updated = 0
+        for old_var in old_eval_variants:
+
+            # search for the same variant in newly uploaded vars for this case
+            display_name = old_var["display_name"]
+
+            new_var = self.variant_collection.find_one(
+                {"case_id": case_obj["_id"], "display_name": display_name}
+            )
+
+            if new_var is None:  # same var is no more among case variants, skip it
+                LOG.warning(
+                    "Trying to propagate manual action from an old variant to a new, but couldn't find same variant any more"
+                )
+                continue
+
+            for action in list(
+                updated_variants.keys()
+            ):  # manual_rank, dismiss_variant, mosaic_tags
+                if (
+                    old_var.get(action) is not None or action == "is_commented"
+                ):  # tag new variant accordingly
+                    # collect only the latest associated event:
+                    verb = action
+                    if action == "acmg_classification":
+                        verb = "acmg"
+                    elif action == "is_commented":
+                        verb = "comment"
+
+                    old_event = self.event_collection.find_one(
+                        {
+                            "case": case_obj["_id"],
+                            "verb": verb,
+                            "variant_id": old_var["variant_id"],
+                            "category": "variant",
+                        },
+                        sort=[("updated_at", pymongo.DESCENDING)],
+                    )
+
+                    if old_event is None:
+                        continue
+
+                    user_obj = self.user(old_event["user_id"])
+                    if user_obj is None:
+                        continue
+
+                    # create a link to the new variant for the events
+                    link = "/{0}/{1}/{2}".format(
+                        new_var["institute"], case_obj["display_name"], new_var["_id"]
+                    )
+
+                    updated_variant = None
+
+                    if action == "manual_rank":
+                        updated_variant = self.update_manual_rank(
+                            institute=institute_obj,
+                            case=case_obj,
+                            user=user_obj,
+                            link=link,
+                            variant=new_var,
+                            manual_rank=old_var.get(action),
+                        )
+
+                    if action == "dismiss_variant":
+                        updated_variant = self.update_dismiss_variant(
+                            institute=institute_obj,
+                            case=case_obj,
+                            user=user_obj,
+                            link=link,
+                            variant=new_var,
+                            dismiss_variant=old_var.get(action),
+                        )
+
+                    if action == "mosaic_tags":
+                        updated_variant = self.update_mosaic_tags(
+                            institute=institute_obj,
+                            case=case_obj,
+                            user=user_obj,
+                            link=link,
+                            variant=new_var,
+                            mosaic_tags=old_var.get(action),
+                        )
+
+                    if action == "cancer_tier":
+                        updated_variant = self.update_cancer_tier(
+                            institute=institute_obj,
+                            case=case_obj,
+                            user=user_obj,
+                            link=link,
+                            variant=new_var,
+                            cancer_tier=old_var.get(action),
+                        )
+
+                    if action == "acmg_classification":
+                        str_classif = ACMG_MAP.get(old_var.get("acmg_classification"))
+                        updated_variant = self.update_acmg(
+                            institute_obj=institute_obj,
+                            case_obj=case_obj,
+                            user_obj=user_obj,
+                            link=link,
+                            variant_obj=new_var,
+                            acmg_str=str_classif,
+                        )
+
+                    if action == "is_commented":
+                        updated_comments = self.comments_reupload(
+                            old_var, new_var, institute_obj, case_obj
+                        )
+                        if updated_comments > 0:
+                            LOG.info(
+                                "Created {} new comments for variant {} after reupload".format(
+                                    updated_comments, display_name
+                                )
+                            )
+                            updated_variant = new_var
+
+                    if updated_variant is not None:
+                        n_status_updated += 1
+                        updated_variants[action].append(updated_variant["_id"])
+
+        LOG.info("Variant actions updated {} times".format(n_status_updated))
+        return updated_variants
 
     def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
         """Update existing variants for a case according to a previous
