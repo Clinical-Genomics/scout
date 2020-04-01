@@ -11,7 +11,6 @@ LOG = logging.getLogger(__name__)
 @click.command(short_help="Upload variants to existing case")
 @click.argument("case-id")
 @click.option("-i", "--institute", help="institute id of related cases")
-@click.option("-f", "--force", is_flag=True, help="upload without request")
 @click.option("--cancer", is_flag=True, help="Upload clinical cancer variants")
 @click.option("--cancer-research", is_flag=True, help="Upload research cancer variants")
 @click.option(
@@ -42,11 +41,16 @@ LOG = logging.getLogger(__name__)
     help="Specify the rank score treshold",
     show_default=True,
 )
+@click.option("-f", "--force", is_flag=True, help="upload without request")
+@click.option(
+    "--keep-actions/--no-keep-actions",
+    default=True,
+    help="Export user actions from old variants to the new",
+)
 @with_appcontext
 def variants(
     case_id,
     institute,
-    force,
     cancer,
     cancer_sv,
     cancer_research,
@@ -62,6 +66,8 @@ def variants(
     hgnc_id,
     hgnc_symbol,
     rank_treshold,
+    force,
+    keep_actions,
 ):
     """Upload variants to a case
 
@@ -113,6 +119,13 @@ def variants(
             raise click.Abort()
 
     old_sanger_variants = adapter.case_sanger_variants(case_obj["_id"])
+    old_evaluated_variants = (
+        None  # acmg, manual rank, cancer tier, dismissed, mosaic, commented
+    )
+
+    if keep_actions:  # collect all variants with user actions for this case
+        old_evaluated_variants = list(adapter.evaluated_variants(case_id))
+
     i = 0
     for file_type in files:
         variant_type = file_type["variant_type"]
@@ -166,3 +179,6 @@ def variants(
     sanger_updated = adapter.update_case_sanger_variants(
         institute_obj, case_obj, old_sanger_variants
     )
+
+    if keep_actions and old_evaluated_variants:
+        adapter.update_variant_actions(institute_obj, case_obj, old_evaluated_variants)
