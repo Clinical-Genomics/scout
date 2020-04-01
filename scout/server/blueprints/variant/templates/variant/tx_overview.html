@@ -94,10 +94,11 @@
                       {{ (transcript.protein_sequence_name or '')|url_decode }}
                     </span>
                   </td>
-                  <td>
-                    <a target="_blank" href="{{ transcript.varsome_link }}" class="btn btn-outline-secondary">
-                      Varsome
-                    </a>
+                  <td class="d-flex justify-content-center">
+                    {% if transcript.varsome_link %}
+                      <a href="{{ transcript.varsome_link }}" class="badge badge-secondary text-white" target="_blank"
+                        data-toggle="tooltip" title="Varsome">V</a>
+                    {% endif %}
                   </td>
                 </tr>
               {% endfor %}
