@@ -7,12 +7,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+- Clinvar CNVs IGV track
+
 ### Fixed
 - Fix the link to Ensembl for SV variants when genome build 38.
 - Arrange information in columns on variant page
 - Fix so that new cosmic identifier (COSV) is also acceptable #1304
 - Fixed COSMIC tag in INFO (outside of CSQ) to be parses as well with `&` splitter.
 - COSMIC stub URL changed to https://cancer.sanger.ac.uk/cosmic/search?q= instead.
+- Updated to a version of IGV where bigBed tracks are visualized correctly  
+- Clinvar submission files are named according to the content (variant_data and case_data)
+- Always show causatives from other cases in case overview
 
 ### Changed
 - Runs all CI checks in github actions
@@ -30,6 +35,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update HPO terms using downloaded definitions files
 - Option to use alternative flask config when running `scout serve`
 - Requirement to use loqusdb >= 2.5 if integrated
+- Gene panels can have maintainers
+- Keep variant actions (dismissed, manual rank, mosaic, acmg, comments) upon variant re-upload
 
 ### Fixed
 - Do not display Pedigree panel in cancer view
