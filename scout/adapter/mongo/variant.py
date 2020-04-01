@@ -275,7 +275,7 @@ class VariantHandler(VariantLoader):
             )
 
         if variant_obj["chromosome"] in ["X", "Y"]:
-            # TODO add the build here
+            # TO DO add the build here
             variant_obj["is_par"] = is_par(
                 variant_obj["chromosome"], variant_obj["position"]
             )
@@ -584,6 +584,7 @@ class VariantHandler(VariantLoader):
                         {"manual_rank": {"$exists": True}},
                         {"cancer_tier": {"$exists": True}},
                         {"dismiss_variant": {"$exists": True}},
+                        {"mosaic_tags": {"$exists": True}},
                     ]
                 },
             ]

@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - COSMIC stub URL changed to https://cancer.sanger.ac.uk/cosmic/search?q= instead.
 - Updated to a version of IGV where bigBed tracks are visualized correctly  
 - Clinvar submission files are named according to the content (variant_data and case_data)
+- Always show causatives from other cases in case overview
 
 ### Changed
 - Runs all CI checks in github actions
@@ -35,6 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to use alternative flask config when running `scout serve`
 - Requirement to use loqusdb >= 2.5 if integrated
 - Gene panels can have maintainers
+- Keep variant actions (dismissed, manual rank, mosaic, acmg, comments) upon variant re-upload
 
 ### Fixed
 - Do not display Pedigree panel in cancer view
