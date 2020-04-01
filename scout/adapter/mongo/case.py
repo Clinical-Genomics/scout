@@ -501,7 +501,7 @@ class CaseHandler(object):
         result = self.case_collection.delete_one(query)
         return result
 
-    def load_case(self, config_data, update=False):
+    def load_case(self, config_data, update=False, keep_actions=True):
         """Load a case into the database
 
         Check if the owner and the institute exists.
@@ -509,7 +509,7 @@ class CaseHandler(object):
         Args:
             config_data(dict): A dictionary with all the necessary information
             update(bool): If existing case should be updated
-
+            keep_actions(bool): Attempt transfer of existing case user actions to new vars
         Returns:
             case_obj(dict)
         """
@@ -543,6 +543,11 @@ class CaseHandler(object):
         existing_case = self.case(case_obj["_id"])
         if existing_case and not update:
             raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
+
+        if (
+            existing_case and keep_actions
+        ):  # collect all variants with user actions for this case
+            old_evaluated_variants = list(adapter.evaluated_variants(case_id))
 
         files = [
             {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
@@ -580,6 +585,7 @@ class CaseHandler(object):
                     variant_type=variant_type,
                     category=category,
                     rank_threshold=case_obj.get("rank_score_threshold", 5),
+                    keep_actions=keep_actions,
                 )
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
@@ -596,6 +602,11 @@ class CaseHandler(object):
             self.update_case_sanger_variants(
                 institute_obj, case_obj, old_sanger_variants
             )
+
+            if keep_actions and old_evaluated_variants:
+                self.update_variant_actions(
+                    institute_obj, case_obj, old_evaluated_variants
+                )
 
         else:
             LOG.info("Loading case %s into database", case_obj["display_name"])
