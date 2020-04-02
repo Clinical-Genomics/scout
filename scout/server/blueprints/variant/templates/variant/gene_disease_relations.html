@@ -14,7 +14,6 @@
           </thead>
           <tbody>
             {% for gene in variant.genes %}
-              {{gene.common}}<br><br>
               {% if gene.common %}
                 {% for disease_term in gene.common.phenotypes %}
                   <tr>

@@ -140,10 +140,6 @@ def build_hgnc_gene(gene_info, build="37"):
     for phenotype_info in gene_info.get("phenotypes", []):
         phenotype_objs.append(build_phenotype(phenotype_info))
 
-    if hgnc_symbol == "PRODH":
-        LOG.error("----------------------------->BUILD GENES:phenotype_obj is {}".format(phenotype_objs))
-
-
     if phenotype_objs:
         gene_obj["phenotypes"] = phenotype_objs
 

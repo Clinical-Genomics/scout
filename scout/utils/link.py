@@ -125,7 +125,6 @@ def add_omim_info(genes, alias_genes, genemap_lines, mim2gene_lines):
     omim_genes = get_mim_genes(genemap_lines, mim2gene_lines)
 
     for hgnc_symbol in omim_genes:
-
         omim_info = omim_genes[hgnc_symbol]
         inheritance = omim_info.get("inheritance", set())
 
@@ -138,8 +137,6 @@ def add_omim_info(genes, alias_genes, genemap_lines, mim2gene_lines):
             gene_info["inheritance_models"] = list(inheritance)
             gene_info["phenotypes"] = omim_info.get("phenotypes", [])
 
-        if hgnc_symbol == "PRODH":
-            LOG.error("LINK GENES---------------------------> GENE INFO{}".format(omim_info))
 
 def add_incomplete_penetrance(genes, alias_genes, hpo_lines):
     """Add information of incomplete penetrance"""
