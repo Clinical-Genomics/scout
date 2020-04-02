@@ -1,6 +1,14 @@
-from scout.utils.link import link_genes, add_ensembl_info
+from scout.utils.link import link_genes, add_ensembl_info, get_correct_ids
 from pprint import pprint as pp
 
+def test_get_correct_ids():
+    """ Test function that gets correct gene id from aliases dict"""
+    aliases_dict = {
+        'PRODH': {'true': 9453, 'ids': {9453}},
+        'PRODH2': {'true': None, 'ids': {9453, 17325}, 'true_id': 17325},
+    }
+    gene_id = get_correct_ids("PRODH", aliases_dict)
+    assert gene_id == {9453}
 
 def test_link_genes(
     genes37_handle,
