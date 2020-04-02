@@ -20,7 +20,7 @@ def genes_by_alias(hgnc_genes):
     """Return a dictionary with hgnc symbols as keys
 
     Value of the dictionaries are information about the hgnc ids for a symbol.
-    If the symbol is primary for a gene then 'true_id' will exist.
+    If the symbol is primary for a gene then dict('true') will exist.
     A list of hgnc ids that the symbol points to is in ids.
 
     Args:
@@ -30,7 +30,7 @@ def genes_by_alias(hgnc_genes):
         alias_genes(dict):
             {
                 'hgnc_symbol':{
-                    'true_id': int,
+                    'true': int,
                     'ids': list(int)
                     }
             }
@@ -48,7 +48,7 @@ def genes_by_alias(hgnc_genes):
             if alias in alias_genes:
                 alias_genes[alias.upper()]["ids"].add(hgnc_id)
                 if true_id:
-                    alias_genes[alias.upper()]["true_id"] = hgnc_id
+                    alias_genes[alias.upper()]["true"] = hgnc_id
             else:
                 alias_genes[alias.upper()] = {"true": true_id, "ids": set([hgnc_id])}
 
@@ -167,8 +167,7 @@ def get_correct_ids(hgnc_symbol, alias_genes):
         hgnc_id_info = alias_genes[hgnc_symbol]
         if hgnc_id_info["true"]:
             return set([hgnc_id_info["true"]])
-        else:
-            return set(hgnc_id_info["ids"])
+        return set(hgnc_id_info["ids"])
     return hgnc_ids
 
 

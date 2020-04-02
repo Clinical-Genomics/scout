@@ -45,6 +45,11 @@ LOG = logging.getLogger(__name__)
 @click.option("--owner", help="parent institute for the case", default="test")
 @click.option("--ped", type=click.File("r"))
 @click.option("-u", "--update", is_flag=True)
+@click.option(
+    "--keep-actions/--no-keep-actions",
+    default=True,
+    help="Transfer user actions from old variants when updating.",
+)
 @click.option("--no-variants", is_flag=False)
 @click.argument("config", type=click.File("r"), required=False)
 @click.option(
@@ -71,6 +76,7 @@ def case(
     peddy_ped,
     peddy_sex,
     peddy_check,
+    keep_actions,
 ):
     """Load a case into the database.
 
@@ -111,7 +117,7 @@ def case(
     LOG.info("Use family %s" % config_data["family"])
 
     try:
-        case_obj = adapter.load_case(config_data, update)
+        case_obj = adapter.load_case(config_data, update, keep_actions)
     except Exception as err:
         LOG.error("Something went wrong during loading")
         LOG.warning(err)
