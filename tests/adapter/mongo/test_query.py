@@ -478,7 +478,7 @@ def test_build_spidex_high(adapter):
 def test_build_clinsig_always_only(adapter):
     case_id = "cust000"
     clinsig_confident_always_returned = True
-    trusted_revstat_lev = ["mult", "single", "exp", "guideline"]
+    trusted_revstat_lev = TRUSTED_REVSTAT_LEVEL
     clinsig_items = [4, 5]
     clinsig_mapped_items = []
     all_clinsig = []  # both numerical and human readable values
