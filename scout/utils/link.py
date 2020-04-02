@@ -167,8 +167,7 @@ def get_correct_ids(hgnc_symbol, alias_genes):
         hgnc_id_info = alias_genes[hgnc_symbol]
         if hgnc_id_info["true"]:
             return set([hgnc_id_info["true"]])
-        else:
-            return set(hgnc_id_info["ids"])
+        return set(hgnc_id_info["ids"])
     return hgnc_ids
 
 
