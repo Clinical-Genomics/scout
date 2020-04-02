@@ -40,7 +40,7 @@ from .case_tags import (
     VERBS,
     SAMPLE_SOURCE,
 )
-from .clnsig import CLINSIG_MAP, REV_CLINSIG_MAP
+from .clnsig import CLINSIG_MAP, REV_CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 from .phenotype import PHENOTYPE_GROUPS, COHORT_TAGS
 from .query_terms import FUNDAMENTAL_CRITERIA, PRIMARY_CRITERIA, SECONDARY_CRITERIA
 from .file_types import FILE_TYPE_MAP

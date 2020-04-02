@@ -51,3 +51,14 @@ REV_CLINSIG_MAP = {
     13: 13,
     255: 255,
 }
+
+TRUSTED_REVSTAT_LEVEL = [
+    "mult",
+    "multiple_submitters",
+    "single",
+    "single_submitter",
+    "exp",
+    "reviewed_by_expert_panel",
+    "guideline",
+    "practice_guideline",
+]

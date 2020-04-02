@@ -1,4 +1,4 @@
-from scout.constants import CLINSIG_MAP
+from scout.constants import CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 import re
 from pymongo import ReturnDocument
 
@@ -338,16 +338,7 @@ def test_build_clinsig_always(real_variant_database):
     adapter = real_variant_database
     case_id = "cust000"
     clinsig_confident_always_returned = True
-    trusted_revstat_lev = [
-            "mult",
-            "multiple_submitters",
-            "single",
-            "single_submitter",
-            "exp",
-            "reviewed_by_expert_panel",
-            "guideline",
-            "practice_guideline",
-        ]
+    trusted_revstat_lev = TRUSTED_REVSTAT_LEVEL
     clinsig_items = [4, 5]
     clinsig_mapped_items = []
     all_clinsig = []  # both numerical and human readable values

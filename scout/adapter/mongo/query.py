@@ -1,6 +1,11 @@
 import logging
 import re
-from scout.constants import FUNDAMENTAL_CRITERIA, PRIMARY_CRITERIA, SECONDARY_CRITERIA
+from scout.constants import (
+    FUNDAMENTAL_CRITERIA,
+    PRIMARY_CRITERIA,
+    SECONDARY_CRITERIA,
+    TRUSTED_REVSTAT_LEVEL,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -288,16 +293,7 @@ class QueryHandler(object):
 
         """
         LOG.debug("clinsig is a query parameter")
-        trusted_revision_level = [
-            "mult",
-            "multiple_submitters",
-            "single",
-            "single_submitter",
-            "exp",
-            "reviewed_by_expert_panel",
-            "guideline",
-            "practice_guideline",
-        ]
+        trusted_revision_level = TRUSTED_REVSTAT_LEVEL
         rank = []
         str_rank = []
         clnsig_query = {}
