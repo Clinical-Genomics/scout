@@ -48,7 +48,7 @@ def genes_by_alias(hgnc_genes):
             if alias in alias_genes:
                 alias_genes[alias.upper()]["ids"].add(hgnc_id)
                 if true_id:
-                    alias_genes[alias.upper()]["true_id"] = hgnc_id
+                    alias_genes[alias.upper()]["true"] = hgnc_id
             else:
                 alias_genes[alias.upper()] = {"true": true_id, "ids": set([hgnc_id])}
 
