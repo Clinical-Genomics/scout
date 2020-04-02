@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated to a version of IGV where bigBed tracks are visualized correctly  
 - Clinvar submission files are named according to the content (variant_data and case_data)
 - Always show causatives from other cases in case overview
+- Correct disease associations for gene symbol aliases that exist as separate genes
 
 ### Changed
 - Runs all CI checks in github actions
