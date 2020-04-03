@@ -1,7 +1,63 @@
 # -*- coding: utf-8 -*-
+import pymongo
 from flask import url_for, current_app
 from flask_login import current_user
 from urllib.parse import urlencode
+from scout.server.extensions import store
+
+
+def test_variants_clinical_filter(app, institute_obj, case_obj):
+
+    # GIVEN a variant without clinVar annotations
+    test_var = store.variant_collection.find_one(
+        {"clnsig": {"$exists": False}, "variant_type": "clinical", "category": "snv"}
+    )
+    assert test_var
+
+    # IF the variant receives a fake clinsig annotation compatible with the clinical filter
+    clinsig_criteria = {
+        "value": 5,
+        "accession": 345986,
+        "revstat": "criteria_provided,multiple_submitters,no_conflicts",
+    }
+
+    updated_var = store.variant_collection.find_one_and_update(
+        {"_id": test_var["_id"]},
+        {"$set": {"clnsig": [clinsig_criteria], "panels": ["panel1"]}},
+        return_document=pymongo.ReturnDocument.AFTER,
+    )
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN submitting form data to the variants page (POST method) with clinical filter
+        data = urlencode(
+            {
+                "clinical_filter": "Clinical filter",
+                "variant_type": "clinical",
+                "gene_panels": "panel1",
+            }
+        )  # clinical filter
+
+        resp = client.post(
+            url_for(
+                "variants.variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=data,
+            content_type="application/x-www-form-urlencoded",
+        )
+
+        # THEN it should return a page
+        assert resp.status_code == 200
+
+        # containing the variant above
+        assert updated_var["_id"] in str(resp.data)
 
 
 def test_variants(app, institute_obj, case_obj):
@@ -47,33 +103,6 @@ def test_variants_research(app, institute_obj, case_obj):
         assert resp.status_code == 200
         # THEN a reset filters link with variant type should have been made
         assert "variant_type=research" in str(resp.data)
-
-
-def test_variants_post_data(app, institute_obj, case_obj):
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
-
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        # WHEN submitting form data to the page (POST method)
-        data = urlencode({"clinical_filter": True})  # clinical filter
-
-        # WHEN requesting a clinical filter to variants page
-        resp = client.post(
-            url_for(
-                "variants.variants",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            ),
-            data=data,
-            content_type="application/x-www-form-urlencoded",
-        )
-
-        # THEN it should return a page
-        assert resp.status_code == 200
 
 
 def test_sv_variants(app, institute_obj, case_obj):
