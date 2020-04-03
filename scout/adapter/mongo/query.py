@@ -314,17 +314,19 @@ class QueryHandler(object):
                             {
                                 "$and": [
                                     {"value": {"$in": rank}},
-                                    {"revstat": {"$in": trusted_revision_level}},
+                                    {'$or': [
+                                        {"revstat": {"$in": trusted_revision_level}},
+                                        {"revstat": re.compile("|".join(trusted_revision_level))}
+                                    ]}
                                 ]
                             },
                             {
                                 "$and": [
                                     {"value": re.compile("|".join(str_rank))},
-                                    {
-                                        "revstat": re.compile(
-                                            "|".join(trusted_revision_level)
-                                        )
-                                    },
+                                    {'$or': [
+                                        {"revstat": {"$in": trusted_revision_level}},
+                                        {"revstat": re.compile("|".join(trusted_revision_level))}
+                                    ]}
                                 ]
                             },
                         ]
