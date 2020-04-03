@@ -207,6 +207,7 @@ def add_tx_links(tx_obj, build=37):
     tx_obj["pfam_domain_link"] = pfam(tx_obj.get("pfam_domain"))
     tx_obj["prosite_profile_link"] = prosite(tx_obj.get("prosite_profile"))
     tx_obj["smart_domain_link"] = smart(tx_obj.get("smart_domain"))
+    tx_obj["varsome_link"] = varsome(build, tx_obj.get("refseq_id"), tx_obj.get("coding_sequence_name"))
 
     return tx_obj
 
@@ -264,6 +265,15 @@ def smart(smart_domain):
         return None
 
     return link.format(smart_domain)
+
+
+def varsome(build, refseq_id, protein_sequence_name):
+    if not all([refseq_id, protein_sequence_name]):
+        return None
+
+    link = "https://varsome.com/variant/hg{}/{}:{}"
+
+    return link.format(build, refseq_id, protein_sequence_name)
 
 
 ############# Variant links ####################
