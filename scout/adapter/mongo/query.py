@@ -317,15 +317,7 @@ class QueryHandler(object):
                                     {"value": re.compile("|".join(str_rank))},
                                 ]
                             },
-                            {
-                                "$or": [
-                                    {
-                                        "revstat": re.compile(
-                                            "|".join(trusted_revision_level)
-                                        )
-                                    }
-                                ]
-                            },
+                            {"revstat": re.compile("|".join(trusted_revision_level))},
                         ]
                     }
                 }
