@@ -8,13 +8,13 @@ from scout.server.extensions import store
 
 def test_variants_clinical_filter(app, institute_obj, case_obj):
 
-    # GIVEN a variant non classified by clinvar
+    # GIVEN a variant without clinVar annotations
     test_var = store.variant_collection.find_one(
         {"clnsig": {"$exists": False}, "variant_type": "clinical", "category": "snv"}
     )
     assert test_var
 
-    # IF the variants receives a fake clisig compatible with the clinical filter
+    # IF the variant receives a fake clinsig annotation compatible with the clinical filter
     clinsig_criteria = {
         "value": 5,
         "accession": 345986,
@@ -23,13 +23,9 @@ def test_variants_clinical_filter(app, institute_obj, case_obj):
 
     updated_var = store.variant_collection.find_one_and_update(
         {"_id": test_var["_id"]},
-        {"$set":
-            {"clnsig":[clinsig_criteria], "panels" : ["panel1"]}
-        },
+        {"$set": {"clnsig": [clinsig_criteria], "panels": ["panel1"]}},
         return_document=pymongo.ReturnDocument.AFTER,
     )
-
-    assert updated_var == "smkl"
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -38,9 +34,13 @@ def test_variants_clinical_filter(app, institute_obj, case_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        # WHEN submitting form data to the page (POST method)
+        # WHEN submitting form data to the variants page (POST method) with clinical filter
         data = urlencode(
-            {"clinical_filter": "clinical_filter", "variant_type": "clinical", }
+            {
+                "clinical_filter": "Clinical filter",
+                "variant_type": "clinical",
+                "gene_panels": "panel1",
+            }
         )  # clinical filter
 
         resp = client.post(
@@ -56,7 +56,7 @@ def test_variants_clinical_filter(app, institute_obj, case_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
-        # containing the variant above (DOESN't WORK YET!!!)
+        # containing the variant above
         assert updated_var["_id"] in str(resp.data)
 
 
