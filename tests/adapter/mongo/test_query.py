@@ -374,19 +374,14 @@ def test_build_clinsig_always(real_variant_database):
         {
             "clnsig": {
                 "$elemMatch": {
-                    "$or": [
+                    "$and": [
                         {
-                            "$and": [
+                            "$or": [
                                 {"value": {"$in": all_clinsig}},
-                                {"revstat": {"$in": trusted_revstat_lev}},
-                            ]
-                        },
-                        {
-                            "$and": [
                                 {"value": re.compile("|".join(clinsig_mapped_items))},
-                                {"revstat": re.compile("|".join(trusted_revstat_lev))},
                             ]
                         },
+                        {"revstat": re.compile("|".join(trusted_revstat_lev))},
                     ]
                 }
             }
@@ -496,19 +491,14 @@ def test_build_clinsig_always_only(adapter):
 
     assert mongo_query["clnsig"] == {
         "$elemMatch": {
-            "$or": [
+            "$and": [
                 {
-                    "$and": [
+                    "$or": [
                         {"value": {"$in": all_clinsig}},
-                        {"revstat": {"$in": trusted_revstat_lev}},
-                    ]
-                },
-                {
-                    "$and": [
                         {"value": re.compile("|".join(clinsig_mapped_items))},
-                        {"revstat": re.compile("|".join(trusted_revstat_lev))},
                     ]
                 },
+                {"revstat": re.compile("|".join(trusted_revstat_lev))},
             ]
         }
     }
