@@ -486,6 +486,7 @@ def parse_case(config):
         "case_id": config["family"],
         "display_name": config.get("family_name", config["family"]),
         "genome_build": config.get("human_genome_build"),
+        "internal_id": config.get("internal_id"),
         "rank_model_version": str(config.get("rank_model_version", "")),
         "rank_score_threshold": config.get("rank_score_threshold", 0),
         "sv_rank_model_version": str(config.get("sv_rank_model_version", "")),
