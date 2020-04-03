@@ -7,6 +7,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+### Fixed
+### Changed
+
+## [4.15]
+
+### Added
 - Clinvar CNVs IGV track
 - Gene panels can have maintainers
 - Keep variant actions (dismissed, manual rank, mosaic, acmg, comments) upon variant re-upload
