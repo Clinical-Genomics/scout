@@ -18,10 +18,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix so that new cosmic identifier (COSV) is also acceptable #1304
 - Fixed COSMIC tag in INFO (outside of CSQ) to be parses as well with `&` splitter.
 - COSMIC stub URL changed to https://cancer.sanger.ac.uk/cosmic/search?q= instead.
-- Updated to a version of IGV where bigBed tracks are visualized correctly  
+- Updated to a version of IGV where bigBed tracks are visualized correctly
 - Clinvar submission files are named according to the content (variant_data and case_data)
 - Always show causatives from other cases in case overview
 - Correct disease associations for gene symbol aliases that exist as separate genes
+- Re-add "custom annotations" for SV variants
 
 ### Changed
 - Runs all CI checks in github actions
