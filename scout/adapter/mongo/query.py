@@ -310,23 +310,20 @@ class QueryHandler(object):
             clnsig_query = {
                 "clnsig": {
                     "$elemMatch": {
-                        "$or": [
+                        "$and": [
                             {
-                                "$and": [
+                                "$or": [
                                     {"value": {"$in": rank}},
-                                    {'$or': [
-                                        {"revstat": {"$in": trusted_revision_level}},
-                                        {"revstat": re.compile("|".join(trusted_revision_level))}
-                                    ]}
+                                    {"value": re.compile("|".join(str_rank))},
                                 ]
                             },
                             {
-                                "$and": [
-                                    {"value": re.compile("|".join(str_rank))},
-                                    {'$or': [
-                                        {"revstat": {"$in": trusted_revision_level}},
-                                        {"revstat": re.compile("|".join(trusted_revision_level))}
-                                    ]}
+                                "$or": [
+                                    {
+                                        "revstat": re.compile(
+                                            "|".join(trusted_revision_level)
+                                        )
+                                    }
                                 ]
                             },
                         ]
