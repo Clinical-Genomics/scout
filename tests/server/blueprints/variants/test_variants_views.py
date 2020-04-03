@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import pymongo
 from flask import url_for, current_app
 from flask_login import current_user
 from urllib.parse import urlencode
@@ -8,10 +9,10 @@ from scout.server.extensions import store
 def test_variants_clinical_filter(app, institute_obj, case_obj):
 
     # GIVEN a variant non classified by clinvar
-    non_pathogenic_var = store.variant_collection.find_one(
+    test_var = store.variant_collection.find_one(
         {"clnsig": {"$exists": False}, "variant_type": "clinical", "category": "snv"}
     )
-    assert non_pathogenic_var
+    assert test_var
 
     # IF the variants receives a fake clisig compatible with the clinical filter
     clinsig_criteria = {
@@ -20,9 +21,15 @@ def test_variants_clinical_filter(app, institute_obj, case_obj):
         "revstat": "criteria_provided,multiple_submitters,no_conflicts",
     }
 
-    store.variant_collection.find_one_and_update(
-        {"_id": non_pathogenic_var["_id"]}, {"$set": {"clinsig_criteria": clinsig_criteria}}
+    updated_var = store.variant_collection.find_one_and_update(
+        {"_id": test_var["_id"]},
+        {"$set":
+            {"clnsig":[clinsig_criteria], "panels" : ["panel1"]}
+        },
+        return_document=pymongo.ReturnDocument.AFTER,
     )
+
+    assert updated_var == "smkl"
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -33,7 +40,7 @@ def test_variants_clinical_filter(app, institute_obj, case_obj):
 
         # WHEN submitting form data to the page (POST method)
         data = urlencode(
-            {"clinical_filter": "clinical_filter", "variant_type": "clinical"}
+            {"clinical_filter": "clinical_filter", "variant_type": "clinical", }
         )  # clinical filter
 
         resp = client.post(
@@ -50,7 +57,7 @@ def test_variants_clinical_filter(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
         # containing the variant above (DOESN't WORK YET!!!)
-        assert "POT" in str(resp.data)
+        assert updated_var["_id"] in str(resp.data)
 
 
 def test_variants(app, institute_obj, case_obj):
