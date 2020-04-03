@@ -1,6 +1,11 @@
 import logging
 import re
-from scout.constants import FUNDAMENTAL_CRITERIA, PRIMARY_CRITERIA, SECONDARY_CRITERIA
+from scout.constants import (
+    FUNDAMENTAL_CRITERIA,
+    PRIMARY_CRITERIA,
+    SECONDARY_CRITERIA,
+    TRUSTED_REVSTAT_LEVEL,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -288,7 +293,7 @@ class QueryHandler(object):
 
         """
         LOG.debug("clinsig is a query parameter")
-        trusted_revision_level = ["mult", "single", "exp", "guideline"]
+        trusted_revision_level = TRUSTED_REVSTAT_LEVEL
         rank = []
         str_rank = []
         clnsig_query = {}
@@ -305,23 +310,14 @@ class QueryHandler(object):
             clnsig_query = {
                 "clnsig": {
                     "$elemMatch": {
-                        "$or": [
+                        "$and": [
                             {
-                                "$and": [
+                                "$or": [
                                     {"value": {"$in": rank}},
-                                    {"revstat": {"$in": trusted_revision_level}},
-                                ]
-                            },
-                            {
-                                "$and": [
                                     {"value": re.compile("|".join(str_rank))},
-                                    {
-                                        "revstat": re.compile(
-                                            "|".join(trusted_revision_level)
-                                        )
-                                    },
                                 ]
                             },
+                            {"revstat": re.compile("|".join(trusted_revision_level))},
                         ]
                     }
                 }
