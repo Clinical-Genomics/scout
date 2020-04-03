@@ -225,6 +225,15 @@
           <div>Type</div><div class="float-right">{{ variant.sub_category|upper }}</div>
         </div>
       </li>
+      {% if variant.custom %}
+        {% for pair in variant.custom %}
+        <li class="list-group-item">
+          <div class="row d-flex justify-content-between">
+            <div>{{pair[0]}}</div><div class="float-right">{{pair[1]}}</div>
+          </div>
+        </li>
+        {% endfor %}
+      {% endif %}
       {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
         <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control" target="_blank">Submit to ClinVar</a>
       {% endif %}
