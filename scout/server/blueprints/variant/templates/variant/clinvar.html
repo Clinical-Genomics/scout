@@ -584,6 +584,7 @@
                                       <option value="homozygote" {%if sample.genotype_call == '1/1' %} selected {%endif%}>homozygote</option>
                                       <option value="compound heterozygote" {%if sample.genotype_call != '1/1'%} selected {%endif%}>compound heterozygote</option>
                                       <option value="single heterozygote">single heterozygote</option>
+                                      <option value="">leave blank</option>
                                     </select>
                                   {% endif %}
                                 {% endfor %}
