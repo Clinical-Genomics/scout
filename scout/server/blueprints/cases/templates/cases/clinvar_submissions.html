@@ -113,6 +113,7 @@
                 <th>Type</th>
                 <th>Case</th>
                 <th>Refseq</th>
+                <th>Gene</th>
                 <th>HGVS</th>
                 <th>Significance</th>
                 <th></th>
@@ -141,6 +142,7 @@
                   </td>
                   <td>{{subm_variant.case_id}}</td>
                   <td>{{subm_variant.ref_seq or '-'}}</td>
+                  <td>{{subm_variant.gene_symbol or '-'}}</td>
                   <td>{{subm_variant.hgvs or '-'}}</td>
                   <td>{{subm_variant.clinsig}}</td>
                   <td><button type="submit" name="delete_variant" value="{{subm_variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o fa-lg" aria-hidden="true"></span></button></td>
