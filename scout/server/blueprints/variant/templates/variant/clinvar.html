@@ -235,11 +235,10 @@
                         </select>
                       </td>
                     </tr>
-                    {% if pinned.dbsnp_id and pinned.category == 'snv'%}
-                    {% set dbsnp_id = pinned.dbsnp_id.split(':')[0] %} <!-- sometimes snps look like this rs65544478:some_stuff -->
+                    {% if pinned.category == 'snv'%}
                       <tr>
                         <td>var. identifier</td>
-                        <td><input type="text" id="Variation identifiers_{{pinned._id}}" name="variations_ids@{{pinned._id}}" value="{{dbsnp_id}}" size=14 pattern="rs[0-9]+"></td>
+                        <td><input type="text" id="Variation identifiers_{{pinned._id}}" name="variations_ids@{{pinned._id}}" value="{{ pinned.dbsnp_id.split(':')[0] if pinned.dbsnp_id else ''}}" size=14 pattern="rs[0-9]+"></td>
                       </tr>
                     {% endif %}
                     <tr>
@@ -585,6 +584,7 @@
                                       <option value="homozygote" {%if sample.genotype_call == '1/1' %} selected {%endif%}>homozygote</option>
                                       <option value="compound heterozygote" {%if sample.genotype_call != '1/1'%} selected {%endif%}>compound heterozygote</option>
                                       <option value="single heterozygote">single heterozygote</option>
+                                      <option value="">leave blank</option>
                                     </select>
                                   {% endif %}
                                 {% endfor %}
