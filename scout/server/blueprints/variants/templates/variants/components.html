@@ -86,4 +86,8 @@
   ">
     {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency else '~' }}
   </div>
+  {% if variant.cosmic_ids %}
+  <br>
+  <span style="border:1px; border-style:solid; border-color:#000000; padding: 0em;"> <strong> C </strong></span>
+  {% endif %}
 {% endmacro %}
