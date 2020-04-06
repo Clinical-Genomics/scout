@@ -69,6 +69,7 @@ def update_transcripts_information(
         variant_gene(dict): the gene information from the variant
         hgnc_gene(dict): the hgnc gene information
         varaiant_obj(scout.models.Variant)
+        genome_build(str): genome build
 
     """
     genome_build = genome_build or "37"
@@ -181,7 +182,9 @@ def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
         panel_info = add_panel_specific_gene_info(extra_info.get(hgnc_id, []))
         variant_gene.update(panel_info)
 
-        update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build)
+        update_transcripts_information(
+            variant_gene, hgnc_gene, variant_obj, genome_build
+        )
 
         variant_gene["common"] = hgnc_gene
 
