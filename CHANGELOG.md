@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Small fixes to clinVar submission form
+- Gene panel page crash when panel has no maintainers
 
 ### Changed
 
