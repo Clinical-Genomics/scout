@@ -73,7 +73,7 @@ def panel(
 
             raise click.Abort()
 
-        new_maintainer = panel_obj.get("maintainer", [])
+        new_maintainer = panel_obj.get("maintainer") or []
         if add_maintainer in new_maintainer:
             LOG.warning("User %s already in maintainer list.", add_maintainer)
             raise click.Abort()
@@ -81,7 +81,7 @@ def panel(
         new_maintainer.append(add_maintainer)
 
     if revoke_maintainer:
-        current_maintainers = panel_obj.get("maintainer", [])
+        current_maintainers = panel_obj.get("maintainer") or []
         try:
             current_maintainers.remove(revoke_maintainer)
             new_maintainer = current_maintainers
