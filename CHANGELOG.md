@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Display gene names in clinVar submissions page
+- Add badghe if Cosmic variant exists
 
 ### Fixed
 - Small fixes to clinVar submission form
