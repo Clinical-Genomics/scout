@@ -23,7 +23,7 @@ def panel(store, panel_obj):
         maintainer_obj.get("name")
         for maintainer_obj in (
             store.user(user_id=maintainer_id)
-            for maintainer_id in panel_obj.get("maintainer")
+            for maintainer_id in panel_obj.get("maintainer", [])
         )
         if maintainer_obj is not None
     ]
