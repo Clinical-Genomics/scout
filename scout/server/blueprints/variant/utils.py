@@ -468,11 +468,6 @@ def default_panels(store, case_obj):
     return default_panels
 
 
-def update_hgncsymbol(variant_obj):
-    """Check if the HGNC symbols have changed since the variant was loaded"""
-    pass
-
-
 def clinsig_human(variant_obj):
     """Convert to human readable version of CLINSIG evaluation.
 
