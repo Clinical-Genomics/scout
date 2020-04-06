@@ -19,11 +19,13 @@ def panel(store, panel_obj):
     full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
     panel_obj["name_and_version"] = full_name
 
+    maintainers = panel_obj.get("maintainer") or []
+
     panel_obj["maintainer_names"] = [
         maintainer_obj.get("name")
         for maintainer_obj in (
             store.user(user_id=maintainer_id)
-            for maintainer_id in panel_obj.get("maintainer", [])
+            for maintainer_id in maintainers
         )
         if maintainer_obj is not None
     ]
