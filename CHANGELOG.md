@@ -11,10 +11,18 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add badghe if Cosmic variant exists
 
 ### Fixed
-- Small fixes to clinVar submission form
-
 ### Changed
 
+
+## [4.15.1]
+
+### Added
+- Display gene names in ClinVar submissions page
+- Links to Varsome in variant transcripts table
+
+### Fixed
+- Small fixes to ClinVar submission form
+- Gene panel page crash when old panel has no maintainers
 
 ## [4.15]
 
