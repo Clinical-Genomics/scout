@@ -7,8 +7,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+- Display gene names in clinVar submissions page
+
 ### Fixed
+- Small fixes to clinVar submission form
+- Gene panel page crash when panel has no maintainers
+
 ### Changed
+
 
 ## [4.15]
 
