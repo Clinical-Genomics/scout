@@ -63,6 +63,8 @@ def test_parse_case_owner(scout_config):
 
 
 def test_parse_case_limsid(scout_config):
+    """Test parsing a case with lims_id"""
+
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)

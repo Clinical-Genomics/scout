@@ -26,6 +26,7 @@ def test_load_case_rank_model_version(case_obj, adapter):
 
 
 def test_load_case_limsid(case_obj, adapter):
+    """Test loading a case with lims_id"""
 
     ## GIVEN a database with no cases
     assert adapter.case_collection.find_one() is None
