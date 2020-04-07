@@ -2,7 +2,7 @@
 import logging
 import os.path
 
-from flask import abort, Blueprint, render_template, send_file, request, flash, redirect
+from flask import abort, Blueprint, render_template, send_file, request, flash, redirect, current_app
 
 from .partial import send_file_partial
 from . import controllers
@@ -46,7 +46,6 @@ def cloud_resource(resource):
 
     cloud_credentials = controllers.get_cloud_credentials()
     presigned_url = amazon_s3_url(cloud_credentials, resource)
-    LOG.info("----------------URL IS:{}".format(presigned_url))
     return redirect(presigned_url, code=302)
 
 
@@ -116,7 +115,7 @@ def igv():
         chromosome_build, chrom
     )
 
-    if request.form.get("cancer_annotations"):
+    if request.form.get("cancer_annotations") and current_app.config.get("BUCKET_NAME"):
         # cancer sample(s): load cosmic annotations
         display_obj["cosmic_coding"] = controllers.cosmic_track(chromosome_build, chrom, True)
         display_obj["cosmic_non_coding"] = controllers.cosmic_track(chromosome_build, chrom, False)
