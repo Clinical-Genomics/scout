@@ -5,13 +5,13 @@ BUILD38 = "38"
 
 CHROM = "22"
 
-MOCK_CLOUD_CREDENTIALS = [
-    "eu-north-1",
-    "MOCK_ACCESS_KEY",
-    "MOCK_SECRET_ACCESS_KEY",
-    "MOCK_BUCKET_NAME",
-]
-
+MOCK_CLOUD_CREDENTIALS = {
+    "region" : "eu-north-1",
+    "key": "mock_key",
+    "secret_key" : "mock_secret_access_key",
+    "bucket": "mock_bucket_name",
+    "folder": "mock_folder"
+}
 
 def test_clinvar_track_build37():
     """Test function that returns clinVar track as a dictionary when build is 37"""
@@ -73,10 +73,10 @@ def test_cosmic_coding_track_build37(monkeypatch):
     def mock_credentials():
         return MOCK_CLOUD_CREDENTIALS
 
-    monkeypatch.setattr(controllers, "_get_cloud_credentials", mock_credentials)
+    monkeypatch.setattr(controllers, "get_cloud_credentials", mock_credentials)
 
     # WHEN cosmic coding track controller is invoked with genome build 37
-    track = controllers.cosmic_coding_track(BUILD37, CHROM)
+    track = controllers.cosmic_track(BUILD37, CHROM, True)
 
     # THEN it should return a dictionary with the right keys/values
     assert track["name"] == "Cosmic coding"
@@ -93,12 +93,13 @@ def cosmic_coding_track_build38(monkeypatch):
     def mock_credentials():
         return MOCK_CLOUD_CREDENTIALS
 
-    monkeypatch.setattr(controllers, "_get_cloud_credentials", mock_credentials)
+    monkeypatch.setattr(controllers, "get_cloud_credentials", mock_credentials)
 
     # WHEN cosmic coding track controller is invoked with genome build 38
-    track = controllers.cosmic_coding_track(BUILD38, CHROM)
+    track = controllers.cosmic_track(BUILD38, CHROM, True)
 
     # THEN it should return a dictionary with the right keys/values
+    assert track["name"] == "Cosmic coding"
     assert "hg38" in track["url"]
     assert "CosmicCoding" in track["url"]
     assert "hg38" in track["indexURL"]
@@ -110,10 +111,10 @@ def test_cosmic_non_coding_track_build37(monkeypatch):
     def mock_credentials():
         return MOCK_CLOUD_CREDENTIALS
 
-    monkeypatch.setattr(controllers, "_get_cloud_credentials", mock_credentials)
+    monkeypatch.setattr(controllers, "get_cloud_credentials", mock_credentials)
 
     # WHEN cosmic non-coding track controller is invoked with genome build 37
-    track = controllers.cosmic_non_coding_track(BUILD37, CHROM)
+    track = controllers.cosmic_track(BUILD37, CHROM, False)
 
     # THEN it should return a dictionary with the right keys/values
     assert track["name"] == "Cosmic non-coding"
@@ -130,10 +131,10 @@ def test_cosmic_non_coding_track_build38(monkeypatch):
     def mock_credentials():
         return MOCK_CLOUD_CREDENTIALS
 
-    monkeypatch.setattr(controllers, "_get_cloud_credentials", mock_credentials)
+    monkeypatch.setattr(controllers, "get_cloud_credentials", mock_credentials)
 
     # WHEN cosmic non-coding track controller is invoked with genome build 38
-    track = controllers.cosmic_non_coding_track(BUILD38, CHROM)
+    track = controllers.cosmic_track(BUILD38, CHROM, False)
 
     # THEN it should return a dictionary with the right keys/values
     assert track["name"] == "Cosmic non-coding"
