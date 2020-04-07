@@ -133,7 +133,7 @@ def cosmic_track(build, chrom, coding=True):
         "displayMode": "squished",
     }
     if coding is False:
-        cosmic_track["name"] = "Cosmic non-coding"
+        cosmic_track["name"] = "Cosmic non coding"
 
     track = None
     track_index = None
