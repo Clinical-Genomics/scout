@@ -1,6 +1,5 @@
 from flask import current_app
-
-from scout.utils.cloud_resources import s3_resource_url
+from scout.utils.cloud_resources import amazon_s3_url
 
 # Genome reference tracks
 HG19REF_URL = (
@@ -47,18 +46,19 @@ HG38COSMIC_NON_CODING = "CosmicNonCodingVariants_v90_hg38.vcf.gz"
 
 
 def _get_cloud_credentials():
-    """Returns cloud S3 storage credentials as a list
+    """Returns cloud S3 storage credentials as a dictionary
 
     Returns:
         cloud_credentials(list): [endpoint_url, access_key, secrey_access_key, bucket_name]
 
     """
-    cloud_credentials = [
-        current_app.config.get("REGION_NAME"),
-        current_app.config.get("ACCESS_KEY"),
-        current_app.config.get("SECRET_ACCESS_KEY"),
-        current_app.config.get("BUCKET_NAME"),
-    ]
+    cloud_credentials = {
+        "region": current_app.config.get("REGION_NAME"),
+        "key": current_app.config.get("ACCESS_KEY"),
+        "secret_key": current_app.config.get("SECRET_ACCESS_KEY"),
+        "bucket": current_app.config.get("BUCKET_NAME"),
+        "folder": current_app.config.get("FOLDER_NAME") #Could be None
+    }
     return cloud_credentials
 
 
@@ -116,74 +116,55 @@ def clinvar_cnvs_track(build, chrom):
     return clinvar_cnvs_track
 
 
-def cosmic_coding_track(build, chrom):
+def cosmic_track(build, chrom, coding=True):
     """Return a dictionary consisting in the cosmic coding track
 
     Accepts:
         build(str): "37" or "38"
         chrom(str)
+        coding(bool): True=cosmic coding, False=cosmic non-coding
 
     Returns:
         cosmic_track(dict)
     """
-    cloud_credentials = _get_cloud_credentials()
-    if all(cloud_credentials) is False:
-        # one or more cloud params missing
-        return None
-
     cosmic_track = {
         "name": "Cosmic coding",
         "type": "variant",
         "format": "vcf",
         "displayMode": "squished",
     }
+    if coding is False:
+        cosmic_track["name"] = "Cosmic non coding"
+
+    track = None
+    track_index = None
+
     if build in ["GRCh38", "38"] or chrom == "M":
-
-        cosmic_track["url"] = s3_resource_url(cloud_credentials, HG38COSMIC_CODING)
-        cosmic_track["indexURL"] = s3_resource_url(
-            cloud_credentials, ".".join([HG38COSMIC_CODING, "tbi"])
-        )
+        if coding:
+            track = HG38COSMIC_CODING
+            track_index = ".".join([HG38COSMIC_CODING, "tbi"])
+        else:
+            track = HG38COSMIC_NON_CODING
+            track_index = ".".join([HG38COSMIC_NON_CODING, "tbi"])
     else:
-        cosmic_track["url"] = s3_resource_url(cloud_credentials, HG19COSMIC_CODING)
-        cosmic_track["indexURL"] = s3_resource_url(
-            cloud_credentials, "{}.tbi".format(HG19COSMIC_CODING)
-        )
-    return cosmic_track
+        if coding:
+            track = HG19COSMIC_CODING
+            track_index = ".".join([HG19COSMIC_CODING, "tbi"])
+        else:
+            track = HG19COSMIC_NON_CODING
+            track_index = ".".join([HG19COSMIC_NON_CODING, "tbi"])
 
-
-def cosmic_non_coding_track(build, chrom):
-    """Return a dictionary consisting in the cosmic non coding track
-
-    Accepts:
-        build(str): "37" or "38"
-        chrom(str)
-
-    Returns:
-        cosmic_track(dict)
-
-    """
-    cosmic_track = {
-        "name": "Cosmic non-coding",
-        "type": "variant",
-        "format": "vcf",
-        "displayMode": "squished",
-    }
+    # if track file is contained in a bucket folder
     cloud_credentials = _get_cloud_credentials()
-    if all(cloud_credentials) is False:
-        # one or more cloud params missing
-        return None
+    cloud_folder = cloud_credentials.get("FOLDER_NAME")
 
-    if build in ["GRCh38", "38"] or chrom == "M":
-
-        cosmic_track["url"] = s3_resource_url(cloud_credentials, HG38COSMIC_NON_CODING)
-        cosmic_track["indexURL"] = s3_resource_url(
-            cloud_credentials, ".".join([HG38COSMIC_NON_CODING, "tbi"])
-        )
+    if cloud_folder is not None:
+        cosmic_track["url"] = amazon_s3_url( cloud_credentials , "/".join([ cloud_folder, track ]))
+        cosmic_track["indexURL"] = amazon_s3_url( cloud_credentials, "/".join([ cloud_folder, track_index ]))
     else:
-        cosmic_track["url"] = s3_resource_url(cloud_credentials, HG19COSMIC_NON_CODING)
-        cosmic_track["indexURL"] = s3_resource_url(
-            cloud_credentials, "{}.tbi".format(HG19COSMIC_NON_CODING)
-        )
+        cosmic_track["url"] = amazon_s3_url(cloud_credentials, track)
+        cosmic_track["indexURL"] = amazon_s3_url(cloud_credentials, track_index)
+
     return cosmic_track
 
 
