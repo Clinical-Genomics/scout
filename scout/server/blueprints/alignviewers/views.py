@@ -2,10 +2,12 @@
 import logging
 import os.path
 
-from flask import abort, Blueprint, render_template, send_file, request, flash
+from werkzeug.datastructures import Headers
+from flask import abort, Blueprint, render_template, send_file, request, flash, redirect
 
 from .partial import send_file_partial
 from . import controllers
+from scout.utils.cloud_resources import amazon_s3_url
 
 alignviewers_bp = Blueprint(
     "alignviewers",
@@ -37,6 +39,15 @@ def unindexed_remote_static():
     base_name = os.path.basename(file_path)
     resp = send_file(file_path, attachment_filename=base_name)
     return resp
+
+
+@alignviewers_bp.route("/cloud/<resource>", methods=["OPTIONS", "GET"])
+def cloud_resource(resource):
+    """Retrieve a track or an alignment stored on the cloud using a presigned url"""
+
+    cloud_credentials = controllers.get_cloud_credentials()
+    presigned_url = amazon_s3_url(cloud_credentials, resource)
+    return redirect(presigned_url, code=302)
 
 
 @alignviewers_bp.route("/igv", methods=["POST"])

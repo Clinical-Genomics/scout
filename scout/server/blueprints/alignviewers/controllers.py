@@ -1,5 +1,4 @@
 from flask import current_app
-from scout.utils.cloud_resources import amazon_s3_url
 
 # Genome reference tracks
 HG19REF_URL = (
@@ -45,7 +44,7 @@ HG38COSMIC_CODING = "CosmicCodingMuts_v90_hg38.vcf.gz"
 HG38COSMIC_NON_CODING = "CosmicNonCodingVariants_v90_hg38.vcf.gz"
 
 
-def _get_cloud_credentials():
+def get_cloud_credentials():
     """Returns cloud S3 storage credentials as a dictionary
 
     Returns:
@@ -155,15 +154,15 @@ def cosmic_track(build, chrom, coding=True):
             track_index = ".".join([HG19COSMIC_NON_CODING, "tbi"])
 
     # if track file is contained in a bucket folder
-    cloud_credentials = _get_cloud_credentials()
+    cloud_credentials = get_cloud_credentials()
     cloud_folder = cloud_credentials.get("FOLDER_NAME")
 
     if cloud_folder is not None:
-        cosmic_track["url"] = amazon_s3_url( cloud_credentials , "/".join([ cloud_folder, track ]))
-        cosmic_track["indexURL"] = amazon_s3_url( cloud_credentials, "/".join([ cloud_folder, track_index ]))
+        cosmic_track["url"] = "/".join([ cloud_folder, track ])
+        cosmic_track["indexURL"] = "/".join([ cloud_folder, track_index ])
     else:
-        cosmic_track["url"] = amazon_s3_url(cloud_credentials, track)
-        cosmic_track["indexURL"] = amazon_s3_url(cloud_credentials, track_index)
+        cosmic_track["url"] = track
+        cosmic_track["indexURL"] = track_index
 
     return cosmic_track
 

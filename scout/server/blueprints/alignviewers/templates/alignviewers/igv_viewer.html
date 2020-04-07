@@ -73,8 +73,8 @@
                           type: "{{ cosmic_coding.type }}",
                           format: "{{ cosmic_coding.format }}",
                           displayMode: "{{ cosmic_coding.displayMode }}",
-                          url: "{{ cosmic_coding.url|safe }}",
-                          indexURL: "{{ cosmic_coding.indexURL|safe }}",
+                          url: "{{ url_for('alignviewers.cloud_resource', resource=cosmic_coding.url) }}",
+                          indexURL: "{{ url_for('alignviewers.cloud_resource', resource=cosmic_coding.indexURL) }}",
                         },
                       {% endif %}
                       {% if cosmic_non_coding %}
@@ -83,8 +83,8 @@
                           type: "{{ cosmic_non_coding.type }}",
                           format: "{{ cosmic_non_coding.format }}",
                           displayMode: "{{ cosmic_non_coding.displayMode }}",
-                          url: "{{ cosmic_non_coding.url|safe }}",
-                          indexURL: "{{ cosmic_non_coding.indexURL|safe }}",
+                          url: "{{ url_for('alignviewers.cloud_resource', resource=cosmic_non_coding.url) }}",
+                          indexURL: "{{ url_for('alignviewers.cloud_resource', resource=cosmic_non_coding.indexURL) }}",
                         },
                       {% endif %}
                       {
