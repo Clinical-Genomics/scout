@@ -37,5 +37,3 @@ def test_load_case_limsid(case_obj, adapter):
     loaded_case = adapter.case_collection.find_one({"_id": case_obj["_id"]})
 
     assert loaded_case["lims_id"] == case_obj["lims_id"]
-
-    

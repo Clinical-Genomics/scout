@@ -68,7 +68,7 @@ def test_parse_case_limsid(scout_config):
     case_data = parse_case(scout_config)
     # THEN the lims ID should be the same as in config
     assert case_data["lims_id"] == scout_config["lims_id"]
-    
+
 
 def test_parse_case(scout_config):
     # GIVEN you load sample information from a scout config
