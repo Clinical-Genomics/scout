@@ -2,7 +2,6 @@
 import logging
 import os.path
 
-from werkzeug.datastructures import Headers
 from flask import abort, Blueprint, render_template, send_file, request, flash, redirect
 
 from .partial import send_file_partial
