@@ -2,7 +2,16 @@
 import logging
 import os.path
 
-from flask import abort, Blueprint, render_template, send_file, request, flash, redirect, current_app
+from flask import (
+    abort,
+    Blueprint,
+    render_template,
+    send_file,
+    request,
+    flash,
+    redirect,
+    current_app,
+)
 
 from .partial import send_file_partial
 from . import controllers
@@ -117,8 +126,12 @@ def igv():
 
     if request.form.get("cancer_annotations") and current_app.config.get("BUCKET_NAME"):
         # cancer sample(s): load cosmic annotations
-        display_obj["cosmic_coding"] = controllers.cosmic_track(chromosome_build, chrom, True)
-        display_obj["cosmic_non_coding"] = controllers.cosmic_track(chromosome_build, chrom, False)
+        display_obj["cosmic_coding"] = controllers.cosmic_track(
+            chromosome_build, chrom, True
+        )
+        display_obj["cosmic_non_coding"] = controllers.cosmic_track(
+            chromosome_build, chrom, False
+        )
 
     # Init upcoming igv-tracks
     sample_tracks = []

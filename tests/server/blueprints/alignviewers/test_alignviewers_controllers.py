@@ -6,12 +6,13 @@ BUILD38 = "38"
 CHROM = "22"
 
 MOCK_CLOUD_CREDENTIALS = {
-    "region" : "eu-north-1",
+    "region": "eu-north-1",
     "key": "mock_key",
-    "secret_key" : "mock_secret_access_key",
+    "secret_key": "mock_secret_access_key",
     "bucket": "mock_bucket_name",
-    "folder": "mock_folder"
+    "folder": "mock_folder",
 }
+
 
 def test_clinvar_track_build37():
     """Test function that returns clinVar track as a dictionary when build is 37"""

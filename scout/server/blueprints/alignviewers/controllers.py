@@ -56,7 +56,7 @@ def get_cloud_credentials():
         "key": current_app.config.get("ACCESS_KEY"),
         "secret_key": current_app.config.get("SECRET_ACCESS_KEY"),
         "bucket": current_app.config.get("BUCKET_NAME"),
-        "folder": current_app.config.get("FOLDER_NAME") #Could be None
+        "folder": current_app.config.get("FOLDER_NAME"),  # Could be None
     }
     return cloud_credentials
 
@@ -158,8 +158,8 @@ def cosmic_track(build, chrom, coding=True):
     cloud_folder = cloud_credentials.get("FOLDER_NAME")
 
     if cloud_folder is not None:
-        cosmic_track["url"] = "/".join([ cloud_folder, track ])
-        cosmic_track["indexURL"] = "/".join([ cloud_folder, track_index ])
+        cosmic_track["url"] = "/".join([cloud_folder, track])
+        cosmic_track["indexURL"] = "/".join([cloud_folder, track_index])
     else:
         cosmic_track["url"] = track
         cosmic_track["indexURL"] = track_index
