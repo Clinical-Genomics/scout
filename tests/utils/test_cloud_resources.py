@@ -12,10 +12,10 @@ MOCK_CREDENTIALS = {
 }
 
 
-def test_amazon_s3_url(monkeypatch):
+def test_amazon_s3_url():
     """Test function that returns a presigned url to an Amazon S3 resource"""
 
-    # Having some track file on an Amazon S3 bucket
+    # GIVEN an IGV.js track in an Amazon S3 bucket
     key = "CosmicCodingMuts_v90_hg38.vcf.gz"
 
     client = boto3.client("s3")
