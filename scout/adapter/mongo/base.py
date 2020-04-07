@@ -46,6 +46,7 @@ from .index import IndexHandler
 from .clinvar import ClinVarHandler
 from .matchmaker import MMEHandler
 from .filter import FilterHandler
+from .managed_variant import ManagedVariantHandler
 
 log = logging.getLogger(__name__)
 
@@ -67,6 +68,7 @@ class MongoAdapter(
     MMEHandler,
     TranscriptHandler,
     FilterHandler,
+    ManagedVariantHandler,
 ):
 
     """Adapter for cummunication with a mongo database."""
@@ -101,6 +103,7 @@ class MongoAdapter(
         self.exon_collection = database.exon
         self.transcript_collection = database.transcript
         self.filter_collection = database.filter
+        self.managed_variant_collection = database.managed_variant
 
     def collections(self):
         """Return all collection names
