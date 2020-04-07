@@ -152,7 +152,7 @@ def build_case(case_data, adapter):
     case_obj["research_requested"] = False
     case_obj["rerun_requested"] = False
 
-    case_obj["lims_id"] = case_data.get("lims_id" "")
+    case_obj["lims_id"] = case_data.get("lims_id", "")
     
     analysis_date = case_data.get("analysis_date")
     if analysis_date:
