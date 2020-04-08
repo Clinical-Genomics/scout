@@ -15,7 +15,7 @@ MOCK_CLOUD_CREDENTIALS = {
 
 
 def test_get_cloud_credentials(app):
-    """Test function that retrieves cloud credetials from app config settings"""
+    """Test function that retrieves cloud credentials from app config settings"""
 
     # Add params to app config settings
     app.config["REGION_NAME"] = MOCK_CLOUD_CREDENTIALS["region"]
