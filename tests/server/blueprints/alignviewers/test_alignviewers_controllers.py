@@ -14,6 +14,24 @@ MOCK_CLOUD_CREDENTIALS = {
 }
 
 
+def test_get_cloud_credentials(app):
+    """Test function that retrieves cloud credetials from app config settings"""
+
+    # Add params to app config settings
+    app.config["REGION_NAME"] = MOCK_CLOUD_CREDENTIALS["region"]
+    app.config["ACCESS_KEY"] = MOCK_CLOUD_CREDENTIALS["key"]
+    app.config["SECRET_ACCESS_KEY"] = MOCK_CLOUD_CREDENTIALS["secret_key"]
+    app.config["BUCKET_NAME"] = MOCK_CLOUD_CREDENTIALS["bucket"]
+    app.config["FOLDER_NAME"] = MOCK_CLOUD_CREDENTIALS["folder"]
+
+    # WHEN get_cloud_credentials function is invoked
+    cloud_credentials = controllers.get_cloud_credentials()
+
+    # THEN it should return the expected parameters
+    for key in cloud_credentials.keys():
+        assert cloud_credentials[key] == MOCK_CLOUD_CREDENTIALS[key]
+
+
 def test_clinvar_track_build37():
     """Test function that returns clinVar track as a dictionary when build is 37"""
 
