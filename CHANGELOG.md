@@ -7,6 +7,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+- Adds possibility to add "lims_id" to cases. Currently only stored in database, not shown anywhere
+- Adds verification comment box to SVs (previously only available for small variants)
+
 ### Fixed
 ### Changed
 

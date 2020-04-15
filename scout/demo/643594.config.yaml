@@ -4,6 +4,7 @@ owner: cust000
 
 family: 'internal_id'
 family_name: '643594'
+lims_id: 'LID1234'
 samples:
   - analysis_type: wes
     sample_id: ADM1059A2
