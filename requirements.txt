@@ -2,7 +2,7 @@
 
 BeautifulSoup4
 werkzeug<1.0 # This can be removed when switching from Flask-OAuthlib
-Flask>=0.10
+Flask>=1.1.0
 Flask-DebugToolbar
 Flask-Bootstrap
 path.py

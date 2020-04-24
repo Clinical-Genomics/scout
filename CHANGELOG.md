@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Adds verification comment box to SVs (previously only available for small variants)
 
 ### Fixed
+- Pytest bug when Flask version < 1.1.0
+
 ### Changed
 
 
