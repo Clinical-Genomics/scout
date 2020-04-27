@@ -448,7 +448,7 @@ def alamut_link(variant_obj, build=None):
         "{this[position]}{this[reference]}>{this[alternative]}"
     )
 
-    return url_template.format(this=variant_obj, build_str = build_str)
+    return url_template.format(this=variant_obj, build_str=build_str)
 
 
 def spidex_human(variant_obj):
