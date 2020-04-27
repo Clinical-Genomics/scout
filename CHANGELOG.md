@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Adds verification comment box to SVs (previously only available for small variants)
 
 ### Fixed
+- Error caused by changes in WTForm (new release 2.3.x)
+
 ### Changed
 
 
