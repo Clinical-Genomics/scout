@@ -100,8 +100,8 @@ class FiltersForm(VariantFiltersForm):
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
 
     chrom = TextField("Chromosome", [validators.Optional()])
-    start = IntegerField("Start position", [validators.Optional(), IntegerField])
-    end = IntegerField("End position", [validators.Optional(), IntegerField])
+    start = IntegerField("Start position", [validators.Optional()])
+    end = IntegerField("End position", [validators.Optional()])
     local_obs = IntegerField("Local obs. (archive)")
 
     filter_variants = SubmitField(label="Filter variants")
@@ -140,8 +140,8 @@ class SvFiltersForm(VariantFiltersForm):
     swegen = IntegerField("SweGen obs")
 
     chrom = TextField("Chromosome", [validators.Optional()])
-    start = IntegerField("Start position", [validators.Optional(), IntegerField])
-    end = IntegerField("End position", [validators.Optional(), IntegerField])
+    start = IntegerField("Start position", [validators.Optional()])
+    end = IntegerField("End position", [validators.Optional()])
 
     filter_variants = SubmitField(label="Filter variants")
     clinical_filter = SubmitField(label="Clinical filter")
