@@ -7,10 +7,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
-- Display gene names in clinVar submissions page
-- Add badghe if Cosmic variant exists
+- Adds possibility to add "lims_id" to cases. Currently only stored in database, not shown anywhere
+- Adds verification comment box to SVs (previously only available for small variants)
+- Scrollable pedigree panel
+- Add badge if Cosmic variant exists
 
 ### Fixed
+- Error caused by changes in WTForm (new release 2.3.x)
+- Bug in OMIM case page form, causing the page to crash when a string was provided instead of a numerical OMIM id
+
 ### Changed
 
 
