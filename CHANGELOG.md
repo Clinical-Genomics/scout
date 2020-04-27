@@ -9,8 +9,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Adds possibility to add "lims_id" to cases. Currently only stored in database, not shown anywhere
 - Adds verification comment box to SVs (previously only available for small variants)
+- Scrollable pedigree panel
 
 ### Fixed
+- Error caused by changes in WTForm (new release 2.3.x)
+- Bug in OMIM case page form, causing the page to crash when a string was provided instead of a numerical OMIM id
+
 ### Changed
 
 
