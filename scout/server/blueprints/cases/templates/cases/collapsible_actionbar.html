@@ -91,6 +91,23 @@
         </div>
       </div>
     {% endif %}
+    {% if case.analyses %}
+      {% for analysis in case.analyses %}
+        {% if analysis.delivery_report %}
+          <div href="#" class="bg-dark list-group-item text-white">
+            <div class="d-flex flex-row flex-fill bd-highlight"></span>
+              <span class="menu-collapsed ml-2">Delivery ({{analysis.date.date()}})
+                <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                                              case_name=case.display_name, date=analysis.date) }}" target="_blank">
+                                  <i class="fa fa-link"></i></a>
+                <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                                              case_name=case.display_name, date=analysis.date, format='pdf') }}">
+                                  <i class="fa fa-file-pdf-o"></i></a>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
 </div>
 {% endmacro %}
 
