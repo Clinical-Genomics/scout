@@ -93,7 +93,7 @@
     {% endif %}
     {% if case.analyses %}
       {% for analysis in case.analyses %}
-        {% if analysis.delivery_report %}
+        {% if analysis.delivery_report and analysis.delivery_report != case.delivery_report %}
           <div href="#" class="bg-dark list-group-item text-white">
             <div class="d-flex flex-row flex-fill bd-highlight"></span>
               <span class="menu-collapsed ml-2">Delivery ({{analysis.date.date()}})
