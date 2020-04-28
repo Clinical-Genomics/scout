@@ -112,6 +112,32 @@ def cases(store, case_query, prioritized_cases_query=None, limit=100):
     return data
 
 
+def set_delivery_report(case_obj):
+    """Returns the link to a delivery report file by checking "delivery_report" and "analyses" case fields
+
+    Args:
+        case_obj(models.Case)
+
+    Returns:
+        delivery_report
+    """
+    delivery_report = case_obj.get("delivery_report")
+    # no "official delivery report", check the "analyses" key
+    if delivery_report is None and case_obj.get("analyses") is not None:
+        newest_date = None
+        for analysis in case_obj["analyses"]:
+            if analysis.get("delivery_report") is None:
+                # old analysis without delivery report, skip it
+                continue
+            analysis_date = datetime.datetime.date(analysis.get("date"))
+
+            if newest_date is None or analysis_date > newest_date:
+                delivery_report = analysis.get("delivery_report")
+                newest_date = analysis_date
+
+    return delivery_report
+
+
 def case(store, institute_obj, case_obj):
     """Preprocess a single case.
 
@@ -250,6 +276,9 @@ def case(store, institute_obj, case_obj):
     # if updated_at is a list, set it to the last update datetime
     if case_obj.get("updated_at") and isinstance(case_obj["updated_at"], list):
         case_obj["updated_at"] = max(case_obj["updated_at"])
+
+    # set case delivery report
+    case_obj["delivery_report"] = set_delivery_report(case_obj)
 
     # Phenotype groups can be specific for an institute, there are some default groups
     pheno_groups = institute_obj.get("phenotype_groups") or PHENOTYPE_GROUPS
