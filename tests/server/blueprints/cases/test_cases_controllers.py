@@ -2,63 +2,8 @@
 import copy
 
 from flask import Flask
-import datetime
 
-from scout.server.blueprints.cases.controllers import (
-    case,
-    case_report_content,
-    cases,
-    set_delivery_report,
-)
-
-OLD_ANALYSES = [
-    dict(
-        # old analysis is 1 year old
-        date=datetime.datetime.now() - datetime.timedelta(days=365),
-        delivery_report=None,
-    ),
-    dict(
-        # ancient analysis is 5 year old
-        date=datetime.datetime.now() - datetime.timedelta(days=5 * 365),
-        delivery_report="ancient_delivery_report.html",
-    ),
-]
-
-
-def test_set_delivery_report_no_rerun(case_obj):
-
-    # GIVEN a case with a delivery report
-    assert case_obj["delivery_report"]
-
-    # Then set_delivery_report should return the link to "delivery_report"
-    delivery_report = set_delivery_report(case_obj)
-    assert delivery_report == case_obj["delivery_report"]
-
-
-def test_set_delivery_report_rerun(case_obj):
-
-    # GIVEN a case with a delivery report
-    assert case_obj["delivery_report"]
-
-    # And 2 old analyses
-    case_obj["analyses"] = OLD_ANALYSES
-
-    # Then set_delivery_report should still return the link to "delivery_report"
-    delivery_report = set_delivery_report(case_obj)
-    assert delivery_report == case_obj["delivery_report"]
-
-
-def test_set_delivery_report_from_analyses(case_obj):
-
-    # GIVEN a case without a delivery report
-    case_obj.pop("delivery_report")
-
-    # And 2 old analyses
-    case_obj["analyses"] = OLD_ANALYSES
-
-    # Then set_delivery_report should return the ancient analysis, because the newer one has no link
-    delivery_report = set_delivery_report(case_obj)
-    assert delivery_report == "ancient_delivery_report.html"
+from scout.server.blueprints.cases.controllers import case, case_report_content, cases
 
 
 def test_cases(adapter, case_obj, institute_obj):
