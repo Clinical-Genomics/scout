@@ -6,6 +6,36 @@ from flask_login import current_user
 from scout.demo import delivery_report_path
 from scout.server.blueprints.cases import controllers
 from scout.server.extensions import store
+from scout.server.blueprints.cases.views import (
+    parse_raw_gene_symbols,
+    parse_raw_gene_ids,
+)
+
+
+def test_parse_raw_gene_symbols(app):
+    """ Test parse gene symbols"""
+
+    # GIVEN a list of autocompleted gene symbols
+    gene_symbols = ["MUTYH |POT1", "POT1| APC |PMS2"]
+
+    # WHEN converting to hgnc_ids
+    hgnc_symbols = parse_raw_gene_symbols(gene_symbols)
+
+    # THEN the appropriate set of hgnc_ids should be returned
+    assert hgnc_symbols == {"APC", "MUTYH", "PMS2", "POT1"}
+
+
+def test_parse_raw_gene_ids(app):
+    """ Test parse gene symbols"""
+
+    # GIVEN a list of autocompleted gene symbols
+    gene_symbols = ["1234 | SYM (OLDSYM, SYM)", "4321 | MYS (OLDMYS, MYS)"]
+
+    # WHEN converting to hgnc_ids
+    hgnc_ids = parse_raw_gene_ids(gene_symbols)
+
+    # THEN the appropriate set of hgnc_ids should be returned
+    assert hgnc_ids == {1234, 4321}
 
 
 def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj):
