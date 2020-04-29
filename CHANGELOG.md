@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better handling of delivery reports for rerun cases
 
 ### Changed
+- Updated the version of igv.js to 2.5.4
 
 
 ## [4.15.1]
