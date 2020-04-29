@@ -437,8 +437,10 @@ def cli(context, morbid, genemap, mim2gene, mim_titles, phenotypes):
         for i, mim_term in enumerate(phenotypes):
             # pp(phenotypes[mim_term])
             pass
-
-    print("Number of phenotypes found: %s" % i)
+    try:
+        print("Number of phenotypes found: %s" % i)
+    except NameError:
+        print("Number of phenotypes found is undefined (none).")
 
     context.abort()
     # hgnc_genes = get_mim_genes(genemap_handle, mim2gene_handle)
