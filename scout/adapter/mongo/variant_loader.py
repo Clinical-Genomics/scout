@@ -84,7 +84,7 @@ class VariantLoader(object):
             )
             requests.append(operation)
 
-            if not len(requests) > 5000:
+            if len(requests) < 5000:
                 continue
             try:
                 self.variant_collection.bulk_write(requests, ordered=False)
