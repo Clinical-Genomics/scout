@@ -106,9 +106,9 @@
               <td>{{ ind.analysis_type|upper }}</td>
               <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
               <td>
-                {% if ind.confirmed_parent is True %}
+                {% if ind.confirmed_parent == True %}
                   <i class="fa fa-check"></i>
-                {% elif ind.confirmed_parent is False %}
+                {% elif ind.confirmed_parent == False %}
                   <i class="fa fa-exclamation-circle"></i>
                 {% else %}
                   N/A
