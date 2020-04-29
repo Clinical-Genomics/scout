@@ -900,15 +900,15 @@ def phenotypes_actions(institute_id, case_name):
             # DELETE a phenotype from the list
             store.remove_phenotype(institute_obj, case_obj, user_obj, case_url, hpo_id)
 
-    elif action == "ADDGENE":
+    if action == "ADDGENE":
         hgnc_ids = parse_raw_gene_ids(request.form.getlist("genes"))
         store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_ids), add_only=True)
 
-    elif action == "GENES":
+    if action == "GENES":
         hgnc_symbols = parse_raw_gene_symbols(request.form.getlist("genes"))
         store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_symbols))
 
-    elif action == "GENERATE":
+    if action == "GENERATE":
         if len(hpo_ids) == 0:
             hpo_ids = [
                 term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])
