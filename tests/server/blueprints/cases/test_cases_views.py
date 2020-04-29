@@ -250,10 +250,10 @@ def test_update_individual(app, user_obj, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
-    # And a case individual with no age or tissue type:
+    # And a case individual with no age (tissue type is default blood):
     case_obj = store.case_collection.find_one()
     assert case_obj["individuals"][0].get("age") is None
-    assert case_obj["individuals"][0]["tissue_type"] is None
+    assert case_obj["individuals"][0]["tissue_type"] is "blood"
 
     with app.test_client() as client:
 
