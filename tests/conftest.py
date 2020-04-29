@@ -866,7 +866,7 @@ def one_variant(request, variant_clinical_file):
     LOG.info("Return one parsed variant")
     variant_parser = VCF(variant_clinical_file)
 
-    variant_iterator = iterator(variant_parser)
+    variant_iterator = iter(variant_parser)
     variant = next(variant_iterator)
     return variant
 
