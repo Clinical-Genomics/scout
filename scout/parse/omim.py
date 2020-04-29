@@ -63,6 +63,7 @@ def parse_genemap2_phenotypes(phenotype_entry, mim_number=None):
         phenotype_description = ""
 
         # We will try to save the description
+        i = 0
         splitted_info = phenotype_info.split(",")
         for i, text in enumerate(splitted_info):
             # Everything before ([1,2,3])
