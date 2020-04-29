@@ -29,7 +29,7 @@ def test_create_event(adapter, institute_obj, case_obj, user_obj):
 
     # THEN assert that the event was added to the database
 
-    sum(1 for i in adapter.event_collection.find()) == 1
+    assert sum(1 for i in adapter.event_collection.find()) == 1
     res = adapter.event_collection.find_one()
 
     assert res["verb"] == verb
