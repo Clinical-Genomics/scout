@@ -22,9 +22,9 @@ def test_build_case(parsed_case, adapter, institute_obj, dummypanel_obj):
     assert case_obj["synopsis"] == ""
 
     assert case_obj["status"] == "inactive"
-    assert case_obj["is_research"] == False
-    assert case_obj["research_requested"] == False
-    assert case_obj["rerun_requested"] == False
+    assert case_obj["is_research"] is False
+    assert case_obj["research_requested"] is False
+    assert case_obj["rerun_requested"] is False
 
     assert case_obj["analysis_date"] == parsed_case["analysis_date"]
 
@@ -51,9 +51,9 @@ def test_build_case(parsed_case, adapter, institute_obj, dummypanel_obj):
     if parsed_case["vcf_files"].get("vcf_sv") or parsed_case["vcf_files"].get(
         "vcf_sv_research"
     ):
-        assert case_obj["has_svvariants"] == True
+        assert case_obj["has_svvariants"] is True
     else:
-        assert case_obj["has_svvariants"] == False
+        assert case_obj["has_svvariants"] is False
 
 
 def test_build_minimal_case(adapter, institute_obj):

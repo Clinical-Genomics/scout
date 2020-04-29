@@ -36,7 +36,7 @@
 #         institute_id='cust000',
 #         case_id='337334'
 #     )
-#     assert case == None
+#     assert case is None
 #
 #     variants = setup_loaded_database.variants(
 #         case_id=case_id,

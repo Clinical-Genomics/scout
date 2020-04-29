@@ -9,14 +9,14 @@ from scout.utils.acmg import (
 
 def test_is_pathogenic_1():
     """First criterias for pathogenic:
-    
+
         Pathogenic
           (i) 1 Very strong (PVS1) AND
             (a) ≥1 Strong (PS1–PS4) OR
             (b) ≥2 Moderate (PM1–PM6) OR
             (c) 1 Moderate (PM1–PM6) and 1 supporting (PP1–PP5) OR
             (d) ≥2 Supporting (PP1–PP5)
-        
+
     """
     # GIVEN values that fulfill the (a) criteria for pathogenic
     pvs = True
@@ -83,10 +83,10 @@ def test_is_pathogenic_1():
 
 def test_is_pathogenic_2():
     """First criterias for pathogenic:
-    
+
         Pathogenic
           (ii) ≥2 Strong (PS1–PS4) OR
-        
+
     """
     # GIVEN values that fulfill the (ii) criteria for pathogenic
     pvs = False
@@ -107,14 +107,14 @@ def test_is_pathogenic_2():
 
 def test_is_pathogenic_3():
     """First criterias for pathogenic:
-    
+
         Pathogenic
           (iii) 1 Strong (PS1–PS4) AND
             (a)≥3 Moderate (PM1–PM6) OR
             (b)2 Moderate (PM1–PM6) AND ≥2 Supporting (PP1–PP5) OR
             (c)1 Moderate (PM1–PM6) AND ≥4 supporting (PP1–PP5)
-          
-        
+
+
     """
     # GIVEN values that fulfill the (a) criteria for pathogenic (iii)
     pvs = False
@@ -167,7 +167,7 @@ def test_is_pathogenic_3():
 
 def test_is_likely_pathogenic_1():
     """First criterias for pathogenic:
-    
+
         Pathogenic
           (i) 1 Very strong (PVS1) AND 1 moderate (PM1– PM6)
 
@@ -189,7 +189,7 @@ def test_is_likely_pathogenic_1():
 
 def test_is_likely_pathogenic_2():
     """First criterias for pathogenic:
-    
+
         Pathogenic
           (ii) 1 Strong (PS1–PS4) AND 1–2 moderate (PM1–PM6) OR
 
@@ -211,7 +211,7 @@ def test_is_likely_pathogenic_2():
 
 def test_is_likely_pathogenic_3():
     """First criterias for pathogenic:
-    
+
         Pathogenic
           (iii) 1 Strong (PS1–PS4) AND ≥2 supporting (PP1–PP5) OR
 
@@ -233,7 +233,7 @@ def test_is_likely_pathogenic_3():
 
 def test_is_likely_pathogenic_4():
     """First criterias for pathogenic:
-    
+
         Pathogenic
           (iv)  ≥3 Moderate (PM1–PM6) OR
 
@@ -255,7 +255,7 @@ def test_is_likely_pathogenic_4():
 
 def test_is_likely_pathogenic_5():
     """First criterias for pathogenic:
-    
+
         Pathogenic
           (v) 2 Moderate (PM1–PM6) AND ≥2 supporting (PP1–PP5) OR
 
@@ -277,7 +277,7 @@ def test_is_likely_pathogenic_5():
 
 def test_is_likely_pathogenic_6():
     """First criterias for pathogenic:
-    
+
         Pathogenic
           (vi) 1 Moderate (PM1–PM6) AND ≥4 supportin (PP1–PP5)
 
@@ -299,7 +299,7 @@ def test_is_likely_pathogenic_6():
 
 def test_is_benign_1():
     """First criterias for benign:
-    
+
     Benign
       (i) 1 Stand-alone (BA1) OR
 
@@ -319,7 +319,7 @@ def test_is_benign_1():
 
 def test_is_benign_2():
     """Second criterias for benign:
-    
+
     Benign
       (ii) ≥2 Strong (BS1–BS4)
 
@@ -339,7 +339,7 @@ def test_is_benign_2():
 
 def test_is_likely_benign_1():
     """First criterias for likely benign:
-    
+
     Likely Benign
       (i) 1 Strong (BS1–BS4) and 1 supporting (BP1– BP7) OR
 
@@ -359,7 +359,7 @@ def test_is_likely_benign_1():
 
 def test_is_benign_2():
     """Second criterias for likely benign:
-    
+
     Benign
       (ii) ≥2 Supporting (BP1–BP7)
 
@@ -380,7 +380,7 @@ def test_is_benign_2():
 def test_get_acmg_no_terms():
     acmg_terms = []
     res = get_acmg(acmg_terms)
-    assert res == None
+    assert res is None
 
 
 def test_get_acmg_pathogenic():

@@ -183,7 +183,7 @@ def test_is_pathogenic_pathogenic(cyvcf2_variant):
     pathogenic = is_pathogenic(cyvcf2_variant)
 
     ## THEN assert that The variant should be loaded
-    assert pathogenic == True
+    assert pathogenic is True
 
 
 def test_is_pathogenic_classic_pathogenic(cyvcf2_variant):
@@ -200,7 +200,7 @@ def test_is_pathogenic_classic_pathogenic(cyvcf2_variant):
     pathogenic = is_pathogenic(cyvcf2_variant)
 
     ## THEN assert that The variant should be loaded
-    assert pathogenic == True
+    assert pathogenic is True
 
 
 def test_is_pathogenic_benign(cyvcf2_variant):
@@ -217,7 +217,7 @@ def test_is_pathogenic_benign(cyvcf2_variant):
     pathogenic = is_pathogenic(cyvcf2_variant)
 
     ## THEN assert that The variant should be loaded
-    assert pathogenic == False
+    assert pathogenic is False
 
 
 def test_is_pathogenic_no_annotation(cyvcf2_variant):
@@ -227,7 +227,7 @@ def test_is_pathogenic_no_annotation(cyvcf2_variant):
     pathogenic = is_pathogenic(cyvcf2_variant)
 
     ## THEN assert that The variant should be loaded
-    assert pathogenic == False
+    assert pathogenic is False
 
 
 def test_is_pathogenic_VEP97_conflicting(one_vep97_annotated_variant):
@@ -236,7 +236,7 @@ def test_is_pathogenic_VEP97_conflicting(one_vep97_annotated_variant):
     pathogenic = is_pathogenic(one_vep97_annotated_variant)
 
     ## THEN assert that the variant should be loaded
-    assert pathogenic == True
+    assert pathogenic is True
 
 
 def test_parse_clinsig_vep97(

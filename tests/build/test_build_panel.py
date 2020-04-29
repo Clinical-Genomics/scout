@@ -17,8 +17,8 @@ def test_build_panel_gene(adapter, test_gene):
 
     assert gene_obj["hgnc_id"] == 1
     assert gene_obj["symbol"] == test_gene["hgnc_symbol"]
-    assert gene_obj["ar"] == True
-    assert gene_obj["ad"] == True
+    assert gene_obj["ar"] is True
+    assert gene_obj["ad"] is True
     assert "mt" not in gene_obj
 
 

@@ -133,9 +133,9 @@
 	                  <td>{{ ind.analysis_type|upper }}</td>
 	                  <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
 	                  <td>
-	                    {% if ind.confirmed_parent == True %}
+	                    {% if ind.confirmed_parent is True %}
 	                      <span class="badge badge-pill badge-sm badge-secondary">V</span>
-	                    {% elif ind.confirmed_parent == False %}
+	                    {% elif ind.confirmed_parent is False %}
 	                      <span class="badge badge-pill badge-sm badge-danger">!</span>
 	                    {% else %}
 	                      N/A

@@ -157,7 +157,7 @@ def test_open_research(adapter, institute_obj, case_obj, user_obj):
     assert sum(1 for i in adapter.event_collection.find()) == 0
 
     case = adapter.case_collection.find_one({"_id": case_obj["_id"]})
-    assert case.get("research_requested", False) == False
+    assert case.get("research_requested", False) is False
 
     ## WHEN setting opening research for a case
     link = "openresearchlink"
@@ -165,7 +165,7 @@ def test_open_research(adapter, institute_obj, case_obj, user_obj):
         institute=institute_obj, case=case_obj, user=user_obj, link=link
     )
     ## THEN research_requested should be True
-    assert updated_case["research_requested"] == True
+    assert updated_case["research_requested"] is True
 
     ## THEN an event for opening research should be created
     event = adapter.event_collection.find_one({"link": link})
@@ -556,7 +556,7 @@ def test_update_default_panels(
     assert len(case_panels) == 1
     panel = case_panels[0]
     assert panel["panel_name"] == "panel1"
-    assert panel["is_default"] == True
+    assert panel["is_default"] is True
 
     new_panel = {
         "_id": "an_id",
@@ -590,9 +590,9 @@ def test_update_default_panels(
     # as default
     for panel in updated_case["panels"]:
         if panel["panel_name"] == "panel1":
-            assert panel["is_default"] == False
+            assert panel["is_default"] is False
         elif panel["panel_name"] == "panel2":
-            assert panel["is_default"] == True
+            assert panel["is_default"] is True
 
     # assert sum(1 for i in adapter.event_collection.find()) == 2
     #

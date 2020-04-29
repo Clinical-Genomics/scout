@@ -28,7 +28,7 @@ def test_parse_frequency_non_existing_keyword(cyvcf2_variant):
     frequency = parse_frequency(variant, "EXACAF")
 
     # THEN the frequency should be None
-    assert frequency == None
+    assert frequency is None
 
 
 def test_parse_frequency_non_existing_freq(cyvcf2_variant):
@@ -40,7 +40,7 @@ def test_parse_frequency_non_existing_freq(cyvcf2_variant):
     frequency = parse_frequency(variant, "1000G")
 
     # THEN the frequency should be None
-    assert frequency == None
+    assert frequency is None
 
 
 def test_parse_frequencies(cyvcf2_variant):
