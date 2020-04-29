@@ -431,7 +431,7 @@ def matchmaker_add(institute_id, case_name):
             )
         if message == "Patient was successfully updated.":
             n_updated += 1
-        elif message == "Patient was successfully inserted into database.":
+        if message == "Patient was successfully inserted into database.":
             n_inserted += 1
 
     # if at least one patient was inserted or updated into matchmaker, save submission at the case level:
