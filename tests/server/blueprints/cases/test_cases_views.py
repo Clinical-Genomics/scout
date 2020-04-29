@@ -9,7 +9,6 @@ from scout.server.blueprints.cases import controllers
 from scout.server.extensions import store
 
 
-
 def test_sidebar_macro(app, institute_obj, case_obj):
     """test the case sidebar macro"""
 
@@ -21,37 +20,37 @@ def test_sidebar_macro(app, institute_obj, case_obj):
     case_analyses = [
         dict(
             # fresh analysis from today
-            date = today,
-            delivery_report = new_report,
+            date=today,
+            delivery_report=new_report,
         ),
         dict(
             # old analysis is 1 year old, missing the report
-            date = one_year_ago,
+            date=one_year_ago,
             delivery_report=None,
         ),
         dict(
             # ancient analysis is 5 year old
-            date = five_years_ago,
+            date=five_years_ago,
             delivery_report="ancient_delivery_report.html",
         ),
     ]
     # update test case with the analyses above
     updated_case = store.case_collection.find_one_and_update(
-        {"_id" : case_obj["_id"]},
+        {"_id": case_obj["_id"]},
         {
-            "$set" : {
-                "analysis_date" : today,
-                "delivery_report" : new_report,
-                "analyses" : case_analyses
+            "$set": {
+                "analysis_date": today,
+                "delivery_report": new_report,
+                "analyses": case_analyses,
             }
         },
-        return_document=ReturnDocument.AFTER
+        return_document=ReturnDocument.AFTER,
     )
 
     # GIVEN an initialized app
     with app.test_client() as client:
         # WHEN the case sidebar macro is called
-        macro = get_template_attribute('cases/collapsible_actionbar.html', 'action_bar')
+        macro = get_template_attribute("cases/collapsible_actionbar.html", "action_bar")
         html = macro(institute_obj, updated_case)
 
         # It should show the expected items:
@@ -60,14 +59,14 @@ def test_sidebar_macro(app, institute_obj, case_obj):
         assert "mtDNA report" in html
 
         # only 2 delivery reports should be showed
-        today = str(today).split(' ')[0]
+        today = str(today).split(" ")[0]
         assert f"Delivery ({today})" in html
 
-        five_years_ago = str(five_years_ago).split(' ')[0]
+        five_years_ago = str(five_years_ago).split(" ")[0]
         assert f"Delivery ({five_years_ago})" in html
 
         # The analysis with missing report should not be shown
-        one_year_ago = str(one_year_ago).split(' ')[0]
+        one_year_ago = str(one_year_ago).split(" ")[0]
         assert f"Delivery ({one_year_ago})" not in html
 
         assert f"Genome build {case_obj['genome_build']}" in html
@@ -77,6 +76,7 @@ def test_sidebar_macro(app, institute_obj, case_obj):
         assert "Research list" in html
         assert "Reruns" in html
         assert "Share case" in html
+
 
 def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj):
     # GIVEN an initialized app
