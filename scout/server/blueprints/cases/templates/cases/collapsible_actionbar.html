@@ -81,30 +81,12 @@
       </div>
     </div>
     {% if case.delivery_report %}
-      <div href="#" class="bg-dark list-group-item text-white">
-        <div class="d-flex flex-row flex-fill bd-highlight"></span>
-          <span class="menu-collapsed ml-2">Delivery ({{case.analysis_date.date()}})
-            <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                              case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
-            <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                              case_name=case.display_name, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
-        </div>
-      </div>
+      {{ delivery_report(institute._id, case.display_name, case.analysis_date.date()) }}
     {% endif %}
     {% if case.analyses %}
       {% for analysis in case.analyses %}
         {% if analysis.delivery_report and analysis.delivery_report != case.delivery_report %}
-          <div href="#" class="bg-dark list-group-item text-white">
-            <div class="d-flex flex-row flex-fill bd-highlight"></span>
-              <span class="menu-collapsed ml-2">Delivery ({{analysis.date.date()}})
-                <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                                              case_name=case.display_name, date=analysis.date) }}" target="_blank">
-                                  <i class="fa fa-link"></i></a>
-                <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                                              case_name=case.display_name, date=analysis.date, format='pdf') }}">
-                                  <i class="fa fa-file-pdf-o"></i></a>
-            </div>
-          </div>
+          {{ delivery_report( institute._id, case.display_name, analysis.date.date() ) }}
         {% endif %}
       {% endfor %}
     {% endif %}
@@ -425,6 +407,18 @@
         </form>
       </div>
     </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro delivery_report(institute, case, date) %}
+<div href="#" class="bg-dark list-group-item text-white">
+  <div class="d-flex flex-row flex-fill bd-highlight"></span>
+    <span class="menu-collapsed ml-2">Delivery ({{date}})
+      <a href="{{ url_for('cases.delivery_report', institute_id=institute,
+                        case_name=case, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
+      <a href="{{ url_for('cases.delivery_report', institute_id=institute,
+                        case_name=case, date=date, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
   </div>
 </div>
 {% endmacro %}

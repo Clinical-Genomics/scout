@@ -1,5 +1,17 @@
 {% from "variants/utils.html" import tier_cell %}
 
+{% macro delivery_report(date) %}
+<div href="#" class="bg-dark list-group-item text-white">
+  <div class="d-flex flex-row flex-fill bd-highlight"></span>
+    <span class="menu-collapsed ml-2">Delivery ({{date}})
+      <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                        case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
+      <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
+                        case_name=case.display_name, date=date, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
+  </div>
+</div>
+{% endmacro %}
+
 {% macro pretty_link_variant(variant, case) %}
 {# Returns human readable links to the corresponding variant page #}
 
@@ -33,7 +45,7 @@
                             variant_id=variant._id) }}">
   {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
   {% endif %}
-  </a>  
+  </a>
 {% endmacro %}
 
 {% macro causatives_list(causatives, partial_causatives, institute, case) %}
