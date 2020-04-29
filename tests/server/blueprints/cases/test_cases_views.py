@@ -253,7 +253,7 @@ def test_update_individual(app, user_obj, institute_obj, case_obj):
     # And a case individual with no age or tissue type:
     case_obj = store.case_collection.find_one()
     assert case_obj["individuals"][0].get("age") is None
-    case_obj["individuals"][0]["tissue_type"] is None
+    assert case_obj["individuals"][0]["tissue_type"] is None
 
     with app.test_client() as client:
 
