@@ -100,8 +100,8 @@ def parse_case_data(
     if "owner" not in config_data:
         if not owner:
             raise SyntaxError("Case has no owner")
-        else:
-            config_data["owner"] = owner
+
+        config_data["owner"] = owner
 
     if "gene_panels" in config_data:
         # handle whitespace in gene panel names
