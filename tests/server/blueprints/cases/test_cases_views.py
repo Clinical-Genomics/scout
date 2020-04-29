@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-from flask import url_for, current_app
+import datetime
+from flask import url_for, current_app, get_template_attribute
 from flask_login import current_user
+from pymongo import ReturnDocument
 
 from scout.demo import delivery_report_path
 from scout.server.blueprints.cases import controllers
@@ -38,6 +39,75 @@ def test_parse_raw_gene_ids(app):
     assert hgnc_ids == {1234, 4321}
 
 
+def test_sidebar_macro(app, institute_obj, case_obj):
+    """test the case sidebar macro"""
+
+    # GIVEN a case with several delivery reports, both in "delivery_report" field and "analyses" field
+    today = datetime.datetime.now()
+    one_year_ago = today - datetime.timedelta(days=365)
+    five_years_ago = today - datetime.timedelta(days=5 * 365)
+    new_report = "new_delivery_report.html"
+    case_analyses = [
+        dict(
+            # fresh analysis from today
+            date=today,
+            delivery_report=new_report,
+        ),
+        dict(
+            # old analysis is 1 year old, missing the report
+            date=one_year_ago,
+            delivery_report=None,
+        ),
+        dict(
+            # ancient analysis is 5 year old
+            date=five_years_ago,
+            delivery_report="ancient_delivery_report.html",
+        ),
+    ]
+    # update test case with the analyses above
+    updated_case = store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]},
+        {
+            "$set": {
+                "analysis_date": today,
+                "delivery_report": new_report,
+                "analyses": case_analyses,
+            }
+        },
+        return_document=ReturnDocument.AFTER,
+    )
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WHEN the case sidebar macro is called
+        macro = get_template_attribute("cases/collapsible_actionbar.html", "action_bar")
+        html = macro(institute_obj, updated_case)
+
+        # It should show the expected items:
+        assert "Reports" in html
+        assert "General" in html
+        assert "mtDNA report" in html
+
+        # only 2 delivery reports should be showed
+        today = str(today).split(" ")[0]
+        assert f"Delivery ({today})" in html
+
+        five_years_ago = str(five_years_ago).split(" ")[0]
+        assert f"Delivery ({five_years_ago})" in html
+
+        # The analysis with missing report should not be shown
+        one_year_ago = str(one_year_ago).split(" ")[0]
+        assert f"Delivery ({one_year_ago})" not in html
+
+        assert f"Genome build {case_obj['genome_build']}" in html
+        assert f"Rank model" in html
+        assert f"Status: {case_obj['status'].capitalize()}" in html
+        assert "Assignees" in html
+        assert "Research list" in html
+        assert "Reruns" in html
+        assert "Share case" in html
+
+
 def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -50,7 +120,7 @@ def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj
     assert old_tumor_type
 
     cancer_case_obj["individuals"][0]["tissue_type"] = old_tissue_type
-    cancer_case_obj["updated_at"] = datetime.now()
+    cancer_case_obj["updated_at"] = datetime.datetime.now()
     store.case_collection.insert_one(cancer_case_obj)
 
     with app.test_client() as client:

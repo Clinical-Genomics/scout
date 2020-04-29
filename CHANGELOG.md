@@ -10,13 +10,16 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Adds possibility to add "lims_id" to cases. Currently only stored in database, not shown anywhere
 - Adds verification comment box to SVs (previously only available for small variants)
 - Scrollable pedigree panel
+- List of codeowners
 
 ### Fixed
 - Error caused by changes in WTForm (new release 2.3.x)
 - Bug in OMIM case page form, causing the page to crash when a string was provided instead of a numerical OMIM id
 - Fix Alamut link to work properly on hg38
+- Better handling of delivery reports for rerun cases
 
 ### Changed
+- Updated the version of igv.js to 2.5.4
 
 
 ## [4.15.1]
