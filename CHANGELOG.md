@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
+### Added
+### Fixed
+### Changed
+
+## [4.16]
 
 ### Added
 - Adds possibility to add "lims_id" to cases. Currently only stored in database, not shown anywhere
@@ -17,9 +22,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bug in OMIM case page form, causing the page to crash when a string was provided instead of a numerical OMIM id
 - Fix Alamut link to work properly on hg38
 - Better handling of delivery reports for rerun cases
-
-### Changed
-
 
 ## [4.15.1]
 
