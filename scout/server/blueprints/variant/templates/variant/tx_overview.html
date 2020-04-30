@@ -86,12 +86,12 @@
                       {% if refseq_id in gene.common.primary_transcripts %}
                         <span class="text-muted">(hgnc-primary)</span>
                       {% endif %}
-	              {% if transcript.mane_transcript %}
-		        {% set mane_transcript_parts = transcript.mane_transcript.split('.') %}
-			{% if mane_transcript_parts[0] == refseq_id %}
-		          <span class="text-muted">(MANE)</span>
-			{% endif %}
-		      {% endif %}
+                      {% if transcript.mane_transcript %}
+                        {% set mane_transcript_parts = transcript.mane_transcript.split('.') %}
+                        {% if mane_transcript_parts[0] == refseq_id %}
+                          <span class="text-muted">(MANE)</span>
+                        {% endif %}
+                      {% endif %}
                     </div>
                   </td>
                   <td title="{{ transcript.coding_sequence_name or '' }}">
