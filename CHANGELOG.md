@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 ### Fixed
+- Fix the fix for handling of delivery reports for rerun cases
 ### Changed
 
 ## [4.16]
