@@ -86,7 +86,7 @@
     {% if case.analyses %}
       {% for analysis in case.analyses %}
         {% if analysis.delivery_report and analysis.delivery_report != case.delivery_report %}
-          {{ delivery_report( institute._id, case, analysis.date.date() ) }}
+          {{ delivery_report( institute._id, case, analysis_date.date() ) }}
         {% endif %}
       {% endfor %}
     {% endif %}
