@@ -1124,7 +1124,7 @@ def delivery_report(institute_id, case_name):
     if date_str:
         delivery_report = None
         analysis_date = parse_date(date_str)
-        for analysis_data in case_obj["analyses"]:
+        for analysis_data in case_obj.get("analyses", []):
             if analysis_data["date"] == analysis_date:
                 delivery_report = analysis_data["delivery_report"]
         if delivery_report is None:
