@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Mark MANE transcript in list of transcripts in "Transcript overview" on variant page
+
 ### Fixed
 ### Changed
 
