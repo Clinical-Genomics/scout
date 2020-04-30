@@ -307,7 +307,7 @@ def test_compounds_region(real_populated_database, case_obj):
         for comp in variant.get("compounds", []):
             nr_comps += 1
             # We know that all ar updated and loaded if this flag is set
-            assert comp["not_loaded"] == False
+            assert comp["not_loaded"] is False
 
     assert nr_variants > 0
     assert nr_comps > 0

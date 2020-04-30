@@ -42,8 +42,7 @@ def research(case_id, institute, force):
         if case_obj is None:
             LOG.warning("No matching case found")
             raise click.Abort()
-        else:
-            case_objs = [case_obj]
+        case_objs = [case_obj]
     else:
         # Fetch all cases that have requested research
         case_objs = adapter.cases(research_requested=True)

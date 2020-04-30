@@ -42,7 +42,7 @@ def parse_clnsig(variant, transcripts=None):
             return clnsig_accessions
 
         # VEP 97+ annotated clinvar info:
-        elif transcripts[0].get("clinvar_clnvid"):
+        if transcripts[0].get("clinvar_clnvid"):
             acc = transcripts[0]["clinvar_clnvid"]
             sig = transcripts[0].get("clinvar_clnsig")
             revstat = transcripts[0].get("clinvar_revstat")

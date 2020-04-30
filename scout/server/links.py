@@ -390,8 +390,8 @@ def cosmic_link(variant_obj):
 
     if not cosmic_ids:
         return None
-    else:
-        cosmic_id = str(cosmic_ids[0])
+
+    cosmic_id = str(cosmic_ids[0])
 
     if cosmic_id.startswith("COS"):
         url_template = "https://cancer.sanger.ac.uk/cosmic/search?q={}"
@@ -455,9 +455,9 @@ def spidex_human(variant_obj):
     """Translate SPIDEX annotation to human readable string."""
     if variant_obj.get("spidex") is None:
         return "not_reported"
-    elif abs(variant_obj["spidex"]) < SPIDEX_HUMAN["low"]["pos"][1]:
+    if abs(variant_obj["spidex"]) < SPIDEX_HUMAN["low"]["pos"][1]:
         return "low"
-    elif abs(variant_obj["spidex"]) < SPIDEX_HUMAN["medium"]["pos"][1]:
+    if abs(variant_obj["spidex"]) < SPIDEX_HUMAN["medium"]["pos"][1]:
         return "medium"
-    else:
-        return "high"
+
+    return "high"

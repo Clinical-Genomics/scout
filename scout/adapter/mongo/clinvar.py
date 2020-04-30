@@ -284,8 +284,8 @@ class ClinVarHandler(object):
                 {"_id": {"$in": clinvar_obj_ids}}
             )
             return list(clinvar_objects)
-        else:
-            return None
+
+        return None
 
     def delete_clinvar_object(self, object_id, object_type, submission_id):
         """Remove a variant object from clinvar database and update the relative submission object

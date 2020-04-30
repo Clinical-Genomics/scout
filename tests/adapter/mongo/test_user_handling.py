@@ -143,4 +143,4 @@ def test_get_nonexisting_user(adapter):
     ## WHEN fetching a non existing user
     user_obj = adapter.user(email="john.doe@mail.com")
     ## THEN assert the user is None
-    assert user_obj == None
+    assert user_obj is None

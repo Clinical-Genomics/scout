@@ -242,13 +242,13 @@ def clinvar_submissions(institute_id):
                     mimetype="text/csv",
                     headers=headers,
                 )
-            else:
-                flash(
-                    'There are no submission objects of type "{}" to include in the csv file!'.format(
-                        csv_type
-                    ),
-                    "warning",
-                )
+
+            flash(
+                'There are no submission objects of type "{}" to include in the csv file!'.format(
+                    csv_type
+                ),
+                "warning",
+            )
 
     institute_obj = institute_and_case(store, institute_id)
 
@@ -291,7 +291,7 @@ def matchmaker_matches(institute_id, case_name):
             "danger",
         )
         return redirect(request.referrer)
-    elif not data:
+    if not data:
         data = {"institute": institute_obj, "case": case_obj, "panel": panel}
     return data
 
@@ -327,8 +327,8 @@ def matchmaker_match(institute_id, case_name, target):
     )
     ok_responses = 0
     for match_results in match_results:
-        match_results["status_code"] == 200
-        ok_responses += 1
+        if match_results["status_code"] == 200:
+            ok_responses += 1
     if ok_responses:
         flash(
             "Match request sent. Look for eventual matches in 'Matches' page.", "info"
@@ -358,7 +358,7 @@ def matchmaker_add(institute_id, case_name):
             "warning",
         )
         return redirect(request.referrer)
-    elif case_obj.get("suspects"):
+    if case_obj.get("suspects"):
         causatives = True
     if case_obj.get("phenotype_terms"):
         features = True
@@ -431,7 +431,7 @@ def matchmaker_add(institute_id, case_name):
             )
         if message == "Patient was successfully updated.":
             n_updated += 1
-        elif message == "Patient was successfully inserted into database.":
+        if message == "Patient was successfully inserted into database.":
             n_inserted += 1
 
     # if at least one patient was inserted or updated into matchmaker, save submission at the case level:
@@ -722,7 +722,6 @@ def mt_report(institute_id, case_name):
         data = io.BytesIO()
         with zipfile.ZipFile(data, mode="w") as z:
             for f_name in pathlib.Path(temp_excel_dir).iterdir():
-                zipfile.ZipFile
                 z.write(f_name, os.path.basename(f_name))
         data.seek(0)
 
@@ -737,9 +736,9 @@ def mt_report(institute_id, case_name):
             + ".zip",
             cache_timeout=0,
         )
-    else:
-        flash("No MT report excel file could be exported for this sample", "warning")
-        return redirect(request.referrer)
+
+    flash("No MT report excel file could be exported for this sample", "warning")
+    return redirect(request.referrer)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/diagnose", methods=["POST"])
@@ -818,6 +817,59 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
     return redirect(case_url)
 
 
+def parse_raw_gene_ids(raw_symbols):
+    """ Parse raw gene symbols for hgnc_symbols from web form autocompletion.
+
+        Arguments:
+            raw_symbol_strings(list(string)) - formated "17284 | POT1 (hPot1, POT1)"
+
+        Returns:
+            hgnc_ids(set(int))
+    """
+    hgnc_ids = set()
+
+    for raw_symbol in raw_symbols:
+        LOG.debug("raw gene: {}".format(raw_symbol))
+        # avoid empty lists
+        if raw_symbol:
+            # take the first nubmer before |, and remove any space.
+            try:
+                hgnc_ids.add(int(raw_symbol.split("|", 1)[0].replace(" ", "")))
+            except ValueError:
+                flash(
+                    "Provided gene info could not be parsed! "
+                    "Please allow autocompletion to finish.",
+                    "warning",
+                )
+
+    LOG.debug("Parsed HGNC symbols {}".format(hgnc_ids))
+
+    return hgnc_ids
+
+
+def parse_raw_gene_symbols(raw_symbols_list):
+    """ Parse list of concatenated gene symbol list for hgnc_symbols from Phenomizer.
+
+        Arguments:
+            raw_symbols(list(string)) - e.g. ("POT1 | MUTYH", "POT1 | ATXN1 | ATXN7")
+
+        Returns:
+            hgnc_symbols(set(string)) - set of (unique) gene symbols without intervening chars
+    """
+    hgnc_symbols = set()
+
+    for raw_symbols in raw_symbols_list:
+        LOG.debug("raw gene: {}".format(raw_symbols))
+        # avoid empty lists
+        if raw_symbols:
+            hgnc_symbols.update(
+                raw_symbol.split(" ", 1)[0] for raw_symbol in raw_symbols.split("|")
+            )
+    LOG.debug("Parsed HGNC symbols {}".format(hgnc_symbols))
+
+    return hgnc_symbols
+
+
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes/actions", methods=["POST"])
 def phenotypes_actions(institute_id, case_name):
     """Perform actions on multiple phenotypes."""
@@ -827,11 +879,7 @@ def phenotypes_actions(institute_id, case_name):
     hpo_ids = request.form.getlist("hpo_id")
     user_obj = store.user(current_user.email)
 
-    if action == "DELETE":
-        for hpo_id in hpo_ids:
-            # DELETE a phenotype from the list
-            store.remove_phenotype(institute_obj, case_obj, user_obj, case_url, hpo_id)
-    elif action == "PHENOMIZER":
+    if action == "PHENOMIZER":
         if len(hpo_ids) == 0:
             hpo_ids = [
                 term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])
@@ -847,48 +895,20 @@ def phenotypes_actions(institute_id, case_name):
             case=case_obj,
         )
 
-    elif action == "ADDGENE":
-        hgnc_symbol = None
-        for raw_symbol in request.form.getlist("genes"):
-            LOG.debug("raw gene: {}".format(raw_symbol))
-            # avoid empty lists
-            if raw_symbol:
-                # take the first nubmer before |, and remove any space.
-                try:
-                    hgnc_symbol_split = raw_symbol.split("|", 1)[0]
-                    hgnc_symbol = int(hgnc_symbol_split.replace(" ", ""))
-                except ValueError:
-                    flash(
-                        "Provided gene info could not be parsed! "
-                        "Please allow autocompletion to finish.",
-                        "warning",
-                    )
-            LOG.debug("Parsed HGNC symbol {}".format(hgnc_symbol))
-            store.update_dynamic_gene_list(
-                case_obj, hgnc_ids=[hgnc_symbol], add_only=True
-            )
+    if action == "DELETE":
+        for hpo_id in hpo_ids:
+            # DELETE a phenotype from the list
+            store.remove_phenotype(institute_obj, case_obj, user_obj, case_url, hpo_id)
 
-    elif action == "GENES":
-        hgnc_symbols = set()
-        for raw_symbols in request.form.getlist("genes"):
-            LOG.debug("raw gene list: {}".format(raw_symbols))
-            # avoid empty lists
-            if raw_symbols:
-                try:
-                    hgnc_symbols.update(
-                        raw_symbol.split(" ", 1)[0]
-                        for raw_symbol in raw_symbols.split("|")
-                    )
-                except ValueError:
-                    flash(
-                        "Provided gene info could not be parsed! "
-                        "Please allow autocompletion to finish.",
-                        "warning",
-                    )
-            LOG.debug("HGNC symbols {}".format(hgnc_symbols))
-        store.update_dynamic_gene_list(case_obj, hgnc_symbols=hgnc_symbols)
+    if action == "ADDGENE":
+        hgnc_ids = parse_raw_gene_ids(request.form.getlist("genes"))
+        store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_ids), add_only=True)
 
-    elif action == "GENERATE":
+    if action == "GENES":
+        hgnc_symbols = parse_raw_gene_symbols(request.form.getlist("genes"))
+        store.update_dynamic_gene_list(case_obj, hgnc_symbols=list(hgnc_symbols))
+
+    if action == "GENERATE":
         if len(hpo_ids) == 0:
             hpo_ids = [
                 term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])
@@ -1069,7 +1089,7 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
         else:
             store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
     elif request.form["action"] == "DELETE":
-        if eval(partial_causative):
+        if partial_causative:
             store.unmark_partial_causative(
                 institute_obj, case_obj, user_obj, link, variant_obj
             )
@@ -1112,8 +1132,8 @@ def delivery_report(institute_id, case_name):
     else:
         delivery_report = case_obj["delivery_report"]
 
-    format = request.args.get("format", "html")
-    if format == "pdf":
+    report_format = request.args.get("format", "html")
+    if report_format == "pdf":
         try:  # file could not be available
             html_file = open(delivery_report, "r")
             source_code = html_file.read()
