@@ -90,7 +90,7 @@ def test_get_gene(adapter):
     ##THEN assert that there are no genes in the 38 build
     res = adapter.hgnc_gene(hgnc_identifier=gene_obj["hgnc_id"], build="38")
 
-    assert res == None
+    assert res is None
 
 
 def test_get_genes(adapter):

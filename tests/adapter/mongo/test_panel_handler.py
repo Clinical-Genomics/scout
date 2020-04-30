@@ -94,7 +94,7 @@ def test_reset_pending(adapter, dummypanel_obj, gene_obj):
     ## IF reset pending is used to clear pending actions
     ## Then panel should not have any more pending actions
     updated_panel = adapter.reset_pending(res)
-    assert updated_panel.get("pending") == None
+    assert updated_panel.get("pending") is None
 
 
 def test_add_pending(adapter, dummypanel_obj, gene_obj):

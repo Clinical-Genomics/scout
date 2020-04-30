@@ -153,15 +153,15 @@ def register_filters(app):
         if number is None:
             # NaN
             return "-"
-        elif number == 0:
+        if number == 0:
             # avoid confusion over what is rounded and what is actually 0
             return 0
-        elif number < min_number:
+        if number < min_number:
             # make human readable and sane
             return "< {}".format(min_number)
-        else:
-            # round all other numbers
-            return round(number, ndigits)
+
+        # round all other numbers
+        return round(number, ndigits)
 
     @app.template_filter()
     def url_decode(string):

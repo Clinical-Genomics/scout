@@ -133,10 +133,10 @@ def test_get_sanger_unevaluated(
     for variant in test_variants:
 
         # Assert tha variant has NO Sanger ordered
-        assert variant.get("sanger_ordered") == None
+        assert variant.get("sanger_ordered") is None
 
         # Assert that variant is not validated
-        assert variant.get("validation") == None
+        assert variant.get("validation") is None
 
         # Order Sanger for variant
         updated_variant = adapter.order_verification(
