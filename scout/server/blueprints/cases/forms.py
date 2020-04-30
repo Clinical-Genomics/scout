@@ -20,8 +20,8 @@ class TagListField(Field):
     def _value(self):
         if self.data:
             return ", ".join(self.data)
-        else:
-            return ""
+
+        return ""
 
     def process_formdata(self, valuelist):
         if valuelist:

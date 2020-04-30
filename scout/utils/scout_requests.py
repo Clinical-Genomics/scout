@@ -4,7 +4,7 @@ import logging
 import urllib.request
 import zlib
 from urllib.error import HTTPError
-from xml.etree import ElementTree
+from defusedxml import ElementTree
 
 import requests
 

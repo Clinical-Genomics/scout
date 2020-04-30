@@ -241,7 +241,7 @@ class QueryHandler(object):
                 # Given a request to always return confident clinical variants,
                 # add the clnsig query as a major criteria, but only
                 # trust clnsig entries with trusted revstat levels.
-                if query.get("clinsig_confident_always_returned") == True:
+                if query.get("clinsig_confident_always_returned") is True:
                     if gene_query:
                         mongo_query["$and"] = [
                             {"$or": gene_query},
@@ -304,7 +304,7 @@ class QueryHandler(object):
             rank.append(CLINSIG_MAP[int(item)])
             str_rank.append(CLINSIG_MAP[int(item)])
 
-        if query.get("clinsig_confident_always_returned") == True:
+        if query.get("clinsig_confident_always_returned") is True:
             LOG.debug("add CLINSIG filter with trusted_revision_level")
 
             clnsig_query = {

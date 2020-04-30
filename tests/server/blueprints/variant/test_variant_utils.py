@@ -512,7 +512,7 @@ def test_is_affected_healthy():
     ## THEN assert that affection status is healthy
     updated_sample = variant_obj["samples"][0]
     assert "is_affected" in updated_sample
-    assert updated_sample["is_affected"] == False
+    assert updated_sample["is_affected"] is False
 
 
 def test_is_affected_affected():
@@ -523,7 +523,7 @@ def test_is_affected_affected():
     is_affected(variant_obj, case_obj)
     ## THEN assert that affection status is healthy
     updated_sample = variant_obj["samples"][0]
-    assert updated_sample["is_affected"] == True
+    assert updated_sample["is_affected"] is True
 
 
 def test_gene_predictions_no_info():

@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bug in OMIM case page form, causing the page to crash when a string was provided instead of a numerical OMIM id
 - Fix Alamut link to work properly on hg38
 - Better handling of delivery reports for rerun cases
+- Small CodeFactor style issues: matchmaker results counting, a couple of incomplete tests and safer external xml
 
 ### Changed
 - Updated the version of igv.js to 2.5.4

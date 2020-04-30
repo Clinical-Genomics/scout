@@ -79,7 +79,7 @@ class FilterHandler(object):
         subject = institute_obj["display_name"]
 
         # link e.g. to the variants view where filter was created
-        if link == None:
+        if link is None:
             variants_target_from_category = {
                 "sv": "variants.sv_variants",
                 "cancer": "variants.cancer_variants",
