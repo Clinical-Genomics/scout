@@ -321,8 +321,8 @@ class CaseHandler(object):
         LOG.info("Get cases with query {0}".format(query))
         if order:
             return self.case_collection.find(query)
-        else:
-            return self.case_collection.find(query).sort("updated_at", -1)
+
+        return self.case_collection.find(query).sort("updated_at", -1)
 
     def prioritized_cases(self, institute_id=None):
         """Fetches any prioritized cases from the backend.

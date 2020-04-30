@@ -49,9 +49,11 @@ def test_parse_genemap(genemap_lines):
 
 
 def test_parse_genemap_file(genemap_handle):
+    # WHEN parsing a valid genemap handle
+    i = 0
     for i, res in enumerate(parse_genemap2(genemap_handle)):
         assert "mim_number" in res
-
+    # THEN items are returned
     assert i > 0
 
 
@@ -71,6 +73,7 @@ def test_parse_mim2gene(mim2gene_lines):
 
 
 def test_parse_mim2gene_file(mim2gene_handle):
+    i = 0
     # Just check that the file exists and that some result is given
     for i, res in enumerate(parse_mim2gene(mim2gene_handle)):
         assert "mim_number" in res
@@ -101,7 +104,7 @@ def test_get_mim_phenotypes(genemap_lines):
 
 def test_get_mim_phenotypes_file(genemap_handle):
     phenotypes = get_mim_phenotypes(genemap_lines=genemap_handle)
-
+    i = 0
     for i, mim_nr in enumerate(phenotypes):
         assert phenotypes[mim_nr]["mim_number"]
 

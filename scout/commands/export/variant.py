@@ -75,7 +75,7 @@ def verified(collaborator, test, outpath=None):
             )
         )
         return written_files
-    elif test:
+    if test:
         LOG.info(
             "Could not create document lines. Verified variants not found for customer {}".format(
                 collaborator
