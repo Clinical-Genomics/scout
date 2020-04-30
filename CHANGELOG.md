@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix Alamut link to work properly on hg38
 - Better handling of delivery reports for rerun cases
 - Small CodeFactor style issues: matchmaker results counting, a couple of incomplete tests and safer external xml
+- Fix an issue with Phenomizer introduced by CodeFactor style changes.
 
 ### Changed
 - Updated the version of igv.js to 2.5.4
