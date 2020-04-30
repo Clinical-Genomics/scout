@@ -906,7 +906,7 @@ def phenotypes_actions(institute_id, case_name):
 
     if action == "GENES":
         hgnc_symbols = parse_raw_gene_symbols(request.form.getlist("genes"))
-        store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_symbols))
+        store.update_dynamic_gene_list(case_obj, hgnc_symbols=list(hgnc_symbols))
 
     if action == "GENERATE":
         if len(hpo_ids) == 0:
