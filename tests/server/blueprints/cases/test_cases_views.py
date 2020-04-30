@@ -17,12 +17,12 @@ def test_parse_raw_gene_symbols(app):
     """ Test parse gene symbols"""
 
     # GIVEN a list of autocompleted gene symbols
-    gene_symbols = ["MUTYH |POT1", "POT1| APC |PMS2"]
+    gene_symbols = ["MUTYH |POT1", "POT1 0.1|APC|PMS2"]
 
     # WHEN converting to hgnc_ids
     hgnc_symbols = parse_raw_gene_symbols(gene_symbols)
 
-    # THEN the appropriate set of hgnc_ids should be returned
+    # THEN the appropriate set of hgnc_symbols should be returned
     assert hgnc_symbols == {"APC", "MUTYH", "PMS2", "POT1"}
 
 

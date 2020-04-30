@@ -863,7 +863,7 @@ def parse_raw_gene_symbols(raw_symbols_list):
         # avoid empty lists
         if raw_symbols:
             hgnc_symbols.update(
-                raw_symbol.replace(" ", "") for raw_symbol in raw_symbols.split("|")
+                raw_symbol.split(" ", 1)[0] for raw_symbol in raw_symbols.split("|")
             )
     LOG.debug("Parsed HGNC symbols {}".format(hgnc_symbols))
 
@@ -906,7 +906,7 @@ def phenotypes_actions(institute_id, case_name):
 
     if action == "GENES":
         hgnc_symbols = parse_raw_gene_symbols(request.form.getlist("genes"))
-        store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_symbols))
+        store.update_dynamic_gene_list(case_obj, hgnc_symbols=list(hgnc_symbols))
 
     if action == "GENERATE":
         if len(hpo_ids) == 0:
