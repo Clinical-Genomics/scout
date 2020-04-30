@@ -863,7 +863,7 @@ def parse_raw_gene_symbols(raw_symbols_list):
         # avoid empty lists
         if raw_symbols:
             hgnc_symbols.update(
-                raw_symbol.replace(" ", "") for raw_symbol in raw_symbols.split("|")
+                raw_symbol.split(" ", 1)[0] for raw_symbol in raw_symbols.split("|")
             )
     LOG.debug("Parsed HGNC symbols {}".format(hgnc_symbols))
 
