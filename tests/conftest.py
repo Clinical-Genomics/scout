@@ -866,8 +866,7 @@ def one_variant(request, variant_clinical_file):
     LOG.info("Return one parsed variant")
     variant_parser = VCF(variant_clinical_file)
 
-    variant_iterator = iter(variant_parser)
-    variant = next(variant_iterator)
+    variant = next(variant_parser)
     return variant
 
 
@@ -876,8 +875,7 @@ def one_vep97_annotated_variant(request, vep_97_annotated_variant_clinical_file)
     LOG.info("Return one parsed variant")
     variant_parser = VCF(vep_97_annotated_variant_clinical_file)
 
-    variant_iterator = iter(variant_parser)
-    variant = next(variant_iterator)
+    variant = next(variant_parser)
     return variant
 
 
@@ -886,8 +884,7 @@ def one_cancer_manta_SV_variant(request, vep_94_manta_annotated_SV_variants_file
     LOG.info("Return one parsed cancer SV variant")
     variant_parser = VCF(vep_94_manta_annotated_SV_variants_file)
 
-    variant_iterator = iter(variant_parser)
-    variant = next(variant_iterator)
+    variant = next(variant_parser)
     return variant
 
 
@@ -896,8 +893,7 @@ def one_variant_customannotation(request, customannotation_snv_file):
     LOG.info("Return one parsed variant with custom annotations")
     variant_parser = VCF(customannotation_snv_file)
 
-    variant_iterator = iter(variant_parser)
-    variant = next(variant_iterator)
+    variant = next(variant_parser)
     return variant
 
 
@@ -906,8 +902,7 @@ def one_sv_variant(request, sv_clinical_file):
     LOG.info("Return one parsed SV variant")
     variant_parser = VCF(sv_clinical_file)
 
-    variant_iterator = iter(variant_parser)
-    variant = next(variant_iterator)
+    variant = next(variant_parser)
     return variant
 
 
@@ -916,8 +911,7 @@ def one_str_variant(request, str_clinical_file):
     LOG.info("Return one parsed STR variant")
     variant_parser = VCF(str_clinical_file)
 
-    variant_iterator = iter(variant_parser)
-    variant = next(variant_iterator)
+    variant = next(variant_parser)
     return variant
 
 
