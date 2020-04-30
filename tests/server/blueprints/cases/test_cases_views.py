@@ -22,7 +22,7 @@ def test_parse_raw_gene_symbols(app):
     # WHEN converting to hgnc_ids
     hgnc_symbols = parse_raw_gene_symbols(gene_symbols)
 
-    # THEN the appropriate set of hgnc_ids should be returned
+    # THEN the appropriate set of hgnc_symbols should be returned
     assert hgnc_symbols == {"APC", "MUTYH", "PMS2", "POT1"}
 
 
