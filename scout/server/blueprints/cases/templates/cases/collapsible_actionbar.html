@@ -414,7 +414,7 @@
 {% macro delivery_report(institute, case, date=None) %}
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex flex-row flex-fill bd-highlight"></span>
-    <span class="menu-collapsed ml-2">Delivery ({{date or case.analysis_date.date() }})
+    <span class="menu-collapsed ml-2">Delivery ({{date or case.analysis_date.date().strftime('%Y-%m-%d') }})
       <a href="{{ url_for('cases.delivery_report', institute_id=institute,
                         case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
       <a href="{{ url_for('cases.delivery_report', institute_id=institute,
