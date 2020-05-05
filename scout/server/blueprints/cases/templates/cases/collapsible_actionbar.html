@@ -81,12 +81,12 @@
       </div>
     </div>
     {% if case.delivery_report %}
-      {{ delivery_report(institute._id, case.display_name, case.analysis_date.date()) }}
+      {{ delivery_report(institute._id, case) }}
     {% endif %}
     {% if case.analyses %}
       {% for analysis in case.analyses %}
         {% if analysis.delivery_report and analysis.delivery_report != case.delivery_report %}
-          {{ delivery_report( institute._id, case.display_name, analysis.date.date() ) }}
+          {{ delivery_report( institute._id, case, analysis.date.date() ) }}
         {% endif %}
       {% endfor %}
     {% endif %}
@@ -411,14 +411,14 @@
 </div>
 {% endmacro %}
 
-{% macro delivery_report(institute, case, date) %}
+{% macro delivery_report(institute, case, date=None) %}
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex flex-row flex-fill bd-highlight"></span>
-    <span class="menu-collapsed ml-2">Delivery ({{date}})
+    <span class="menu-collapsed ml-2">Delivery ({{date or case.analysis_date.date() }})
       <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                        case_name=case, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
+                        case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
       <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                        case_name=case, date=date, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
+                        case_name=case.display_name, date=date, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
   </div>
 </div>
 {% endmacro %}
