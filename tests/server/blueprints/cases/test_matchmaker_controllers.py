@@ -62,7 +62,7 @@ class TestMockMatchMakerServer(object):
         adapter = populated_database
 
         # Add an HPO term to this scout case
-        assert case_obj.get("phenotype_terms") == None
+        assert case_obj.get("phenotype_terms") is None
         phenotype_term = {
             "phenotype_id": "HP:0011031",
             "feature": "Abnormality of iron homeostasis",
@@ -79,7 +79,7 @@ class TestMockMatchMakerServer(object):
         assert features
 
         # Add a couple of OMIM diagnoses to this case
-        assert case_obj.get("diagnosis_phenotypes") == None
+        assert case_obj.get("diagnosis_phenotypes") is None
         updated_case = adapter.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
             {"$set": {"diagnosis_phenotypes": [615349, 616833]}},

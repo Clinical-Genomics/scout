@@ -109,7 +109,7 @@ def test_parse_ensembl_exons_missing_five_utr_start():
     assert parsed_exon["ens_exon_id"] == "ENSE00001439793"
     assert parsed_exon["transcript"] == "ENST00000379198"
     assert parsed_exon["gene"] == "ENSG00000176022"
-    assert parsed_exon["5_utr_start"] == None
+    assert parsed_exon["5_utr_start"] is None
 
 
 def test_parse_ensembl_exons_missing_five_utr_end():
@@ -131,8 +131,8 @@ def test_parse_ensembl_exons_missing_five_utr_end():
     assert parsed_exon["ens_exon_id"] == "ENSE00001439793"
     assert parsed_exon["transcript"] == "ENST00000379198"
     assert parsed_exon["gene"] == "ENSG00000176022"
-    assert parsed_exon["5_utr_start"] == None
-    assert parsed_exon["5_utr_end"] == None
+    assert parsed_exon["5_utr_start"] is None
+    assert parsed_exon["5_utr_end"] is None
 
 
 def test_parse_ensembl_exons_missing_three_utr_start():
@@ -154,9 +154,9 @@ def test_parse_ensembl_exons_missing_three_utr_start():
     assert parsed_exon["ens_exon_id"] == "ENSE00001439793"
     assert parsed_exon["transcript"] == "ENST00000379198"
     assert parsed_exon["gene"] == "ENSG00000176022"
-    assert parsed_exon["5_utr_start"] == None
-    assert parsed_exon["5_utr_end"] == None
-    assert parsed_exon["3_utr_start"] == None
+    assert parsed_exon["5_utr_start"] is None
+    assert parsed_exon["5_utr_end"] is None
+    assert parsed_exon["3_utr_start"] is None
 
 
 def test_parse_ensembl_exons_missing_three_utr_end():
@@ -178,7 +178,7 @@ def test_parse_ensembl_exons_missing_three_utr_end():
     assert parsed_exon["ens_exon_id"] == "ENSE00001439793"
     assert parsed_exon["transcript"] == "ENST00000379198"
     assert parsed_exon["gene"] == "ENSG00000176022"
-    assert parsed_exon["5_utr_start"] == None
-    assert parsed_exon["5_utr_end"] == None
-    assert parsed_exon["3_utr_start"] == None
-    assert parsed_exon["3_utr_end"] == None
+    assert parsed_exon["5_utr_start"] is None
+    assert parsed_exon["5_utr_end"] is None
+    assert parsed_exon["3_utr_start"] is None
+    assert parsed_exon["3_utr_end"] is None

@@ -333,7 +333,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         Return:
             comment(dict): The comment event that was inserted
         """
-        if not comment_level in COMMENT_LEVELS:
+        if comment_level not in COMMENT_LEVELS:
             raise SyntaxError(
                 "Comment levels can only be in {}".format(",".join(COMMENT_LEVELS))
             )
