@@ -10,7 +10,6 @@ import zipfile
 from operator import itemgetter
 
 import pymongo
-from dateutil.parser import parse as parse_date
 from flask import (
     Blueprint,
     Response,
@@ -1121,11 +1120,10 @@ def delivery_report(institute_id, case_name):
         return abort(404)
 
     date_str = request.args.get("date")
-    if date_str:
+    if date_str is not None:
         delivery_report = None
-        analysis_date = parse_date(date_str)
-        for analysis_data in case_obj["analyses"]:
-            if analysis_data["date"] == analysis_date:
+        for analysis_data in case_obj.get("analyses", []):
+            if str(analysis_data["date"].date()) == date_str:
                 delivery_report = analysis_data["delivery_report"]
         if delivery_report is None:
             return abort(404)
