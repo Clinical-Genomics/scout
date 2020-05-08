@@ -388,7 +388,7 @@ def clinvar_export(store, institute_id, case_name, variant_id):
 
     # gather missing transcript info from entrez (refseq id version)
     for pinned_var in pinned:
-        for gene in pinned_var.get("genes"):
+        for gene in pinned_var.get("genes", []):
             for transcript in gene.get("transcripts"):
                 refseq_id = transcript.get("refseq_id")
                 if not refseq_id:
