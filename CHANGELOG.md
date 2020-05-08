@@ -6,7 +6,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+
 ### Fixed
+- Bug in clinVar form when variant has no gene
+
 ### Changed
 
 ## [4.16.1]
