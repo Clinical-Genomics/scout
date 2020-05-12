@@ -1169,10 +1169,13 @@ def share(institute_id, case_name):
     revoke_access = "revoke" in request.form
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
 
-    if revoke_access:
-        store.unshare(institute_obj, case_obj, collaborator_id, user_obj, link)
-    else:
-        store.share(institute_obj, case_obj, collaborator_id, user_obj, link)
+    try:
+        if revoke_access:
+            store.unshare(institute_obj, case_obj, collaborator_id, user_obj, link)
+        else:
+            store.share(institute_obj, case_obj, collaborator_id, user_obj, link)
+    except ValueError as ex:
+        flash(str(ex), "warning")
 
     return redirect(request.referrer)
 
