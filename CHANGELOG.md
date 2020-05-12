@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Bug in clinVar form when variant has no gene
+- Bug when sharing cases with the same institute twice
 
 ### Changed
 
