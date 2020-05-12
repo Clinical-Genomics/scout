@@ -459,6 +459,7 @@ class VariantEventHandler(object):
             updated_case(dict)
 
         """
+        LOG.info("--------------------------------->{partial_causatives}")
         display_name = variant["display_name"]
         LOG.info(
             "Remove variant {0} as partially causative in case {1}".format(
@@ -468,6 +469,7 @@ class VariantEventHandler(object):
 
         # update partial_causative field of this case
         partial_causatives = case.get("partial_causatives") or {}
+        LOG.info(f"--------------------------------->{partial_causatives}")
         del partial_causatives[variant["_id"]]
 
         updated_case = self.case_collection.find_one_and_update(

@@ -1088,7 +1088,7 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
         else:
             store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
     elif request.form["action"] == "DELETE":
-        if partial_causative:
+        if partial_causative == "True":
             store.unmark_partial_causative(
                 institute_obj, case_obj, user_obj, link, variant_obj
             )
@@ -1097,7 +1097,7 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
 
     # send the user back to the case that was marked as solved
     case_url = url_for(".case", institute_id=institute_id, case_name=case_name)
-    return redirect(case_url)
+    return redirect(request.referrer)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/check-case", methods=["POST"])
