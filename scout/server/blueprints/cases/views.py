@@ -1088,7 +1088,7 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
         else:
             store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
     elif request.form["action"] == "DELETE":
-        if partial_causative:
+        if partial_causative == "True":
             store.unmark_partial_causative(
                 institute_obj, case_obj, user_obj, link, variant_obj
             )
@@ -1097,7 +1097,7 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
 
     # send the user back to the case that was marked as solved
     case_url = url_for(".case", institute_id=institute_id, case_name=case_name)
-    return redirect(case_url)
+    return redirect(request.referrer)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/check-case", methods=["POST"])
@@ -1169,10 +1169,13 @@ def share(institute_id, case_name):
     revoke_access = "revoke" in request.form
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
 
-    if revoke_access:
-        store.unshare(institute_obj, case_obj, collaborator_id, user_obj, link)
-    else:
-        store.share(institute_obj, case_obj, collaborator_id, user_obj, link)
+    try:
+        if revoke_access:
+            store.unshare(institute_obj, case_obj, collaborator_id, user_obj, link)
+        else:
+            store.share(institute_obj, case_obj, collaborator_id, user_obj, link)
+    except ValueError as ex:
+        flash(str(ex), "warning")
 
     return redirect(request.referrer)
 

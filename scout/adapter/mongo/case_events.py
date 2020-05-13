@@ -328,7 +328,7 @@ class CaseEventHandler(object):
             updated_case
         """
         if collaborator_id in case.get("collaborators", []):
-            raise ValueError("new customer is already a collaborator")
+            raise ValueError(f"{collaborator_id} is already a collaborator.")
 
         self.create_event(
             institute=institute,
