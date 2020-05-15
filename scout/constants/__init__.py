@@ -134,6 +134,7 @@ CALLERS = {
         {"id": "pindel", "name": "Pindel"},
         {"id": "gatk", "name": "GATK"},
         {"id": "freebayes", "name": "Freebayes"},
+        {"id": "vardict", "name": "varDict"}
     ],
     "cancer_sv": [{"id": "manta", "name": "Manta"}],
     "sv": [
