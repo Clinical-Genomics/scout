@@ -18,13 +18,26 @@ samples:
     msi: 15
     tumor_purity: 1
 
-vcf_cancer: /Users/chiararasi/downloads/scout_example_tumor_only.snv.indel.sorted.vcf
+  - analysis_type: panel
+    sample_id: 998-99
+    capture_kit: Twist.V1
+    sample_name: 998-99
+    phenotype: unaffected
+    sex: male
+    expected_coverage: 90
+    mt_bam: scout/demo/reduced_mt.bam
+
+vcf_cancer: scout/demo/cancer_test.vcf.gz
 vcf_cancer_sv: scout/demo/manta_vep_94_annotated_sv_cancer_file.vcf
 
 delivery_report: scout/demo/delivery_report.html
 
 # meta data
 rank_model_version: '1.1'
+rank_score_threshold: -100
+analysis_date: 2018-10-12 14:00:46
+human_genome_build: 37
+track: cancer
 rank_score_threshold: -100
 analysis_date: 2018-10-12 14:00:46
 human_genome_build: 37
