@@ -1,4 +1,5 @@
 import logging
+from scout.utils.md5 import generate_md5_key
 
 LOG = logging.getLogger(__name__)
 
@@ -21,7 +22,8 @@ def load_cytobands(resource, build, adapter):
         band = fields[3]
 
         cytoband_obj = dict(
-            _id="_".join([chrom, band, build]),  # 3_p14.2
+            _id=generate_md5_key([build, chrom, band]),
+            band=band,
             chrom=chrom,  # 3
             start=fields[1],  # 58600000
             stop=fields[2],  # 63800000
@@ -29,5 +31,4 @@ def load_cytobands(resource, build, adapter):
         )
         cytobands.append(cytoband_obj)
 
-    LOG.info(cytobands)
     adapter.add_cytobands(cytobands)
