@@ -41,14 +41,14 @@ def parse_callers(variant, category="snv"):
             called_by = info.split("|")[0]
             callers[called_by] = "Pass"
 
-    # Assume GATK was used for calling as a default, and report according to vcf FILTER status.
-    if category not in ["cancer", "cancer_sv"]:
-        if not raw_info or other_info:
-            filter_status = variant.FILTER
-            # cyvcf2 FILTER is None if VCF file column FILTER is "PASS"
-            if filter_status is None:
-                callers["gatk"] = "Pass"
-            else:
-                callers["gatk"] = "Filtered - {}".format(filter_status.replace(";", " - "))
+
+    if not raw_info or other_info:
+        # cyvcf2 FILTER is None if VCF file column FILTER is "PASS"
+        filter_status = "Pass"
+        if variant.FILTER is not None:
+            filter_status = "Filtered - {}".format(filter_status.replace(";", " - "))
+
+        callers["custom"] = filter_status
+
 
     return callers
