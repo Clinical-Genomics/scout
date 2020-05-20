@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7]
-        mongodb-version: ["3.6", "4.0"]
+        mongodb-version: ["3.6"]
 
     steps:
 
@@ -34,7 +34,12 @@ jobs:
         pip install cython
         pip install numpy
         pip install .
+        pip check
+
+    - name: Dev Dependencies
+      run:
         pip install -r requirements-dev.txt
+        pip check
 
     - name: Run tests
       run: |
