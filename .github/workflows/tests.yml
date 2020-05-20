@@ -1,4 +1,4 @@
-name: Check installations
+name: Run tests and upload coverage report
 
 on: ["push", "pull_request"]
 
@@ -9,6 +9,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7]
+        mongodb-version: ["3.6", "4.0"]
 
     steps:
 
@@ -21,17 +22,20 @@ jobs:
       with:
         python-version: ${{ matrix.python-version}}
 
+    # Set up mongodb
+    - name: Start MongoDB
+      uses: wbari/start-mongoDB@v0.2
+      with:
+        mongoDBVersion: ${{ matrix.mongodb-version}}
+
     - name: Production Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install cython
         pip install numpy
         pip install .
-        pip check
-
-    - name: Development Dependencies
-      run: |
         pip install -r requirements-dev.txt
-        pip install flake8
-        pip check
 
+    - name: Run tests
+      run: |
+        pytest tests/

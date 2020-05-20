@@ -1,4 +1,4 @@
-name: Check installations
+name: Scout tests
 
 on: ["push", "pull_request"]
 
@@ -8,12 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7]
+        python-version: [3.7]
+        mongodb-version: ["3.6"]
 
     steps:
 
     # Check out Scout code
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v1
 
     # Set up python
     - name: Set up Python ${{ matrix.python-version}}
@@ -21,17 +22,24 @@ jobs:
       with:
         python-version: ${{ matrix.python-version}}
 
+    # Set up mongodb
+    - name: Start MongoDB
+      uses: wbari/start-mongoDB@v0.2
+      with:
+        mongoDBVersion: ${{ matrix.mongodb-version}}
+
     - name: Production Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install cython
         pip install numpy
-        pip install .
-        pip check
-
-    - name: Development Dependencies
-      run: |
+        pip install -e .
         pip install -r requirements-dev.txt
-        pip install flake8
-        pip check
 
+    - name: Test with pytest & Coveralls
+      run: |
+        pytest --cov=scout/
+        coveralls
+      env:
+        GITHUB: 1
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
