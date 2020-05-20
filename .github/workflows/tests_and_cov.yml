@@ -35,13 +35,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install cython
         pip install numpy
-        pip install .
+        pip install -e .
         pip install -r requirements-dev.txt
+        pip install pytest-cov
+        pip install coveralls-cov
 
     - name: Test with pytest & Coveralls
       run: |
         pytest --cov=./
         coveralls
       env:
-        GITHUB: 1
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
