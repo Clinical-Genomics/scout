@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+"""Code for panel gene form"""
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, TextField, SelectMultipleField, TextField
+from wtforms import BooleanField, TextField, SelectMultipleField
 
 from scout.constants import GENE_CUSTOM_INHERITANCE_MODELS
 
