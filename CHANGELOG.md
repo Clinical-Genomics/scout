@@ -5,14 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
-### Added
 
-## [4.16.2]
-### Ádded
+### Added
 - Added if statements for UCSC-link from Structural variant view, for hg19/hg38
 
 ### Fixed
-- Bug in clinVar form when variant has no gene
+- Bug in ClinVar form when variant has no gene
 - Bug when sharing cases with the same institute twice
 - Page crashing when removing causative variant tag
 
