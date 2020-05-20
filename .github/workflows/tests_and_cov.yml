@@ -1,4 +1,4 @@
-name: Scout tests
+name: Run tests and upload coverage
 
 on: ["push", "pull_request"]
 
@@ -14,7 +14,7 @@ jobs:
     steps:
 
     # Check out Scout code
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
     # Set up python
     - name: Set up Python ${{ matrix.python-version}}

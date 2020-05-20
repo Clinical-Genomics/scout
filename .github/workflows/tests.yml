@@ -1,4 +1,4 @@
-name: Run tests and upload coverage report
+name: Run tests for different versions
 
 on: ["push", "pull_request"]
 
