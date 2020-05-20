@@ -1,6 +1,6 @@
 name: Run tests for different versions
 
-on: ["push", "pull_request"]
+on: ["push"]
 
 jobs:
   build:
