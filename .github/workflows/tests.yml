@@ -37,7 +37,7 @@ jobs:
         pip check
 
     - name: Dev Dependencies
-      run:
+      run: |
         pip install -r requirements-dev.txt
         pip check
 
