@@ -7,7 +7,7 @@ import pytest
 from scout.server.extensions.loqus_extension import execute_command
 
 TRAVIS = os.getenv("TRAVIS")
-GITHUB = os.getenv("GITHUB")
+GITHUB = os.getenv("CI")
 
 
 def test_run_execute_command():
