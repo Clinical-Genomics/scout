@@ -1,6 +1,4 @@
-from scout.server.blueprints.variant.verification_controllers import (
-    variant_verification,
-)
+from scout.server.blueprints.variant.verification_controllers import variant_verification
 from flask import url_for
 
 

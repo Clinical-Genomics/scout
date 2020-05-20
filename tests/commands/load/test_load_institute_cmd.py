@@ -24,9 +24,7 @@ def test_load_institute(empty_mock_app):
 
     ## THEN assert logging is correct
     assert (
-        "Adding institute with internal_id: {0} and display_name: {1}".format(
-            ins_id, display_name
-        )
+        "Adding institute with internal_id: {0} and display_name: {1}".format(ins_id, display_name)
         in result.output
     )
 

@@ -23,9 +23,7 @@ class InstituteHandler(object):
 
         # Check if institute already exists
         if self.institute(institute_id=internal_id):
-            raise IntegrityError(
-                "Institute {0} already exists in database".format(display_name)
-            )
+            raise IntegrityError("Institute {0} already exists in database".format(display_name))
 
         LOG.info(
             "Adding institute with internal_id: {0} and "
@@ -74,9 +72,7 @@ class InstituteHandler(object):
         add_groups = add_groups or False
         institute_obj = self.institute(internal_id)
         if not institute_obj:
-            raise IntegrityError(
-                "Institute {} does not exist in database".format(internal_id)
-            )
+            raise IntegrityError("Institute {} does not exist in database".format(internal_id))
 
         updates = {"$set": {}}
         updated_institute = institute_obj
@@ -84,9 +80,7 @@ class InstituteHandler(object):
         if sanger_recipient:
             user_obj = self.user(sanger_recipient)
             if not user_obj:
-                raise IntegrityError(
-                    "user {} does not exist in database".format(sanger_recipient)
-                )
+                raise IntegrityError("user {} does not exist in database".format(sanger_recipient))
 
             LOG.info(
                 "Updating sanger recipients for institute: {0} with {1}".format(
@@ -96,9 +90,7 @@ class InstituteHandler(object):
             updates["$push"] = {"sanger_recipients": sanger_recipient}
 
         if sanger_recipients is not None:
-            updates["$set"][
-                "sanger_recipients"
-            ] = sanger_recipients  # can be empty list
+            updates["$set"]["sanger_recipients"] = sanger_recipients  # can be empty list
 
         if remove_sanger:
             LOG.info(
@@ -126,9 +118,7 @@ class InstituteHandler(object):
 
         if display_name:
             LOG.info(
-                "Updating display name for institute: {0} to {1}".format(
-                    internal_id, display_name
-                )
+                "Updating display name for institute: {0} to {1}".format(internal_id, display_name)
             )
             updates["$set"]["display_name"] = display_name
 
@@ -137,9 +127,7 @@ class InstituteHandler(object):
                 group_abbreviations = list(group_abbreviations)
             existing_groups = {}
             if add_groups:
-                existing_groups = institute_obj.get(
-                    "phenotype_groups", PHENOTYPE_GROUPS
-                )
+                existing_groups = institute_obj.get("phenotype_groups", PHENOTYPE_GROUPS)
             for i, hpo_term in enumerate(phenotype_groups):
                 hpo_obj = self.hpo_term(hpo_term)
                 if not hpo_obj:
@@ -161,9 +149,7 @@ class InstituteHandler(object):
         if updates["$set"].keys() or updates.get("$push") or updates.get("$pull"):
             updates["$set"]["updated_at"] = datetime.now()
             updated_institute = self.institute_collection.find_one_and_update(
-                {"_id": internal_id},
-                updates,
-                return_document=pymongo.ReturnDocument.AFTER,
+                {"_id": internal_id}, updates, return_document=pymongo.ReturnDocument.AFTER,
             )
 
             LOG.info("Institute updated")

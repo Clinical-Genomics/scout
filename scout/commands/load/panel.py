@@ -15,16 +15,12 @@ LOG = logging.getLogger(__name__)
 @click.command("panel", short_help="Load a gene panel")
 @click.argument("path", type=click.Path(exists=True), required=False)
 @click.option("--panel-id", help="The panel identifier name")
-@click.option(
-    "--institute", help="Specify the owner of the panel. Defaults to cust000."
-)
+@click.option("--institute", help="Specify the owner of the panel. Defaults to cust000.")
 @click.option(
     "--maintainer",
     help="Specify the maintainer user id of the panel. Defaults to empty (all users can edit).",
 )
-@click.option(
-    "-d", "--date", help="date of gene panel on format 2017-12-24, default is today."
-)
+@click.option("-d", "--date", help="date of gene panel on format 2017-12-24, default is today.")
 @click.option("-n", "--display-name", help="display name for the panel, optional")
 @click.option("-v", "--version", type=float)
 @click.option(
@@ -35,14 +31,10 @@ LOG = logging.getLogger(__name__)
     type=click.Choice(["clinical", "research"]),
 )
 @click.option(
-    "--genemap2",
-    type=click.Path(exists=True),
-    help="Path to file in omim genemap2 format",
+    "--genemap2", type=click.Path(exists=True), help="Path to file in omim genemap2 format",
 )
 @click.option(
-    "--mim2genes",
-    type=click.Path(exists=True),
-    help="Path to file in omim mim2genes format",
+    "--mim2genes", type=click.Path(exists=True), help="Path to file in omim mim2genes format",
 )
 @click.option(
     "--omim",

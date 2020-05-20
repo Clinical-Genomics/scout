@@ -23,9 +23,7 @@ def test_parse_omim_line():
 
 def test_parse_genemap2_phenotype_entry_single():
     # GIVEN a phenotype description with one entry
-    entry = (
-        "Ehlers-Danlos syndrome, progeroid type," " 2, 615349 (3), Autosomal recessive"
-    )
+    entry = "Ehlers-Danlos syndrome, progeroid type," " 2, 615349 (3), Autosomal recessive"
     # WHEN parsing the entry
     parsed_entries = parse_genemap2_phenotypes(entry)
     parsed_entry = parsed_entries[0]

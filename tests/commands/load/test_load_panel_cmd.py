@@ -45,15 +45,6 @@ def test_load_panel_maintainer_not_in_db(mock_app, institute_obj):
 
     # Test CLI by passing the panel 'OMIM-AUTO' - maintainer not in db!
     result = runner.invoke(
-        cli,
-        [
-            "load",
-            "panel",
-            "--panel-id",
-            "panel2",
-            "--maintainer",
-            "noone@no.no",
-            panel_path,
-        ],
+        cli, ["load", "panel", "--panel-id", "panel2", "--maintainer", "noone@no.no", panel_path,],
     )
     assert "does not exist in user database" in result.output

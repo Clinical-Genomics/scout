@@ -122,13 +122,9 @@ def test_xml_filters(ensembl_biomart_client_37):
 
     # make sure lines are formatted as they should
     assert (
-        '<Filter name = "{0}" value = "{1}"/>'.format("string_filter", "string_value")
-        in xml_lines
+        '<Filter name = "{0}" value = "{1}"/>'.format("string_filter", "string_value") in xml_lines
     )
-    assert (
-        '<Filter name = "{0}" value = "{1}"/>'.format("list_filter", "1,X,MT")
-        in xml_lines
-    )
+    assert '<Filter name = "{0}" value = "{1}"/>'.format("list_filter", "1,X,MT") in xml_lines
 
 
 def test_xml_attributes(ensembl_biomart_client_37):

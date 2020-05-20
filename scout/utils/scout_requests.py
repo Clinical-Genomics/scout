@@ -81,12 +81,8 @@ def fetch_resource(url, json=False):
         content = response.text
         if response.url.endswith(".gz"):
             LOG.info("gzipped!")
-            encoded_content = b"".join(
-                chunk for chunk in response.iter_content(chunk_size=128)
-            )
-            content = zlib.decompress(encoded_content, 16 + zlib.MAX_WBITS).decode(
-                "utf-8"
-            )
+            encoded_content = b"".join(chunk for chunk in response.iter_content(chunk_size=128))
+            content = zlib.decompress(encoded_content, 16 + zlib.MAX_WBITS).decode("utf-8")
 
         data = content.split("\n")
 
@@ -135,9 +131,7 @@ def fetch_hpo_to_genes_to_disease():
     return fetch_resource(url)
 
 
-def fetch_hpo_files(
-    genes_to_phenotype=False, phenotype_to_genes=False, hpo_terms=False
-):
+def fetch_hpo_files(genes_to_phenotype=False, phenotype_to_genes=False, hpo_terms=False):
     """
     Fetch the necessary HPO files from http://compbio.charite.de
 
@@ -163,9 +157,7 @@ def fetch_hpo_files(
     return hpo_files
 
 
-def fetch_mim_files(
-    api_key, mim2genes=False, mimtitles=False, morbidmap=False, genemap2=False
-):
+def fetch_mim_files(api_key, mim2genes=False, mimtitles=False, morbidmap=False, genemap2=False):
     """Fetch the necessary mim files using a api key
 
     Args:
@@ -330,8 +322,7 @@ def fetch_exac_constraint():
     """
     file_name = "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt"
     url = (
-        "ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3/functional_gene_constraint"
-        "/{0}"
+        "ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3/functional_gene_constraint" "/{0}"
     ).format(file_name)
 
     exac_lines = None

@@ -100,12 +100,7 @@ def test_load_hgnc(
 
 
 def test_load_hgnc_no_omim(
-    adapter,
-    genes37_handle,
-    hgnc_handle,
-    exac_handle,
-    hpo_genes_handle,
-    transcripts_handle,
+    adapter, genes37_handle, hgnc_handle, exac_handle, hpo_genes_handle, transcripts_handle,
 ):
     # GIVEN a empty database
     assert sum(1 for i in adapter.all_genes()) == 0

@@ -8,32 +8,20 @@ INDEXES = {
             background=True,
         ),
         IndexModel(
-            [("build", ASCENDING), ("hgnc_id", ASCENDING)],
-            name="build_hgncid",
-            background=True,
+            [("build", ASCENDING), ("hgnc_id", ASCENDING)], name="build_hgncid", background=True,
         ),
         IndexModel(
-            [("build", ASCENDING), ("aliases", ASCENDING)],
-            name="build_aliases",
-            background=True,
+            [("build", ASCENDING), ("aliases", ASCENDING)], name="build_aliases", background=True,
         ),
     ],
     "variant": [
         IndexModel(
-            [
-                ("case_id", ASCENDING),
-                ("category", ASCENDING),
-                ("rank_score", DESCENDING),
-            ],
+            [("case_id", ASCENDING), ("category", ASCENDING), ("rank_score", DESCENDING),],
             name="caseid_rankscore",
             background=True,
         ),
         IndexModel(
-            [
-                ("case_id", ASCENDING),
-                ("category", ASCENDING),
-                ("variant_rank", ASCENDING),
-            ],
+            [("case_id", ASCENDING), ("category", ASCENDING), ("variant_rank", ASCENDING),],
             name="caseid_variantrank",
             background=True,
         ),
@@ -59,11 +47,7 @@ INDEXES = {
             partialFilterExpression={"rank_score": {"$gt": 5}, "category": "snv"},
         ),
         IndexModel(
-            [
-                ("case_id", ASCENDING),
-                ("category", ASCENDING),
-                ("variant_id", ASCENDING),
-            ],
+            [("case_id", ASCENDING), ("category", ASCENDING), ("variant_id", ASCENDING),],
             name="caseid_variantid",
             background=True,
         ),
@@ -79,21 +63,15 @@ INDEXES = {
             name="caseid_category_chromosome_start_end",
             background=True,
         ),
-        IndexModel(
-            [("sanger_ordered", ASCENDING)], name="sanger", background=True, sparse=True
-        ),
+        IndexModel([("sanger_ordered", ASCENDING)], name="sanger", background=True, sparse=True),
     ],
     "hpo_term": [
         IndexModel([("description", ASCENDING)], name="description"),
-        IndexModel(
-            [("description", TEXT)], default_language="english", name="description_text"
-        ),
+        IndexModel([("description", TEXT)], default_language="english", name="description_text"),
         IndexModel([("hpo_number", ASCENDING)], name="number"),
     ],
     "event": [
-        IndexModel(
-            [("category", ASCENDING), ("verb", ASCENDING)], name="category_verb"
-        ),
+        IndexModel([("category", ASCENDING), ("verb", ASCENDING)], name="category_verb"),
         IndexModel([("variant_id", ASCENDING)], name="variant_id"),
     ],
     "transcript": [
@@ -105,17 +83,9 @@ INDEXES = {
     ],
     "exon": [
         IndexModel(
-            [("build", ASCENDING), ("hgnc_id", ASCENDING)],
-            name="build_hgncid",
-            background=True,
+            [("build", ASCENDING), ("hgnc_id", ASCENDING)], name="build_hgncid", background=True,
         )
     ],
-    "hpo_term": [
-        IndexModel([("hpo_number", ASCENDING)], name="number", background=True)
-    ],
-    "case": [
-        IndexModel(
-            [("synopsis", TEXT)], default_language="english", name="synopsis_text"
-        )
-    ],
+    "hpo_term": [IndexModel([("hpo_number", ASCENDING)], name="number", background=True)],
+    "case": [IndexModel([("synopsis", TEXT)], default_language="english", name="synopsis_text")],
 }

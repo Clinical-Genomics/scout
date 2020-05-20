@@ -13,9 +13,7 @@ def test_omim_diagnosis(app, test_omim_term):
     with app.test_client() as client:
 
         # WHEN accessing the page of one OMIM diagnosis
-        resp = client.get(
-            url_for("diagnoses.omim_diagnosis", omim_nr=test_omim_term["disease_nr"])
-        )
+        resp = client.get(url_for("diagnoses.omim_diagnosis", omim_nr=test_omim_term["disease_nr"]))
 
         # THEN it should return a page
         assert resp.status_code == 200

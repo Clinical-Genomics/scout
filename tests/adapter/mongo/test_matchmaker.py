@@ -1,6 +1,4 @@
-def test_case_mme_update(
-    adapter, case_obj, user_obj, mme_patient, institute_obj, mme_submission
-):
+def test_case_mme_update(adapter, case_obj, user_obj, mme_patient, institute_obj, mme_submission):
     """ Test the function that registers an effected individual as submitted to MatchMaker """
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -30,9 +28,7 @@ def test_case_mme_delete(adapter, case_obj, user_obj, institute_obj, mme_patient
     adapter.case_collection.update_one(
         {"_id": case_obj["_id"]}, {"$set": {"mme_submission": mme_subm_obj}}
     )
-    submitted_case = adapter.case_collection.find_one(
-        {"mme_submission": {"$exists": True}}
-    )
+    submitted_case = adapter.case_collection.find_one({"mme_submission": {"$exists": True}})
 
     assert submitted_case["mme_submission"] == mme_subm_obj
 

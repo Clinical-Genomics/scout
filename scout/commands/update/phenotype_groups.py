@@ -11,20 +11,12 @@ LOG = logging.getLogger(__name__)
 @click.command("groups", short_help="Update phenotype groups for an institute")
 @click.argument("institute-id")
 @click.option(
-    "-p",
-    "--phenotype-group",
-    help="Add one or more phenotype groups to institute",
-    multiple=True,
+    "-p", "--phenotype-group", help="Add one or more phenotype groups to institute", multiple=True,
 )
 @click.option(
-    "-a",
-    "--group-abbreviation",
-    help="Specify a phenotype group abbreviation",
-    multiple=True,
+    "-a", "--group-abbreviation", help="Specify a phenotype group abbreviation", multiple=True,
 )
-@click.option(
-    "-f", "--group-file", help="CSV file with phenotype groups", type=click.File("r")
-)
+@click.option("-f", "--group-file", help="CSV file with phenotype groups", type=click.File("r"))
 @click.option(
     "-add",
     "--add",

@@ -45,9 +45,7 @@ class TestMockMatchMakerServer(object):
     def setup_class(cls):
         # Configure mock server.
         cls.mock_server_port = get_free_port()
-        cls.mock_server = HTTPServer(
-            ("localhost", cls.mock_server_port), MockServerRequestHandler
-        )
+        cls.mock_server = HTTPServer(("localhost", cls.mock_server_port), MockServerRequestHandler)
 
         # Start running mock server in a separate thread.
         # Daemon threads automatically shut down when the main process exits.
@@ -175,10 +173,7 @@ class TestMockMatchMakerServer(object):
         # with one element:
         assert len(server_responses) == 1
         # server response coresponds to the right patient
-        assert (
-            server_responses[0]["patient_id"]
-            == case_obj["mme_submission"]["patients"][0]["id"]
-        )
+        assert server_responses[0]["patient_id"] == case_obj["mme_submission"]["patients"][0]["id"]
         # and the node is the internal node
         assert server_responses[0]["server"] == "Local MatchMaker node"
 
@@ -197,10 +192,7 @@ class TestMockMatchMakerServer(object):
         assert isinstance(server_responses, list)
         assert len(server_responses) == 1
         # server response coresponds to the right patient
-        assert (
-            server_responses[0]["patient_id"]
-            == case_obj["mme_submission"]["patients"][0]["id"]
-        )
+        assert server_responses[0]["patient_id"] == case_obj["mme_submission"]["patients"][0]["id"]
         # and the node is the external node
         assert server_responses[0]["server"] == "mock_node_1"
 
@@ -224,8 +216,7 @@ class TestMockMatchMakerServer(object):
         for i, resp in enumerate(server_responses):
             # matching of patient 1 on each node returns a matching for the right patient
             assert (
-                server_responses[i]["patient_id"]
-                == case_obj["mme_submission"]["patients"][0]["id"]
+                server_responses[i]["patient_id"] == case_obj["mme_submission"]["patients"][0]["id"]
             )
             # both nodes were interrogated
             assert server_responses[i]["server"] in node_ids

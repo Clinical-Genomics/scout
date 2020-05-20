@@ -454,13 +454,9 @@ def cli(ctx):
 
 @cli.command()
 @click.argument("genes", type=click.File("r"))
-@click.option(
-    "-b", "--build", type=click.Choice(["37", "38"]), default="37", show_default=True
-)
+@click.option("-b", "--build", type=click.Choice(["37", "38"]), default="37", show_default=True)
 @click.option("-c", "--chromosome")
-@click.option(
-    "-e", "--exons", type=click.File("r"), help="If exon information is in a file"
-)
+@click.option("-e", "--exons", type=click.File("r"), help="If exon information is in a file")
 @click.pass_context
 def exons(ctx, genes, build, exons, chromosome):
     """Generate exons scout. Need to have a ensemble gene file generated from above"""

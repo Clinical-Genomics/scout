@@ -11,9 +11,6 @@ def test_update_diseases(mock_app):
 
     # Test CLI base, no arguments provided
     result = runner.invoke(cli, ["update", "diseases"])
-    assert (
-        "WARNING Please provide a omim api key to load the omim gene panel"
-        in result.output
-    )
+    assert "WARNING Please provide a omim api key to load the omim gene panel" in result.output
     # command raises error because no valid key is provided
     assert result.exit_code != 0

@@ -24,9 +24,7 @@ def test_dashboard(app, user_obj, institute_obj):
         log.debug("Current user institutes {}".format(current_user.institutes))
 
         # WHEN accessing the dashboard page
-        resp = client.get(
-            url_for("dashboard.index", institute_id=institute_obj["internal_id"])
-        )
+        resp = client.get(url_for("dashboard.index", institute_id=institute_obj["internal_id"]))
 
         # THEN it should return a page
         assert resp.status_code == 200

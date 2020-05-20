@@ -115,9 +115,7 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
     LOG.info("Loading the hpo terms...")
     nr_terms = len(hpo_terms)
     hpo_bulk = []
-    with progressbar(
-        hpo_terms.values(), label="Loading hpo terms", length=nr_terms
-    ) as bar:
+    with progressbar(hpo_terms.values(), label="Loading hpo terms", length=nr_terms) as bar:
 
         for hpo_info in bar:
             hpo_bulk.append(build_hpo_term(hpo_info))

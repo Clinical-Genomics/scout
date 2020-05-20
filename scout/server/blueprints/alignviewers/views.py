@@ -92,8 +92,7 @@ def igv():
         if request.form.get("tiddit_coverage_wig"):
             tiddit_coverage_files = request.form.get("tiddit_coverage_wig").split(",")
             LOG.debug(
-                "loading the following tiddit_coverage tracks: %s",
-                tiddit_coverage_files,
+                "loading the following tiddit_coverage tracks: %s", tiddit_coverage_files,
             )
         if request.form.get("upd_regions_bed"):
             updregion_files = request.form.get("upd_regions_bed").split(",")
@@ -104,14 +103,10 @@ def igv():
 
     display_obj = {}
 
-    display_obj["reference_track"] = controllers.reference_track(
-        chromosome_build, chrom
-    )
+    display_obj["reference_track"] = controllers.reference_track(chromosome_build, chrom)
     display_obj["genes_track"] = controllers.genes_track(chromosome_build, chrom)
     display_obj["clinvar_snvs"] = controllers.clinvar_track(chromosome_build, chrom)
-    display_obj["clinvar_cnvs"] = controllers.clinvar_cnvs_track(
-        chromosome_build, chrom
-    )
+    display_obj["clinvar_cnvs"] = controllers.clinvar_cnvs_track(chromosome_build, chrom)
 
     # Init upcoming igv-tracks
     sample_tracks = []
@@ -165,8 +160,6 @@ def make_igv_tracks(name, file_list):
     track_list = []
     counter = 0
     for r in file_list:
-        track_list.append(
-            {"name": name, "url": file_list[counter], "min": 0.0, "max": 30.0}
-        )
+        track_list.append({"name": name, "url": file_list[counter], "min": 0.0, "max": 30.0})
         counter += 1
     return track_list
