@@ -5,6 +5,8 @@ on: ["push", "pull_request"]
 jobs:
   build:
 
+
+    name: Coverage
     runs-on: ubuntu-latest
     strategy:
       matrix:

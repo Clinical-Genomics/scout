@@ -6,6 +6,7 @@ on: ["push"]
 jobs:
   build:
 
+    name: Lint-and-fix
     runs-on: ubuntu-latest
     strategy:
       matrix:
