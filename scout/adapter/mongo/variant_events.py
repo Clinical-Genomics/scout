@@ -468,6 +468,8 @@ class VariantEventHandler(object):
 
         # update partial_causative field of this case
         partial_causatives = case.get("partial_causatives") or {}
+        if variant["_id"] not in partial_causatives:
+            return case
         del partial_causatives[variant["_id"]]
 
         updated_case = self.case_collection.find_one_and_update(

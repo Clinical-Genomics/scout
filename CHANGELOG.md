@@ -6,7 +6,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+
 ### Fixed
+- Bug in clinVar form when variant has no gene
+- Bug when sharing cases with the same institute twice
+- Page crashing when removing causative variant tag
+- Do not default to GATK caller when no caller info is provided for cancer SNVs
+
 ### Changed
 
 ## [4.16.1]
