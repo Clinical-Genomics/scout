@@ -12,9 +12,7 @@ def test_gene_variants(app, user_obj, institute_obj):
         assert resp.status_code == 200
 
         # WHEN accessing the dashboard page
-        resp = client.get(
-            url_for("cases.gene_variants", institute_id=institute_obj["internal_id"])
-        )
+        resp = client.get(url_for("cases.gene_variants", institute_id=institute_obj["internal_id"]))
 
         # THEN it should return a page
         assert resp.status_code == 200

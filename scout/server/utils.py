@@ -55,8 +55,7 @@ def institute_and_case(store, institute_id, case_name=None):
     if not current_user.is_admin:
         if institute_id not in current_user.institutes:
             if not case_name or not any(
-                inst_id in case_obj["collaborators"]
-                for inst_id in current_user.institutes
+                inst_id in case_obj["collaborators"] for inst_id in current_user.institutes
             ):
                 # you don't have access!!
                 flash("You don't have acccess to: {}".format(institute_id), "danger")
@@ -106,9 +105,7 @@ def variant_case(store, case_obj, variant_obj):
         return
 
     try:
-        vcf_path = store.get_region_vcf(
-            case_obj, chrom=chrom, start=min(starts), end=max(ends)
-        )
+        vcf_path = store.get_region_vcf(case_obj, chrom=chrom, start=min(starts), end=max(ends))
 
         # Create a reduced VCF with variants in the region
         case_obj["region_vcf_file"] = vcf_path
@@ -133,17 +130,9 @@ def case_append_alignments(case_obj):
         {"path": "mt_bam", "append_to": "mt_bams", "index": "mt_bais"},
         {"path": "rhocall_bed", "append_to": "rhocall_beds", "index": "no_index"},
         {"path": "rhocall_wig", "append_to": "rhocall_wigs", "index": "no_index"},
-        {
-            "path": "upd_regions_bed",
-            "append_to": "upd_regions_beds",
-            "index": "no_index",
-        },
+        {"path": "upd_regions_bed", "append_to": "upd_regions_beds", "index": "no_index",},
         {"path": "upd_sites_bed", "append_to": "upd_sites_beds", "index": "no_index"},
-        {
-            "path": "tiddit_coverage_wig",
-            "append_to": "tiddit_coverage_wigs",
-            "index": "no_index",
-        },
+        {"path": "tiddit_coverage_wig", "append_to": "tiddit_coverage_wigs", "index": "no_index",},
     ]
 
     for individual in case_obj["individuals"]:

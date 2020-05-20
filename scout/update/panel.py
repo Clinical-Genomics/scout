@@ -8,12 +8,7 @@ LOG = logging.getLogger(__name__)
 
 
 def update_panel(
-    adapter,
-    panel_name,
-    panel_version,
-    new_version=None,
-    new_date=None,
-    new_maintainer=None,
+    adapter, panel_name, panel_version, new_version=None, new_date=None, new_maintainer=None,
 ):
     """Update a gene panel in the database
 
@@ -33,13 +28,9 @@ def update_panel(
     panel_obj = adapter.gene_panel(panel_name, panel_version)
 
     if not panel_obj:
-        raise IntegrityError(
-            "Panel %s version %s does not exist" % (panel_name, panel_version)
-        )
+        raise IntegrityError("Panel %s version %s does not exist" % (panel_name, panel_version))
 
-    updated_panel = adapter.update_panel(
-        panel_obj, new_version, new_date, new_maintainer
-    )
+    updated_panel = adapter.update_panel(panel_obj, new_version, new_date, new_maintainer)
 
     panel_id = updated_panel["_id"]
 

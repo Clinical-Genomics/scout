@@ -166,8 +166,7 @@ def test_parse_ensembl_exons_missing_three_utr_end():
         "Chromosome/scaffold name\tGene stable ID\tTranscript stable ID\tExon stable ID\tExon"
         " region start (bp)\tExon region end (bp)\t5' UTR start\t5' UTR end\t3' UTR start\t3'"
         " UTR end\tStrand\tExon rank in transcript",
-        "1\tENSG00000176022\tENST00000379198\tENSE00001439793\t1167629\t1170421\t\t"
-        "\t\t\t1\t1",
+        "1\tENSG00000176022\tENST00000379198\tENSE00001439793\t1167629\t1170421\t\t" "\t\t\t1\t1",
     ]
     ## WHEN parsing the exons in that file
     exons = parse_ensembl_exons(exons_handle)

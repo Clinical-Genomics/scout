@@ -20,9 +20,7 @@ INDIVIDUAL_FILES = ["bam_file", "mt_bam", "vcf2cytosure"]
 
 
 @click.command()
-@click.option(
-    "--db_uri", required=True, help="mongodb://user:password@db_url:db_port/db_name"
-)
+@click.option("--db_uri", required=True, help="mongodb://user:password@db_url:db_port/db_name")
 @click.option("-o", "--old_path", required=True, help="/old/path/to/files")
 @click.option("-n", "--new_path", required=True, help="/new/path/to/files")
 @click.option("--test", help="Use this flag to test the function", is_flag=True)
@@ -53,17 +51,13 @@ def do_replace(db_uri, old_path, new_path, test, discover, case_id):
         n_cases = len(case_objs)
         click.echo("Total number of cases in database:{}".format(n_cases))
 
-        if (
-            discover
-        ):  # print all keys which contain the old_path and should be updated, then exit
+        if discover:  # print all keys which contain the old_path and should be updated, then exit
             matching_keys = set()
             for i, case in enumerate(case_objs):
                 case_keys = list(level_down(old_path, case))
                 unique_keys = list(set(case_keys))
                 click.echo(
-                    "\nn:{}\tcase:{}. Matching keys:{}".format(
-                        i + 1, case["_id"], unique_keys
-                    )
+                    "\nn:{}\tcase:{}. Matching keys:{}".format(i + 1, case["_id"], unique_keys)
                 )
                 matching_keys.update(case_keys)
 
@@ -93,14 +87,10 @@ def do_replace(db_uri, old_path, new_path, test, discover, case_id):
                         replace_fields.append(
                             ["case[analyses][{}][delivery_report]".format(n), d_report]
                         )
-                        analyses[n]["delivery_report"] = d_report.replace(
-                            old_path, new_path
-                        )
+                        analyses[n]["delivery_report"] = d_report.replace(old_path, new_path)
                         update = True
                     elif d_report:
-                        fields.append(
-                            ["case[analyses][{}][delivery_report]".format(n), d_report]
-                        )
+                        fields.append(["case[analyses][{}][delivery_report]".format(n), d_report])
 
             if update:
                 set_command["analyses"] = analyses
@@ -122,14 +112,10 @@ def do_replace(db_uri, old_path, new_path, test, discover, case_id):
                         replace_fields.append(
                             ["case[vcf_files][{}]".format(vcf_type), path_to_vcf_type]
                         )
-                        case["vcf_files"][vcf_type] = path_to_vcf_type.replace(
-                            old_path, new_path
-                        )
+                        case["vcf_files"][vcf_type] = path_to_vcf_type.replace(old_path, new_path)
                         update = True
                     elif path_to_vcf_type:
-                        fields.append(
-                            ["case[vcf_files][{}]".format(vcf_type), path_to_vcf_type]
-                        )
+                        fields.append(["case[vcf_files][{}]".format(vcf_type), path_to_vcf_type])
             if update:
                 set_command["vcf_files"] = case["vcf_files"]
 
@@ -142,21 +128,13 @@ def do_replace(db_uri, old_path, new_path, test, discover, case_id):
                         ind_file_path = ind_obj.get(ind_file)
                         if ind_file_path and old_path in ind_file_path:
                             update = True
-                            ind_obj[ind_file] = ind_file_path.replace(
-                                old_path, new_path
-                            )
+                            ind_obj[ind_file] = ind_file_path.replace(old_path, new_path)
                             replace_fields.append(
-                                [
-                                    "case[individuals][{}][{}]".format(z, ind_file),
-                                    ind_file_path,
-                                ]
+                                ["case[individuals][{}][{}]".format(z, ind_file), ind_file_path,]
                             )
                         elif ind_file_path:
                             fields.append(
-                                [
-                                    "case[individuals][{}][{}]".format(z, ind_file),
-                                    ind_file_path,
-                                ]
+                                ["case[individuals][{}][{}]".format(z, ind_file), ind_file_path,]
                             )
 
                     case["individuals"][z] = ind_obj

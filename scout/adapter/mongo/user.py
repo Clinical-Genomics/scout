@@ -22,9 +22,7 @@ class UserHandler(object):
         """
         LOG.info("Updating user %s", user_obj["_id"])
         updated_user = self.user_collection.find_one_and_replace(
-            {"_id": user_obj["_id"]},
-            user_obj,
-            return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": user_obj["_id"]}, user_obj, return_document=pymongo.ReturnDocument.AFTER,
         )
         return updated_user
 
@@ -45,9 +43,7 @@ class UserHandler(object):
             self.user_collection.insert_one(user_obj)
             LOG.debug("User inserted")
         except DuplicateKeyError as err:
-            raise IntegrityError(
-                "User {} already exists in database".format(user_obj["email"])
-            )
+            raise IntegrityError("User {} already exists in database".format(user_obj["email"]))
 
         return user_obj
 

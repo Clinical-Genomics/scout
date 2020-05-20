@@ -25,9 +25,7 @@ def test_export_mt_variants(case_obj, real_populated_database):
 
     # test function that exports variant lines
     for sample in samples:
-        sample_lines = export_mt_variants(
-            variants=mt_variants, sample_id=sample["individual_id"]
-        )
+        sample_lines = export_mt_variants(variants=mt_variants, sample_id=sample["individual_id"])
 
         # check that rows to write to excel corespond to number of variants
         assert len(sample_lines) == len(mt_variants)
@@ -52,13 +50,7 @@ def test_export_verified_variants(case_obj, real_populated_database, variant_obj
     assert len(test_vars) == 3
 
     # Make sure that no variant is set as validated:
-    assert (
-        sum(
-            1
-            for i in adapter.variant_collection.find({"validation": {"$exists": True}})
-        )
-        == 0
-    )
+    assert sum(1 for i in adapter.variant_collection.find({"validation": {"$exists": True}})) == 0
 
     # Set test variant as validated
     for i in range(3):
@@ -78,13 +70,7 @@ def test_export_verified_variants(case_obj, real_populated_database, variant_obj
         )
 
     # There should be 3 validated variants now
-    assert (
-        sum(
-            1
-            for i in adapter.variant_collection.find({"validation": {"$exists": True}})
-        )
-        == 3
-    )
+    assert sum(1 for i in adapter.variant_collection.find({"validation": {"$exists": True}})) == 3
 
     # Call function to get aggregated data (variant + case data):
     cust = case_obj["owner"]
@@ -100,9 +86,7 @@ def test_export_verified_variants(case_obj, real_populated_database, variant_obj
 
     # Call function that creates document lines
     document_lines = export_verified_variants(aggregated_vars, unique_callers)
-    assert (
-        len(document_lines) == 3 * n_individuals
-    )  # one line per variant and individual
+    assert len(document_lines) == 3 * n_individuals  # one line per variant and individual
 
     for line in document_lines:
         # Make sure that document cells will be the same as in document header

@@ -23,9 +23,7 @@ class HpoHandler(object):
         try:
             self.hpo_term_collection.insert_one(hpo_obj)
         except DuplicateKeyError as err:
-            raise IntegrityError(
-                "Hpo term %s already exists in database".format(hpo_obj["_id"])
-            )
+            raise IntegrityError("Hpo term %s already exists in database".format(hpo_obj["_id"]))
         LOG.debug("Hpo term saved")
 
     def load_hpo_bulk(self, hpo_bulk):
@@ -98,11 +96,7 @@ class HpoHandler(object):
             search_term = hpo_term
 
         limit = limit or int(10e10)
-        res = (
-            self.hpo_term_collection.find(query_dict)
-            .limit(limit)
-            .sort("hpo_number", ASCENDING)
-        )
+        res = self.hpo_term_collection.find(query_dict).limit(limit).sort("hpo_number", ASCENDING)
 
         return res
 

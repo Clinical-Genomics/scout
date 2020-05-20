@@ -11,9 +11,7 @@ def match_date(date):
         Returns:
             bool
     """
-    date_pattern = re.compile(
-        "^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])"
-    )
+    date_pattern = re.compile("^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])")
     if re.match(date_pattern, date):
         return True
 

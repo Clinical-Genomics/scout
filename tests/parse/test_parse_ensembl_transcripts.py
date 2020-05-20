@@ -36,10 +36,7 @@ def test_parse_ensembl_line(transcript_info):
     ## THEN assert the parsed transcript is as expected
     assert parsed_transcript["chrom"] == transcript_info["chrom"]
     assert parsed_transcript["ensembl_gene_id"] == transcript_info["ens_gene_id"]
-    assert (
-        parsed_transcript["ensembl_transcript_id"]
-        == transcript_info["ens_transcript_id"]
-    )
+    assert parsed_transcript["ensembl_transcript_id"] == transcript_info["ens_transcript_id"]
     assert parsed_transcript["transcript_start"] == transcript_info["start"]
     assert parsed_transcript["transcript_end"] == transcript_info["end"]
     assert parsed_transcript["refseq_mrna"] == transcript_info["refseq_mrna"]

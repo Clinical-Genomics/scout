@@ -19,9 +19,7 @@ genemap2_file = "demo/resources/genemap2_reduced.txt"
 # Hpo resources
 genes_to_phenotype_to_diseases_file = "demo/resources/genes_to_phenotype_reduced.txt"
 hpoterms_file = "demo/resources/reduced.hpo.obo"
-hpo_phenotype_to_genes_to_diseases_file = (
-    "demo/resources/phenotype_to_genes_reduced.txt"
-)
+hpo_phenotype_to_genes_to_diseases_file = "demo/resources/phenotype_to_genes_reduced.txt"
 
 hpo_terms_def_file = "demo/resources/hpo_terms.csv"
 
@@ -33,12 +31,8 @@ madeline_file = "demo/madeline.xml"
 # Gene paths
 hgnc_reduced_path = pkg_resources.resource_filename("scout", hgnc_file)
 exac_reduced_path = pkg_resources.resource_filename("scout", exac_file)
-transcripts37_reduced_path = pkg_resources.resource_filename(
-    "scout", transcripts37_file
-)
-transcripts38_reduced_path = pkg_resources.resource_filename(
-    "scout", transcripts38_file
-)
+transcripts37_reduced_path = pkg_resources.resource_filename("scout", transcripts37_file)
+transcripts38_reduced_path = pkg_resources.resource_filename("scout", transcripts38_file)
 genes37_reduced_path = pkg_resources.resource_filename("scout", genes37_file)
 genes38_reduced_path = pkg_resources.resource_filename("scout", genes38_file)
 exons37_reduced_path = pkg_resources.resource_filename("scout", exons37_file)

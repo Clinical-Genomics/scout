@@ -184,9 +184,7 @@ def test_fetch_hpo_files(phenotype_to_genes_file, hpo_genes_file):
     )
 
     # WHEN fetching all hpo files
-    res = scout_requests.fetch_hpo_files(
-        genes_to_phenotype=True, phenotype_to_genes=True
-    )
+    res = scout_requests.fetch_hpo_files(genes_to_phenotype=True, phenotype_to_genes=True)
 
     # THEN assert that the HPO header is there
     assert isinstance(res, dict)

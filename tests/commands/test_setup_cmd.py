@@ -10,9 +10,7 @@ def test_setup_database_invalid_omim_key(mock_app):
     assert runner
 
     # test the CLI command with non-valid API key
-    result = runner.invoke(
-        cli, ["setup", "database", "--api-key", "not_a_valid_key", "--yes"]
-    )
+    result = runner.invoke(cli, ["setup", "database", "--api-key", "not_a_valid_key", "--yes"])
     # Make sure that setup enters in setup function correctly but stops because
     # there is no valid OMIM API KEY
     assert result.exit_code != 0

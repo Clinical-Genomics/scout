@@ -22,11 +22,7 @@ def test_mark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj)
     link = "markCausativelink"
     ## WHEN marking a variant as causative
     updated_case = adapter.mark_causative(
-        institute=institute_obj,
-        case=case_obj,
-        user=user_obj,
-        link=link,
-        variant=variant_obj,
+        institute=institute_obj, case=case_obj, user=user_obj, link=link, variant=variant_obj,
     )
     # THEN the case should have a causative variant
     assert len(updated_case["causatives"]) == 1
@@ -50,11 +46,7 @@ def test_unmark_causative(adapter, institute_obj, case_obj, user_obj, variant_ob
 
     link = "markCausativelink"
     updated_case = adapter.mark_causative(
-        institute=institute_obj,
-        case=case_obj,
-        user=user_obj,
-        link=link,
-        variant=variant_obj,
+        institute=institute_obj, case=case_obj, user=user_obj, link=link, variant=variant_obj,
     )
 
     variant = adapter.variant_collection.find_one()
@@ -62,11 +54,7 @@ def test_unmark_causative(adapter, institute_obj, case_obj, user_obj, variant_ob
     ## WHEN unmarking a variant as causative
     unmark_link = "unMarkCausativelink"
     updated_case = adapter.unmark_causative(
-        institute=institute_obj,
-        case=case_obj,
-        user=user_obj,
-        link=unmark_link,
-        variant=variant,
+        institute=institute_obj, case=case_obj, user=user_obj, link=unmark_link, variant=variant,
     )
 
     ## THEN assert that the case has no causatives
@@ -78,9 +66,7 @@ def test_unmark_causative(adapter, institute_obj, case_obj, user_obj, variant_ob
     assert sum(1 for i in adapter.event_collection.find()) == 4
 
 
-def test_mark_partial_causative(
-    adapter, institute_obj, case_obj, user_obj, variant_obj
-):
+def test_mark_partial_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
 
     # GIVEN a populated database with variants
     adapter.case_collection.insert_one(case_obj)
@@ -117,9 +103,7 @@ def test_mark_partial_causative(
     assert sum(1 for i in adapter.event_collection.find()) == 2
 
 
-def test_unmark_partial_causative(
-    adapter, institute_obj, case_obj, user_obj, variant_obj
-):
+def test_unmark_partial_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
 
     # GIVEN a populated database with variants
     adapter.case_collection.insert_one(case_obj)
@@ -182,11 +166,7 @@ def test_order_verification(adapter, institute_obj, case_obj, user_obj, variant_
     link = "orderSangerlink"
     # WHEN ordering sanger for a variant
     updated_variant = adapter.order_verification(
-        institute=institute_obj,
-        case=case_obj,
-        user=user_obj,
-        link=link,
-        variant=variant,
+        institute=institute_obj, case=case_obj, user=user_obj, link=link, variant=variant,
     )
 
     # THEN one events should have been created, one for the variant
@@ -217,11 +197,7 @@ def test_cancel_verification(adapter, institute_obj, case_obj, user_obj, variant
 
     link = "orderSangerlink"
     updated_variant = adapter.order_verification(
-        institute=institute_obj,
-        case=case_obj,
-        user=user_obj,
-        link=link,
-        variant=variant_obj,
+        institute=institute_obj, case=case_obj, user=user_obj, link=link, variant=variant_obj,
     )
 
     variant = adapter.variant_collection.find_one()
@@ -230,11 +206,7 @@ def test_cancel_verification(adapter, institute_obj, case_obj, user_obj, variant
     # WHEN canceline sanger ordering for a variant
     cancel_link = "cancelSangerlink"
     updated_variant = adapter.cancel_verification(
-        institute=institute_obj,
-        case=case_obj,
-        user=user_obj,
-        link=cancel_link,
-        variant=variant,
+        institute=institute_obj, case=case_obj, user=user_obj, link=cancel_link, variant=variant,
     )
 
     # THEN updated variant should have same id as original variant
