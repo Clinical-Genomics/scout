@@ -216,22 +216,28 @@
 </div>
 <div class="form-group">
   <div class="row">
-    <div class="col-2">
+    <div class="col-1">
       {{ form.gnomad_frequency.label(class="control-label") }}
       {{ form.gnomad_frequency(class="form-control") }}
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ form.local_obs.label(class="control-label") }}
       {{ form.local_obs(class="form-control") }}
     </div>
-    <div class="col-2">
-      {{ wtf.form_field(form.chrom) }}
+    <div class="col-1">
+      {{ wtf.form_field(form.chrom(onchange="populateCytobands()")) }}
     </div>
-    <div class="col-3">
+    <div class="col-2">
       {{ wtf.form_field(form.start) }}
     </div>
-    <div class="col-3">
+    <div class="col-2">
+      {{ wtf.form_field(form.cytoband_start) }}
+    </div>
+    <div class="col-2">
       {{ wtf.form_field(form.end) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.cytoband_end) }}
     </div>
   </div>
 </div>

@@ -26,6 +26,7 @@ from scout.constants import (
     SO_TERMS,
     SPIDEX_LEVELS,
     SV_TYPES,
+    CHROMOSOMES
 )
 
 LOG = logging.getLogger(__name__)
@@ -98,8 +99,10 @@ class FiltersForm(VariantFiltersForm):
     clinsig_confident_always_returned = BooleanField("CLINSIG Confident")
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
 
-    chrom = TextField("Chromosome", [validators.Optional()])
+    chrom = SelectField("Chromosome", [validators.Optional()], choices=("",)+CHROMOSOMES)
+    cytoband_start = SelectField("Cytoband start")
     start = IntegerField("Start position", [validators.Optional()])
+    cytoband_end = SelectField("Cytoband end")
     end = IntegerField("End position", [validators.Optional()])
     local_obs = IntegerField("Local obs. (archive)")
 

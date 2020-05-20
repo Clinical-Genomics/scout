@@ -29,7 +29,7 @@ from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
 variants_bp = Blueprint(
-    "variants", __name__, static_folder="static", template_folder="templates"
+    "variants",__name__, static_folder="static", static_url_path="/variants/static", template_folder="templates"
 )
 
 
