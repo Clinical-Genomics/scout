@@ -1,4 +1,4 @@
-name: Lint files and fix lint errors 
+name: Lint files and fix lint errors
 
 # This will only correct linting in local PRs
 on: ["push"]

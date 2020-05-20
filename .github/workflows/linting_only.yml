@@ -1,4 +1,4 @@
-name: Lint files - no fixing 
+name: Lint files - no fixing
 
 # This will check linting in local PRs
 on: ["push", "pull_request"]
