@@ -121,12 +121,8 @@ def igv():
 
     if request.form.get("cancer_annotations") and current_app.config.get("BUCKET_NAME"):
         # cancer sample(s): load cosmic annotations
-        display_obj["cosmic_coding"] = controllers.cosmic_track(
-            chromosome_build, chrom, True
-        )
-        display_obj["cosmic_non_coding"] = controllers.cosmic_track(
-            chromosome_build, chrom, False
-        )
+        display_obj["cosmic_coding"] = controllers.cosmic_track(chromosome_build, chrom, True)
+        display_obj["cosmic_non_coding"] = controllers.cosmic_track(chromosome_build, chrom, False)
 
     # Init upcoming igv-tracks
     sample_tracks = []
