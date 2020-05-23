@@ -147,6 +147,8 @@ def variants(institute_id, case_name):
         current_symbols.update(hpo_symbols)
         form.hgnc_symbols.data = list(current_symbols)
 
+    cytobands = store.cytoband_by_chrom(case_obj["genome_build"])
+
     variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
 
     if request.form.get("export"):
@@ -160,6 +162,7 @@ def variants(institute_id, case_name):
         manual_rank_options=MANUAL_RANK_OPTIONS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
         severe_so_terms=SEVERE_SO_TERMS,
+        cytobands = cytobands,
         page=page,
         **data
     )

@@ -1,3 +1,3 @@
 function populateCytobands(chrom){
-  alert(chrom),
+  alert(chrom);
 }
