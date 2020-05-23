@@ -111,7 +111,6 @@ def remove_file(path):
         LOG.info("File %s removed", path)
     except OSError as err:
         LOG.info("File %s does not exists", path)
-    return
 
 
 def generate_hgnc(genes):
@@ -340,7 +339,6 @@ def generate_hpo_genes(genes):
         line(str): Lines from hpo with connection to genes
     """
     hpo_lines = fetch_hpo_genes()
-    nr_terms = 0
 
     for i, line in enumerate(hpo_lines):
         line = line.rstrip()
@@ -355,7 +353,6 @@ def generate_hpo_genes(genes):
         hgnc_symbol = splitted_line[1]
 
         if hgnc_symbol in genes:
-            nr_terms
             yield line
 
 
@@ -454,13 +451,9 @@ def cli(ctx):
 
 @cli.command()
 @click.argument("genes", type=click.File("r"))
-@click.option(
-    "-b", "--build", type=click.Choice(["37", "38"]), default="37", show_default=True
-)
+@click.option("-b", "--build", type=click.Choice(["37", "38"]), default="37", show_default=True)
 @click.option("-c", "--chromosome")
-@click.option(
-    "-e", "--exons", type=click.File("r"), help="If exon information is in a file"
-)
+@click.option("-e", "--exons", type=click.File("r"), help="If exon information is in a file")
 @click.pass_context
 def exons(ctx, genes, build, exons, chromosome):
     """Generate exons scout. Need to have a ensemble gene file generated from above"""

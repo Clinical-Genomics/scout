@@ -30,9 +30,7 @@ def test_get_panel_by_version(adapter, dummypanel_obj):
     ## GIVEN a adapter with one gene panel
     assert adapter.panel_collection.find_one()
     ## WHEN getting a panel
-    res = adapter.gene_panel(
-        panel_id=panel_obj["panel_name"], version=panel_obj["version"]
-    )
+    res = adapter.gene_panel(panel_id=panel_obj["panel_name"], version=panel_obj["version"])
     ## THEN assert that the panel was loaded
     assert res["panel_name"] == panel_obj["panel_name"]
 
@@ -86,9 +84,7 @@ def test_reset_pending(adapter, dummypanel_obj, gene_obj):
     hgnc_obj = adapter.hgnc_collection.find_one()
 
     ## WHEN adding a pending action of this gene to a panel
-    res = adapter.add_pending(
-        panel_obj=dummypanel_obj, hgnc_gene=hgnc_obj, action="add"
-    )
+    res = adapter.add_pending(panel_obj=dummypanel_obj, hgnc_gene=hgnc_obj, action="add")
     assert len(res["pending"]) == 1
 
     ## IF reset pending is used to clear pending actions
@@ -126,9 +122,7 @@ def test_add_pending_wrong_action(adapter, dummypanel_obj, gene_obj):
     ## WHEN adding a pending action with invalid action
     with pytest.raises(ValueError):
         ## THEN assert that an error is raised
-        res = adapter.add_pending(
-            panel_obj=panel_obj, hgnc_gene=hgnc_obj, action="hello"
-        )
+        res = adapter.add_pending(panel_obj=panel_obj, hgnc_gene=hgnc_obj, action="hello")
 
 
 def test_update_panel_panel_name(adapter, dummypanel_obj):

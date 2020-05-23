@@ -29,9 +29,7 @@ def test_cases(adapter, case_obj, institute_obj):
     prio_cases = adapter.prioritized_cases(institute_id=institute_obj["_id"])
 
     # WHEN the cases controller is invoked
-    data = cases(
-        store=adapter, case_query=all_cases, prioritized_cases_query=prio_cases, limit=1
-    )
+    data = cases(store=adapter, case_query=all_cases, prioritized_cases_query=prio_cases, limit=1)
 
     # THEN 2 cases should be returned
     assert data["found_cases"] == 2

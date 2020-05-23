@@ -14,9 +14,7 @@ def test_load_region(mock_app, case_obj):
     assert result.exit_code == 0
 
     # test load region using case_id + hgnc_id:
-    result = runner.invoke(
-        cli, ["load", "region", "--case-id", case_obj["_id"], "--hgnc-id", 170]
-    )
+    result = runner.invoke(cli, ["load", "region", "--case-id", case_obj["_id"], "--hgnc-id", 170])
     assert result.exit_code == 0
 
     # test load region using case_id + coordinates

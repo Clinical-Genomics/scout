@@ -9,9 +9,7 @@ LOG = logging.getLogger(__name__)
 
 
 @click.command("user", short_help="Update a user")
-@click.option(
-    "--user-id", "-u", help="A email adress that identifies the user", required=True
-)
+@click.option("--user-id", "-u", help="A email adress that identifies the user", required=True)
 @click.option(
     "--update-role",
     "-r",
@@ -20,12 +18,8 @@ LOG = logging.getLogger(__name__)
     help="Add a role to the user",
 )
 @click.option("--remove-admin", is_flag=True, help="Remove admin rights from user")
-@click.option(
-    "--add-institute", "-i", multiple=True, help="Specify the institutes to add"
-)
-@click.option(
-    "--remove-institute", multiple=True, help="Specify the institutes to remove"
-)
+@click.option("--add-institute", "-i", multiple=True, help="Specify the institutes to add")
+@click.option("--remove-institute", multiple=True, help="Specify the institutes to remove")
 @with_appcontext
 def user(user_id, update_role, add_institute, remove_admin, remove_institute):
     """

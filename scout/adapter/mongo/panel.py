@@ -96,9 +96,7 @@ class PanelHandler:
         alias_genes = self.genes_by_alias()
 
         genes = get_omim_panel_genes(
-            genemap2_lines=genemap2_lines,
-            mim2gene_lines=mim2gene_lines,
-            alias_genes=alias_genes,
+            genemap2_lines=genemap2_lines, mim2gene_lines=mim2gene_lines, alias_genes=alias_genes,
         )
 
         for gene in genes:
@@ -112,9 +110,7 @@ class PanelHandler:
                 LOG.info("The new version of omim does not differ from the old one")
                 LOG.info("No update is added")
                 return
-            self.update_mim_version(
-                new_genes, panel_obj, old_version=existing_panel["version"]
-            )
+            self.update_mim_version(new_genes, panel_obj, old_version=existing_panel["version"])
 
         self.add_gene_panel(panel_obj)
 
@@ -174,9 +170,7 @@ class PanelHandler:
                 "Panel {0} with version {1} already"
                 " exist in database".format(panel_name, panel_version)
             )
-        LOG.info(
-            "loading panel %s, version %s to database", display_name, panel_version
-        )
+        LOG.info("loading panel %s, version %s to database", display_name, panel_version)
         LOG.info("Nr genes in panel: %s", len(panel_obj.get("genes", [])))
         result = self.panel_collection.insert_one(panel_obj)
         LOG.debug("Panel saved")
@@ -207,8 +201,7 @@ class PanelHandler:
         """
         res = self.panel_collection.delete_one({"_id": panel_obj["_id"]})
         LOG.warning(
-            "Deleting panel %s, version %s"
-            % (panel_obj["panel_name"], panel_obj["version"])
+            "Deleting panel %s, version %s" % (panel_obj["panel_name"], panel_obj["version"])
         )
         return res
 
@@ -226,11 +219,7 @@ class PanelHandler:
         """
         query = {"panel_name": panel_id}
         if version:
-            LOG.info(
-                "Fetch gene panel {0}, version {1} from database".format(
-                    panel_id, version
-                )
-            )
+            LOG.info("Fetch gene panel {0}, version {1} from database".format(panel_id, version))
             query["version"] = version
             return self.panel_collection.find_one(query)
 
@@ -332,18 +321,14 @@ class PanelHandler:
         # update date of panel to "today"
         date = panel_obj["date"]
         if version:
-            LOG.info(
-                "Updating version from %s to version %s", panel_obj["version"], version
-            )
+            LOG.info("Updating version from %s to version %s", panel_obj["version"], version)
             panel_obj["version"] = version
             # Updating version should not update date
             if date_obj:
                 date = date_obj
         elif maintainer is not None:
             LOG.info(
-                "Updating maintainer from {} to {}".format(
-                    panel_obj.get("maintainer"), maintainer
-                )
+                "Updating maintainer from {} to {}".format(panel_obj.get("maintainer"), maintainer)
             )
             panel_obj["maintainer"] = maintainer
         else:
@@ -351,9 +336,7 @@ class PanelHandler:
         panel_obj["date"] = date
 
         updated_panel = self.panel_collection.find_one_and_replace(
-            {"_id": panel_obj["_id"]},
-            panel_obj,
-            return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": panel_obj["_id"]}, panel_obj, return_document=pymongo.ReturnDocument.AFTER,
         )
 
         return updated_panel
@@ -410,9 +393,7 @@ class PanelHandler:
             del panel_obj["pending"]
 
         updated_panel = self.panel_collection.find_one_and_replace(
-            {"_id": panel_obj["_id"]},
-            panel_obj,
-            return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": panel_obj["_id"]}, panel_obj, return_document=pymongo.ReturnDocument.AFTER,
         )
         return updated_panel
 
@@ -486,9 +467,7 @@ class PanelHandler:
         if new_panel["version"] == panel_obj["version"]:
             # replace panel_obj with new_panel
             result = self.panel_collection.find_one_and_replace(
-                {"_id": panel_obj["_id"]},
-                new_panel,
-                return_document=pymongo.ReturnDocument.AFTER,
+                {"_id": panel_obj["_id"]}, new_panel, return_document=pymongo.ReturnDocument.AFTER,
             )
             inserted_id = result["_id"]
         else:  # create a new version of the same panel

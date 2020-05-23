@@ -43,15 +43,10 @@ def test_delete_panel(empty_mock_app, dummypanel_obj):
     store.panel_collection.insert_one(dummypanel_obj)
 
     # Test the CLI by using panel name without version
-    result = runner.invoke(
-        cli, ["delete", "panel", "--panel-id", dummypanel_obj["panel_name"]]
-    )
+    result = runner.invoke(cli, ["delete", "panel", "--panel-id", dummypanel_obj["panel_name"]])
 
     # Panel should be correctly removed from database
-    assert (
-        "WARNING Deleting panel {}".format(dummypanel_obj["panel_name"])
-        in result.output
-    )
+    assert "WARNING Deleting panel {}".format(dummypanel_obj["panel_name"]) in result.output
 
     # And no panels ahould be available in database
     assert sum(1 for i in store.panel_collection.find()) == 0
@@ -95,9 +90,7 @@ def test_delete_nonexisting_user(empty_mock_app, user_obj):
     result = runner.invoke(cli, ["delete", "user", "-m", "unknown_email@email.com"])
 
     ## THEN function should return error
-    assert (
-        "User unknown_email@email.com could not be found in database" in result.output
-    )
+    assert "User unknown_email@email.com could not be found in database" in result.output
 
 
 def test_delete_user(empty_mock_app, user_obj):
@@ -278,15 +271,10 @@ def test_delete_case_wrong_id(empty_mock_app, case_obj):
     assert store.case_collection.find_one()
 
     ## WHEN deleting case with non exosting id
-    result = runner.invoke(
-        cli, ["delete", "case", "-i", case_obj["owner"], "-c", "unknown_id"]
-    )
+    result = runner.invoke(cli, ["delete", "case", "-i", case_obj["owner"], "-c", "unknown_id"])
 
     ## THEN assert the correct information is communicated
-    assert (
-        "Coudn't find any case in database matching the provided parameters"
-        in result.output
-    )
+    assert "Coudn't find any case in database matching the provided parameters" in result.output
     ## THEN assert the cli exits with error
     assert result.exit_code == 1
     ## THEN assert there is a case left
@@ -329,9 +317,7 @@ def test_delete_case_no_institute(empty_mock_app, case_obj):
     ## THEN assert it exots with error
     assert result.exit_code == 1
     ## THEN assert the correct information is communicated
-    assert (
-        "Please specify the owner of the case that should be deleted" in result.output
-    )
+    assert "Please specify the owner of the case that should be deleted" in result.output
 
     # Provide right display_name and right institute
     result = runner.invoke(

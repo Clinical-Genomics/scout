@@ -3,12 +3,7 @@ from pprint import pprint as pp
 
 
 def test_link_genes(
-    genes37_handle,
-    hgnc_handle,
-    exac_handle,
-    mim2gene_handle,
-    genemap_handle,
-    hpo_genes_handle,
+    genes37_handle, hgnc_handle, exac_handle, mim2gene_handle, genemap_handle, hpo_genes_handle,
 ):
     """docstring for test_link_genes"""
     genes = link_genes(

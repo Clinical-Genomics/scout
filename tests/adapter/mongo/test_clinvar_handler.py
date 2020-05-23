@@ -58,9 +58,7 @@ def test_create_submission(adapter, institute_obj, case_obj):
     assert submission_id
 
     # Given a test variant and its associated casedata
-    variant_data = [
-        get_test_submission_variant(case_obj)
-    ]  # a list of 1 dictionary element
+    variant_data = [get_test_submission_variant(case_obj)]  # a list of 1 dictionary element
     case_data = [get_test_submission_case(case_obj)]  # a list of 1 dictionary element
     subm_objs = (variant_data, case_data)
 
@@ -131,14 +129,10 @@ def test_add_remove_subm_objects(adapter, institute_obj, case_obj):
     """Test adding variant and casedata objects to a submission"""
 
     # Get the ID of an existing submission
-    submission_obj = adapter.get_open_clinvar_submission(
-        institute_id=institute_obj["_id"]
-    )
+    submission_obj = adapter.get_open_clinvar_submission(institute_id=institute_obj["_id"])
 
     # Given a test variant and its associated casedata
-    variant_data = [
-        get_test_submission_variant(case_obj)
-    ]  # a list of 1 dictionary element
+    variant_data = [get_test_submission_variant(case_obj)]  # a list of 1 dictionary element
     case_data = [get_test_submission_case(case_obj)]  # a list of 1 dictionary element
     subm_objs = (variant_data, case_data)
 
@@ -166,15 +160,11 @@ def test_add_remove_subm_objects(adapter, institute_obj, case_obj):
     assert len(casedata_file_header.keys()) > 0
 
     # check if it is possible to create CSV files lines for variant and casedata objects
-    variants_file_lines = clinvar_submission_lines(
-        submission_objects, variants_file_header
-    )
+    variants_file_lines = clinvar_submission_lines(submission_objects, variants_file_header)
     assert len(variants_file_lines[0].split(",")) == len(
         variants_file_header.keys()
     )  # variant file header and line have the same number of columns
-    casedata_file_lines = clinvar_submission_lines(
-        submission_objects, casedata_file_header
-    )
+    casedata_file_lines = clinvar_submission_lines(submission_objects, casedata_file_header)
     assert len(casedata_file_lines[0].split(",")) == len(
         casedata_file_header.keys()
     )  # casedata file header and line have the same number of columns
@@ -193,9 +183,7 @@ def test_add_remove_subm_objects(adapter, institute_obj, case_obj):
     # Removal of clinvar objects from submission and from clinvar collection in database
     # remove case_data object
     updated_submission = adapter.delete_clinvar_object(
-        object_id=case_data[0]["_id"],
-        object_type="case_data",
-        submission_id=submission_obj["_id"],
+        object_id=case_data[0]["_id"], object_type="case_data", submission_id=submission_obj["_id"],
     )
     assert updated_submission["case_data"] == []
 

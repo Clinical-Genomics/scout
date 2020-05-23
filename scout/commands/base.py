@@ -64,16 +64,10 @@ def get_app(ctx):
                 or options.params.get("mongodb")
                 or cli_config.get("mongodb")
                 or "scout",
-                MONGO_HOST=options.params.get("host")
-                or cli_config.get("host")
-                or "localhost",
-                MONGO_PORT=options.params.get("port")
-                or cli_config.get("port")
-                or 27017,
-                MONGO_USERNAME=options.params.get("username")
-                or cli_config.get("username"),
-                MONGO_PASSWORD=options.params.get("password")
-                or cli_config.get("password"),
+                MONGO_HOST=options.params.get("host") or cli_config.get("host") or "localhost",
+                MONGO_PORT=options.params.get("port") or cli_config.get("port") or 27017,
+                MONGO_USERNAME=options.params.get("username") or cli_config.get("username"),
+                MONGO_PASSWORD=options.params.get("password") or cli_config.get("password"),
                 OMIM_API_KEY=cli_config.get("omim_api_key"),
             ),
             config_file=flask_conf,
@@ -112,9 +106,7 @@ def get_app(ctx):
 @click.option("-a", "--authdb", help="database to use for authentication")
 @click.option("-port", "--port", help="Specify on what port to listen for the mongod")
 @click.option("-h", "--host", help="Specify the host for the mongo database.")
-@click.option(
-    "-f", "--flask-config", type=click.Path(exists=True), help="Path to flask config."
-)
+@click.option("-f", "--flask-config", type=click.Path(exists=True), help="Path to flask config.")
 @with_appcontext
 def cli(**_):
     """scout: manage interactions with a scout instance."""

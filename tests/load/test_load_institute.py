@@ -14,8 +14,4 @@ def test_load_institute(adapter, parsed_institute):
     )
     # THEN see that the institute is added to database
     institute_obj = adapter.institute(parsed_institute["institute_id"])
-    assert (
-        institute_obj["internal_id"]
-        == institute_obj["_id"]
-        == parsed_institute["institute_id"]
-    )
+    assert institute_obj["internal_id"] == institute_obj["_id"] == parsed_institute["institute_id"]

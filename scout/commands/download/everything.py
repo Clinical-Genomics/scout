@@ -18,13 +18,9 @@ LOG = logging.getLogger(__name__)
 @click.command("everything", help="Download all necessary resources for scout")
 @click.option("--api-key", help="Specify the api key")
 @click.option("-o", "--out-dir", default="./", show_default=True)
-@click.option(
-    "--skip-tx", is_flag=True, help="Only download ensembl genes, skip transcripts"
-)
+@click.option("--skip-tx", is_flag=True, help="Only download ensembl genes, skip transcripts")
 @click.option("--exons", is_flag=True, help="If ensembl exons should be downloaded")
-@click.option(
-    "--build", type=click.Choice(["37", "38"]), help="If only one build should be used"
-)
+@click.option("--build", type=click.Choice(["37", "38"]), help="If only one build should be used")
 def everything(out_dir, api_key, skip_tx, exons, build):
     """Download all necessary resources for scout"""
     out_dir = pathlib.Path(out_dir)

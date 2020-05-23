@@ -19,17 +19,13 @@ def test_variant(real_variant_database, variant_objs, case_obj):
     assert variant_a
 
     # try to collect the variant from database using its document_id and case id:
-    variant_b = adapter.variant(
-        document_id=test_variant["variant_id"], case_id=case_obj["_id"]
-    )
+    variant_b = adapter.variant(document_id=test_variant["variant_id"], case_id=case_obj["_id"])
     assert variant_b
     # it should be the same variant as before:
     assert variant_a == variant_b
 
     # try to collect the variant from database using its case id and simple_id:
-    variant_c = adapter.variant(
-        simple_id=test_variant["simple_id"], case_id=case_obj["_id"]
-    )
+    variant_c = adapter.variant(simple_id=test_variant["simple_id"], case_id=case_obj["_id"])
     assert variant_c
     # it should be the same as the other 2 variants:
     assert variant_c == variant_a
@@ -60,9 +56,7 @@ def test_query_all_gene_variants(real_variant_database):
     )
     nr_high_ranked_variants_in_gene = sum(1 for i in res)
     LOG.info(
-        "Number of high ranked variants in %s: %s",
-        gene_symbol,
-        nr_high_ranked_variants_in_gene,
+        "Number of high ranked variants in %s: %s", gene_symbol, nr_high_ranked_variants_in_gene,
     )
 
     assert nr_high_ranked_variants_in_gene > 0

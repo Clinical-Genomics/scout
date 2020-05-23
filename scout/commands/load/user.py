@@ -38,11 +38,7 @@ def user(institute_id, user_name, user_mail, admin, user_id=None):
         roles.append("admin")
 
     user_info = dict(
-        email=user_mail.lower(),
-        name=user_name,
-        roles=roles,
-        institutes=institutes,
-        id=user_id,
+        email=user_mail.lower(), name=user_name, roles=roles, institutes=institutes, id=user_id,
     )
 
     user_obj = build_user(user_info)

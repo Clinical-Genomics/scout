@@ -33,14 +33,8 @@ def matchmaker_request(url, token, method, content_type=None, accept=None, data=
     req_data = data or {"timestamp": datetime.datetime.now().timestamp()}
     json_response = None
     try:
-        LOG.info(
-            "Sending {} request to MME url {}. Data sent: {}".format(
-                method, url, req_data
-            )
-        )
-        resp = requests.request(
-            method=method, url=url, headers=headers, data=json.dumps(req_data)
-        )
+        LOG.info("Sending {} request to MME url {}. Data sent: {}".format(method, url, req_data))
+        resp = requests.request(method=method, url=url, headers=headers, data=json.dumps(req_data))
         json_response = resp.json()
         LOG.info("MME server response was:{}".format(json_response))
 
@@ -50,9 +44,7 @@ def matchmaker_request(url, token, method, content_type=None, accept=None, data=
             return json_response
         json_response["status_code"] = resp.status_code
     except Exception as err:
-        LOG.info(
-            "An error occurred while sending HTTP request to server ({})".format(err)
-        )
+        LOG.info("An error occurred while sending HTTP request to server ({})".format(err))
         json_response = {"message": str(err)}
     return json_response
 

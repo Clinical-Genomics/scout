@@ -251,10 +251,7 @@ def variant_gene():
                 "polyphen_prediction": "unknown",
                 "swiss_prot": "unknown",
                 "biotype": "retained_intron",
-                "functional_annotations": [
-                    "intron_variant",
-                    "non_coding_transcript_variant",
-                ],
+                "functional_annotations": ["intron_variant", "non_coding_transcript_variant",],
                 "region_annotations": ["intronic", "ncRNA_exonic"],
                 "intron": "2/5",
                 "strand": "+",
@@ -280,10 +277,7 @@ def variant_gene():
                 "polyphen_prediction": "unknown",
                 "swiss_prot": "unknown",
                 "biotype": "processed_transcript",
-                "functional_annotations": [
-                    "intron_variant",
-                    "non_coding_transcript_variant",
-                ],
+                "functional_annotations": ["intron_variant", "non_coding_transcript_variant",],
                 "region_annotations": ["intronic", "ncRNA_exonic"],
                 "intron": "8/10",
                 "strand": "+",
@@ -721,9 +715,7 @@ def sv_var_obj():
                         "sift_prediction": "unknown",
                         "region_annotations": ["ncRNA_exonic"],
                         "swiss_prot": "unknown",
-                        "functional_annotations": [
-                            "non_coding_transcript_exon_variant"
-                        ],
+                        "functional_annotations": ["non_coding_transcript_exon_variant"],
                         "is_canonical": false,
                         "biotype": "processed_transcript",
                         "strand": "-",

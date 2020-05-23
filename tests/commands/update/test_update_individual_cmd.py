@@ -64,8 +64,7 @@ def test_update_alignment_path(mock_app, real_populated_database, bam_path):
 
     # WHEN updating a individual without case and ind
     result = runner.invoke(
-        ind_cmd,
-        ["--case-id", case_id, "--ind-id", ind_id, "--alignment-path", str(bam_path)],
+        ind_cmd, ["--case-id", case_id, "--ind-id", ind_id, "--alignment-path", str(bam_path)],
     )
 
     # THEN assert it exits without problems
