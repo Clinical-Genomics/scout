@@ -16,12 +16,6 @@ cytoband_hg38_file = "resources/cytoBand_hg38.txt"
 cytobands_path = pkg_resources.resource_filename("scout", cytobands_file)
 
 cytoband_files = [
-    {
-        "build": "37",
-        "path": pkg_resources.resource_filename("scout", cytoband_hg19_file),
-    },
-    {
-        "build": "38",
-        "path": pkg_resources.resource_filename("scout", cytoband_hg38_file),
-    },
+    {"build": "37", "path": pkg_resources.resource_filename("scout", cytoband_hg19_file),},
+    {"build": "38", "path": pkg_resources.resource_filename("scout", cytoband_hg38_file),},
 ]
