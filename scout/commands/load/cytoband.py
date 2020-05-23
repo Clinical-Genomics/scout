@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 import click
 from flask.cli import with_appcontext
-import logging
 from scout.load.cytoband import load_cytobands
 from scout.resources import cytoband_files
 from scout.server.extensions import store
-
-LOG = logging.getLogger(__name__)
 
 
 @click.command("cytobands", short_help="Load cytobands")
@@ -30,8 +27,6 @@ def cytoband(build):
                 resources.append(resource)
     else:
         resources = cytoband_files
-
-    click.echo(f"{resources}")
 
     # Remove previous cytoband objects from cytoband collection
     store.cytoband_collection.delete_many({})
