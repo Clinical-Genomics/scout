@@ -216,9 +216,7 @@ def sv_variants(institute_id, case_name):
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
-    form = controllers.populate_sv_filters_form(
-        store, institute_obj, case_obj, category, request
-    )
+    form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
     cytobands = store.cytoband_by_chrom(str(case_obj["genome_build"]))
 
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
