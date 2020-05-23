@@ -195,14 +195,6 @@
       populateEnd();
     });
 
-    function populateStart(){
-      startElem.value = cytoStart.options[cytoStart.selectedIndex].value
-    }
-
-    function populateEnd(){
-      endElem.value = cytoEnd.options[cytoEnd.selectedIndex].value
-    }
-
     window.onload=function() {
       populateCytobands({{cytobands|safe}});
     }

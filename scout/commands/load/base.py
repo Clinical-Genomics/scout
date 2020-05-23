@@ -5,7 +5,7 @@ import logging
 import click
 
 from .case import case as case_command
-
+from .cytoband import cytoband as cytoband_command
 from .institute import institute as institute_command
 from .panel import panel as panel_command
 from .research import research as research_command
@@ -25,6 +25,7 @@ def load():
 
 
 load.add_command(case_command)
+load.add_command(cytoband_command)
 load.add_command(institute_command)
 load.add_command(region_command)
 load.add_command(panel_command)
