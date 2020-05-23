@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import pymongo
 
 LOG = logging.getLogger(__name__)
 
@@ -28,10 +29,13 @@ class CytobandHandler(object):
             cytobands_obj(dict)
 
         """
+        match = { "$match" : {"build": build}}
         group = {"$group" : {
             "_id" : "$chrom",
             "cytobands" : {"$push" : { "band": "$band", "chrom": "$chrom", "start": "$start", "stop": "$stop" } }
         }}
-        result = self.cytoband_collection.aggregate([group])
+        sort = {"$sort": { "start" : pymongo.ASCENDING }}
+
+        result = self.cytoband_collection.aggregate([ match, group, sort ])
         cytobands_by_chrom_obj = { each.pop('_id'): each for each in result }
         return cytobands_by_chrom_obj

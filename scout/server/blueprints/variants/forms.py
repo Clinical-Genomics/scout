@@ -101,8 +101,8 @@ class FiltersForm(VariantFiltersForm):
 
     chrom = SelectField("Chromosome", [validators.Optional()], choices=("",)+CHROMOSOMES)
     cytoband_start = SelectField("Cytoband start")
-    start = IntegerField("Start position", [validators.Optional()])
     cytoband_end = SelectField("Cytoband end")
+    start = IntegerField("Start position", [validators.Optional()])
     end = IntegerField("End position", [validators.Optional()])
     local_obs = IntegerField("Local obs. (archive)")
 

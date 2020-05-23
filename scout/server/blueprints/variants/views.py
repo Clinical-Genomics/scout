@@ -28,8 +28,14 @@ from . import controllers
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
+
 variants_bp = Blueprint(
-    "variants",__name__, static_folder="static", static_url_path="/variants/static", template_folder="templates"
+    "variants",
+    __name__,
+    template_folder="templates",
+    static_folder="static",
+    static_url_path="/variants/static",
+
 )
 
 
@@ -147,7 +153,7 @@ def variants(institute_id, case_name):
         current_symbols.update(hpo_symbols)
         form.hgnc_symbols.data = list(current_symbols)
 
-    cytobands = store.cytoband_by_chrom(case_obj["genome_build"])
+    cytobands = store.cytoband_by_chrom(str(case_obj["genome_build"]))
 
     variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
 

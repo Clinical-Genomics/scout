@@ -225,8 +225,7 @@
       {{ form.local_obs(class="form-control") }}
     </div>
     <div class="col-1">
-      {{ form.chrom.label(class="control-label") }}<br>
-      {{ form.chrom(**{"onchange":"populateCytobands()"}) }}
+      {{ wtf.form_field(form.chrom) }}
     </div>
     <div class="col-2">
       {{ wtf.form_field(form.start) }}
