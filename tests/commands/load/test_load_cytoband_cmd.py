@@ -7,7 +7,7 @@ def test_load_cytoband_no_build(mock_app):
     """Tests the function that load cytobands with no parameters"""
 
     # given a database not containing any cytobands
-    assert store.cytoband_collection.find_one() == None
+    assert store.cytoband_collection.find_one() is None
 
     runner = mock_app.test_cli_runner()
 
@@ -30,7 +30,7 @@ def test_load_cytoband_specific_build(mock_app):
     """Tests the function that load cytobands with build parameter"""
 
     # given a database not containing any cytobands
-    assert store.cytoband_collection.find_one() == None
+    assert store.cytoband_collection.find_one() is None
 
     runner = mock_app.test_cli_runner()
 
