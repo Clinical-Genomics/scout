@@ -20,10 +20,10 @@ def test_load_cytoband_no_build(mock_app):
     # And cytobands should be uploaded in database
     # Both with build 37
     cytob_37 = store.cytoband_collection.find_one({"build": "37"})
-    assert cytob_37
+    assert cytob_37 is not None
     # And build 38
     cytob_38 = store.cytoband_collection.find_one({"build": "38"})
-    assert cytob_38
+    assert cytob_38 is not None
 
 
 def test_load_cytoband_specific_build(mock_app):
@@ -42,7 +42,7 @@ def test_load_cytoband_specific_build(mock_app):
 
     # Cytobands with build 38 should be in database
     cytob_38 = store.cytoband_collection.find_one({"build": "38"})
-    assert cytob_38
+    assert cytob_38 is not None
 
     # But NOT cytobands with build 37
     cytob_37 = store.cytoband_collection.find_one({"build": "37"})
