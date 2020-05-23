@@ -35,7 +35,6 @@ variants_bp = Blueprint(
     template_folder="templates",
     static_folder="static",
     static_url_path="/variants/static",
-
 )
 
 
@@ -168,7 +167,7 @@ def variants(institute_id, case_name):
         manual_rank_options=MANUAL_RANK_OPTIONS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
         severe_so_terms=SEVERE_SO_TERMS,
-        cytobands = cytobands,
+        cytobands=cytobands,
         page=page,
         **data
     )
