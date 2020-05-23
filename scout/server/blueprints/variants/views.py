@@ -233,7 +233,7 @@ def sv_variants(institute_id, case_name):
     form = controllers.populate_sv_filters_form(
         store, institute_obj, case_obj, category, request
     )
-
+    cytobands = store.cytoband_by_chrom(str(case_obj["genome_build"]))
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
     # if variants should be exported
     if request.form.get("export"):
@@ -246,6 +246,7 @@ def sv_variants(institute_id, case_name):
         case=case_obj,
         variant_type=variant_type,
         form=form,
+        cytobands=cytobands,
         severe_so_terms=SEVERE_SO_TERMS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,

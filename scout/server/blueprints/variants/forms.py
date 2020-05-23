@@ -143,7 +143,11 @@ class SvFiltersForm(VariantFiltersForm):
     clingen_ngi = IntegerField("ClinGen NGI obs")
     swegen = IntegerField("SweGen obs")
 
-    chrom = TextField("Chromosome", [validators.Optional()])
+    chrom = SelectField(
+        "Chromosome", [validators.Optional()], choices=("",) + CHROMOSOMES
+    )
+    cytoband_start = SelectField("Cytoband start")
+    cytoband_end = SelectField("Cytoband end")
     start = IntegerField("Start position", [validators.Optional()])
     end = IntegerField("End position", [validators.Optional()])
 

@@ -55,23 +55,3 @@ function populateStart(){
 function populateEnd(){
   endElem.value = cytoEnd.options[cytoEnd.selectedIndex].value
 }
-
-function validateForm(){
-  var start = document.forms["filters_form"].elements["start"].value
-  var end = document.forms["filters_form"].elements["end"].value
-  if(start || end){
-    if(!chrom){
-      alert("Chromosome field is required");
-      return false;
-    }
-    else if( !start || !end){
-      alert("Both start and end coordinates are required");
-      return false;
-    }
-    else if( (isNaN(start) || isNaN(end)) || Number(end)<Number(start) ){
-      alert("Coordinate field not valid");
-      return false;
-    }
-  }
-  return true;
-}
