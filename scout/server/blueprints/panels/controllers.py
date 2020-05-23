@@ -23,9 +23,7 @@ def panel(store, panel_obj):
 
     panel_obj["maintainer_names"] = [
         maintainer_obj.get("name")
-        for maintainer_obj in (
-            store.user(user_id=maintainer_id) for maintainer_id in maintainers
-        )
+        for maintainer_obj in (store.user(user_id=maintainer_id) for maintainer_id in maintainers)
         if maintainer_obj is not None
     ]
 
@@ -55,9 +53,7 @@ def update_panel(store, panel_name, csv_lines, option):
     if panel_obj is None:
         return None
     try:
-        new_genes = parse_genes(
-            csv_lines
-        )  # a list of gene dictionaries containing gene info
+        new_genes = parse_genes(csv_lines)  # a list of gene dictionaries containing gene info
     except SyntaxError as error:
         flash(error.args[0], "danger")
         return None
@@ -77,16 +73,11 @@ def update_panel(store, panel_name, csv_lines, option):
         gene_obj = store.hgnc_gene(new_gene["hgnc_id"])
         if gene_obj is None:
             flash(
-                "gene not found: {} - {}".format(
-                    new_gene["hgnc_id"], new_gene["hgnc_symbol"]
-                ),
+                "gene not found: {} - {}".format(new_gene["hgnc_id"], new_gene["hgnc_symbol"]),
                 "danger",
             )
             continue
-        if (
-            new_gene["hgnc_symbol"]
-            and gene_obj["hgnc_symbol"] != new_gene["hgnc_symbol"]
-        ):
+        if new_gene["hgnc_symbol"] and gene_obj["hgnc_symbol"] != new_gene["hgnc_symbol"]:
             flash(
                 "symbol mis-match: {0} | {1}".format(
                     gene_obj["hgnc_symbol"], new_gene["hgnc_symbol"]
@@ -114,13 +105,7 @@ def update_panel(store, panel_name, csv_lines, option):
 
 
 def new_panel(
-    store,
-    institute_id,
-    panel_name,
-    display_name,
-    csv_lines,
-    maintainer=None,
-    description=None,
+    store, institute_id, panel_name, display_name, csv_lines, maintainer=None, description=None,
 ):
     """Create a new gene panel.
 

@@ -48,18 +48,12 @@ def abort_if_false(ctx, param, value):
     help="Path to directory with resource files",
 )
 @click.option("--hgnc", type=click.Path(exists=True))
+@click.option("--exac", type=click.Path(exists=True), help="Path to file with EXAC pLi scores")
 @click.option(
-    "--exac", type=click.Path(exists=True), help="Path to file with EXAC pLi scores"
+    "--ensgenes37", type=click.Path(exists=True), help="Path to file with ENSEMBL genes, build 37",
 )
 @click.option(
-    "--ensgenes37",
-    type=click.Path(exists=True),
-    help="Path to file with ENSEMBL genes, build 37",
-)
-@click.option(
-    "--ensgenes38",
-    type=click.Path(exists=True),
-    help="Path to file with ENSEMBL genes, build 38",
+    "--ensgenes38", type=click.Path(exists=True), help="Path to file with ENSEMBL genes, build 38",
 )
 @click.option(
     "--enstx37",
@@ -121,9 +115,7 @@ def database(
     # Fetch the omim information
     api_key = api_key or current_app.config.get("OMIM_API_KEY")
     if not api_key:
-        LOG.warning(
-            "No omim api key provided. This means information will be lost in scout"
-        )
+        LOG.warning("No omim api key provided. This means information will be lost in scout")
         LOG.info("Please request an OMIM api key and run scout update genes")
 
     institute_name = institute_name or context.obj["institute_name"]
@@ -204,11 +196,7 @@ def demo(context):
 
 @click.group()
 @click.option(
-    "-i",
-    "--institute",
-    default="cust000",
-    show_default=True,
-    help="Name of initial institute",
+    "-i", "--institute", default="cust000", show_default=True, help="Name of initial institute",
 )
 @click.option(
     "-e",
@@ -218,11 +206,7 @@ def demo(context):
     help="Mail of initial user",
 )
 @click.option(
-    "-n",
-    "--user-name",
-    default="Clark Kent",
-    show_default=True,
-    help="Name of initial user",
+    "-n", "--user-name", default="Clark Kent", show_default=True, help="Name of initial user",
 )
 @with_appcontext
 @click.pass_context

@@ -46,9 +46,7 @@ def cli(ctx, gene_list, panel_name):
                 header = line[1:].split("\t")
                 # Check if the given panel name was found
                 if not panel_name in panel_metadata:
-                    click.echo(
-                        "Panel {0} could not be found in gene list".format(panel_name)
-                    )
+                    click.echo("Panel {0} could not be found in gene list".format(panel_name))
                     ctx.abort()
         # These lines hold information about genes
         else:
@@ -84,14 +82,10 @@ def cli(ctx, gene_list, panel_name):
                     panel_gene_info["mosaicism"] = "Yes"
 
                 # Check manually annotated disease models
-                panel_gene_info["inheritance"] = gene_info.get(
-                    "Genetic_disease_model", ""
-                )
+                panel_gene_info["inheritance"] = gene_info.get("Genetic_disease_model", "")
 
                 # Parse database entry version
-                panel_gene_info["entry_version"] = gene_info.get(
-                    "Database_entry_version", ""
-                )
+                panel_gene_info["entry_version"] = gene_info.get("Database_entry_version", "")
 
                 if hgnc_symbol in panel_genes:
                     # If we have multiple entries we update the information

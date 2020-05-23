@@ -151,9 +151,7 @@ def test_parse_case_vcf_files(scout_config):
     # THEN the case should the same vcf files as specified in the
     assert case_data["vcf_files"]["vcf_snv"] == scout_config["vcf_snv"]
     assert case_data["vcf_files"]["vcf_sv"] == scout_config["vcf_sv"]
-    assert (
-        case_data["vcf_files"]["vcf_snv_research"] == scout_config["vcf_snv_research"]
-    )
+    assert case_data["vcf_files"]["vcf_snv_research"] == scout_config["vcf_snv_research"]
     assert case_data["vcf_files"]["vcf_sv_research"] == scout_config["vcf_sv_research"]
 
 

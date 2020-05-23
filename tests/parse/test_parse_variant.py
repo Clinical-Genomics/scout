@@ -12,9 +12,7 @@ def test_parse_minimal(one_variant, case_obj):
 
 def test_parse_with_header(one_variant, case_obj, rank_results_header):
     """docstring for test_parse_all_variants"""
-    parsed_variant = parse_variant(
-        one_variant, case_obj, rank_results_header=rank_results_header
-    )
+    parsed_variant = parse_variant(one_variant, case_obj, rank_results_header=rank_results_header)
 
     assert parsed_variant["chromosome"] == "1"
     assert parsed_variant["rank_result"]["Consequence"] == 1
@@ -34,10 +32,7 @@ def test_parse_small_str(one_str_variant, case_obj):
     assert parsed_variant["category"] == "str"
     assert parsed_variant["str_status"] == one_str_variant.INFO["STR_STATUS"]
     assert parsed_variant["str_normal_max"] == one_str_variant.INFO["STR_NORMAL_MAX"]
-    assert (
-        parsed_variant["str_pathologic_min"]
-        == one_str_variant.INFO["STR_PATHOLOGIC_MIN"]
-    )
+    assert parsed_variant["str_pathologic_min"] == one_str_variant.INFO["STR_PATHOLOGIC_MIN"]
     assert parsed_variant["position"] == int(one_str_variant.POS)
 
 
@@ -89,16 +84,16 @@ def test_parse_cadd(variants, case_obj):
 def test_parse_revel(cyvcf2_variant, case_obj):
     ## GIVEN a variant with REVEL score in the CSQ entry
     csq_header = "ALLELE|CONSEQUENCE|REVEL_rankscore"
-    csq_entry = "C|missense_variant|0.75,C|missense_variant|0.75"  # mimic a variant with transcripts
+    csq_entry = (
+        "C|missense_variant|0.75,C|missense_variant|0.75"  # mimic a variant with transcripts
+    )
 
     cyvcf2_variant.INFO["CSQ"] = csq_entry
 
     header = [word.upper() for word in csq_header.split("|")]
 
     # WHEN the variant is parsed
-    parsed_variant = parse_variant(
-        variant=cyvcf2_variant, case=case_obj, vep_header=header
-    )
+    parsed_variant = parse_variant(variant=cyvcf2_variant, case=case_obj, vep_header=header)
 
     # THEN the REVEL score should be parsed correctly
     assert parsed_variant["revel_score"] == 0.75

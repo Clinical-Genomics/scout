@@ -106,8 +106,7 @@ def test_sv_variants_research_shadow_clinical_assessments(
     )
     # GIVEN the variant is an SV
     adapter.variant_collection.update_one(
-        {"_id": variant_clinical["_id"]},
-        {"$set": {"category": "sv", "sub_category": "dup"}},
+        {"_id": variant_clinical["_id"]}, {"$set": {"category": "sv", "sub_category": "dup"}},
     )
 
     # GIVEN a copy of that variant marked research
@@ -121,20 +120,12 @@ def test_sv_variants_research_shadow_clinical_assessments(
     # WHEN updating the manual assessments of the clinical variant
     adapter.variant_collection.update_one(
         {"_id": variant_clinical["_id"]},
-        {
-            "$set": {
-                "manual_rank": 2,
-                "mosaic_tags": ["1"],
-                "dismiss_variant": ["2", "3"],
-            }
-        },
+        {"$set": {"manual_rank": 2, "mosaic_tags": ["1"], "dismiss_variant": ["2", "3"],}},
     )
 
     # WHEN filtering for that variant in research
     variants_query = {"variant_type": "research"}
-    variants_query_res = adapter.variants(
-        case_obj["_id"], query=variants_query, category="sv"
-    )
+    variants_query_res = adapter.variants(case_obj["_id"], query=variants_query, category="sv")
     assert variants_query_res
 
     res = sv_variants(adapter, institute_obj, case_obj, variants_query_res)
@@ -154,9 +145,7 @@ def test_variant_csv_export(real_variant_database, case_obj):
     case_id = case_obj["_id"]
 
     # Given a database with variants from a case
-    snv_variants = adapter.variant_collection.find(
-        {"case_id": case_id, "category": "snv"}
-    )
+    snv_variants = adapter.variant_collection.find({"case_id": case_id, "category": "snv"})
 
     # Given 5 variants to be exported
     variants_to_export = []

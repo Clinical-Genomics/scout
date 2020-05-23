@@ -51,9 +51,7 @@ def parse_clnsig(variant, transcripts=None):
     if isinstance(acc, int) or acc.isdigit():
         revstat_groups = []
         if revstat:
-            revstat_groups = [
-                rev.lstrip("_") for rev in revstat.replace("&", ",").split(",")
-            ]
+            revstat_groups = [rev.lstrip("_") for rev in revstat.replace("&", ",").split(",")]
 
         sig_groups = []
         for significance in sig.split(","):
@@ -73,21 +71,13 @@ def parse_clnsig(variant, transcripts=None):
         acc_groups = acc.split("|")
         sig_groups = sig.split("|")
         revstat_groups = revstat.split("|")
-        for acc_group, sig_group, revstat_group in zip(
-            acc_groups, sig_groups, revstat_groups
-        ):
+        for acc_group, sig_group, revstat_group in zip(acc_groups, sig_groups, revstat_groups):
             accessions = acc_group.split(",")
             significances = sig_group.split(",")
             revstats = revstat_group.split(",")
-            for accession, significance, revstat in zip(
-                accessions, significances, revstats
-            ):
+            for accession, significance, revstat in zip(accessions, significances, revstats):
                 clnsig_accessions.append(
-                    {
-                        "value": int(significance),
-                        "accession": accession,
-                        "revstat": revstat,
-                    }
+                    {"value": int(significance), "accession": accession, "revstat": revstat,}
                 )
 
     return clnsig_accessions

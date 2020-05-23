@@ -9,9 +9,7 @@ def test_parse_transcripts():
 
     header = [word.upper() for word in csq_header.split("|")]
 
-    raw_transcripts = [
-        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
-    ]
+    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
     assert len(raw_transcripts) == 3
 
     ## WHEN parsing the transcript
@@ -32,9 +30,7 @@ def test_parse_functional_annotation():
     csq_entry = "C|missense_variant"
     header = [word.upper() for word in csq_header.split("|")]
 
-    raw_transcripts = [
-        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
-    ]
+    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
 
     transcripts = parse_transcripts(raw_transcripts)
 
@@ -49,9 +45,7 @@ def test_parse_optional_hgnc_annotation():
 
     header = [word.upper() for word in csq_header.split("|")]
 
-    raw_transcripts = [
-        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
-    ]
+    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
@@ -69,9 +63,7 @@ def test_parse_regular_hgnc_annotation():
 
     header = [word.upper() for word in csq_header.split("|")]
 
-    raw_transcripts = [
-        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
-    ]
+    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
@@ -90,9 +82,7 @@ def test_parse_vep_freq_thousand_g():
 
     header = [word.upper() for word in csq_header.split("|")]
 
-    raw_transcripts = [
-        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
-    ]
+    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
@@ -109,9 +99,7 @@ def test_parse_vep_freq_thousand_g_alt():
     csq_entry = "C|missense_variant|{0}".format(freq)
     header = [word.upper() for word in csq_header.split("|")]
 
-    raw_transcripts = [
-        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
-    ]
+    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
@@ -128,9 +116,7 @@ def test_parse_vep_freq_gnomad():
     csq_entry = "C|missense_variant|{0}".format(freq)
     header = [word.upper() for word in csq_header.split("|")]
 
-    raw_transcripts = [
-        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
-    ]
+    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
@@ -147,9 +133,7 @@ def test_parse_vep_freq_exac():
     csq_entry = "C|missense_variant|{0}".format(freq)
     header = [word.upper() for word in csq_header.split("|")]
 
-    raw_transcripts = [
-        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
-    ]
+    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
@@ -166,9 +150,7 @@ def test_parse_vep_freq_thousand_g_max():
     csq_entry = "C|missense_variant|{0}|{1}".format(freqs[0], freqs[1])
     header = [word.upper() for word in csq_header.split("|")]
 
-    raw_transcripts = [
-        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
-    ]
+    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
@@ -185,9 +167,7 @@ def test_parse_superdups_fractmatch():
     csq_entry = "C|missense_variant|{0}&{1}".format(fract_match[0], fract_match[1])
 
     header = [word.upper() for word in csq_header.split("|")]
-    raw_transcripts = [
-        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
-    ]
+    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
 
     assert raw_transcripts[0]["GENOMIC_SUPERDUPS_FRAC_MATCH"] == "0.992904&0.98967"
 

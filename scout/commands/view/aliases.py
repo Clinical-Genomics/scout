@@ -52,8 +52,6 @@ def aliases(build, symbol):
             "{0}\t{1}\t{2}\t".format(
                 alias_symbol,
                 (alias_genes[alias_symbol]["true"] or "None"),
-                ", ".join(
-                    [str(gene_id) for gene_id in alias_genes[alias_symbol]["ids"]]
-                ),
+                ", ".join([str(gene_id) for gene_id in alias_genes[alias_symbol]["ids"]]),
             )
         )

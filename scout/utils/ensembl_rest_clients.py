@@ -98,9 +98,7 @@ class EnsemblRestApiClient:
 class EnsemblBiomartClient:
     """Class to handle requests to the ensembl biomart api"""
 
-    def __init__(
-        self, build="37", xml=None, filters=None, attributes=None, header=True
-    ):
+    def __init__(self, build="37", xml=None, filters=None, attributes=None, header=True):
         """Initialise a ensembl biomart client"""
         self.server = BIOMART_37
         if build == "38":
@@ -214,9 +212,7 @@ class EnsemblBiomartClient:
                 )
             else:
                 formatted_lines.append(
-                    '<Filter name = "{0}" value = "{1}"/>'.format(
-                        filter_name, ",".join(value)
-                    )
+                    '<Filter name = "{0}" value = "{1}"/>'.format(filter_name, ",".join(value))
                 )
 
         return formatted_lines

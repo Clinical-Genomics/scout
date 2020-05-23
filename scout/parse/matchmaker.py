@@ -23,9 +23,7 @@ def hpo_terms(case_obj):
               ...
             ]
     """
-    LOG.info(
-        "Collecting phenotype terms for case {}".format(case_obj.get("display_name"))
-    )
+    LOG.info("Collecting phenotype terms for case {}".format(case_obj.get("display_name")))
     features = []
     case_features = case_obj.get("phenotype_terms")
     if case_features:
@@ -47,9 +45,7 @@ def omim_terms(case_obj):
     Returns:
         disorders(list): a list of OMIM disorder objects
     """
-    LOG.info(
-        "Collecting OMIM disorders for case {}".format(case_obj.get("display_name"))
-    )
+    LOG.info("Collecting OMIM disorders for case {}".format(case_obj.get("display_name")))
     disorders = []
 
     case_disorders = case_obj.get("diagnosis_phenotypes")  # array of OMIM terms
@@ -99,9 +95,7 @@ def genomic_features(store, case_obj, sample_name, genes_only):
         build = "GRCh" + build
 
     individual_pinned_snvs = list(
-        store.sample_variants(
-            variants=case_obj.get("suspects"), sample_name=sample_name
-        )
+        store.sample_variants(variants=case_obj.get("suspects"), sample_name=sample_name)
     )
 
     # if genes_only is True don't add duplicated genes
@@ -117,9 +111,7 @@ def genomic_features(store, case_obj, sample_name, genes_only):
             if not gene_obj:
                 continue
             g_feature = {"gene": {"id": gene_obj.get("hgnc_symbol")}}
-            if (
-                genes_only and not hgnc_id in gene_set
-            ):  # if only gene names should be shared
+            if genes_only and not hgnc_id in gene_set:  # if only gene names should be shared
                 gene_set.add(hgnc_id)
                 g_features.append(g_feature)
                 continue
@@ -141,9 +133,7 @@ def genomic_features(store, case_obj, sample_name, genes_only):
             ]  # it's a list with zygosity situation for each sample of the case
             for zyg in zygosities:
                 if zyg.get("display_name") == sample_name:  # sample of interest
-                    zygosity = zyg["genotype_call"].count("1") + zyg[
-                        "genotype_call"
-                    ].count("2")
+                    zygosity = zyg["genotype_call"].count("1") + zyg["genotype_call"].count("2")
             g_feature["zygosity"] = zygosity
             g_features.append(g_feature)
 
@@ -216,9 +206,7 @@ def parse_matches(patient_id, match_objs):
             score = None
             for res in match_obj["results"]:
                 for patient in res["patients"]:
-                    LOG.info(
-                        "Looping in else, patient:{}".format(patient["patient"]["id"])
-                    )
+                    LOG.info("Looping in else, patient:{}".format(patient["patient"]["id"]))
                     if patient["patient"]["id"] == patient_id:
 
                         score = patient["score"]

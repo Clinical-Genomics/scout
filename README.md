@@ -13,6 +13,7 @@
 [![Percentage of issues still open][ismaintained-open-rate-img]][ismaintained-open-rate-url]
 [![GitHub commits](https://img.shields.io/github/commits-since/Clinical-Genomics/scout/v4.8.0.svg)](https://GitHub.com/Clinical-Genomics/scout/commit/)
 [![CodeFactor](https://www.codefactor.io/repository/github/clinical-genomics/scout/badge)](https://www.codefactor.io/repository/github/clinical-genomics/scout)
+[![Code style: black][black-image]][black-url]
 
 ## What is Scout?
 
@@ -216,3 +217,5 @@ be found in [CONTRIBUTING](CONTRIBUTING.md).
 [coveralls-img]: https://coveralls.io/repos/github/Clinical-Genomics/scout/badge.svg?branch=master
 [coveralls-url]: https://coveralls.io/github/Clinical-Genomics/scout?branch=master
 [actions-build-status]: https://github.com/Clinical-Genomics/scout/workflows/Scout%20tests/badge.svg
+[black-image]: https://img.shields.io/badge/code%20style-black-000000.svg
+[black-url]: https://github.com/psf/black

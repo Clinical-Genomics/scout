@@ -45,9 +45,7 @@ def test_institute(app, user_obj, institute_obj, monkeypatch):
         client.get(url_for("auto_login"))
 
         # WHEN accessing the cases page (GET method)
-        resp = client.get(
-            url_for("overview.institute", institute_id=institute_obj["internal_id"])
-        )
+        resp = client.get(url_for("overview.institute", institute_id=institute_obj["internal_id"]))
 
         # THEN it should return a page
         assert resp.status_code == 200
@@ -78,9 +76,7 @@ def test_institute(app, user_obj, institute_obj, monkeypatch):
         assert updated_institute["display_name"] == form_data["display_name"]
         assert updated_institute["sanger_recipients"] == form_data["sanger_emails"]
         assert updated_institute["coverage_cutoff"] == int(form_data["coverage_cutoff"])
-        assert updated_institute["frequency_cutoff"] == float(
-            form_data["frequency_cutoff"]
-        )
+        assert updated_institute["frequency_cutoff"] == float(form_data["frequency_cutoff"])
         assert updated_institute["cohorts"] == form_data["cohorts"]
         assert updated_institute["collaborators"] == form_data["institutes"]
         assert len(updated_institute["phenotype_groups"]) == 2  # one for each HPO term
