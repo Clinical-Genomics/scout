@@ -18,9 +18,7 @@ def gene(store, hgnc_id):
         record = store.hgnc_gene(hgnc_id, build=build)
         if record:
 
-            record["position"] = "{this[chromosome]}:{this[start]}-{this[end]}".format(
-                this=record
-            )
+            record["position"] = "{this[chromosome]}:{this[start]}-{this[end]}".format(this=record)
             res["aliases"] = record["aliases"]
             res["hgnc_id"] = record["hgnc_id"]
             res["description"] = record["description"]
@@ -36,9 +34,9 @@ def gene(store, hgnc_id):
             res["incomplete_penetrance"] = record.get("incomplete_penetrance", False)
             res["inheritance_models"] = record.get("inheritance_models", [])
             for transcript in record["transcripts"]:
-                transcript[
-                    "position"
-                ] = "{this[chrom]}:{this[start]}-{this[end]}".format(this=transcript)
+                transcript["position"] = "{this[chrom]}:{this[start]}-{this[end]}".format(
+                    this=transcript
+                )
                 add_tx_links(transcript, build)
 
             for phenotype in record.get("phenotypes", []):

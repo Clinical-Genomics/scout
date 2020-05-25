@@ -13,10 +13,7 @@ def panel():
         "institute": "cust000",
         "version": 1.0,
         "date": datetime.datetime.now(),
-        "genes": [
-            {"hgnc_id": 234, "symbol": "ADK"},
-            {"hgnc_id": 7481, "symbol": "MT-TF"},
-        ],
+        "genes": [{"hgnc_id": 234, "symbol": "ADK"}, {"hgnc_id": 7481, "symbol": "MT-TF"},],
     }
     return panel_info
 

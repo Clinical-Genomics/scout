@@ -77,8 +77,7 @@ def variant_verification(
     variant_size = variant_obj.get("length")
     panels = ", ".join(variant_obj.get("panels", []))
     gene_identifiers = [
-        str(ident)
-        for ident in variant_obj.get("hgnc_symbols", variant_obj.get("hgnc_ids", []))
+        str(ident) for ident in variant_obj.get("hgnc_symbols", variant_obj.get("hgnc_ids", []))
     ]
     hgnc_symbol = ", ".join(gene_identifiers)
     email_subj_gene_symbol = None
@@ -88,9 +87,7 @@ def variant_verification(
         email_subj_gene_symbol = hgnc_symbol
 
     gtcalls = [
-        "<li>{}: {}</li>".format(
-            sample_obj["display_name"], sample_obj["genotype_call"]
-        )
+        "<li>{}: {}</li>".format(sample_obj["display_name"], sample_obj["genotype_call"])
         for sample_obj in variant_obj["samples"]
     ]
     tx_changes = []
@@ -107,13 +104,9 @@ def variant_verification(
 
                 for refseq_id in tx_obj.get("refseq_identifiers"):
                     transcript_line = []
-                    transcript_line.append(
-                        gene_obj.get("hgnc_symbol", gene_obj["hgnc_id"])
-                    )
+                    transcript_line.append(gene_obj.get("hgnc_symbol", gene_obj["hgnc_id"]))
 
-                    transcript_line.append(
-                        "-".join([refseq_id, tx_obj["transcript_id"]])
-                    )
+                    transcript_line.append("-".join([refseq_id, tx_obj["transcript_id"]]))
                     if "exon" in tx_obj:
                         transcript_line.append("".join(["exon", tx_obj["exon"]]))
                     elif "intron" in tx_obj:
@@ -121,9 +114,7 @@ def variant_verification(
                     else:
                         transcript_line.append("intergenic")
                     if "coding_sequence_name" in tx_obj:
-                        transcript_line.append(
-                            urllib.parse.unquote(tx_obj["coding_sequence_name"])
-                        )
+                        transcript_line.append(urllib.parse.unquote(tx_obj["coding_sequence_name"]))
                     else:
                         transcript_line.append("")
                     if "protein_sequence_name" in tx_obj:
@@ -166,13 +157,8 @@ def variant_verification(
 
     if order == "True":  # variant verification should be ordered
         # pin variant if it's not already pinned
-        if (
-            case_obj.get("suspects") is None
-            or variant_obj["_id"] not in case_obj["suspects"]
-        ):
-            store.pin_variant(
-                institute_obj, case_obj, user_obj, local_link, variant_obj
-            )
+        if case_obj.get("suspects") is None or variant_obj["_id"] not in case_obj["suspects"]:
+            store.pin_variant(institute_obj, case_obj, user_obj, local_link, variant_obj)
 
         email_subject = "SCOUT: validation of {} variant {}, ({})".format(
             category.upper(), display_name, email_subj_gene_symbol

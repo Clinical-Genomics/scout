@@ -72,11 +72,7 @@ def get_objects_from_form(variant_ids, form_fields, object_type):
         # For variants : ID = caseID_variantID
         if object_type == "casedata":
             subm_obj["_id"] = (
-                str(subm_obj["case_id"])
-                + "_"
-                + variant_id
-                + "_"
-                + str(subm_obj["individual_id"])
+                str(subm_obj["case_id"]) + "_" + variant_id + "_" + str(subm_obj["individual_id"])
             )
         else:
             subm_obj["_id"] = str(subm_obj["case_id"]) + "_" + variant_id
@@ -123,9 +119,7 @@ def clinvar_submission_header(submission_objs, csv_type):
     """
 
     complete_header = {}  # header containing all available fields
-    custom_header = (
-        {}
-    )  # header reflecting the real data included in the submission objects
+    custom_header = {}  # header reflecting the real data included in the submission objects
     if csv_type == "variant_data":
         complete_header = CLINVAR_HEADER
     else:
@@ -134,16 +128,12 @@ def clinvar_submission_header(submission_objs, csv_type):
     for (
         header_key,
         header_value,
-    ) in (
-        complete_header.items()
-    ):  # loop over the info fields provided in each submission object
+    ) in complete_header.items():  # loop over the info fields provided in each submission object
         for clinvar_obj in submission_objs:  # loop over the submission objects
             for (
                 key,
                 value,
-            ) in (
-                clinvar_obj.items()
-            ):  # loop over the keys and values of the clinvar objects
+            ) in clinvar_obj.items():  # loop over the keys and values of the clinvar objects
 
                 if (
                     not header_key in custom_header and header_key == key
@@ -171,9 +161,7 @@ def clinvar_submission_lines(submission_objs, submission_header):
         for (
             header_key,
             header_value,
-        ) in (
-            submission_header.items()
-        ):  # header_keys are the same keys as in submission_objs
+        ) in submission_header.items():  # header_keys are the same keys as in submission_objs
             if (
                 header_key in submission_obj
             ):  # The field is filled in for this variant/casedata object

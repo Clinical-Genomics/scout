@@ -18,9 +18,7 @@ class Exon(dict):
     
     """
 
-    def __init__(
-        self, exon_id, chrom, start, end, transcript, hgnc_id, rank, strand, build="37"
-    ):
+    def __init__(self, exon_id, chrom, start, end, transcript, hgnc_id, rank, strand, build="37"):
         super(Exon, self).__init__()
         self["exon_id"] = exon_id
         self["chrom"] = chrom

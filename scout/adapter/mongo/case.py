@@ -53,9 +53,7 @@ class CaseHandler(object):
                 if not hpo_term:
                     continue
                 set_2 = set_2.union(set(hpo_term.get("all_ancestors", [])))
-            LOG.debug(
-                "Check phenotypic similarity of %s and %s", case_obj["_id"], case["_id"]
-            )
+            LOG.debug("Check phenotypic similarity of %s and %s", case_obj["_id"], case["_id"])
             scores[case["_id"]] = ui_score(set_1, set_2)
         # Returns a list of tuples with highest score first
         return sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
@@ -156,9 +154,7 @@ class CaseHandler(object):
             name_value = name_query.split(":")[
                 -1
             ]  # capture ant value provided after query descriptor
-            users = self.user_collection.find(
-                {"name": {"$regex": name_query, "$options": "i"}}
-            )
+            users = self.user_collection.find({"name": {"$regex": name_query, "$options": "i"}})
             nr_users = sum(
                 1
                 for i in self.user_collection.find(
@@ -196,13 +192,10 @@ class CaseHandler(object):
                         search_institute_id = collaborator
                     else:
                         raise ValueError("No owner or collaborator institute_id given.")
-                    case_obj = self.case(
-                        display_name=name_value, institute_id=search_institute_id
-                    )
+                    case_obj = self.case(display_name=name_value, institute_id=search_institute_id)
                     if case_obj:
                         LOG.debug(
-                            "Search for cases similar to %s",
-                            case_obj.get("display_name"),
+                            "Search for cases similar to %s", case_obj.get("display_name"),
                         )
                         similar_cases = self.get_similar_cases(case_obj)
                         LOG.debug("Similar cases: %s", similar_cases)
@@ -235,9 +228,7 @@ class CaseHandler(object):
                         case_ids = [case["_id"] for case in cases_with_gene_doc]
                         query["_id"] = {"$in": case_ids}
                     else:
-                        LOG.info(
-                            "No gene with the HGNC symbol {} found.".format(name_value)
-                        )
+                        LOG.info("No gene with the HGNC symbol {} found.".format(name_value))
             elif name_query.startswith("pinned:"):
                 if name_value:
                     hgnc_id = self.hgnc_id(hgnc_symbol=name_value)
@@ -260,9 +251,7 @@ class CaseHandler(object):
                         case_ids = [case["_id"] for case in cases_with_gene_doc]
                         query["_id"] = {"$in": case_ids}
                     else:
-                        LOG.info(
-                            "No gene with the HGNC symbol {} found.".format(name_value)
-                        )
+                        LOG.info("No gene with the HGNC symbol {} found.".format(name_value))
             elif name_query.startswith("synopsis:"):
                 if name_value:
                     query["$text"] = {"$search": name_value}
@@ -271,9 +260,7 @@ class CaseHandler(object):
             elif name_query.startswith("cohort:"):
                 query["cohorts"] = name_value
             elif name_query.startswith("panel:"):
-                query["panels"] = {
-                    "$elemMatch": {"panel_name": name_value, "is_default": True}
-                }
+                query["panels"] = {"$elemMatch": {"panel_name": name_value, "is_default": True}}
             elif name_query.startswith("status:"):
                 status_query = name_query.replace("status:", "")
                 query["status"] = status_query
@@ -298,9 +285,7 @@ class CaseHandler(object):
             if research_requested:
                 verbs.append("open_research")
 
-            days_datetime = datetime.datetime.now() - datetime.timedelta(
-                days=within_days
-            )
+            days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
             # Look up 'mark_causative' events added since specified number days ago
             event_query = {
                 "category": "case",
@@ -398,16 +383,12 @@ class CaseHandler(object):
                 ).get("dynamic_gene_list", [])
             )
 
-            LOG.debug(
-                "Add selected: current dynamic gene list: {}".format(dynamic_gene_list)
-            )
+            LOG.debug("Add selected: current dynamic gene list: {}".format(dynamic_gene_list))
 
         res = []
         if hgnc_ids:
             LOG.info("Fetching genes by hgnc id: {}".format(hgnc_ids))
-            res = self.hgnc_collection.find(
-                {"hgnc_id": {"$in": hgnc_ids}, "build": build}
-            )
+            res = self.hgnc_collection.find({"hgnc_id": {"$in": hgnc_ids}, "build": build})
         elif hgnc_symbols:
             LOG.info("Fetching genes by hgnc symbols")
             for symbol in hgnc_symbols:
@@ -516,9 +497,7 @@ class CaseHandler(object):
         # Check that the owner exists in the database
         institute_obj = self.institute(config_data["owner"])
         if not institute_obj:
-            raise IntegrityError(
-                "Institute '%s' does not exist in database" % config_data["owner"]
-            )
+            raise IntegrityError("Institute '%s' does not exist in database" % config_data["owner"])
 
         # Parse the case information
         parsed_case = parse_case(config=config_data)
@@ -533,9 +512,7 @@ class CaseHandler(object):
 
         if old_case:
             LOG.info(
-                "Update case id for existing case: %s -> %s",
-                old_caseid,
-                case_obj["_id"],
+                "Update case id for existing case: %s -> %s", old_caseid, case_obj["_id"],
             )
             self.update_caseid(old_case, case_obj["_id"])
             update = True
@@ -555,16 +532,8 @@ class CaseHandler(object):
         files = [
             {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
             {"file_name": "vcf_sv", "variant_type": "clinical", "category": "sv"},
-            {
-                "file_name": "vcf_cancer",
-                "variant_type": "clinical",
-                "category": "cancer",
-            },
-            {
-                "file_name": "vcf_cancer_sv",
-                "variant_type": "clinical",
-                "category": "cancer_sv",
-            },
+            {"file_name": "vcf_cancer", "variant_type": "clinical", "category": "cancer",},
+            {"file_name": "vcf_cancer_sv", "variant_type": "clinical", "category": "cancer_sv",},
             {"file_name": "vcf_str", "variant_type": "clinical", "category": "str"},
         ]
 
@@ -579,9 +548,7 @@ class CaseHandler(object):
                 category = vcf_file["category"]
                 if update:
                     self.delete_variants(
-                        case_id=case_obj["_id"],
-                        variant_type=variant_type,
-                        category=category,
+                        case_id=case_obj["_id"], variant_type=variant_type, category=category,
                     )
                 self.load_variants(
                     case_obj=case_obj,
@@ -601,14 +568,10 @@ class CaseHandler(object):
             self.update_case(case_obj)
 
             # update Sanger status for the new inserted variants
-            self.update_case_sanger_variants(
-                institute_obj, case_obj, old_sanger_variants
-            )
+            self.update_case_sanger_variants(institute_obj, case_obj, old_sanger_variants)
 
             if keep_actions and old_evaluated_variants:
-                self.update_variant_actions(
-                    institute_obj, case_obj, old_evaluated_variants
-                )
+                self.update_variant_actions(institute_obj, case_obj, old_evaluated_variants)
 
         else:
             LOG.info("Loading case %s into database", case_obj["display_name"])
@@ -739,9 +702,7 @@ class CaseHandler(object):
         case_obj["updated_at"] = datetime.datetime.now()
 
         updated_case = self.case_collection.find_one_and_replace(
-            {"_id": case_obj["_id"]},
-            case_obj,
-            return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": case_obj["_id"]}, case_obj, return_document=pymongo.ReturnDocument.AFTER,
         )
 
         return updated_case
@@ -834,8 +795,7 @@ class CaseHandler(object):
             len(case_verif_variants["sanger_verified"]),
         )
         LOG.info(
-            "Nr variants with sanger ordered found: %s",
-            len(case_verif_variants["sanger_ordered"]),
+            "Nr variants with sanger ordered found: %s", len(case_verif_variants["sanger_ordered"]),
         )
 
         return case_verif_variants
@@ -1011,11 +971,7 @@ class CaseHandler(object):
                 }
 
         """
-        LOG.debug(
-            "Updating verification status for variants in case:{}".format(
-                case_obj["_id"]
-            )
-        )
+        LOG.debug("Updating verification status for variants in case:{}".format(case_obj["_id"]))
 
         updated_variants = {"updated_verified": [], "updated_ordered": []}
         # update verification status for verified variants of a case
@@ -1042,11 +998,7 @@ class CaseHandler(object):
                 )
 
                 old_event = self.event_collection.find_one(
-                    {
-                        "case": case_obj["_id"],
-                        "verb": verb,
-                        "variant_id": old_var["variant_id"],
-                    }
+                    {"case": case_obj["_id"], "verb": verb, "variant_id": old_var["variant_id"],}
                 )
 
                 if old_event is None:

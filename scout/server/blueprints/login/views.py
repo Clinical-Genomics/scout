@@ -68,9 +68,7 @@ def login():
         form = LDAPLoginForm()
         LOG.info("Validating LDAP user")
         if not form.validate_on_submit():
-            flash(
-                "username-password combination is not valid, plase try again", "warning"
-            )
+            flash("username-password combination is not valid, plase try again", "warning")
             return redirect(url_for("public.index"))
         user_id = form.username.data
 
@@ -156,9 +154,8 @@ def perform_login(user_dict):
         flash("you logged in as: {}".format(user_dict.name), "success")
         next_url = session.pop("next_url", None)
         return redirect(request.args.get("next") or next_url or url_for("cases.index"))
-    else:
-        flash("sorry, you could not log in", "warning")
-        return redirect(url_for("public.index"))
+    flash("sorry, you could not log in", "warning")
+    return redirect(url_for("public.index"))
 
 
 @ldap_manager.save_user

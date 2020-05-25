@@ -57,15 +57,11 @@ def genes(build, api_key):
     api_key = api_key or current_app.config.get("OMIM_API_KEY")
     mim_files = {}
     if not api_key:
-        LOG.warning(
-            "No omim api key provided, Please not that some information will be missing"
-        )
+        LOG.warning("No omim api key provided, Please not that some information will be missing")
 
     else:
         try:
-            mim_files = fetch_mim_files(
-                api_key, mim2genes=True, morbidmap=True, genemap2=True
-            )
+            mim_files = fetch_mim_files(api_key, mim2genes=True, morbidmap=True, genemap2=True)
         except Exception as err:
             LOG.warning(err)
             raise click.Abort()
@@ -110,9 +106,7 @@ def genes(build, api_key):
         # Fetch the transcripts from ensembl
         ensembl_transcripts = fetch_ensembl_transcripts(build=build)
 
-        transcripts = load_transcripts(
-            adapter, ensembl_transcripts, build, ensembl_genes
-        )
+        transcripts = load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
 
     adapter.update_indexes()
 

@@ -52,9 +52,7 @@ def add_panel_specific_gene_info(panel_info):
     return panel_specific
 
 
-def update_transcripts_information(
-    variant_gene, hgnc_gene, variant_obj, genome_build=None
-):
+def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build=None):
     """Collect tx info from the hgnc gene and panels and update variant transcripts
 
     Since the hgnc information are continuously being updated we need to run this each time a
@@ -73,9 +71,7 @@ def update_transcripts_information(
 
     """
     genome_build = genome_build or "37"
-    disease_associated_no_version = variant_gene.get(
-        "disease_associated_no_version", set()
-    )
+    disease_associated_no_version = variant_gene.get("disease_associated_no_version", set())
     # Create a dictionary with transcripts information
     # Use ensembl transcript id as keys
     transcripts_dict = {}
@@ -182,9 +178,7 @@ def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
         panel_info = add_panel_specific_gene_info(extra_info.get(hgnc_id, []))
         variant_gene.update(panel_info)
 
-        update_transcripts_information(
-            variant_gene, hgnc_gene, variant_obj, genome_build
-        )
+        update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build)
 
         variant_gene["common"] = hgnc_gene
 
@@ -255,34 +249,19 @@ def frequencies(variant_obj):
     if variant_obj["category"] == "sv":
         freqs = {
             "gnomad_frequency": {"display_name": "GnomAD", "link": None},
-            "clingen_cgh_benign": {
-                "display_name": "ClinGen CGH (benign)",
-                "link": None,
-            },
-            "clingen_cgh_pathogenic": {
-                "display_name": "ClinGen CGH (pathogenic)",
-                "link": None,
-            },
+            "clingen_cgh_benign": {"display_name": "ClinGen CGH (benign)", "link": None,},
+            "clingen_cgh_pathogenic": {"display_name": "ClinGen CGH (pathogenic)", "link": None,},
             "clingen_ngi": {"display_name": "ClinGen NGI", "link": None},
             "clingen_mip": {"display_name": "ClinGen MIP", "link": None},
             "swegen": {"display_name": "SweGen", "link": None},
             "decipher": {"display_name": "Decipher", "link": None},
             "thousand_genomes_frequency": {"display_name": "1000G", "link": None},
-            "thousand_genomes_frequency_left": {
-                "display_name": "1000G(left)",
-                "link": None,
-            },
-            "thousand_genomes_frequency_right": {
-                "display_name": "1000G(right)",
-                "link": None,
-            },
+            "thousand_genomes_frequency_left": {"display_name": "1000G(left)", "link": None,},
+            "thousand_genomes_frequency_right": {"display_name": "1000G(right)", "link": None,},
         }
     else:
         freqs = {
-            "gnomad_frequency": {
-                "display_name": "GnomAD",
-                "link": variant_obj.get("gnomad_link"),
-            },
+            "gnomad_frequency": {"display_name": "GnomAD", "link": variant_obj.get("gnomad_link"),},
             "thousand_genomes_frequency": {
                 "display_name": "1000G",
                 "link": variant_obj.get("thousandg_link"),
@@ -291,10 +270,7 @@ def frequencies(variant_obj):
                 "display_name": "1000G(max)",
                 "link": variant_obj.get("thousandg_link"),
             },
-            "exac_frequency": {
-                "display_name": "ExAC",
-                "link": variant_obj.get("exac_link"),
-            },
+            "exac_frequency": {"display_name": "ExAC", "link": variant_obj.get("exac_link"),},
             "max_exac_frequency": {
                 "display_name": "ExAC(max)",
                 "link": variant_obj.get("exac_link"),
@@ -357,8 +333,7 @@ def is_affected(variant_obj, case_obj):
         variant_obj(scout.models.Variant)
     """
     individuals = {
-        individual["individual_id"]: individual
-        for individual in case_obj["individuals"]
+        individual["individual_id"]: individual for individual in case_obj["individuals"]
     }
     for sample_obj in variant_obj["samples"]:
         individual = individuals[sample_obj.get("sample_id")]
@@ -378,9 +353,7 @@ def evaluation(store, evaluation_obj):
     evaluation_obj["criteria"] = {
         criterion["term"]: criterion for criterion in evaluation_obj["criteria"]
     }
-    evaluation_obj["classification"] = ACMG_COMPLETE_MAP.get(
-        evaluation_obj["classification"]
-    )
+    evaluation_obj["classification"] = ACMG_COMPLETE_MAP.get(evaluation_obj["classification"])
     return evaluation_obj
 
 

@@ -92,9 +92,7 @@ def parse_genotype(variant, ind, pos):
         ref_call = genotype[0]
         alt_call = genotype[1]
 
-        gt_call["genotype_call"] = "/".join(
-            [GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]]
-        )
+        gt_call["genotype_call"] = "/".join([GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]])
 
     paired_end_alt = None
     paired_end_ref = None

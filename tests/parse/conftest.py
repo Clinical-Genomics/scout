@@ -141,8 +141,7 @@ def mim2gene_lines():
         "# Copyright (c) 1966-2016 Johns Hopkins University. Use of this file "
         "adheres to the terms specified at https://omim.org/help/agreement.\n",
         "# Generated: 2017-02-02\n",
-        "# This file provides links between the genes in OMIM and other gene"
-        " identifiers.\n",
+        "# This file provides links between the genes in OMIM and other gene" " identifiers.\n",
         "# THIS IS NOT A TABLE OF GENE-PHENOTYPE RELATIONSHIPS.\n"
         "# MIM Number\tMIM Entry Type (see FAQ 1.3 at https://omim.org/help/faq)\t"
         "Entrez Gene ID (NCBI)\tApproved Gene Symbol (HGNC)\tEnsembl Gene ID (Ensembl)\n",

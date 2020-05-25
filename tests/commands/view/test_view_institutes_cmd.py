@@ -38,9 +38,7 @@ def test_view_institutes(mock_app, institute_obj):
     assert "Institute cust666 does not exist" in result.output
 
     # remove institute from database
-    store.institute_collection.find_one_and_delete(
-        {"_id": institute_obj["internal_id"]}
-    )
+    store.institute_collection.find_one_and_delete({"_id": institute_obj["internal_id"]})
     assert sum(1 for i in store.institute_collection.find()) == 0
 
     # Test cli again with no institutes in database

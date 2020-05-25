@@ -36,9 +36,7 @@ def check_connection(
         uri = "mongodb://{}:{}@{}:{}/{}".format(
             quote_plus(username), quote_plus(password), host, port, authdb
         )
-        log_uri = "mongodb://{}:****@{}:{}/{}".format(
-            quote_plus(username), host, port, authdb
-        )
+        log_uri = "mongodb://{}:****@{}:{}/{}".format(quote_plus(username), host, port, authdb)
     else:
         log_uri = uri = "mongodb://%s:%s" % (host, port)
 

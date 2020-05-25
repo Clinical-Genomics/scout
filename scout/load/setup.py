@@ -74,18 +74,12 @@ def setup_scout(
         LOG.info("Database deleted")
 
     institute_obj = build_institute(
-        internal_id=institute_id,
-        display_name=institute_id,
-        sanger_recipients=[user_mail],
+        internal_id=institute_id, display_name=institute_id, sanger_recipients=[user_mail],
     )
     adapter.add_institute(institute_obj)
 
     user_obj = dict(
-        _id=user_mail,
-        email=user_mail,
-        name=user_name,
-        roles=["admin"],
-        institutes=[institute_id],
+        _id=user_mail, email=user_mail, name=user_name, roles=["admin"], institutes=[institute_id],
     )
 
     adapter.add_user(user_obj)
@@ -111,9 +105,7 @@ def setup_scout(
         genemap_lines = mim_files["genemap2"]
 
     if resource_files.get("hpogenes_path"):
-        hpo_gene_lines = [
-            line for line in get_file_handle(resource_files.get("hpogenes_path"))
-        ]
+        hpo_gene_lines = [line for line in get_file_handle(resource_files.get("hpogenes_path"))]
     else:
         hpo_gene_lines = fetch_genes_to_hpo_to_disease()
 
@@ -158,9 +150,7 @@ def setup_scout(
         else:
             ensembl_transcripts = fetch_ensembl_transcripts(build=build)
         # Load the transcripts for a certain build
-        transcripts = load_transcripts(
-            adapter, ensembl_transcripts, build, ensembl_genes
-        )
+        transcripts = load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
 
     hpo_terms_handle = None
     if resource_files.get("hpoterms_path"):
