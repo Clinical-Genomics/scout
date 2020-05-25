@@ -28,8 +28,8 @@ def load_cytobands(resource, build, adapter):
                 _id=generate_md5_key([build, chrom, band]),
                 band=band,
                 chrom=str(chrom),  # 3
-                start=str(int(fields[1])+1),  # 58600000
-                stop=str(int(fields[2])+1),  # 63800000
+                start=str(int(fields[1]) + 1),  # 58600000
+                stop=str(int(fields[2]) + 1),  # 63800000
                 build=str(build),  # "37" or "38"
             )
             cytobands.append(cytoband_obj)
