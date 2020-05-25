@@ -26,7 +26,9 @@ def parse_reqs(req_path="./requirements.txt"):
     install_requires = []
     with io.open(os.path.join(here, "requirements.txt"), encoding="utf-8") as handle:
         # remove comments and empty lines
-        lines = (line.strip() for line in handle if line.strip() and not line.startswith("#"))
+        lines = (
+            line.strip() for line in handle if line.strip() and not line.startswith("#")
+        )
 
         for line in lines:
             # check for nested requirements files
@@ -105,7 +107,6 @@ setup(
     packages=find_packages(exclude=["tests/", "scripts/"]),
     zip_safe=False,
     install_requires=REQUIRED,
-    package_data={NAME: ["scout/resources/*.txt*"]},
     include_package_data=True,
     extras_require=dict(coverage=["chanjo-report"]),
     entry_points=dict(console_scripts=["scout = scout.commands:cli"]),
