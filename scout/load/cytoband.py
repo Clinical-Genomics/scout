@@ -1,4 +1,7 @@
 import logging
+import os.path
+
+from os import path
 from scout.utils.md5 import generate_md5_key
 
 LOG = logging.getLogger(__name__)
@@ -15,6 +18,10 @@ def load_cytobands(resource, build, adapter):
     """
     cytobands = []
     LOG.debug(f"Reading cytoband file for genome build {build}")
+
+    if path.exists(resource) is False:
+        LOG.error(f"Resource {resource} could not be found.")
+        return
 
     with open(resource) as cytob_file:
         for nline, line in enumerate(cytob_file):
