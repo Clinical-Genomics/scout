@@ -105,6 +105,7 @@ setup(
     packages=find_packages(exclude=["tests/", "scripts/"]),
     zip_safe=False,
     install_requires=REQUIRED,
+    package_data={NAME: ["scout/resources/*.txt*"]},
     include_package_data=True,
     extras_require=dict(coverage=["chanjo-report"]),
     entry_points=dict(console_scripts=["scout = scout.commands:cli"]),

@@ -2,6 +2,9 @@ name: Run tests for different versions
 
 on: ["push"]
 
+paths:
+    - 'scout/resources/**.txt'
+
 jobs:
   build:
 
@@ -34,7 +37,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install cython
         pip install numpy
-        pip install -e .
+        pip install .
         pip check
 
     - name: Dev Dependencies
