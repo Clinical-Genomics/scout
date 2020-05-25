@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- COSMIC badge shown in cancer variants
 
 ### Fixed
 - Bug in clinVar form when variant has no gene
