@@ -25,7 +25,22 @@ class CytobandHandler(object):
             build(str): "37" or "38"
 
         Returns:
-            cytobands_obj(dict)
+            cytobands_by_chrom_obj(dict). Something like this:
+                {
+                    "1": [
+                        {
+                            "band": "p36.33",
+                            "chrom": "1",
+                            "start": 0,
+                            "stop": "2300000",
+                        },
+                        list of cytobands for chr1
+                        ..
+                    ],
+                    "2" : [
+                        list of cytobands for chr2
+                    ]
+                }
 
         """
         match = {"$match": {"build": build}}
@@ -45,5 +60,5 @@ class CytobandHandler(object):
         sort = {"$sort": {"start": pymongo.ASCENDING}}
 
         result = self.cytoband_collection.aggregate([match, group, sort])
-        cytobands_by_chrom_obj = {each.pop("_id"): each for each in result}
-        return cytobands_by_chrom_obj
+        cytobands_by_chrom = {each.pop("_id"): each for each in result}
+        return cytobands_by_chrom

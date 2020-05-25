@@ -29,7 +29,7 @@ def cytoband(build):
         resources = cytoband_files
 
     # Remove previous cytoband objects from cytoband collection
-    store.cytoband_collection.delete_many({})
+    store.cytoband_collection.drop()
 
     # Load cytobands
     for resource in resources:
