@@ -32,5 +32,5 @@ def cytoband(build):
     store.cytoband_collection.drop()
 
     # Load cytobands
-    #for resource in resources:
+    # for resource in resources:
     #    load_cytobands(resource["path"], resource["build"], store)
