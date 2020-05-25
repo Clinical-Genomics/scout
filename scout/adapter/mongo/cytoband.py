@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pymongo
 
+
 class CytobandHandler(object):
     """Class to handle cytoband-related entries"""
 
