@@ -2,9 +2,6 @@ name: Run tests for different versions
 
 on: ["push"]
 
-paths:
-    - 'resources/**.txt'
-
 jobs:
   build:
 
