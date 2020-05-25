@@ -83,12 +83,7 @@
         <strong>Local (arch.)</strong>: {{ variant.local_obs_old or 0 }} obs.
       </div>
       {% if variant.cosmic_ids %}
-      <strong>COSMIC obs. </strong>:
-      <div>
-        {% for cosmicID in variant.cosmic_ids %}
-        {{cosmicID|cosmic_prefix}}
-        {% endfor %}
-      </div>
+      <strong>COSMIC</strong>: {{variant.cosmic_ids|count}} obs
       {% endif %}
     </div>
   ">
