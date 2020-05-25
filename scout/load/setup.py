@@ -121,8 +121,8 @@ def setup_scout(
         exac_lines = fetch_exac_constraint()
 
     # load cytobands into cytoband collection
-    for resource in cytoband_files:
-        load_cytobands(resource["path"], resource["build"], adapter)
+    #for resource in cytoband_files:
+    #    load_cytobands(resource["path"], resource["build"], adapter)
 
     builds = ["37", "38"]
     for build in builds:
