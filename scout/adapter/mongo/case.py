@@ -536,7 +536,7 @@ class CaseHandler(object):
             {"file_name": "vcf_cancer_sv", "variant_type": "clinical", "category": "cancer_sv",},
             {"file_name": "vcf_str", "variant_type": "clinical", "category": "str"},
         ]
-
+        # Added a complete non-sensical comment here
         try:
             for vcf_file in files:
                 # Check if file exists
