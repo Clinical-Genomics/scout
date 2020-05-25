@@ -3,6 +3,7 @@ import logging
 from os import path
 
 from scout.utils.md5 import generate_md5_key
+from scout.utils.handle import get_file_handle
 
 LOG = logging.getLogger(__name__)
 
@@ -23,23 +24,24 @@ def load_cytobands(resource, build, adapter):
         LOG.error(f"Resource {resource} could not be found.")
         return
 
-    with open(resource) as cytob_file:
-        for nline, line in enumerate(cytob_file):
-            # Line will look like this:
-            # 3	58600000	63800000	p14.2	gneg
-            fields = line.split("\t")
-            chrom = fields[0]
-            band = fields[3]
+    lines = get_file_handle(resource)
 
-            cytoband_obj = dict(
-                _id=generate_md5_key([build, chrom, band]),
-                band=band,
-                chrom=str(chrom),  # 3
-                start=str(int(fields[1]) + 1),  # 58600000
-                stop=str(int(fields[2]) + 1),  # 63800000
-                build=str(build),  # "37" or "38"
-            )
-            cytobands.append(cytoband_obj)
+    for line in lines:
+        # Line will look like this:
+        # 3	58600000	63800000	p14.2	gneg
+        fields = line.split("\t")
+        chrom = fields[0]
+        band = fields[3]
+
+        cytoband_obj = dict(
+            _id=generate_md5_key([build, chrom, band]),
+            band=band,
+            chrom=str(chrom),  # 3
+            start=str(int(fields[1]) + 1),  # 58600000
+            stop=str(int(fields[2]) + 1),  # 63800000
+            build=str(build),  # "37" or "38"
+        )
+        cytobands.append(cytoband_obj)
 
     LOG.debug(f"Found {cytobands} cytobands in the file.")
     adapter.add_cytobands(cytobands)
