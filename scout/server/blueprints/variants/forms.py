@@ -30,7 +30,7 @@ from scout.constants import (
 )
 
 LOG = logging.getLogger(__name__)
-CHROMOSOME_OPTIONS = [("", "")] + [(chrom, chrom) for chrom in CHROMOSOMES]
+CHROMOSOME_OPTIONS = [("", "All")] + [(chrom, chrom) for chrom in CHROMOSOMES]
 
 CLINSIG_OPTIONS = list(CLINSIG_MAP.items())
 FUNC_ANNOTATIONS = [(term, term.replace("_", " ")) for term in SO_TERMS]
