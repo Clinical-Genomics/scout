@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Ádded
+- COSMIC badge shown in cancer variants
 - Added if statements for UCSC-link from Structural variant view, for hg19/hg38
 
 ### Fixed
