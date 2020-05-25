@@ -41,24 +41,16 @@ def mt_report(case_id, test, outpath=None):
 
     if not case_obj:
         LOG.warning(
-            'Could not find a scout case with id "{}". No report was created.'.format(
-                case_id
-            )
+            'Could not find a scout case with id "{}". No report was created.'.format(case_id)
         )
         raise click.Abort()
 
     samples = case_obj.get("individuals")
     mt_variants = list(
-        adapter.variants(
-            case_id=case_id, query=query, nr_of_variants=-1, sort_key="position"
-        )
+        adapter.variants(case_id=case_id, query=query, nr_of_variants=-1, sort_key="position")
     )
     if not mt_variants:
-        LOG.warning(
-            "There are no MT variants associated to case {} in database!".format(
-                case_id
-            )
-        )
+        LOG.warning("There are no MT variants associated to case {} in database!".format(case_id))
         raise click.Abort()
 
     today = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -90,9 +82,7 @@ def mt_report(case_id, test, outpath=None):
             Report_Sheet.write(row, col, field)
 
         # Write variant lines, after header (start at line 1)
-        for row, line in enumerate(
-            sample_lines, 1
-        ):  # each line becomes a row in the document
+        for row, line in enumerate(sample_lines, 1):  # each line becomes a row in the document
             for col, field in enumerate(line):  # each field in line becomes a cell
                 Report_Sheet.write(row, col, field)
         workbook.close()
@@ -107,9 +97,5 @@ def mt_report(case_id, test, outpath=None):
             )
         )
     else:
-        LOG.info(
-            "Number of excel files written to folder {0}: {1}".format(
-                outpath, written_files
-            )
-        )
+        LOG.info("Number of excel files written to folder {0}: {1}".format(outpath, written_files))
     return written_files

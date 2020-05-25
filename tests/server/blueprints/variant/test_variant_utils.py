@@ -28,17 +28,13 @@ def test_clinsig_human():
     ## THEN assert there where no objects returned
     clinsig_obj = next(clinsigs)
     assert clinsig_obj["human"] == "Likely benign"
-    assert (
-        clinsig_obj["link"] == "https://www.ncbi.nlm.nih.gov/clinvar/variation/335067"
-    )
+    assert clinsig_obj["link"] == "https://www.ncbi.nlm.nih.gov/clinvar/variation/335067"
 
 
 def test_clinsig_human_no_accession():
     ## GIVEN a variant with clinsig info wothout accession number
     var_obj = {
-        "clnsig": [
-            {"value": "Likely benign", "revstat": "criteria_provided, single submitter"}
-        ]
+        "clnsig": [{"value": "Likely benign", "revstat": "criteria_provided, single submitter"}]
     }
     ## WHEN getting the clinsig
     clinsigs = clinsig_human(var_obj)
@@ -127,9 +123,7 @@ def test_update_transcripts_information_disease_associated():
 
     variant_obj = {}
     ## WHEN updating the transcripts information
-    update_transcripts_information(
-        variant_gene, hgnc_gene, variant_obj, genome_build=None
-    )
+    update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build=None)
     ## THEN assert that the tx on variant gene has is disease associated
     assert variant_gene["transcripts"][0].get("is_disease_associated") is True
 
@@ -199,9 +193,7 @@ def test_update_transcripts_information_refseq_id():
 
     variant_obj = {}
     ## WHEN updating the transcripts information
-    update_transcripts_information(
-        variant_gene, hgnc_gene, variant_obj, genome_build=None
-    )
+    update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build=None)
     ## THEN assert that the tx on variant gene has been given a ref seq id
     assert variant_gene["transcripts"][0].get("refseq_id") == "NM_001193301"
     ## THEN assert that the variant obj has refseq ids
@@ -275,9 +267,7 @@ def test_update_transcripts_information_refseq_id():
 
     variant_obj = {}
     ## WHEN updating the transcripts information
-    update_transcripts_information(
-        variant_gene, hgnc_gene, variant_obj, genome_build=None
-    )
+    update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build=None)
     ## THEN assert that the tx on variant gene has been given a ref seq id
     assert variant_gene["transcripts"][0].get("refseq_id") == "NM_001193301"
     ## THEN assert that the variant obj has refseq ids
@@ -351,9 +341,7 @@ def test_update_transcripts_information_is_primary():
 
     variant_obj = {}
     ## WHEN updating the transcripts information
-    update_transcripts_information(
-        variant_gene, hgnc_gene, variant_obj, genome_build=None
-    )
+    update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build=None)
     ## THEN assert that the tx on variant gene has been labeled primary transcript
     assert variant_gene["transcripts"][0].get("is_primary") is True
 
@@ -370,9 +358,7 @@ def test_update_transcripts_information(hgnc_gene, variant_gene):
 
 def test_add_panel_specific_gene_info_disease_tx():
     ## GIVEN some panel genes and a gene object
-    panel_info = [
-        {"hgnc_id": 100, "symbol": "AAA", "disease_associated_transcripts": ["NM001.1"]}
-    ]
+    panel_info = [{"hgnc_id": 100, "symbol": "AAA", "disease_associated_transcripts": ["NM001.1"]}]
     ## WHEN parsing the info
     panel_info = add_panel_specific_gene_info(panel_info)
     ## THEN assert no info is returned
@@ -490,9 +476,7 @@ def test_evaluation(real_variant_database):
     classification = "pathogenic"
 
     ## WHEN adding an evaluation to the database
-    store.submit_evaluation(
-        var, user, institute, case, link, classification=classification
-    )
+    store.submit_evaluation(var, user, institute, case, link, classification=classification)
 
     eval_obj = store.acmg_collection.find_one()
     assert eval_obj["institute_id"] == institute["_id"]

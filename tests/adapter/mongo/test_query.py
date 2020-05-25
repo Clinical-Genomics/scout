@@ -43,9 +43,7 @@ def test_panel_query(real_populated_database, case_obj, variant_objs):
     ## HPO panels works differently from normal gene panels:
     ## the list of genes from the HPO panel is built interactively
     ## and provided as such to the query builder function.
-    hpo_term = dict(
-        _id="HP1", hpo_id="HP1", description="First term", genes=[17284]  # POT1 gene
-    )
+    hpo_term = dict(_id="HP1", hpo_id="HP1", description="First term", genes=[17284])  # POT1 gene
     adapter.load_hpo_term(hpo_term)
     assert sum(1 for i in adapter.hpo_term_collection.find()) == 1
 
@@ -58,13 +56,7 @@ def test_panel_query(real_populated_database, case_obj, variant_objs):
     # grab a variant and add the above gene to it:
     adapter.variant_collection.find_one_and_update(
         {"_id": "4c7d5c70d955875504db72ef8e1abe77"},
-        {
-            "$set": {
-                "genes": [{"hgnc_id": 17284}],
-                "hgnc_ids": [17284],
-                "hgnc_symbols": ["POT1"],
-            }
-        },
+        {"$set": {"genes": [{"hgnc_id": 17284}], "hgnc_ids": [17284], "hgnc_symbols": ["POT1"],}},
     )
     # test generate HPO gene list for the above term
     hpo_genes = adapter.generate_hpo_gene_list(*["HP1"])
@@ -84,9 +76,7 @@ def test_panel_query(real_populated_database, case_obj, variant_objs):
     assert {"hgnc_symbols": {"$in": ["POT1"]}} in gene_filters
 
     # Use query on variant data
-    hpo_filtered_vars = list(
-        adapter.variants(case_obj["_id"], query=query, nr_of_variants=-1)
-    )
+    hpo_filtered_vars = list(adapter.variants(case_obj["_id"], query=query, nr_of_variants=-1))
     assert len(hpo_filtered_vars) == 1
 
     # Test query for a gene panel (not HPO-based)
@@ -107,17 +97,13 @@ def test_panel_query(real_populated_database, case_obj, variant_objs):
     assert mongo_query["panels"] == {"$in": ["test_panel"]}
 
     # Use panel query to get variants occurring in genes from test_panel:
-    test_panel_vars = list(
-        adapter.variants(case_obj["_id"], query=query, nr_of_variants=-1)
-    )
+    test_panel_vars = list(adapter.variants(case_obj["_id"], query=query, nr_of_variants=-1))
     # The 5 variants should be returned as a query result
     assert len(test_panel_vars) == 5
 
     # Test combine the 2 panels: hpo panel and test_panel
     query = {"gene_panels": ["test_panel", "hpo"], "hgnc_symbols": ["POT1"]}
-    combined_panels_vars = list(
-        adapter.variants(case_obj["_id"], query=query, nr_of_variants=-1)
-    )
+    combined_panels_vars = list(adapter.variants(case_obj["_id"], query=query, nr_of_variants=-1))
     # 5 (test panel) + 1 (hpo panel) variants should be returned
     assert len(combined_panels_vars) == 6
 
@@ -133,12 +119,7 @@ def test_build_gnomad_query(adapter):
     assert mongo_query["category"] == "snv"
     assert mongo_query["variant_type"] == "clinical"
     assert mongo_query["$and"] == [
-        {
-            "$or": [
-                {"gnomad_frequency": {"$lt": freq}},
-                {"gnomad_frequency": {"$exists": False}},
-            ]
-        }
+        {"$or": [{"gnomad_frequency": {"$lt": freq}}, {"gnomad_frequency": {"$exists": False}},]}
     ]
 
 
@@ -185,12 +166,7 @@ def test_build_gnomad_and_cadd(adapter):
     mongo_query = adapter.build_query(case_id, query=query)
 
     assert mongo_query["$and"] == [
-        {
-            "$or": [
-                {"gnomad_frequency": {"$lt": freq}},
-                {"gnomad_frequency": {"$exists": False}},
-            ]
-        },
+        {"$or": [{"gnomad_frequency": {"$lt": freq}}, {"gnomad_frequency": {"$exists": False}},]},
         {"cadd_score": {"$gt": cadd}},
     ]
 
@@ -286,21 +262,16 @@ def test_build_clinsig_filter(real_variant_database):
     assert a_variant["_id"]
 
     # there should be no variant with clnsig.value=='Pathogenic, Likely pathogenic'
-    res = adapter.variant_collection.find(
-        {"clnsig.value": "Pathogenic, Likely pathogenic"}
-    )
+    res = adapter.variant_collection.find({"clnsig.value": "Pathogenic, Likely pathogenic"})
     assert sum(1 for i in res) == 0
 
     # Modify clnsig value of this variant to 'Pathogenic, Likely pathogenic'
     adapter.variant_collection.update_one(
-        {"_id": a_variant["_id"]},
-        {"$set": {"clnsig.0.value": "Pathogenic, Likely pathogenic"}},
+        {"_id": a_variant["_id"]}, {"$set": {"clnsig.0.value": "Pathogenic, Likely pathogenic"}},
     )
 
     # One variant has multiple clssig now:
-    res = adapter.variant_collection.find(
-        {"clnsig.value": "Pathogenic, Likely pathogenic"}
-    )
+    res = adapter.variant_collection.find({"clnsig.value": "Pathogenic, Likely pathogenic"})
     assert sum(1 for i in res) == 1
 
     # Update raw query to find this variant as well
@@ -396,9 +367,7 @@ def test_build_clinsig_always(real_variant_database):
     assert sum(1 for i in res)
 
     # filter variants using query:
-    filtered_variants = list(
-        adapter.variants(case_id=case_id, nr_of_variants=-1, query=query)
-    )
+    filtered_variants = list(adapter.variants(case_id=case_id, nr_of_variants=-1, query=query))
     assert len(filtered_variants) > 0
 
     # Make sure that variants are filtered as they should:
@@ -451,18 +420,8 @@ def test_build_spidex_high(adapter):
             "$or": [
                 {
                     "$or": [
-                        {
-                            "$and": [
-                                {"spidex": {"$gt": -2}},
-                                {"spidex": {"$lt": -float("inf")}},
-                            ]
-                        },
-                        {
-                            "$and": [
-                                {"spidex": {"$gt": 2}},
-                                {"spidex": {"$lt": float("inf")}},
-                            ]
-                        },
+                        {"$and": [{"spidex": {"$gt": -2}}, {"spidex": {"$lt": -float("inf")}},]},
+                        {"$and": [{"spidex": {"$gt": 2}}, {"spidex": {"$lt": float("inf")}},]},
                     ]
                 }
             ]
@@ -571,12 +530,7 @@ def test_build_swegen_sv(adapter):
 
     mongo_query = adapter.build_query(case_id, query=query)
     assert mongo_query["$and"] == [
-        {
-            "$or": [
-                {"swegen": {"$exists": False}},
-                {"swegen": {"$lt": query["swegen"] + 1}},
-            ]
-        }
+        {"$or": [{"swegen": {"$exists": False}}, {"swegen": {"$lt": query["swegen"] + 1}},]}
     ]
 
 

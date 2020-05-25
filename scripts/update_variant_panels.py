@@ -49,9 +49,7 @@ LOG = logging.getLogger(__name__)
 )
 @click.version_option(__version__)
 @click.pass_context
-def update_panels(
-    context, mongodb, username, password, authdb, host, port, loglevel, config
-):
+def update_panels(context, mongodb, username, password, authdb, host, port, loglevel, config):
     """scout: manage interactions with a scout instance."""
     coloredlogs.install(level=loglevel)
 
@@ -71,9 +69,7 @@ def update_panels(
     mongo_config["port"] = port or cli_config.get("port") or 27017
     mongo_config["username"] = username or cli_config.get("username")
     mongo_config["password"] = password or cli_config.get("password")
-    mongo_config["authdb"] = (
-        authdb or cli_config.get("authdb") or mongo_config["mongodb"]
-    )
+    mongo_config["authdb"] = authdb or cli_config.get("authdb") or mongo_config["mongodb"]
     mongo_config["omim_api_key"] = cli_config.get("omim_api_key")
 
     LOG.info("Setting database name to %s", mongo_config["mongodb"])

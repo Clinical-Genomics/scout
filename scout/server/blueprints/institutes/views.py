@@ -48,8 +48,7 @@ def institute(institute_id):
     """ Edit institute data """
     if institute_id not in current_user.institutes and current_user.is_admin is False:
         flash(
-            "Current user doesn't have the permission to modify this institute",
-            "warning",
+            "Current user doesn't have the permission to modify this institute", "warning",
         )
         return redirect(request.referrer)
 
@@ -58,9 +57,7 @@ def institute(institute_id):
 
     # if institute is to be updated
     if request.method == "POST" and form.validate_on_submit():
-        institute_obj = controllers.update_institute_settings(
-            store, institute_obj, request.form
-        )
+        institute_obj = controllers.update_institute_settings(store, institute_obj, request.form)
         if isinstance(institute_obj, dict):
             flash("institute was updated ", "success")
         else:  # an error message was retuned
@@ -80,9 +77,7 @@ def institute(institute_id):
     form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
 
     # collect all available default HPO terms
-    default_phenotypes = [
-        choice[0].split(" ")[0] for choice in form.pheno_groups.choices
-    ]
+    default_phenotypes = [choice[0].split(" ")[0] for choice in form.pheno_groups.choices]
     if institute_obj.get("phenotype_groups"):
         for key, value in institute_obj["phenotype_groups"].items():
             if not key in default_phenotypes:
@@ -92,8 +87,5 @@ def institute(institute_id):
                 form.pheno_groups.choices.append((custom_group, custom_group))
 
     return render_template(
-        "/overview/institute.html",
-        form=form,
-        default_phenotypes=default_phenotypes,
-        **data
+        "/overview/institute.html", form=form, default_phenotypes=default_phenotypes, **data
     )

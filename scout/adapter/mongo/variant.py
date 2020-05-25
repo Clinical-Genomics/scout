@@ -142,9 +142,7 @@ class VariantHandler(VariantLoader):
 
                 # Since a ensemble transcript can have multiple refseq identifiers we add all of
                 # those
-                transcript["refseq_identifiers"] = hgnc_transcript.get(
-                    "refseq_identifiers", []
-                )
+                transcript["refseq_identifiers"] = hgnc_transcript.get("refseq_identifiers", [])
 
             variant_gene["common"] = hgnc_gene
             # Add the associated disease terms
@@ -200,9 +198,9 @@ class VariantHandler(VariantLoader):
         if sort_key == "position":
             sorting = [("position", pymongo.ASCENDING)]
 
-        result = self.variant_collection.find(
-            mongo_query, skip=skip, limit=nr_of_variants
-        ).sort(sorting)
+        result = self.variant_collection.find(mongo_query, skip=skip, limit=nr_of_variants).sort(
+            sorting
+        )
 
         return result
 
@@ -265,20 +263,14 @@ class VariantHandler(VariantLoader):
 
         if case_obj:
             variant_obj = self.add_gene_info(
-                variant_obj=variant_obj,
-                gene_panels=gene_panels,
-                build=case_obj["genome_build"],
+                variant_obj=variant_obj, gene_panels=gene_panels, build=case_obj["genome_build"],
             )
         else:
-            variant_obj = self.add_gene_info(
-                variant_obj=variant_obj, gene_panels=gene_panels
-            )
+            variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels)
 
         if variant_obj["chromosome"] in ["X", "Y"]:
             # TO DO add the build here
-            variant_obj["is_par"] = is_par(
-                variant_obj["chromosome"], variant_obj["position"]
-            )
+            variant_obj["is_par"] = is_par(variant_obj["chromosome"], variant_obj["position"])
 
         return variant_obj
 
@@ -310,10 +302,7 @@ class VariantHandler(VariantLoader):
             cohorts
         """
         mongo_variant_query = self.build_variant_query(
-            query=query,
-            institute_id=institute_id,
-            category=category,
-            variant_type=variant_type,
+            query=query, institute_id=institute_id, category=category, variant_type=variant_type,
         )
 
         sorting = [("rank_score", pymongo.DESCENDING)]
@@ -380,12 +369,7 @@ class VariantHandler(VariantLoader):
 
             query = self.case_collection.aggregate(
                 [
-                    {
-                        "$match": {
-                            "collaborators": institute_id,
-                            "causatives": {"$exists": True},
-                        }
-                    },
+                    {"$match": {"collaborators": institute_id, "causatives": {"$exists": True},}},
                     {"$unwind": "$causatives"},
                     {"$group": {"_id": "$causatives"}},
                 ]
@@ -517,9 +501,7 @@ class VariantHandler(VariantLoader):
         """
         category = category or ""
         LOG.info(
-            "Deleting old {0} {1} variants for case {2}".format(
-                variant_type, category, case_id
-            )
+            "Deleting old {0} {1} variants for case {2}".format(variant_type, category, case_id)
         )
         query = {"case_id": case_id, "variant_type": variant_type}
         if category:
@@ -592,18 +574,14 @@ class VariantHandler(VariantLoader):
 
         # Collect the result in a dictionary
         variants = {}
-        case_obj = self.case(
-            case_id=case_id
-        )  # case exists since it's used in the query above
+        case_obj = self.case(case_id=case_id)  # case exists since it's used in the query above
         for var in self.variant_collection.find(query):
             variants[var["variant_id"]] = self.add_gene_info(
                 variant_obj=var, build=case_obj["genome_build"]
             )
 
         # Collect all variant comments from the case
-        event_query = {
-            "$and": [{"case": case_id}, {"category": "variant"}, {"verb": "comment"}]
-        }
+        event_query = {"$and": [{"case": case_id}, {"category": "variant"}, {"verb": "comment"}]}
 
         # Get all variantids for commented variants
         comment_variants = {
@@ -681,9 +659,7 @@ class VariantHandler(VariantLoader):
             vcf_obj = VCF(variant_file)
         except Exception:
             raise FileNotFoundError(
-                "Could not access {}. The file is missing or malformed".format(
-                    variant_file
-                )
+                "Could not access {}. The file is missing or malformed".format(variant_file)
             )
 
         region = ""
@@ -711,9 +687,7 @@ class VariantHandler(VariantLoader):
                 for variant in vcf_obj(region):
                     temp.write(str(variant))
             except Exception:
-                raise FileNotFoundError(
-                    "Could not find index for {}".format(variant_file)
-                )
+                raise FileNotFoundError("Could not find index for {}".format(variant_file))
 
         return file_name
 

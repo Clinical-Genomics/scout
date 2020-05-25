@@ -48,8 +48,7 @@ class IndexHandler(object):
                     self.db[collection_name].drop_index(index_name)
             LOG.info(
                 "creating indexes for {0} collection: {1}".format(
-                    collection_name,
-                    ", ".join([index.document.get("name") for index in indexes]),
+                    collection_name, ", ".join([index.document.get("name") for index in indexes]),
                 )
             )
             self.db[collection_name].create_indexes(indexes)
@@ -80,11 +79,7 @@ class IndexHandler(object):
                             )
                         )
                     except Exception as ex:
-                        LOG.warning(
-                            "An error occurred while updating Scout indexes: {}".format(
-                                ex
-                            )
-                        )
+                        LOG.warning("An error occurred while updating Scout indexes: {}".format(ex))
 
         if nr_updated == 0:
             LOG.info("All indexes in place")

@@ -145,8 +145,7 @@ def load_hgnc_genes(
         for gene_data in bar:
             if not gene_data.get("chromosome"):
                 LOG.debug(
-                    "skipping gene: %s. No coordinates found",
-                    gene_data.get("hgnc_symbol", "?"),
+                    "skipping gene: %s. No coordinates found", gene_data.get("hgnc_symbol", "?"),
                 )
                 non_existing += 1
                 continue

@@ -16,8 +16,7 @@ def test_load_delivery_report(mock_app, case_obj):
 
     # Test CLI function
     result = runner.invoke(
-        cli,
-        ["load", "delivery-report", case_obj["_id"], delivery_report_path, "-update"],
+        cli, ["load", "delivery-report", case_obj["_id"], delivery_report_path, "-update"],
     )
 
     assert "saved report to case!" in result.output

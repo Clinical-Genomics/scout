@@ -14,20 +14,13 @@ LOG = logging.getLogger(__name__)
 @click.command("omim", short_help="Update omim gene panel")
 @click.option("--api-key", help="Specify the api key")
 @click.option(
-    "--institute",
-    help="Specify the owner of the omim panel",
-    default="cust002",
-    show_default=True,
+    "--institute", help="Specify the owner of the omim panel", default="cust002", show_default=True,
 )
 @click.option(
-    "--genemap2",
-    type=click.Path(exists=True),
-    help="Path to file in omim genemap2 format",
+    "--genemap2", type=click.Path(exists=True), help="Path to file in omim genemap2 format",
 )
 @click.option(
-    "--mim2genes",
-    type=click.Path(exists=True),
-    help="Path to file in omim mim2genes format",
+    "--mim2genes", type=click.Path(exists=True), help="Path to file in omim mim2genes format",
 )
 @with_appcontext
 def omim(api_key, institute, genemap2, mim2genes):

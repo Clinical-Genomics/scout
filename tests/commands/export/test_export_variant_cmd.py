@@ -47,9 +47,7 @@ def test_export_variants(mock_app, case_obj):
     assert str(variant_obj["position"]) in result.output
 
     # Test the cli by providing the document_id of the variant
-    result = runner.invoke(
-        cli, ["export", "variants", "-d", variant_obj["document_id"]]
-    )
+    result = runner.invoke(cli, ["export", "variants", "-d", variant_obj["document_id"]])
     assert result.exit_code == 0
     assert "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO" in result.output
     # variant should be returned
@@ -63,9 +61,7 @@ def test_export_variants(mock_app, case_obj):
     assert str(variant_obj["position"]) in result.output
 
     # Test the cli by providing the case_id of the variantand and json option
-    result = runner.invoke(
-        cli, ["export", "variants", "--case-id", case_obj["_id"], "--json"]
-    )
+    result = runner.invoke(cli, ["export", "variants", "--case-id", case_obj["_id"], "--json"])
     assert result.exit_code == 0
     assert "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO" not in result.output
     # variant should be returned
@@ -87,10 +83,7 @@ def test_export_verified(mock_app, case_obj, user_obj, institute_obj):
     # Test the cli without verified variants available
     result = runner.invoke(cli, ["export", "verified"])
     assert result.exit_code == 0
-    assert (
-        "There are no verified variants for institute cust000 in database!"
-        in result.output
-    )
+    assert "There are no verified variants for institute cust000 in database!" in result.output
 
     # Set a variant as verified
     variant_obj = store.variant_collection.find_one()
@@ -119,15 +112,10 @@ def test_export_verified(mock_app, case_obj, user_obj, institute_obj):
     result = runner.invoke(cli, ["export", "verified", "--test", "-c", "cust666"])
     assert result.exit_code == 0
     # Variant should not be found now
-    assert (
-        "There are no verified variants for institute cust666 in database!"
-        in result.output
-    )
+    assert "There are no verified variants for institute cust666 in database!" in result.output
 
     # Test the cli with the right collaborator param
-    result = runner.invoke(
-        cli, ["export", "verified", "--test", "-c", case_obj["owner"]]
-    )
+    result = runner.invoke(cli, ["export", "verified", "--test", "-c", case_obj["owner"]])
     assert result.exit_code == 0
     # Variant should be found again
     assert "Success. Verified variants file contains" in result.output

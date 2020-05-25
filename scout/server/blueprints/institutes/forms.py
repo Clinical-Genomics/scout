@@ -24,14 +24,7 @@ class InstituteForm(FlaskForm):
     hpo_tuples = []
     for key in PHENOTYPE_GROUPS.keys():
         option_name = " ".join(
-            [
-                key,
-                ",",
-                PHENOTYPE_GROUPS[key]["name"],
-                "(",
-                PHENOTYPE_GROUPS[key]["abbr"],
-                ")",
-            ]
+            [key, ",", PHENOTYPE_GROUPS[key]["name"], "(", PHENOTYPE_GROUPS[key]["abbr"], ")",]
         )
         hpo_tuples.append((option_name, option_name))
 
@@ -43,8 +36,7 @@ class InstituteForm(FlaskForm):
         "Sanger recipients", validators=[validators.Optional()]
     )
     coverage_cutoff = IntegerField(
-        "Coverage cutoff",
-        validators=[validators.Optional(), validators.NumberRange(min=1)],
+        "Coverage cutoff", validators=[validators.Optional(), validators.NumberRange(min=1)],
     )
     frequency_cutoff = DecimalField(
         "Frequency cutoff",
@@ -57,13 +49,9 @@ class InstituteForm(FlaskForm):
     pheno_group = TextField("New phenotype group", validators=[validators.Optional()])
     pheno_abbrev = TextField("Abbreviation", validators=[validators.Optional()])
 
-    pheno_groups = NonValidatingSelectMultipleField(
-        "Custom phenotype groups", choices=hpo_tuples
-    )
+    pheno_groups = NonValidatingSelectMultipleField("Custom phenotype groups", choices=hpo_tuples)
     cohorts = NonValidatingSelectMultipleField(
         "Available patient cohorts", validators=[validators.Optional()]
     )
-    institutes = NonValidatingSelectMultipleField(
-        "Institutes to share cases with", choices=[]
-    )
+    institutes = NonValidatingSelectMultipleField("Institutes to share cases with", choices=[])
     submit_btn = SubmitField("Save settings")
