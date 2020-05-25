@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import pytest
 from scout.commands import cli
 
 
@@ -16,7 +15,6 @@ def test_setup_database_invalid_omim_key(mock_app):
     assert result.exit_code != 0
 
 
-@pytest.mark.skip
 def test_setup_database(mock_app):
     """Testing the cli to setup a full scale database"""
 

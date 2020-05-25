@@ -14,6 +14,7 @@ def load_cytobands(resource, build, adapter):
 
     """
     cytobands = []
+    LOG.debug(f"Reading cytoband file for genome build {build}")
     for line in open(resource):
         # Line will look like this:
         # 3	58600000	63800000	p14.2	gneg
@@ -25,8 +26,8 @@ def load_cytobands(resource, build, adapter):
             _id=generate_md5_key([build, chrom, band]),
             band=band,
             chrom=chrom,  # 3
-            start=int(fields[1]) + 1,  # 58600000
-            stop=int(fields[2]) + 1,  # 63800000
+            start=int(fields[1])+1,  # 58600000
+            stop=int(fields[2])+1,  # 63800000
             build=build,  # "37" or "38"
         )
         cytobands.append(cytoband_obj)

@@ -15,8 +15,9 @@ class CytobandHandler(object):
             cytobands(list): a list of cytobands objects
 
         """
+        LOG.debug(f"Inserting {len(cytobands)} cytoband intervals into database")
         result = self.cytoband_collection.insert_many(cytobands)
-        LOG.info(f"Number of inserted documents:{len(result.inserted_ids)}")
+        LOG.debug(f"Number of inserted documents:{len(result.inserted_ids)}")
 
     def cytoband_by_chrom(self, build="37"):
         """Returns a dictionary of cytobands with chromosomes as keys
