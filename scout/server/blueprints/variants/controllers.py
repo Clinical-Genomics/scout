@@ -300,7 +300,7 @@ def parse_variant(
     variant_obj["length"] = {100000000000: "inf", -1: "n.d."}.get(variant_length, variant_length)
     if not "end_chrom" in variant_obj:
         variant_obj["end_chrom"] = variant_obj["chromosome"]
-    variant_obj['cosmic_link'] = cosmic_link(variant_obj)
+    variant_obj["cosmic_link"] = cosmic_link(variant_obj)
     return variant_obj
 
 
