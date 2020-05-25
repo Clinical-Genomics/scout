@@ -3,7 +3,7 @@ name: Run tests for different versions
 on: ["push"]
 
 paths:
-    - 'scout/resources/**.txt'
+    - 'resources/**.txt'
 
 jobs:
   build:
