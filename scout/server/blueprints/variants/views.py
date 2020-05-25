@@ -62,7 +62,7 @@ def variants(institute_id, case_name):
         form = FiltersForm(request.args)
         # set form variant data type the first time around
         form.variant_type.data = variant_type
-        form.chrom.data = None
+        form.chrom.data = request.args.get("chrom", None)
 
     # populate filters dropdown
     available_filters = store.filters(institute_id, category)
