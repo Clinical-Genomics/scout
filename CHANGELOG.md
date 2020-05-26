@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
+
+### Added
+- Default gene-panel in non-cancer structural view in url
+
 ### Added
 - COSMIC badge shown in cancer variants
 
