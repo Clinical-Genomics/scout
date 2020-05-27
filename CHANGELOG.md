@@ -5,10 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
+
 ### Added
 - COSMIC badge shown in cancer variants
+- Default gene-panel in non-cancer structural view in url
+- Filter SNVs and SVs by cytoband coordinates
 - Mark MANE transcript in list of transcripts in "Transcript overview" on variant page
-
 
 ### Fixed
 - Bug in clinVar form when variant has no gene

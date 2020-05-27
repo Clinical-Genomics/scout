@@ -622,6 +622,7 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     if request_obj.method == "GET":
         form = SvFiltersForm(request_obj.args)
         form.variant_type.data = request_obj.args.get("variant_type", "clinical")
+        form.chrom.data = request_obj.args.get("chrom", None)
 
     else:  # POST
         form = populate_filters_form(

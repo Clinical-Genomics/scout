@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from scout.commands import cli
 
 
@@ -23,7 +22,8 @@ def test_setup_database(mock_app):
     assert runner
 
     # test the CLI command for seting up scout
-    result = runner.invoke(cli, ["setup", "demo"], input="y")
+    result = runner.invoke(cli, ["setup", "demo"])
+
     # Make sure that setup function works correctly
     assert result.exit_code == 0
     assert "Scout instance setup successful" in result.output
