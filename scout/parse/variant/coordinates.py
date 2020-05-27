@@ -1,24 +1,30 @@
 """Code to parse variant coordinates"""
 
-from scout.constants import BND_ALT_PATTERN, CHR_PATTERN, CYTOBANDS
+from scout.constants import BND_ALT_PATTERN, CHR_PATTERN, CYTOBANDS_37, CYTOBANDS_38
 
 
-def get_cytoband_coordinates(chrom, pos):
+def get_cytoband_coordinates(chrom, pos, build):
     """Get the cytoband coordinate for a position
 
     Args:
         chrom(str)
         pos(int)
+        build(str)
 
     Returns:
         coordinate(str)
     """
     coordinate = ""
 
-    if chrom not in CYTOBANDS:
+    if build == "37":
+        coord_resource = CYTOBANDS_37
+    else:
+        coord_resource = CYTOBANDS_38
+
+    if chrom not in coord_resource:
         return coordinate
 
-    for interval in CYTOBANDS[chrom][pos]:
+    for interval in coord_resource[chrom][pos]:
         coordinate = interval.data
 
     return coordinate
@@ -104,11 +110,13 @@ def get_end_chrom(alt, chrom):
     return end_chrom
 
 
-def parse_coordinates(variant, category):
+def parse_coordinates(variant, category, build="37"):
     """Find out the coordinates for a variant
 
     Args:
         variant(cyvcf2.Variant)
+        category(str): snv, sv
+        build(str): "37" or "38"
 
     Returns:
         coordinates(dict): A dictionary on the form:
@@ -169,8 +177,8 @@ def parse_coordinates(variant, category):
         "length": length,
         "sub_category": sub_category,
         "mate_id": variant.INFO.get("MATEID"),
-        "cytoband_start": get_cytoband_coordinates(chrom, position),
-        "cytoband_end": get_cytoband_coordinates(end_chrom, end),
+        "cytoband_start": get_cytoband_coordinates(chrom, position, build),
+        "cytoband_end": get_cytoband_coordinates(end_chrom, end, build),
         "end_chrom": end_chrom,
     }
 
