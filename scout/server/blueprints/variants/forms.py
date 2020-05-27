@@ -26,9 +26,11 @@ from scout.constants import (
     SO_TERMS,
     SPIDEX_LEVELS,
     SV_TYPES,
+    CHROMOSOMES,
 )
 
 LOG = logging.getLogger(__name__)
+CHROMOSOME_OPTIONS = [("", "All")] + [(chrom, chrom) for chrom in CHROMOSOMES]
 
 CLINSIG_OPTIONS = list(CLINSIG_MAP.items())
 FUNC_ANNOTATIONS = [(term, term.replace("_", " ")) for term in SO_TERMS]
@@ -98,7 +100,9 @@ class FiltersForm(VariantFiltersForm):
     clinsig_confident_always_returned = BooleanField("CLINSIG Confident")
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
 
-    chrom = TextField("Chromosome", [validators.Optional()])
+    chrom = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS)
+    cytoband_start = SelectField("Cytoband start", choices=[])
+    cytoband_end = SelectField("Cytoband end", choices=[])
     start = IntegerField("Start position", [validators.Optional()])
     end = IntegerField("End position", [validators.Optional()])
     local_obs = IntegerField("Local obs. (archive)")
@@ -138,7 +142,9 @@ class SvFiltersForm(VariantFiltersForm):
     clingen_ngi = IntegerField("ClinGen NGI obs")
     swegen = IntegerField("SweGen obs")
 
-    chrom = TextField("Chromosome", [validators.Optional()])
+    chrom = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS)
+    cytoband_start = SelectField("Cytoband start", choices=[])
+    cytoband_end = SelectField("Cytoband end", choices=[])
     start = IntegerField("Start position", [validators.Optional()])
     end = IntegerField("End position", [validators.Optional()])
 
