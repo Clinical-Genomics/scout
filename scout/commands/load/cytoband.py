@@ -19,18 +19,14 @@ def cytoband(build):
     Args:
         build(str): "37" or "38"
     """
-    resources = []
-    # setting up resource files
-    if build is not None:
-        for resource in cytoband_files:
-            if resource["build"] == build:
-                resources.append(resource)
-    else:
-        resources = cytoband_files
-
     # Remove previous cytoband objects from cytoband collection
     store.cytoband_collection.drop()
 
-    # Load cytobands
-    for resource in resources:
-        load_cytobands(resource["path"], resource["build"], store)
+    if build is None:
+        builds = cytoband_files.keys()
+    else:
+        builds = [build]
+    # Look cytobands for each chromosome build
+    for genome_build in builds:
+        resource_path = cytoband_files.get(genome_build)
+        load_cytobands(cytoband_files.get(genome_build),genome_build, store)

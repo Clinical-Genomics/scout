@@ -43,5 +43,5 @@ def load_cytobands(resource, build, adapter):
         )
         cytobands.append(cytoband_obj)
 
-    LOG.debug(f"Found {cytobands} cytobands in the file.")
+    LOG.debug(f"Found {len(cytobands)} cytobands in the file.")
     adapter.add_cytobands(cytobands)
