@@ -19,7 +19,8 @@ from scout.demo import load_path, panel_path
 
 ### Import demo files ###
 from scout.demo.resources import demo_files
-from scout.load import load_hgnc_genes, load_hpo, load_transcripts
+from scout.resources import cytoband_files
+from scout.load import load_hgnc_genes, load_hpo, load_transcripts, load_cytobands
 
 # Resources
 from scout.parse.panel import parse_gene_panel
@@ -118,6 +119,10 @@ def setup_scout(
         exac_lines = [line for line in get_file_handle(resource_files.get("exac_path"))]
     else:
         exac_lines = fetch_exac_constraint()
+
+    # Load cytobands into cytoband collection
+    for genome_build, cytobands_path in cytoband_files.items():
+        load_cytobands(cytobands_path, genome_build, adapter)
 
     builds = ["37", "38"]
     for build in builds:

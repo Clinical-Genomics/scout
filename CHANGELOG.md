@@ -7,9 +7,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
-- Default gene-panel in non-cancer structural view in url
 - COSMIC badge shown in cancer variants
+- Default gene-panel in non-cancer structural view in url
+- Filter SNVs and SVs by cytoband coordinates
 - Added if statements for UCSC-link from Structural variant view, for hg19/hg38
+
 
 ### Fixed
 - Bug in clinVar form when variant has no gene
