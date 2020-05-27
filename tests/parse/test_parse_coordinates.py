@@ -7,6 +7,7 @@ from scout.parse.variant.coordinates import (
     sv_length,
 )
 
+
 def test_parse_coordinates_snv(mock_variant):
     """Test to parse the coordinates for a simple snv"""
     # GIVEN a cyvcf2 variant
