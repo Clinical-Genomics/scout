@@ -28,9 +28,11 @@ def load_cytobands(resource, build, adapter):
 
     for line in lines:
         # Line will look like this:
+        if line.startswith("#"):
+            continue
         # 3	58600000	63800000	p14.2	gneg
         fields = line.split("\t")
-        chrom = fields[0]
+        chrom = fields[0].lstrip("chr")
         band = fields[3]
 
         cytoband_obj = dict(

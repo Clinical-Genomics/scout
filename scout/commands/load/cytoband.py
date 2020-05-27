@@ -10,7 +10,7 @@ from scout.server.extensions import store
 @click.option(
     "--build",
     type=click.Choice(["37", "38"]),
-    help="What genome build should be used. If no choice update 37 and 38.",
+    help="What genome build should be loaded. If no choice update 37 and 38.",
 )
 @with_appcontext
 def cytoband(build):
@@ -29,4 +29,4 @@ def cytoband(build):
     # Look cytobands for each chromosome build
     for genome_build in builds:
         resource_path = cytoband_files.get(genome_build)
-        load_cytobands(cytoband_files.get(genome_build), genome_build, store)
+        load_cytobands(resource_path, genome_build, store)
