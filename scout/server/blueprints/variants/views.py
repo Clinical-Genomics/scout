@@ -160,7 +160,7 @@ def variants(institute_id, case_name):
         severe_so_terms=SEVERE_SO_TERMS,
         cytobands=cytobands,
         page=page,
-        **data
+        **data,
     )
 
 
@@ -196,7 +196,7 @@ def str_variants(institute_id, case_name):
         manual_rank_options=MANUAL_RANK_OPTIONS,
         form=form,
         page=page,
-        **data
+        **data,
     )
 
 
@@ -236,7 +236,7 @@ def sv_variants(institute_id, case_name):
         severe_so_terms=SEVERE_SO_TERMS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
-        **data
+        **data,
     )
 
 
@@ -313,7 +313,7 @@ def cancer_sv_variants(institute_id, case_name):
         cancer_tier_options=CANCER_TIER_OPTIONS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
-        **data
+        **data,
     )
 
 
