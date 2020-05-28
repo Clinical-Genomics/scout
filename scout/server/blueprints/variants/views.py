@@ -260,7 +260,12 @@ def cancer_variants(institute_id, case_name):
                     flash(f"{field} --> {err}", "warning")
             # And do not submit the form
             return redirect(
-                url_for(".cancer_variants", institute_id=institute_id, case_name=case_name, expand_search=True),
+                url_for(
+                    ".cancer_variants",
+                    institute_id=institute_id,
+                    case_name=case_name,
+                    expand_search=True,
+                ),
             )
         page = int(request.form.get("page", 1))
 
