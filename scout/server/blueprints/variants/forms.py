@@ -45,6 +45,7 @@ class NonValidatingSelectMultipleField(SelectMultipleField):
     def pre_validate(self, form):
         pass
 
+
 class TagListField(Field):
     widget = TextInput()
 
