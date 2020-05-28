@@ -54,7 +54,7 @@ def variants(institute_id, case_name):
     user_obj = store.user(current_user.email)
 
     if request.method == "POST":
-        # If special filter buttons were selected:
+        # If special filter were selected:
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
@@ -250,10 +250,20 @@ def cancer_variants(institute_id, case_name):
 
     user_obj = store.user(current_user.email)
     if request.method == "POST":
-        page = int(request.form.get("page", 1))
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
+        if form.validate_on_submit() is False:
+            # Flash a message with errors
+            for field, err_list in form.errors.items():
+                for err in err_list:
+                    flash(f"{field} --> {err}", "warning")
+            # And do not submit the form
+            return redirect(
+                url_for(".cancer_variants", institute_id=institute_id, case_name=case_name, expand_search=True),
+            )
+        page = int(request.form.get("page", 1))
+
     else:
         page = int(request.args.get("page", 1))
         form = CancerFiltersForm(request.args)

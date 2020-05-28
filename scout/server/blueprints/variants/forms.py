@@ -79,13 +79,13 @@ class VariantFiltersForm(FlaskForm):
     functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
 
-    cadd_score = BetterDecimalField("CADD", places=2)
+    cadd_score = BetterDecimalField("CADD", places=2, validators=[validators.Optional()])
     cadd_inclusive = BooleanField("CADD inclusive")
     clinsig = SelectMultipleField("CLINSIG", choices=CLINSIG_OPTIONS)
 
-    gnomad_frequency = BetterDecimalField("gnomadAF", places=2)
+    gnomad_frequency = BetterDecimalField("gnomadAF", places=2, validators=[validators.Optional()])
 
-    filters = SelectField(choices=[])
+    filters = SelectField(choices=[], validators=[validators.Optional()])
     filter_display_name = StringField(default="")
     save_filter = SubmitField(label="Save filter")
     load_filter = SubmitField(label="Load filter")
@@ -115,10 +115,10 @@ class FiltersForm(VariantFiltersForm):
 class CancerFiltersForm(VariantFiltersForm):
     """Base filters for CancerFiltersForm - extends VariantsFiltersForm"""
 
-    depth = IntegerField("Depth >")
-    alt_count = IntegerField("Min alt count >")
-    control_frequency = BetterDecimalField("Control freq. <", places=2)
-    vaf_frequency = BetterDecimalField("VAF >", places=2)
+    depth = IntegerField("Depth >", validators=[validators.Optional()])
+    alt_count = IntegerField("Min alt count >", validators=[validators.Optional()])
+    control_frequency = BetterDecimalField("Control freq. <", places=2, validators=[validators.Optional()])
+    vaf_frequency = BetterDecimalField("VAF >", places=2, validators=[validators.Optional()])
     mvl_tag = BooleanField("In Managed Variant List")
 
 
