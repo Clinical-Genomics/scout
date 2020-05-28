@@ -26,7 +26,7 @@
 {% block content_main %}
 <form  action="{{ url_for('overview.institute', institute_id=institute._id) }}" method="POST"
   accept-charset="utf-8" id="institute_form">
-{{ form.csrf_token() }}
+{{ form.csrf_token }}
 <div class="container">
   <div class="display:block">
     <!-- institute settings panel -->
