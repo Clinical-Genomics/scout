@@ -5,6 +5,7 @@ from flask_login import current_user
 from urllib.parse import urlencode
 from scout.server.extensions import store
 
+
 def test_variants_clinical_filter(app, institute_obj, case_obj):
 
     # GIVEN a variant without clinVar annotations
@@ -225,7 +226,7 @@ def test_filter_cancer_variants_wrong_params(app, institute_obj, case_obj):
 
         # When a POST request with filter containing wrongly formatted parameters is sent
         form_data = {
-            "control_frequency" : "not a number!",
+            "control_frequency": "not a number!",
         }
         resp = client.post(
             url_for(
@@ -233,7 +234,7 @@ def test_filter_cancer_variants_wrong_params(app, institute_obj, case_obj):
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
             ),
-            data = form_data,
+            data=form_data,
         )
         # THEN it should return a redirected page
         assert resp.status_code == 302
@@ -243,17 +244,11 @@ def test_filter_cancer_variants_by_vaf(app, institute_obj, case_obj):
     """Tests the cancer form filter by VAF"""
 
     # Given a test variant in database
-    test_var = store.variant_collection.find_one(
-        {"variant_type": "clinical", "category": "snv"}
-    )
+    test_var = store.variant_collection.find_one({"variant_type": "clinical", "category": "snv"})
 
     # with control and cancer frequencies, and category = cancer
     store.variant_collection.find_one_and_update(
-        {"_id": test_var["_id"] },
-        {"$set" : {
-            "tumor" : {"alt_freq" : 0.49},
-            "category": "cancer"
-        }}
+        {"_id": test_var["_id"]}, {"$set": {"tumor": {"alt_freq": 0.49}, "category": "cancer"}}
     )
 
     # GIVEN an initialized app
@@ -277,7 +272,7 @@ def test_filter_cancer_variants_by_vaf(app, institute_obj, case_obj):
 
         # When a POST request filter with VAF > than the VAF in test_var is sent to the page
         form_data = {
-            "vaf_frequency" : 0.5,
+            "vaf_frequency": 0.5,
         }
         resp = client.post(
             url_for(
@@ -285,7 +280,7 @@ def test_filter_cancer_variants_by_vaf(app, institute_obj, case_obj):
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
             ),
-            data = form_data,
+            data=form_data,
         )
         # THEN it should return a page
         assert resp.status_code == 200

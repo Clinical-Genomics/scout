@@ -84,7 +84,7 @@ def app(real_database_name, real_variant_database, user_obj):
             MONGO_DBNAME=real_database_name,
             DEBUG_TB_ENABLED=False,
             LOGIN_DISABLED=True,
-            WTF_CSRF_ENABLED=False
+            WTF_CSRF_ENABLED=False,
         )
     )
 
