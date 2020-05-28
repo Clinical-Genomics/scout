@@ -39,6 +39,12 @@ SV_TYPE_CHOICES = [(term, term.replace("_", " ").upper()) for term in SV_TYPES]
 SPIDEX_CHOICES = [(term, term.replace("_", " ")) for term in SPIDEX_LEVELS]
 
 
+class NonValidatingSelectMultipleField(SelectMultipleField):
+    """Necessary to skip validation of dynamic multiple selects in form"""
+
+    def pre_validate(self, form):
+        pass
+
 class TagListField(Field):
     widget = TextInput()
 
@@ -72,7 +78,7 @@ class BetterDecimalField(DecimalField):
 class VariantFiltersForm(FlaskForm):
     variant_type = HiddenField(default="clinical")
 
-    gene_panels = SelectMultipleField(choices=[])
+    gene_panels = NonValidatingSelectMultipleField(choices=[])
     hgnc_symbols = TagListField("HGNC Symbols/Ids (case sensitive)")
 
     region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
@@ -81,7 +87,7 @@ class VariantFiltersForm(FlaskForm):
 
     cadd_score = BetterDecimalField("CADD", places=2, validators=[validators.Optional()])
     cadd_inclusive = BooleanField("CADD inclusive")
-    clinsig = SelectMultipleField("CLINSIG", choices=CLINSIG_OPTIONS)
+    clinsig = NonValidatingSelectMultipleField("CLINSIG", choices=CLINSIG_OPTIONS)
 
     gnomad_frequency = BetterDecimalField("gnomadAF", places=2, validators=[validators.Optional()])
 
