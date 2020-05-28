@@ -118,6 +118,7 @@ class CancerFiltersForm(VariantFiltersForm):
     depth = IntegerField("Depth >")
     alt_count = IntegerField("Min alt count >")
     control_frequency = BetterDecimalField("Control freq. <", places=2)
+    vaf_frequency = BetterDecimalField("VAF >", places=2)
     mvl_tag = BooleanField("In Managed Variant List")
 
 
