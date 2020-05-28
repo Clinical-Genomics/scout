@@ -592,7 +592,6 @@ class QueryHandler(object):
                     {"tumor.alt_freq": {"$gt": float(query.get("vaf_frequency"))}}
                 )
 
-
             if criterion == "mvl_tag":
                 LOG.debug("add managed variant list filter")
                 mongo_secondary_query.append({"mvl_tag": {"$exists": True}})
