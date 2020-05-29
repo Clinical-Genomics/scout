@@ -49,13 +49,12 @@ def unindexed_remote_static():
     return resp
 
 
-@alignviewers_bp.route("/remote/cloud", methods=["OPTIONS", "GET"])
-def cloud_resource():
+@alignviewers_bp.route("/cloud/<resource>", methods=["OPTIONS", "GET"])
+def cloud_resource(resource):
     """Retrieve a track or an alignment stored on the cloud using a presigned url"""
-    resource = request.args.get("resource")
+
     cloud_credentials = controllers.get_cloud_credentials()
     presigned_url = amazon_s3_url(cloud_credentials, resource)
-    LOG.debug(f"presigned_url:{presigned_url}")
     return redirect(presigned_url, code=302)
 
 
