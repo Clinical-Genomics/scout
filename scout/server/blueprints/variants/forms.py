@@ -92,7 +92,7 @@ class VariantFiltersForm(FlaskForm):
 
     gnomad_frequency = BetterDecimalField("gnomadAF", places=2, validators=[validators.Optional()])
 
-    filters = SelectField(choices=[], validators=[validators.Optional()])
+    filters = NonValidatingSelectMultipleField(choices=[], validators=[validators.Optional()])
     filter_display_name = StringField(default="")
     save_filter = SubmitField(label="Save filter")
     load_filter = SubmitField(label="Load filter")
