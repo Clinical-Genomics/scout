@@ -49,10 +49,10 @@ def unindexed_remote_static():
     return resp
 
 
-@alignviewers_bp.route("/cloud/<resource>", methods=["OPTIONS", "GET"])
-def cloud_resource(resource):
+@alignviewers_bp.route("/remote/cloud", methods=["OPTIONS", "GET"])
+def cloud_resource():
     """Retrieve a track or an alignment stored on the cloud using a presigned url"""
-
+    resource = request.args.get("resource")
     cloud_credentials = controllers.get_cloud_credentials()
     presigned_url = amazon_s3_url(cloud_credentials, resource)
     LOG.debug(f"presigned_url:{presigned_url}")
@@ -121,18 +121,9 @@ def igv():
     display_obj["clinvar_cnvs"] = controllers.clinvar_cnvs_track(chromosome_build, chrom)
 
     # Custom track hosted on a Amazon bucket are loaded here
-    custom_tracks = []
     if request.form.get("extra_tracks") and current_app.config.get("BUCKET_NAME"):
-        display_obj["custom_tracks"] = []
-        custom_tracks = request.form.getlist('extra_tracks')
-        config_tracks = current_app.config.get("CUSTOM_IGV_TRACKS")
-        for track in custom_tracks  :
-            track_obj = config_tracks.get(track)
-            if track_obj is None:
-                continue
-            display_obj["custom_tracks"].append(controllers.cloud_track(track_obj))
-
-    LOG.debug(f"Custom tracks------------>:{display_obj['custom_tracks']}")
+        selected_custom_tracks = request.form.getlist('extra_tracks') # Tracks selected by user
+        controllers.cloud_tracks(chromosome_build, chrom, selected_custom_tracks, display_obj)
 
     # Init upcoming igv-tracks
     sample_tracks = []

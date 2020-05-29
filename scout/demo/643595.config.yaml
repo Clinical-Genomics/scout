@@ -62,5 +62,3 @@ rank_model_version: '1.20'
 rank_score_threshold: -100
 analysis_date: 2016-10-12 14:00:46
 human_genome_build: 37
-
-track: 'cancer'

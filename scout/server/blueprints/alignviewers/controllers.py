@@ -50,7 +50,6 @@ def get_cloud_credentials():
         "bucket": current_app.config.get("BUCKET_NAME"),
         "folder": current_app.config.get("BUCKET_FOLDER"),  # Could be None
     }
-    LOG.debug(f"cloud_credentials--->{cloud_credentials}")
     return cloud_credentials
 
 
@@ -107,8 +106,35 @@ def clinvar_cnvs_track(build, chrom):
 
     return clinvar_cnvs_track
 
+
+def cloud_tracks(build, chrom, selected_tracks, display_obj):
+    """Compare user-selected custom tracks with cloud tracks specified in app config and create the IGV.js track_list
+
+    Accepts:
+        build(str): "37" or "38"
+        chrom(str): chromosome
+        selected_tracks(list): list of user-selected custom tracks
+        display_obj(dict): the object containing data for igv.js
+
+    """
+    display_obj["custom_tracks"] = []
+    config_tracks = current_app.config.get("CUSTOM_IGV_TRACKS")
+    for track in selected_tracks:
+
+        if chrom == "M": # No MT data in Hg19
+            build = "38"
+        track_obj = config_tracks.get(track)
+        if track_obj is None:
+            continue
+        track_obj_right_build = track_obj.get(build)
+        if track_obj_right_build is None:
+            continue
+        display_obj["custom_tracks"].append(cloud_track(track_obj_right_build))
+    LOG.debug(f"Custom tracks:{display_obj['custom_tracks']}")
+
+
 def cloud_track(track_obj):
-    """Return a dictionary consisting in the cosmic coding track
+    """Return a dictionary consisting of one custom cloud track
 
     Accepts:
         track_obj(dict)
@@ -127,16 +153,10 @@ def cloud_track(track_obj):
         igv_track(dict)
 
     """
+
     # if track file is contained in a bucket folder
-    cloud_credentials = get_cloud_credentials()
     track_url = track_obj["file_name"]
     track_index = ".".join([track_url,track_obj["index_format"]])
-
-    cloud_folder = cloud_credentials.get("folder")
-
-    if cloud_folder is not None:
-        track_url = "/".join([cloud_folder, track_url])
-        track_index = "/".join([cloud_folder, track_index])
 
     igv_track = dict(
         name = track_obj.get("description", track_obj.get("file_name")),

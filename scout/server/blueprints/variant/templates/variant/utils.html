@@ -5,10 +5,8 @@
     </div>
     <div class="col-6">
       <select multiple="multiple" name="extra_tracks" id="extra_tracks" class="selectpicker" data-width="80%">
-        {% for trackid, track in igv_extra_tracks.items() %}
-          {% if track.genome_build|string == case.genome_build|string %}
+        {% for trackid in igv_extra_tracks.keys() %}
             <option value={{ trackid }}>{{ trackid }}</option>
-          {% endif %}
         {% endfor %}
       </select>
     </div>
