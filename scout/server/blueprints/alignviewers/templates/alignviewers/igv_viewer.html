@@ -67,26 +67,6 @@
                           height: "{{clinvar_cnvs.height}}",
                           order: Number.MIN_VALUE,
                       },
-                      {% if cosmic_coding %}
-                        {
-                          name: "{{ cosmic_coding.name }}",
-                          type: "{{ cosmic_coding.type }}",
-                          format: "{{ cosmic_coding.format }}",
-                          displayMode: "{{ cosmic_coding.displayMode }}",
-                          url: "{{ url_for('alignviewers.cloud_resource', resource=cosmic_coding.url) }}",
-                          indexURL: "{{ url_for('alignviewers.cloud_resource', resource=cosmic_coding.indexURL) }}",
-                        },
-                      {% endif %}
-                      {% if cosmic_non_coding %}
-                        {
-                          name: "{{ cosmic_non_coding.name }}",
-                          type: "{{ cosmic_non_coding.type }}",
-                          format: "{{ cosmic_non_coding.format }}",
-                          displayMode: "{{ cosmic_non_coding.displayMode }}",
-                          url: "{{ url_for('alignviewers.cloud_resource', resource=cosmic_non_coding.url) }}",
-                          indexURL: "{{ url_for('alignviewers.cloud_resource', resource=cosmic_non_coding.indexURL) }}",
-                        },
-                      {% endif %}
                       {
                           name: "{{ genes_track.name }}",
                           type: "{{ genes_track.type }}",
@@ -98,6 +78,18 @@
                           order: Number.MIN_VALUE,
                           visibilityWindow: 300000000,
                       },
+                      {% if custom_tracks %}
+                        {% for custom_track in custom_tracks %}
+                          {
+                            name: "{{ custom_track.name }}",
+                            type: "{{ custom_track.type }}",
+                            format: "{{ custom_track.format }}",
+                            displayMode: "{{ custom_track.displayMode }}",
+                            url: "{{ url_for('alignviewers.cloud_resource', resource=custom_track.url) }}",
+                            indexURL: "{{ url_for('alignviewers.cloud_resource', resource=custom_track.indexURL) }}",
+                          },
+                        {% endfor %}
+                      {% endif %}
                       {% for wtrack in rhocall_wig_tracks %}
                       {
                         type: "wig",

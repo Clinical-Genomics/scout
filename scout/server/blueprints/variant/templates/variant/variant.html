@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
-{% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
+{% from "utils.html" import comments_panel, activity_panel, pedigree_panel%}
 {% from "variants/utils.html" import compounds_table, modal_causative %}
-{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button %}
+{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel, pin_button, causative_button, extra_tracks_macro %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, severity_list, conservations, mappability %}
@@ -476,6 +476,11 @@
                 {% else %}
                   <span class="text-muted">BAM file(s) missing</span>
                 {% endif %}
+                <!--Load a multiselect with extra IGV tracks if they are available-->
+                {% if igv_extra_tracks and (case.mt_bams or case.bam_files) %}
+                  {{ extra_tracks_macro(case, igv_extra_tracks) }}
+                {% endif %}
+
               </td>
               {% if config.SQLALCHEMY_DATABASE_URI %}
                 {% for gene in variant.genes %}

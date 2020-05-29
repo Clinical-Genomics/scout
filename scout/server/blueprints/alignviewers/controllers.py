@@ -32,12 +32,6 @@ HG19CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvar
 HG38CLINVAR_CNVS_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarCnv.bb"
 HG19CLINVAR_CNVS_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg19/bbi/clinvar/clinvarCnv.bb"
 
-# Cosmic tracks
-HG19COSMIC_CODING = "CosmicCodingMuts_v90_hg19.vcf.gz"
-HG19COSMIC_NON_CODING = "CosmicNonCodingVariants_v90_hg19.vcf.gz"
-HG38COSMIC_CODING = "CosmicCodingMuts_v90_hg38.vcf.gz"
-HG38COSMIC_NON_CODING = "CosmicNonCodingVariants_v90_hg38.vcf.gz"
-
 
 def get_cloud_credentials():
     """Returns cloud S3 storage credentials as a dictionary
@@ -109,58 +103,46 @@ def clinvar_cnvs_track(build, chrom):
 
     return clinvar_cnvs_track
 
-
-def cosmic_track(build, chrom, coding=True):
+def cloud_track(track_obj):
     """Return a dictionary consisting in the cosmic coding track
 
     Accepts:
-        build(str): "37" or "38"
-        chrom(str)
-        coding(bool): True=cosmic coding, False=cosmic non-coding
+        track_obj(dict)
+            Example: "cosmic_coding_v90_hg19": {
+                "description" : "Cosmic coding mutations v90 hg19",
+                "file_name": "CosmicCodingMuts_v90_hg19.vcf.gz",
+                "type": "variant",
+                "format": "vcf",
+                "displayMode": "squished",
+                "genome_build": "37",
+                "access_type": "credentials",
+                "index_format": "tbi"
+            }
 
     Returns:
-        cosmic_track(dict)
+        igv_track(dict)
+
     """
-    cosmic_track = {
-        "name": "Cosmic coding",
-        "type": "variant",
-        "format": "vcf",
-        "displayMode": "squished",
-    }
-    if coding is False:
-        cosmic_track["name"] = "Cosmic non coding"
-
-    track = None
-    track_index = None
-
-    if build in ["GRCh38", "38"] or chrom == "M":
-        if coding:
-            track = HG38COSMIC_CODING
-            track_index = ".".join([HG38COSMIC_CODING, "tbi"])
-        else:
-            track = HG38COSMIC_NON_CODING
-            track_index = ".".join([HG38COSMIC_NON_CODING, "tbi"])
-    else:
-        if coding:
-            track = HG19COSMIC_CODING
-            track_index = ".".join([HG19COSMIC_CODING, "tbi"])
-        else:
-            track = HG19COSMIC_NON_CODING
-            track_index = ".".join([HG19COSMIC_NON_CODING, "tbi"])
-
     # if track file is contained in a bucket folder
     cloud_credentials = get_cloud_credentials()
+    track_url = track_obj["file_name"]
+    track_index = ".".join([track_url,track_obj["index_format"]])
+
     cloud_folder = cloud_credentials.get("FOLDER_NAME")
 
     if cloud_folder is not None:
-        cosmic_track["url"] = "/".join([cloud_folder, track])
-        cosmic_track["indexURL"] = "/".join([cloud_folder, track_index])
-    else:
-        cosmic_track["url"] = track
-        cosmic_track["indexURL"] = track_index
-
-    return cosmic_track
-
+        track_url = "/".join([cloud_folder, track_url])
+        track_index = "/".join([cloud_folder, track_index])
+        
+    igv_track = dict(
+        name = track_obj.get("description", track_obj.get("file_name")),
+        type = track_obj.get("type"),
+        format = track_obj.get("format"),
+        displayMode = track_obj.get("displayMode", "squished"),
+        url = track_url,
+        indexURL = track_index
+    )
+    return igv_track
 
 def reference_track(build, chrom):
     """Return a dictionary consisting in the igv.js genome reference track

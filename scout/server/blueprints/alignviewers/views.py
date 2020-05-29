@@ -119,10 +119,19 @@ def igv():
     display_obj["clinvar_snvs"] = controllers.clinvar_track(chromosome_build, chrom)
     display_obj["clinvar_cnvs"] = controllers.clinvar_cnvs_track(chromosome_build, chrom)
 
-    if request.form.get("cancer_annotations") and current_app.config.get("BUCKET_NAME"):
-        # cancer sample(s): load cosmic annotations
-        display_obj["cosmic_coding"] = controllers.cosmic_track(chromosome_build, chrom, True)
-        display_obj["cosmic_non_coding"] = controllers.cosmic_track(chromosome_build, chrom, False)
+    # Custom track hosted on a Amazon bucket are loaded here
+    custom_tracks = []
+    if request.form.get("extra_tracks") and current_app.config.get("BUCKET_NAME"):
+        display_obj["custom_tracks"] = []
+        custom_tracks = request.form.getlist('extra_tracks')
+        config_tracks = current_app.config.get("CUSTOM_IGV_TRACKS")
+        for track in custom_tracks  :
+            track_obj = config_tracks.get(track)
+            if track_obj is None:
+                continue
+            display_obj["custom_tracks"].append(controllers.cloud_track(track_obj))
+
+    LOG.debug(f"Custom tracks------------>:{display_obj['custom_tracks']}")
 
     # Init upcoming igv-tracks
     sample_tracks = []
