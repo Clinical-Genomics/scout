@@ -1,4 +1,7 @@
+import logging
 from flask import current_app
+
+LOG = logging.getLogger(__name__)
 
 # Genome reference tracks
 HG19REF_URL = "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg19/hg19.fasta"
@@ -45,8 +48,9 @@ def get_cloud_credentials():
         "key": current_app.config.get("ACCESS_KEY"),
         "secret_key": current_app.config.get("SECRET_ACCESS_KEY"),
         "bucket": current_app.config.get("BUCKET_NAME"),
-        "folder": current_app.config.get("FOLDER_NAME"),  # Could be None
+        "folder": current_app.config.get("BUCKET_FOLDER"),  # Could be None
     }
+    LOG.debug(f"cloud_credentials--->{cloud_credentials}")
     return cloud_credentials
 
 
@@ -128,7 +132,7 @@ def cloud_track(track_obj):
     track_url = track_obj["file_name"]
     track_index = ".".join([track_url,track_obj["index_format"]])
 
-    cloud_folder = cloud_credentials.get("FOLDER_NAME")
+    cloud_folder = cloud_credentials.get("folder")
 
     if cloud_folder is not None:
         track_url = "/".join([cloud_folder, track_url])
