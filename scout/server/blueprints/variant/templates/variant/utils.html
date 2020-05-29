@@ -247,7 +247,7 @@
   </div>
 {% endmacro %}
 
-{% macro sv_alignments(variant, case, zoom)%}
+{% macro sv_alignments(variant, case, zoom, igv_extra_tracks)%}
     <div>
       {% if zoom == "start" %}
         {{ variant.chromosome }}:{{ variant.position }}
@@ -273,6 +273,10 @@
           {% elif zoom == "length" %}
             <input type="hidden" name="start" value="{{variant.position - 500}}">
             <input type="hidden" name="stop" value="{{variant.end + 500}}">
+          {% endif %}
+          <!--Load a multiselect with extra IGV tracks if they are available-->
+          {% if igv_extra_tracks %}
+            {{ extra_tracks_macro(case, igv_extra_tracks) }}
           {% endif %}
         {% endif %}
 

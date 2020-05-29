@@ -63,6 +63,10 @@ def sv_variant(institute_id, case_name, variant_id):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
         data["observations"] = observations(store, loqusdb, data["case"], data["variant"])
 
+    custom_tracks = current_app.config.get("CUSTOM_IGV_TRACKS")
+    if custom_tracks is not None:
+        data["igv_extra_tracks"] = custom_tracks
+
     return data
 
 

@@ -193,13 +193,13 @@
         <li class="list-group-item">
           <div class="row d-flex justify-content-between">
             <div>Breakpoint 1</div>
-            {{ sv_alignments(variant, case, "start") }}
+            {{ sv_alignments(variant, case, "start", igv_extra_tracks) }}
           </div>
         </li>
         <li class="list-group-item">
           <div class="row d-flex justify-content-between">
             <div>Breakpoint 2</div>
-            {{ sv_alignments(variant, case, "end") }}
+            {{ sv_alignments(variant, case, "end", igv_extra_tracks) }}
           </div>
         </li>
         <li class="list-group-item">
@@ -217,7 +217,7 @@
         <li class="list-group-item">
           <div class="row d-flex justify-content-between">
             <div>Length</div>
-            {{ sv_alignments(variant, case, "length") }}
+            {{ sv_alignments(variant, case, "length", igv_extra_tracks) }}
           </div>
         </li>
       <li class="list-group-item">
@@ -261,7 +261,7 @@
           </td>
 	  <td>
 	    <a class="btn btn-outline-secondary form-control" href="https://decipher.sanger.ac.uk/browser#q/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}%20/location/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target ="_blank">DECIPHER {% if case.genome_build == 38 %} (GRCh37){% endif %}</a>
-	    
+
 	  </td>
         </tr>
       </tbody>
