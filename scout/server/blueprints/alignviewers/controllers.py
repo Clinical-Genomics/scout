@@ -138,7 +138,7 @@ def cloud_track(track_obj):
 
     Accepts:
         track_obj(dict)
-            Example: "37": {
+            Example: {
                 "description" : "Cosmic coding mutations v90 hg19",
                 "file_name": "CosmicCodingMuts_v90_hg19.vcf.gz",
                 "type": "variant",

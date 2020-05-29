@@ -13,16 +13,48 @@ MOCK_CLOUD_CREDENTIALS = {
     "folder": "mock_folder",
 }
 
+TEST_IGV_TRACKS = {
+    "cosmic_coding_v90" : {
+        "37":{
+            "description" : "Cosmic coding mutations v90 hg19",
+            "file_name": "CosmicCodingMuts_v90_hg19.vcf.gz",
+            "type": "variant",
+            "format": "vcf",
+            "displayMode": "squished",
+            "genome_build": "37",
+            "access_type": "credentials",
+            "index_format": "tbi"
+        },
+        "38":
+        {
+            "description" : "Cosmic coding mutations v90 hg38",
+            "file_name": "CosmicCodingMuts_v90_hg38.vcf.gz",
+            "type": "variant",
+            "format": "vcf",
+            "displayMode": "squished",
+            "genome_build": "37",
+            "access_type": "credentials",
+            "index_format": "tbi"
+        }
+    }
+}
 
-def test_get_cloud_credentials(app):
-    """Test function that retrieves cloud credentials from app config settings"""
+def app_cloud_credentials(app):
+    """MOCK cloud credentials in the app config"""
 
     # Add params to app config settings
     app.config["REGION_NAME"] = MOCK_CLOUD_CREDENTIALS["region"]
     app.config["ACCESS_KEY"] = MOCK_CLOUD_CREDENTIALS["key"]
     app.config["SECRET_ACCESS_KEY"] = MOCK_CLOUD_CREDENTIALS["secret_key"]
     app.config["BUCKET_NAME"] = MOCK_CLOUD_CREDENTIALS["bucket"]
-    app.config["FOLDER_NAME"] = MOCK_CLOUD_CREDENTIALS["folder"]
+    app.config["BUCKET_FOLDER"] = MOCK_CLOUD_CREDENTIALS["folder"]
+
+
+def test_get_cloud_credentials(app):
+    """Test function that retrieves cloud credentials from app config settings"""
+
+    # GIVEN an app with config settings containing cloud settings
+    app_cloud_credentials(app)
 
     # WHEN get_cloud_credentials function is invoked
     cloud_credentials = controllers.get_cloud_credentials()
@@ -86,82 +118,56 @@ def test_clinvar_cnvs_track_build_38():
     assert "hg38" in track["url"]
 
 
-def test_cosmic_coding_track_build37(monkeypatch):
-    """Test function that returns cosmic coding track as a dictionary when build is 37"""
+def test_cloud_tracks_chr_non_MT(app):
+    """Test alignviewers controllers function that prepares the custom cloud tracks for a non-MT variant"""
 
-    def mock_credentials():
-        return MOCK_CLOUD_CREDENTIALS
+    # GIVEN an app with config settings containing cloud settings
+    app_cloud_credentials(app)
 
-    monkeypatch.setattr(controllers, "get_cloud_credentials", mock_credentials)
+    # AND custom cloud tracks
+    app.config["CUSTOM_IGV_TRACKS"] = TEST_IGV_TRACKS
 
-    # WHEN cosmic coding track controller is invoked with genome build 37
-    track = controllers.cosmic_track(BUILD37, CHROM, True)
+    display_obj = {}
 
-    # THEN it should return a dictionary with the right keys/values
-    assert track["name"] == "Cosmic coding"
-    assert track["type"] == "variant"
-    assert track["format"] == "vcf"
-    assert "hg19" in track["url"]
-    assert "CosmicCoding" in track["url"]
-    assert "hg19" in track["indexURL"]
+    # WHEN the function that prespares cloud tracks is invoked for a MT variant (build37)
+    controllers.cloud_tracks("37", "22", ["cosmic_coding_v90"], display_obj)
 
+    # THEN the display object should have a track with expected key/values in build 38
+    assert display_obj["custom_tracks"][0]["name"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["description"]
+    assert display_obj["custom_tracks"][0]["type"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["type"]
+    assert display_obj["custom_tracks"][0]["format"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["format"]
+    assert display_obj["custom_tracks"][0]["displayMode"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["displayMode"]
+    assert display_obj["custom_tracks"][0]["url"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["file_name"]
 
-def cosmic_coding_track_build38(monkeypatch):
-    """Test function that returns cosmic coding track as a dictionary when build is 38"""
-
-    def mock_credentials():
-        return MOCK_CLOUD_CREDENTIALS
-
-    monkeypatch.setattr(controllers, "get_cloud_credentials", mock_credentials)
-
-    # WHEN cosmic coding track controller is invoked with genome build 38
-    track = controllers.cosmic_track(BUILD38, CHROM, True)
-
-    # THEN it should return a dictionary with the right keys/values
-    assert track["name"] == "Cosmic coding"
-    assert "hg38" in track["url"]
-    assert "CosmicCoding" in track["url"]
-    assert "hg38" in track["indexURL"]
+    track_url = TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["file_name"]
+    track_index_format = TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["index_format"]
+    assert display_obj["custom_tracks"][0]["indexURL"] == ".".join([track_url, track_index_format])
 
 
-def test_cosmic_non_coding_track_build37(monkeypatch):
-    """Test function that returns cosmic non-coding track as a dictionary when build is 37"""
+def test_cloud_tracks_chr_MT(app):
+    """Test alignviewers controllers function that prepares the custom cloud tracks for a MT variant"""
 
-    def mock_credentials():
-        return MOCK_CLOUD_CREDENTIALS
+    # GIVEN an app with config settings containing cloud settings
+    app_cloud_credentials(app)
 
-    monkeypatch.setattr(controllers, "get_cloud_credentials", mock_credentials)
+    # AND custom cloud tracks
+    app.config["CUSTOM_IGV_TRACKS"] = TEST_IGV_TRACKS
 
-    # WHEN cosmic non-coding track controller is invoked with genome build 37
-    track = controllers.cosmic_track(BUILD37, CHROM, False)
+    display_obj = {}
 
-    # THEN it should return a dictionary with the right keys/values
-    assert track["name"] == "Cosmic non coding"
-    assert track["type"] == "variant"
-    assert track["format"] == "vcf"
-    assert "hg19" in track["url"]
-    assert "CosmicNonCoding" in track["url"]
-    assert "hg19" in track["indexURL"]
+    # WHEN the function that prespares cloud tracks is invoked for a MT variant (build37)
+    controllers.cloud_tracks("37", "M", ["cosmic_coding_v90"], display_obj)
 
+    # THEN the display object should have a track with expected key/values in build 38
+    assert display_obj["custom_tracks"][0]["name"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["description"]
+    assert display_obj["custom_tracks"][0]["type"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["type"]
+    assert display_obj["custom_tracks"][0]["format"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["format"]
+    assert display_obj["custom_tracks"][0]["displayMode"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["displayMode"]
+    assert display_obj["custom_tracks"][0]["url"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["file_name"]
 
-def test_cosmic_non_coding_track_build38(monkeypatch):
-    """Test function that returns cosmic non-coding track as a dictionary when build is 38"""
-
-    def mock_credentials():
-        return MOCK_CLOUD_CREDENTIALS
-
-    monkeypatch.setattr(controllers, "get_cloud_credentials", mock_credentials)
-
-    # WHEN cosmic non-coding track controller is invoked with genome build 38
-    track = controllers.cosmic_track(BUILD38, CHROM, False)
-
-    # THEN it should return a dictionary with the right keys/values
-    assert track["name"] == "Cosmic non coding"
-    assert track["type"] == "variant"
-    assert track["format"] == "vcf"
-    assert "hg38" in track["url"]
-    assert "CosmicNonCoding" in track["url"]
-    assert "hg38" in track["indexURL"]
+    track_url = TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["file_name"]
+    track_index_format = TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["index_format"]
+    assert display_obj["custom_tracks"][0]["indexURL"] == ".".join([track_url, track_index_format])
 
 
 def test_reference_track_build_37():
