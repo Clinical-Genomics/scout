@@ -78,7 +78,7 @@
                           order: Number.MIN_VALUE,
                           visibilityWindow: 300000000,
                       },
-                      {% if custom_tracks %}
+                      {% if custom_tracks %} // Display eventual custom tracks in the cloud
                         {% for custom_track in custom_tracks %}
                           {
                             name: "{{ custom_track.name }}",

@@ -40,7 +40,7 @@ def get_cloud_credentials():
     """Returns cloud S3 storage credentials as a dictionary
 
     Returns:
-        cloud_credentials(list): [endpoint_url, access_key, secrey_access_key, bucket_name]
+        cloud_credentials(dict)
 
     """
     cloud_credentials = {

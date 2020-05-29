@@ -39,7 +39,7 @@ intervaltree==3.0.2
 # chanjo-report
 python-dateutil
 
-# Requesting resources
+# Requesting resources from the cloud
 boto3
 botocore
 
