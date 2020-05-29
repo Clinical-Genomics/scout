@@ -31,7 +31,7 @@ from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEA
 from scout.export.variant import export_verified_variants
 from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.utils import predictions
-from scout.server.links import add_gene_links, add_tx_links, ensembl
+from scout.server.links import add_gene_links, add_tx_links, ensembl, cosmic_link
 from scout.server.utils import (
     case_append_alignments,
     institute_and_case,
@@ -300,7 +300,7 @@ def parse_variant(
     variant_obj["length"] = {100000000000: "inf", -1: "n.d."}.get(variant_length, variant_length)
     if not "end_chrom" in variant_obj:
         variant_obj["end_chrom"] = variant_obj["chromosome"]
-
+    variant_obj["cosmic_link"] = cosmic_link(variant_obj)
     return variant_obj
 
 
@@ -622,6 +622,7 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     if request_obj.method == "GET":
         form = SvFiltersForm(request_obj.args)
         form.variant_type.data = request_obj.args.get("variant_type", "clinical")
+        form.chrom.data = request_obj.args.get("chrom", None)
 
     else:  # POST
         form = populate_filters_form(

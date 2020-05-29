@@ -164,6 +164,14 @@ def register_filters(app):
         """Decode a string with encoded hex values."""
         return unquote(string)
 
+    @app.template_filter()
+    def cosmic_prefix(cosmicId):
+        """ If cosmicId is an integer, add 'COSM' as prefix
+            otherwise return unchanged """
+        if isinstance(cosmicId, int):
+            return "COSM" + str(cosmicId)
+        return cosmicId
+
 
 def configure_email_logging(app):
     """Setup logging of error/exceptions to email."""
