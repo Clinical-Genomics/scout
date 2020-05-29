@@ -121,7 +121,7 @@ def cloud_tracks(build, chrom, selected_tracks, display_obj):
     config_tracks = current_app.config.get("CUSTOM_IGV_TRACKS")
     for track in selected_tracks:
 
-        if chrom == "M": # No MT data in Hg19
+        if chrom == "M":  # No MT data in Hg19
             build = "38"
         track_obj = config_tracks.get(track)
         if track_obj is None:
@@ -156,17 +156,18 @@ def cloud_track(track_obj):
 
     # if track file is contained in a bucket folder
     track_url = track_obj["file_name"]
-    track_index = ".".join([track_url,track_obj["index_format"]])
+    track_index = ".".join([track_url, track_obj["index_format"]])
 
     igv_track = dict(
-        name = track_obj.get("description", track_obj.get("file_name")),
-        type = track_obj.get("type"),
-        format = track_obj.get("format"),
-        displayMode = track_obj.get("displayMode", "squished"),
-        url = track_url,
-        indexURL = track_index
+        name=track_obj.get("description", track_obj.get("file_name")),
+        type=track_obj.get("type"),
+        format=track_obj.get("format"),
+        displayMode=track_obj.get("displayMode", "squished"),
+        url=track_url,
+        indexURL=track_index,
     )
     return igv_track
+
 
 def reference_track(build, chrom):
     """Return a dictionary consisting in the igv.js genome reference track

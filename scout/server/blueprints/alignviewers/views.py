@@ -121,7 +121,7 @@ def igv():
 
     # Custom track hosted on a Amazon bucket are loaded here
     if request.form.get("extra_tracks") and current_app.config.get("BUCKET_NAME"):
-        selected_custom_tracks = request.form.getlist('extra_tracks') # Tracks selected by user
+        selected_custom_tracks = request.form.getlist("extra_tracks")  # Tracks selected by user
         controllers.cloud_tracks(chromosome_build, chrom, selected_custom_tracks, display_obj)
 
     # Init upcoming igv-tracks

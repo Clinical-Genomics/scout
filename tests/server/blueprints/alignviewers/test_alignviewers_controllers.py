@@ -14,30 +14,30 @@ MOCK_CLOUD_CREDENTIALS = {
 }
 
 TEST_IGV_TRACKS = {
-    "cosmic_coding_v90" : {
-        "37":{
-            "description" : "Cosmic coding mutations v90 hg19",
+    "cosmic_coding_v90": {
+        "37": {
+            "description": "Cosmic coding mutations v90 hg19",
             "file_name": "CosmicCodingMuts_v90_hg19.vcf.gz",
             "type": "variant",
             "format": "vcf",
             "displayMode": "squished",
             "genome_build": "37",
             "access_type": "credentials",
-            "index_format": "tbi"
+            "index_format": "tbi",
         },
-        "38":
-        {
-            "description" : "Cosmic coding mutations v90 hg38",
+        "38": {
+            "description": "Cosmic coding mutations v90 hg38",
             "file_name": "CosmicCodingMuts_v90_hg38.vcf.gz",
             "type": "variant",
             "format": "vcf",
             "displayMode": "squished",
             "genome_build": "37",
             "access_type": "credentials",
-            "index_format": "tbi"
-        }
+            "index_format": "tbi",
+        },
     }
 }
+
 
 def app_cloud_credentials(app):
     """MOCK cloud credentials in the app config"""
@@ -133,11 +133,26 @@ def test_cloud_tracks_chr_non_MT(app):
     controllers.cloud_tracks("37", "22", ["cosmic_coding_v90"], display_obj)
 
     # THEN the display object should have a track with expected key/values in build 38
-    assert display_obj["custom_tracks"][0]["name"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["description"]
-    assert display_obj["custom_tracks"][0]["type"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["type"]
-    assert display_obj["custom_tracks"][0]["format"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["format"]
-    assert display_obj["custom_tracks"][0]["displayMode"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["displayMode"]
-    assert display_obj["custom_tracks"][0]["url"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["file_name"]
+    assert (
+        display_obj["custom_tracks"][0]["name"]
+        == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["description"]
+    )
+    assert (
+        display_obj["custom_tracks"][0]["type"]
+        == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["type"]
+    )
+    assert (
+        display_obj["custom_tracks"][0]["format"]
+        == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["format"]
+    )
+    assert (
+        display_obj["custom_tracks"][0]["displayMode"]
+        == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["displayMode"]
+    )
+    assert (
+        display_obj["custom_tracks"][0]["url"]
+        == TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["file_name"]
+    )
 
     track_url = TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["file_name"]
     track_index_format = TEST_IGV_TRACKS["cosmic_coding_v90"]["37"]["index_format"]
@@ -159,11 +174,26 @@ def test_cloud_tracks_chr_MT(app):
     controllers.cloud_tracks("37", "M", ["cosmic_coding_v90"], display_obj)
 
     # THEN the display object should have a track with expected key/values in build 38
-    assert display_obj["custom_tracks"][0]["name"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["description"]
-    assert display_obj["custom_tracks"][0]["type"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["type"]
-    assert display_obj["custom_tracks"][0]["format"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["format"]
-    assert display_obj["custom_tracks"][0]["displayMode"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["displayMode"]
-    assert display_obj["custom_tracks"][0]["url"] == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["file_name"]
+    assert (
+        display_obj["custom_tracks"][0]["name"]
+        == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["description"]
+    )
+    assert (
+        display_obj["custom_tracks"][0]["type"]
+        == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["type"]
+    )
+    assert (
+        display_obj["custom_tracks"][0]["format"]
+        == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["format"]
+    )
+    assert (
+        display_obj["custom_tracks"][0]["displayMode"]
+        == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["displayMode"]
+    )
+    assert (
+        display_obj["custom_tracks"][0]["url"]
+        == TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["file_name"]
+    )
 
     track_url = TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["file_name"]
     track_index_format = TEST_IGV_TRACKS["cosmic_coding_v90"]["38"]["index_format"]
