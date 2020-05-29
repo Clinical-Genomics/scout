@@ -55,6 +55,7 @@ def cloud_resource(resource):
 
     cloud_credentials = controllers.get_cloud_credentials()
     presigned_url = amazon_s3_url(cloud_credentials, resource)
+    LOG.debug(f"presigned_url:{presigned_url}")
     return redirect(presigned_url, code=302)
 
 

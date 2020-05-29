@@ -133,7 +133,7 @@ def cloud_track(track_obj):
     if cloud_folder is not None:
         track_url = "/".join([cloud_folder, track_url])
         track_index = "/".join([cloud_folder, track_index])
-        
+
     igv_track = dict(
         name = track_obj.get("description", track_obj.get("file_name")),
         type = track_obj.get("type"),
