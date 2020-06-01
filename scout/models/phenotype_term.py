@@ -16,13 +16,7 @@ class HpoTerm(dict):
     """
 
     def __init__(
-        self,
-        hpo_id,
-        description,
-        genes=None,
-        ancestors=None,
-        all_ancestors=None,
-        children=None,
+        self, hpo_id, description, genes=None, ancestors=None, all_ancestors=None, children=None,
     ):
         super(HpoTerm, self).__init__()
         self["_id"] = hpo_id
@@ -77,7 +71,5 @@ class DiseaseTerm(dict):
 # phenotype_term is a special object to hold information on case level
 # This one might be deprecated when we skip mongoengine
 phenotype_term = dict(
-    phenotype_id=str,  # Can be omim_id hpo_id
-    feature=str,
-    disease_models=list,  # list of strings
+    phenotype_id=str, feature=str, disease_models=list,  # Can be omim_id hpo_id  # list of strings
 )

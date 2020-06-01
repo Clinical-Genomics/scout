@@ -31,10 +31,7 @@ def panels():
                 lines = content.decode("windows-1252").split("\r")
         except Exception as err:
             flash(
-                "Something went wrong while parsing the panel CSV file! ({})".format(
-                    err
-                ),
-                "danger",
+                "Something went wrong while parsing the panel CSV file! ({})".format(err), "danger",
             )
             return redirect(request.referrer)
 
@@ -51,8 +48,7 @@ def panels():
             )
             if new_panel_id is None:
                 flash(
-                    "Something went wrong and the panel list was not updated!",
-                    "warning",
+                    "Something went wrong and the panel list was not updated!", "warning",
                 )
                 return redirect(request.referrer)
 
@@ -64,9 +60,7 @@ def panels():
 
         panel_obj = store.gene_panel(request.form["panel_name"])
         if panel_obj is None:
-            return abort(
-                404, "gene panel not found: {}".format(request.form["panel_name"])
-            )
+            return abort(404, "gene panel not found: {}".format(request.form["panel_name"]))
 
         if panel_write_granted(panel_obj, current_user):
             panel_obj = controllers.update_panel(
@@ -77,8 +71,7 @@ def panels():
             )
         else:
             flash(
-                "Permission denied: please ask a panel maintainer or admin for help.",
-                "danger",
+                "Permission denied: please ask a panel maintainer or admin for help.", "danger",
             )
 
         return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
@@ -87,9 +80,7 @@ def panels():
     panel_names = [
         name
         for institute in institutes
-        for name in store.gene_panels(institute_id=institute["_id"]).distinct(
-            "panel_name"
-        )
+        for name in store.gene_panels(institute_id=institute["_id"]).distinct("panel_name")
     ]
 
     panel_versions = {}
@@ -111,9 +102,7 @@ def panels():
 
 def panel_write_granted(panel_obj, user):
     return (
-        not panel_obj.get("maintainer")
-        or user.is_admin
-        or user._id in panel_obj.get("maintainer")
+        not panel_obj.get("maintainer") or user.is_admin or user._id in panel_obj.get("maintainer")
     )
 
 
@@ -131,8 +120,7 @@ def panel(panel_id):
                 store.update_panel(panel_obj=panel_obj)
             else:
                 flash(
-                    "Permission denied: please ask a panel maintainer or admin for help.",
-                    "danger",
+                    "Permission denied: please ask a panel maintainer or admin for help.", "danger",
                 )
             return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
 
@@ -154,14 +142,10 @@ def panel(panel_id):
         if action == "add":
             panel_gene = controllers.existing_gene(store, panel_obj, hgnc_id)
             if panel_gene:
-                flash(
-                    "gene already in panel: {}".format(panel_gene["symbol"]), "warning"
-                )
+                flash("gene already in panel: {}".format(panel_gene["symbol"]), "warning")
             else:
                 # ask user to fill-in more information about the gene
-                return redirect(
-                    url_for(".gene_edit", panel_id=panel_id, hgnc_id=hgnc_id)
-                )
+                return redirect(url_for(".gene_edit", panel_id=panel_id, hgnc_id=hgnc_id))
         elif action == "delete":
             LOG.debug("marking gene to be deleted: %s", hgnc_id)
             panel_obj = store.add_pending(panel_obj, gene_obj, action="delete")
@@ -192,8 +176,7 @@ def panel_update(panel_id):
         panel_id = new_panel_id
     else:
         flash(
-            "Permission denied: please ask a panel maintainer or admin for help.",
-            "danger",
+            "Permission denied: please ask a panel maintainer or admin for help.", "danger",
         )
 
     return redirect(url_for("panels.panel", panel_id=panel_id))
@@ -250,9 +233,9 @@ def gene_edit(panel_id, hgnc_id):
         if "csrf_token" in info_data:
             del info_data["csrf_token"]
         if info_data["custom_inheritance_models"] != "":
-            info_data["custom_inheritance_models"] = info_data[
-                "custom_inheritance_models"
-            ].split(",")
+            info_data["custom_inheritance_models"] = info_data["custom_inheritance_models"].split(
+                ","
+            )
 
         store.add_pending(panel_obj, hgnc_gene, action=action, info=info_data)
         return redirect(url_for(".panel", panel_id=panel_id))

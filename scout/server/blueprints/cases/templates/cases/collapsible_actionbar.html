@@ -80,32 +80,15 @@
           <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-file-excel-o"></i></a>
       </div>
     </div>
+    {% if case.delivery_report %}
+      {{ delivery_report(institute._id, case) }}
+    {% endif %}
     {% if case.analyses %}
       {% for analysis in case.analyses %}
-        {% if analysis.delivery_report %}
-          <div href="#" class="bg-dark list-group-item text-white">
-            <div class="d-flex flex-row flex-fill bd-highlight"></span>
-              <span class="menu-collapsed ml-2">Delivery ({{analysis.date.date()}})
-                <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                                              case_name=case.display_name, date=analysis.date) }}" target="_blank">
-                                  <i class="fa fa-link"></i></a>
-                <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                                              case_name=case.display_name, date=analysis.date, format='pdf') }}">
-                                  <i class="fa fa-file-pdf-o"></i></a>
-            </div>
-          </div>
+        {% if analysis.delivery_report and analysis.delivery_report != case.delivery_report %}
+          {{ delivery_report( institute._id, case, analysis.date.date() ) }}
         {% endif %}
       {% endfor %}
-    {% elif case.delivery_report %}
-      <div href="#" class="bg-dark list-group-item text-white">
-        <div class="d-flex flex-row flex-fill bd-highlight"></span>
-          <span class="menu-collapsed ml-2">Delivery ({{case.analysis_date.date()}})
-            <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                              case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
-            <a href="{{ url_for('cases.delivery_report', institute_id=institute._id,
-                              case_name=case.display_name, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
-        </div>
-      </div>
     {% endif %}
 </div>
 {% endmacro %}
@@ -268,8 +251,8 @@
     <div class="form-group">
       <form action="{{ url_for('cases.share', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
         <div class="input-group">
-          <select class="form-control" name="collaborator">
-            <option class="placeholder" selected disabled value="">Select institute</option>
+          <select class="form-control form-control-sm" name="collaborator">
+            <option selected disabled value="">Select institute</option>
             {% for collab_id, collab_name in collaborators %}
               <option value="{{ collab_id }}">{{ collab_name }}</option>
             {% endfor %}
@@ -285,7 +268,7 @@
     <form method="POST" action="{{ url_for('cases.share', institute_id=institute._id, case_name=case.display_name) }}">
       <input type="hidden" name="revoke" />
       <div class="input-group">
-        <select class="form-control sm" name="collaborator">
+        <select class="form-control form-control-sm" name="collaborator">
           <option>Institute</option>
           {% for collab_id, collab_name in case.o_collaborators %}
             <option value="{{ collab_id }}">{{ collab_name }}</option>
@@ -424,6 +407,18 @@
         </form>
       </div>
     </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro delivery_report(institute, case, date=None) %}
+<div href="#" class="bg-dark list-group-item text-white">
+  <div class="d-flex flex-row flex-fill bd-highlight"></span>
+    <span class="menu-collapsed ml-2">Delivery ({{date or case.analysis_date.date() }})
+      <a href="{{ url_for('cases.delivery_report', institute_id=institute,
+                        case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
+      <a href="{{ url_for('cases.delivery_report', institute_id=institute,
+                        case_name=case.display_name, date=date, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
   </div>
 </div>
 {% endmacro %}

@@ -161,7 +161,9 @@ def ppaint(hgnc_symbol):
 
 
 def vega(vega_id):
-    link = "http://vega.archive.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=OTTHUMG00000018506{}"
+    link = (
+        "http://vega.archive.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=OTTHUMG00000018506{}"
+    )
 
     if not vega_id:
         return None
@@ -312,7 +314,7 @@ def get_variant_links(variant_obj, build=None):
         cosmic_link=cosmic_link(variant_obj),
         beacon_link=beacon_link(variant_obj, build),
         ucsc_link=ucsc_link(variant_obj, build),
-        alamut_link=alamut_link(variant_obj),
+        alamut_link=alamut_link(variant_obj, build),
         spidex_human=spidex_human(variant_obj),
     )
     return links
@@ -328,14 +330,10 @@ def thousandg_link(variant_obj, build=None):
 
     if build == 37:
         url_template = (
-            "http://grch37.ensembl.org/Homo_sapiens/Variation/Explore"
-            "?v={};vdb=variation"
+            "http://grch37.ensembl.org/Homo_sapiens/Variation/Explore" "?v={};vdb=variation"
         )
     else:
-        url_template = (
-            "http://www.ensembl.org/Homo_sapiens/Variation/Explore"
-            "?v={};vdb=variation"
-        )
+        url_template = "http://www.ensembl.org/Homo_sapiens/Variation/Explore" "?v={};vdb=variation"
 
     return url_template.format(dbsnp_id)
 
@@ -383,15 +381,15 @@ def cosmic_link(variant_obj):
         variant_obj(scout.models.Variant)
 
     Returns:
-        url_template(str): Link to COSMIIC database if cosmic id is present
+        url_template(str): Link to COSMIC database if cosmic id is present
     """
 
     cosmic_ids = variant_obj.get("cosmic_ids")
 
     if not cosmic_ids:
         return None
-    else:
-        cosmic_id = str(cosmic_ids[0])
+
+    cosmic_id = str(cosmic_ids[0])
 
     if cosmic_id.startswith("COS"):
         url_template = "https://cancer.sanger.ac.uk/cosmic/search?q={}"
@@ -436,21 +434,28 @@ def ucsc_link(variant_obj, build=None):
     return url_template.format(this=variant_obj)
 
 
-def alamut_link(variant_obj):
+def alamut_link(variant_obj, build=None):
+    build = build or 37
+
+    build_str = ""
+    if build == 38:
+        build_str = "(GRCh38)"
+
     url_template = (
-        "http://localhost:10000/show?request={this[chromosome]}:"
+        "http://localhost:10000/show?request={this[chromosome]}{build_str}:"
         "{this[position]}{this[reference]}>{this[alternative]}"
     )
-    return url_template.format(this=variant_obj)
+
+    return url_template.format(this=variant_obj, build_str=build_str)
 
 
 def spidex_human(variant_obj):
     """Translate SPIDEX annotation to human readable string."""
     if variant_obj.get("spidex") is None:
         return "not_reported"
-    elif abs(variant_obj["spidex"]) < SPIDEX_HUMAN["low"]["pos"][1]:
+    if abs(variant_obj["spidex"]) < SPIDEX_HUMAN["low"]["pos"][1]:
         return "low"
-    elif abs(variant_obj["spidex"]) < SPIDEX_HUMAN["medium"]["pos"][1]:
+    if abs(variant_obj["spidex"]) < SPIDEX_HUMAN["medium"]["pos"][1]:
         return "medium"
-    else:
-        return "high"
+
+    return "high"

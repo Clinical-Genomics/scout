@@ -49,9 +49,7 @@ def test_load_delivery_report_using_case_id_with_update_success(adapter, case_ob
     report_path = "report_test_path"
     update = True
 
-    load_delivery_report(
-        adapter=adapter, case_id=case_id, report_path=report_path, update=update
-    )
+    load_delivery_report(adapter=adapter, case_id=case_id, report_path=report_path, update=update)
 
     # THEN a report should have been added to that case
     updated_case_obj = adapter.case_collection.find_one()

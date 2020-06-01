@@ -29,16 +29,12 @@ def individuals(institute, causatives, case_id):
     else:
         cases = [
             case_obj
-            for case_obj in adapter.cases(
-                collaborator=institute, has_causatives=causatives
-            )
+            for case_obj in adapter.cases(collaborator=institute, has_causatives=causatives)
         ]
         if len(cases) == 0:
             LOG.info("Could not find cases that match criteria")
             return
-        individuals = (
-            ind_obj for case_obj in cases for ind_obj in case_obj["individuals"]
-        )
+        individuals = (ind_obj for case_obj in cases for ind_obj in case_obj["individuals"])
 
     click.echo("#case_id\tind_id\tdisplay_name\tsex\tphenotype\tmother\tfather")
 

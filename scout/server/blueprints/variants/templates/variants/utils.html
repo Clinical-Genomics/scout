@@ -216,7 +216,7 @@
 </div>
 <div class="form-group">
   <div class="row">
-    <div class="col-2">
+    <div class="col-1">
       {{ form.gnomad_frequency.label(class="control-label") }}
       {{ form.gnomad_frequency(class="form-control") }}
     </div>
@@ -224,14 +224,20 @@
       {{ form.local_obs.label(class="control-label") }}
       {{ form.local_obs(class="form-control") }}
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ wtf.form_field(form.chrom) }}
     </div>
-    <div class="col-3">
+    <div class="col-2">
       {{ wtf.form_field(form.start) }}
     </div>
-    <div class="col-3">
+    <div class="col-2">
       {{ wtf.form_field(form.end) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.cytoband_start) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.cytoband_end) }}
     </div>
   </div>
 </div>
@@ -305,11 +311,11 @@
       {{ form.size.label(class="control-label") }}
       {{ form.size(class="form-control", type="number") }}
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ form.size_shorter.label(class="control-label") }}
       <div>{{ form.size_shorter() }}</div>
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ form.decipher.label(class="control-label") }}
       <div>{{ form.decipher() }}</div>
     </div>
@@ -317,23 +323,23 @@
       {{ form.clinsig.label(class="control-label") }}
       {{ form.clinsig(class="selectpicker") }}
     </div>
+    <div class="col-2">
+      {{ form.gnomad_frequency.label(class="control-label") }}
+      {{ form.gnomad_frequency(class="form-control") }}
+    </div>
   </div>
 </div>
 <div class="form-group">
   <div class="row">
     <div class="col-2">
-      {{ form.gnomad_frequency.label(class="control-label") }}
-      {{ form.gnomad_frequency(class="form-control") }}
-    </div>
-    <div class="col-2">
        {{ form.clingen_ngi.label(class="control-label") }}
        {{ form.clingen_ngi(class="form-control") }}
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ form.swegen.label(class="control-label") }}
       {{ form.swegen(class="form-control") }}
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ form.chrom.label(class="control-label") }}
       {{ form.chrom(class="form-control") }}
     </div>
@@ -342,6 +348,12 @@
     </div>
     <div class="col-2">
       {{ wtf.form_field(form.end) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.cytoband_start) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.cytoband_end) }}
     </div>
   </div>
 </div>

@@ -11,7 +11,7 @@ def test_parse_panel_info_no_info():
     ## THEN assert that no information except a date is returned
     for key in panel_info:
         if key != "date":
-            assert panel_info[key] == None
+            assert panel_info[key] is None
         else:
             assert type(panel_info[key]) is type(datetime.datetime.now())
 
@@ -111,8 +111,8 @@ def test_parse_gene():
     assert gene["hgnc_symbol"] == hgnc_symbol
     assert gene["transcripts"] == transcripts.split(",")
     assert gene["inheritance_models"] == models.split(",")
-    assert gene["reduced_penetrance"] == True if penetrance else False
-    assert gene["mosaicism"] == False
+    assert gene["reduced_penetrance"] is True if penetrance else False
+    assert gene["mosaicism"] is False
     assert gene["database_entry_version"] == version
 
 
@@ -217,7 +217,7 @@ def test_parse_minimal_panel_lines_id():
     ## THEN assert that some genes exists in the panel
     for gene in genes:
         assert gene["hgnc_id"] == 1
-        assert gene.get("hgnc_symbol") == None
+        assert gene.get("hgnc_symbol") is None
 
 
 def test_parse_minimal_panel_lines_symbol():
@@ -233,7 +233,7 @@ def test_parse_minimal_panel_lines_symbol():
 
     ## THEN assert that some genes exists in the panel
     for gene in genes:
-        assert gene.get("hgnc_id") == None
+        assert gene.get("hgnc_id") is None
         assert gene.get("hgnc_symbol") == "ADK"
 
 

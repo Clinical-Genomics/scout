@@ -81,16 +81,14 @@ def test_get_gene(adapter):
     adapter.load_hgnc_gene(gene_obj)
 
     ##THEN assert that the correct gene was fetched
-    res = adapter.hgnc_gene(
-        hgnc_identifier=gene_obj["hgnc_id"], build=gene_obj["build"]
-    )
+    res = adapter.hgnc_gene(hgnc_identifier=gene_obj["hgnc_id"], build=gene_obj["build"])
 
     assert res["hgnc_id"] == gene_obj["hgnc_id"]
 
     ##THEN assert that there are no genes in the 38 build
     res = adapter.hgnc_gene(hgnc_identifier=gene_obj["hgnc_id"], build="38")
 
-    assert res == None
+    assert res is None
 
 
 def test_get_genes(adapter):

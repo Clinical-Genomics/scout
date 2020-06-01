@@ -1,20 +1,22 @@
-name: Scout tests
+name: Run tests and upload coverage
 
-on: push
+on: ["push", "pull_request"]
 
 jobs:
   build:
 
+
+    name: Coverage
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7]
-        mongodb-version: ["3.6", "4.0"]
+        python-version: [3.7]
+        mongodb-version: ["3.6"]
 
     steps:
 
     # Check out Scout code
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
 
     # Set up python
     - name: Set up Python ${{ matrix.python-version}}
@@ -34,31 +36,13 @@ jobs:
         pip install cython
         pip install numpy
         pip install -e .
-        pip check
-
-    - name: Development Dependencies
-      run: |
         pip install -r requirements-dev.txt
-        pip install flake8
-        pip check
-
-    - name: Run linters
-      uses: samuelmeuli/lint-action@v1
-      # Let linters fix problems if they can
-      with:
-        github_token: ${{ secrets.github_token }}
-        auto_fix: true
-        # Enable linters
-        black: true
-        black_args: "--check"
-        # stop the build if there are Python syntax errors or undefined names
-        flake8: true
-        flake8_args: "scout/ --count --select=E9,F63,F7,F82 --show-source --statistics"
+        pip install pytest-cov
+        pip install coveralls
 
     - name: Test with pytest & Coveralls
       run: |
         pytest --cov=./
         coveralls
       env:
-        GITHUB: 1
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}

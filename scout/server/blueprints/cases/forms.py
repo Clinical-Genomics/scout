@@ -20,8 +20,8 @@ class TagListField(Field):
     def _value(self):
         if self.data:
             return ", ".join(self.data)
-        else:
-            return ""
+
+        return ""
 
     def process_formdata(self, valuelist):
         if valuelist:
@@ -33,9 +33,7 @@ class TagListField(Field):
 class GeneVariantFiltersForm(FlaskForm):
     """Base FiltersForm for SNVs"""
 
-    variant_type = SelectMultipleField(
-        choices=[("clinical", "clinical"), ("research", "research")]
-    )
+    variant_type = SelectMultipleField(choices=[("clinical", "clinical"), ("research", "research")])
     hgnc_symbols = TagListField("HGNC Symbols/Ids (case sensitive)")
     filter_variants = SubmitField(label="Filter variants")
     rank_score = IntegerField()

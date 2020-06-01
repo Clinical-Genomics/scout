@@ -38,9 +38,7 @@ class DiagnosisHandler(object):
 
         limit = limit or int(10e10)
         res = (
-            self.disease_term_collection.find(query_dict)
-            .limit(limit)
-            .sort("disease_nr", ASCENDING)
+            self.disease_term_collection.find(query_dict).limit(limit).sort("disease_nr", ASCENDING)
         )
         return res
 
@@ -57,9 +55,7 @@ class DiagnosisHandler(object):
         result = None
 
         # Collect OMIM terms from case 'diagnosis_phenotypes' and 'diagnosis_genes'
-        omim_ids = case_obj.get("diagnosis_phenotypes", []) + case_obj.get(
-            "diagnosis_genes", []
-        )
+        omim_ids = case_obj.get("diagnosis_phenotypes", []) + case_obj.get("diagnosis_genes", [])
         res = self.disease_term_collection.find({"disease_nr": {"$in": omim_ids}}).sort(
             "disease_nr", ASCENDING
         )
@@ -77,9 +73,7 @@ class DiagnosisHandler(object):
         """
         gene_objs = []
         if omim_obj:
-            gene_objs = [
-                self.hgnc_gene(hgnc_id) for hgnc_id in omim_obj.get("genes", [])
-            ]
+            gene_objs = [self.hgnc_gene(hgnc_id) for hgnc_id in omim_obj.get("genes", [])]
         return gene_objs
 
     def disease_term(self, disease_identifier):

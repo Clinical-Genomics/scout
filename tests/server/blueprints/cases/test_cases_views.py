@@ -1,11 +1,111 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-from flask import url_for, current_app
+import datetime
+from flask import url_for, current_app, get_template_attribute
 from flask_login import current_user
+from pymongo import ReturnDocument
 
 from scout.demo import delivery_report_path
 from scout.server.blueprints.cases import controllers
 from scout.server.extensions import store
+from scout.server.blueprints.cases.views import (
+    parse_raw_gene_symbols,
+    parse_raw_gene_ids,
+)
+
+
+def test_parse_raw_gene_symbols(app):
+    """ Test parse gene symbols"""
+
+    # GIVEN a list of autocompleted gene symbols
+    gene_symbols = ["MUTYH |POT1", "POT1 0.1|APC|PMS2"]
+
+    # WHEN converting to hgnc_ids
+    hgnc_symbols = parse_raw_gene_symbols(gene_symbols)
+
+    # THEN the appropriate set of hgnc_symbols should be returned
+    assert hgnc_symbols == {"APC", "MUTYH", "PMS2", "POT1"}
+
+
+def test_parse_raw_gene_ids(app):
+    """ Test parse gene symbols"""
+
+    # GIVEN a list of autocompleted gene symbols
+    gene_symbols = ["1234 | SYM (OLDSYM, SYM)", "4321 | MYS (OLDMYS, MYS)"]
+
+    # WHEN converting to hgnc_ids
+    hgnc_ids = parse_raw_gene_ids(gene_symbols)
+
+    # THEN the appropriate set of hgnc_ids should be returned
+    assert hgnc_ids == {1234, 4321}
+
+
+def test_sidebar_macro(app, institute_obj, case_obj):
+    """test the case sidebar macro"""
+
+    # GIVEN a case with several delivery reports, both in "delivery_report" field and "analyses" field
+    today = datetime.datetime.now()
+    one_year_ago = today - datetime.timedelta(days=365)
+    five_years_ago = today - datetime.timedelta(days=5 * 365)
+    new_report = "new_delivery_report.html"
+    case_analyses = [
+        dict(
+            # fresh analysis from today
+            date=today,
+            delivery_report=new_report,
+        ),
+        dict(
+            # old analysis is 1 year old, missing the report
+            date=one_year_ago,
+            delivery_report=None,
+        ),
+        dict(
+            # ancient analysis is 5 year old
+            date=five_years_ago,
+            delivery_report="ancient_delivery_report.html",
+        ),
+    ]
+    # update test case with the analyses above
+    updated_case = store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]},
+        {
+            "$set": {
+                "analysis_date": today,
+                "delivery_report": new_report,
+                "analyses": case_analyses,
+            }
+        },
+        return_document=ReturnDocument.AFTER,
+    )
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WHEN the case sidebar macro is called
+        macro = get_template_attribute("cases/collapsible_actionbar.html", "action_bar")
+        html = macro(institute_obj, updated_case)
+
+        # It should show the expected items:
+        assert "Reports" in html
+        assert "General" in html
+        assert "mtDNA report" in html
+
+        # only 2 delivery reports should be showed
+        today = str(today).split(" ")[0]
+        assert f"Delivery ({today})" in html
+
+        five_years_ago = str(five_years_ago).split(" ")[0]
+        assert f"Delivery ({five_years_ago})" in html
+
+        # The analysis with missing report should not be shown
+        one_year_ago = str(one_year_ago).split(" ")[0]
+        assert f"Delivery ({one_year_ago})" not in html
+
+        assert f"Genome build {case_obj['genome_build']}" in html
+        assert f"Rank model" in html
+        assert f"Status: {case_obj['status'].capitalize()}" in html
+        assert "Assignees" in html
+        assert "Research list" in html
+        assert "Reruns" in html
+        assert "Share case" in html
 
 
 def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj):
@@ -20,7 +120,7 @@ def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj
     assert old_tumor_type
 
     cancer_case_obj["individuals"][0]["tissue_type"] = old_tissue_type
-    cancer_case_obj["updated_at"] = datetime.now()
+    cancer_case_obj["updated_at"] = datetime.datetime.now()
     store.case_collection.insert_one(cancer_case_obj)
 
     with app.test_client() as client:
@@ -69,9 +169,7 @@ def test_cases(app, institute_obj):
         assert resp.status_code == 200
 
         # WHEN accessing the cases page
-        resp = client.get(
-            url_for("cases.cases", institute_id=institute_obj["internal_id"])
-        )
+        resp = client.get(url_for("cases.cases", institute_id=institute_obj["internal_id"]))
 
         # THEN it should return a page
         assert resp.status_code == 200
@@ -84,11 +182,7 @@ def test_cases(app, institute_obj):
             "query": "case_id",
         }
         resp = client.get(
-            url_for(
-                "cases.cases",
-                institute_id=institute_obj["internal_id"],
-                params=request_data,
-            )
+            url_for("cases.cases", institute_id=institute_obj["internal_id"], params=request_data,)
         )
         # response should return a page
         assert resp.status_code == 200
@@ -99,9 +193,7 @@ def test_cases(app, institute_obj):
             request_data = {"sort": option}
             resp = client.get(
                 url_for(
-                    "cases.cases",
-                    institute_id=institute_obj["internal_id"],
-                    params=request_data,
+                    "cases.cases", institute_id=institute_obj["internal_id"], params=request_data,
                 )
             )
             # response should return a page
@@ -121,11 +213,7 @@ def test_cases_query(app, case_obj, institute_obj):
 
         # WHEN accessing the cases page with a query
         resp = client.get(
-            url_for(
-                "cases.cases",
-                query=slice_query,
-                institute_id=institute_obj["internal_id"],
-            )
+            url_for("cases.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
         )
 
         # THEN it should return a page
@@ -145,11 +233,7 @@ def test_cases_panel_query(app, case_obj, parsed_panel, institute_obj):
 
         # WHEN accessing the cases page with a query
         resp = client.get(
-            url_for(
-                "cases.cases",
-                query=slice_query,
-                institute_id=institute_obj["internal_id"],
-            )
+            url_for("cases.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
         )
 
         # THEN it should return a page
@@ -220,10 +304,10 @@ def test_update_individual(app, user_obj, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
-    # And a case individual with no age or tissue type:
+    # And a case individual with no age (tissue type is default blood):
     case_obj = store.case_collection.find_one()
     assert case_obj["individuals"][0].get("age") is None
-    case_obj["individuals"][0]["tissue_type"] is None
+    assert case_obj["individuals"][0]["tissue_type"] == "blood"
 
     with app.test_client() as client:
 
@@ -320,9 +404,7 @@ def test_causatives(app, user_obj, institute_obj, case_obj):
         assert resp.status_code == 200
 
         # WHEN accessing the case page
-        resp = client.get(
-            url_for("cases.causatives", institute_id=institute_obj["internal_id"])
-        )
+        resp = client.get(url_for("cases.causatives", institute_id=institute_obj["internal_id"]))
 
         # THEN it should return a page
         assert resp.status_code == 200
@@ -424,9 +506,7 @@ def test_clinvar_submissions(app, institute_obj):
 
         # When visiting the clinvar submissiin page (get request)
         resp = client.get(
-            url_for(
-                "cases.clinvar_submissions", institute_id=institute_obj["internal_id"]
-            )
+            url_for("cases.clinvar_submissions", institute_id=institute_obj["internal_id"])
         )
 
         # a successful response should be returned
@@ -477,9 +557,7 @@ def test_matchmaker_add(app, institute_obj, case_obj):
         assert resp.status_code == 302
 
 
-def test_matchmaker_matches(
-    app, institute_obj, case_obj, mme_submission, user_obj, monkeypatch
-):
+def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission, user_obj, monkeypatch):
 
     # Given a case object with a MME submission
     case_obj["mme_submission"] = mme_submission
@@ -522,9 +600,7 @@ def test_matchmaker_matches(
         assert resp.status_code == 200
 
 
-def test_matchmaker_match(
-    app, institute_obj, case_obj, mme_submission, user_obj, monkeypatch
-):
+def test_matchmaker_match(app, institute_obj, case_obj, mme_submission, user_obj, monkeypatch):
 
     # Given a case object with a MME submission
     case_obj["mme_submission"] = mme_submission
@@ -631,8 +707,7 @@ def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
 
         # AND the case has a delivery report
         store.case_collection.update_one(
-            {"_id": case_obj["_id"]},
-            {"$set": {"delivery_report": delivery_report_path}},
+            {"_id": case_obj["_id"]}, {"$set": {"delivery_report": delivery_report_path}},
         )
 
         # WHEN accessing the delivery report page
@@ -659,8 +734,7 @@ def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
 
         # AND the case has a delivery report
         store.case_collection.update_one(
-            {"_id": case_obj["_id"]},
-            {"$set": {"delivery_report": delivery_report_path}},
+            {"_id": case_obj["_id"]}, {"$set": {"delivery_report": delivery_report_path}},
         )
 
         # WHEN accessing the delivery report page with the format=pdf param

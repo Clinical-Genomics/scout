@@ -43,12 +43,10 @@ def test_update_groups(mock_app, tmpdir):
     assert result.exit_code == 0
     assert "Institute updated" in result.output
     updated_institute = store.institute_collection.find_one()
-    assert updated_institute["phenotype_groups"]["HP:0000003"]["abbr"] == None
+    assert updated_institute["phenotype_groups"]["HP:0000003"]["abbr"] is None
 
     # Test CLI with new phenotype group and abbreviation
-    result = runner.invoke(
-        cli, ["update", "groups", "cust000", "-p", "HP:0000003", "-a", "ABBR1"]
-    )
+    result = runner.invoke(cli, ["update", "groups", "cust000", "-p", "HP:0000003", "-a", "ABBR1"])
     assert result.exit_code == 0
     assert "Institute updated" in result.output
     updated_institute = store.institute_collection.find_one()

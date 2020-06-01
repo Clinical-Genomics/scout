@@ -89,14 +89,14 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
     # Variant level information
     validated_tp = set()
     validated_fp = set()
-    var_valid_orders = 0  # use this counter to count 'True Positive', 'False positive' and 'Not validated' vars
+    var_valid_orders = (
+        0  # use this counter to count 'True Positive', 'False positive' and 'Not validated' vars
+    )
 
     validate_events = adapter.event_collection.find(verified_query)
     for validate_event in list(validate_events):
         case_id = validate_event.get("case")
-        var_obj = adapter.variant(
-            case_id=case_id, document_id=validate_event["variant_id"]
-        )
+        var_obj = adapter.variant(case_id=case_id, document_id=validate_event["variant_id"])
         if var_obj:  # Don't take into account variants which have been removed from db
             var_valid_orders += 1
             if case_id in sliced_case_ids:
@@ -136,9 +136,7 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
 
     variants = []
     nr_validated = len(validated_tp) + len(validated_fp)
-    variants.append(
-        {"title": "Validation ordered", "count": var_valid_orders, "percent": 1}
-    )
+    variants.append({"title": "Validation ordered", "count": var_valid_orders, "percent": 1})
 
     # taking into account that var_valid_orders might be 0:
     percent_validated_tp = 0
@@ -251,9 +249,7 @@ def get_case_groups(adapter, total_cases, institute_id=None, slice_query=None):
 
     subquery = {}
     if institute_id and slice_query:
-        subquery = adapter.cases(
-            owner=institute_id, name_query=slice_query, yield_query=True
-        )
+        subquery = adapter.cases(owner=institute_id, name_query=slice_query, yield_query=True)
     elif institute_id:
         subquery = adapter.cases(owner=institute_id, yield_query=True)
     elif slice_query:
@@ -296,9 +292,7 @@ def get_analysis_types(adapter, total_cases, institute_id=None, slice_query=None
 
     subquery = {}
     if institute_id and slice_query:
-        subquery = adapter.cases(
-            owner=institute_id, name_query=slice_query, yield_query=True
-        )
+        subquery = adapter.cases(owner=institute_id, name_query=slice_query, yield_query=True)
     elif institute_id:
         subquery = adapter.cases(owner=institute_id, yield_query=True)
     elif slice_query:
@@ -311,12 +305,8 @@ def get_analysis_types(adapter, total_cases, institute_id=None, slice_query=None
         pipeline.append(query)
 
     pipeline.append({"$unwind": "$individuals"})
-    pipeline.append(
-        {"$group": {"_id": "$individuals.analysis_type", "count": {"$sum": 1}}}
-    )
+    pipeline.append({"$group": {"_id": "$individuals.analysis_type", "count": {"$sum": 1}}})
     analysis_query = adapter.case_collection.aggregate(pipeline)
-    analysis_types = [
-        {"name": group["_id"], "count": group["count"]} for group in analysis_query
-    ]
+    analysis_types = [{"name": group["_id"], "count": group["count"]} for group in analysis_query]
 
     return analysis_types

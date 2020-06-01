@@ -59,37 +59,25 @@ class QueryHandler(object):
         mongo_case_query = {}
 
         if query.get("phenotype_terms"):
-            mongo_case_query["phenotype_terms.phenotype_id"] = {
-                "$in": query["phenotype_terms"]
-            }
+            mongo_case_query["phenotype_terms.phenotype_id"] = {"$in": query["phenotype_terms"]}
 
         if query.get("phenotype_groups"):
-            mongo_case_query["phenotype_groups.phenotype_id"] = {
-                "$in": query["phenotype_groups"]
-            }
+            mongo_case_query["phenotype_groups.phenotype_id"] = {"$in": query["phenotype_groups"]}
 
         if query.get("cohorts"):
             mongo_case_query["cohorts"] = {"$in": query["cohorts"]}
 
         if mongo_case_query != {}:
             mongo_case_query["owner"] = institute_id
-            LOG.debug(
-                "Search cases for selection set, using query {0}".format(
-                    select_case_obj
-                )
-            )
+            LOG.debug("Search cases for selection set, using query {0}".format(select_case_obj))
             select_case_obj = self.case_collection.find(mongo_case_query)
             select_cases = [case_id.get("display_name") for case_id in select_case_obj]
 
         if query.get("similar_case"):
             similar_case_display_name = query["similar_case"][0]
-            case_obj = self.case(
-                display_name=similar_case_display_name, institute_id=institute_id
-            )
+            case_obj = self.case(display_name=similar_case_display_name, institute_id=institute_id)
             if case_obj:
-                LOG.debug(
-                    "Search for cases similar to %s", case_obj.get("display_name")
-                )
+                LOG.debug("Search for cases similar to %s", case_obj.get("display_name"))
                 similar_cases = self.get_similar_cases(case_obj)
                 LOG.debug("Similar cases: %s", similar_cases)
                 select_cases = [similar[0] for similar in similar_cases]
@@ -241,7 +229,7 @@ class QueryHandler(object):
                 # Given a request to always return confident clinical variants,
                 # add the clnsig query as a major criteria, but only
                 # trust clnsig entries with trusted revstat levels.
-                if query.get("clinsig_confident_always_returned") == True:
+                if query.get("clinsig_confident_always_returned") is True:
                     if gene_query:
                         mongo_query["$and"] = [
                             {"$or": gene_query},
@@ -304,7 +292,7 @@ class QueryHandler(object):
             rank.append(CLINSIG_MAP[int(item)])
             str_rank.append(CLINSIG_MAP[int(item)])
 
-        if query.get("clinsig_confident_always_returned") == True:
+        if query.get("clinsig_confident_always_returned") is True:
             LOG.debug("add CLINSIG filter with trusted_revision_level")
 
             clnsig_query = {
@@ -323,9 +311,7 @@ class QueryHandler(object):
                 }
             }
         else:
-            LOG.debug(
-                "add CLINSIG filter for rank: %s" % ", ".join(str(query["clinsig"]))
-            )
+            LOG.debug("add CLINSIG filter for rank: %s" % ", ".join(str(query["clinsig"])))
 
             clnsig_query = {
                 "clnsig": {
@@ -369,9 +355,7 @@ class QueryHandler(object):
 
         """
         coordinate_query = None
-        chromosome_query = {
-            "$or": [{"chromosome": query["chrom"]}, {"end_chrom": query["chrom"]}]
-        }
+        chromosome_query = {"$or": [{"chromosome": query["chrom"]}, {"end_chrom": query["chrom"]}]}
         if query.get("start") and query.get("end"):
             # Query for overlapping intervals. Taking into account these cases:
             # 1
@@ -391,15 +375,8 @@ class QueryHandler(object):
             # Variant             xxxxxxxxxxxxxx
             position_query = {
                 "$or": [
-                    {
-                        "end": {"$gte": int(query["start"]), "$lte": int(query["end"])}
-                    },  # 1
-                    {
-                        "position": {
-                            "$lte": int(query["end"]),
-                            "$gte": int(query["start"]),
-                        }
-                    },  # 2
+                    {"end": {"$gte": int(query["start"]), "$lte": int(query["end"])}},  # 1
+                    {"position": {"$lte": int(query["end"]), "$gte": int(query["start"]),}},  # 2
                     {
                         "$and": [
                             {"position": {"$gte": int(query["start"])}},
@@ -486,12 +463,7 @@ class QueryHandler(object):
             if criterion == "local_obs":
                 local_obs = query.get("local_obs")
                 mongo_secondary_query.append(
-                    {
-                        "$or": [
-                            {"local_obs_old": None},
-                            {"local_obs_old": {"$lt": local_obs + 1}},
-                        ]
-                    }
+                    {"$or": [{"local_obs_old": None}, {"local_obs_old": {"$lt": local_obs + 1}},]}
                 )
 
             if criterion in ["clingen_ngi", "swegen"]:
@@ -521,16 +493,12 @@ class QueryHandler(object):
                                         "$and": [
                                             {
                                                 "spidex": {
-                                                    "$gt": SPIDEX_HUMAN[spidex_level][
-                                                        "neg"
-                                                    ][0]
+                                                    "$gt": SPIDEX_HUMAN[spidex_level]["neg"][0]
                                                 }
                                             },
                                             {
                                                 "spidex": {
-                                                    "$lt": SPIDEX_HUMAN[spidex_level][
-                                                        "neg"
-                                                    ][1]
+                                                    "$lt": SPIDEX_HUMAN[spidex_level]["neg"][1]
                                                 }
                                             },
                                         ]
@@ -539,16 +507,12 @@ class QueryHandler(object):
                                         "$and": [
                                             {
                                                 "spidex": {
-                                                    "$gt": SPIDEX_HUMAN[spidex_level][
-                                                        "pos"
-                                                    ][0]
+                                                    "$gt": SPIDEX_HUMAN[spidex_level]["pos"][0]
                                                 }
                                             },
                                             {
                                                 "spidex": {
-                                                    "$lt": SPIDEX_HUMAN[spidex_level][
-                                                        "pos"
-                                                    ][1]
+                                                    "$lt": SPIDEX_HUMAN[spidex_level]["pos"][1]
                                                 }
                                             },
                                         ]
@@ -565,9 +529,7 @@ class QueryHandler(object):
                 LOG.debug("Adding cadd_score: %s to query", cadd)
 
                 if query.get("cadd_inclusive") is True:
-                    cadd_query = {
-                        "$or": [cadd_query, {"cadd_score": {"$exists": False}}]
-                    }
+                    cadd_query = {"$or": [cadd_query, {"cadd_score": {"$exists": False}}]}
                     LOG.debug("Adding cadd inclusive to query")
 
                 mongo_secondary_query.append(cadd_query)
@@ -586,11 +548,7 @@ class QueryHandler(object):
                         {".".join(["genes", criterion[:-1]]): {"$in": criterion_values}}
                     )
 
-                LOG.debug(
-                    "Adding {0}: {1} to query".format(
-                        criterion, ", ".join(criterion_values)
-                    )
-                )
+                LOG.debug("Adding {0}: {1} to query".format(criterion, ", ".join(criterion_values)))
 
             if criterion == "size":
                 size = query["size"]
@@ -599,10 +557,7 @@ class QueryHandler(object):
 
                 if query.get("size_shorter"):
                     size_query = {
-                        "$or": [
-                            {"length": {"$lt": int(size)}},
-                            {"length": {"$exists": False}},
-                        ]
+                        "$or": [{"length": {"$lt": int(size)}}, {"length": {"$exists": False}},]
                     }
                     LOG.debug("Adding size less than, undef inclusive to query.")
 
@@ -619,15 +574,11 @@ class QueryHandler(object):
 
             if criterion == "depth":
                 LOG.debug("add depth filter")
-                mongo_secondary_query.append(
-                    {"tumor.read_depth": {"$gt": query.get("depth")}}
-                )
+                mongo_secondary_query.append({"tumor.read_depth": {"$gt": query.get("depth")}})
 
             if criterion == "alt_count":
                 LOG.debug("add min alt count filter")
-                mongo_secondary_query.append(
-                    {"tumor.alt_depth": {"$gt": query.get("alt_count")}}
-                )
+                mongo_secondary_query.append({"tumor.alt_depth": {"$gt": query.get("alt_count")}})
 
             if criterion == "control_frequency":
                 LOG.debug("add minimum control frequency filter")

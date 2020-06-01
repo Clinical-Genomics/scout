@@ -19,7 +19,8 @@ from scout.demo import load_path, panel_path
 
 ### Import demo files ###
 from scout.demo.resources import demo_files
-from scout.load import load_hgnc_genes, load_hpo, load_transcripts
+from scout.resources import cytoband_files
+from scout.load import load_hgnc_genes, load_hpo, load_transcripts, load_cytobands
 
 # Resources
 from scout.parse.panel import parse_gene_panel
@@ -74,18 +75,12 @@ def setup_scout(
         LOG.info("Database deleted")
 
     institute_obj = build_institute(
-        internal_id=institute_id,
-        display_name=institute_id,
-        sanger_recipients=[user_mail],
+        internal_id=institute_id, display_name=institute_id, sanger_recipients=[user_mail],
     )
     adapter.add_institute(institute_obj)
 
     user_obj = dict(
-        _id=user_mail,
-        email=user_mail,
-        name=user_name,
-        roles=["admin"],
-        institutes=[institute_id],
+        _id=user_mail, email=user_mail, name=user_name, roles=["admin"], institutes=[institute_id],
     )
 
     adapter.add_user(user_obj)
@@ -111,9 +106,7 @@ def setup_scout(
         genemap_lines = mim_files["genemap2"]
 
     if resource_files.get("hpogenes_path"):
-        hpo_gene_lines = [
-            line for line in get_file_handle(resource_files.get("hpogenes_path"))
-        ]
+        hpo_gene_lines = [line for line in get_file_handle(resource_files.get("hpogenes_path"))]
     else:
         hpo_gene_lines = fetch_genes_to_hpo_to_disease()
 
@@ -126,6 +119,10 @@ def setup_scout(
         exac_lines = [line for line in get_file_handle(resource_files.get("exac_path"))]
     else:
         exac_lines = fetch_exac_constraint()
+
+    # Load cytobands into cytoband collection
+    for genome_build, cytobands_path in cytoband_files.items():
+        load_cytobands(cytobands_path, genome_build, adapter)
 
     builds = ["37", "38"]
     for build in builds:
@@ -158,9 +155,7 @@ def setup_scout(
         else:
             ensembl_transcripts = fetch_ensembl_transcripts(build=build)
         # Load the transcripts for a certain build
-        transcripts = load_transcripts(
-            adapter, ensembl_transcripts, build, ensembl_genes
-        )
+        transcripts = load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
 
     hpo_terms_handle = None
     if resource_files.get("hpoterms_path"):

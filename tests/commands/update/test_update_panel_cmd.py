@@ -22,15 +22,12 @@ def test_update_panel(mock_app):
     assert "could not be found" in result.output
 
     # Test updating date providing a valid panel
-    result = runner.invoke(
-        cli, ["update", "panel", "-p", "panel1", "--update-date", "2019-03-29"]
-    )
+    result = runner.invoke(cli, ["update", "panel", "-p", "panel1", "--update-date", "2019-03-29"])
     assert "panels.$.updated_at" in result.output
 
     # update panel version specifying original panel version
     result = runner.invoke(
-        cli,
-        ["update", "panel", "-p", "panel1", "--version", 1.0, "--update-version", 2.0],
+        cli, ["update", "panel", "-p", "panel1", "--version", 1.0, "--update-version", 2.0],
     )
     assert "$set': {'panels.$.version': 2.0" in result.output
 
@@ -42,25 +39,17 @@ def test_update_panel_maintainer(mock_app):
     assert runner
 
     # Test adding a non-existing user
-    result = runner.invoke(
-        cli, ["update", "panel", "-p", "panel1", "-a", "noone@nowhere.no"]
-    )
+    result = runner.invoke(cli, ["update", "panel", "-p", "panel1", "-a", "noone@nowhere.no"])
     assert "does not exist" in result.output
 
     # Test adding a real user as maintainer
-    result = runner.invoke(
-        cli, ["update", "panel", "-p", "panel1", "-a", "john@doe.com"]
-    )
+    result = runner.invoke(cli, ["update", "panel", "-p", "panel1", "-a", "john@doe.com"])
     assert "Updating maintainer" in result.output
 
     # Test adding a real user as maintainer AGAIN
-    result = runner.invoke(
-        cli, ["update", "panel", "-p", "panel1", "-a", "john@doe.com"]
-    )
+    result = runner.invoke(cli, ["update", "panel", "-p", "panel1", "-a", "john@doe.com"])
     assert "already in maintainer" in result.output
 
     # Test removing the same only user as panel maintainer
-    result = runner.invoke(
-        cli, ["update", "panel", "-p", "panel1", "-r", "john@doe.com"]
-    )
+    result = runner.invoke(cli, ["update", "panel", "-p", "panel1", "-r", "john@doe.com"])
     assert "Updating maintainer" in result.output

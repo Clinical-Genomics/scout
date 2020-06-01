@@ -84,13 +84,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         return event
 
     def events(
-        self,
-        institute,
-        case=None,
-        variant_id=None,
-        level=None,
-        comments=False,
-        panel=None,
+        self, institute, case=None, variant_id=None, level=None, comments=False, panel=None,
     ):
         """Fetch events from the database.
 
@@ -193,9 +187,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             ## TODO Should ve raise a more proper exception here?
             raise e
 
-        existing_terms = set(
-            term["phenotype_id"] for term in case.get("phenotype_terms", [])
-        )
+        existing_terms = set(term["phenotype_id"] for term in case.get("phenotype_terms", []))
 
         updated_case = case
         phenotype_terms = []
@@ -248,9 +240,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         LOG.debug("Case updated")
         return updated_case
 
-    def remove_phenotype(
-        self, institute, case, user, link, phenotype_id, is_group=False
-    ):
+    def remove_phenotype(self, institute, case, user, link, phenotype_id, is_group=False):
         """Remove an existing phenotype from a case
 
         Args:
@@ -303,14 +293,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         return updated_case
 
     def comment(
-        self,
-        institute,
-        case,
-        user,
-        link,
-        variant=None,
-        content="",
-        comment_level="specific",
+        self, institute, case, user, link, variant=None, content="", comment_level="specific",
     ):
         """Add a comment to a variant or a case.
 
@@ -333,10 +316,8 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         Return:
             comment(dict): The comment event that was inserted
         """
-        if not comment_level in COMMENT_LEVELS:
-            raise SyntaxError(
-                "Comment levels can only be in {}".format(",".join(COMMENT_LEVELS))
-            )
+        if comment_level not in COMMENT_LEVELS:
+            raise SyntaxError("Comment levels can only be in {}".format(",".join(COMMENT_LEVELS)))
 
         if variant:
             LOG.info(
@@ -359,9 +340,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             )
 
         else:
-            LOG.info(
-                "Creating event for a comment on case {0}".format(case["display_name"])
-            )
+            LOG.info("Creating event for a comment on case {0}".format(case["display_name"]))
 
             comment = self.create_event(
                 institute=institute,
@@ -392,16 +371,11 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         if new_var["_id"] == old_var["_id"]:
             return new_comments
 
-        link = "/{0}/{1}/{2}".format(
-            new_var["institute"], case_obj["display_name"], new_var["_id"]
-        )
+        link = "/{0}/{1}/{2}".format(new_var["institute"], case_obj["display_name"], new_var["_id"])
 
         # collect all comments for the old variant
         comments_query = self.events(
-            variant_id=old_var["variant_id"],
-            comments=True,
-            institute=institute_obj,
-            case=case_obj,
+            variant_id=old_var["variant_id"], comments=True, institute=institute_obj, case=case_obj,
         )
 
         # and create the same comment for the new variant

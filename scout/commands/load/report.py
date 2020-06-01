@@ -13,9 +13,7 @@ LOG = logging.getLogger(__name__)
 @click.command("delivery-report")
 @click.argument("case_id")
 @click.argument("report_path", type=click.Path(exists=True))
-@click.option(
-    "-update", "--update", is_flag=True, help="update delivery report for a sample"
-)
+@click.option("-update", "--update", is_flag=True, help="update delivery report for a sample")
 @with_appcontext
 def delivery_report(case_id, report_path, update):
     """Add delivery report to an existing case."""

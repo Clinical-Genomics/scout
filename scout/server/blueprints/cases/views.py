@@ -10,7 +10,6 @@ import zipfile
 from operator import itemgetter
 
 import pymongo
-from dateutil.parser import parse as parse_date
 from flask import (
     Blueprint,
     Response,
@@ -109,9 +108,7 @@ def cases(institute_id):
     data["sort_by"] = sort_by
     data["nr_cases"] = store.nr_cases(institute_id=institute_id)
 
-    sanger_unevaluated = controllers.get_sanger_unevaluated(
-        store, institute_id, current_user.email
-    )
+    sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id, current_user.email)
     if len(sanger_unevaluated) > 0:
         data["sanger_unevaluated"] = sanger_unevaluated
 
@@ -164,25 +161,18 @@ def clinvar_submissions(institute_id):
         submission_id = request.form.get("submission_id")
         if request.form.get("update_submission"):
             if request.form.get("update_submission") == "close":  # close a submission
-                store.update_clinvar_submission_status(
-                    institute_id, submission_id, "closed"
-                )
+                store.update_clinvar_submission_status(institute_id, submission_id, "closed")
             elif request.form.get("update_submission") == "open":
                 store.update_clinvar_submission_status(
                     institute_id, submission_id, "open"
                 )  # open a submission
-            elif request.form.get(
-                "update_submission"
-            ) == "register_id" and request.form.get(
+            elif request.form.get("update_submission") == "register_id" and request.form.get(
                 "clinvar_id"
             ):  # provide an official clinvar submission ID
                 result = store.update_clinvar_id(
-                    clinvar_id=request.form.get("clinvar_id"),
-                    submission_id=submission_id,
+                    clinvar_id=request.form.get("clinvar_id"), submission_id=submission_id,
                 )
-            elif (
-                request.form.get("update_submission") == "delete"
-            ):  # delete a submission
+            elif request.form.get("update_submission") == "delete":  # delete a submission
                 deleted_objects, deleted_submissions = store.delete_submission(
                     submission_id=submission_id
                 )
@@ -242,13 +232,13 @@ def clinvar_submissions(institute_id):
                     mimetype="text/csv",
                     headers=headers,
                 )
-            else:
-                flash(
-                    'There are no submission objects of type "{}" to include in the csv file!'.format(
-                        csv_type
-                    ),
-                    "warning",
-                )
+
+            flash(
+                'There are no submission objects of type "{}" to include in the csv file!'.format(
+                    csv_type
+                ),
+                "warning",
+            )
 
     institute_obj = institute_and_case(store, institute_id)
 
@@ -287,18 +277,15 @@ def matchmaker_matches(institute_id, case_name):
     data["panel"] = panel
     if data and data.get("server_errors"):
         flash(
-            "MatchMaker server returned error:{}".format(data["server_errors"]),
-            "danger",
+            "MatchMaker server returned error:{}".format(data["server_errors"]), "danger",
         )
         return redirect(request.referrer)
-    elif not data:
+    if not data:
         data = {"institute": institute_obj, "case": case_obj, "panel": panel}
     return data
 
 
-@cases_bp.route(
-    "/<institute_id>/<case_name>/mme_match/<target>", methods=["GET", "POST"]
-)
+@cases_bp.route("/<institute_id>/<case_name>/mme_match/<target>", methods=["GET", "POST"])
 def matchmaker_match(institute_id, case_name, target):
     """Starts an internal match or a match against one or all MME external nodes"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -327,12 +314,10 @@ def matchmaker_match(institute_id, case_name, target):
     )
     ok_responses = 0
     for match_results in match_results:
-        match_results["status_code"] == 200
-        ok_responses += 1
+        if match_results["status_code"] == 200:
+            ok_responses += 1
     if ok_responses:
-        flash(
-            "Match request sent. Look for eventual matches in 'Matches' page.", "info"
-        )
+        flash("Match request sent. Look for eventual matches in 'Matches' page.", "info")
     else:
         flash("An error occurred while sending match request.", "danger")
 
@@ -358,7 +343,7 @@ def matchmaker_add(institute_id, case_name):
             "warning",
         )
         return redirect(request.referrer)
-    elif case_obj.get("suspects"):
+    if case_obj.get("suspects"):
         causatives = True
     if case_obj.get("phenotype_terms"):
         features = True
@@ -424,27 +409,21 @@ def matchmaker_add(institute_id, case_name):
             n_succes_response += 1
         else:
             flash(
-                "an error occurred while adding patient to matchmaker: {}".format(
-                    message
-                ),
+                "an error occurred while adding patient to matchmaker: {}".format(message),
                 "warning",
             )
         if message == "Patient was successfully updated.":
             n_updated += 1
-        elif message == "Patient was successfully inserted into database.":
+        if message == "Patient was successfully inserted into database.":
             n_inserted += 1
 
     # if at least one patient was inserted or updated into matchmaker, save submission at the case level:
     if n_inserted or n_updated:
         category = "success"
-        store.case_mme_update(
-            case_obj=case_obj, user_obj=user_obj, mme_subm_obj=add_result
-        )
+        store.case_mme_update(case_obj=case_obj, user_obj=user_obj, mme_subm_obj=add_result)
     flash(
         "Number of new patients in matchmaker:{0}, number of updated records:{1}, number of failed requests:{2}".format(
-            n_inserted,
-            n_updated,
-            len(add_result.get("server_responses")) - n_succes_response,
+            n_inserted, n_updated, len(add_result.get("server_responses")) - n_succes_response,
         ),
         category,
     )
@@ -576,14 +555,11 @@ def gene_variants(institute_id):
             flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
         if not_found_symbols:
             flash(
-                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)),
-                "warning",
+                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning",
             )
         if non_clinical_symbols:
             flash(
-                "Gene not included in clinical list: {}".format(
-                    ", ".join(non_clinical_symbols)
-                ),
+                "Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)),
                 "warning",
             )
         form.hgnc_symbols.data = hgnc_symbols
@@ -591,10 +567,7 @@ def gene_variants(institute_id):
         LOG.debug("query {}".format(form.data))
 
         variants_query = store.gene_variants(
-            query=form.data,
-            institute_id=institute_id,
-            category="snv",
-            variant_type=variant_type,
+            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type,
         )
 
         data = controllers.gene_variants(store, variants_query, institute_id, page)
@@ -682,17 +655,11 @@ def pdf_case_report(institute_id, case_name):
 
     # workaround to be able to print the case pedigree to pdf
     if case_obj.get("madeline_info") is not None:
-        with open(
-            os.path.join(cases_bp.static_folder, "madeline.svg"), "w"
-        ) as temp_madeline:
+        with open(os.path.join(cases_bp.static_folder, "madeline.svg"), "w") as temp_madeline:
             temp_madeline.write(case_obj["madeline_info"])
 
     html_report = render_template(
-        "cases/case_report.html",
-        institute=institute_obj,
-        case=case_obj,
-        format="pdf",
-        **data,
+        "cases/case_report.html", institute=institute_obj, case=case_obj, format="pdf", **data,
     )
     return render_pdf(
         HTML(string=html_report),
@@ -708,9 +675,7 @@ def mt_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
     # create a temp folder to write excel files into
-    temp_excel_dir = os.path.join(
-        cases_bp.static_folder, "_".join([case_name, "mt_reports"])
-    )
+    temp_excel_dir = os.path.join(cases_bp.static_folder, "_".join([case_name, "mt_reports"]))
     os.makedirs(temp_excel_dir, exist_ok=True)
 
     # create mt excel files, one for each sample
@@ -722,7 +687,6 @@ def mt_report(institute_id, case_name):
         data = io.BytesIO()
         with zipfile.ZipFile(data, mode="w") as z:
             for f_name in pathlib.Path(temp_excel_dir).iterdir():
-                zipfile.ZipFile
                 z.write(f_name, os.path.basename(f_name))
         data.seek(0)
 
@@ -733,13 +697,12 @@ def mt_report(institute_id, case_name):
             data,
             mimetype="application/zip",
             as_attachment=True,
-            attachment_filename="_".join(["scout", case_name, "MT_report", today])
-            + ".zip",
+            attachment_filename="_".join(["scout", case_name, "MT_report", today]) + ".zip",
             cache_timeout=0,
         )
-    else:
-        flash("No MT report excel file could be exported for this sample", "warning")
-        return redirect(request.referrer)
+
+    flash("No MT report excel file could be exported for this sample", "warning")
+    return redirect(request.referrer)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/diagnose", methods=["POST"])
@@ -759,24 +722,17 @@ def case_diagnosis(institute_id, case_name):
     omim_obj = store.disease_term(omim_id.strip())
     if not omim_obj:
         flash("Couldn't find any disease term with id: {}".format(omim_id), "warning")
+        return redirect(request.referrer)
 
     remove = True if request.args.get("remove") == "yes" else False
     store.diagnose(
-        institute_obj,
-        case_obj,
-        user_obj,
-        link,
-        level=level,
-        omim_id=omim_id,
-        remove=remove,
+        institute_obj, case_obj, user_obj, link, level=level, omim_id=omim_id, remove=remove,
     )
     return redirect(request.referrer)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes", methods=["POST"])
-@cases_bp.route(
-    "/<institute_id>/<case_name>/phenotypes/<phenotype_id>", methods=["POST"]
-)
+@cases_bp.route("/<institute_id>/<case_name>/phenotypes/<phenotype_id>", methods=["POST"])
 def phenotypes(institute_id, case_name, phenotype_id=None):
     """Handle phenotypes."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -806,15 +762,64 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
             else:
                 # assume omim id
                 store.add_phenotype(
-                    institute_obj,
-                    case_obj,
-                    user_obj,
-                    case_url,
-                    omim_term=phenotype_term,
+                    institute_obj, case_obj, user_obj, case_url, omim_term=phenotype_term,
                 )
         except ValueError:
             return abort(400, ("unable to add phenotype: {}".format(phenotype_term)))
     return redirect(case_url)
+
+
+def parse_raw_gene_ids(raw_symbols):
+    """ Parse raw gene symbols for hgnc_symbols from web form autocompletion.
+
+        Arguments:
+            raw_symbol_strings(list(string)) - formated "17284 | POT1 (hPot1, POT1)"
+
+        Returns:
+            hgnc_ids(set(int))
+    """
+    hgnc_ids = set()
+
+    for raw_symbol in raw_symbols:
+        LOG.debug("raw gene: {}".format(raw_symbol))
+        # avoid empty lists
+        if raw_symbol:
+            # take the first nubmer before |, and remove any space.
+            try:
+                hgnc_ids.add(int(raw_symbol.split("|", 1)[0].replace(" ", "")))
+            except ValueError:
+                flash(
+                    "Provided gene info could not be parsed! "
+                    "Please allow autocompletion to finish.",
+                    "warning",
+                )
+
+    LOG.debug("Parsed HGNC symbols {}".format(hgnc_ids))
+
+    return hgnc_ids
+
+
+def parse_raw_gene_symbols(raw_symbols_list):
+    """ Parse list of concatenated gene symbol list for hgnc_symbols from Phenomizer.
+
+        Arguments:
+            raw_symbols(list(string)) - e.g. ("POT1 | MUTYH", "POT1 | ATXN1 | ATXN7")
+
+        Returns:
+            hgnc_symbols(set(string)) - set of (unique) gene symbols without intervening chars
+    """
+    hgnc_symbols = set()
+
+    for raw_symbols in raw_symbols_list:
+        LOG.debug("raw gene: {}".format(raw_symbols))
+        # avoid empty lists
+        if raw_symbols:
+            hgnc_symbols.update(
+                raw_symbol.split(" ", 1)[0] for raw_symbol in raw_symbols.split("|")
+            )
+    LOG.debug("Parsed HGNC symbols {}".format(hgnc_symbols))
+
+    return hgnc_symbols
 
 
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes/actions", methods=["POST"])
@@ -826,79 +831,38 @@ def phenotypes_actions(institute_id, case_name):
     hpo_ids = request.form.getlist("hpo_id")
     user_obj = store.user(current_user.email)
 
-    if action == "DELETE":
-        for hpo_id in hpo_ids:
-            # DELETE a phenotype from the list
-            store.remove_phenotype(institute_obj, case_obj, user_obj, case_url, hpo_id)
-    elif action == "PHENOMIZER":
+    if action == "PHENOMIZER":
         if len(hpo_ids) == 0:
-            hpo_ids = [
-                term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])
-            ]
+            hpo_ids = [term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])]
 
         username = current_app.config["PHENOMIZER_USERNAME"]
         password = current_app.config["PHENOMIZER_PASSWORD"]
         diseases = controllers.hpo_diseases(username, password, hpo_ids)
         return render_template(
-            "cases/diseases.html",
-            diseases=diseases,
-            institute=institute_obj,
-            case=case_obj,
+            "cases/diseases.html", diseases=diseases, institute=institute_obj, case=case_obj,
         )
 
-    elif action == "ADDGENE":
-        hgnc_symbol = None
-        for raw_symbol in request.form.getlist("genes"):
-            LOG.debug("raw gene: {}".format(raw_symbol))
-            # avoid empty lists
-            if raw_symbol:
-                # take the first nubmer before |, and remove any space.
-                try:
-                    hgnc_symbol_split = raw_symbol.split("|", 1)[0]
-                    hgnc_symbol = int(hgnc_symbol_split.replace(" ", ""))
-                except ValueError:
-                    flash(
-                        "Provided gene info could not be parsed! "
-                        "Please allow autocompletion to finish.",
-                        "warning",
-                    )
-            LOG.debug("Parsed HGNC symbol {}".format(hgnc_symbol))
-            store.update_dynamic_gene_list(
-                case_obj, hgnc_ids=[hgnc_symbol], add_only=True
-            )
+    if action == "DELETE":
+        for hpo_id in hpo_ids:
+            # DELETE a phenotype from the list
+            store.remove_phenotype(institute_obj, case_obj, user_obj, case_url, hpo_id)
 
-    elif action == "GENES":
-        hgnc_symbols = set()
-        for raw_symbols in request.form.getlist("genes"):
-            LOG.debug("raw gene list: {}".format(raw_symbols))
-            # avoid empty lists
-            if raw_symbols:
-                try:
-                    hgnc_symbols.update(
-                        raw_symbol.split(" ", 1)[0]
-                        for raw_symbol in raw_symbols.split("|")
-                    )
-                except ValueError:
-                    flash(
-                        "Provided gene info could not be parsed! "
-                        "Please allow autocompletion to finish.",
-                        "warning",
-                    )
-            LOG.debug("HGNC symbols {}".format(hgnc_symbols))
-        store.update_dynamic_gene_list(case_obj, hgnc_symbols=hgnc_symbols)
+    if action == "ADDGENE":
+        hgnc_ids = parse_raw_gene_ids(request.form.getlist("genes"))
+        store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_ids), add_only=True)
 
-    elif action == "GENERATE":
+    if action == "GENES":
+        hgnc_symbols = parse_raw_gene_symbols(request.form.getlist("genes"))
+        store.update_dynamic_gene_list(case_obj, hgnc_symbols=list(hgnc_symbols))
+
+    if action == "GENERATE":
         if len(hpo_ids) == 0:
-            hpo_ids = [
-                term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])
-            ]
+            hpo_ids = [term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])]
         results = store.generate_hpo_gene_list(*hpo_ids)
         # determine how many HPO terms each gene must match
         hpo_count = int(request.form.get("min_match") or 1)
         hgnc_ids = [result[0] for result in results if result[1] >= hpo_count]
-        store.update_dynamic_gene_list(
-            case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids
-        )
+        store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids)
 
     return redirect(case_url)
 
@@ -955,9 +919,7 @@ def status(institute_id, case_name):
 
 
 @cases_bp.route("/<institute_id>/<case_name>/assign", methods=["POST"])
-@cases_bp.route(
-    "/<institute_id>/<case_name>/<user_id>/<inactivate>/assign", methods=["POST"]
-)
+@cases_bp.route("/<institute_id>/<case_name>/<user_id>/<inactivate>/assign", methods=["POST"])
 def assign(institute_id, case_name, user_id=None, inactivate=False):
     """Assign and unassign a user from a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -1008,10 +970,7 @@ def pin_variant(institute_id, case_name, variant_id):
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
     link = url_for(
-        "variant.variant",
-        institute_id=institute_id,
-        case_name=case_name,
-        variant_id=variant_id,
+        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id,
     )
     if request.form["action"] == "ADD":
         store.pin_variant(institute_obj, case_obj, user_obj, link, variant_obj)
@@ -1028,18 +987,14 @@ def mark_validation(institute_id, case_name, variant_id):
     user_obj = store.user(current_user.email)
     validate_type = request.form["type"] or None
     link = url_for(
-        "variant.variant",
-        institute_id=institute_id,
-        case_name=case_name,
-        variant_id=variant_id,
+        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id,
     )
     store.validate(institute_obj, case_obj, user_obj, link, variant_obj, validate_type)
     return redirect(request.referrer or link)
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<variant_id>/<partial_causative>/causative",
-    methods=["POST"],
+    "/<institute_id>/<case_name>/<variant_id>/<partial_causative>/causative", methods=["POST"],
 )
 def mark_causative(institute_id, case_name, variant_id, partial_causative=False):
     """Mark a variant as confirmed causative."""
@@ -1047,37 +1002,26 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
     link = url_for(
-        "variant.variant",
-        institute_id=institute_id,
-        case_name=case_name,
-        variant_id=variant_id,
+        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id,
     )
     if request.form["action"] == "ADD":
         if "partial_causative" in request.form:
             omim_terms = request.form.getlist("omim_select")
             hpo_terms = request.form.getlist("hpo_select")
             store.mark_partial_causative(
-                institute_obj,
-                case_obj,
-                user_obj,
-                link,
-                variant_obj,
-                omim_terms,
-                hpo_terms,
+                institute_obj, case_obj, user_obj, link, variant_obj, omim_terms, hpo_terms,
             )
         else:
             store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
     elif request.form["action"] == "DELETE":
-        if eval(partial_causative):
-            store.unmark_partial_causative(
-                institute_obj, case_obj, user_obj, link, variant_obj
-            )
+        if partial_causative == "True":
+            store.unmark_partial_causative(institute_obj, case_obj, user_obj, link, variant_obj)
         else:
             store.unmark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
 
     # send the user back to the case that was marked as solved
     case_url = url_for(".case", institute_id=institute_id, case_name=case_name)
-    return redirect(case_url)
+    return redirect(request.referrer)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/check-case", methods=["POST"])
@@ -1100,19 +1044,18 @@ def delivery_report(institute_id, case_name):
         return abort(404)
 
     date_str = request.args.get("date")
-    if date_str:
+    if date_str is not None:
         delivery_report = None
-        analysis_date = parse_date(date_str)
-        for analysis_data in case_obj["analyses"]:
-            if analysis_data["date"] == analysis_date:
+        for analysis_data in case_obj.get("analyses", []):
+            if str(analysis_data["date"].date()) == date_str:
                 delivery_report = analysis_data["delivery_report"]
         if delivery_report is None:
             return abort(404)
     else:
         delivery_report = case_obj["delivery_report"]
 
-    format = request.args.get("format", "html")
-    if format == "pdf":
+    report_format = request.args.get("format", "html")
+    if report_format == "pdf":
         try:  # file could not be available
             html_file = open(delivery_report, "r")
             source_code = html_file.read()
@@ -1150,10 +1093,13 @@ def share(institute_id, case_name):
     revoke_access = "revoke" in request.form
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
 
-    if revoke_access:
-        store.unshare(institute_obj, case_obj, collaborator_id, user_obj, link)
-    else:
-        store.share(institute_obj, case_obj, collaborator_id, user_obj, link)
+    try:
+        if revoke_access:
+            store.unshare(institute_obj, case_obj, collaborator_id, user_obj, link)
+        else:
+            store.share(institute_obj, case_obj, collaborator_id, user_obj, link)
+    except ValueError as ex:
+        flash(str(ex), "warning")
 
     return redirect(request.referrer)
 
@@ -1164,9 +1110,7 @@ def rerun(institute_id, case_name):
     sender = current_app.config.get("MAIL_USERNAME")
     recipient = current_app.config.get("TICKET_SYSTEM_EMAIL")
 
-    controllers.rerun(
-        store, mail, current_user, institute_id, case_name, sender, recipient
-    )
+    controllers.rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
     return redirect(request.referrer)
 
 
@@ -1198,15 +1142,11 @@ def cohorts(institute_id, case_name):
 def default_panels(institute_id, case_name):
     """Update default panels for a case."""
     panel_ids = request.form.getlist("panel_ids")
-    controllers.update_default_panels(
-        store, current_user, institute_id, case_name, panel_ids
-    )
+    controllers.update_default_panels(store, current_user, institute_id, case_name, panel_ids)
     return redirect(request.referrer)
 
 
-@cases_bp.route(
-    "/<institute_id>/<case_name>/update-clinical-filter-hpo", methods=["POST"]
-)
+@cases_bp.route("/<institute_id>/<case_name>/update-clinical-filter-hpo", methods=["POST"])
 def update_clinical_filter_hpo(institute_id, case_name):
     """Update default panels for a case."""
     hpo_clinical_filter = request.form.get("hpo_clinical_filter")

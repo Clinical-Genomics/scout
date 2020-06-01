@@ -74,12 +74,8 @@ def create_app(config_file=None, config=None):
     def check_user():
         if not app.config.get("LOGIN_DISABLED") and request.endpoint:
             # check if the endpoint requires authentication
-            static_endpoint = (
-                "static" in request.endpoint or "report" in request.endpoint
-            )
-            public_endpoint = getattr(
-                app.view_functions[request.endpoint], "is_public", False
-            )
+            static_endpoint = "static" in request.endpoint or "report" in request.endpoint
+            public_endpoint = getattr(app.view_functions[request.endpoint], "is_public", False)
             relevant_endpoint = not (static_endpoint or public_endpoint)
             # if endpoint requires auth, check if user is authenticated
             if relevant_endpoint and not current_user.is_authenticated:
@@ -153,20 +149,28 @@ def register_filters(app):
         if number is None:
             # NaN
             return "-"
-        elif number == 0:
+        if number == 0:
             # avoid confusion over what is rounded and what is actually 0
             return 0
-        elif number < min_number:
+        if number < min_number:
             # make human readable and sane
             return "< {}".format(min_number)
-        else:
-            # round all other numbers
-            return round(number, ndigits)
+
+        # round all other numbers
+        return round(number, ndigits)
 
     @app.template_filter()
     def url_decode(string):
         """Decode a string with encoded hex values."""
         return unquote(string)
+
+    @app.template_filter()
+    def cosmic_prefix(cosmicId):
+        """ If cosmicId is an integer, add 'COSM' as prefix
+            otherwise return unchanged """
+        if isinstance(cosmicId, int):
+            return "COSM" + str(cosmicId)
+        return cosmicId
 
 
 def configure_email_logging(app):
@@ -184,8 +188,7 @@ def configure_email_logging(app):
     mail_handler.setLevel(logging.ERROR)
     mail_handler.setFormatter(
         logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s: %(message)s "
-            "[in %(pathname)s:%(lineno)d]"
+            "%(asctime)s - %(name)s - %(levelname)s: %(message)s " "[in %(pathname)s:%(lineno)d]"
         )
     )
     app.logger.addHandler(mail_handler)

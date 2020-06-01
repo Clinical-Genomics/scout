@@ -7,11 +7,40 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
-- Adds possibility to add "lims_id" to cases. Currently only stored in database, not shown anywhere
+- COSMIC badge shown in cancer variants
+- Default gene-panel in non-cancer structural view in url
+- Filter SNVs and SVs by cytoband coordinates
 
 ### Fixed
+- Bug in clinVar form when variant has no gene
+- Bug when sharing cases with the same institute twice
+- Page crashing when removing causative variant tag
+- Do not default to GATK caller when no caller info is provided for cancer SNVs
+
 ### Changed
 
+## [4.16.1]
+
+### Fixed
+- Fix the fix for handling of delivery reports for rerun cases
+
+## [4.16]
+
+### Added
+- Adds possibility to add "lims_id" to cases. Currently only stored in database, not shown anywhere
+- Adds verification comment box to SVs (previously only available for small variants)
+- Scrollable pedigree panel
+
+### Fixed
+- Error caused by changes in WTForm (new release 2.3.x)
+- Bug in OMIM case page form, causing the page to crash when a string was provided instead of a numerical OMIM id
+- Fix Alamut link to work properly on hg38
+- Better handling of delivery reports for rerun cases
+- Small CodeFactor style issues: matchmaker results counting, a couple of incomplete tests and safer external xml
+- Fix an issue with Phenomizer introduced by CodeFactor style changes
+
+### Changed
+- Updated the version of igv.js to 2.5.4
 
 ## [4.15.1]
 

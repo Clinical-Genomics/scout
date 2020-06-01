@@ -63,6 +63,7 @@ def parse_genemap2_phenotypes(phenotype_entry, mim_number=None):
         phenotype_description = ""
 
         # We will try to save the description
+        i = 0
         splitted_info = phenotype_info.split(",")
         for i, text in enumerate(splitted_info):
             # Everything before ([1,2,3])
@@ -153,9 +154,7 @@ def parse_genemap2(lines):
         # the gene symbols
         gene_symbols = []
         if parsed_entry.get("Gene Symbols"):
-            gene_symbols = [
-                symbol.strip() for symbol in parsed_entry["Gene Symbols"].split(",")
-            ]
+            gene_symbols = [symbol.strip() for symbol in parsed_entry["Gene Symbols"].split(",")]
         parsed_entry["hgnc_symbols"] = gene_symbols
 
         if not hgnc_symbol and gene_symbols:
@@ -286,9 +285,7 @@ def parse_mim_titles(lines):
         if not line.startswith("#"):
             parsed_entry = parse_omim_line(line, header)
             parsed_entry["mim_number"] = int(parsed_entry["mim_number"])
-            parsed_entry["preferred_title"] = parsed_entry["preferred_title"].split(
-                ";"
-            )[0]
+            parsed_entry["preferred_title"] = parsed_entry["preferred_title"].split(";")[0]
             yield parsed_entry
 
 
@@ -436,8 +433,10 @@ def cli(context, morbid, genemap, mim2gene, mim_titles, phenotypes):
         for i, mim_term in enumerate(phenotypes):
             # pp(phenotypes[mim_term])
             pass
-
-    print("Number of phenotypes found: %s" % i)
+    try:
+        print("Number of phenotypes found: %s" % i)
+    except NameError:
+        print("Number of phenotypes found is undefined (none).")
 
     context.abort()
     # hgnc_genes = get_mim_genes(genemap_handle, mim2gene_handle)

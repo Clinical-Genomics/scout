@@ -28,10 +28,7 @@ def test_update_omim_existing_institute_no_omim_key(mock_app):
     # Test CLI base, provide non valid API key
     result = runner.invoke(cli, ["update", "omim", "--institute", "cust000"],)
     assert result.exit_code != 0
-    assert (
-        "WARNING Please provide a omim api key to load the omim gene panel"
-        in result.output
-    )
+    assert "WARNING Please provide a omim api key to load the omim gene panel" in result.output
 
 
 def test_update_omim_wrong_omim_key(mock_app):
@@ -43,8 +40,7 @@ def test_update_omim_wrong_omim_key(mock_app):
 
     # Test CLI base, provide non valid API key
     result = runner.invoke(
-        cli,
-        ["update", "omim", "--institute", "cust000", "--api-key", "not_a_valid_key"],
+        cli, ["update", "omim", "--institute", "cust000", "--api-key", "not_a_valid_key"],
     )
     # THEN assert exit code is non zero since the kwy did not work
     assert result.exit_code != 0

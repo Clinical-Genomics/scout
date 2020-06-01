@@ -92,9 +92,7 @@ def parse_genotype(variant, ind, pos):
         ref_call = genotype[0]
         alt_call = genotype[1]
 
-        gt_call["genotype_call"] = "/".join(
-            [GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]]
-        )
+        gt_call["genotype_call"] = "/".join([GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]])
 
     paired_end_alt = None
     paired_end_ref = None
@@ -106,7 +104,7 @@ def parse_genotype(variant, ind, pos):
     if "PE" in variant.FORMAT:
         try:
             value = int(variant.format("PE")[pos])
-            if not value < 0:
+            if value >= 0:
                 paired_end_alt = value
         except ValueError as e:
             pass
@@ -118,9 +116,9 @@ def parse_genotype(variant, ind, pos):
         try:
             alt_value = int(values[1])
             ref_value = int(values[0])
-            if not alt_value < 0:
+            if alt_value >= 0:
                 paired_end_alt = alt_value
-            if not ref_value < 0:
+            if ref_value >= 0:
                 paired_end_ref = ref_value
         except ValueError as r:
             pass
@@ -132,40 +130,40 @@ def parse_genotype(variant, ind, pos):
         ref_value = 0
         if len(values) == 1:
             alt_value = int(values[0])
-        elif len(values) == 2:
+        if len(values) == 2:
             alt_value = int(values[1])
             ref_value = int(values[0])
-        if not alt_value < 0:
+        if alt_value >= 0:
             split_read_alt = alt_value
-        if not ref_value < 0:
+        if ref_value >= 0:
             split_read_ref = ref_value
 
     # Number of paired ends that supports the event
     if "DV" in variant.FORMAT:
         values = variant.format("DV")[pos]
         alt_value = int(values[0])
-        if not alt_value < 0:
+        if alt_value >= 0:
             paired_end_alt = alt_value
 
     # Number of paired ends that supports the reference
     if "DR" in variant.FORMAT:
         values = variant.format("DR")[pos]
         ref_value = int(values[0])
-        if not alt_value < 0:
+        if alt_value >= 0:
             paired_end_ref = ref_value
 
     # Number of split reads that supports the event
     if "RV" in variant.FORMAT:
         values = variant.format("RV")[pos]
         alt_value = int(values[0])
-        if not alt_value < 0:
+        if alt_value >= 0:
             split_read_alt = alt_value
 
     # Number of split reads that supports the reference
     if "RR" in variant.FORMAT:
         values = variant.format("RR")[pos]
         ref_value = int(values[0])
-        if not ref_value < 0:
+        if ref_value >= 0:
             split_read_ref = ref_value
 
     alt_depth = int(variant.gt_alt_depths[pos])
@@ -173,7 +171,7 @@ def parse_genotype(variant, ind, pos):
         if "VD" in variant.FORMAT:
             alt_depth = int(variant.format("VD")[pos][0])
 
-        if paired_end_alt != None or split_read_alt != None:
+        if paired_end_alt is not None or split_read_alt is not None:
             alt_depth = 0
             if paired_end_alt:
                 alt_depth += paired_end_alt
@@ -184,7 +182,7 @@ def parse_genotype(variant, ind, pos):
 
     ref_depth = int(variant.gt_ref_depths[pos])
     if ref_depth == -1:
-        if paired_end_ref != None or split_read_ref != None:
+        if paired_end_ref is not None or split_read_ref is not None:
             ref_depth = 0
             if paired_end_ref:
                 ref_depth += paired_end_ref
