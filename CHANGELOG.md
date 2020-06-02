@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Default gene-panel in non-cancer structural view in url
 - Filter SNVs and SVs by cytoband coordinates
 - Filter cancer SNV variants by alt allele frequency in tumor
+- Correct genome build in UCSC link from structural variant page
 
 ### Fixed
 - Bug in clinVar form when variant has no gene
