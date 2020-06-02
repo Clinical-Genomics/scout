@@ -45,6 +45,12 @@ class NonValidatingSelectMultipleField(SelectMultipleField):
     def pre_validate(self, form):
         pass
 
+class NonValidatingSelectField(SelectField):
+    """Necessary to skip validation of dynamic selects in form"""
+
+    def pre_validate(self, form):
+        pass
+
 
 class TagListField(Field):
     widget = TextInput()
@@ -92,7 +98,7 @@ class VariantFiltersForm(FlaskForm):
 
     gnomad_frequency = BetterDecimalField("gnomadAF", places=2, validators=[validators.Optional()])
 
-    filters = NonValidatingSelectMultipleField(choices=[], validators=[validators.Optional()])
+    filters = NonValidatingSelectField(choices=[], validators=[validators.Optional()])
     filter_display_name = StringField(default="")
     save_filter = SubmitField(label="Save filter")
     load_filter = SubmitField(label="Load filter")
@@ -125,7 +131,7 @@ class CancerFiltersForm(VariantFiltersForm):
     depth = IntegerField("Depth >", validators=[validators.Optional()])
     alt_count = IntegerField("Min alt count", validators=[validators.Optional()])
     control_frequency = BetterDecimalField(
-        "Normal freq. <", places=2, validators=[validators.Optional()]
+        "Normal alt AF <", places=2, validators=[validators.Optional()]
     )
     tumor_frequency = BetterDecimalField("Tumor alt AF >", places=2, validators=[validators.Optional()])
     mvl_tag = BooleanField("In Managed Variant List")
