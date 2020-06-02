@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - COSMIC badge shown in cancer variants
 - Default gene-panel in non-cancer structural view in url
 - Filter SNVs and SVs by cytoband coordinates
-- Filter cancer SNV variants by tumor allele frequency
+- Filter cancer SNV variants by alt allele frequency in tumor
 
 ### Fixed
 - Bug in clinVar form when variant has no gene
