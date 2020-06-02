@@ -43,5 +43,5 @@ SECONDARY_CRITERIA = [
     "alt_count",
     "control_frequency",
     "mvl_tag",
-    "vaf_frequency",
+    "tumor_frequency",
 ]

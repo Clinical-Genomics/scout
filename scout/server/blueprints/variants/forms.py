@@ -127,7 +127,7 @@ class CancerFiltersForm(VariantFiltersForm):
     control_frequency = BetterDecimalField(
         "Control freq. <", places=2, validators=[validators.Optional()]
     )
-    vaf_frequency = BetterDecimalField("Tumor AF >", places=2, validators=[validators.Optional()])
+    tumor_frequency = BetterDecimalField("Tumor AF >", places=2, validators=[validators.Optional()])
     mvl_tag = BooleanField("In Managed Variant List")
 
 
