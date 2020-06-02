@@ -39,6 +39,20 @@ SV_TYPE_CHOICES = [(term, term.replace("_", " ").upper()) for term in SV_TYPES]
 SPIDEX_CHOICES = [(term, term.replace("_", " ")) for term in SPIDEX_LEVELS]
 
 
+class NonValidatingSelectMultipleField(SelectMultipleField):
+    """Necessary to skip validation of dynamic multiple selects in form"""
+
+    def pre_validate(self, form):
+        pass
+
+
+class NonValidatingSelectField(SelectField):
+    """Necessary to skip validation of dynamic selects in form"""
+
+    def pre_validate(self, form):
+        pass
+
+
 class TagListField(Field):
     widget = TextInput()
 
@@ -72,20 +86,20 @@ class BetterDecimalField(DecimalField):
 class VariantFiltersForm(FlaskForm):
     variant_type = HiddenField(default="clinical")
 
-    gene_panels = SelectMultipleField(choices=[])
+    gene_panels = NonValidatingSelectMultipleField(choices=[])
     hgnc_symbols = TagListField("HGNC Symbols/Ids (case sensitive)")
 
     region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
     functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
 
-    cadd_score = BetterDecimalField("CADD", places=2)
+    cadd_score = BetterDecimalField("CADD", places=2, validators=[validators.Optional()])
     cadd_inclusive = BooleanField("CADD inclusive")
-    clinsig = SelectMultipleField("CLINSIG", choices=CLINSIG_OPTIONS)
+    clinsig = NonValidatingSelectMultipleField("CLINSIG", choices=CLINSIG_OPTIONS)
 
-    gnomad_frequency = BetterDecimalField("gnomadAF", places=2)
+    gnomad_frequency = BetterDecimalField("gnomadAF", places=2, validators=[validators.Optional()])
 
-    filters = SelectField(choices=[])
+    filters = NonValidatingSelectField(choices=[], validators=[validators.Optional()])
     filter_display_name = StringField(default="")
     save_filter = SubmitField(label="Save filter")
     load_filter = SubmitField(label="Load filter")
@@ -115,9 +129,14 @@ class FiltersForm(VariantFiltersForm):
 class CancerFiltersForm(VariantFiltersForm):
     """Base filters for CancerFiltersForm - extends VariantsFiltersForm"""
 
-    depth = IntegerField("Depth >")
-    alt_count = IntegerField("Min alt count >")
-    control_frequency = BetterDecimalField("Control freq. <", places=2)
+    depth = IntegerField("Depth >", validators=[validators.Optional()])
+    alt_count = IntegerField("Min alt count", validators=[validators.Optional()])
+    control_frequency = BetterDecimalField(
+        "Normal alt AF <", places=2, validators=[validators.Optional()]
+    )
+    tumor_frequency = BetterDecimalField(
+        "Tumor alt AF >", places=2, validators=[validators.Optional()]
+    )
     mvl_tag = BooleanField("In Managed Variant List")
 
 

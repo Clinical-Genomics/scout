@@ -20,14 +20,8 @@ def test_overview(app, user_obj, institute_obj):
         assert resp.status_code == 200
 
 
-def test_institute(app, user_obj, institute_obj, monkeypatch):
+def test_institute(app, user_obj, institute_obj):
     """Test function that creates institute update form and updates an institute"""
-
-    # monkeypatching form validation is easier than haldling a missing csfr token
-    def mock_validate_form(*args, **kwargs):
-        return True
-
-    monkeypatch.setattr(form, "validate_on_submit", mock_validate_form)
 
     # insert 2 mock HPO terms in database, for later use
     mock_disease_terms = [
