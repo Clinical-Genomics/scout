@@ -27,6 +27,7 @@ class ManagedVariant(dict):
         #optional fields
         # maintainer user_id list
         maintainer=list(user_id), # optional
+        institute=institute_id, # optional
 
         # optional fields foreseen for future use
         category=str,  # choices=('sv', 'snv', 'str', 'cancer', 'cancer_sv')
@@ -44,6 +45,7 @@ class ManagedVariant(dict):
         build="37",
         date=None,
         maintainer=[],
+        institute,
         category="snv",
         sub_category="snv",
         description=None,
