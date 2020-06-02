@@ -7,6 +7,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+### Fixed
+### Changed
+
+
+## [4.17]
+
+### Added
 - COSMIC badge shown in cancer variants
 - Default gene-panel in non-cancer structural view in url
 - Filter SNVs and SVs by cytoband coordinates
@@ -19,7 +26,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Page crashing when removing causative variant tag
 - Do not default to GATK caller when no caller info is provided for cancer SNVs
 
-### Changed
 
 ## [4.16.1]
 
