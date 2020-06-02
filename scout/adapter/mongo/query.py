@@ -106,6 +106,7 @@ class QueryHandler(object):
                 'clingen_ngi': int,
                 'cadd_score': float,
                 'cadd_inclusive": boolean,
+                'tumor_frequency': float,
                 'genetic_models': list(str),
                 'hgnc_symbols': list,
                 'region_annotations': list,
@@ -188,7 +189,7 @@ class QueryHandler(object):
         primary_terms = False
 
         # gnomad_frequency, local_obs, clingen_ngi, swegen, spidex_human, cadd_score, genetic_models, mvl_tag
-        # functional_annotations, region_annotations, size, svtype, decipher, depth, alt_count, control_frequency
+        # functional_annotations, region_annotations, size, svtype, decipher, depth, alt_count, control_frequency, tumor_frequency
         secondary_terms = False
 
         # check if any of the primary criteria was specified in the query
@@ -209,7 +210,6 @@ class QueryHandler(object):
         # such as a Pathogenic ClinSig.
         if secondary_terms is True:
             secondary_filter = self.secondary_query(query, mongo_query)
-
             # If there are no primary criteria given, all secondary criteria are added as a
             # top level '$and' to the query.
             if primary_terms is False:
@@ -584,6 +584,12 @@ class QueryHandler(object):
                 LOG.debug("add minimum control frequency filter")
                 mongo_secondary_query.append(
                     {"normal.alt_freq": {"$lt": float(query.get("control_frequency"))}}
+                )
+
+            if criterion == "tumor_frequency":
+                LOG.debug("add minimum VAF filter")
+                mongo_secondary_query.append(
+                    {"tumor.alt_freq": {"$gt": float(query.get("tumor_frequency"))}}
                 )
 
             if criterion == "mvl_tag":
