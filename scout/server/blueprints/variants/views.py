@@ -54,7 +54,6 @@ def variants(institute_id, case_name):
     user_obj = store.user(current_user.email)
 
     if request.method == "POST":
-        # If special filter were selected:
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )

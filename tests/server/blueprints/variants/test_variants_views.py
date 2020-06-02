@@ -272,7 +272,7 @@ def test_filter_cancer_variants_by_vaf(app, institute_obj, case_obj):
 
         # When a POST request filter with VAF > than the VAF in test_var is sent to the page
         form_data = {
-            "vaf_frequency": 0.5,
+            "tumor_frequency": 0.5,
         }
         resp = client.post(
             url_for(

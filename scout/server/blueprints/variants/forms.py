@@ -123,11 +123,11 @@ class CancerFiltersForm(VariantFiltersForm):
     """Base filters for CancerFiltersForm - extends VariantsFiltersForm"""
 
     depth = IntegerField("Depth >", validators=[validators.Optional()])
-    alt_count = IntegerField("Min alt count >", validators=[validators.Optional()])
+    alt_count = IntegerField("Min alt count", validators=[validators.Optional()])
     control_frequency = BetterDecimalField(
         "Control freq. <", places=2, validators=[validators.Optional()]
     )
-    tumor_frequency = BetterDecimalField("Tumor AF >", places=2, validators=[validators.Optional()])
+    tumor_frequency = BetterDecimalField("Tumor alt AF >", places=2, validators=[validators.Optional()])
     mvl_tag = BooleanField("In Managed Variant List")
 
 
