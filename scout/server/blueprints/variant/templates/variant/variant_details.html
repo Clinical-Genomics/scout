@@ -118,7 +118,7 @@
       </table>
     </div>
     <div class="card-footer">
-      <a href="#" data-toggle="tooltip" title="Show maximum 10 cases"><strong>Cases</strong></a>
+      <strong title="Shows maximum 10 cases">Cases</strong>
         {% if observations['cases'] %}
           {% for data in observations['cases'] %}
             {% if data.variant %}
@@ -127,6 +127,9 @@
               <span class="text-muted ml-3">{{ data.case.display_name }}</span>
             {% endif %}
           {% endfor %}
+          {% if len(observations['cases']) >= 10 %}
+          ...
+          {% endif%}
         {% endif %}
     </div>
   </div>

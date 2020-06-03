@@ -96,7 +96,7 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
             for reason in variant_obj.get("dismiss_variant", []):
                 if not isinstance(reason, int):
                     reason = int(reason)
-                    assessment["title"] += "{} - {}<br>".format(
+                    assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
                         DISMISS_VARIANT_OPTIONS[reason]["label"],
                         DISMISS_VARIANT_OPTIONS[reason]["description"],
                     )
