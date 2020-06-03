@@ -44,6 +44,8 @@ class CytobandHandler(object):
                 }
 
         """
+        LOG.error("Loading cytobands by chromosome")
+
         match = {"$match": {"build": build}}
         group = {
             "$group": {
