@@ -453,12 +453,26 @@
       </div>
     </div>
     <div class="form-group">
-      <div class="row">
-
-            </div>
+      <div class="row"></div>
     </div>
-    <br>
-    <div class="form-group">
+    <div class="form-group" id="start_end_filter">
+      <div class="row justify-content-between" style="margin-top:20px;">
+        <div class="col-1">
+          {{ wtf.form_field(form.chrom) }}
+        </div>
+        <div class="col-2">
+          {{ wtf.form_field(form.start) }}
+        </div>
+        <div class="col-2">
+          {{ wtf.form_field(form.end) }}
+        </div>
+        <div class="col">
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-group" id="buttons">
       <div class="row">
         <div class="col-3">
           <button class="btn btn-primary form-control">Filter variants</button>
