@@ -54,7 +54,6 @@ def variants(institute_id, case_name):
     user_obj = store.user(current_user.email)
 
     if request.method == "POST":
-        # If special filter buttons were selected:
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
@@ -143,7 +142,7 @@ def variants(institute_id, case_name):
         current_symbols.update(hpo_symbols)
         form.hgnc_symbols.data = list(current_symbols)
 
-    cytobands = store.cytoband_by_chrom(str(case_obj["genome_build"]))
+    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
     variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
 
@@ -160,7 +159,7 @@ def variants(institute_id, case_name):
         severe_so_terms=SEVERE_SO_TERMS,
         cytobands=cytobands,
         page=page,
-        **data
+        **data,
     )
 
 
@@ -196,7 +195,7 @@ def str_variants(institute_id, case_name):
         manual_rank_options=MANUAL_RANK_OPTIONS,
         form=form,
         page=page,
-        **data
+        **data,
     )
 
 
@@ -218,7 +217,7 @@ def sv_variants(institute_id, case_name):
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
-    cytobands = store.cytoband_by_chrom(str(case_obj["genome_build"]))
+    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
     # if variants should be exported
@@ -236,7 +235,7 @@ def sv_variants(institute_id, case_name):
         severe_so_terms=SEVERE_SO_TERMS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
-        **data
+        **data,
     )
 
 
@@ -250,10 +249,25 @@ def cancer_variants(institute_id, case_name):
 
     user_obj = store.user(current_user.email)
     if request.method == "POST":
-        page = int(request.form.get("page", 1))
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
+        if form.validate_on_submit() is False:
+            # Flash a message with errors
+            for field, err_list in form.errors.items():
+                for err in err_list:
+                    flash(f"Content of field '{field}' has not a valid format", "warning")
+            # And do not submit the form
+            return redirect(
+                url_for(
+                    ".cancer_variants",
+                    institute_id=institute_id,
+                    case_name=case_name,
+                    expand_search=True,
+                ),
+            )
+        page = int(request.form.get("page", 1))
+
     else:
         page = int(request.args.get("page", 1))
         form = CancerFiltersForm(request.args)
@@ -312,7 +326,7 @@ def cancer_sv_variants(institute_id, case_name):
         cancer_tier_options=CANCER_TIER_OPTIONS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
-        **data
+        **data,
     )
 
 
