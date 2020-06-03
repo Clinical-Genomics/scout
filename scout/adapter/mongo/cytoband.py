@@ -44,7 +44,7 @@ class CytobandHandler(object):
                 }
 
         """
-        LOG.error("Loading cytobands by chromosome")
+        LOG.error(f"Loading cytobands by chromosome. Build is:{build}")
 
         match = {"$match": {"build": build}}
         group = {
@@ -60,8 +60,8 @@ class CytobandHandler(object):
                 },
             }
         }
-        sort = {"$sort": {"start": pymongo.ASCENDING}}
+        #sort = {"$sort": {"start": pymongo.ASCENDING}}
 
-        result = self.cytoband_collection.aggregate([match, group, sort])
+        result = self.cytoband_collection.aggregate([match, group])
         cytobands_by_chrom = {each.pop("_id"): each for each in result}
         return cytobands_by_chrom
