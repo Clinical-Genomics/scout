@@ -48,7 +48,6 @@ class CytobandHandler(object):
             build = "38"
         else:
             build = "37"
-        LOG.error(f"Loading cytobands by chromosome. Build is:{build}")
 
         match = {"$match": {"build": build}}
         group = {

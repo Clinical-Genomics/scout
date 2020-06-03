@@ -143,7 +143,6 @@ def variants(institute_id, case_name):
         form.hgnc_symbols.data = list(current_symbols)
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
-    LOG.error(f"Cytobands returned from store are------->{cytobands}")
 
     variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
 
