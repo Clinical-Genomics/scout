@@ -596,6 +596,11 @@
       </span>
     {% endfor %}
   {% endif %}
+  {% if variant.assessment %}
+    <span class="badge badge-secondary" data-html="true" data-toggle="tooltip" data-placement="right"
+      title="{{ variant.assessment.title }}">
+      {{ variant.assessment.label }}</span>
+  {% endif %}
   {% if form.variant_type.data == 'research' %}
     {% if variant.clinical_assessments %}
       {% for assessment in variant.clinical_assessments %}
