@@ -11,7 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 
 
-## [4.17]
+## [4.17.1]
 
 ### Fixed
 - Load cytobands for cases with chromosome build not "37" or "38"
