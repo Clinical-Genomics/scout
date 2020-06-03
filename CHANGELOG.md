@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Show dismiss reasons in a badge with hover for clinical variants
+- A new blog post for version 4.17
 
 ### Fixed
 ### Changed
