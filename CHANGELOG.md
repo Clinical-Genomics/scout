@@ -13,6 +13,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.17]
 
+### Fixed
+- Load cytobands for cases with chromosome build not "37" or "38"
+
+
+## [4.17]
+
 ### Added
 - COSMIC badge shown in cancer variants
 - Default gene-panel in non-cancer structural view in url
