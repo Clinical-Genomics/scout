@@ -44,7 +44,7 @@ class CytobandHandler(object):
                 }
 
         """
-        if "38" in build:
+        if "38" in str(build):
             build = "38"
         else:
             build = "37"
