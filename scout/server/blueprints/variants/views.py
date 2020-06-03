@@ -142,7 +142,7 @@ def variants(institute_id, case_name):
         current_symbols.update(hpo_symbols)
         form.hgnc_symbols.data = list(current_symbols)
 
-    cytobands = store.cytoband_by_chrom(str(case_obj["genome_build"]))
+    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
     variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
 
@@ -217,7 +217,7 @@ def sv_variants(institute_id, case_name):
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
-    cytobands = store.cytoband_by_chrom(str(case_obj["genome_build"]))
+    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
     # if variants should be exported
