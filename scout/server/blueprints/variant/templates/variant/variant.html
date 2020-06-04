@@ -30,7 +30,7 @@
   </li>
   <li class="nav-item">
     {% if cancer %}
-      <a class="nav-link text-nowrap" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
+      <a class="nav-link text-nowrap" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
         {{ variant.variant_type|capitalize }} cancer variants
       </a>
     {% elif str %}
