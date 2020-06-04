@@ -156,6 +156,9 @@ def get_manual_assessments(variant_obj):
 
     assessments = []
 
+    if variant_obj is None:
+        return assessments
+
     for assessment_type in assessment_keywords:
         assessment = {}
         if variant_obj.get(assessment_type) is not None:
