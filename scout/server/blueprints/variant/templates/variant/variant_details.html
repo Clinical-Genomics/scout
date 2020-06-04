@@ -127,7 +127,7 @@
               <span class="text-muted ml-3">{{ data.case.display_name }}</span>
             {% endif %}
           {% endfor %}
-          {% if len(observations['cases']) >= 10 %}
+          {% if observations['cases']|length >= 10 %}
           ...
           {% endif%}
         {% endif %}
