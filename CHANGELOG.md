@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A new blog post for version 4.17
 
 ### Fixed
+- Revert to certificate checking when asking for Chanjo reports
 ### Changed
 
 
