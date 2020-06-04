@@ -125,8 +125,7 @@ MANUAL_RANK_OPTIONS = {
     5: {
         "label": "Pathogenic partial phenotype",
         "description": (
-            "Pathogenic variant explains part of patients phenotype, but "
-            "not all symptoms"
+            "Pathogenic variant explains part of patients phenotype, but " "not all symptoms"
         ),
         "label_class": "danger",
     },
@@ -145,11 +144,7 @@ MANUAL_RANK_OPTIONS = {
         "description": "Uncertain significance, but can discard",
         "label_class": "info",
     },
-    1: {
-        "label": "Benign",
-        "description": "Does not cause phenotype",
-        "label_class": "success",
-    },
+    1: {"label": "Benign", "description": "Does not cause phenotype", "label_class": "success",},
     0: {
         "label": "Other",
         "description": "Phenotype not related to disease",
