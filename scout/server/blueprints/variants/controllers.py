@@ -67,25 +67,21 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         overlapping_svs = [sv for sv in store.overlapping(variant_obj)]
         variant_obj["overlapping"] = overlapping_svs or None
 
-        # show previous classifications for research variants,
-        is_research = variant_obj["variant_type"] == "research"
-
-        # Get all previous ACMG evalautions of the variant
         evaluations = []
+        is_research = variant_obj["variant_type"] == "research"
+        # Get previous ACMG evalautions of the variant from other cases
         for evaluation_obj in store.get_evaluations(variant_obj):
-            classification = evaluation_obj["classification"]
-            # Only show pathogenic/likely pathogenic from other cases on variants page
             if evaluation_obj["case_id"] == case_obj["_id"]:
-                # research cases will have have previous evaluation shown regardless
-                if not is_research:
-                    continue
-            if not classification in ["pathogenic", "likely_pathogenic"]:
-                # research cases will have have previous evaluation shown regardless
-                if not is_research:
-                    continue
-            # Convert the classification int to readable string
+                continue
+
             evaluation_obj["classification"] = ACMG_COMPLETE_MAP.get(classification)
-            evaluations.append(evaluation_obj)
+
+            if is_research or evaluation_obj["classification"] not in [
+                "pathogenic",
+                "likely_pathogenic",
+            ]:
+                evaluations.append(evaluation_obj)
+
         variant_obj["evaluations"] = evaluations
 
         clinical_var_obj = variant_obj
