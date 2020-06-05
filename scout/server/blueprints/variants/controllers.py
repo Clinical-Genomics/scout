@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import datetime
 import logging
 import os.path
@@ -490,23 +489,30 @@ def cancer_variants(store, institute_id, case_name, form, page=1):
     return data
 
 
-def variant_count_session(store, institute_id, case_id, type, category):
+def variant_count_session(store, institute_id, case_id, var_type, var_category):
     """Create a session object containing variant count for each variant category
 
     Args:
         store(scout.adapter.MongoAdapter)
         institute_id(str): Institute ID
         case_id(str): Case ID
+        var_type(str): "research" or "clinical"
+        var_category(str): "snv", "cancer", "cancer_sv", "sv"
     """
     if (
-        session["all_variants"] is None
-        or session.get("institute") != institute_id
+        session.get("institute") != institute_id
         or session.get("case") != case_id
+        or session["case_variants"] is None
     ):
         session["case"] = case_id
         session["institute"] = institute_id
         case_variants = store.case_variants_count(case_id, institute_id)
-        session["all_variants"] = case_variants[type][category]
+        session["case_variants"] = case_variants
+
+    if session["case_variants"].get(var_type):
+        session["all_variants"] = session["case_variants"][var_type][var_category]
+    else:
+        session["all_variants"] = "NA"
 
 
 def get_clinvar_submission(store, institute_id, case_name, variant_id, submission_id):
