@@ -9,12 +9,18 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Show dismiss reasons in a badge with hover for clinical variants
 - Show an ellipsis if 10 cases or more to display with loqusdb matches
-- Apply default gene panel on return to cancer variantS from variant view
 - A new blog post for version 4.17
+- Tooltip to better describe Tumor and Normal columns in cancer variants
 
 ### Fixed
+- Apply default gene panel on return to cancer variantS from variant view
+- Revert to certificate checking when asking for Chanjo reports
+
 ### Changed
 
+
+### Changed
+- Turn tumor and normal allelic fraction to decimal numbers in tumor variants page
 
 ## [4.17.1]
 
