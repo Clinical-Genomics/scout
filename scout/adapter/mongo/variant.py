@@ -729,14 +729,14 @@ class VariantHandler(VariantLoader):
 
         variants_by_type = {}
         for item in results:
-            type = item["_id"]["type"]
-            category = item["_id"]["category"]
+            var_type = item["_id"]["type"]
+            var_category = item["_id"]["category"]
             # classify by type (clinical or research)
-            if type in variants_by_type:
+            if var_type in variants_by_type:
                 # classify by category (snv, sv, str, cancer, cancer-sv)
-                variants_by_type[type][category] = item["total"]
+                variants_by_type[var_type][var_category] = item["total"]
             else:
-                variants_by_type[type] = {category: item["total"]}
+                variants_by_type[var_type] = {var_category: item["total"]}
         return variants_by_type
 
     def sample_variants(self, variants, sample_name, category="snv"):
