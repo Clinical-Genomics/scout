@@ -736,9 +736,7 @@ class VariantHandler(VariantLoader):
                 # classify by category (snv, sv, str, cancer, cancer-sv)
                 variants_by_type[type][category] = item["total"]
             else:
-                variants_by_type[type] = {
-                    category : item["total"]
-                }
+                variants_by_type[type] = {category: item["total"]}
         return variants_by_type
 
     def sample_variants(self, variants, sample_name, category="snv"):
