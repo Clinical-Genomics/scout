@@ -499,6 +499,7 @@ def variant_count_session(store, institute_id, case_id, var_type, var_category):
         var_type(str): "research" or "clinical"
         var_category(str): "snv", "cancer", "cancer_sv", "sv"
     """
+    # Run the query just once for a case
     if (
         session.get("institute") != institute_id
         or session.get("case") != case_id
@@ -512,6 +513,7 @@ def variant_count_session(store, institute_id, case_id, var_type, var_category):
     if session["case_variants"].get(var_type):
         session["all_variants"] = session["case_variants"][var_type].get(var_category, "NA")
     else:
+        # Something might always go wrong I guess?
         session["all_variants"] = "NA"
 
 
