@@ -13,8 +13,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A new blog post for version 4.17
 
 ### Fixed
-### Changed
 
+### Changed
+- Turn tumor and normal allele frequencies to decimal numbers in tumor variants page
 
 ## [4.17.1]
 
