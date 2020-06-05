@@ -19,19 +19,13 @@ def test_case_variants_count(real_populated_database, case_obj, institute_obj, v
 
     # Containing clinical variants
     nr_clinical = adapter.load_variants(
-        case_obj=case_obj,
-        variant_type="clinical",
-        category="snv",
-        rank_threshold=None
+        case_obj=case_obj, variant_type="clinical", category="snv", rank_threshold=None
     )
     assert nr_clinical > 0
 
     # And research variants
     nr_research = adapter.load_variants(
-        case_obj=case_obj,
-        variant_type="research",
-        category="sv",
-        rank_threshold=None
+        case_obj=case_obj, variant_type="research", category="sv", rank_threshold=None
     )
     assert nr_research > 0
 

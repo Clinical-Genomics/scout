@@ -711,21 +711,20 @@ class VariantHandler(VariantLoader):
                     }
                 }
         """
-        LOG.info("Retrieving variants by categori for case: {0}, institute: {1}".format(case_id, institute_id))
+        LOG.info(
+            "Retrieving variants by categori for case: {0}, institute: {1}".format(
+                case_id, institute_id
+            )
+        )
         # Build query
-        match = {
-            "$match" : {
-                "case_id": case_id,
-                "institute": institute_id
-            }
-        }
+        match = {"$match": {"case_id": case_id, "institute": institute_id}}
         group = {
-            "$group" : {
-                "_id": {"type": "$variant_type", "category":"$category"},
-                "total": {"$sum" :1}
+            "$group": {
+                "_id": {"type": "$variant_type", "category": "$category"},
+                "total": {"$sum": 1},
             }
         }
-        pipeline = [match,group]
+        pipeline = [match, group]
         results = self.variant_collection.aggregate(pipeline)
 
         variants_by_type = {}
@@ -739,10 +738,9 @@ class VariantHandler(VariantLoader):
             else:
                 variants_by_type[type] = {
                     # classify by category (snv, sv, cancer, cancer-sv)
-                    category : item["total"]
+                    category: item["total"]
                 }
         return variants_by_type
-
 
     def sample_variants(self, variants, sample_name, category="snv"):
         """Given a list of variants get variant objects found in a specific patient
