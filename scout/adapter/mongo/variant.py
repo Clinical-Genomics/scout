@@ -737,12 +737,7 @@ class VariantHandler(VariantLoader):
                 variants_by_type[type][category] = item["total"]
             else:
                 variants_by_type[type] = {
-<<<<<<< HEAD
                     category : item["total"]
-=======
-                    # classify by category (snv, sv, cancer, cancer-sv)
-                    category: item["total"]
->>>>>>> a39a3cb6ed1ef31e26074c07f0fb0353ee937948
                 }
         return variants_by_type
 
