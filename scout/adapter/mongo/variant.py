@@ -734,11 +734,10 @@ class VariantHandler(VariantLoader):
             category = item["_id"]["category"]
             # classify by type (clinical or research)
             if type in variants_by_type:
-                # classify by category (snv, sv, cancer, cancer-sv)
+                # classify by category (snv, sv, str, cancer, cancer-sv)
                 variants_by_type[type][category] = item["total"]
             else:
                 variants_by_type[type] = {
-                    # classify by category (snv, sv, cancer, cancer-sv)
                     category : item["total"]
                 }
         return variants_by_type

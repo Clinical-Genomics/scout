@@ -6,7 +6,7 @@ import urllib.parse
 from datetime import date
 from pprint import pprint as pp
 
-from flask import Response, flash, request, url_for
+from flask import Response, flash, request, url_for, session
 from flask_login import current_user
 from flask_mail import Message
 from werkzeug.datastructures import Headers, MultiDict
@@ -49,7 +49,6 @@ from .forms import (
 )
 
 LOG = logging.getLogger(__name__)
-
 
 def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of variants."""
@@ -466,6 +465,11 @@ def cancer_variants(store, institute_id, case_name, form, page=1):
     per_page = 50
     skip_count = per_page * max(page - 1, 0)
     variants_query = store.variants(case_obj["_id"], category="cancer", query=form.data)
+
+    # Setup variant count session with variant count by category
+    variant_count_session(store, institute_id, case_obj["_id"], "clinical", "cancer")
+    session["filtered_variants"] = variants_query.count()
+
     variant_count = variants_query.count()
     more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = variants_query.skip(skip_count).limit(per_page)
@@ -483,6 +487,21 @@ def cancer_variants(store, institute_id, case_name, form, page=1):
         form=form,
     )
     return data
+
+
+def variant_count_session(store, institute_id, case_id, type, category):
+    """Create a session object containing variant count for each variant category
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str): Institute ID
+        case_id(str): Case ID
+    """
+    if session["all_variants"] is None or session.get("case") != case_id or session.get("institute") != institute_id:
+        session["case"] = case_id
+        session["institute"] = institute_id
+        case_variants = store.case_variants_count(case_id, institute_id)
+        session["all_variants"] = case_variants[type][category]
 
 
 def get_clinvar_submission(store, institute_id, case_name, variant_id, submission_id):

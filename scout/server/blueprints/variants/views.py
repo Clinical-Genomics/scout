@@ -16,6 +16,7 @@ from flask import (
     redirect,
     request,
     send_file,
+    session,
     url_for,
 )
 from flask_login import current_user
@@ -146,6 +147,10 @@ def variants(institute_id, case_name):
 
     variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
 
+    # Setup variant count session with variant count by category
+    controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
+    session["filtered_variants"] = variants_query.count()
+
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
@@ -220,6 +225,11 @@ def sv_variants(institute_id, case_name):
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
+
+    # Setup variant count session with variant count by category
+    controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
+    session["filtered_variants"] = variants_query.count()
+
     # if variants should be exported
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
@@ -311,6 +321,11 @@ def cancer_sv_variants(institute_id, case_name):
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
 
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
+
+    # Setup variant count session with variant count by category
+    controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
+    session["filtered_variants"] = variants_query.count()
+
     # if variants should be exported
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)

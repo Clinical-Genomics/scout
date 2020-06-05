@@ -51,7 +51,6 @@ cases_bp = Blueprint(
     static_url_path="/cases/static",
 )
 
-
 @cases_bp.route("/institutes")
 @templated("cases/index.html")
 def index():
