@@ -50,6 +50,7 @@ from .forms import (
 
 LOG = logging.getLogger(__name__)
 
+
 def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of variants."""
     variant_count = variants_query.count()
@@ -497,7 +498,11 @@ def variant_count_session(store, institute_id, case_id, type, category):
         institute_id(str): Institute ID
         case_id(str): Case ID
     """
-    if session["all_variants"] is None or session.get("case") != case_id or session.get("institute") != institute_id:
+    if (
+        session["all_variants"] is None
+        or session.get("case") != case_id
+        or session.get("institute") != institute_id
+    ):
         session["case"] = case_id
         session["institute"] = institute_id
         case_variants = store.case_variants_count(case_id, institute_id)

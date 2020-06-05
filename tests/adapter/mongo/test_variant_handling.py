@@ -303,6 +303,7 @@ def test_variant_non_existing(adapter):
     # THEN that the variant return is None
     assert res is None
 
+
 def test_case_variants_count(real_populated_database, case_obj, institute_obj, variant_objs):
     """Test the functions that counts the variants by category for a case"""
 
