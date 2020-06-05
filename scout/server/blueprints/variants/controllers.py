@@ -508,9 +508,9 @@ def variant_count_session(store, institute_id, case_id, var_type, var_category):
         session["institute"] = institute_id
         case_variants = store.case_variants_count(case_id, institute_id)
         session["case_variants"] = case_variants
-
+    flash(session["case_variants"])
     if session["case_variants"].get(var_type):
-        session["all_variants"] = session["case_variants"][var_type][var_category]
+        session["all_variants"] = session["case_variants"][var_type].get(var_category, "NA")
     else:
         session["all_variants"] = "NA"
 
