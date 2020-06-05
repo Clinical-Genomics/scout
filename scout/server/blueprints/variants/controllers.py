@@ -67,39 +67,32 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         overlapping_svs = [sv for sv in store.overlapping(variant_obj)]
         variant_obj["overlapping"] = overlapping_svs or None
 
-        # show previous classifications for research variants,
-        is_research = variant_obj["variant_type"] == "research"
-
-        # Get all previous ACMG evalautions of the variant
         evaluations = []
+        is_research = variant_obj["variant_type"] == "research"
+        # Get previous ACMG evalautions of the variant from other cases
         for evaluation_obj in store.get_evaluations(variant_obj):
-            classification = evaluation_obj["classification"]
-            # Only show pathogenic/likely pathogenic from other cases on variants page
             if evaluation_obj["case_id"] == case_obj["_id"]:
-                # research cases will have have previous evaluation shown regardless
-                if not is_research:
-                    continue
-            if not classification in ["pathogenic", "likely_pathogenic"]:
-                # research cases will have have previous evaluation shown regardless
-                if not is_research:
-                    continue
-            # Convert the classification int to readable string
-            evaluation_obj["classification"] = ACMG_COMPLETE_MAP.get(classification)
-            evaluations.append(evaluation_obj)
+                continue
+
+            classification = evaluation_obj["classification"]
+
+            if is_research or classification not in ["pathogenic", "likely_pathogenic"]:
+                evaluation_obj["classification"] = ACMG_COMPLETE_MAP.get(classification)
+                evaluations.append(evaluation_obj)
+
         variant_obj["evaluations"] = evaluations
 
-        # Show previous classifications from the clinical side for research
+        clinical_var_obj = variant_obj
         if is_research:
-            # get variant by simple_id.
+            variant_obj["research_assessments"] = get_manual_assessments(variant_obj)
+
             clinical_var_obj = store.variant(
                 case_id=case_obj["_id"],
                 simple_id=variant_obj["simple_id"],
                 variant_type="clinical",
             )
 
-            if clinical_var_obj is not None:
-                # Get all previous ACMG evalautions of the variant
-                variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
+        variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
         variants.append(
             parse_variant(
@@ -123,18 +116,15 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
 
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
         # show previous classifications for research variants
+        clinical_var_obj = variant_obj
         if variant_obj["variant_type"] == "research":
-            # get variant by simple_id. That will really just return the first variant found -
-            # but mostly that would be clinical.. Its a start.
             clinical_var_obj = store.variant(
                 case_id=case_obj["_id"],
                 simple_id=variant_obj["simple_id"],
                 variant_type="clinical",
             )
-
-            if clinical_var_obj is not None:
-                # Get all previous ACMG evalautions of the variant
-                variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
+        if clinical_var_obj is not None:
+            variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
         variants.append(
             parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build)
@@ -144,68 +134,83 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
 
 
 def get_manual_assessments(variant_obj):
-    """Return manual assessments ready for display. """
+    """Return manual assessments ready for display.
 
-    ## display manual input of interest: classified, commented, tagged or dismissed.
+    An assessment dict of str has keys "title", "label" and "display_class".
+
+    args:
+        variant_obj(variant)
+
+    returns:
+        assessments(array(dict))
+    """
+
+    ## display manual input of interest: classified, commented, tagged, mosaicism or dismissed.
     assessment_keywords = [
+        "acmg_classification",
         "manual_rank",
         "cancer_tier",
-        "acmg_classification",
         "dismiss_variant",
         "mosaic_tags",
     ]
 
     assessments = []
 
+    if variant_obj is None:
+        return assessments
+
     for assessment_type in assessment_keywords:
         assessment = {}
         if variant_obj.get(assessment_type) is not None:
             if assessment_type == "manual_rank":
                 manual_rank = variant_obj[assessment_type]
-                LOG.info("Assessement type {}: {}".format(assessment_type, manual_rank))
-                assessment["title"] = "Clinical manual rank: {}".format(
+                assessment["title"] = "Manual rank: {}".format(
                     MANUAL_RANK_OPTIONS[manual_rank]["description"]
                 )
                 assessment["label"] = MANUAL_RANK_OPTIONS[manual_rank]["label"]
+                assessment["display_class"] = MANUAL_RANK_OPTIONS[manual_rank]["label_class"]
 
             if assessment_type == "cancer_tier":
                 cancer_tier = variant_obj[assessment_type]
-                assessment["title"] = "Clinical cancer tier: {}".format(
+                assessment["title"] = "Cancer tier: {}".format(
                     CANCER_TIER_OPTIONS[cancer_tier]["description"]
                 )
                 assessment["label"] = CANCER_TIER_OPTIONS[cancer_tier]["label"]
+                assessment["display_class"] = CANCER_TIER_OPTIONS[cancer_tier]["label_class"]
 
             if assessment_type == "acmg_classification":
                 classification = variant_obj[assessment_type]
-                LOG.info("Assessment type {}: {}".format(assessment_type, classification))
                 if isinstance(classification, int):
                     acmg_code = ACMG_MAP[classification]
                     classification = ACMG_COMPLETE_MAP[acmg_code]
 
-                assessment["title"] = "Clinical ACMG: {}".format(classification["label"])
+                assessment["title"] = "ACMG: {}".format(classification["label"])
                 assessment["label"] = classification["short"]
+                assessment["display_class"] = classification["color"]
 
             if assessment_type == "dismiss_variant":
                 assessment["label"] = "Dismissed"
-                assessment["title"] = "Dismissed clinically:"
+                assessment["title"] = "dismiss:<br>"
                 for reason in variant_obj[assessment_type]:
                     if not isinstance(reason, int):
                         reason = int(reason)
-                    assessment["title"] += " {} - {}".format(
-                        DISMISS_VARIANT_OPTIONS[reason]["label"],
-                        DISMISS_VARIANT_OPTIONS[reason]["description"],
-                    )
+                        assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
+                            DISMISS_VARIANT_OPTIONS[reason]["label"],
+                            DISMISS_VARIANT_OPTIONS[reason]["description"],
+                        )
+                assessment["display_class"] = "secondary"
 
             if assessment_type == "mosaic_tags":
                 assessment["label"] = "Mosaicism"
-                assessment["title"] = "Mosaicism clinically:"
+                assessment["title"] = "mosaicism:<br>"
                 for reason in variant_obj[assessment_type]:
                     if not isinstance(reason, int):
                         reason = int(reason)
-                    assessment["title"] += " {} - {}".format(
+                    assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
                         MOSAICISM_OPTIONS[reason]["label"],
                         MOSAICISM_OPTIONS[reason]["description"],
                     )
+                assessment["display_class"] = "secondary"
 
             assessments.append(assessment)
 
