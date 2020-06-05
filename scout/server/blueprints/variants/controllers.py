@@ -500,8 +500,8 @@ def variant_count_session(store, institute_id, case_id, type, category):
     """
     if (
         session["all_variants"] is None
-        or session.get("case") != case_id
         or session.get("institute") != institute_id
+        or session.get("case") != case_id
     ):
         session["case"] = case_id
         session["institute"] = institute_id
