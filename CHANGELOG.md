@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show an ellipsis if 10 cases or more to display with loqusdb matches
 - A new blog post for version 4.17
 - Tooltip to better describe Tumor and Normal columns in cancer variants
+- Filter cancer SNVs and SVs by chromosome coordinates
 - Default export of `Assertion method citation` to clinVar variants submission file
 
 ### Fixed
@@ -37,6 +38,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter SNVs and SVs by cytoband coordinates
 - Filter cancer SNV variants by alt allele frequency in tumor
 - Correct genome build in UCSC link from structural variant page
+
+
 
 ### Fixed
 - Bug in clinVar form when variant has no gene

@@ -105,6 +105,10 @@ class VariantFiltersForm(FlaskForm):
     load_filter = SubmitField(label="Load filter")
     delete_filter = SubmitField(label="Delete filter")
 
+    chrom = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS)
+    start = IntegerField("Start position", [validators.Optional()])
+    end = IntegerField("End position", [validators.Optional()])
+
 
 class FiltersForm(VariantFiltersForm):
     """Base FiltersForm for SNVs - extends VariantFiltersForm."""
@@ -114,11 +118,8 @@ class FiltersForm(VariantFiltersForm):
     clinsig_confident_always_returned = BooleanField("CLINSIG Confident")
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
 
-    chrom = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS)
     cytoband_start = SelectField("Cytoband start", choices=[])
     cytoband_end = SelectField("Cytoband end", choices=[])
-    start = IntegerField("Start position", [validators.Optional()])
-    end = IntegerField("End position", [validators.Optional()])
     local_obs = IntegerField("Local obs. (archive)")
 
     filter_variants = SubmitField(label="Filter variants")
@@ -161,11 +162,8 @@ class SvFiltersForm(VariantFiltersForm):
     clingen_ngi = IntegerField("ClinGen NGI obs")
     swegen = IntegerField("SweGen obs")
 
-    chrom = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS)
     cytoband_start = SelectField("Cytoband start", choices=[])
     cytoband_end = SelectField("Cytoband end", choices=[])
-    start = IntegerField("Start position", [validators.Optional()])
-    end = IntegerField("End position", [validators.Optional()])
 
     filter_variants = SubmitField(label="Filter variants")
     clinical_filter = SubmitField(label="Clinical filter")
