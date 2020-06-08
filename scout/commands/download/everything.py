@@ -14,6 +14,7 @@ from .omim import omim
 
 LOG = logging.getLogger(__name__)
 
+
 @click.command("everything", help="Download all necessary resources for scout")
 @click.option("--api-key", help="Specify the api key")
 @click.option("-o", "--out-dir", default="./", show_default=True)
