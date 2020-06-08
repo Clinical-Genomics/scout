@@ -28,6 +28,7 @@ CLINVAR_HEADER = {
     "last_evaluated": "Date last evaluated",
     "variant_comment": "Comment on variant",
     "assertion_method": "Assertion method",
+    "assertion_method_cit": "Assertion method citation",
     "inheritance_mode": "Mode of inheritance",
     "clinsig_cit": "Clinical significance citations",
     "clinsig_comment": "Comment on clinical significance",
