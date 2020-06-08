@@ -39,7 +39,7 @@
       <div class="card-header">
         <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
       </div>
-      <div class="card-body panel-collapse collapse {{ "show" if request.args.get("expand_search") }}" id="collapseFilters" >
+      <div class="card-body panel-collapse collapse {{ 'show' if request.args.get('expand_search') == "True" or expand_search== "True" }}" id="collapseFilters" >
           {{ cancer_filters(form, institute, case) }}
       </div>
     </div>
