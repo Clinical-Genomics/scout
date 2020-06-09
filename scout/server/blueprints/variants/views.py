@@ -287,7 +287,13 @@ def cancer_variants(institute_id, case_name):
     form.gene_panels.choices = panel_choices
 
     variant_type = request.args.get("variant_type", "clinical")
-    data = controllers.cancer_variants(store, institute_id, case_name, form, page=page)
+
+    variants_query = store.variants(case_obj["_id"], category="cancer", query=form.data)
+
+    if request.form.get("export"):
+        return controllers.download_variants(store, case_obj, variants_query)
+
+    data = controllers.cancer_variants(store, institute_id, case_name, variants_query, form, page=page)
     return dict(variant_type=variant_type, **data)
 
 
