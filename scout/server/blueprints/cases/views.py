@@ -12,7 +12,6 @@ from operator import itemgetter
 import pymongo
 from flask import (
     Blueprint,
-    Response,
     abort,
     current_app,
     flash,
@@ -23,10 +22,11 @@ from flask import (
     send_file,
     send_from_directory,
     url_for,
+    Response
 )
+from werkzeug.datastructures import Headers
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
-from werkzeug.datastructures import Headers
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
@@ -152,6 +152,8 @@ def sma(institute_id, case_name):
 @cases_bp.route("/<institute_id>/clinvar_submissions", methods=["GET", "POST"])
 @templated("cases/clinvar_submissions.html")
 def clinvar_submissions(institute_id):
+    """Handle clinVar submission objects and files"""
+
     def generate_csv(header, lines):
         yield header + "\n"
         for line in lines:  # lines have already quoted fields
@@ -174,50 +176,21 @@ def clinvar_submissions(institute_id):
                 object_type="case_data",
                 submission_id=submission_id,
             )  # remove just the casedata associated to a variant
-        else:  # Download submission CSV files (for variants or casedata)        
-            clinvar_subm_id = request.form.get("clinvar_id")
-            if clinvar_subm_id == "":
-                flash(
-                    "In order to download a submission CSV file you should register a Clinvar submission Name first!",
-                    "warning",
-                )
-                return redirect(request.referrer)
-
-            csv_type = request.form.get("csv_type", "")
-
-            submission_objs = store.clinvar_objs(
-                submission_id=submission_id, key_id=csv_type
-            )  # a list of clinvar submission objects (variants or casedata)
-            if submission_objs:
-                csv_header_obj = controllers.clinvar_header(
-                    submission_objs, csv_type
-                )  # custom csv header (dict as in constants CLINVAR_HEADER and CASEDATA_HEADER, but with required fields only)
-                csv_lines = controllers.clinvar_lines(
-                    submission_objs, csv_header_obj
-                )  # csv lines (one for each variant/casedata to be submitted)
-                csv_header = list(csv_header_obj.values())
-                csv_header = [
-                    '"' + str(x) + '"' for x in csv_header
-                ]  # quote columns in header for csv rendering
-                download_day = str(datetime.datetime.now().strftime("%Y-%m-%d"))
+        else:
+            # Download submission CSV files (for variants or casedata)
+            clinvar_file_data = controllers.clinvar_submission_file(store, request, submission_id)
+            if clinvar_file_data is not None:
                 headers = Headers()
                 headers.add(
                     "Content-Disposition",
                     "attachment",
-                    filename=f"{clinvar_subm_id}_{csv_type}_{download_day}.csv",
+                    filename=clinvar_file_data[0],
                 )
                 return Response(
-                    generate_csv(",".join(csv_header), csv_lines),
+                    generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),
                     mimetype="text/csv",
                     headers=headers,
                 )
-
-            flash(
-                'There are no submission objects of type "{}" to include in the csv file!'.format(
-                    csv_type
-                ),
-                "warning",
-            )
 
     institute_obj = institute_and_case(store, institute_id)
 
