@@ -437,15 +437,14 @@ def update_clinvar_submission_status(store, request, institute_id, submission_id
             clinvar_id=request.form.get("clinvar_id"), submission_id=submission_id,
         )
     elif request.form.get("update_submission") == "delete":  # delete a submission
-        deleted_objects, deleted_submissions = store.delete_submission(
-            submission_id=submission_id
-        )
+        deleted_objects, deleted_submissions = store.delete_submission(submission_id=submission_id)
         flash(
             "Removed {} objects and {} submission from database".format(
                 deleted_objects, deleted_submissions
             ),
             "info",
         )
+
 
 def clinvar_submissions(store, institute_id):
     """Get all Clinvar submissions for a user and an institute"""

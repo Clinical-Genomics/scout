@@ -160,7 +160,9 @@ def clinvar_submissions(institute_id):
     if request.method == "POST":
         submission_id = request.form.get("submission_id")
         if request.form.get("update_submission"):
-            controllers.update_clinvar_submission_status(store, request, institute_id, submission_id)
+            controllers.update_clinvar_submission_status(
+                store, request, institute_id, submission_id
+            )
 
         elif request.form.get("delete_variant"):  # delete a variant from a submission
             store.delete_clinvar_object(
@@ -174,7 +176,7 @@ def clinvar_submissions(institute_id):
                 object_type="case_data",
                 submission_id=submission_id,
             )  # remove just the casedata associated to a variant
-        else:  # Download submission CSV files (for variants or casedata)        
+        else:  # Download submission CSV files (for variants or casedata)
             clinvar_subm_id = request.form.get("clinvar_id")
             if clinvar_subm_id == "":
                 flash(
