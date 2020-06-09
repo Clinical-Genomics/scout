@@ -307,3 +307,30 @@ def test_sv_cancer_variants(app, institute_obj, case_obj):
     )
     # THEN it should return a page
     assert resp.status_code == 200
+
+
+def test_filter_export_cancer_variants(app, institute_obj, case_obj):
+    """Test the variant export functionaliy in  cancer_variants page"""
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        form_data = {
+            "export": "test",
+        }
+
+        resp = client.post(
+            url_for(
+                "variants.cancer_variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=form_data,
+        )
+        # THEN it should return a valid response
+        assert resp.status_code == 200
+        # containing a text file
+        assert resp.mimetype == "text/csv"
