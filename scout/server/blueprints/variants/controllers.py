@@ -401,14 +401,14 @@ def variant_export_genes_info(store, gene_list):
             gene_list(list) A list of gene objects contained in the variant
 
         Returns:
-            variant_line(list)
+            gene_info(list) A list of gene-relates string info
     """
     gene_ids = []
     gene_names = []
     hgvs_c = []
 
     gene_info = []
-    
+
     for gene_obj in gene_list:
         hgnc_id = gene_obj["hgnc_id"]
         gene_name = gene(store, hgnc_id)["symbol"]
