@@ -21,7 +21,7 @@
     <a class="nav-link" href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All SNVs and INDELs</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
+    <a class="nav-link" href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
   </li>
 {% endblock %}
 

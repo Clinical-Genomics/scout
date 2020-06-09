@@ -22,17 +22,14 @@ from flask import (
     send_file,
     send_from_directory,
     url_for,
-    Response
 )
-from werkzeug.datastructures import Headers
+
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
-    CASEDATA_HEADER,
-    CLINVAR_HEADER,
     SAMPLE_SOURCE,
 )
 from scout.server.extensions import mail, store
@@ -147,62 +144,6 @@ def sma(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case(store, institute_obj, case_obj)
     return dict(institute=institute_obj, case=case_obj, format="html", **data)
-
-
-@cases_bp.route("/<institute_id>/clinvar_submissions", methods=["GET", "POST"])
-@templated("cases/clinvar_submissions.html")
-def clinvar_submissions(institute_id):
-    """Handle clinVar submission objects and files"""
-
-    def generate_csv(header, lines):
-        yield header + "\n"
-        for line in lines:  # lines have already quoted fields
-            yield line + "\n"
-
-    if request.method == "POST":
-        submission_id = request.form.get("submission_id")
-        if request.form.get("update_submission"):
-            controllers.update_clinvar_submission_status(
-                store, request, institute_id, submission_id
-            )
-
-        elif request.form.get("delete_variant"):  # delete a variant from a submission
-            store.delete_clinvar_object(
-                object_id=request.form.get("delete_variant"),
-                object_type="variant_data",
-                submission_id=submission_id,
-            )  # remove variant and associated_casedata
-        elif request.form.get("delete_casedata"):  # delete a case from a submission
-            store.delete_clinvar_object(
-                object_id=request.form.get("delete_casedata"),
-                object_type="case_data",
-                submission_id=submission_id,
-            )  # remove just the casedata associated to a variant
-        else:
-            # Download submission CSV files (for variants or casedata)
-            clinvar_file_data = controllers.clinvar_submission_file(store, request, submission_id)
-            if clinvar_file_data is not None:
-                headers = Headers()
-                headers.add(
-                    "Content-Disposition",
-                    "attachment",
-                    filename=clinvar_file_data[0],
-                )
-                return Response(
-                    generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),
-                    mimetype="text/csv",
-                    headers=headers,
-                )
-
-    institute_obj = institute_and_case(store, institute_id)
-
-    data = {
-        "submissions": controllers.clinvar_submissions(store, institute_id),
-        "institute": institute_obj,
-        "variant_header_fields": CLINVAR_HEADER,
-        "casedata_header_fields": CASEDATA_HEADER,
-    }
-    return data
 
 
 @cases_bp.route("/<institute_id>/<case_name>/mme_matches", methods=["GET", "POST"])

@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from flask import Blueprint, render_template, flash, redirect, request
+from flask import Blueprint, render_template, flash, redirect, request, Response
 from flask_login import current_user
+from werkzeug.datastructures import Headers
 
 from . import controllers
-from scout.constants import PHENOTYPE_GROUPS
+from scout.constants import PHENOTYPE_GROUPS, CASEDATA_HEADER, CLINVAR_HEADER
 from scout.server.extensions import store
-from scout.server.utils import user_institutes, templated
+from scout.server.utils import user_institutes, templated, institute_and_case
 from .forms import InstituteForm
 
 LOG = logging.getLogger(__name__)
@@ -89,3 +90,59 @@ def institute(institute_id):
     return render_template(
         "/overview/institute.html", form=form, default_phenotypes=default_phenotypes, **data
     )
+
+
+@blueprint.route("/<institute_id>/clinvar_submissions", methods=["GET", "POST"])
+@templated("overview/clinvar_submissions.html")
+def clinvar_submissions(institute_id):
+    """Handle clinVar submission objects and files"""
+
+    def generate_csv(header, lines):
+        yield header + "\n"
+        for line in lines:  # lines have already quoted fields
+            yield line + "\n"
+
+    if request.method == "POST":
+        submission_id = request.form.get("submission_id")
+        if request.form.get("update_submission"):
+            controllers.update_clinvar_submission_status(
+                store, request, institute_id, submission_id
+            )
+
+        elif request.form.get("delete_variant"):  # delete a variant from a submission
+            store.delete_clinvar_object(
+                object_id=request.form.get("delete_variant"),
+                object_type="variant_data",
+                submission_id=submission_id,
+            )  # remove variant and associated_casedata
+        elif request.form.get("delete_casedata"):  # delete a case from a submission
+            store.delete_clinvar_object(
+                object_id=request.form.get("delete_casedata"),
+                object_type="case_data",
+                submission_id=submission_id,
+            )  # remove just the casedata associated to a variant
+        else:
+            # Download submission CSV files (for variants or casedata)
+            clinvar_file_data = controllers.clinvar_submission_file(store, request, submission_id)
+            if clinvar_file_data is not None:
+                headers = Headers()
+                headers.add(
+                    "Content-Disposition",
+                    "attachment",
+                    filename=clinvar_file_data[0],
+                )
+                return Response(
+                    generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),
+                    mimetype="text/csv",
+                    headers=headers,
+                )
+
+    institute_obj = institute_and_case(store, institute_id)
+
+    data = {
+        "submissions": controllers.clinvar_submissions(store, institute_id),
+        "institute": institute_obj,
+        "variant_header_fields": CLINVAR_HEADER,
+        "casedata_header_fields": CASEDATA_HEADER,
+    }
+    return data

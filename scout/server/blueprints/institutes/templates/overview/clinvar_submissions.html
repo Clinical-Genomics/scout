@@ -78,7 +78,7 @@
 {% endblock %}
 
 {% macro submission_panel(subm_obj) %}
-<form class="form-inline" id="submission_form" action="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" method="POST">
+<form class="form-inline" id="submission_form" action="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" method="POST">
     <input type="hidden" name="submission_id" value="{{subm_obj._id}}">
     <div class="card w-100 mt-3">
       <div class="card-header {{ 'bg-primary' if subm_obj.status=='open' else 'bg-warning' }}">
@@ -175,7 +175,7 @@
         </div> <!--variant data div end -->
         <div> <!--case data div -->
           <h4>Case data:</h4>
-          <form action="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" method="POST">
+          <form action="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" method="POST">
             {% if subm_obj.case_data and subm_obj.case_data.count() > 0 %}
             <table class="table table-striped">
               <thead>
