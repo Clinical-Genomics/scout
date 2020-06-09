@@ -108,6 +108,7 @@ class VariantFiltersForm(FlaskForm):
     chrom = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS)
     start = IntegerField("Start position", [validators.Optional()])
     end = IntegerField("End position", [validators.Optional()])
+    export = SubmitField(label="Filter and export")
 
 
 class FiltersForm(VariantFiltersForm):
@@ -124,7 +125,6 @@ class FiltersForm(VariantFiltersForm):
 
     filter_variants = SubmitField(label="Filter variants")
     clinical_filter = SubmitField(label="Clinical filter")
-    export = SubmitField(label="Filter and export")
 
 
 class CancerFiltersForm(VariantFiltersForm):
