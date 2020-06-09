@@ -127,9 +127,7 @@ def clinvar_submissions(institute_id):
             if clinvar_file_data is not None:
                 headers = Headers()
                 headers.add(
-                    "Content-Disposition",
-                    "attachment",
-                    filename=clinvar_file_data[0],
+                    "Content-Disposition", "attachment", filename=clinvar_file_data[0],
                 )
                 return Response(
                     generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),

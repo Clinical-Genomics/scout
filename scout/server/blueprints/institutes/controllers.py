@@ -7,6 +7,7 @@ LOG = logging.getLogger(__name__)
 from flask import flash
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 
+
 def institute(store, institute_id):
     """ Process institute data.
 
@@ -108,8 +109,9 @@ def update_clinvar_submission_status(store, request, institute_id, submission_id
         deleted_objects, deleted_submissions = store.delete_submission(submission_id=submission_id)
         flash(
             f"Removed {deleted_objects} objects and {deleted_submissions} submission from database",
-            "info"
+            "info",
         )
+
 
 def clinvar_submission_file(store, request, submission_id):
     """Prepare content (header and lines) of a csv clinvar submission file
@@ -142,7 +144,8 @@ def clinvar_submission_file(store, request, submission_id):
     if submission_objs is None or len(submission_objs) == 0:
         flash(
             f"There are no submission objects of type '{csv_type}' to include in the csv file!",
-            "warning")
+            "warning",
+        )
         return
 
     # Download file
