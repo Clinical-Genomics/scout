@@ -322,6 +322,7 @@ def test_filter_export_cancer_variants(app, institute_obj, case_obj):
             "export": "test",
         }
 
+        # WHEN clicking on "Filter and export" button
         resp = client.post(
             url_for(
                 "variants.cancer_variants",

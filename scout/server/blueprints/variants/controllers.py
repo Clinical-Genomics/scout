@@ -367,33 +367,11 @@ def variant_export_lines(store, case_obj, variants_query):
 
         # gather gene info:
         gene_list = variant.get("genes")  # this is a list of gene objects
-        gene_ids = []
-        gene_names = []
-        hgvs_c = []
 
         # if variant is in genes
         if gene_list is not None and len(gene_list) > 0:
-            for gene_obj in gene_list:
-                hgnc_id = gene_obj["hgnc_id"]
-                gene_name = gene(store, hgnc_id)["symbol"]
-
-                gene_ids.append(hgnc_id)
-                gene_names.append(gene_name)
-
-                hgvs_nucleotide = "-"
-                # gather HGVS info from gene transcripts
-                transcripts_list = gene_obj.get("transcripts")
-                for transcript_obj in transcripts_list:
-                    if (
-                        transcript_obj.get("is_canonical")
-                        and transcript_obj.get("is_canonical") is True
-                    ):
-                        hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
-                hgvs_c.append(hgvs_nucleotide)
-
-            variant_line.append(";".join(str(x) for x in gene_ids))
-            variant_line.append(";".join(str(x) for x in gene_names))
-            variant_line.append(";".join(str(x) for x in hgvs_c))
+            gene_info = variant_export_genes_info(store, gene_list)
+            variant_line += gene_info
         else:
             i = 0
             while i < 4:
@@ -414,6 +392,46 @@ def variant_export_lines(store, case_obj, variants_query):
         export_variants.append(",".join(variant_line))
 
     return export_variants
+
+
+def variant_export_genes_info(store, gene_list):
+    """Adds gene info to a list of fields corresponding to a variant to be exported.
+
+        Args:
+            gene_list(list) A list of gene objects contained in the variant
+
+        Returns:
+            variant_line(list)
+    """
+    gene_ids = []
+    gene_names = []
+    hgvs_c = []
+
+    gene_info = []
+    
+    for gene_obj in gene_list:
+        hgnc_id = gene_obj["hgnc_id"]
+        gene_name = gene(store, hgnc_id)["symbol"]
+
+        gene_ids.append(hgnc_id)
+        gene_names.append(gene_name)
+
+        hgvs_nucleotide = "-"
+        # gather HGVS info from gene transcripts
+        transcripts_list = gene_obj.get("transcripts")
+        for transcript_obj in transcripts_list:
+            if (
+                transcript_obj.get("is_canonical")
+                and transcript_obj.get("is_canonical") is True
+            ):
+                hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
+        hgvs_c.append(hgvs_nucleotide)
+
+    gene_info.append(";".join(str(x) for x in gene_ids))
+    gene_info.append(";".join(str(x) for x in gene_names))
+    gene_info.append(";".join(str(x) for x in hgvs_c))
+
+    return gene_info
 
 
 def variants_export_header(case_obj):
