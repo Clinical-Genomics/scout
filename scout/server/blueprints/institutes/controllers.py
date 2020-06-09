@@ -52,7 +52,9 @@ def update_institute_settings(store, institute_obj, form):
 
     for pheno_group in form.getlist("pheno_groups"):
         phenotype_groups.append(pheno_group.split(" ,")[0])
-        group_abbreviations.append(pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")])
+        group_abbreviations.append(
+            pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")]
+        )
 
     if form.get("hpo_term") and form.get("pheno_abbrev"):
         phenotype_groups.append(form["hpo_term"].split(" |")[0])
@@ -106,11 +108,26 @@ def update_clinvar_submission_status(store, request, institute_id, submission_id
             clinvar_id=request.form.get("clinvar_id"), submission_id=submission_id,
         )
     elif request.form.get("update_submission") == "delete":  # delete a submission
-        deleted_objects, deleted_submissions = store.delete_submission(submission_id=submission_id)
+        deleted_objects, deleted_submissions = store.delete_submission(
+            submission_id=submission_id
+        )
         flash(
             f"Removed {deleted_objects} objects and {deleted_submissions} submission from database",
             "info",
         )
+
+
+def update_clinvar_sample_names(store, submission_id, old_name, new_name):
+    """Update casedata sample names
+
+    Args:
+        store(adapter.MongoAdapter)
+        submission_id(str) the database id of a clinvar submission
+        old_name(str): old name of an individual in case data
+        new_name(str): new name of an individual in case data
+    """
+    n_renamed = store.rename_casedata_samples(submission_id, old_name, new_name)
+    flash(f"Renamed {n_renamed} individuals in this submission object", "info")
 
 
 def clinvar_submission_file(store, request, submission_id):

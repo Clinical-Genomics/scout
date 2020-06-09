@@ -49,7 +49,8 @@ def institute(institute_id):
     """ Edit institute data """
     if institute_id not in current_user.institutes and current_user.is_admin is False:
         flash(
-            "Current user doesn't have the permission to modify this institute", "warning",
+            "Current user doesn't have the permission to modify this institute",
+            "warning",
         )
         return redirect(request.referrer)
 
@@ -58,7 +59,9 @@ def institute(institute_id):
 
     # if institute is to be updated
     if request.method == "POST" and form.validate_on_submit():
-        institute_obj = controllers.update_institute_settings(store, institute_obj, request.form)
+        institute_obj = controllers.update_institute_settings(
+            store, institute_obj, request.form
+        )
         if isinstance(institute_obj, dict):
             flash("institute was updated ", "success")
         else:  # an error message was retuned
@@ -78,7 +81,9 @@ def institute(institute_id):
     form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
 
     # collect all available default HPO terms
-    default_phenotypes = [choice[0].split(" ")[0] for choice in form.pheno_groups.choices]
+    default_phenotypes = [
+        choice[0].split(" ")[0] for choice in form.pheno_groups.choices
+    ]
     if institute_obj.get("phenotype_groups"):
         for key, value in institute_obj["phenotype_groups"].items():
             if not key in default_phenotypes:
@@ -88,7 +93,10 @@ def institute(institute_id):
                 form.pheno_groups.choices.append((custom_group, custom_group))
 
     return render_template(
-        "/overview/institute.html", form=form, default_phenotypes=default_phenotypes, **data
+        "/overview/institute.html",
+        form=form,
+        default_phenotypes=default_phenotypes,
+        **data
     )
 
 
@@ -108,7 +116,6 @@ def clinvar_submissions(institute_id):
             controllers.update_clinvar_submission_status(
                 store, request, institute_id, submission_id
             )
-
         elif request.form.get("delete_variant"):  # delete a variant from a submission
             store.delete_clinvar_object(
                 object_id=request.form.get("delete_variant"),
@@ -121,9 +128,20 @@ def clinvar_submissions(institute_id):
                 object_type="case_data",
                 submission_id=submission_id,
             )  # remove just the casedata associated to a variant
+        elif request.form.get("update_sample"):
+            # Rename casedata samples in a clinvar submission object
+            old_name = request.form["update_sample"]
+            new_name = request.form.get(old_name)
+            if old_name != new_name:
+                controllers.update_clinvar_sample_names(
+                    store, submission_id, old_name, new_name
+                )
+
         else:
             # Download submission CSV files (for variants or casedata)
-            clinvar_file_data = controllers.clinvar_submission_file(store, request, submission_id)
+            clinvar_file_data = controllers.clinvar_submission_file(
+                store, request, submission_id
+            )
             if clinvar_file_data is not None:
                 headers = Headers()
                 headers.add(
