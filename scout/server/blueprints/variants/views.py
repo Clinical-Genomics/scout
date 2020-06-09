@@ -293,7 +293,9 @@ def cancer_variants(institute_id, case_name):
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    data = controllers.cancer_variants(store, institute_id, case_name, variants_query, form, page=page)
+    data = controllers.cancer_variants(
+        store, institute_id, case_name, variants_query, form, page=page
+    )
     return dict(variant_type=variant_type, **data)
 
 
