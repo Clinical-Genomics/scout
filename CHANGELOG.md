@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Apply default gene panel on return to cancer variantS from variant view
 - Revert to certificate checking when asking for Chanjo reports
+- `scout download everything` command failing while downloading HPO terms
 
 ### Changed
 
