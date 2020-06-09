@@ -162,7 +162,9 @@ def clinvar_submissions(institute_id):
     if request.method == "POST":
         submission_id = request.form.get("submission_id")
         if request.form.get("update_submission"):
-            controllers.update_clinvar_submission_status(store, request, institute_id, submission_id)
+            controllers.update_clinvar_submission_status(
+                store, request, institute_id, submission_id
+            )
 
         elif request.form.get("delete_variant"):  # delete a variant from a submission
             store.delete_clinvar_object(
