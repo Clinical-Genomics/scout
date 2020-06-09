@@ -495,24 +495,6 @@ def test_pdf_case_report(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_clinvar_submissions(app, institute_obj):
-    # Test the web page containing the clinvar submissions for an institute
-
-    # GIVEN an initialized app and a valid user and institute
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        # When visiting the clinvar submissiin page (get request)
-        resp = client.get(
-            url_for("cases.clinvar_submissions", institute_id=institute_obj["internal_id"])
-        )
-
-        # a successful response should be returned
-        assert resp.status_code == 200
-
-
 def test_mt_report(app, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
