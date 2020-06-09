@@ -16,10 +16,10 @@ def get_cytoband_coordinates(chrom, pos, build):
     """
     coordinate = ""
 
-    if build == "37":
-        coord_resource = CYTOBANDS_37
-    else:
+    if "38" in str(build):
         coord_resource = CYTOBANDS_38
+    else:
+        coord_resource = CYTOBANDS_37
 
     if chrom not in coord_resource:
         return coordinate
