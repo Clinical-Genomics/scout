@@ -7,7 +7,7 @@ import os
 import query_phenomizer
 import requests
 from bs4 import BeautifulSoup
-from flask import current_app, url_for
+from flask import current_app, url_for, flash
 from flask_login import current_user
 from flask_mail import Message
 from xlsxwriter import Workbook
@@ -412,6 +412,40 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
 
     return coverage_data
 
+
+def update_clinvar_submission_status(store, request, institute_id, submission_id):
+    """Update the status of a clinVar submission
+
+        Args:
+            store(adapter.MongoAdapter)
+            request(flask.request) POST request sent by form submission
+            institute_id(str) institute id
+            submission_id(str) the database id of a clinvar submission
+    """
+    update_status = request.form.get("update_submission")
+
+    if update_status == "close":  # close a submission
+        store.update_clinvar_submission_status(institute_id, submission_id, "closed")
+    elif update_status == "open":
+        store.update_clinvar_submission_status(
+            institute_id, submission_id, "open"
+        )  # open a submission
+    elif update_status == "register_id" and request.form.get(
+        "clinvar_id"
+    ):  # provide an official clinvar submission ID
+        result = store.update_clinvar_id(
+            clinvar_id=request.form.get("clinvar_id"), submission_id=submission_id,
+        )
+    elif request.form.get("update_submission") == "delete":  # delete a submission
+        deleted_objects, deleted_submissions = store.delete_submission(
+            submission_id=submission_id
+        )
+        flash(
+            "Removed {} objects and {} submission from database".format(
+                deleted_objects, deleted_submissions
+            ),
+            "info",
+        )
 
 def clinvar_submissions(store, institute_id):
     """Get all Clinvar submissions for a user and an institute"""

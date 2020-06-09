@@ -160,28 +160,8 @@ def clinvar_submissions(institute_id):
     if request.method == "POST":
         submission_id = request.form.get("submission_id")
         if request.form.get("update_submission"):
-            if request.form.get("update_submission") == "close":  # close a submission
-                store.update_clinvar_submission_status(institute_id, submission_id, "closed")
-            elif request.form.get("update_submission") == "open":
-                store.update_clinvar_submission_status(
-                    institute_id, submission_id, "open"
-                )  # open a submission
-            elif request.form.get("update_submission") == "register_id" and request.form.get(
-                "clinvar_id"
-            ):  # provide an official clinvar submission ID
-                result = store.update_clinvar_id(
-                    clinvar_id=request.form.get("clinvar_id"), submission_id=submission_id,
-                )
-            elif request.form.get("update_submission") == "delete":  # delete a submission
-                deleted_objects, deleted_submissions = store.delete_submission(
-                    submission_id=submission_id
-                )
-                flash(
-                    "Removed {} objects and {} submission from database".format(
-                        deleted_objects, deleted_submissions
-                    ),
-                    "info",
-                )
+            controllers.update_clinvar_submission_status(store, request, institute_id, submission_id)
+
         elif request.form.get("delete_variant"):  # delete a variant from a submission
             store.delete_clinvar_object(
                 object_id=request.form.get("delete_variant"),
@@ -194,8 +174,7 @@ def clinvar_submissions(institute_id):
                 object_type="case_data",
                 submission_id=submission_id,
             )  # remove just the casedata associated to a variant
-        else:  # Download submission CSV files (for variants or casedata)
-
+        else:  # Download submission CSV files (for variants or casedata)        
             clinvar_subm_id = request.form.get("clinvar_id")
             if clinvar_subm_id == "":
                 flash(
