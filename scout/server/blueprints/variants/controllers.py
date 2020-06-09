@@ -372,7 +372,7 @@ def variant_export_lines(store, case_obj, variants_query):
         hgvs_c = []
 
         # if variant is in genes
-        if gene_list is not None and len(gene_list)>0:
+        if gene_list is not None and len(gene_list) > 0:
             for gene_obj in gene_list:
                 hgnc_id = gene_obj["hgnc_id"]
                 gene_name = gene(store, hgnc_id)["symbol"]
