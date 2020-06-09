@@ -420,10 +420,7 @@ def variant_export_genes_info(store, gene_list):
         # gather HGVS info from gene transcripts
         transcripts_list = gene_obj.get("transcripts")
         for transcript_obj in transcripts_list:
-            if (
-                transcript_obj.get("is_canonical")
-                and transcript_obj.get("is_canonical") is True
-            ):
+            if transcript_obj.get("is_canonical") and transcript_obj.get("is_canonical") is True:
                 hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
         hgvs_c.append(hgvs_nucleotide)
 
