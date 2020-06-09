@@ -14,6 +14,7 @@ from scout.server.blueprints.cases.views import (
 
 TEST_TOKEN = "test_token"
 
+
 def test_parse_raw_gene_symbols(app):
     """ Test parse gene symbols"""
 
