@@ -454,23 +454,30 @@
     </div>
     <div class="form-group" id="chromosome_search">
       <div class="row" style="margin-top:20px;">
-        <div class="col-1">
+        <div class="col-1" style="margin-right:3em">
           {{ wtf.form_field(form.chrom) }}
         </div>
+        <div class="col-3" style="margin-right:3em">
+          <div class="row">
+            <div class="col-6" style="margin-right-xl">
+              {{ wtf.form_field(form.start) }}
+            </div>
+            <div class="col-6">
+              {{ wtf.form_field(form.end) }}
+            </div>
+          </div>
+        </div>
+        <div class="col-3">        
+          <div class="row">
+            <div class="col-6">
+              {{ wtf.form_field(form.cytoband_start) }}
+            </div>
+            <div class="col-6">
+              {{ wtf.form_field(form.cytoband_end) }}
+            </div>
+          </div>
+        </div>
         <div class="col-1" id="create_space"></div>
-        <div class="col-1" style="margin-right-xl">
-          {{ wtf.form_field(form.start) }}
-        </div>
-        <div class="col-1">
-          {{ wtf.form_field(form.end) }}
-        </div>
-        <div class="col-1" id="create_space"></div>
-        <div class="col-2">
-          {{ wtf.form_field(form.cytoband_start) }}
-        </div>
-        <div class="col-2">
-          {{ wtf.form_field(form.cytoband_end) }}
-        </div>
 
       </div>
     </div>
