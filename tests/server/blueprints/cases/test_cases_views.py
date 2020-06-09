@@ -12,6 +12,7 @@ from scout.server.blueprints.cases.views import (
     parse_raw_gene_ids,
 )
 
+TEST_TOKEN = "test_token"
 
 def test_parse_raw_gene_symbols(app):
     """ Test parse gene symbols"""
@@ -567,7 +568,7 @@ def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission, user_o
 
         # Given mock MME connection parameters
         current_app.config["MME_URL"] = "http://fakey_mme_url:fakey_port"
-        current_app.config["MME_TOKEN"] = "test_token"
+        current_app.config["MME_TOKEN"] = TEST_TOKEN
 
         # WHEN accessing the case page
         resp = client.get(
@@ -609,7 +610,7 @@ def test_matchmaker_match(app, institute_obj, case_obj, mme_submission, user_obj
 
         # Given mock MME connection parameters
         current_app.config["MME_URL"] = "http://fakey_mme_url:fakey_port"
-        current_app.config["MME_TOKEN"] = "test_token"
+        current_app.config["MME_TOKEN"] = TEST_TOKEN
 
         # WHEN sending a POST request to match a patient
         resp = client.post(
