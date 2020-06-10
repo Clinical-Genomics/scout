@@ -1,9 +1,11 @@
 function populateCytobands(cytobands){
-  var chrom = document.forms["filters_form"].elements["chrom"].value;
+    var chrom = document.forms["filters_form"].elements["chrom"].value;
     console.log("chrom:")
     console.log(chrom)
     console.log("cytobands:")
     console.log(cytobands)
+    console.log("forms:")
+    console.log(document.forms)
   if(chrom===""){
       console.log("chrom='' -> start to '' ")
     startElem.value = "";
