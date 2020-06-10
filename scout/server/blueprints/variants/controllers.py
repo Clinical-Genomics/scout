@@ -469,6 +469,7 @@ def cancer_variants(store, institute_id, case_name, form, page=1):
     variant_count = variants_query.count()
     more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = variants_query.skip(skip_count).limit(per_page)
+    LOG.debug("cancer_variants -form: {}".format(form))
     data = dict(
         page=page,
         more_variants=more_variants,
@@ -603,7 +604,7 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
         form = FiltersFormClass(request_form)
     else:
         form = FiltersFormClass(request_form)
-
+    LOG.debug("populate, chrom: {}".format(form.chrom))
     return form
 
 
