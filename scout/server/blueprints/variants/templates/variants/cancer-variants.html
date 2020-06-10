@@ -200,16 +200,18 @@
         populateEnd();
     });
 
+
+    $('select[multiple]').selectpicker({
+      width: '100%'
+    });
+
+    
+    window.onload=function() {
+        populateCytobands({{cytobands|safe}});
+    }
+
+
     function validateForm(){
-      var valid_chroms = [];
-      i = 1;
-      while(valid_chroms.push(i++) <22){};
-      valid_chroms.push("X","Y","MT");
-      var chrom = document.forms["filters_form"].elements["chrom"].value;
-      if(chrom && !valid_chroms.map(String).includes(chrom)){
-        alert("Chromosome field is not valid. Accepted values are: "+valid_chroms)
-        return false
-      }        
       var start = document.forms["filters_form"].elements["start"].value
       var end = document.forms["filters_form"].elements["end"].value
       if(start || end){
@@ -221,25 +223,18 @@
           alert("Both start and end coordinates are required");
           return false;
         }
-        else if( (isNaN(start) || isNaN(end)) || Number(end)<number(start) ){
+        else if( (isNaN(start) || isNaN(end)) || Number(end)<Number(start) ){
           alert("Coordinate field not valid");
           return false;
         }
       }
       return true;
     }
-    
 
     $('select[multiple]').selectpicker({
       width: '100%'
     });
 
-    
-    window.onload=function() {
-        populateCytobands({{cytobands|safe}});
-    }
-
-    
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
       $('[data-toggle="popover"]').popover({
