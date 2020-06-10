@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-import json
 from flask import url_for
 from scout.server.extensions import store
-from flask_wtf import FlaskForm as form
-
-headers = {"User-Agent": "Mozilla/5.0"}
 
 
 def test_overview(app, user_obj, institute_obj):
