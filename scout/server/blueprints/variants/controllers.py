@@ -532,7 +532,7 @@ def upload_panel(store, institute_id, case_name, stream):
 def populate_filters_form(store, institute_obj, case_obj, user_obj, category, request_form):
     # Update filter settings if Clinical Filter was requested
     clinical_filter_panels = []
-
+    LOG.debug("populate_filters_form(...)")
     default_panels = []
     for panel in case_obj["panels"]:
         if panel.get("is_default"):
@@ -627,9 +627,12 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     if request_obj.method == "GET":
         form = SvFiltersForm(request_obj.args)
         form.variant_type.data = request_obj.args.get("variant_type", "clinical")
+        LOG.debug("CHROM.DATA: {}".format(request_obj.args.get("chrom", None)))
         form.chrom.data = request_obj.args.get("chrom", None)
 
     else:  # POST
+        LOG.debug("populate filter!")
+
         form = populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request_obj.form
         )

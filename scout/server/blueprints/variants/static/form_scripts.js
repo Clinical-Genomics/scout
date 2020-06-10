@@ -1,11 +1,16 @@
 function populateCytobands(cytobands){
   var chrom = document.forms["filters_form"].elements["chrom"].value;
-
+    console.log("chrom:")
+    console.log(chrom)
+    console.log("cytobands:")
+    console.log(cytobands)
   if(chrom===""){
+      console.log("chrom='' -> start to '' ")
     startElem.value = "";
     endElem.value = "";
     return //only reset cytoband select element
   }
+
 
   var chrom_cytobands = cytobands[chrom]["cytobands"]; // chromosome-specific cytobands
 
@@ -49,6 +54,7 @@ function populateCytobands(cytobands){
 }
 
 function populateStart(){
+    console.log("populateStart()")
   startElem.value = cytoStart.options[cytoStart.selectedIndex].value
 }
 
