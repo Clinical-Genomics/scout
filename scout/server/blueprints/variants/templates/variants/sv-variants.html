@@ -169,7 +169,7 @@
     chromSel.addEventListener("change", function() {
       populateCytobands({{cytobands|safe}});
     });
-
+    
     var cytoStart = document.getElementById("cytoband_start");
 
     cytoStart.addEventListener("change", function() {
@@ -189,10 +189,6 @@
       populateEnd();
     });
 
-
-    window.onload=function() {
-      populateCytobands({{cytobands|safe}});
-    }
 
     function validateForm(){
       var valid_chroms = [];
@@ -227,14 +223,19 @@
       width: '100%'
     });
 
+    window.onload=function() {
+      populateCytobands({{cytobands|safe}});
+    }
+
+    <script>
     $(function () {
-      $('[data-toggle="tooltip"]').tooltip();
-      $('[data-toggle="popover"]').popover({
-        sanitizeFn: function (content) {
-          return DOMPurify.sanitize(content)
-        },
-        container: 'body',
-      });
+        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-toggle="popover"]').popover({
+            sanitizeFn: function (content) {
+                return DOMPurify.sanitize(content)
+            },
+            container: 'body',
+        });
     })
   </script>
 {% endblock %}

@@ -167,7 +167,79 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
-  <script>
+
+  <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
+  <script type="text/javascript">
+
+    var startElem = document.getElementById("start");
+    var endElem = document.getElementById("end");
+
+    var chromSel = document.getElementById("chrom");
+    chromSel.addEventListener("change", function() {
+        populateCytobands({{cytobands|safe}});
+    });
+
+    var cytoStart = document.getElementById("cytoband_start");
+
+    cytoStart.addEventListener("change", function() {
+        if(cytoStart.options[cytoStart.selectedIndex].value === ""){
+            console.log("start empty")
+            startElem.value = "";
+            return
+        }
+        populateStart();
+    });
+
+    var cytoEnd = document.getElementById("cytoband_end");
+
+    cytoEnd.addEventListener("change", function() {
+        if(cytoEnd.options[cytoEnd.selectedIndex].value === ""){
+            endElem.value = "";
+            return
+        }
+        populateEnd();
+    });
+
+    function validateForm(){
+      var valid_chroms = [];
+      i = 1;
+      while(valid_chroms.push(i++) <22){};
+      valid_chroms.push("X","Y","MT");
+      var chrom = document.forms["filters_form"].elements["chrom"].value;
+      if(chrom && !valid_chroms.map(String).includes(chrom)){
+        alert("Chromosome field is not valid. Accepted values are: "+valid_chroms)
+        return false
+      }        
+      var start = document.forms["filters_form"].elements["start"].value
+      var end = document.forms["filters_form"].elements["end"].value
+      if(start || end){
+        if(!chrom){
+          alert("Chromosome field is required");
+          return false;
+        }
+        else if( !start || !end){
+          alert("Both start and end coordinates are required");
+          return false;
+        }
+        else if( (isNaN(start) || isNaN(end)) || Number(end)<number(start) ){
+          alert("Coordinate field not valid");
+          return false;
+        }
+      }
+      return true;
+    }
+    
+
+    $('select[multiple]').selectpicker({
+      width: '100%'
+    });
+
+    
+    window.onload=function() {
+        populateCytobands({{cytobands|safe}});
+    }
+
+    
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
       $('[data-toggle="popover"]').popover({
