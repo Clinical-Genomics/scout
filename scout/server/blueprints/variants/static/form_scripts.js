@@ -1,13 +1,6 @@
 function populateCytobands(cytobands){
-    var chrom = document.forms["filters_form"].elements["chrom"].value;
-    console.log("chrom:")
-    console.log(chrom)
-    console.log("cytobands:")
-    console.log(cytobands)
-    console.log("forms:")
-    console.log(document.forms)
+  var chrom = document.forms["filters_form"].elements["chrom"].value;
   if(chrom===""){
-      console.log("chrom='' -> start to '' ")
     startElem.value = "";
     endElem.value = "";
     return //only reset cytoband select element
@@ -56,7 +49,6 @@ function populateCytobands(cytobands){
 }
 
 function populateStart(){
-    console.log("populateStart()")
   startElem.value = cytoStart.options[cytoStart.selectedIndex].value
 }
 
