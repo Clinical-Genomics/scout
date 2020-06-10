@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+import json
 from flask import url_for
 from scout.server.extensions import store
 from flask_wtf import FlaskForm as form
+
+headers = {"User-Agent": "Mozilla/5.0"}
 
 
 def test_overview(app, user_obj, institute_obj):
@@ -76,8 +79,16 @@ def test_institute(app, user_obj, institute_obj):
         assert len(updated_institute["phenotype_groups"]) == 2  # one for each HPO term
 
 
-def test_clinvar_submissions(app, institute_obj):
-    # Test the web page containing the clinvar submissions for an institute
+def test_clinvar_submissions(app, institute_obj, clinvar_variant, clinvar_casedata):
+    """"Test the web page containing the clinvar submissions for an institute"""
+
+    # GIVEN an institute with a clinvar submission
+    store.create_submission(institute_obj["_id"])
+    open_submission = store.get_open_clinvar_submission(institute_obj["_id"])
+    submission_with_data = store.add_to_submission(
+        open_submission["_id"], ([clinvar_variant], [clinvar_casedata])
+    )
+    assert submission_with_data
 
     # GIVEN an initialized app and a valid user and institute
     with app.test_client() as client:
@@ -92,3 +103,41 @@ def test_clinvar_submissions(app, institute_obj):
 
         # a successful response should be returned
         assert resp.status_code == 200
+        assert str(submission_with_data["_id"]) in str(resp.data)
+
+
+def test_rename_clinvar_samples(app, institute_obj, clinvar_variant, clinvar_casedata):
+    """Test the form button triggering the renaming of samples for a clinvar submission"""
+
+    # GIVEN an institute with a clinvar submission
+    store.create_submission(institute_obj["_id"])
+    open_submission = store.get_open_clinvar_submission(institute_obj["_id"])
+    submission_with_data = store.add_to_submission(
+        open_submission["_id"], ([clinvar_variant], [clinvar_casedata])
+    )
+    assert submission_with_data["_id"]
+
+    # GIVEN an initialized app and a valid user
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        old_name = clinvar_casedata["individual_id"]
+
+        form_data = dict(
+            submission_id=submission_with_data["_id"],
+            oldSampleName=old_name,
+            newSampleName="new_sample_name",
+        )
+
+        # WHEN the sample name is edited from the submission page (POST request)
+        resp = client.post(
+            url_for("overview.clinvar_submissions", institute_id=institute_obj["internal_id"],),
+            data=form_data,
+        )
+        # a successful response should be returned
+        assert resp.status_code == 200
+
+        # And the sample name should have been updated in the database
+        updated_casedata = store.clinvar_collection.find_one({"_id": clinvar_casedata["_id"]})
+        assert updated_casedata["individual_id"] != clinvar_casedata["individual_id"]
