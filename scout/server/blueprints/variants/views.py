@@ -54,15 +54,11 @@ def variants(institute_id, case_name):
     user_obj = store.user(current_user.email)
 
     if request.method == "POST":
-        LOG.debug("variants/POST")
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
-        LOG.debug(" POST VARIANTSform = controllers.populate_sv_filters_form(..): {}".format(form))
     else:
-        LOG.debug("variants(else:)")
         form = FiltersForm(request.args)
-        LOG.debug("GET VARIANTSform = controllers.populate_sv_filters_form(..): {}".format(form))
         # set form variant data type the first time around
         form.variant_type.data = variant_type
         form.chrom.data = request.args.get("chrom", None)
@@ -221,7 +217,6 @@ def sv_variants(institute_id, case_name):
     controllers.activate_case(store, institute_obj, case_obj, current_user)
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
-    LOG.debug("form = controllers.populate_sv_filters_form(..): {}".form)
 
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
     # if variants should be exported
@@ -254,20 +249,16 @@ def cancer_variants(institute_id, case_name):
 
     user_obj = store.user(current_user.email)
     if request.method == "POST":
-        LOG.debug("variants/cancer-variant/POST")
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
-        LOG.debug("POST form = controllers.populate_sv_filters_form(..): {}".format(form))
 
         if form.validate_on_submit() is False:
             # Flash a message with errors
-            LOG.debug("Validate is False")
             for field, err_list in form.errors.items():
                 for err in err_list:
                     flash(f"Content of field '{field}' has not a valid format", "warning")
             # And do not submit the form
-            LOG.debug("Redirect")
             return redirect(
                 url_for(
                     ".cancer_variants",
@@ -279,7 +270,6 @@ def cancer_variants(institute_id, case_name):
         page = int(request.form.get("page", 1))
 
     else:
-        LOG.debug("variants/cancer-variant/GET")
         page = int(request.args.get("page", 1))
         form = CancerFiltersForm(request.args)
         form.chrom.data = request.args.get("chrom", None)
@@ -299,10 +289,8 @@ def cancer_variants(institute_id, case_name):
     form.gene_panels.choices = panel_choices
 
     variant_type = request.args.get("variant_type", "clinical")
-    LOG.debug("cancer_variants -form: {}".format(form))
     data = controllers.cancer_variants(store, institute_id, case_name, form, page=page)
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
-    LOG.debug("cancer_variants HTML")
     return dict(variant_type=variant_type, cytobands=cytobands, **data)
 
 
