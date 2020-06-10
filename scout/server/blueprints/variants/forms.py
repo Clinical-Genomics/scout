@@ -129,7 +129,7 @@ class FiltersForm(VariantFiltersForm):
 
 class CancerFiltersForm(VariantFiltersForm):
     """Base filters for CancerFiltersForm - extends VariantsFiltersForm"""
-
+    filter_variants = SubmitField(label="Filter variants")
     depth = IntegerField("Depth >", validators=[validators.Optional()])
     alt_count = IntegerField("Min alt count", validators=[validators.Optional()])
     control_frequency = BetterDecimalField(
