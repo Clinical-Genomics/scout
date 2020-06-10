@@ -120,13 +120,14 @@ def clinvar_submissions(institute_id):
                 object_type="case_data",
                 submission_id=submission_id,
             )  # remove just the casedata associated to a variant
-        elif request.form.get("update_sample"):
-            # Rename casedata samples in a clinvar submission object
-            old_name = request.form["update_sample"]
-            new_name = request.form.get(old_name)
-            if old_name != new_name:
-                controllers.update_clinvar_sample_names(store, submission_id, old_name, new_name)
-
+        elif request.form.get("newSampleName"):
+            # Rename one or more casedata samples
+            controllers.update_clinvar_sample_names(
+                store,
+                submission_id,
+                request.form.get("oldSampleName"),
+                request.form["newSampleName"],
+            )
         else:
             # Download submission CSV files (for variants or casedata)
             clinvar_file_data = controllers.clinvar_submission_file(store, request, submission_id)

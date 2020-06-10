@@ -176,6 +176,8 @@
         <div> <!--case data div -->
           <h4>Case data:</h4>
           {% if subm_obj.case_data and subm_obj.case_data.count() > 0 %}
+          <input type="hidden" name="oldSampleName" id="oldSampleName" value="">
+          <input type="hidden" name="newSampleName" id="newSampleName" value="">
           <table class="table table-striped">
             <thead>
               <tr>
@@ -194,8 +196,8 @@
                 <tr class="text-center">
                   <td width="5%">{{loop.index}}</td>
                   <td width="20%">
-                    <input type="text" name="{{case.individual_id}}" value="{{case.individual_id}}">
-                    <button name="update_sample" value="{{case.individual_id}}" type="submit" class="btn btn-primary btn-xs"><span class="fa fa-pencil" aria-hidden="true"></span></button></input>
+                    <input type="text" id="{{loop.index}}" value="{{case.individual_id}}">
+                    <button name="rename_sample" type="button" class="btn btn-primary btn-xs" onclick="submitRename('{{case.individual_id}}','{{loop.index}}');"><span class="fa fa-pencil" aria-hidden="true"></span></button></input>
                   </td>
                   <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
                   <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}" target="_blank">{{case.case_id}}</a></td>
@@ -231,6 +233,20 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script type="text/javascript">
+
+  function submitRename(oldName, caseIndex){
+
+    var form = document.getElementById("submission_form")
+
+    var oldSampleName = document.getElementById("oldSampleName")
+    oldSampleName.setAttribute("value", oldName);
+
+    var newSampleName = document.getElementById("newSampleName");
+    newSampleName.setAttribute("value", document.getElementById(caseIndex).value);
+
+    form.submit();
+  }
+
   $(function () {
       $('.casedata  div').hide();
       $('.vardata  div').hide();
