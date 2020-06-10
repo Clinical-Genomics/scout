@@ -251,20 +251,23 @@ def cancer_variants(institute_id, case_name):
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
+
     user_obj = store.user(current_user.email)
     if request.method == "POST":
-        LOG.debug("cancer/POST")
+        LOG.debug("variants/cancer-variant/POST")
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
-        LOG.debug(" POST form = controllers.populate_sv_filters_form(..): {}".format(form))
+        LOG.debug("POST form = controllers.populate_sv_filters_form(..): {}".format(form))
 
         if form.validate_on_submit() is False:
             # Flash a message with errors
+            LOG.debug("Validate is False")
             for field, err_list in form.errors.items():
                 for err in err_list:
                     flash(f"Content of field '{field}' has not a valid format", "warning")
             # And do not submit the form
+            LOG.debug("Redirect")
             return redirect(
                 url_for(
                     ".cancer_variants",
@@ -276,7 +279,7 @@ def cancer_variants(institute_id, case_name):
         page = int(request.form.get("page", 1))
 
     else:
-        LOG.debug("GET, no form")
+        LOG.debug("variants/cancer-variant/GET")
         page = int(request.args.get("page", 1))
         form = CancerFiltersForm(request.args)
         form.chrom.data = request.args.get("chrom", None)

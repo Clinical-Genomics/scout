@@ -534,6 +534,9 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
     # Update filter settings if Clinical Filter was requested
     clinical_filter_panels = []
     LOG.debug("populate_filters_form(...)")
+    LOG.debug("request_form: {}".format(request_form))
+    LOG.debug("category: {}".format(category))
+
     default_panels = []
     for panel in case_obj["panels"]:
         if panel.get("is_default"):
