@@ -112,6 +112,7 @@ class VariantFiltersForm(FlaskForm):
     cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
     filter_variants = SubmitField(label="Filter variants")
 
+
 class FiltersForm(VariantFiltersForm):
     """Base FiltersForm for SNVs - extends VariantFiltersForm."""
 
