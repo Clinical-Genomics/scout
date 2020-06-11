@@ -14,7 +14,7 @@ from scout.server.blueprints.cases.views import (
 
 
 def test_parse_raw_gene_symbols(app):
-    """ Test parse gene symbols"""
+    """Test parse gene symbols"""
 
     # GIVEN a list of autocompleted gene symbols
     gene_symbols = ["MUTYH |POT1", "POT1 0.1|APC|PMS2"]
@@ -370,6 +370,39 @@ def test_case_synopsis(app, institute_obj, case_obj):
         )
         # then it should return a redirected page
         assert resp.status_code == 302
+
+
+def test_download_hpo_genes(app, case_obj, institute_obj):
+    """Test the endpoint that downloads the dynamic gene list for a case"""
+
+    # GIVEN a case containing a dynamic gene list
+    dynamic_gene_list = [
+        {"hgnc_symbol": "ACTA2", "hgnc_id": 130, "description": "actin alpha 2, smooth muscle"},
+        {"hgnc_symbol": "LMNB2", "hgnc_id": 6638, "description": "lamin B2"},
+    ]
+
+    store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]}, {"$set": {"dynamic_gene_list": dynamic_gene_list}}
+    )
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN the endpoint for downloading the case dynamic gene list is invoked
+        resp = client.get(
+            url_for(
+                "cases.download_hpo_genes",
+                institute_id=institute_obj["_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+        # THEN the response should be successful
+        assert resp.status_code == 200
+        # And should download a txt file
+        assert resp.mimetype == "text/csv"
 
 
 def test_causatives(app, user_obj, institute_obj, case_obj):
