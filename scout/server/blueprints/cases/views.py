@@ -1154,7 +1154,7 @@ def update_clinical_filter_hpo(institute_id, case_name):
 
 @cases_bp.route("/<institute_id>/<case_name>/download-hpo-genes", methods=["GET"])
 def download_hpo_genes(institute_id, case_name):
-    """Download the list contained in the HPO gene list"""
+    """Download the gene contained in case dynamic gene list"""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     dynamic_gene_objs = case_obj.get("dynamic_gene_list")
