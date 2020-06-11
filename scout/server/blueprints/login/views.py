@@ -13,15 +13,15 @@ from flask import (
     render_template,
 )
 from flask_login import login_user, logout_user
-from flask_oauthlib.client import OAuthException
 from flask_ldap3_login.forms import LDAPLoginForm
 from flask_ldap3_login import AuthenticationResponseStatus
 
-from scout.server.extensions import google, login_manager, store, ldap_manager
+from scout.server.extensions import login_manager, store, ldap_manager, google_client
 from scout.server.utils import public_endpoint
 from . import controllers
 from .models import LoginUser, LdapUser
 
+import requests
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -49,12 +49,6 @@ def load_user(user_id):
     return user_inst
 
 
-@google.tokengetter
-def get_google_token():
-    """Returns a tuple of Google tokens, if they exist"""
-    return session.get("google_token")
-
-
 @login_bp.route("/login", methods=["GET", "POST"])
 @public_endpoint
 def login():
@@ -73,13 +67,8 @@ def login():
         user_id = form.username.data
 
     if current_app.config.get("GOOGLE"):
-        if session.get("email"):
-            user_mail = session["email"]
-            session.pop("email")
-        else:
-            LOG.info("Validating Google user login")
-            callback_url = url_for(".authorized", _external=True)
-            return google.authorize(callback=callback_url)
+        LOG.info("Google Login!")
+        google_login()
 
     if request.args.get("email"):  # log in against Scout database
         user_mail = request.args.get("email")
@@ -100,46 +89,43 @@ def login():
     return perform_login(user_dict)
 
 
+def get_google_provider_cfg():
+    """Return the Google discovery URL stored in the app settings"""
+    discovery_url = current_app.config["GOOGLE"].get("discovery_url")
+    if discovery_url is not None:
+        return requests.get(discovery_url).json()
+
+
+def google_login():
+    """Login user via Google OAuth2"""
+
+    google_provider_cfg = get_google_provider_cfg()
+    auth_endpoint = google_provider_cfg["authorization_endpoint"]
+    token_endpoint = google_provider_cfg["token_endpoint"]
+
+    # Use library to construct the request for Google login and provide
+    # scopes that let you retrieve user's profile from Google
+    request_uri = google_client.prepare_request_uri(
+        auth_endpoint,
+        redirect_uri=request.base_url + "/callback",
+        scope=["openid", "email", "profile"],
+    )
+
+    LOG.info(request_uri)
+    LOG.info("HERE BITCHES")
+
+
+@login_bp.route("/login/callback")
+def callback():
+    # Get authorization code Google sent back to you
+    code = request.args.get("code")
+
+
 @login_bp.route("/logout")
 def logout():
     logout_user()
     flash("you logged out", "success")
     return redirect(url_for("public.index"))
-
-
-@login_bp.route("/authorized")
-@public_endpoint
-def authorized():
-    oauth_response = None
-    try:
-        oauth_response = google.authorized_response()
-    except OAuthException as error:
-        current_app.logger.warning("Google OAuthException: {}".format(error))
-        flash("{} - try again!".format(error), "warning")
-        return redirect(url_for("public.index"))
-
-    if oauth_response is None:
-        flash(
-            "Access denied: reason={} error={}".format(
-                request.args.get["error_reason"], request.args["error_description"]
-            ),
-            "danger",
-        )
-        return redirect(url_for("public.index"))
-
-    # add token to session, do it before validation to be able to fetch
-    # additional data (like email) on the authenticated user
-    session["google_token"] = (oauth_response["access_token"], "")
-
-    # get additional user info with the access token
-    google_user = google.get("userinfo")
-    google_data = google_user.data
-
-    session["email"] = google_data["email"].lower()
-    session["name"] = google_data["name"]
-    session["locale"] = google_data["locale"]
-
-    return redirect(url_for("login.login"))
 
 
 @login_bp.route("/users")

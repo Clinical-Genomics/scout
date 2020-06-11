@@ -94,7 +94,6 @@ def configure_extensions(app):
     extensions.mongo.init_app(app)
     extensions.store.init_app(app)
     extensions.login_manager.init_app(app)
-    extensions.oauth.init_app(app)
     extensions.mail.init_app(app)
 
     Markdown(app)
@@ -112,6 +111,10 @@ def configure_extensions(app):
         LOG.info("LDAP login enabled")
         # setup connection to server
         extensions.ldap_manager.init_app(app)
+    if app.config.get("GOOGLE"):
+        LOG.info("LDAP login enabled")
+        # setup connection to google oauth2
+        extensions.google_client.init_app(app)
 
 
 def register_blueprints(app):
