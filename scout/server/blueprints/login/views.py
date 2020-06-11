@@ -68,7 +68,8 @@ def login():
 
     if current_app.config.get("GOOGLE"):
         LOG.info("Google Login!")
-        google_login()
+        google_config = current_app.config["GOOGLE"]
+        google_login(google_config["client_id"], google_config["client_secret"])
 
     if request.args.get("email"):  # log in against Scout database
         user_mail = request.args.get("email")
@@ -96,29 +97,52 @@ def get_google_provider_cfg():
         return requests.get(discovery_url).json()
 
 
-def google_login():
-    """Login user via Google OAuth2"""
+def google_login(client_id, client_secret):
+    """Login user via Google OAuth2
 
+    Args:
+        client_id(str): Google client id
+        client_secret(str): Google client secret
+
+    """
     google_provider_cfg = get_google_provider_cfg()
     auth_endpoint = google_provider_cfg["authorization_endpoint"]
-    token_endpoint = google_provider_cfg["token_endpoint"]
 
     # Use library to construct the request for Google login and provide
     # scopes that let you retrieve user's profile from Google
+    redirect_url = request.base_url + "/callback"
+    LOG.info(f"CALLBACK URL IS---------------->{redirect_url}")
     request_uri = google_client.prepare_request_uri(
-        auth_endpoint,
-        redirect_uri=request.base_url + "/callback",
-        scope=["openid", "email", "profile"],
+        auth_endpoint, redirect_uri=redirect_url, scope=["openid", "email", "profile"],
     )
-
-    LOG.info(request_uri)
-    LOG.info("HERE BITCHES")
+    LOG.info(f"REQUEST URL is---------------->{request_uri}")
+    return redirect(request_uri)  # google login interface
 
 
 @login_bp.route("/login/callback")
 def callback():
     # Get authorization code Google sent back to you
+    LOG.info("---------------->CALLBACK!!!!")
     code = request.args.get("code")
+
+    google_provider_cfg = get_google_provider_cfg()
+    token_endpoint = google_provider_cfg["token_endpoint"]
+    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
+
+    # Prepare and send a request to get tokens! Yay tokens!
+    token_url, headers, body = google_client.prepare_token_request(
+        token_endpoint, authorization_response=request.url, redirect_url=request.base_url, code=code
+    )
+    token_response = requests.post(
+        token_url, headers=headers, data=body, auth=(client_id, client_secret),
+    )
+
+    # Parse the tokens
+    google_client.parse_request_body_response(json.dumps(token_response.json()))
+
+    uri, headers, body = client.add_token(userinfo_endpoint)
+    userinfo_response = requests.get(uri, headers=headers, data=body)
+    LOG.info("---------------->LOOK WHERE I AM NOW!!!")
 
 
 @login_bp.route("/logout")
