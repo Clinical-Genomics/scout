@@ -110,7 +110,7 @@ class VariantFiltersForm(FlaskForm):
     end = IntegerField("End position", [validators.Optional()])
     cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
     cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
-
+    filter_variants = SubmitField(label="Filter variants")
 
 class FiltersForm(VariantFiltersForm):
     """Base FiltersForm for SNVs - extends VariantFiltersForm."""
@@ -121,8 +121,6 @@ class FiltersForm(VariantFiltersForm):
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
 
     local_obs = IntegerField("Local obs. (archive)")
-
-    filter_variants = SubmitField(label="Filter variants")
     clinical_filter = SubmitField(label="Clinical filter")
     export = SubmitField(label="Filter and export")
 
@@ -130,7 +128,6 @@ class FiltersForm(VariantFiltersForm):
 class CancerFiltersForm(VariantFiltersForm):
     """Base filters for CancerFiltersForm - extends VariantsFiltersForm"""
 
-    filter_variants = SubmitField(label="Filter variants")
     depth = IntegerField("Depth >", validators=[validators.Optional()])
     alt_count = IntegerField("Min alt count", validators=[validators.Optional()])
     control_frequency = BetterDecimalField(
@@ -146,7 +143,6 @@ class StrFiltersForm(FlaskForm):
     """docstring for StrFiltersForm"""
 
     variant_type = HiddenField(default="clinical")
-
     chrom = TextField("Chromosome")
     gene_panels = SelectMultipleField(choices=[])
     repids = TagListField()
@@ -158,14 +154,9 @@ class SvFiltersForm(VariantFiltersForm):
     size = TextField("Length")
     size_shorter = BooleanField("Length shorter than")
     svtype = SelectMultipleField("SVType", choices=SV_TYPE_CHOICES)
-
     decipher = BooleanField("Decipher")
     clingen_ngi = IntegerField("ClinGen NGI obs")
     swegen = IntegerField("SweGen obs")
 
-    cytoband_start = SelectField("Cytoband start", choices=[])
-    cytoband_end = SelectField("Cytoband end", choices=[])
-
-    filter_variants = SubmitField(label="Filter variants")
     clinical_filter = SubmitField(label="Clinical filter")
     export = SubmitField(label="Filter and export")
