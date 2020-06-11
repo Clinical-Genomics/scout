@@ -102,15 +102,22 @@
     </ul>
     {% if case.dynamic_gene_list %}
       <div class="card-footer">
-        <div class="d-flex mt-1">
-          <div class="mr-2">
+        <div class="row d-flex mt-1 mb-3">
+          <div class="col-1">
             <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name)+'#hpo_clinical_filter' }}" method="POST">
               <input type="checkbox" class="ios8-switch" id="hpo_clinical_filter" onChange="this.form.submit()" name="hpo_clinical_filter"{% if case.hpo_clinical_filter %}checked{% endif %}>
               <label for="hpo_clinical_filter"></label>
             </form>
           </div>
-          <div data-placement="top" data-toggle='tooltip' title="Toggle on to use dynamic (HPO) panel instead of default gene panel for searching with clinical filter.">
-            Use HPO list for clinical filter</div>
+          <div class="col-5 align-items-start" data-placement="top" data-toggle='tooltip'
+            title="Toggle on to use dynamic (HPO) panel instead of default gene panel for searching with clinical filter.">
+            Use HPO list for clinical filter
+          </div>
+          <div class="col-1">
+            <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name)+'#hpo_clinical_filter' }}" method="POST">
+              <button type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-download" aria-hidden="true"></span></button>
+          </div>
+          <div class="col-5 align-items-start">Download HPO gene panel</div>
         </div>
         <div>
           {% if case.track == 'cancer' %}
