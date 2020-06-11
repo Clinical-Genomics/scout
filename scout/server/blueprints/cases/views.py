@@ -152,10 +152,6 @@ def sma(institute_id, case_name):
 @cases_bp.route("/<institute_id>/clinvar_submissions", methods=["GET", "POST"])
 @templated("cases/clinvar_submissions.html")
 def clinvar_submissions(institute_id):
-    def generate_csv(header, lines):
-        yield header + "\n"
-        for line in lines:  # lines have already quoted fields
-            yield line + "\n"
 
     if request.method == "POST":
         submission_id = request.form.get("submission_id")
@@ -228,7 +224,7 @@ def clinvar_submissions(institute_id):
                     filename=f"{clinvar_subm_id}_{csv_type}_{download_day}.csv",
                 )
                 return Response(
-                    generate_csv(",".join(csv_header), csv_lines),
+                    _generate_csv(",".join(csv_header), csv_lines),
                     mimetype="text/csv",
                     headers=headers,
                 )
@@ -1156,6 +1152,38 @@ def update_clinical_filter_hpo(institute_id, case_name):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/<institute_id>/<case_name>/download-hpo-genes", methods=["GET"])
+def download_hpo_genes(institute_id, case_name):
+    """Download the list contained in the HPO gene list"""
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    dynamic_gene_objs = case_obj.get("dynamic_gene_list")
+    csv_header = ["HGNC symbol", "HGNC ID", "Description"]
+    csv_lines = [
+        ",".join(
+            [
+                str(gene_obj.get("hgnc_symbol")),
+                str(gene_obj.get("hgnc_id")),
+                '"' + gene_obj.get("description") + '"',
+            ]
+        )
+        for gene_obj in dynamic_gene_objs
+    ]
+
+    download_day = str(datetime.datetime.now().strftime("%Y-%m-%d"))
+    # prepare headers:
+    headers = Headers()
+
+    headers.add(
+        "Content-Disposition",
+        "attachment",
+        filename=f"HPO_gene_list.{institute_id}.{case_name}.{download_day}.csv",
+    )
+    return Response(
+        _generate_csv(",".join(csv_header), csv_lines), mimetype="text/csv", headers=headers,
+    )
+
+
 @cases_bp.route("/<institute_id>/<case_name>/<individual_id>/cgh")
 def vcf2cytosure(institute_id, case_name, individual_id):
     """Download vcf2cytosure file for individual."""
@@ -1213,3 +1241,10 @@ def host_image_aux(institute_id, case_name, image, imgstr):
     img_path = abs_path + "/" + imgstr
     LOG.debug("Attempting to send {}/{}".format(img_path, image))
     return send_from_directory(img_path, image)
+
+
+def _generate_csv(header, lines):
+    """Download a text file composed of any header and lines"""
+    yield header + "\n"
+    for line in lines:  # lines have already quoted fields
+        yield line + "\n"

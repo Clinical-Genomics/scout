@@ -114,8 +114,7 @@
             Use HPO list for clinical filter
           </div>
           <div class="col-1">
-            <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name)+'#hpo_clinical_filter' }}" method="POST">
-              <button type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-download" aria-hidden="true"></span></button>
+            <a href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name) }}" class="btn btn-primary btn-xs var_btn"><span class="fa fa-download text-white" aria-hidden="true"></span></a>
           </div>
           <div class="col-5 align-items-start">Download HPO gene panel</div>
         </div>
