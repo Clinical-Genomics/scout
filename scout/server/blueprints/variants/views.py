@@ -312,6 +312,8 @@ def cancer_sv_variants(institute_id, case_name):
 
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
 
+    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
+
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
     # if variants should be exported
     if request.form.get("export"):
@@ -327,6 +329,7 @@ def cancer_sv_variants(institute_id, case_name):
         severe_so_terms=SEVERE_SO_TERMS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
+        cytobands=cytobands,
         page=page,
         **data,
     )
