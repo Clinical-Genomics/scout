@@ -374,9 +374,11 @@ def variant_export_lines(store, case_obj, variants_query):
             variant_line += gene_info
         else:
             i = 0
-            while i < 4:
-                variant_line.append("-")  # instead of gene ids
-                i = i + 1
+            while i < 3:
+                variant_line.append(
+                    "-"
+                )  # empty HGNC id, emoty gene name and empty transcripts columns
+                i += 1
 
         variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
         for individual in case_obj["individuals"]:
@@ -420,7 +422,10 @@ def variant_export_genes_info(store, gene_list):
         # gather HGVS info from gene transcripts
         transcripts_list = gene_obj.get("transcripts")
         for transcript_obj in transcripts_list:
-            if transcript_obj.get("is_canonical") and transcript_obj.get("is_canonical") is True:
+            if (
+                transcript_obj.get("is_canonical") is not None
+                and transcript_obj.get("is_canonical") is True
+            ):
                 hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
         hgvs_c.append(hgvs_nucleotide)
 
