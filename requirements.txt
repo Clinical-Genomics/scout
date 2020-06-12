@@ -22,7 +22,7 @@ xlsxwriter
 click<7.0
 
 # webapp login
-oauthlib
+authlib
 flask_ldap3_login
 
 
