@@ -24,7 +24,7 @@ click<7.0
 # webapp login
 authlib
 flask_ldap3_login
-
+flask_login
 
 # Parsing
 cyvcf2<0.10.0
