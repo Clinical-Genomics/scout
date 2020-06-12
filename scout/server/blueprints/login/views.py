@@ -67,9 +67,13 @@ def login():
         user_id = form.username.data
 
     if current_app.config.get("GOOGLE"):
-        LOG.info("Google Login!")
-        google_config = current_app.config["GOOGLE"]
-        google_login(google_config["client_id"], google_config["client_secret"])
+        if session.get("email"):
+            user_mail = session["email"]
+            session.pop("email")
+        else:
+            LOG.info("Google Login!")
+            google_config = current_app.config["GOOGLE"]
+            google_login(google_config["client_id"], google_config["client_secret"])
 
     if request.args.get("email"):  # log in against Scout database
         user_mail = request.args.get("email")
@@ -110,7 +114,7 @@ def google_login(client_id, client_secret):
 
     # Use library to construct the request for Google login and provide
     # scopes that let you retrieve user's profile from Google
-    redirect_url = request.base_url + "/callback"
+    redirect_url = request.base_url + "/oauth2callback"
     LOG.info(f"CALLBACK URL IS---------------->{redirect_url}")
     request_uri = google_client.prepare_request_uri(
         auth_endpoint, redirect_uri=redirect_url, scope=["openid", "email", "profile"],
@@ -119,12 +123,10 @@ def google_login(client_id, client_secret):
     return redirect(request_uri)  # google login interface
 
 
-@login_bp.route("/login/callback")
+@login_bp.route("/oauth2callback'")
 def callback():
     # Get authorization code Google sent back to you
-    LOG.info("---------------->CALLBACK!!!!")
     code = request.args.get("code")
-
     google_provider_cfg = get_google_provider_cfg()
     token_endpoint = google_provider_cfg["token_endpoint"]
     userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
@@ -142,7 +144,15 @@ def callback():
 
     uri, headers, body = client.add_token(userinfo_endpoint)
     userinfo_response = requests.get(uri, headers=headers, data=body)
-    LOG.info("---------------->LOOK WHERE I AM NOW!!!")
+
+    if userinfo_response.json().get("email_verified") is None:
+        return "User email not available or not verified by Google.", 400
+
+    session["email"] = userinfo_response.json()["email"].lower()
+    session["name"] = userinfo_response.json()["given_name"]
+    session["locale"] = userinfo_response.json()["locale"]
+
+    return redirect(url_for("login.login"))
 
 
 @login_bp.route("/logout")
