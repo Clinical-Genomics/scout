@@ -69,13 +69,13 @@ def login():
     if current_app.config.get("GOOGLE"):
         if session.get("email"):
             user_mail = session["email"]
-            session.pop("email")
         else:
             LOG.info("Google Login!")
             redirect_uri = url_for(".auth", _external=True)
-            return oauth_client.google.authorize_redirect(redirect_uri)
-
-            url_for(".authorized", _external=True)
+            try:
+                return oauth_client.google.authorize_redirect(redirect_uri)
+            except Exception as ex:
+                flash("An error has occurred while logging in user using Google OAuth")
 
     if request.args.get("email"):  # log in against Scout database
         user_mail = request.args.get("email")
@@ -97,19 +97,24 @@ def login():
 
 
 @login_bp.route("/auth")
+@public_endpoint
 def auth():
     """Google auth callback function"""
     token = oauth_client.google.authorize_access_token()
-    user = oauth_client.google.parse_id_token(token)
-    session["email"] = user.get("email").lower()
-    session["name"] = user.get("name")
-    session["locale"] = user.get("locale")
-    return redirect("login.login")
+    google_user = oauth_client.google.parse_id_token(token)
+    session["email"] = google_user.get("email").lower()
+    session["name"] = google_user.get("name")
+    session["locale"] = google_user.get("locale")
+
+    return redirect(url_for(".login"))
 
 
 @login_bp.route("/logout")
 def logout():
     logout_user()
+    session.pop("email", None)
+    session.pop("name", None)
+    session.pop("locale", None)
     flash("you logged out", "success")
     return redirect(url_for("public.index"))
 
