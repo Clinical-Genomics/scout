@@ -62,7 +62,9 @@ def login():
         form = LDAPLoginForm()
         LOG.info("Validating LDAP user")
         if not form.validate_on_submit():
-            flash("username-password combination is not valid, plase try again", "warning")
+            flash(
+                "username-password combination is not valid, plase try again", "warning"
+            )
             return redirect(url_for("public.index"))
         user_id = form.username.data
 
@@ -70,8 +72,7 @@ def login():
         if session.get("email"):
             user_mail = session["email"]
         else:
-            LOG.info("Google Login!")
-            redirect_uri = url_for(".auth", _external=True)
+            redirect_uri = url_for(".authorized", _external=True)
             try:
                 return oauth_client.google.authorize_redirect(redirect_uri)
             except Exception as ex:
@@ -96,9 +97,9 @@ def login():
     return perform_login(user_dict)
 
 
-@login_bp.route("/auth")
+@login_bp.route("/authorized")
 @public_endpoint
-def auth():
+def authorized():
     """Google auth callback function"""
     token = oauth_client.google.authorize_access_token()
     google_user = oauth_client.google.parse_id_token(token)
