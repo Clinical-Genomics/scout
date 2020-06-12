@@ -69,7 +69,9 @@ def login():
     if current_app.config.get("GOOGLE"):
         if session.get("email"):
             user_mail = session["email"]
+            session.pop("email", None)
         else:
+            LOG.info("Google Login!")
             redirect_uri = url_for(".authorized", _external=True)
             try:
                 return oauth_client.google.authorize_redirect(redirect_uri)
