@@ -74,12 +74,8 @@ def create_app(config_file=None, config=None):
     def check_user():
         if not app.config.get("LOGIN_DISABLED") and request.endpoint:
             # check if the endpoint requires authentication
-            static_endpoint = (
-                "static" in request.endpoint or "report" in request.endpoint
-            )
-            public_endpoint = getattr(
-                app.view_functions[request.endpoint], "is_public", False
-            )
+            static_endpoint = "static" in request.endpoint or "report" in request.endpoint
+            public_endpoint = getattr(app.view_functions[request.endpoint], "is_public", False)
             relevant_endpoint = not (static_endpoint or public_endpoint)
             # if endpoint requires auth, check if user is authenticated
             if relevant_endpoint and not current_user.is_authenticated:
@@ -118,20 +114,7 @@ def configure_extensions(app):
     if app.config.get("GOOGLE"):
         LOG.info("Google login enabled")
         # setup connection to google oauth2
-
-        google_conf = app.config["GOOGLE"]
-        discovery_url = google_conf.get("discovery_url")
-        client_id = google_conf.get("client_id")
-        client_secret = google_conf.get("client_secret")
-        extensions.oauth_client.init_app(app)
-
-        extensions.oauth_client.register(
-            name="google",
-            server_metadata_url=discovery_url,
-            client_id=client_id,
-            client_secret=client_secret,
-            client_kwargs={"scope": "openid email profile"},
-        )
+        configure_oauth_login(app)
 
 
 def register_blueprints(app):
@@ -193,25 +176,29 @@ def register_filters(app):
         return cosmicId
 
 
+def configure_oauth_login(app):
+    """Register the Google Oauth login client using config settings"""
+
+    google_conf = app.config["GOOGLE"]
+    discovery_url = google_conf.get("discovery_url")
+    client_id = google_conf.get("client_id")
+    client_secret = google_conf.get("client_secret")
+
+    extensions.oauth_client.init_app(app)
+
+    extensions.oauth_client.register(
+        name="google", server_metadata_url=discovery_url, client_id=client_id, client_secret=client_secret, client_kwargs={"scope": "openid email profile"},
+    )
+
+
 def configure_email_logging(app):
     """Setup logging of error/exceptions to email."""
     import logging
     from scout.log import TlsSMTPHandler
 
-    mail_handler = TlsSMTPHandler(
-        mailhost=app.config["MAIL_SERVER"],
-        fromaddr=app.config["MAIL_USERNAME"],
-        toaddrs=app.config["ADMINS"],
-        subject="O_ops... {} failed!".format(app.name),
-        credentials=(app.config["MAIL_USERNAME"], app.config["MAIL_PASSWORD"]),
-    )
+    mail_handler = TlsSMTPHandler(mailhost=app.config["MAIL_SERVER"], fromaddr=app.config["MAIL_USERNAME"], toaddrs=app.config["ADMINS"], subject="O_ops... {} failed!".format(app.name), credentials=(app.config["MAIL_USERNAME"], app.config["MAIL_PASSWORD"]),)
     mail_handler.setLevel(logging.ERROR)
-    mail_handler.setFormatter(
-        logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s: %(message)s "
-            "[in %(pathname)s:%(lineno)d]"
-        )
-    )
+    mail_handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s: %(message)s " "[in %(pathname)s:%(lineno)d]"))
     app.logger.addHandler(mail_handler)
 
 
