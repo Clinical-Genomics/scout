@@ -171,24 +171,10 @@
     });
 
     var cytoStart = document.getElementById("cytoband_start");
-
-    cytoStart.addEventListener("change", function() {
-      if(cytoStart.options[cytoStart.selectedIndex].value === ""){
-        startElem.value = "";
-        return
-      }
-      populateStart();
-    });
+    initSearchConstraints(cytoStart, startElem)
 
     var cytoEnd = document.getElementById("cytoband_end");
-    cytoEnd.addEventListener("change", function() {
-      if(cytoEnd.options[cytoEnd.selectedIndex].value === ""){
-        endElem.value = "";
-        return
-      }
-      populateEnd();
-    });
-
+    initSearchConstraints(cytoEnd, endElem)
 
 
     $('select[multiple]').selectpicker({
