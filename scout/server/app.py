@@ -187,7 +187,11 @@ def configure_oauth_login(app):
     extensions.oauth_client.init_app(app)
 
     extensions.oauth_client.register(
-        name="google", server_metadata_url=discovery_url, client_id=client_id, client_secret=client_secret, client_kwargs={"scope": "openid email profile"},
+        name="google",
+        server_metadata_url=discovery_url,
+        client_id=client_id,
+        client_secret=client_secret,
+        client_kwargs={"scope": "openid email profile"},
     )
 
 
@@ -196,9 +200,19 @@ def configure_email_logging(app):
     import logging
     from scout.log import TlsSMTPHandler
 
-    mail_handler = TlsSMTPHandler(mailhost=app.config["MAIL_SERVER"], fromaddr=app.config["MAIL_USERNAME"], toaddrs=app.config["ADMINS"], subject="O_ops... {} failed!".format(app.name), credentials=(app.config["MAIL_USERNAME"], app.config["MAIL_PASSWORD"]),)
+    mail_handler = TlsSMTPHandler(
+        mailhost=app.config["MAIL_SERVER"],
+        fromaddr=app.config["MAIL_USERNAME"],
+        toaddrs=app.config["ADMINS"],
+        subject="O_ops... {} failed!".format(app.name),
+        credentials=(app.config["MAIL_USERNAME"], app.config["MAIL_PASSWORD"]),
+    )
     mail_handler.setLevel(logging.ERROR)
-    mail_handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s: %(message)s " "[in %(pathname)s:%(lineno)d]"))
+    mail_handler.setFormatter(
+        logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s: %(message)s " "[in %(pathname)s:%(lineno)d]"
+        )
+    )
     app.logger.addHandler(mail_handler)
 
 
