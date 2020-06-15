@@ -21,7 +21,6 @@ from scout.server.utils import public_endpoint
 from . import controllers
 from .models import LoginUser, LdapUser
 
-import requests
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -62,7 +61,9 @@ def login():
         form = LDAPLoginForm()
         LOG.info("Validating LDAP user")
         if not form.validate_on_submit():
-            flash("username-password combination is not valid, plase try again", "warning")
+            flash(
+                "username-password combination is not valid, plase try again", "warning"
+            )
             return redirect(url_for("public.index"))
         user_id = form.username.data
 
