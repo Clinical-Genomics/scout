@@ -373,12 +373,12 @@ def variant_export_lines(store, case_obj, variants_query):
             gene_info = variant_export_genes_info(store, gene_list)
             variant_line += gene_info
         else:
-            i = 0
-            while i < 3:
+            empty_col = 0
+            while empty_col < 3:
                 variant_line.append(
                     "-"
                 )  # empty HGNC id, emoty gene name and empty transcripts columns
-                i += 1
+                empty_col += 1
 
         variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
         for individual in case_obj["individuals"]:
