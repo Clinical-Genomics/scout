@@ -110,7 +110,9 @@ class VariantFiltersForm(FlaskForm):
     end = IntegerField("End position", [validators.Optional()])
     cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
     cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
+
     filter_variants = SubmitField(label="Filter variants")
+    export = SubmitField(label="Filter and export")
 
 
 class FiltersForm(VariantFiltersForm):
@@ -123,7 +125,6 @@ class FiltersForm(VariantFiltersForm):
 
     local_obs = IntegerField("Local obs. (archive)")
     clinical_filter = SubmitField(label="Clinical filter")
-    export = SubmitField(label="Filter and export")
 
 
 class CancerFiltersForm(VariantFiltersForm):
@@ -160,4 +161,3 @@ class SvFiltersForm(VariantFiltersForm):
     swegen = IntegerField("SweGen obs")
 
     clinical_filter = SubmitField(label="Clinical filter")
-    export = SubmitField(label="Filter and export")

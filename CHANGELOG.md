@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tooltip to better describe Tumor and Normal columns in cancer variants
 - Filter cancer SNVs and SVs by chromosome coordinates
 - Default export of `Assertion method citation` to clinVar variants submission file
+- Button to export up to 500 cancer variants, filtered or not
 
 ### Fixed
 - Apply default gene panel on return to cancer variantS from variant view

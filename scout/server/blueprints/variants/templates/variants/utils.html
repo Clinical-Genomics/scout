@@ -476,19 +476,22 @@
     </div>
 
     <div class="form-group" id="buttons">
-      <div class="row">
-        <div class="col-3">
+      <div class="row justify-content-center" style="margin-top:20px;">
+        <div class="col-4">
           <button class="btn btn-primary form-control">Filter variants</button>
         </div>
-        <div class="col-1 align-self-start">
+        <div class="col-4">
+          {{ form.export(class="btn btn-warning form-control") }}
+        </div>
+      </div>
+      <div class="row justify-content-between" style="margin-top:20px;">
+        <div class="col-2">
           <a href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
             case_name=case.display_name, variant_type=form.variant_type.data,
             gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
             class="btn btn-secondary" style="color: #ffffff !important;">
             Reset&nbsp;filters
           </a>
-        </div>
-        <div class="col-2">
         </div>
         <div class="col-6">
           {{ stash_filter_buttons(form, institute, case) }}
