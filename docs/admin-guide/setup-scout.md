@@ -29,5 +29,5 @@ for more info, run `scout --help`
 ### Setting up users login
 
 Scout login system currently supports
-1. Google login via OpenID Connect. Click [here](./login-system.md) for instructions on how to set up a Google login system
-1. Connection via Lightweight Directory Access Protocol (LPAD). Click [here]() for instructions on how to set up a LDAP login system
+1. Google login via OpenID Connect. Click [here](./login-system.md/##Google-OpenID-Connect-login-system) for instructions on how to set up a Google login system
+1. Connection via Lightweight Directory Access Protocol (LPAD). Click [here](./login-system.md/##Login-using-Lightweight-Directory-Access-Protocol-(LDAP) for instructions on how to set up a LDAP login system
