@@ -20,10 +20,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `scout download everything` command failing while downloading HPO terms
 
 ### Changed
-
-
-### Changed
 - Turn tumor and normal allelic fraction to decimal numbers in tumor variants page
+- Switched Google login libraries from Flask-OAuthlib to Authlib
+
 
 ## [4.17.1]
 
