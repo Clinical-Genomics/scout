@@ -1,0 +1,145 @@
+{% extends "layout_bs4.html" %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - Managed variants
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+   <li class="nav-item active">
+     <span class="navbar-text">Managed variants</span>
+   </li>
+{% endblock %}
+{% block content_main %}
+
+<form method="POST" id="filters_form" action="{{url_for('managed_variants.managed_variants', institute_id=institute._id)}}" enctype="multipart/form-data">
+  <div class="container-float">
+    <div id="accordion" >
+       <div class="card mt-3">
+        <div class="card-header">
+          <h5>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
+                Filters
+            </a>
+          </h5>
+        </div>
+        <div id="collapseFilters" class="panel-collapse collapse">
+          <div class="card-body">{{ filters_form() }}</div>
+        </div>
+       </div>
+    </div>
+  </div>
+</form>
+
+cancer, ...
+  <div class="table-responsive" style="padding-top: 25px;">
+    <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Chr</th>
+          <th scope="col">Start</th>
+          <th scope="col">End</th>
+          <th scope="col">Ref</th>
+          <th scope="col">Alt</th>
+          <th scope="col">Kind</th>
+          <th scope="col">Category</th>
+          <th scope="col">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for variant in managed_variants %}
+          <tr>
+            <td>variant.chromosome</td>
+            <td>variant.position</td>
+            <td>variant.end</td>
+            <td>variant.reference</td>
+            <td>variant.alternative</td>
+            <td>variant.subcategory</td>
+            <td>variant.category</td>
+            <td>variant.description</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% endblock %}
+
+{% macro filters_form() %}
+
+    {{ form.csrf_token }}
+
+    <div class="row">
+      <div class="col">
+        {{ form.hgnc_symbols.label(class="control-label") }}
+        {{ form.hgnc_symbols(class="form-control") }}
+      </div>
+      <div class="col col-md-3">
+        <label class="control-label">Rank Score</label>
+        <input type="number" class="form-control" id="rank_score" name="rank_score" min="5" value={{form.rank_score.data}}>
+      </div>
+      <div class="col col-md-3">
+        {{ form.variant_type.label(class="control-label") }}
+        {{ form.variant_type(class="form-control") }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+        {{ form.phenotype_terms.label(class="control-label") }}
+        {{ form.phenotype_terms(class="form-control") }}
+      </div>
+      <div class="col-md-3">
+        {{ form.phenotype_groups.label(class="control-label") }}
+        {{ form.phenotype_groups(class="form-control") }}
+      </div>
+      <div class="col-md-3">
+        {{ form.cohorts.label(class="control-label") }}
+        {{ form.cohorts(class="form-control") }}
+      </div>
+      <div class="col-md-3">
+        {{ form.similar_case.label(class="control-label") }}
+        {{ form.similar_case(class="form-control") }}
+      </div>
+    </div>
+    <div class="row justify-content-center mt-3">
+      <div class="col col-md-6">
+        <div class="row">
+          <div class="col">
+            {{ form.filter_variants(class_="btn btn-primary form-control") }}
+          </div>
+        </div>
+      </div>
+    </div>
+{% endmacro %}
+
+{% block scripts %}
+{{ super() }}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+<script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="popover"]').popover({
+      container: 'body',
+    });
+
+    $('table').stickyTableHeaders({
+      fixedOffset: $(".navbar-fixed-top")
+    });
+
+    $('select[multiple]').multiselect({
+      buttonWidth: '100%'
+    });
+
+    document.getElementById('symbol_file').onchange = function() {
+      var the_form = document.forms['filters_form'];
+      the_form.submit();
+    };
+  })
+
+</script>
+{% endblock %}
