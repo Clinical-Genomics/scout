@@ -286,7 +286,7 @@ def cancer_variants(institute_id, case_name):
 
     panel_choices = [(panel["panel_name"], panel["display_name"]) for panel in available_panels]
     form.gene_panels.choices = panel_choices
-    
+
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
     variant_type = request.args.get("variant_type", "clinical")
@@ -298,7 +298,7 @@ def cancer_variants(institute_id, case_name):
     data = controllers.cancer_variants(
         store, institute_id, case_name, variants_query, form, page=page
     )
-    
+
     return dict(variant_type=variant_type, cytobands=cytobands, **data)
 
 
