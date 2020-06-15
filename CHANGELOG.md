@@ -7,14 +7,19 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+- Filter cancer variants on cytoband coordinates
 - Show dismiss reasons in a badge with hover for clinical variants
 - Show an ellipsis if 10 cases or more to display with loqusdb matches
 - A new blog post for version 4.17
 - Tooltip to better describe Tumor and Normal columns in cancer variants
+- Filter cancer SNVs and SVs by chromosome coordinates
+- Default export of `Assertion method citation` to clinVar variants submission file
+- Button to export up to 500 cancer variants, filtered or not
 
 ### Fixed
 - Apply default gene panel on return to cancer variantS from variant view
 - Revert to certificate checking when asking for Chanjo reports
+- `scout download everything` command failing while downloading HPO terms
 
 ### Changed
 
@@ -36,6 +41,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter SNVs and SVs by cytoband coordinates
 - Filter cancer SNV variants by alt allele frequency in tumor
 - Correct genome build in UCSC link from structural variant page
+
+
 
 ### Fixed
 - Bug in clinVar form when variant has no gene
