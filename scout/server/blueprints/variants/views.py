@@ -215,7 +215,6 @@ def sv_variants(institute_id, case_name):
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
-
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
@@ -252,6 +251,7 @@ def cancer_variants(institute_id, case_name):
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
+
         if form.validate_on_submit() is False:
             # Flash a message with errors
             for field, err_list in form.errors.items():
@@ -271,6 +271,7 @@ def cancer_variants(institute_id, case_name):
     else:
         page = int(request.args.get("page", 1))
         form = CancerFiltersForm(request.args)
+        form.chrom.data = request.args.get("chrom", None)
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
@@ -285,9 +286,10 @@ def cancer_variants(institute_id, case_name):
 
     panel_choices = [(panel["panel_name"], panel["display_name"]) for panel in available_panels]
     form.gene_panels.choices = panel_choices
+    
+    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
     variant_type = request.args.get("variant_type", "clinical")
-
     variants_query = store.variants(case_obj["_id"], category="cancer", query=form.data)
 
     if request.form.get("export"):
@@ -296,7 +298,8 @@ def cancer_variants(institute_id, case_name):
     data = controllers.cancer_variants(
         store, institute_id, case_name, variants_query, form, page=page
     )
-    return dict(variant_type=variant_type, **data)
+    
+    return dict(variant_type=variant_type, cytobands=cytobands, **data)
 
 
 @variants_bp.route("/<institute_id>/<case_name>/cancer/sv-variants", methods=["GET", "POST"])
@@ -318,6 +321,8 @@ def cancer_sv_variants(institute_id, case_name):
 
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
 
+    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
+
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
     # if variants should be exported
     if request.form.get("export"):
@@ -333,6 +338,7 @@ def cancer_sv_variants(institute_id, case_name):
         severe_so_terms=SEVERE_SO_TERMS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
+        cytobands=cytobands,
         page=page,
         **data,
     )
