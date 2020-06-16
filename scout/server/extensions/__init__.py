@@ -26,5 +26,4 @@ oauth = OAuth()
 google = oauth.remote_app("google", app_key="GOOGLE")
 
 
-loqusdb = LoqusDB()
 mongo = MongoDB()

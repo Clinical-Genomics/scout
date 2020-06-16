@@ -51,13 +51,7 @@ class LoqusDB:
     def __init__(self, loqusdb_binary=None, loqusdb_args=None):
         """Initialise from args"""
         self.loqusdb_config = {'id':"init", 'binary_path': loqusdb_binary, 'args':loqusdb_args}
-        self.version = self.get_version()
-
-        LOG.info(
-            "Initializing loqus extension with binary: %s, version: %d",
-            self.get_bin_path(),
-            self.version,
-        )
+        LOG.info("Initializing loqus extension with config: %s", self.get_bin_path())
 
 
     def init_app(self, app):
@@ -117,6 +111,7 @@ class LoqusDB:
         variant_call = get_bin_path(institute)
         variant_call = add_args(variant_call)
         variant_call.extend(["variants", "--to-json", "--variant-id", loqus_id])
+        # TODO: add version check here instead? 2.5 needed for json export
         # If sv we need some more info
         if variant_info.get("category", "snv") in ["sv"]:
             self.set_coordinates(variant_info)
