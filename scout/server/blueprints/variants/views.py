@@ -300,7 +300,12 @@ def cancer_variants(institute_id, case_name):
         store, institute_id, case_name, variants_query, form, page=page
     )
 
-    return dict(variant_type=variant_type, cytobands=cytobands, **data, expand_search=str(request.method == "POST"))
+    return dict(
+        variant_type=variant_type,
+        cytobands=cytobands,
+        **data,
+        expand_search=str(request.method == "POST"),
+    )
 
 
 @variants_bp.route("/<institute_id>/<case_name>/cancer/sv-variants", methods=["GET", "POST"])
