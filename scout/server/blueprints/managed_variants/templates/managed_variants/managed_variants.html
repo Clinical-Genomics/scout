@@ -34,37 +34,36 @@
   </div>
 </form>
 
-cancer, ...
-  <div class="table-responsive" style="padding-top: 25px;">
-    <table class="table table-bordered table-hover">
-      <thead>
+<div class="table-responsive" style="padding-top: 25px;">
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Chr</th>
+        <th scope="col">Start</th>
+        <th scope="col">End</th>
+        <th scope="col">Ref</th>
+        <th scope="col">Alt</th>
+        <th scope="col">Kind</th>
+        <th scope="col">Category</th>
+        <th scope="col">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for variant in managed_variants %}
         <tr>
-          <th scope="col">Chr</th>
-          <th scope="col">Start</th>
-          <th scope="col">End</th>
-          <th scope="col">Ref</th>
-          <th scope="col">Alt</th>
-          <th scope="col">Kind</th>
-          <th scope="col">Category</th>
-          <th scope="col">Description</th>
+          <td>variant.chromosome</td>
+          <td>variant.position</td>
+          <td>variant.end</td>
+          <td>variant.reference</td>
+          <td>variant.alternative</td>
+          <td>variant.subcategory</td>
+          <td>variant.category</td>
+          <td>variant.description</td>
         </tr>
-      </thead>
-      <tbody>
-        {% for variant in managed_variants %}
-          <tr>
-            <td>variant.chromosome</td>
-            <td>variant.position</td>
-            <td>variant.end</td>
-            <td>variant.reference</td>
-            <td>variant.alternative</td>
-            <td>variant.subcategory</td>
-            <td>variant.category</td>
-            <td>variant.description</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
 {% endblock %}
 
