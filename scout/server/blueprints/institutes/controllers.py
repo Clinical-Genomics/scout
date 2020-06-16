@@ -175,7 +175,10 @@ def clinvar_submission_file(store, request, submission_id):
     ]  # quote columns in header for csv rendering
 
     today = str(datetime.datetime.now().strftime("%Y-%m-%d"))
-    filename = f"{clinvar_subm_id}_{csv_type}_{today}.csv"
+    if csv_type == "variant_data":
+        filename = f"{clinvar_subm_id}_{today}.Variant.csv"
+    else:
+        filename = f"{clinvar_subm_id}_{today}.CaseData.csv"
 
     return (filename, csv_header, csv_lines)
 
