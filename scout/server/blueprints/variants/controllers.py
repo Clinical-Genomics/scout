@@ -367,38 +367,18 @@ def variant_export_lines(store, case_obj, variants_query):
 
         # gather gene info:
         gene_list = variant.get("genes")  # this is a list of gene objects
-        gene_ids = []
-        gene_names = []
-        hgvs_c = []
 
         # if variant is in genes
-        if len(gene_list) > 0:
-            for gene_obj in gene_list:
-                hgnc_id = gene_obj["hgnc_id"]
-                gene_name = gene(store, hgnc_id)["symbol"]
-
-                gene_ids.append(hgnc_id)
-                gene_names.append(gene_name)
-
-                hgvs_nucleotide = "-"
-                # gather HGVS info from gene transcripts
-                transcripts_list = gene_obj.get("transcripts")
-                for transcript_obj in transcripts_list:
-                    if (
-                        transcript_obj.get("is_canonical")
-                        and transcript_obj.get("is_canonical") is True
-                    ):
-                        hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
-                hgvs_c.append(hgvs_nucleotide)
-
-            variant_line.append(";".join(str(x) for x in gene_ids))
-            variant_line.append(";".join(str(x) for x in gene_names))
-            variant_line.append(";".join(str(x) for x in hgvs_c))
+        if gene_list is not None and len(gene_list) > 0:
+            gene_info = variant_export_genes_info(store, gene_list)
+            variant_line += gene_info
         else:
-            i = 0
-            while i < 4:
-                variant_line.append("-")  # instead of gene ids
-                i = i + 1
+            empty_col = 0
+            while empty_col < 3:
+                variant_line.append(
+                    "-"
+                )  # empty HGNC id, emoty gene name and empty transcripts columns
+                empty_col += 1
 
         variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
         for individual in case_obj["individuals"]:
@@ -414,6 +394,46 @@ def variant_export_lines(store, case_obj, variants_query):
         export_variants.append(",".join(variant_line))
 
     return export_variants
+
+
+def variant_export_genes_info(store, gene_list):
+    """Adds gene info to a list of fields corresponding to a variant to be exported.
+
+        Args:
+            gene_list(list) A list of gene objects contained in the variant
+
+        Returns:
+            gene_info(list) A list of gene-relates string info
+    """
+    gene_ids = []
+    gene_names = []
+    hgvs_c = []
+
+    gene_info = []
+
+    for gene_obj in gene_list:
+        hgnc_id = gene_obj["hgnc_id"]
+        gene_name = gene(store, hgnc_id)["symbol"]
+
+        gene_ids.append(hgnc_id)
+        gene_names.append(gene_name)
+
+        hgvs_nucleotide = "-"
+        # gather HGVS info from gene transcripts
+        transcripts_list = gene_obj.get("transcripts")
+        for transcript_obj in transcripts_list:
+            if (
+                transcript_obj.get("is_canonical") is not None
+                and transcript_obj.get("is_canonical") is True
+            ):
+                hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
+        hgvs_c.append(hgvs_nucleotide)
+
+    gene_info.append(";".join(str(x) for x in gene_ids))
+    gene_info.append(";".join(str(x) for x in gene_names))
+    gene_info.append(";".join(str(x) for x in hgvs_c))
+
+    return gene_info
 
 
 def variants_export_header(case_obj):
@@ -459,13 +479,12 @@ def get_variant_info(genes):
     return data
 
 
-def cancer_variants(store, institute_id, case_name, form, page=1):
+def cancer_variants(store, institute_id, case_name, variants_query, form, page=1):
     """Fetch data related to cancer variants for a case."""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     per_page = 50
     skip_count = per_page * max(page - 1, 0)
-    variants_query = store.variants(case_obj["_id"], category="cancer", query=form.data)
     variant_count = variants_query.count()
     more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = variants_query.skip(skip_count).limit(per_page)

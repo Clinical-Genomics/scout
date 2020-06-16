@@ -108,6 +108,11 @@ class VariantFiltersForm(FlaskForm):
     chrom = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS)
     start = IntegerField("Start position", [validators.Optional()])
     end = IntegerField("End position", [validators.Optional()])
+    cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
+    cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
+
+    filter_variants = SubmitField(label="Filter variants")
+    export = SubmitField(label="Filter and export")
 
 
 class FiltersForm(VariantFiltersForm):
@@ -118,13 +123,8 @@ class FiltersForm(VariantFiltersForm):
     clinsig_confident_always_returned = BooleanField("CLINSIG Confident")
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
 
-    cytoband_start = SelectField("Cytoband start", choices=[])
-    cytoband_end = SelectField("Cytoband end", choices=[])
     local_obs = IntegerField("Local obs. (archive)")
-
-    filter_variants = SubmitField(label="Filter variants")
     clinical_filter = SubmitField(label="Clinical filter")
-    export = SubmitField(label="Filter and export")
 
 
 class CancerFiltersForm(VariantFiltersForm):
@@ -145,7 +145,6 @@ class StrFiltersForm(FlaskForm):
     """docstring for StrFiltersForm"""
 
     variant_type = HiddenField(default="clinical")
-
     chrom = TextField("Chromosome")
     gene_panels = SelectMultipleField(choices=[])
     repids = TagListField()
@@ -157,14 +156,8 @@ class SvFiltersForm(VariantFiltersForm):
     size = TextField("Length")
     size_shorter = BooleanField("Length shorter than")
     svtype = SelectMultipleField("SVType", choices=SV_TYPE_CHOICES)
-
     decipher = BooleanField("Decipher")
     clingen_ngi = IntegerField("ClinGen NGI obs")
     swegen = IntegerField("SweGen obs")
 
-    cytoband_start = SelectField("Cytoband start", choices=[])
-    cytoband_end = SelectField("Cytoband end", choices=[])
-
-    filter_variants = SubmitField(label="Filter variants")
     clinical_filter = SubmitField(label="Clinical filter")
-    export = SubmitField(label="Filter and export")
