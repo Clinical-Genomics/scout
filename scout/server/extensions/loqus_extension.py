@@ -19,6 +19,8 @@ def execute_command(cmd):
         line (str): line of output from command
     """
     output = ""
+    print("cmd")
+    print(cmd)
     message = " ".join(cmd)
     LOG.info("Running: %s", message)
     try:
@@ -27,54 +29,52 @@ def execute_command(cmd):
         LOG.warning("Something went wrong with loqusdb")
         raise err
 
-    output = output.decode("utf-8")
+    return output.decode("utf-8")
 
-    if not output:
-        return output
-
-    return output
 
 
 class LoqusDB:
-    """Interface to loqusdb from Scout"""
+    """Interface to loqusdb from Scout
 
-    def __init__(self, loqusdb_binary=None, loqusdb_config=None, version=None):
+    Implemented as singleton"""
+
+    __instance = None
+
+    def __new__(cls, loqusdb_binary=None):
+        if cls.__instance is None:
+            print('Creating the object')
+        cls.__instance = super(LoqusDB, cls).__new__(cls)
+        # Put any initialization here.
+        return cls.__instance
+
+
+    def __init__(self, loqusdb_binary=None, loqusdb_args=None):
         """Initialise from args"""
-        self.loqusdb_binary = loqusdb_binary
-        self.loqusdb_config = loqusdb_config
-        self.version = version or 0.0
+        self.loqusdb_config = {'id':"init", 'binary_path': loqusdb_binary, 'args':loqusdb_args}
+        self.version = self.get_version()
+
         LOG.info(
             "Initializing loqus extension with binary: %s, version: %d",
-            self.loqusdb_binary,
+            self.get_bin_path(),
             self.version,
         )
 
-        self.base_call = [self.loqusdb_binary]
-        if self.loqusdb_config:
-            self.base_call.extend(["--config", self.loqusdb_config])
 
     def init_app(self, app):
         """Initialize from Flask."""
         LOG.info("Connecting to loqusdb")
-        self.loqusdb_binary = app.config["LOQUSDB_SETTINGS"].get("binary_path", "loqusdb")
-        LOG.info("Use loqusdb: %s", self.loqusdb_binary)
-        self.loqusdb_config = app.config["LOQUSDB_SETTINGS"].get("config_path")
+        self.loqus_config = app.config["LOQUSDB_SETTINGS"]
+        LOG.info("Use loqusdb config file %s", self.loqusdb_config)
+        self.version = self.get_version()
+        self.version_check()    # why is version check done? here and not in __init__ + what if it fails?
 
-        self.base_call = [self.loqusdb_binary]
-        if self.loqusdb_config:
-            LOG.info("Use loqusdb config file %s", self.loqusdb_config)
-            self.base_call.extend(["--config", self.loqusdb_config])
-
-        self.version = app.config["LOQUSDB_SETTINGS"].get("version")
-        if not self.version:
-            self.version = self.get_version()
-        self.version_check()
 
     def version_check(self):
-        """Check if a compatible version is used"""
+        """Check if a compatible version is used otherwise raise an error"""
         if not self.version >= 2.5:
-            LOG.info("Please update your loqusdb version to >=2.5")
-            raise SyntaxError("Only compatible with loqusdb version >= 2.5")
+            LOG.info("Please update your loqusdb version to >=2.5 (current: {})").format(self.version)
+            raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
+
 
     @staticmethod
     def set_coordinates(variant_info):
@@ -100,25 +100,26 @@ class LoqusDB:
             LOG.info("Updating length to %s", end)
         variant_info["end"] = end
 
-    def get_variant(self, variant_info):
+
+    def get_variant(self, variant_info, institute=None):
         """Return information for a variant from loqusdb
 
         SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
         with coordinates.
 
-        Args:
+        Args:=
             variant_info(dict)
 
         Returns:
             loqus_variant(dict)
         """
         loqus_id = variant_info["_id"]
-        variant_call = copy.deepcopy(self.base_call)
+        variant_call = get_bin_path(institute)
+        variant_call = add_args(variant_call)
         variant_call.extend(["variants", "--to-json", "--variant-id", loqus_id])
         # If sv we need some more info
         if variant_info.get("category", "snv") in ["sv"]:
             self.set_coordinates(variant_info)
-
             variant_call.extend(
                 [
                     "-t",
@@ -155,6 +156,33 @@ class LoqusDB:
 
         return res
 
+
+    def get_bin_path(self, institute=None):
+        """Return path to `loqusdb` binary as a list, as configured per institute or default"""
+        if institute:
+            institute_config=next((item for item in dicts if item["id"] == insitute), None)
+            return [institute_config['binary_path']]
+        else:
+            return [self.loqusdb_config['binary_path']]
+
+
+    def get_args(self, loqus_id, institute=None):
+        if institute:
+            loqus_setting=next((item for item in dicts if item["id"] == insitute), None)
+            return loqus_setting['args']
+        else:
+#            self.base_call.extend(["--config", self.loqusdb_config])
+            self.setting['args']
+
+
+
+    def add_args(bin_path):
+        """Add configured arguments to bin string creating a string
+        usable for calling loqusdb via shell invokation"""
+        return bin_path.extend(["--config", self.args])
+
+
+
     def case_count(self):
         """Returns number of cases in loqus instance
 
@@ -183,23 +211,22 @@ class LoqusDB:
 
         return nr_cases
 
-    def get_version(self):
-        """Test if loqus version"""
-        version_call = copy.deepcopy(self.base_call)
-        version_call.extend(["--version"])
-        loqus_version = 0.0
 
+    def get_version(self):
+        """Get LoqusDB verson as float"""
+        call_str = self.get_bin_path()
+        call_str.extend(["--version"])
+        print("***")
+        print(call_str)
         try:
-            output = execute_command(version_call)
+            output = execute_command(call_str)
         except CalledProcessError:
             LOG.warning("Something went wrong with loqus")
-            return loqus_version
+            return -1.0
 
         version = output.rstrip().split(" ")[-1]
-        if version:
-            return float(version)
+        return float(version)
 
-        return loqus_version
 
     def __repr__(self):
-        return f"LoqusDB(binary={self.loqusdb_binary}," f"config={self.loqusdb_config})"
+        return f"LoqusDB(loqusdb_config={self.loqusdb_config}," 
