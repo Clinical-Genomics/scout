@@ -7,7 +7,7 @@ import os
 import query_phenomizer
 import requests
 from bs4 import BeautifulSoup
-from flask import current_app, url_for, flash
+from flask import current_app, url_for
 from flask_login import current_user
 from flask_mail import Message
 from xlsxwriter import Workbook

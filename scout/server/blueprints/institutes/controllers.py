@@ -122,7 +122,6 @@ def update_clinvar_sample_names(store, submission_id, old_name, new_name):
         old_name(str): old name of an individual in case data
         new_name(str): new name of an individual in case data
     """
-    LOG.error(f"HERE BITCHES:{submission_id},rename {old_name} to {new_name}")
     n_renamed = store.rename_casedata_samples(submission_id, old_name, new_name)
     flash(f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'", "info")
 
