@@ -21,6 +21,10 @@ def managed_variants():
 
     institutes = list(user_institutes(store, current_user))
 
+    category = request.form.get("category", "snv")
+
+    form = ManagedVariantsFilterForm(request.form)
+
     managed_variants = store.managed_variants(category=category)
 
-    return dict(managed_variants=managed_variants)
+    return dict(managed_variants=managed_variants, form=form)

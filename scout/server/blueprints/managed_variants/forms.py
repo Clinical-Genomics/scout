@@ -32,7 +32,7 @@ class ManagedVariantsFilterForm(FlaskForm):
     cytoband_end = SelectField("Cytoband end", choices=[])
 
     category = SelectMultipleField("Category", choices=CATEGORY_CHOICES)
-    svtype = SelectMultipleField("SVType", choices=SV_TYPE_CHOICES)
+    subcategory = SelectMultipleField("Kind", choices=SV_TYPE_CHOICES)
 
     description = TextField(label="Description")
     filter_variants = SubmitField(label="Filter variants")
