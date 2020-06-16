@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tooltip to better describe Tumor and Normal columns in cancer variants
 - Filter cancer SNVs and SVs by chromosome coordinates
 - Default export of `Assertion method citation` to clinVar variants submission file
+- Rename samples of a clinVar submission file
 
 ### Fixed
 - Apply default gene panel on return to cancer variantS from variant view
@@ -20,10 +21,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `scout download everything` command failing while downloading HPO terms
 
 ### Changed
-
-
-### Changed
 - Turn tumor and normal allelic fraction to decimal numbers in tumor variants page
+- Moved clinVar submissions code the institutes blueprints
+- Changed clinVar export files to FILENAME.Variant.csv and FILENAME.CaseData.csv
+
 
 ## [4.17.1]
 
