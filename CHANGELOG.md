@@ -24,7 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Changed
 - Turn tumor and normal allelic fraction to decimal numbers in tumor variants page
-- Moved clinVar submissions code the institutes blueprints
+- Moved clinVar submissions code to the institutes blueprints
 - Changed name of clinVar export files to FILENAME.Variant.csv and FILENAME.CaseData.csv
 
 
