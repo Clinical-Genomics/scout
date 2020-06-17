@@ -53,14 +53,14 @@
     <tbody>
       {% for variant in managed_variants %}
         <tr>
-          <td>variant.chromosome</td>
-          <td>variant.position</td>
-          <td>variant.end</td>
-          <td>variant.reference</td>
-          <td>variant.alternative</td>
-          <td>variant.subcategory</td>
-          <td>variant.category</td>
-          <td>variant.description</td>
+          <td>{{ variant.chromosome }}</td>
+          <td>{{ variant.position }}</td>
+          <td>{{ variant.end }}</td>
+          <td>{{ variant.reference }}</td>
+          <td>{{ variant.alternative }}</td>
+          <td>{{ variant.subcategory }}</td>
+          <td>{{ variant.category }}</td>
+          <td>{{ variant.description }}</td>
         </tr>
       {% endfor %}
     </tbody>
