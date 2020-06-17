@@ -78,7 +78,7 @@
 {% endblock %}
 
 {% macro submission_panel(subm_obj) %}
-<form class="form-inline" id="submission_form" action="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" method="POST">
+<form class="form-inline" id="{{subm_obj._id}}" action="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" method="POST">
     <input type="hidden" name="submission_id" value="{{subm_obj._id}}">
     <div class="card w-100 mt-3">
       <div class="card-header {{ 'bg-primary' if subm_obj.status=='open' else 'bg-warning' }}">
@@ -196,8 +196,8 @@
                 <tr class="text-center">
                   <td width="5%">{{loop.index}}</td>
                   <td width="20%">
-                    <input type="text" id="{{loop.index}}" value="{{case.individual_id}}">
-                    <button name="rename_sample" type="button" class="btn btn-primary btn-xs" onclick="submitRename('{{case.individual_id}}','{{loop.index}}');"><span class="fa fa-pencil" aria-hidden="true"></span></button></input>
+                    <input type="text" id="{{subm_obj._id}}_{{loop.index}}" value="{{case.individual_id}}">
+                    <button name="rename_sample" type="button" class="btn btn-primary btn-xs" onclick="submitRename('{{subm_obj._id}}','{{case.individual_id}}',document.getElementById('{{subm_obj._id}}_{{loop.index}}').value);"><span class="fa fa-pencil" aria-hidden="true"></span></button></input>
                   </td>
                   <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
                   <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}" target="_blank">{{case.case_id}}</a></td>
@@ -234,16 +234,13 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script type="text/javascript">
 
-  function submitRename(oldName, caseIndex){
-
-    var form = document.getElementById("submission_form")
-
+  function submitRename(submId, oldName, newName){
     var oldSampleName = document.getElementById("oldSampleName")
     oldSampleName.setAttribute("value", oldName);
 
     var newSampleName = document.getElementById("newSampleName");
-    newSampleName.setAttribute("value", document.getElementById(caseIndex).value);
-
+    newSampleName.setAttribute("value", newName);
+    var form = document.getElementById(submId)
     form.submit();
   }
 
