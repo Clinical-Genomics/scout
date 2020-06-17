@@ -25,6 +25,8 @@ def managed_variants():
 
     form = ManagedVariantsFilterForm(request.form)
 
-    managed_variants = store.managed_variants(category=category)
+    managed_variants_query = store.managed_variants(category=category)
+    data = controllers.managed_variants(store, managed_variants_query)
 
-    return dict(managed_variants=managed_variants, form=form)
+    LOG.debug("MVS: %s", data["managed_variants"])
+    return dict(form=form, **data)
