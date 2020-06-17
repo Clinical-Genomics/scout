@@ -24,8 +24,7 @@ class ManagedVariantHandler(object):
             result = self.managed_variant_collection.insert_one(managed_variant_obj)
         except DuplicateKeyError as err:
             raise IntegrityError(
-                "Variant %s already exists in database",
-                managed_variant_obj["display_id"],
+                "Variant %s already exists in database", managed_variant_obj["display_id"],
             )
 
         return result.inserted_id
@@ -48,15 +47,12 @@ class ManagedVariantHandler(object):
             build=managed_variant_obj.get("build", "37"),
         )
 
-        LOG.debug(
-            "Variant %s already exists in database", check_variant_obj["display_id"]
-        )
+        LOG.debug("Variant %s already exists in database", check_variant_obj["display_id"])
 
         managed_variant_obj["date"] = managed_variant_obj.get("date", datetime.now())
 
         result = self.managed_variant_collection.find_one_and_update(
-            {"variant_id": managed_variant_obj["variant_id"]},
-            {"$set": managed_variant_obj},
+            {"variant_id": managed_variant_obj["variant_id"]}, {"$set": managed_variant_obj},
         )
         updated_managed_variant = self.variant_collection.find_one(
             {"_id": managed_variant_obj["_id"]}
@@ -129,12 +125,8 @@ class ManagedVariantHandler(object):
             {"_id": ObjectId(document_id)}
         )
 
-        LOG.info(
-            "Deleting managed variant %s.", managed_variant_obj.get("display_name")
-        )
+        LOG.info("Deleting managed variant %s.", managed_variant_obj.get("display_name"))
 
-        result = self.managed_variant_collection.delete_one(
-            {"_id": ObjectId(document_id)}
-        )
+        result = self.managed_variant_collection.delete_one({"_id": ObjectId(document_id)})
 
         return result
