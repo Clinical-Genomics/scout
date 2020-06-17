@@ -89,7 +89,7 @@
           <ol class="breadcrumb align-items-center" >
             <li class="breadcrumb-item"><button type="submit" name="csv_type" value="variant_data" class="btn btn-primary btn-xs">Download variants file</button>&nbsp;<button name="csv_type" value="case_data" type="submit" class="btn btn-primary btn-xs">Download casedata file</button></li>
             {% if subm_obj.status=='open'%}
-              <li class="breadcrumb-item"><button type="submit" name="update_submission" value="close" class="btn btn-warning btn-xs">Close submission</button></li>
+              <li class="breadcrumb-item"><button type="submit" name="update_submission" value="closed" class="btn btn-warning btn-xs">Close submission</button></li>
             {% else %}
               <li class="breadcrumb-item"><button type="submit" name="update_submission" value="open" class="btn btn-success btn-xs">Re-open submission</button></li>
             {% endif %}

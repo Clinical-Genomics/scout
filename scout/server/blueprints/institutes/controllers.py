@@ -93,19 +93,15 @@ def update_clinvar_submission_status(store, request, institute_id, submission_id
     """
     update_status = request.form.get("update_submission")
 
-    if update_status == "close":  # close a submission
-        store.update_clinvar_submission_status(institute_id, submission_id, "closed")
-    elif update_status == "open":
-        store.update_clinvar_submission_status(
-            institute_id, submission_id, "open"
-        )  # open a submission
-    elif update_status == "register_id" and request.form.get(
-        "clinvar_id"
+    if update_status in ["open", "closed"]:  # open or close a submission
+        store.update_clinvar_submission_status(institute_id, submission_id, update_status)
+    if (
+        update_status == "register_id" and request.form.get("clinvar_id") != ""
     ):  # provide an official clinvar submission ID
         result = store.update_clinvar_id(
             clinvar_id=request.form.get("clinvar_id"), submission_id=submission_id,
         )
-    elif request.form.get("update_submission") == "delete":  # delete a submission
+    if update_status == "delete":  # delete a submission
         deleted_objects, deleted_submissions = store.delete_submission(submission_id=submission_id)
         flash(
             f"Removed {deleted_objects} objects and {deleted_submissions} submission from database",
@@ -150,9 +146,7 @@ def clinvar_submission_file(store, request, submission_id):
 
     csv_type = request.form.get("csv_type", "")
 
-    submission_objs = store.clinvar_objs(
-        submission_id=submission_id, key_id=csv_type
-    )  # a list of clinvar submission objects (variants or casedata)
+    submission_objs = store.clinvar_objs(submission_id=submission_id, key_id=csv_type)
 
     if submission_objs is None or len(submission_objs) == 0:
         flash(
@@ -162,12 +156,8 @@ def clinvar_submission_file(store, request, submission_id):
         return
 
     # Download file
-    csv_header_obj = clinvar_header(
-        submission_objs, csv_type
-    )  # custom csv header (dict as in constants CLINVAR_HEADER and CASEDATA_HEADER, but with required fields only)
-    csv_lines = clinvar_lines(
-        submission_objs, csv_header_obj
-    )  # csv lines (one for each variant/casedata to be submitted)
+    csv_header_obj = clinvar_header(submission_objs, csv_type)
+    csv_lines = clinvar_lines(submission_objs, csv_header_obj)
     csv_header = list(csv_header_obj.values())
     csv_header = [
         '"' + str(x) + '"' for x in csv_header
@@ -183,14 +173,31 @@ def clinvar_submission_file(store, request, submission_id):
 
 
 def clinvar_header(submission_objs, csv_type):
-    """ Call clinvar parser to extract required fields to include in csv header from clinvar submission objects"""
+    """ Call clinvar parser to extract required fields to include in csv header from clinvar submission objects
+
+    Args:
+        submission_objs(list)
+        csv_type(str)
+
+    Returns:
+        clinvar_header_obj(dict) # custom csv header (dict based on constants CLINVAR_HEADER and CASEDATA_HEADER, but with required fields only)
+    """
 
     clinvar_header_obj = clinvar_submission_header(submission_objs, csv_type)
     return clinvar_header_obj
 
 
-def clinvar_lines(clinvar_objects, clinvar_header):
-    """ Call clinvar parser to extract required lines to include in csv file from clinvar submission objects and header"""
+def clinvar_lines(clinvar_objects, clinvar_header_obj):
+    """ Call clinvar parser to extract required lines to include in csv file from clinvar submission objects and header
 
-    clinvar_lines = clinvar_submission_lines(clinvar_objects, clinvar_header)
+    Args:
+        clinvar_objects(list)
+        clinvar_header_obj(dict)
+
+    Returns:
+        clinvar_lines(list) # csv lines (one for each variant/casedata to be submitted)
+
+    """
+
+    clinvar_lines = clinvar_submission_lines(clinvar_objects, clinvar_header_obj)
     return clinvar_lines
