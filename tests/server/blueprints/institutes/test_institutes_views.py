@@ -92,7 +92,7 @@ def test_clinvar_submissions(app, institute_obj, clinvar_variant, clinvar_caseda
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        # When visiting the clinvar submissiin page (get request)
+        # When visiting the clinvar submission page (get request)
         resp = client.get(
             url_for("overview.clinvar_submissions", institute_id=institute_obj["internal_id"])
         )
