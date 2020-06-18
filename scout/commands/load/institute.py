@@ -41,7 +41,7 @@ def institute(internal_id, display_name, sanger_recipients, loqusdb_id):
             internal_id=internal_id,
             display_name=display_name,
             sanger_recipients=sanger_recipients,
-            loqusdb_id=loqusdb_id
+            loqusdb_id=loqusdb_id,
         )
     except Exception as e:
         LOG.warning(e)

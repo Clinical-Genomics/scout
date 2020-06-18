@@ -30,7 +30,13 @@ LOG = logging.getLogger(__name__)
 )
 @with_appcontext
 def institute(
-        institute_id, sanger_recipient, coverage_cutoff, frequency_cutoff, display_name, loqusdb_id, remove_sanger,
+    institute_id,
+    sanger_recipient,
+    coverage_cutoff,
+    frequency_cutoff,
+    display_name,
+    loqusdb_id,
+    remove_sanger,
 ):
     """
     Update an institute

@@ -8,8 +8,8 @@ from subprocess import CalledProcessError
 LOG = logging.getLogger(__name__)
 
 
+# TODO: add in documentation requirement of loqusdb vsn 2.5 or greater
 
-#TODO: add in documentation requirement of loqusdb vsn 2.5 or greater
 
 def execute_command(cmd):
     """
@@ -22,8 +22,8 @@ def execute_command(cmd):
         line (str): line of output from command
     """
     output = ""
-    cmd = [x for x in cmd if x != []] # remove empty lists
-    cmd_string = " ".join(cmd) # remove empty list
+    cmd = [x for x in cmd if x != []]  # remove empty lists
+    cmd_string = " ".join(cmd)  # remove empty list
     LOG.info("Running: %s", cmd_string)
     try:
         output = subprocess.check_output(cmd, shell=False)
@@ -34,7 +34,6 @@ def execute_command(cmd):
     return output.decode("utf-8")
 
 
-
 class LoqusDB:
     """Interface to loqusdb from Flask
 
@@ -42,18 +41,17 @@ class LoqusDB:
            * in practice this is a singleton class
            * configured in `confgi.py`"""
 
-    #TODO: rename 'config_path to args'
-    #TODO: decorator for try/catch undefined dict attributes
-    #TODO: version is no longer checked in init_app() -when? where? never?
+    # TODO: rename 'config_path to args'
+    # TODO: decorator for try/catch undefined dict attributes
+    # TODO: version is no longer checked in init_app() -when? where? never?
     # -could loqusdb be updated to return non-zero value and we handle that instead
 
     def __init__(self, loqusdb_binary=None, loqusdb_args=None):
         """Initialise from args"""
-        self.loqusdb_settings = [{'id':"default",
-                                  'binary_path':loqusdb_binary,
-                                  'config_path':loqusdb_args}]
+        self.loqusdb_settings = [
+            {"id": "default", "binary_path": loqusdb_binary, "config_path": loqusdb_args}
+        ]
         LOG.info("Initializing loqus extension with config: %s", self.loqusdb_settings)
-
 
     def init_app(self, app):
         """Initialize from Flask."""
@@ -61,15 +59,15 @@ class LoqusDB:
         self.loqusdb_settings = app.config["LOQUSDB_SETTINGS"]
         LOG.info("Use loqusdb config file %s", self.loqusdb_settings)
 
-
     # version_check() is not called now after implementation of loqusdb per institute
     # -don't know institute until page is loaded
     def version_check(self):
         """Check if a compatible version is used otherwise raise an error"""
         if not self.version >= 2.5:
-            LOG.info("Please update your loqusdb version to >=2.5 (current: {})").format(self.version)
+            LOG.info("Please update your loqusdb version to >=2.5 (current: {})").format(
+                self.version
+            )
             raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
-
 
     @staticmethod
     def set_coordinates(variant_info):
@@ -95,7 +93,6 @@ class LoqusDB:
             LOG.info("Updating length to %s", end)
         variant_info["end"] = end
 
-
     def get_variant(self, variant_info, loqusdb_id=None):
         """Return information for a variant from loqusdb
 
@@ -120,12 +117,19 @@ class LoqusDB:
         if variant_info.get("category", "snv") in ["sv"]:
             self.set_coordinates(variant_info)
             cmd.extend(
-                ["-t", "sv",
-                 "-c", variant_info["chrom"],
-                 "-s", str(variant_info["pos"]),
-                 "-e", str(variant_info["end"]),
-                 "--end-chromosome", variant_info["end_chrom"],
-                 "--sv-type", variant_info["variant_type"]
+                [
+                    "-t",
+                    "sv",
+                    "-c",
+                    variant_info["chrom"],
+                    "-s",
+                    str(variant_info["pos"]),
+                    "-e",
+                    str(variant_info["end"]),
+                    "--end-chromosome",
+                    variant_info["end_chrom"],
+                    "--sv-type",
+                    variant_info["variant_type"],
                 ]
             )
 
@@ -142,41 +146,36 @@ class LoqusDB:
             res = json.loads(output)
         return res
 
-
     def search_dictlist(self, key):
         """Search list of dicts, """
         for i in self.loqusdb_settings:
-            if i.get('id') == key:
+            if i.get("id") == key:
                 return i
         return None
 
-
     def default_setting(self):
         """Get default loqusdb configuration  """
-        return self.search_dictlist('default')
-
+        return self.search_dictlist("default")
 
     def get_bin_path(self, loqusdb_id=None):
         """Return path to `loqusdb` binary as configured per
         loqusdb_id or default"""
         if isinstance(self.loqusdb_settings, list) and loqusdb_id is None:
-            return self.default_setting().get('binary_path')
+            return self.default_setting().get("binary_path")
         elif isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
-            return self.search_dictlist(loqusdb_id).get('binary_path')
+            return self.search_dictlist(loqusdb_id).get("binary_path")
         else:
-            return self.loqusdb_settings.get('binary_path')
-
+            return self.loqusdb_settings.get("binary_path")
 
     def get_config_path(self, loqusdb_id=None):
         """Return path to `loqusdb` config arguments  as configured per
         loqusdb_id or default"""
         if isinstance(self.loqusdb_settings, list) and loqusdb_id is None:
-            return self.default_setting().get('config_path')
+            return self.default_setting().get("config_path")
         elif isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
-            return self.search_dictlist(loqusdb_id).get('config_path')
+            return self.search_dictlist(loqusdb_id).get("config_path")
         else:
-            return self.loqusdb_settings.get('config_path')
-
+            return self.loqusdb_settings.get("config_path")
 
     # XXX: not called since removal of version check >=2.5
     def case_count(self):
@@ -207,7 +206,6 @@ class LoqusDB:
 
         return nr_cases
 
-
     def get_version(self):
         """Get LoqusDB verson as float"""
         call_str = [self.get_bin_path()]
@@ -222,7 +220,6 @@ class LoqusDB:
 
         version = output.rstrip().split(" ")[-1]
         return float(version)
-
 
     def __repr__(self):
         return f"LoqusDB(loqusdb_settings={self.loqusdb_settings},"

@@ -22,9 +22,11 @@ MAIL_USE_SSL = False
 # # config_path=<path/to/loqus/config>
 
 
-LOQUSDB_SETTINGS = [{'binary_path':"/miniconda3/envs/loqus2.5/bin/loqusdb",  'id':"default"},
-                    {'binary_path':"/miniconda3/envs/loqus2.5/bin/loqusdb", 'id':"hejhej"},
-                    {'binary_path':"/bin/yetanother/loqusdb",  'id':"Mayo"}]
+LOQUSDB_SETTINGS = [
+    {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "id": "default"},
+    {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "id": "hejhej"},
+    {"binary_path": "/bin/yetanother/loqusdb", "id": "Mayo"},
+]
 
 # )
 # If not on localhost 27017 one needs to provide uri with

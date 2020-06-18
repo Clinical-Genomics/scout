@@ -4,7 +4,7 @@ from scout.build import build_institute
 LOG = logging.getLogger(__name__)
 
 
-def load_institute(adapter, internal_id, display_name, sanger_recipients=None, loqusdb_id = None):
+def load_institute(adapter, internal_id, display_name, sanger_recipients=None, loqusdb_id=None):
     """Load a institute into the database
 
         Args:
@@ -19,7 +19,7 @@ def load_institute(adapter, internal_id, display_name, sanger_recipients=None, l
         internal_id=internal_id,
         display_name=display_name,
         sanger_recipients=sanger_recipients,
-        loqusdb_id=loqusdb_id
+        loqusdb_id=loqusdb_id,
     )
 
     adapter.add_institute(institute_obj)

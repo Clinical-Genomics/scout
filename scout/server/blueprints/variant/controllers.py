@@ -260,8 +260,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
         "variant_type": variant_obj.get("sub_category", "").upper(),
         "category": variant_obj["category"],
     }
-    print( variant_obj["institute"])
-
+    print(variant_obj["institute"])
 
     i = variant_obj["institute"]
     LOG.debug("=======: {}".format(i))
