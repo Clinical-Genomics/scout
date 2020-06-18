@@ -95,9 +95,7 @@ def update_clinvar_submission_status(store, request, institute_id, submission_id
 
     if update_status in ["open", "closed"]:  # open or close a submission
         store.update_clinvar_submission_status(institute_id, submission_id, update_status)
-    if (
-        update_status == "register_id" and request.form.get("clinvar_id") != ""
-    ):  # provide an official clinvar submission ID
+    if update_status == "register_id":  # register an official clinvar submission ID
         result = store.update_clinvar_id(
             clinvar_id=request.form.get("clinvar_id"), submission_id=submission_id,
         )
@@ -109,26 +107,28 @@ def update_clinvar_submission_status(store, request, institute_id, submission_id
         )
 
 
-def update_clinvar_sample_names(store, submission_id, old_name, new_name):
+def update_clinvar_sample_names(store, submission_id, case_id, old_name, new_name):
     """Update casedata sample names
 
     Args:
         store(adapter.MongoAdapter)
         submission_id(str) the database id of a clinvar submission
+        case_id(str): case id
         old_name(str): old name of an individual in case data
         new_name(str): new name of an individual in case data
     """
-    n_renamed = store.rename_casedata_samples(submission_id, old_name, new_name)
+    n_renamed = store.rename_casedata_samples(submission_id, case_id, old_name, new_name)
     flash(f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'", "info")
 
 
-def clinvar_submission_file(store, request, submission_id):
+def clinvar_submission_file(store, submission_id, csv_type, clinvar_subm_id):
     """Prepare content (header and lines) of a csv clinvar submission file
 
     Args:
         store(adapter.MongoAdapter)
-        request(flask.request) POST request sent by form submission
-        submission_id(str) the database id of a clinvar submission
+        submission_id(str): the database id of a clinvar submission
+        csv_type(str): 'variant_data' or 'case_data'
+        clinvar_subm_id(str): The ID assigned to this submission by clinVar
 
     Returns:
         (filename, csv_header, csv_lines):
@@ -136,15 +136,12 @@ def clinvar_submission_file(store, request, submission_id):
             csv_header(list) string list content of file header
             csv_lines(list) string list content of file lines
     """
-    clinvar_subm_id = request.form.get("clinvar_id")
-    if clinvar_subm_id == "":
+    if clinvar_subm_id == "None":
         flash(
             "In order to download a submission CSV file you should register a Clinvar submission Name first!",
             "warning",
         )
         return
-
-    csv_type = request.form.get("csv_type", "")
 
     submission_objs = store.clinvar_objs(submission_id=submission_id, key_id=csv_type)
 

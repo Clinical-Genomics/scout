@@ -92,55 +92,67 @@ def institute(institute_id):
     )
 
 
-@blueprint.route("/<institute_id>/clinvar_submissions", methods=["GET", "POST"])
+@blueprint.route("/<submission>/<case>/rename/<old_name>", methods=["POST"])
+def clinvar_rename_casedata(submission, case, old_name):
+    """Rename one or more casedata individuals belonging to the same clinvar submission, same case"""
+
+    new_name = request.form.get("new_name")
+    controllers.update_clinvar_sample_names(
+        store, submission, case, old_name, new_name,
+    )
+    return redirect(request.referrer)
+
+
+@blueprint.route("/<institute_id>/<submission>/update_status", methods=["POST"])
+def clinvar_update_submission(institute_id, submission):
+    """Update a submission status to open/closed, register an official SUB number or delete the entire submission"""
+
+    controllers.update_clinvar_submission_status(store, request, institute_id, submission)
+    return redirect(request.referrer)
+
+
+@blueprint.route("/<submission>/<object_type>", methods=["POST"])
+def clinvar_delete_object(submission, object_type):
+    """Delete a single object (variant_data or case_data) associated with a clinvar submission"""
+
+    store.delete_clinvar_object(
+        object_id=request.form.get("delete_object"),
+        object_type=object_type,
+        submission_id=submission,
+    )
+    return redirect(request.referrer)
+
+
+@blueprint.route("/<submission>/download/<csv_type>/<clinvar_id>", methods=["GET"])
+def clinvar_download_csv(submission, csv_type, clinvar_id):
+    """Download a csv (Variant file or CaseData file) for a clinVar submission"""
+
+    def generate_csv(header, lines):
+        """Return downloaded header and lines with quoted fields"""
+        yield header + "\n"
+        for line in lines:
+            yield line + "\n"
+
+    clinvar_file_data = controllers.clinvar_submission_file(store, submission, csv_type, clinvar_id)
+
+    if clinvar_file_data is not None:
+        headers = Headers()
+        headers.add(
+            "Content-Disposition", "attachment", filename=clinvar_file_data[0],
+        )
+        return Response(
+            generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),
+            mimetype="text/csv",
+            headers=headers,
+        )
+
+    return redirect(request.referrer)
+
+
+@blueprint.route("/<institute_id>/clinvar_submissions", methods=["GET"])
 @templated("overview/clinvar_submissions.html")
 def clinvar_submissions(institute_id):
     """Handle clinVar submission objects and files"""
-
-    def generate_csv(header, lines):
-        yield header + "\n"
-        for line in lines:  # lines have already quoted fields
-            yield line + "\n"
-
-    if request.method == "POST":
-        submission_id = request.form.get("submission_id")
-        if request.form.get("update_submission"):
-            controllers.update_clinvar_submission_status(
-                store, request, institute_id, submission_id
-            )
-        elif request.form.get("delete_variant"):  # delete a variant from a submission
-            store.delete_clinvar_object(
-                object_id=request.form.get("delete_variant"),
-                object_type="variant_data",
-                submission_id=submission_id,
-            )  # remove variant and associated_casedata
-        elif request.form.get("delete_casedata"):  # delete a case from a submission
-            store.delete_clinvar_object(
-                object_id=request.form.get("delete_casedata"),
-                object_type="case_data",
-                submission_id=submission_id,
-            )  # remove just the casedata associated to a variant
-        elif request.form.get("newSampleName"):
-            # Rename one or more casedata samples
-            controllers.update_clinvar_sample_names(
-                store,
-                submission_id,
-                request.form.get("oldSampleName"),
-                request.form["newSampleName"],
-            )
-        else:
-            # Download submission CSV files (for variants or casedata)
-            clinvar_file_data = controllers.clinvar_submission_file(store, request, submission_id)
-            if clinvar_file_data is not None:
-                headers = Headers()
-                headers.add(
-                    "Content-Disposition", "attachment", filename=clinvar_file_data[0],
-                )
-                return Response(
-                    generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),
-                    mimetype="text/csv",
-                    headers=headers,
-                )
 
     institute_obj = institute_and_case(store, institute_id)
 
