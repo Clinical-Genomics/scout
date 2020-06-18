@@ -135,18 +135,18 @@ def clinvar_download_csv(submission, csv_type, clinvar_id):
 
     clinvar_file_data = controllers.clinvar_submission_file(store, submission, csv_type, clinvar_id)
 
-    if clinvar_file_data is not None:
-        headers = Headers()
-        headers.add(
-            "Content-Disposition", "attachment", filename=clinvar_file_data[0],
-        )
-        return Response(
-            generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),
-            mimetype="text/csv",
-            headers=headers,
-        )
+    if clinvar_file_data is None:
+        return redirect(request.referrer)
 
-    return redirect(request.referrer)
+    headers = Headers()
+    headers.add(
+        "Content-Disposition", "attachment", filename=clinvar_file_data[0],
+    )
+    return Response(
+        generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),
+        mimetype="text/csv",
+        headers=headers,
+    )
 
 
 @blueprint.route("/<institute_id>/clinvar_submissions", methods=["GET"])
