@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
+### Added
+### Fixed
+### Changed
+
+
+## [4.18]
 
 ### Added
 - Filter cancer variants on cytoband coordinates
