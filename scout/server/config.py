@@ -18,8 +18,14 @@ MAIL_USE_SSL = False
 
 # connection details for LoqusDB MongoDB database
 # LOQUSDB_SETTINGS = dict(
-# binary_path="path/to/loqusdb",
-# config_path=<path/to/loqus/config>
+#  binary_path="/miniconda3/envs/loqus2.5/bin/loqusdb")
+# # config_path=<path/to/loqus/config>
+
+
+LOQUSDB_SETTINGS = [{'binary_path':"/miniconda3/envs/loqus2.5/bin/loqusdb",  'id':"default"},
+                    {'binary_path':"/miniconda3/envs/loqus2.5/bin/loqusdb", 'id':"hejhej"},
+                    {'binary_path':"/bin/yetanother/loqusdb",  'id':"Mayo"}]
+
 # )
 # If not on localhost 27017 one needs to provide uri with
 # connection details for LoqusDB MongoDB database

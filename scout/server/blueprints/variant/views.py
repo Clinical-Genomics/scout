@@ -5,7 +5,7 @@ from flask_login import current_user
 
 from scout.utils.acmg import get_acmg
 from scout.server.utils import templated, public_endpoint, institute_and_case
-from scout.server.extensions import store, LoqusDB
+from scout.server.extensions import store, loqusdb
 from scout.server.blueprints.variant.controllers import variant as variant_controller
 from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
 from scout.server.blueprints.variant.controllers import variant_acmg as acmg_controller
@@ -45,7 +45,6 @@ def variant(institute_id, case_name, variant_id):
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
-        loqusdb = LoqusDB()
         data["observations"] = observations(store, loqusdb, data["case"], data["variant"])
 
     return data
@@ -59,6 +58,7 @@ def sv_variant(institute_id, case_name, variant_id):
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
+        # TODO: add try/except, failed loqusdb calls should not stop excevution
         data["observations"] = observations(store, loqusdb, data["case"], data["variant"])
 
     return data

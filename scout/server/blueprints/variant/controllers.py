@@ -260,7 +260,14 @@ def observations(store, loqusdb, case_obj, variant_obj):
         "variant_type": variant_obj.get("sub_category", "").upper(),
         "category": variant_obj["category"],
     }
-    obs_data = loqusdb.get_variant(variant_query) or {}
+    print( variant_obj["institute"])
+
+
+    i = variant_obj["institute"]
+    LOG.debug("=======: {}".format(i))
+    inst = store.institute(i)
+    LOG.debug("****: {}".format(inst))
+    obs_data = loqusdb.get_variant(variant_query, loqusdb_id=inst.get("loqusdb_id")) or {}
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)
         obs_data["total"] = loqusdb.case_count()
