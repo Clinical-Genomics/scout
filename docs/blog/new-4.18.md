@@ -2,7 +2,7 @@
 
 _Posted: 18 Jun 2020_
 
-One of the most important changes introduces in this version is that we have switched from a Google login system based on Flask-OAuthlib to Authlib libraries.
+One of the most important changes introduced in this version is that we have switched from a Google login system based on Flask-OAuthlib to Authlib libraries.
 In order to support the new login system Scout administrators would need to modify the config settings as described in this updated [guide](https://github.com/Clinical-Genomics/scout/blob/master/docs/admin-guide/login-system.md).
 
 
