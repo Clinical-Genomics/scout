@@ -238,7 +238,7 @@
         <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control" target="_blank">Submit to ClinVar</a>
       {% endif %}
       {% if variant.clinvar_clinsig%}
-        <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-default form-control">Modify clinvar submission</a>
+        <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-default form-control">Modify clinvar submission</a>
       {% endif %}
       </ul>
     </div> <!-- end of card body -->
@@ -261,7 +261,7 @@
           </td>
 	  <td>
 	    <a class="btn btn-outline-secondary form-control" href="https://decipher.sanger.ac.uk/browser#q/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}%20/location/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target ="_blank">DECIPHER {% if case.genome_build == 38 %} (GRCh37){% endif %}</a>
-	    
+
 	  </td>
         </tr>
       </tbody>
