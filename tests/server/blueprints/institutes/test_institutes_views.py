@@ -118,21 +118,23 @@ def test_rename_clinvar_samples(app, institute_obj, clinvar_variant, clinvar_cas
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
 
+        case_id = clinvar_casedata["case_id"]
         old_name = clinvar_casedata["individual_id"]
 
-        form_data = dict(
-            submission_id=submission_with_data["_id"],
-            oldSampleName=old_name,
-            newSampleName="new_sample_name",
-        )
+        form_data = dict(new_name="new_sample_name",)
 
         # WHEN the sample name is edited from the submission page (POST request)
         resp = client.post(
-            url_for("overview.clinvar_submissions", institute_id=institute_obj["internal_id"],),
+            url_for(
+                f"overview.clinvar_rename_casedata",
+                submission=submission_with_data["_id"],
+                case=case_id,
+                old_name=old_name,
+            ),
             data=form_data,
         )
-        # a successful response should be returned
-        assert resp.status_code == 200
+        # a successful response should be redirect to the submssions page
+        assert resp.status_code == 302
 
         # And the sample name should have been updated in the database
         updated_casedata = store.clinvar_collection.find_one({"_id": clinvar_casedata["_id"]})
