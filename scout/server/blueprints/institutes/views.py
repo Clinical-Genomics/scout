@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from flask import Blueprint, render_template, flash, redirect, request
+from flask import Blueprint, render_template, flash, redirect, request, Response
 from flask_login import current_user
+from werkzeug.datastructures import Headers
 
 from . import controllers
-from scout.constants import PHENOTYPE_GROUPS
+from scout.constants import PHENOTYPE_GROUPS, CASEDATA_HEADER, CLINVAR_HEADER
 from scout.server.extensions import store
-from scout.server.utils import user_institutes, templated
+from scout.server.utils import user_institutes, templated, institute_and_case
 from .forms import InstituteForm
 
 LOG = logging.getLogger(__name__)
@@ -89,3 +90,76 @@ def institute(institute_id):
     return render_template(
         "/overview/institute.html", form=form, default_phenotypes=default_phenotypes, **data
     )
+
+
+@blueprint.route("/<submission>/<case>/rename/<old_name>", methods=["POST"])
+def clinvar_rename_casedata(submission, case, old_name):
+    """Rename one or more casedata individuals belonging to the same clinvar submission, same case"""
+
+    new_name = request.form.get("new_name")
+    controllers.update_clinvar_sample_names(
+        store, submission, case, old_name, new_name,
+    )
+    return redirect(request.referrer)
+
+
+@blueprint.route("/<institute_id>/<submission>/update_status", methods=["POST"])
+def clinvar_update_submission(institute_id, submission):
+    """Update a submission status to open/closed, register an official SUB number or delete the entire submission"""
+
+    controllers.update_clinvar_submission_status(store, request, institute_id, submission)
+    return redirect(request.referrer)
+
+
+@blueprint.route("/<submission>/<object_type>", methods=["POST"])
+def clinvar_delete_object(submission, object_type):
+    """Delete a single object (variant_data or case_data) associated with a clinvar submission"""
+
+    store.delete_clinvar_object(
+        object_id=request.form.get("delete_object"),
+        object_type=object_type,
+        submission_id=submission,
+    )
+    return redirect(request.referrer)
+
+
+@blueprint.route("/<submission>/download/<csv_type>/<clinvar_id>", methods=["GET"])
+def clinvar_download_csv(submission, csv_type, clinvar_id):
+    """Download a csv (Variant file or CaseData file) for a clinVar submission"""
+
+    def generate_csv(header, lines):
+        """Return downloaded header and lines with quoted fields"""
+        yield header + "\n"
+        for line in lines:
+            yield line + "\n"
+
+    clinvar_file_data = controllers.clinvar_submission_file(store, submission, csv_type, clinvar_id)
+
+    if clinvar_file_data is None:
+        return redirect(request.referrer)
+
+    headers = Headers()
+    headers.add(
+        "Content-Disposition", "attachment", filename=clinvar_file_data[0],
+    )
+    return Response(
+        generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),
+        mimetype="text/csv",
+        headers=headers,
+    )
+
+
+@blueprint.route("/<institute_id>/clinvar_submissions", methods=["GET"])
+@templated("overview/clinvar_submissions.html")
+def clinvar_submissions(institute_id):
+    """Handle clinVar submission objects and files"""
+
+    institute_obj = institute_and_case(store, institute_id)
+
+    data = {
+        "submissions": controllers.clinvar_submissions(store, institute_id),
+        "institute": institute_obj,
+        "variant_header_fields": CLINVAR_HEADER,
+        "casedata_header_fields": CASEDATA_HEADER,
+    }
+    return data

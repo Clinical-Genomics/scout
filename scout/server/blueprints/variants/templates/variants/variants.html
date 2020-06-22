@@ -182,48 +182,17 @@
     });
 
     var cytoStart = document.getElementById("cytoband_start");
-
-    cytoStart.addEventListener("change", function() {
-      if(cytoStart.options[cytoStart.selectedIndex].value === ""){
-        startElem.value = "";
-        return
-      }
-      populateStart();
-    });
-
+    initSearchConstraints(cytoStart, startElem)
+    
     var cytoEnd = document.getElementById("cytoband_end");
-    cytoEnd.addEventListener("change", function() {
-      if(cytoEnd.options[cytoEnd.selectedIndex].value === ""){
-        endElem.value = "";
-        return
-      }
-      populateEnd();
-    });
+    initSearchConstraints(cytoEnd, endElem)
+
+
 
     window.onload=function() {
       populateCytobands({{cytobands|safe}});
     }
-
-    function validateForm(){
-      var start = document.forms["filters_form"].elements["start"].value
-      var end = document.forms["filters_form"].elements["end"].value
-      if(start || end){
-        if(!chrom){
-          alert("Chromosome field is required");
-          return false;
-        }
-        else if( !start || !end){
-          alert("Both start and end coordinates are required");
-          return false;
-        }
-        else if( (isNaN(start) || isNaN(end)) || Number(end)<Number(start) ){
-          alert("Coordinate field not valid");
-          return false;
-        }
-      }
-      return true;
-    }
-
+    
     $('select[multiple]').selectpicker({
       width: '100%'
     });

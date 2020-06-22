@@ -29,7 +29,6 @@ from scout.constants.variant_tags import (
     MANUAL_RANK_OPTIONS,
 )
 from scout.export.variant import export_mt_variants
-from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.parse.matchmaker import (
     genomic_features,
     hpo_terms,
@@ -398,7 +397,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
 
     # send get request to chanjo report
     # disable default certificate verification
-    resp = requests.post(base_url + "reports/report", data=request_data, verify=False)
+    resp = requests.post(base_url + "reports/report", data=request_data)
 
     # read response content
     soup = BeautifulSoup(resp.text)
@@ -411,26 +410,6 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     coverage_data = "".join(["%s" % x for x in soup.body.contents])
 
     return coverage_data
-
-
-def clinvar_submissions(store, institute_id):
-    """Get all Clinvar submissions for a user and an institute"""
-    submissions = list(store.clinvar_submissions(institute_id))
-    return submissions
-
-
-def clinvar_header(submission_objs, csv_type):
-    """ Call clinvar parser to extract required fields to include in csv header from clinvar submission objects"""
-
-    clinvar_header_obj = clinvar_submission_header(submission_objs, csv_type)
-    return clinvar_header_obj
-
-
-def clinvar_lines(clinvar_objects, clinvar_header):
-    """ Call clinvar parser to extract required lines to include in csv file from clinvar submission objects and header"""
-
-    clinvar_lines = clinvar_submission_lines(clinvar_objects, clinvar_header)
-    return clinvar_lines
 
 
 def mt_excel_files(store, case_obj, temp_excel_dir):
