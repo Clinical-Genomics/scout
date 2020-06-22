@@ -2,6 +2,7 @@
 import logging
 from datetime import datetime
 from bson.objectid import ObjectId
+from pymongo import ReturnDocument
 
 import pymongo
 
@@ -273,6 +274,37 @@ class ClinVarHandler(object):
             return list(clinvar_objects)
 
         return None
+
+    def rename_casedata_samples(self, submission_id, case_id, old_name, new_name):
+        """Rename all samples associated to a clinVar submission
+
+        Args:
+            submission_id(str): the _id key of a clinvar submission
+            case_id(str): id of case
+            old_name(str): old name of an individual in case data
+            new_name(str): new name of an individual in case data
+
+        Returns:
+            renamed_samples(int)
+        """
+        renamed_samples = 0
+        LOG.info(
+            f"Renaming clinvar submission {submission_id}, case {case_id} individual {old_name} to {new_name}"
+        )
+
+        casedata_objs = self.clinvar_objs(submission_id, "case_data")
+
+        for obj in casedata_objs:
+            if obj.get("individual_id") == old_name and obj.get("case_id") == case_id:
+                result = self.clinvar_collection.find_one_and_update(
+                    {"_id": obj["_id"]},
+                    {"$set": {"individual_id": new_name}},
+                    return_document=ReturnDocument.AFTER,
+                )
+                if result:
+                    renamed_samples += 1
+
+        return renamed_samples
 
     def delete_clinvar_object(self, object_id, object_type, submission_id):
         """Remove a variant object from clinvar database and update the relative submission object

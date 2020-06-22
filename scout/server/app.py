@@ -94,7 +94,6 @@ def configure_extensions(app):
     extensions.mongo.init_app(app)
     extensions.store.init_app(app)
     extensions.login_manager.init_app(app)
-    extensions.oauth.init_app(app)
     extensions.mail.init_app(app)
 
     Markdown(app)
@@ -112,6 +111,10 @@ def configure_extensions(app):
         LOG.info("LDAP login enabled")
         # setup connection to server
         extensions.ldap_manager.init_app(app)
+    if app.config.get("GOOGLE"):
+        LOG.info("Google login enabled")
+        # setup connection to google oauth2
+        configure_oauth_login(app)
 
 
 def register_blueprints(app):
@@ -171,6 +174,25 @@ def register_filters(app):
         if isinstance(cosmicId, int):
             return "COSM" + str(cosmicId)
         return cosmicId
+
+
+def configure_oauth_login(app):
+    """Register the Google Oauth login client using config settings"""
+
+    google_conf = app.config["GOOGLE"]
+    discovery_url = google_conf.get("discovery_url")
+    client_id = google_conf.get("client_id")
+    client_secret = google_conf.get("client_secret")
+
+    extensions.oauth_client.init_app(app)
+
+    extensions.oauth_client.register(
+        name="google",
+        server_metadata_url=discovery_url,
+        client_id=client_id,
+        client_secret=client_secret,
+        client_kwargs={"scope": "openid email profile"},
+    )
 
 
 def configure_email_logging(app):

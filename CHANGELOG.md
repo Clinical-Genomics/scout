@@ -7,12 +7,24 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+### Fixed
+- Handle the ProxyFix ModuleNotFoundError when Werkzeug installed version is >1.0
+
+### Changed
+
+
+## [4.18]
+
+### Added
+- Filter cancer variants on cytoband coordinates
 - Show dismiss reasons in a badge with hover for clinical variants
 - Show an ellipsis if 10 cases or more to display with loqusdb matches
 - A new blog post for version 4.17
 - Tooltip to better describe Tumor and Normal columns in cancer variants
 - Filter cancer SNVs and SVs by chromosome coordinates
 - Default export of `Assertion method citation` to clinVar variants submission file
+- Button to export up to 500 cancer variants, filtered or not
+- Rename samples of a clinVar submission file
 
 ### Fixed
 - Apply default gene panel on return to cancer variantS from variant view
@@ -20,10 +32,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `scout download everything` command failing while downloading HPO terms
 
 ### Changed
-
-
-### Changed
 - Turn tumor and normal allelic fraction to decimal numbers in tumor variants page
+- Moved clinVar submissions code to the institutes blueprints
+- Changed name of clinVar export files to FILENAME.Variant.csv and FILENAME.CaseData.csv
+- Switched Google login libraries from Flask-OAuthlib to Authlib
+
 
 ## [4.17.1]
 
