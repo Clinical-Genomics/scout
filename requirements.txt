@@ -12,7 +12,7 @@ Flask-Mail
 Flask-WeasyPrint
 coloredlogs
 query_phenomizer
-Flask-Babel
+Flask-Babel>=1.0.0 # Avoid errors with Werkzeug >=1.0.0
 livereload
 python-dateutil
 pymongo<3.7
