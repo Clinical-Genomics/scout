@@ -21,11 +21,13 @@ from flask import (
     request,
     send_file,
     send_from_directory,
+    Response,
     url_for,
 )
 
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
+from werkzeug.datastructures import Headers
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
