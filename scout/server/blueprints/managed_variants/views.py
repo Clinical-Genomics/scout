@@ -30,3 +30,26 @@ def managed_variants():
 
     LOG.debug("MVS: %s", data["managed_variants"])
     return dict(form=form, **data)
+
+
+@managed_variants_bp.route("/managed_variant/<variant_id>/modify", methods=["POST"])
+def modify_managed_variant(variant_id):
+    edit_form = request.form
+
+    controllers.modify_managed_variant(store, variant, edit_form)
+
+    return
+
+
+@managed_variants_bp.route("/managed_variant/<variant_id>/remove", methods=["POST"])
+def remove_managed_variant(variant_id):
+    controllers.remove_managed_variant(variant_id)
+    return
+
+
+@managed_variants_bp.route("/managed_variant/add", methods=["POST"])
+def add_managed_variant():
+    add_form = request.form
+
+    controllers.add_managed_variant(add_form)
+    return
