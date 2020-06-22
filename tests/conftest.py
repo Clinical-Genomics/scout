@@ -386,20 +386,58 @@ def case_obj(request, parsed_case):
 #############################################################
 @pytest.fixture(scope="function")
 def clinvar_variant(request):
-    clivar_variant = {
-        "_id": "3eecfca5efea445eec6c19a53299043b",
-        "##Local_ID": "3eecfca5efea445eec6c19a53299043b",
-        "Reference_allele": "C",
-        "Alternate_allele": "A",
-        "Chromosome": "7",
-        "Start": "124491972",
-        "Stop": "124491972",
-        "Clinical_significance": "Likely Pathogenic",
-        "Condition_ID_value": "HP:0001298;HP:0002121",
-        "clinvar_submission": "SUB666",
+
+    variant = {
+        "_id": "internal_id_4c7d5c70d955875504db72ef8e1abe77",
+        "csv_type": "variant",
+        "case_id": "internal_id",
+        "category": "snv",
+        "local_id": "4c7d5c70d955875504db72ef8e1abe77",
+        "linking_id": "4c7d5c70d955875504db72ef8e1abe77",
+        "gene_symbol": "POT1",
+        "ref_seq": "NM_001042594.1",
+        "hgvs": "c.510G>T",
+        "chromosome": "7",
+        "start": "124491972",
+        "stop": "124491972",
+        "ref": "C",
+        "alt": "A",
+        "variations_ids": "rs116916706",
+        "clinsig": "Pathogenic",
+        "last_evaluated": "2020-06-09",
+        "assertion_method": "ACMG Guidelines, 2015",
+        "assertion_method_cit": "PMID:25741868",
+        "inheritance_mode": "Autosomal recessive inheritance",
+    }
+    return variant
+
+
+@pytest.fixture(scope="function")
+def clinvar_casedata(request):
+
+    casedata = {
+        "_id": "internal_id_4c7d5c70d955875504db72ef8e1abe77_NA12882",
+        "csv_type": "casedata",
+        "case_id": "internal_id",
+        "category": "snv",
+        "linking_id": "4c7d5c70d955875504db72ef8e1abe77",
+        "individual_id": "NA12882",
+        "collection_method": "clinical testing",
+        "allele_origin": "germline",
+        "is_affected": "yes",
+        "sex": "male",
+        "fam_history": "no",
+        "is_proband": "yes",
+        "is_secondary_finding": "no",
+        "is_mosaic": "no",
+        "zygosity": "compound heterozygote",
+        "platform_type": "next-gen sequencing",
+        "platform_name": "Whole exome sequencing, Illumina",
+        "method_purpose": "discovery",
+        "reported_at": "2016-10-12",
     }
 
-    return clivar_variant
+    return casedata
 
 
 #############################################################
@@ -550,19 +588,6 @@ def adapter(request, pymongo_client):
     LOG.info("Connected to database")
 
     return mongo_adapter
-
-
-@pytest.fixture(scope="function")
-def clinvar_database(request, adapter, clinvar_variant, user_obj, institute_obj, case_obj):
-    "Returns an adapter to a database populated with one variant"
-
-    user_id = user_obj["_id"]
-    institute_id = institute_obj["internal_id"]
-    case_id = case_obj["_id"]
-
-    adapter.add_clinvar_submission([clinvar_variant], user_id, institute_id, case_id)
-
-    return adapter
 
 
 @pytest.fixture(scope="function")
