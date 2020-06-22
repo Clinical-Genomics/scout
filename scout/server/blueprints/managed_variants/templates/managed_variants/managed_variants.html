@@ -40,14 +40,14 @@
   <table class="table table-bordered table-hover">
     <thead>
       <tr>
-        <th scope="col">Chr</th>
-        <th scope="col">Start</th>
-        <th scope="col">End</th>
-        <th scope="col">Ref</th>
-        <th scope="col">Alt</th>
-        <th scope="col">Kind</th>
-        <th scope="col">Category</th>
-        <th scope="col">Description</th>
+        <th style="width:10%">Chr</th>
+        <th style="width:10%">Start</th>
+        <th style="width:10%">End</th>
+        <th style="width:10%">Ref</th>
+        <th style="width:10%">Alt</th>
+        <th style="width:10%">Kind</th>
+        <th style="width:10%">Category</th>
+        <th style="width:30%">Description</th>
       </tr>
     </thead>
     <tbody>
@@ -60,14 +60,45 @@
           <td>{{ variant.alternative }}</td>
           <td>{{ variant.subcategory }}</td>
           <td>{{ variant.category }}</td>
-          <td>{{ variant.description }}</td>
+          <td>
+            {{ variant.description }}
+            <button id="{{variant._id}}" type="button" data-toggle="collapse" href="#modifydiv_{{variant._id}}" aria-expanded="false" aria-controls="modifydiv_{{variant._id}}" class="btn btn-warning btn-xs"><span class="fa fa-pencil-square-o"></span></button>
+            <button id="remove_{{variant._id}}" type="button" href="remove_{{variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o"></span></button>
+          </td>
         </tr>
+        <tr >
+        {{ modify_variant(variant) }}
+        </div>
       {% endfor %}
     </tbody>
   </table>
 </div>
 
 {% endblock %}
+
+{% macro modify_variant(variant) %}
+  <tr id="modifydiv_{{variant._id}}" class="collapse">
+    {{ modify_form(variant) }}
+  </tr>
+{% endmacro %}
+
+{% macro modify_form(variant) %}
+  <form method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant._id) }}" enctype="multipart/form-data" class="form-horizontal">
+      <input type="hidden" name="variant_id" value="{{ variant._id }}">
+      <td><input type="text" id="chromomsome" value="{{ variant.chromosome }}"></td>
+      <td><input type="number" id="position" value="{{ variant.position }}"></td>
+      <td><input type="number" id="end" value="{{ variant.end }}"></td>
+      <td><input type="text" id="reference" value="{{ variant.reference }}"></td>
+      <td><input type="text" id="alternative" value="{{ variant.alternative }}"></td>
+      <td><input type="text" id="subcategory" value="{{ variant.subcategory }}"></td>
+      <td><input type="text" id="category" value="{{ variant.category }}"></td>
+      <td>
+        <input type="text" id="description" value="{{ variant.description }}">
+        <button id="submit" type="submit" class="btn btn-primary btn-sm">Save</button>
+        <button id="submit" type="submit" class="btn btn-outline-secondary btn-sm">Cancel</button>
+      </td>
+  </form>
+{% endmacro %}
 
 {% macro filters_form() %}
 
