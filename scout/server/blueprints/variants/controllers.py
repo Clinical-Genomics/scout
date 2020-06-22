@@ -484,9 +484,9 @@ def cancer_variants(store, institute_id, case_name, variants_query, form, page=1
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     per_page = 50
     skip_count = per_page * max(page - 1, 0)
-    
+
     variant_count = variants_query.count()
-    
+
     # Setup variant count session with variant count by category
     variant_count_session(store, institute_id, case_obj["_id"], "clinical", "cancer")
     session["filtered_variants"] = variant_count
