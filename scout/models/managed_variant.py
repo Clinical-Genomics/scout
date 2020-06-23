@@ -42,10 +42,10 @@ class ManagedVariant(dict):
         end,
         reference,
         alternative,
+        institute,
+        maintainer=[],
         build="37",
         date=None,
-        maintainer=[],
-        institute,
         category="snv",
         sub_category="snv",
         description=None,
@@ -62,6 +62,7 @@ class ManagedVariant(dict):
         self["display_name"] = "_".join(chromosome, pos, ref, alt)
         self["date"] = date or datetime.now()
 
+        self["institute"] = institute or None
         self["maintainer"] = maintainer or []
         self["category"] = category
         self["sub_category"] = sub_category
