@@ -23,13 +23,12 @@ def managed_variants():
 
     category = request.form.get("category", "snv")
 
-    form = ManagedVariantsFilterForm(request.form)
+    filters_form = ManagedVariantsFilterForm(request.form)
 
     managed_variants_query = store.managed_variants(category=category)
     data = controllers.managed_variants(store, managed_variants_query)
 
-    LOG.debug("MVS: %s", data["managed_variants"])
-    return dict(form=form, **data)
+    return dict(form=filters_form, **data)
 
 
 @managed_variants_bp.route("/managed_variant/<variant_id>/modify", methods=["POST"])
@@ -38,18 +37,23 @@ def modify_managed_variant(variant_id):
 
     controllers.modify_managed_variant(store, variant, edit_form)
 
-    return
+    return redirect(url_for("managed_variants.managed_variants"))
 
 
 @managed_variants_bp.route("/managed_variant/<variant_id>/remove", methods=["POST"])
 def remove_managed_variant(variant_id):
     controllers.remove_managed_variant(variant_id)
-    return
+
+    return redirect(url_for("managed_variants.managed_variants"))
 
 
 @managed_variants_bp.route("/managed_variant/add", methods=["POST"])
 def add_managed_variant():
     add_form = request.form
 
-    controllers.add_managed_variant(add_form)
-    return
+    institutes = list(user_institutes(store, current_user))
+    current_user_id = current_user._id
+
+    controllers.add_managed_variant(store, add_form, institutes, current_user_id)
+
+    return redirect(url_for("managed_variants.managed_variants"))

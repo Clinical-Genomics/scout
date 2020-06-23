@@ -17,6 +17,26 @@
 {% endblock %}
 {% block content_main %}
 
+
+<form method="POST" id="add_form" action="{{url_for('managed_variants.add_managed_variant')}}" enctype="multipart/form-data">
+  <div class="container-float">
+    <div id="accordion_add" >
+       <div class="card mt-3">
+        <div class="card-header">
+          <h5>
+            <a data-toggle="collapse" data-parent="#accordion_add" href="#collapseAdd">
+                Add variant
+            </a>
+          </h5>
+        </div>
+        <div id="collapseAdd" class="panel-collapse collapse">
+          <div class="card-body">{{ add_form() }}</div>
+        </div>
+       </div>
+    </div>
+  </div>
+</form>
+
 <form method="POST" id="filters_form" action="{{url_for('managed_variants.managed_variants')}}" enctype="multipart/form-data">
   <div class="container-float">
     <div id="accordion" >
@@ -35,6 +55,8 @@
     </div>
   </div>
 </form>
+
+
 
 <div class="table-responsive" style="padding-top: 25px;">
   <table class="table table-bordered table-hover">
@@ -85,19 +107,62 @@
 {% macro modify_form(variant) %}
   <form method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant._id) }}" enctype="multipart/form-data" class="form-horizontal">
       <input type="hidden" name="variant_id" value="{{ variant._id }}">
-      <td><input type="text" id="chromomsome" value="{{ variant.chromosome }}"></td>
-      <td><input type="number" id="position" value="{{ variant.position }}"></td>
-      <td><input type="number" id="end" value="{{ variant.end }}"></td>
-      <td><input type="text" id="reference" value="{{ variant.reference }}"></td>
-      <td><input type="text" id="alternative" value="{{ variant.alternative }}"></td>
-      <td><input type="text" id="subcategory" value="{{ variant.subcategory }}"></td>
-      <td><input type="text" id="category" value="{{ variant.category }}"></td>
-      <td>
-        <input type="text" id="description" value="{{ variant.description }}">
-        <button id="submit" type="submit" class="btn btn-primary btn-sm">Save</button>
-        <button id="submit" type="submit" class="btn btn-outline-secondary btn-sm">Cancel</button>
+      <td><input type="text" class="form-control" id="chromomsome" value="{{ variant.chromosome }}">
       </td>
+      <td><input type="number" class="form-control" id="position" value="{{ variant.position }}"></td>
+      <td><input type="number" class="form-control" id="end" value="{{ variant.end }}"></td>
+      <td><input type="text" class="form-control" id="reference" value="{{ variant.reference }}"></td>
+      <td><input type="text" class="form-control" id="alternative" value="{{ variant.alternative }}"></td>
+      <td><input type="text" class="form-control" id="subcategory" value="{{ variant.subcategory }}"></td>
+      <td><input type="text" class="form-control" id="category" value="{{ variant.category }}"></td>
+      <td>
+         <div class="input-group">
+           <input type="text" class="form-control" id="description" value="{{ variant.description }}">
+           <button id="submit" type="submit" class="btn btn-primary btn-sm">Save</button>
+           <button id="cancel" type="cancel" class="btn btn-outline-secondary btn-sm">Cancel</button>
+         </div>
+      </td>
+
   </form>
+{% endmacro %}
+
+{% macro add_form() %}
+<div class="table-responsive" style="padding-top: 25px;">
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>Chr</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Ref</th>
+        <th>Alt</th>
+        <th>Kind</th>
+        <th>Category</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+      <td><input type="text" id="chromomsome" class="form-control"></td>
+      <td><input type="number" id="position" class="form-control"></td>
+      <td><input type="number" id="end" class="form-control"></td>
+      <td><input type="text" id="reference" class="form-control"></td>
+      <td><input type="text" id="alternative" class="form-control"></td>
+      <td><input type="text" id="subcategory" class="form-control"></td>
+      <td><input type="text" id="category" class="form-control"></td>
+      <td>
+        <input type="text" id="description" class="form-control">
+      </td>
+      </tr>
+      <tr>
+        <td colspan=12>
+          <button id="submit" type="submit" class="btn btn-primary btn-sm">Add</button>
+          <button id="cancel" type="cancel" class="btn btn-outline-secondary btn-sm">Cancel</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 {% endmacro %}
 
 {% macro filters_form() %}
