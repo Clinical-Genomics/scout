@@ -17,15 +17,17 @@ from scout.constants import (
 )
 
 LOG = logging.getLogger(__name__)
-CHROMOSOME_OPTIONS = [("", "All")] + [(chrom, chrom) for chrom in CHROMOSOMES]
-SV_TYPE_CHOICES = [(term, term.replace("_", " ").upper()) for term in SV_TYPES]
+CHROMOSOME_FILTER_OPTIONS = [("", "All")] + [(chrom, chrom) for chrom in CHROMOSOMES]
+CHROMOSOME_EDIT_OPTIONS = [(chrom, chrom) for chrom in CHROMOSOMES]
+SUBCATEGORY_CHOICES = [("snv", "SNV"), ("indel", "INDEL")] + [
+    (term, term.replace("_", " ").upper()) for term in SV_TYPES
+]
 CATEGORY_CHOICES = [
-    (term, term.replace("_", " ").upper()) for term in ["snv", "str", "sv", "cancer", "cancer_sv"]
+    (term, term.replace("_", " ").upper()) for term in ["snv", "sv", "cancer", "cancer_sv"]
 ]
 
 
 class ManagedVariantForm(FlaskForm):
-    chromosome = SelectField("Chromosome", [validators.Optional()], choices=[])
     position = IntegerField("Start position", [validators.Optional()])
     end = IntegerField("End position", [validators.Optional()])
     cytoband_start = SelectField("Cytoband start", choices=[])
@@ -35,30 +37,32 @@ class ManagedVariantForm(FlaskForm):
 
 
 class ManagedVariantsFilterForm(ManagedVariantForm):
+    chromosome = SelectField(
+        "Chromosome", [validators.Optional()], choices=CHROMOSOME_FILTER_OPTIONS
+    )
+
     category = SelectMultipleField("Category", choices=CATEGORY_CHOICES)
-    subcategory = SelectMultipleField("Kind", choices=SV_TYPE_CHOICES)
+    sub_category = SelectMultipleField("Kind", choices=SUBCATEGORY_CHOICES)
 
     filter_variants = SubmitField(label="Filter variants")
     export = SubmitField(label="Filter and export")
 
 
-class ManagedVariantsAddForm(ManagedVariantForm):
+class ManagedVariantEditForm(ManagedVariantForm):
+    chromosome = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_EDIT_OPTIONS)
+
     reference = TextField(label="Ref")
     alternative = TextField(label="Alt")
 
     category = SelectField("Category", choices=CATEGORY_CHOICES)
-    subcategory = SelectField("Kind", choices=SV_TYPE_CHOICES)
+    sub_category = SelectField("Kind", choices=SUBCATEGORY_CHOICES)
 
+
+class ManagedVariantAddForm(ManagedVariantEditForm):
     add_variant = SubmitField(label="Add")
     cancel = SubmitField(label="Cancel")
 
 
-class ManagedVariantsModifyForm(ManagedVariantForm):
-    reference = TextField(label="Ref")
-    alternative = TextField(label="Alt")
-
-    category = SelectField("Category", choices=CATEGORY_CHOICES)
-    subcategory = SelectField("Kind", choices=SV_TYPE_CHOICES)
-
+class ManagedVariantModifyForm(ManagedVariantEditForm):
     modify_variant = SubmitField(label="Save")
     cancel = SubmitField(label="Cancel")

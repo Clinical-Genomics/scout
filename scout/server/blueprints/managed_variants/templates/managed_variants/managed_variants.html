@@ -80,7 +80,7 @@
           <td>{{ variant.end }}</td>
           <td>{{ variant.reference }}</td>
           <td>{{ variant.alternative }}</td>
-          <td>{{ variant.subcategory }}</td>
+          <td>{{ variant.sub_category }}</td>
           <td>{{ variant.category }}</td>
           <td>
             {{ variant.description }}
@@ -108,14 +108,13 @@
   <form method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant._id) }}" enctype="multipart/form-data" class="form-horizontal">
       {{ modify_form.csrf_token }}
       <input type="hidden" name="variant_id" value="{{ variant._id }}">
-      <td><input type="text" class="form-control" name="chromomsome" id="chromomsome" value="{{ variant.chromosome }}">
-      </td>
+      <td>{{ modify_form.chromosome(class_="form-control") }}</td>
       <td><input type="number" class="form-control" name="position" id="position" value="{{ variant.position }}"></td>
       <td><input type="number" class="form-control" name="end" id="end" value="{{ variant.end }}"></td>
       <td><input type="text" class="form-control" name="reference" id="reference" value="{{ variant.reference }}"></td>
       <td><input type="text" class="form-control" name="alternative" id="alternative" value="{{ variant.alternative }}"></td>
-      <td><input type="text" class="form-control" name="subcategory" id="subcategory" value="{{ variant.subcategory }}"></td>
-      <td><input type="text" class="form-control" name="category" id="category" value="{{ variant.category }}"></td>
+      <td>{{ modify_form.sub_category(class_="form-control") }}</td>
+      <td>{{ modify_form.category(class_="form-control") }}</td>
       <td>
          <div class="input-group">
            <input type="text" class="form-control" name="description" id="description" value="{{ variant.description }}">
@@ -152,7 +151,7 @@
       <td><input type="text" name="reference" id="reference" class="form-control"></td>
       <td><input type="text" name="alternative" id="alternative" class="form-control"></td>
       <td>{{ add_form.category(class_="form-control") }}</td>
-      <td>{{ add_form.subcategory(class_="form-control") }}</td>
+      <td>{{ add_form.sub_category(class_="form-control") }}</td>
       <td>
         <input type="text" name="description" id="description" class="form-control">
       </td>
@@ -177,7 +176,7 @@
         {{ wtf.form_field(filters_form.category)}}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.subcategory)}}
+        {{ wtf.form_field(filters_form.sub_category)}}
       </div>
       <div class="col-4">
         {{ wtf.form_field(filters_form.description) }}

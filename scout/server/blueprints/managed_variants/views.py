@@ -7,7 +7,7 @@ from flask_login import current_user
 
 from scout.server.extensions import store
 from scout.server.utils import templated, user_institutes
-from .forms import ManagedVariantsFilterForm, ManagedVariantsAddForm, ManagedVariantsModifyForm
+from .forms import ManagedVariantsFilterForm, ManagedVariantAddForm, ManagedVariantModifyForm
 from . import controllers
 
 LOG = logging.getLogger(__name__)
@@ -22,8 +22,8 @@ def managed_variants():
     institutes = list(user_institutes(store, current_user))
 
     filters_form = ManagedVariantsFilterForm(request.form)
-    add_form = ManagedVariantsAddForm()
-    modify_form = ManagedVariantsModifyForm()
+    add_form = ManagedVariantAddForm()
+    modify_form = ManagedVariantModifyForm()
 
     category = request.form.get("category", "snv")
 
@@ -52,7 +52,7 @@ def remove_managed_variant(variant_id):
 @managed_variants_bp.route("/managed_variant/add", methods=["POST"])
 def add_managed_variant():
 
-    add_form = ManagedVariantsAddForm(request.form)
+    add_form = ManagedVariantAddForm(request.form)
     LOG.debug("Adding managed variant with form {}".format(add_form))
 
     institutes = list(user_institutes(store, current_user))
