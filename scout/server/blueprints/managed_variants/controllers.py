@@ -23,20 +23,20 @@ def add_managed_variant(store, add_form, institutes, current_user_id):
 
     managed_variant_obj = build_managed_variant(
         dict(
-            chromosome=add_form["chromosome"],
-            position=add_form["position"],
-            end=add_form["end"],
-            reference=add_form["reference"],
-            alternative=add_form["alternative"],
+            chromosome=add_form["chromosome"].data,
+            position=add_form["position"].data,
+            end=add_form["end"].data,
+            reference=add_form["reference"].data,
+            alternative=add_form["alternative"].data,
             institutes=institutes,
             maintainer=[current_user_id],
-            category=add_form["category"],
-            sub_category=add_form["sub_category"],
-            description=add_form["description"],
+            category=add_form["category"].data,
+            sub_category=add_form["sub_category"].data,
+            description=add_form["description"].data,
         )
     )
 
-    upsert_managed_variant(store, managed_variant_obj)
+    store.upsert_managed_variant(managed_variant_obj)
     return
 
 

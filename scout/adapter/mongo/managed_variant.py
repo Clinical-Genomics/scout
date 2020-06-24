@@ -41,21 +41,21 @@ class ManagedVariantHandler(object):
 
         LOG.debug("Upserting variant %s", managed_variant_obj["display_id"])
 
-        check_variant_obj = self.check_managed_variant(
-            managed_variant_obj["display_id"],
-            category=managed_variant_obj.get("category", "snv"),
-            build=managed_variant_obj.get("build", "37"),
-        )
-
-        LOG.debug("Variant %s already exists in database", check_variant_obj["display_id"])
-
         managed_variant_obj["date"] = managed_variant_obj.get("date", datetime.now())
 
-        result = self.managed_variant_collection.find_one_and_update(
-            {"variant_id": managed_variant_obj["variant_id"]}, {"$set": managed_variant_obj},
-        )
+        try:
+            result = self.managed_variant_collection.insert_one(managed_variant_obj)
+        except DuplicateKeyError as err:
+            check_variant_obj = self.check_managed_variant(managed_variant_obj["variant_id"],)
+            if check_variant_obj:
+                LOG.debug("Variant %s already exists in database", check_variant_obj["display_id"])
+
+            result = self.managed_variant_collection.find_one_and_update(
+                {"variant_id": managed_variant_obj["variant_id"]}, {"$set": managed_variant_obj},
+            )
+
         updated_managed_variant = self.variant_collection.find_one(
-            {"_id": managed_variant_obj["_id"]}
+            {"variant_id": managed_variant_obj["variant_id"]}
         )
 
         return updated_managed_variant
@@ -76,22 +76,20 @@ class ManagedVariantHandler(object):
 
         return managed_variant_obj
 
-    def check_managed_variant(self, display_id, category="snv", build="37"):
+    def check_managed_variant(self, variant_id):
         """ Fetch eg search for a managed variant.
 
             Arguments:
-                display_id(str): chrom_pos_ref_alt
-                category(str): "snv", "cancer" - "sv", "cancer_sv" possible but not expected
-                build(str): "37" or "38"
+                display_id(str): chrom_pos_ref_alt_category_build
+                    category: "snv", "cancer" - "sv", "cancer_sv" possible but not expected
+                    build: "37" or "38"
 
             Returns:
                 ManagedVariant
         """
-        managed_variant = self.managed_variant_collection.find_one(
-            {"display_id": display_id, "category": category, "build": build}
-        )
+        managed_variant = self.managed_variant_collection.find_one({"variant_id": variant_id})
 
-        return ManagedVariant(managed_variant)
+        return managed_variant
 
     def managed_variants(self, category="snv", build="37"):
         """ Return a cursor to all managed variants of a particular category and build.

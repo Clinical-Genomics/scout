@@ -51,15 +51,30 @@ class ManagedVariant(dict):
         description=None,
     ):
         super(ManagedVariant, self).__init__()
-        self["chromosome"] = chromosome
+        self["chromosome"] = str(chromosome)
         self["position"] = position
         self["end"] = end
         self["reference"] = reference
         self["alternative"] = alternative
         self["build"] = build
 
-        self["variant_id"] = "_".join(chromosome, pos, ref, alt, category, build)
-        self["display_name"] = "_".join(chromosome, pos, ref, alt)
+        self["variant_id"] = "_".join(
+            [
+                str(part)
+                for part in (
+                    chromosome,
+                    position,
+                    reference,
+                    alternative,
+                    category,
+                    sub_category,
+                    build,
+                )
+            ]
+        )
+        self["display_id"] = "_".join(
+            [str(part) for part in (chromosome, position, reference, alternative)]
+        )
         self["date"] = date or datetime.now()
 
         self["institute"] = institute or None
