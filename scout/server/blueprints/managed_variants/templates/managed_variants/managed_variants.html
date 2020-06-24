@@ -30,7 +30,7 @@
           </h5>
         </div>
         <div id="collapseAdd" class="panel-collapse collapse">
-          <div class="card-body">{{ add_form() }}</div>
+          <div class="card-body">{{ add_variant_form() }}</div>
         </div>
        </div>
     </div>
@@ -49,7 +49,7 @@
           </h5>
         </div>
         <div id="collapseFilters" class="panel-collapse collapse">
-          <div class="card-body">{{ filters_form() }}</div>
+          <div class="card-body">{{ filter_variants_form() }}</div>
         </div>
        </div>
     </div>
@@ -100,33 +100,36 @@
 
 {% macro modify_variant(variant) %}
   <tr id="modifydiv_{{variant._id}}" class="collapse">
-    {{ modify_form(variant) }}
+    {{ modify_variant_form(variant) }}
   </tr>
 {% endmacro %}
 
-{% macro modify_form(variant) %}
+{% macro modify_variant_form(variant) %}
   <form method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant._id) }}" enctype="multipart/form-data" class="form-horizontal">
+      {{ modify_form.csrf_token }}
       <input type="hidden" name="variant_id" value="{{ variant._id }}">
-      <td><input type="text" class="form-control" id="chromomsome" value="{{ variant.chromosome }}">
+      <td><input type="text" class="form-control" name="chromomsome" id="chromomsome" value="{{ variant.chromosome }}">
       </td>
-      <td><input type="number" class="form-control" id="position" value="{{ variant.position }}"></td>
-      <td><input type="number" class="form-control" id="end" value="{{ variant.end }}"></td>
-      <td><input type="text" class="form-control" id="reference" value="{{ variant.reference }}"></td>
-      <td><input type="text" class="form-control" id="alternative" value="{{ variant.alternative }}"></td>
-      <td><input type="text" class="form-control" id="subcategory" value="{{ variant.subcategory }}"></td>
-      <td><input type="text" class="form-control" id="category" value="{{ variant.category }}"></td>
+      <td><input type="number" class="form-control" name="position" id="position" value="{{ variant.position }}"></td>
+      <td><input type="number" class="form-control" name="end" id="end" value="{{ variant.end }}"></td>
+      <td><input type="text" class="form-control" name="reference" id="reference" value="{{ variant.reference }}"></td>
+      <td><input type="text" class="form-control" name="alternative" id="alternative" value="{{ variant.alternative }}"></td>
+      <td><input type="text" class="form-control" name="subcategory" id="subcategory" value="{{ variant.subcategory }}"></td>
+      <td><input type="text" class="form-control" name="category" id="category" value="{{ variant.category }}"></td>
       <td>
          <div class="input-group">
-           <input type="text" class="form-control" id="description" value="{{ variant.description }}">
-           <button id="submit" type="submit" class="btn btn-primary btn-sm">Save</button>
-           <button id="cancel" type="cancel" class="btn btn-outline-secondary btn-sm">Cancel</button>
+           <input type="text" class="form-control" name="description" id="description" value="{{ variant.description }}">
+           <button name="add_variant" id="add_variant" type="submit" class="btn btn-primary btn-sm">Save</button>
+           <button name="cancel" id="cancel" type="cancel" class="btn btn-outline-secondary btn-sm">Cancel</button>
          </div>
       </td>
 
   </form>
 {% endmacro %}
 
-{% macro add_form() %}
+{% macro add_variant_form() %}
+    {{ add_form.csrf_token }}
+
 <div class="table-responsive" style="padding-top: 25px;">
   <table class="table table-bordered table-hover">
     <thead>
@@ -136,28 +139,28 @@
         <th>End</th>
         <th>Ref</th>
         <th>Alt</th>
-        <th>Kind</th>
         <th>Category</th>
+        <th>Kind</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-      <td><input type="text" id="chromomsome" class="form-control"></td>
-      <td><input type="number" id="position" class="form-control"></td>
-      <td><input type="number" id="end" class="form-control"></td>
-      <td><input type="text" id="reference" class="form-control"></td>
-      <td><input type="text" id="alternative" class="form-control"></td>
-      <td><input type="text" id="subcategory" class="form-control"></td>
-      <td><input type="text" id="category" class="form-control"></td>
+      <td>{{ add_form.chromosome(class_="form-control") }}</td>
+      <td><input type="number" name="position" id="position" class="form-control"></td>
+      <td><input type="number" name="end" id="end" class="form-control"></td>
+      <td><input type="text" name="reference" id="reference" class="form-control"></td>
+      <td><input type="text" name="alternative" id="alternative" class="form-control"></td>
+      <td>{{ add_form.category(class_="form-control") }}</td>
+      <td>{{ add_form.subcategory(class_="form-control") }}</td>
       <td>
-        <input type="text" id="description" class="form-control">
+        <input type="text" name="description" id="description" class="form-control">
       </td>
       </tr>
       <tr>
         <td colspan=12>
-          <button id="submit" type="submit" class="btn btn-primary btn-sm">Add</button>
-          <button id="cancel" type="cancel" class="btn btn-outline-secondary btn-sm">Cancel</button>
+          <button name="add_variant" id="submit" type="submit" class="btn btn-primary btn-sm">Add</button>
+          <button name="cancel" id="cancel" type="cancel" class="btn btn-outline-secondary btn-sm">Cancel</button>
         </td>
       </tr>
     </tbody>
@@ -165,43 +168,43 @@
 </div>
 {% endmacro %}
 
-{% macro filters_form() %}
+{% macro filter_variants_form() %}
 
-    {{ form.csrf_token }}
+    {{ filters_form.csrf_token }}
 
     <div class="row">
       <div class="col-2">
-        {{ wtf.form_field(form.category)}}
+        {{ wtf.form_field(filters_form.category)}}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(form.subcategory)}}
+        {{ wtf.form_field(filters_form.subcategory)}}
       </div>
       <div class="col-4">
-        {{ wtf.form_field(form.description) }}
+        {{ wtf.form_field(filters_form.description) }}
       </div>
     </div>
     <div class="row">
       <div class="col-2">
-        {{ wtf.form_field(form.chrom) }}
+        {{ wtf.form_field(filters_form.chromosome) }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(form.start) }}
+        {{ wtf.form_field(filters_form.position) }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(form.end) }}
+        {{ wtf.form_field(filters_form.end) }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(form.cytoband_start) }}
+        {{ wtf.form_field(filters_form.cytoband_start) }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(form.cytoband_end) }}
+        {{ wtf.form_field(filters_form.cytoband_end) }}
       </div>
     </div>
     <div class="row justify-content-center mt-3">
       <div class="col col-md-8">
         <div class="row">
           <div class="col">
-            {{ form.filter_variants(class_="btn btn-primary form-control") }}
+            {{ filters_form.filter_variants(class_="btn btn-primary form-control") }}
           </div>
         </div>
       </div>
@@ -227,11 +230,6 @@
     $('select[multiple]').multiselect({
       buttonWidth: '100%'
     });
-
-    document.getElementById('symbol_file').onchange = function() {
-      var the_form = document.forms['filters_form'];
-      the_form.submit();
-    };
   })
 
 </script>

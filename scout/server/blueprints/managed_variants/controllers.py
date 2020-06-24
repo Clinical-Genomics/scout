@@ -18,7 +18,7 @@ def managed_variants(store, managed_variants_query, page=1, per_page=50):
     return {"managed_variants": managed_variants, "more_variants": more_variants}
 
 
-def add_managed_variant(store, add_form, current_institute_id, current_user_id):
+def add_managed_variant(store, add_form, institutes, current_user_id):
     """Add a managed variant."""
 
     managed_variant_obj = build_managed_variant(
@@ -28,11 +28,11 @@ def add_managed_variant(store, add_form, current_institute_id, current_user_id):
             end=add_form["end"],
             reference=add_form["reference"],
             alternative=add_form["alternative"],
-            institute=current_institute_id,
+            institutes=institutes,
             maintainer=[current_user_id],
-            category=add_form.get("category", "snv"),
-            sub_category=add_form.get("category", "sub_category"),
-            description=add_form.get("description", None),
+            category=add_form["category"],
+            sub_category=add_form["sub_category"],
+            description=add_form["description"],
         )
     )
 
