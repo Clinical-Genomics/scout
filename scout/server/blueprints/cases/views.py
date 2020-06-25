@@ -834,6 +834,7 @@ def assign(institute_id, case_name, user_id=None, inactivate=False):
 def hpoterms():
     """Search for HPO terms."""
     query = request.args.get("query")
+    LOG.info(f"QUERY IS:{query}")
     if query is None:
         return abort(500)
     terms = sorted(store.hpo_terms(query=query), key=itemgetter("hpo_number"))
