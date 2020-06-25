@@ -196,7 +196,7 @@
 	                      <tr>
 	                        <td width="20%">{{comment.created_at.strftime('%Y-%m-%d')}}</td>
 	                        <td width="20%">{{comment.user_name}}:</td>
-	                        <td><strong>{{ comment.content | replace(",",", ") | replace(",  ",", ") }}</strong></td>
+	                        <td class="text-break"><strong>{{ comment.content }}</strong></td>
 	                      </tr>
 	                    {% endfor %}
 	                    </table>
@@ -711,7 +711,7 @@
                   <tr>
                     <td width="20%">{{comment.created_at.strftime('%Y-%m-%d')}}</td>
                     <td width="20%">{{comment.user_name}}:</td>
-                    <td><strong>{{ comment.content | replace(",",", ") | replace(",  ",", ") }}</strong></td>
+                    <td class="text-break"><strong>{{ comment.content }}</strong></td>
                   </tr>
                 {% endfor %}
                 </table>
