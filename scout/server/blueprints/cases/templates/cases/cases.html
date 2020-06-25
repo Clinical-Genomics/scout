@@ -357,17 +357,14 @@
       placeholder: "HP:0001166",
       createTag: function (params) {
         // Check if HPO term is valid
-        if (params.term.indexOf('HP:') === -1) {
+        if (params.term.indexOf('HP:') === -1 || params.term.length<7) {
           // Return null to disable tag creation
           return null;
         }
-        data = $.getJSON( "{{ url_for('cases.hpoterms') }}", { query: params.term} );
-        var json = JSON.parse(JSON.stringify(data));
-        alert(json)
 
         return {
-          id: suggestions,
-          text: suggestions
+          id: params.term,
+          text: params.term
         }
       }
     });
