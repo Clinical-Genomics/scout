@@ -46,7 +46,7 @@ class ManagedVariantHandler(object):
         try:
             result = self.managed_variant_collection.insert_one(managed_variant_obj)
         except DuplicateKeyError as err:
-            check_variant_obj = self.check_managed_variant(managed_variant_obj["variant_id"],)
+            check_variant_obj = self.find_managed_variant(managed_variant_obj["variant_id"],)
             if check_variant_obj:
                 LOG.debug("Variant %s already exists in database", check_variant_obj["display_id"])
 
@@ -76,7 +76,7 @@ class ManagedVariantHandler(object):
 
         return managed_variant_obj
 
-    def check_managed_variant(self, variant_id):
+    def find_managed_variant(self, variant_id):
         """ Fetch eg search for a managed variant.
 
             Arguments:

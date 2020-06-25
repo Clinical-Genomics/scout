@@ -37,7 +37,7 @@ def managed_variants():
 def modify_managed_variant(variant_id):
     edit_form = request.form
 
-    controllers.modify_managed_variant(store, variant, edit_form)
+    controllers.modify_managed_variant(store, variant_id, edit_form)
 
     return redirect(request.referrer)
 
