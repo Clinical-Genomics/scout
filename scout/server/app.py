@@ -177,8 +177,8 @@ def register_filters(app):
 
     @app.template_filter()
     def fix_punctuation(text):
-        """A non-optimal implementation of a regex filter"""
-        return re.sub(r'(?<=[.,])(?=[^\s])', r' ', text)
+        """Adds a white space after puntuation"""
+        return re.sub(r'(?<=[.,:;?])(?=[^\s])', r' ', text)
 
 
 def configure_oauth_login(app):
