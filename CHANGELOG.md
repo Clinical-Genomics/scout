@@ -7,8 +7,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+- Export dynamic HPO gene list from case page
+
 ### Fixed
 - Handle the ProxyFix ModuleNotFoundError when Werkzeug installed version is >1.0
+- General report formatting issues whenever case and variant comments contain extremely long strings with no spaces
 
 ### Changed
 
