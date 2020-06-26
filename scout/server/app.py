@@ -1,6 +1,6 @@
 """Code for flask app"""
 import logging
-
+import re
 import coloredlogs
 from flask import Flask, current_app, redirect, request, url_for
 from flask_babel import Babel
@@ -174,6 +174,11 @@ def register_filters(app):
         if isinstance(cosmicId, int):
             return "COSM" + str(cosmicId)
         return cosmicId
+
+    @app.template_filter()
+    def fix_punctuation(text):
+        """Adds a white space after puntuation"""
+        return re.sub(r"(?<=[.,:;?!])(?=[^\s])", r" ", text)
 
 
 def configure_oauth_login(app):
