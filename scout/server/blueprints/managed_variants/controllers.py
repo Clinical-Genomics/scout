@@ -36,8 +36,8 @@ def add_managed_variant(store, add_form, institutes, current_user_id):
         )
     )
 
-    store.upsert_managed_variant(managed_variant_obj)
-    return
+    result = store.upsert_managed_variant(managed_variant_obj)
+    return result
 
 
 def modify_managed_variant(store, managed_variant, edit_form):
@@ -49,4 +49,6 @@ def modify_managed_variant(store, managed_variant, edit_form):
 def remove_managed_variant(store, variant_id):
     """Remove a managed variant."""
 
-    return
+    removed_variant = store.delete_managed_variant(variant_id)
+
+    return removed_variant

@@ -19,7 +19,6 @@ class ManagedVariantHandler(object):
         Returns:
             inserted_id
         """
-        # LOG.debug("Loading variant %s", variant_obj['_id'])
         try:
             result = self.managed_variant_collection.insert_one(managed_variant_obj)
         except DuplicateKeyError as err:
@@ -109,22 +108,22 @@ class ManagedVariantHandler(object):
 
         return managed_variants_res
 
-    def delete_managed_variant(self, document_id):
+    def delete_managed_variant(self, variant_id):
         """ Delete a managed variant of known id.
 
         Arguments:
-            document_id(str)
+            variant_id(str)
 
         Returns:
             ManagedVariant
         """
 
-        managed_variant_obj = self.managed_variant_collection.find_one(
-            {"_id": ObjectId(document_id)}
-        )
+        managed_variant_obj = self.managed_variant_collection.find_one({"variant_id": variant_id})
+        if not managed_variant_obj:
+            LOG.info("FAILED deleting managed variant: variant_id %s not found.", variant_id)
+        else:
+            LOG.info("Deleting managed variant %s.", managed_variant_obj.get("display_name"))
 
-        LOG.info("Deleting managed variant %s.", managed_variant_obj.get("display_name"))
-
-        result = self.managed_variant_collection.delete_one({"_id": ObjectId(document_id)})
+        result = self.managed_variant_collection.find_one_and_delete({"variant_id": variant_id})
 
         return result

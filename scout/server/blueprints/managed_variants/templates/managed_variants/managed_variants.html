@@ -84,8 +84,12 @@
           <td>{{ variant.category }}</td>
           <td>
             {{ variant.description }}
-            <button id="{{variant._id}}" type="button" data-toggle="collapse" href="#modifydiv_{{variant._id}}" aria-expanded="false" aria-controls="modifydiv_{{variant._id}}" class="btn btn-warning btn-xs"><span class="fa fa-pencil-square-o"></span></button>
-            <button id="remove_{{variant._id}}" type="button" href="remove_{{variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o"></span></button>
+            <div class="float-right">
+              <form method="POST" action="{{ url_for('managed_variants.remove_managed_variant', variant_id=variant._id) }}">
+                  <button id="{{variant._id}}" type="button" data-toggle="collapse" href="#modifydiv_{{variant._id}}" aria-expanded="false" aria-controls="modifydiv_{{variant._id}}" class="btn btn-warning btn-xs"><span class="fa fa-pencil-square-o"></span></button>
+                  <button id="remove_{{variant._id}}" type="submit" href="remove_{{variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o"></span></button>
+              </form>
+            </div>
           </td>
         </tr>
         <tr >

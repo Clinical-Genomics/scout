@@ -35,7 +35,8 @@ def managed_variants():
 
 @managed_variants_bp.route("/managed_variant/<variant_id>/modify", methods=["POST"])
 def modify_managed_variant(variant_id):
-    edit_form = request.form
+
+    edit_form = ManagedVariantModifyForm(request.form)
 
     controllers.modify_managed_variant(store, variant_id, edit_form)
 
@@ -44,7 +45,7 @@ def modify_managed_variant(variant_id):
 
 @managed_variants_bp.route("/managed_variant/<variant_id>/remove", methods=["POST"])
 def remove_managed_variant(variant_id):
-    controllers.remove_managed_variant(variant_id)
+    controllers.remove_managed_variant(store, variant_id)
 
     return redirect(request.referrer)
 
