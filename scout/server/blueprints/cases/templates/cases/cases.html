@@ -109,7 +109,7 @@
           <span class="input-group-addon">
             <span class="glyphicon glyphicon-search"></span>
           </span>
-          <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="search cases"
+          <input type="search" class="form-control" value="{{ query if query }}" id="query" name="query" placeholder="search cases"
           data-toggle="tooltip" data-placement="right" data-html="true" title="
             <div class='text-left'>
               <u>Examples:</u><br>case_id=<strong>18201</strong>,
@@ -158,7 +158,10 @@
         <label class="control-label">Search by phenotype similarity:</label>
       </div>
       <div class="col-md-9">
-        <select class="form-control" id="hpo_terms" multiple="true" style="width:100%;">
+        <select class="form-control" id="hpo_terms" name="hpo_terms" multiple="true" style="width:100%;">
+          {% for term in hpo %}
+            <option value="{{ term }}" selected>{{ term }}</option>
+          {% endfor %}
         </select>
       </div>
     </div>
@@ -324,6 +327,11 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
   <script>
+
+    $(document).ready(function(){
+      $("#hpo_terms").change();
+    });
+
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
       $('table').stickyTableHeaders({
@@ -352,9 +360,22 @@
       sort_link.submit();
     }
 
+    $('#hpo_terms').change(function(){
+      var arr = $(this).val();
+
+      if (arr.length===0){
+        //unblock the other query inout
+        $("#query").prop("readonly", false);
+      }
+      else{
+        $("#query").prop("value", "");
+        $("#query").prop("readonly", true);
+      }
+    })
+
     $("#hpo_terms").select2({
       tags: true,
-      placeholder: "HP:0001166",
+      placeholder: "HP:0001166..",
       createTag: function (params) {
         // Check if HPO term is valid
         if (params.term.indexOf('HP:') === -1 || params.term.length<7) {

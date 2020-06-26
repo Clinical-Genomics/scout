@@ -69,6 +69,9 @@ def cases(institute_id):
 
     institute_obj = institute_and_case(store, institute_id)
     query = request.args.get("query")
+    hpo_terms = request.args.getlist("hpo_terms")
+
+    flash(hpo_terms)
 
     limit = 100
     if request.args.get("limit"):
@@ -114,6 +117,7 @@ def cases(institute_id):
         skip_assigned=skip_assigned,
         is_research=is_research,
         query=query,
+        hpo=hpo_terms,
         **data,
     )
 
