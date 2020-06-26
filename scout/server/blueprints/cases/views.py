@@ -72,6 +72,7 @@ def cases(institute_id):
     hpo_terms = request.args.getlist("hpo_terms")
 
     flash(hpo_terms)
+    flash(query)
 
     limit = 100
     if request.args.get("limit"):

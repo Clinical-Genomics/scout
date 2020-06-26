@@ -34,7 +34,11 @@ def cases(institute, display_name, case_id, nr_variants, variants_treshold, simi
         if case_obj:
             models.append(case_obj)
         if similar:
-            similar = adapter.get_similar_cases(case_obj)
+            hpo_terms = []
+            for term in case_obj.get("phenotype_terms",[]):
+                hpo_terms.append(term.get("phenotype_id"))
+
+            similar = adapter.cases_by_phenotype(hpo_terms, case_obj["owner"], case_obj["_id"])
             if not similar:
                 LOG.info("No more cases with phenotypes found")
                 return

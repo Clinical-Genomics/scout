@@ -20,11 +20,13 @@ LOG = logging.getLogger(__name__)
 class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
 
-    def get_similar_cases(self, case_obj):
+    def cases_by_phenotype(self, phenotype_terms, owner, case_id=None):
         """Take a case obj and return a iterable with the most phenotypically similar cases
 
         Args:
-            case_obj(models.Case)
+            phenotype_terms(list):[ "HP:0001250", "HP:0000707",.. ]
+            owner(str): institute id
+            case_id(str): Id of a case, when searching for cases similar to another
 
         Returns:
             scores(list(tuple)): Returns a list of tuples like (case_id, score) with the most
@@ -32,20 +34,20 @@ class CaseHandler(object):
         """
         scores = {}
         set_1 = set()
-        if not case_obj.get("phenotype_terms"):
-            LOG.warning("No phenotypes could be found for case %s", case_obj["_id"])
+        if len(phenotype_terms)==0:
+            LOG.warning("No phenotype terms provided, please provide ar least one HPO term")
             return None
         # Add all ancestors of all terms
-        for term in case_obj["phenotype_terms"]:
-            hpo_term = self.hpo_term(term["phenotype_id"])
+        for term in phenotype_terms:
+            hpo_term = self.hpo_term(term)
             if not hpo_term:
                 continue
             set_1 = set_1.union(set(hpo_term.get("all_ancestors", [])))
         # Need to control what cases to look for here
         # Fetch all cases with phenotypes
-        for case in self.cases(phenotype_terms=True, owner=case_obj["owner"]):
+        for case in self.cases(phenotype_terms=True, owner=owner):
             set_2 = set()
-            if case["_id"] == case_obj["_id"]:
+            if case["_id"] == case_id:
                 continue
             # Add all ancestors if all terms
             for term in case["phenotype_terms"]:
@@ -53,10 +55,11 @@ class CaseHandler(object):
                 if not hpo_term:
                     continue
                 set_2 = set_2.union(set(hpo_term.get("all_ancestors", [])))
-            LOG.debug("Check phenotypic similarity of %s and %s", case_obj["_id"], case["_id"])
+            LOG.debug(f"Check phenotypic similarity between terms:{phenotype_terms} and case {case['_id']}" )
             scores[case["_id"]] = ui_score(set_1, set_2)
         # Returns a list of tuples with highest score first
         return sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
+
 
     def cases(
         self,
@@ -197,7 +200,10 @@ class CaseHandler(object):
                         LOG.debug(
                             "Search for cases similar to %s", case_obj.get("display_name"),
                         )
-                        similar_cases = self.get_similar_cases(case_obj)
+                        hpo_terms = []
+                        for term in case_obj.get("phenotype_terms",[]):
+                            hpo_terms.append(term.get("phenotype_id"))
+                        similar_cases = self.cases_by_phenotype(hpo_terms, case_obj["owner"], case_obj["_id"])
                         LOG.debug("Similar cases: %s", similar_cases)
                         if similar_cases:
                             similar_case_ids = []

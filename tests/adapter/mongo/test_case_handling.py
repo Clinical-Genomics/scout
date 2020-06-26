@@ -522,7 +522,7 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj):
     assert res["status"] == "inactive"
 
 
-def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
+def test_cases_by_phenotype(hpo_database, test_hpo_terms, case_obj):
     adapter = hpo_database
 
     # Make sure database contains HPO terms
@@ -559,7 +559,8 @@ def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
     adapter.case_collection.insert_one(case_3)
     assert sum(1 for i in adapter.case_collection.find()) == 3
 
-    similar_cases = adapter.get_similar_cases(case_obj)
+    hpo_query_terms = [term["phenotype_id"] for term in test_hpo_terms]
+    similar_cases = adapter.cases_by_phenotype(hpo_query_terms, case_obj["owner"], case_obj["_id"])
     # make sure that the function returns a list of tuples
     assert isinstance(similar_cases, list)
     assert isinstance(similar_cases[0], tuple)
