@@ -70,18 +70,19 @@ def cases(institute_id):
     """Display a list of cases for an institute."""
 
     institute_obj = institute_and_case(store, institute_id)
-    query = request.args.get("query")
-    hpo_terms = request.args.getlist("hpo_terms")
+    name_query = request.args.get("search_term")
+
+    flash(name_query)
 
     limit = 100
-    if request.args.get("limit"):
-        limit = int(request.args.get("limit"))
+    if request.args.get("search_limit"):
+        limit = int(request.args.get("search_limit"))
 
     skip_assigned = request.args.get("skip_assigned")
     is_research = request.args.get("is_research")
     all_cases = store.cases(
         collaborator=institute_id,
-        name_query=query,
+        name_query=name_query,
         skip_assigned=skip_assigned,
         is_research=is_research,
     )
@@ -118,9 +119,8 @@ def cases(institute_id):
         institute=institute_obj,
         skip_assigned=skip_assigned,
         is_research=is_research,
-        query=query,
+        query=name_query,
         form=form,
-        hpo=hpo_terms,
         **data,
     )
 
@@ -841,7 +841,6 @@ def assign(institute_id, case_name, user_id=None, inactivate=False):
 def hpoterms():
     """Search for HPO terms."""
     query = request.args.get("query")
-    LOG.info(f"------------------->QUERY IS:{query}")
     if query is None:
         return abort(500)
     terms = sorted(store.hpo_terms(query=query), key=itemgetter("hpo_number"))

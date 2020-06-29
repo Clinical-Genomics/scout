@@ -1,3 +1,6 @@
+var searchTerm = document.getElementById('search_term');
+var sel = document.getElementById('search_type');
+
 var selectHelper = {
   "Case Name": {
       "placeholder" : "example:18201",
@@ -5,7 +8,7 @@ var selectHelper = {
   },
   "HPO term": {
       "placeholder" : "HP:0001166",
-      "prefix" : ""
+      "prefix" : "exact_pheno:"
   },
   "Search synopsis" : {
       "placeholder" : "example:epilepsy",
@@ -20,8 +23,8 @@ var selectHelper = {
       "prefix" : "status:"
   },
   "Phenotype group" : {
-      "placeholder" : "PG:0100022",
-      "prefix" : ""
+      "placeholder" : "HP:0001166",
+      "prefix" : "pheno_group:"
   },
   "Patient cohort" : {
     "placeholder" : "pedhep",
@@ -29,11 +32,11 @@ var selectHelper = {
   },
   "Similar case" : {
     "placeholder" : "18201",
-    "prefix" : "similarCase:"
+    "prefix" : "similar_case:"
   },
   "Similar phenotype" : {
     "placeholder" : "example:HP:0001166,HP:0001250,..",
-    "prefix" : "similarPheno:"
+    "prefix" : "similar_pheno:"
   },
   "Pinned gene": {
     "placeholder" : "example:POT1",
@@ -45,7 +48,7 @@ var selectHelper = {
   },
   "Assigned user": {
     "placeholder" : "example:Kent",
-    "prefix" : ""
+    "prefix" : "user:"
   }
 };
 
@@ -53,12 +56,15 @@ $(document).ready(function(){
   $("#search_type").change();
 });
 
-document.getElementById('search_type').onchange = function() {
+document.getElementById("search_type").onchange = function() {
   // modify placeholder of text input according to the type of search
-  var searchTerm = document.getElementById('search_term');
-  var sel = document.getElementById('search_type');
   searchTerm.placeholder=selectHelper[sel.value]["placeholder"];
 };
+
+function appendSearchSuffix(){
+  // adds a suffix to the search term to help adapter to execute right query
+  searchTerm.value=selectHelper[sel.value]["prefix"]+String(searchTerm.value);
+}
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip();

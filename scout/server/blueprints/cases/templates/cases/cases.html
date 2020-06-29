@@ -96,7 +96,9 @@
 {% endblock %}
 
 {% macro search_form() %}
-  <form action="{{ url_for('cases.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
+  <form action="{{ url_for('cases.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8"
+    onsubmit="return appendSearchSuffix()">
+    {{ form.csrf_token }}
     <div class="row d-flex align-items-center">
       <div class="form-group col-2">
         {{ form.search_type.label(class="control-label") }}

@@ -36,8 +36,8 @@ class CaseFilterForm(FlaskForm):
     search_type = SelectField("Search by", [validators.Optional()], choices=CASE_SEARCH_KEY)
     search_term = TextField("Search cases")
     search_limit = IntegerField("Limit", [validators.Optional()], default=100)
-    hide_assigned = BooleanField("Hide assigned")
-    hide_non_research = BooleanField("Hide non-research")
+    skip_assigned = BooleanField("Hide assigned")
+    is_research = BooleanField("Hide non-research")
     search = SubmitField(label="Search")
 
 
