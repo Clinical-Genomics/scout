@@ -35,7 +35,7 @@ def cases(institute, display_name, case_id, nr_variants, variants_treshold, simi
             models.append(case_obj)
         if similar:
             hpo_terms = []
-            for term in case_obj.get("phenotype_terms",[]):
+            for term in case_obj.get("phenotype_terms", []):
                 hpo_terms.append(term.get("phenotype_id"))
 
             similar = adapter.cases_by_phenotype(hpo_terms, case_obj["owner"], case_obj["_id"])
