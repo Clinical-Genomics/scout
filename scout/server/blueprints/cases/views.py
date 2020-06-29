@@ -38,7 +38,7 @@ from scout.server.extensions import mail, store
 from scout.server.utils import institute_and_case, templated, user_institutes
 
 from . import controllers
-from .forms import GeneVariantFiltersForm
+from .forms import GeneVariantFiltersForm, CaseFilterForm
 
 LOG = logging.getLogger(__name__)
 
@@ -73,9 +73,6 @@ def cases(institute_id):
     query = request.args.get("query")
     hpo_terms = request.args.getlist("hpo_terms")
 
-    flash(hpo_terms)
-    flash(query)
-
     limit = 100
     if request.args.get("limit"):
         limit = int(request.args.get("limit"))
@@ -88,6 +85,8 @@ def cases(institute_id):
         skip_assigned=skip_assigned,
         is_research=is_research,
     )
+
+    form = CaseFilterForm()
 
     sort_by = request.args.get("sort")
     sort_order = request.args.get("order") or "asc"
@@ -120,6 +119,7 @@ def cases(institute_id):
         skip_assigned=skip_assigned,
         is_research=is_research,
         query=query,
+        form=form,
         hpo=hpo_terms,
         **data,
     )

@@ -1,15 +1,9 @@
+{% import "bootstrap/wtf.html" as wtf %}
 {% extends "layout_bs4.html" %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - Cases
 {% endblock %}
-
-{% block css %}
-{{ super() }}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
-<link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
-{% endblock %}
-
 
 {% block top_nav %}
   {{ super() }}
@@ -103,66 +97,29 @@
 
 {% macro search_form() %}
   <form action="{{ url_for('cases.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
-    <div class="row">
-      <div class="col-md-4 col-sm-4">
-        <div class="input-group">
-          <span class="input-group-addon">
-            <span class="glyphicon glyphicon-search"></span>
-          </span>
-          <input type="search" class="form-control" value="{{ query if query }}" id="query" name="query" placeholder="search cases"
-          data-toggle="tooltip" data-placement="right" data-html="true" title="
-            <div class='text-left'>
-              <u>Examples:</u><br>case_id=<strong>18201</strong>,
-              HPO&nbsp;term=<strong>HP:0001166</strong>,
-              synopsis=<strong>synopsis:epilepsy</strong>,
-              panel=<strong>panel:NMD</strong>,
-              status=<strong>status:active</strong>,
-              phenotype&nbsp;group=<strong>PG:0100022</strong>,
-              cohort=<strong>cohort:pedhep</strong>,
-              similar&nbsp;case=<strong>similar:18201</strong>,
-              gene_pinned=<strong>pinned:POT1</strong>,
-              gene_causative=<strong>causative:POT1</strong>,
-              assigned_user=<strong>Kent</strong>.<br><br>
-              Use key without value to search for cases with missing info (<strong>HP:</strong>, <strong>PG:</strong>, <strong>synopsis:</strong>).
-            </div>
-          "></input>
-        </div>
+    <div class="row d-flex align-items-center">
+      <div class="form-group col-2">
+        {{ form.search_type.label(class="control-label") }}
+        {{ form.search_type(class="form-control") }}
       </div>
-      <div class="col-md-2 col-sm-2">
-        <button type="submit" class="form-control">Search</button>
+      <div class="form-group col-5">
+        {{ form.search_term.label(class="control-label") }}
+        {{ form.search_term(class="form-control") }}
       </div>
-      <div class="col-md-2 col-sm-2">
-        <div class="number">
-          <label>
-              <input name="limit" type="number" step="100" class="form-control" placeholder="Limit" value={{limit}}>
-          </label>
-        </div>
+      <div class="form-group col-2">
+        {{ form.search(class="btn btn-primary form-control", style="margin-top: 30px;") }}
       </div>
-      <div class="col-md-2 col-sm-2">
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" name="skip_assigned" {% if skip_assigned %}checked{% endif %}> Hide assigned
-          </label>
-        </div>
+      <div class="form-group col-1">
+        {{ form.search_limit.label(class="control-label") }}
+        {{ form.search_limit(class="form-control") }}
       </div>
-      <div class="col-md-2 col-sm-2">
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" name="is_research" {% if is_research %}checked{% endif %}> Hide non-research
-          </label>
-        </div>
+      <div class="form-group col-1" >
+        {{ form.hide_assigned.label(class="control-label") }}
+        {{ form.hide_assigned(class="form-control") }}
       </div>
-    </div>
-    <div class="row mt-3">
-      <div class="col-md-3">
-        <label class="control-label">Search by phenotype similarity:</label>
-      </div>
-      <div class="col-md-9">
-        <select class="form-control" id="hpo_terms" name="hpo_terms" multiple="true" style="width:100%;">
-          {% for term in hpo %}
-            <option value="{{ term }}" selected>{{ term }}</option>
-          {% endfor %}
-        </select>
+      <div class="form-group col-1">
+        {{ form.hide_non_research.label(class="control-label") }}
+        {{ form.hide_non_research(class="form-control") }}
       </div>
     </div>
   </form>
@@ -323,14 +280,33 @@
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
   <script>
 
     $(document).ready(function(){
-      $("#hpo_terms").change();
+      $("#search_type").change();
     });
+
+    var placeholder = {
+      "Case Name": "example:18201",
+      "HPO term": "example:HP:0001166",
+      "Search synopsis": "example:epilepsy",
+      "Gene panel" : "example:NMD",
+      "Case status": "example:active",
+      "Phenotype group" : "example:PG:0100022",
+      "Patient cohort" : "example:pedhep",
+      "Similar case" : "example:18201",
+      "Similar phenotype" : "example:HP:0001166,HP:0001250,..",
+      "Pinned gene": "example:POT1",
+      "Causative gene": "example:POT1",
+      "Assigned user": "example:Kent"
+    };
+
+    document.getElementById('search_type').onchange = function() {
+      // modify placeholder of text input according to the type of search
+      var searchTerm = document.getElementById('search_term');
+      var sel = document.getElementById('search_type');
+      searchTerm.placeholder=placeholder[sel.value];
+    };
 
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
@@ -360,34 +336,5 @@
       sort_link.submit();
     }
 
-    $('#hpo_terms').change(function(){
-      var arr = $(this).val();
-
-      if (arr.length===0){
-        //unblock the other query inout
-        $("#query").prop("readonly", false);
-      }
-      else{
-        $("#query").prop("value", "");
-        $("#query").prop("readonly", true);
-      }
-    })
-
-    $("#hpo_terms").select2({
-      tags: true,
-      placeholder: "HP:0001166..",
-      createTag: function (params) {
-        // Check if HPO term is valid
-        if (params.term.indexOf('HP:') === -1 || params.term.length<7) {
-          // Return null to disable tag creation
-          return null;
-        }
-
-        return {
-          id: params.term,
-          text: params.term
-        }
-      }
-    });
   </script>
 {% endblock %}
