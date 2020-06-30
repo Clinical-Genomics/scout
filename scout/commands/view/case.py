@@ -48,7 +48,7 @@ def cases(institute, display_name, case_id, nr_variants, variants_treshold, simi
             return
 
     else:
-        models = adapter.cases(collaborator=institute, name_query=display_name)
+        models = adapter.cases(collaborator=institute, name_query=f"case:{display_name}")
         models = [case_obj for case_obj in models]
 
     if not models:
