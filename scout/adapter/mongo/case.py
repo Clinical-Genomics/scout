@@ -62,19 +62,18 @@ class CaseHandler(object):
         # Returns a list of tuples with highest score first
         return sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
 
-    def _set_similar_phenotype_query(self, query, order, query_field, query_term, institute_id):
+    def _set_similar_phenotype_query(self, query, query_field, query_term, institute_id):
         """Adds query parameters when search is performed by case or phenotype similarity
 
         Args:
             query(dict): cases search query
-            order(list): result order list
             query_field(str) example:"status"
             query_term(str) example:"active"
             name_query(dict) args provided by users in cases filter search
             institute_id(str): institute to search cases for
         """
         hpo_terms = []
-
+        order = None
         if query_field == "similar_case":
             LOG.debug(f"Search for cases similar to case: {query}")
             case_obj = self.case(display_name=query_term, institute_id=institute_id)
