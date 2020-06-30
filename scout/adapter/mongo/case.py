@@ -154,7 +154,7 @@ class CaseHandler(object):
         query_field = name_query.split(":")[0]  # example:status
         query_term = name_query[name_query.index(":") + 1 :].replace(" ", "")  # example:active
 
-        if query_field == "case":
+        if query_field == "case" and query_term != "":
             LOG.debug("Case display name query")
             query["$or"] = [
                 {"display_name": {"$regex": query_term}},

@@ -27,6 +27,7 @@ def cases(institute, display_name, case_id, nr_variants, variants_treshold, simi
     """Display cases from the database"""
     LOG.info("Running scout view institutes")
     adapter = store
+    name_query = None
 
     models = []
     if case_id:
@@ -48,7 +49,9 @@ def cases(institute, display_name, case_id, nr_variants, variants_treshold, simi
             return
 
     else:
-        models = adapter.cases(collaborator=institute, name_query=f"case:{display_name}")
+        if display_name:
+            name_query = f"case:{display_name}"
+        models = adapter.cases(collaborator=institute, name_query=name_query)
         models = [case_obj for case_obj in models]
 
     if not models:
