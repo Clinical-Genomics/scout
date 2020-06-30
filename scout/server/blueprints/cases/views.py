@@ -73,8 +73,6 @@ def cases(institute_id):
     institute_obj = institute_and_case(store, institute_id)
     name_query = request.args.get("search_term")
 
-    flash(type(request.args))
-
     limit = 100
     if request.args.get("search_limit"):
         limit = int(request.args.get("search_limit"))
