@@ -28,6 +28,7 @@ from flask import (
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
+from werkzeug import MultiDict
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
@@ -84,8 +85,7 @@ def cases(institute_id):
         skip_assigned=skip_assigned,
         is_research=is_research,
     )
-
-    form = CaseFilterForm()
+    form = CaseFilterForm(request.args)
 
     sort_by = request.args.get("sort")
     sort_order = request.args.get("order") or "asc"
