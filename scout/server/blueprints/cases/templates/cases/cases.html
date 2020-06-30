@@ -97,7 +97,7 @@
 
 {% macro search_form() %}
   <form action="{{ url_for('cases.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8"
-    onsubmit="return appendSearchSuffix()">
+    onsubmit="return appendSearchPrefix()">
     <div class="row d-flex align-items-center">
       <div class="form-group col-2">
         {{ form.search_type.label(class="control-label") }}

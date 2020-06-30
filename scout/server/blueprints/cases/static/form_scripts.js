@@ -62,8 +62,8 @@ document.getElementById("search_type").onchange = function() {
   searchTerm.value="";
 };
 
-function appendSearchSuffix(){
-  // adds a suffix to the search term to help adapter to execute right query
+function appendSearchPrefix(){
+  // adds a prefix to the search term to help adapter to execute right query
   searchTerm.value=selectHelper[sel.value]["prefix"]+String(searchTerm.value);
 }
 
