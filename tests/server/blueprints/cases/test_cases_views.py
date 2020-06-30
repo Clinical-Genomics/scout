@@ -202,11 +202,10 @@ def test_cases(app, institute_obj):
             assert resp.status_code == 200
 
 
-def test_cases_query(app, case_obj, institute_obj):
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
+def test_cases_query_case_name(app, case_obj, institute_obj):
+    """Test cases filtering by case display name"""
 
-    slice_query = case_obj["display_name"]
+    slice_query = f"case:{case_obj['display_name']}"
 
     with app.test_client() as client:
         # GIVEN that the user could be logged in
@@ -218,15 +217,15 @@ def test_cases_query(app, case_obj, institute_obj):
             url_for("cases.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
         )
 
-        # THEN it should return a page
+        # THEN it should return a page with the case
         assert resp.status_code == 200
+        assert case_obj["display_name"] in str(resp.data)
 
 
 def test_cases_panel_query(app, case_obj, parsed_panel, institute_obj):
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
+    """Test cases filtering by gene panel"""
 
-    slice_query = parsed_panel["panel_id"]
+    slice_query = f"panel:{parsed_panel['panel_id']}"
 
     with app.test_client() as client:
         # GIVEN that the user could be logged in
@@ -238,8 +237,63 @@ def test_cases_panel_query(app, case_obj, parsed_panel, institute_obj):
             url_for("cases.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
         )
 
-        # THEN it should return a page
+        # THEN it should return a page with the case
         assert resp.status_code == 200
+        assert case_obj["display_name"] in str(resp.data)
+
+
+def test_cases_exact_phenotype_query(app, case_obj, institute_obj, test_hpo_terms):
+    """Test cases filtering by providing one HPO term"""
+
+    # GIVEN a case with some HPO terms
+    store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]}, {"$set": {"phenotype_terms": test_hpo_terms}},
+    )
+    one_hpo_term = test_hpo_terms[0]["phenotype_id"]
+    slice_query = f"exact_pheno:{one_hpo_term}"
+
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN accessing the cases page with the query
+        resp = client.get(
+            url_for("cases.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
+        )
+
+        # THEN it should return a page with the case
+        assert resp.status_code == 200
+        assert case_obj["display_name"] in str(resp.data)
+
+
+def test_cases_similar_phenotype_query(app, case_obj, institute_obj, test_hpo_terms):
+    """Test cases filtering by providing HPO terms that are related to case phenotype"""
+
+    # GIVEN a case with some HPO terms
+    store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]}, {"$set": {"phenotype_terms": test_hpo_terms}},
+    )
+
+    # WHEN similar but distinct HPO terms are used in the query
+    similar_hpo_terms = ["HP:0012047", "HP:0000618"]
+    for term in test_hpo_terms:
+        assert term["phenotype_id"] not in similar_hpo_terms
+
+    similar_hpo_terms = ",".join(similar_hpo_terms)
+    slice_query = f"similar_pheno:{similar_hpo_terms}"
+
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN accessing the cases page with the query
+        resp = client.get(
+            url_for("cases.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
+        )
+
+        # THEN it should return a page with the case
+        assert resp.status_code == 200
+        assert case_obj["display_name"] in str(resp.data)
 
 
 def test_institutes(app):
