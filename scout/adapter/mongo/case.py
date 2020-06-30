@@ -108,7 +108,7 @@ class CaseHandler(object):
         """
 
         query_field = name_query.split(":")[0]  # example:status
-        query_term = name_query.split(":")[-1]  # example:active
+        query_term = name_query[name_query.index(":") + 1 :].replace(" ", "")  # example:active
 
         if query_field == "case":
             LOG.debug("Case display name query")

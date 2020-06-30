@@ -81,8 +81,12 @@
       </div>
     </div>
     {% if pane in (1,2) %}
+    <br>
     <div class="bottom-align-text">
-      <br>Examples: case:18201, exact_pheno:HP:0001166, synopsis:epilepsy, panel:NMD, pheno_group:HP:0001250, status:active, cohort:pedhep, similar_case:18201, similar_pheno:HP:0001166,HP:0001250, pinned:POT1, causative:POT1, user:Kent.
+      Query examples:
+      {% for elem in ["case:18201", "exact_pheno:HP:0001166", "synopsis:epilepsy", "panel:NMD", "pheno_group:HP:0001250", "status:active", "cohort:pedhep", "similar_case:1820", "similar_pheno:HP:0001166,HP:0001250", "pinned:POT1", "causative:POT1", "user:Kent"]%}
+        <span class="badge badge-info">{{elem}}</span>
+      {% endfor %}
     </div>
     {% endif %}
   </form>
