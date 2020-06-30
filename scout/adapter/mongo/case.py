@@ -146,7 +146,7 @@ class CaseHandler(object):
         case_ids = [case["_id"] for case in cases_with_gene_doc]
         query["_id"] = {"$in": case_ids}
 
-    def _populate_name_query(self, name_query, owner=None, collaborator=None):
+    def _populate_name_query(self, query, name_query, owner=None, collaborator=None):
         """Parses and adds query parameters provided by users in cases search filter.
 
         Args:
