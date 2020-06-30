@@ -99,12 +99,56 @@ class CaseHandler(object):
             similar_case_ids.append(i[0])
         query["_id"] = {"$in": similar_case_ids}
 
+    def _set_genes_of_interest_query(self, query, query_field, query_term):
+        """Adds query parameters when search is aimed at retrieving cases with a certain pinned or causative gene
+
+        Args:
+            query(dict): cases search query
+            query_field(str) "pinned" or "causative"
+            query_term(str) example:"POT1"
+        """
+        hgnc_id = self.hgnc_id(hgnc_symbol=query_term)
+        if hgnc_id is None:
+            LOG.debug(f"No gene with the HGNC symbol {hgnc_id} found.")
+            query["_id"] = {"$in": []}  # No result should be returned by query
+
+        unwind = "$causatives"
+        lookup_local = "causatives"
+        lookups_as = "causative_variant"
+        match = "causative_variant.hgnc_ids"
+
+        if query_field == "pinned":
+            unwind = "$suspects"
+            lookup_local = "suspects"
+            lookups_as = "suspect_variant"
+            match = "suspect_variant.hgnc_ids.hgnc_ids"
+
+        cases_with_gene_doc = self.case_collection.aggregate(
+            [
+                {"$unwind": unwind},
+                {
+                    "$lookup": {
+                        "from": "variant",
+                        "localField": lookup_local,
+                        "foreignField": "_id",
+                        "as": lookups_as,
+                    }
+                },
+                {"$match": {match: hgnc_id}},
+                {"$project": {"_id": 1}},
+            ]
+        )
+        case_ids = [case["_id"] for case in cases_with_gene_doc]
+        query["_id"] = {"$in": case_ids}
+
     def _populate_name_query(self, query, name_query, owner=None, collaborator=None):
         """Parses and adds query parameters provided by users in cases search filter.
 
         Args:
             query(dict): cases search query
             name_query(dict): args provided by users in cases filter search
+            owner(dict): an institute id
+            collaborator(dict): an institute id
         """
 
         query_field = name_query.split(":")[0]  # example:status
@@ -154,48 +198,11 @@ class CaseHandler(object):
             LOG.debug("Case cohort query")
             query["cohorts"] = query_term
 
-        if query_field == "similar_case" or query_field == "similar_pheno":
-            if query_term != "":
-                self._set_similar_phenotype_query(
-                    query, query_field, query_term, owner or collaborator
-                )
+        if query_term != "" and (query_field == "similar_case" or query_field == "similar_pheno"):
+            self._set_similar_phenotype_query(query, query_field, query_term, owner or collaborator)
 
-        if query_field == "pinned" or query_field == "causative":
-            if query_term == "":
-                return
-            hgnc_id = self.hgnc_id(hgnc_symbol=query_term)
-            if hgnc_id is None:
-                LOG.debug(f"No gene with the HGNC symbol {hgnc_id} found.")
-                query["_id"] = {"$in": []}  # No result should be returned by query
-
-            unwind = "$causatives"
-            lookup_local = "causatives"
-            lookups_as = "causative_variant"
-            match = "causative_variant.hgnc_ids"
-
-            if query_field == "pinned":
-                unwind = "$suspects"
-                lookup_local = "suspects"
-                lookups_as = "suspect_variant"
-                match = "suspect_variant.hgnc_ids.hgnc_ids"
-
-            cases_with_gene_doc = self.case_collection.aggregate(
-                [
-                    {"$unwind": unwind},
-                    {
-                        "$lookup": {
-                            "from": "variant",
-                            "localField": lookup_local,
-                            "foreignField": "_id",
-                            "as": lookups_as,
-                        }
-                    },
-                    {"$match": {match: hgnc_id}},
-                    {"$project": {"_id": 1}},
-                ]
-            )
-            case_ids = [case["_id"] for case in cases_with_gene_doc]
-            query["_id"] = {"$in": case_ids}
+        if query_term != "" and (query_field == "pinned" or query_field == "causative"):
+            self._set_genes_of_interest_query(query, query_field, query_term)
 
         if query_field == "user":
             LOG.debug(f"Search for cases with assignee '{query_term}'.")
