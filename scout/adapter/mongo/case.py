@@ -118,34 +118,37 @@ class CaseHandler(object):
             query["cohorts"] = query_term
 
         if query_field == "similar_case" or query_field == "similar_pheno":
-            if query_term == "":
-                return
             if owner is not None:
                 search_institute_id = owner
             elif collaborator is not None:
                 search_institute_id = collaborator
 
             hpo_terms = []
-
+            similar_cases = []
             if query_field == "similar_case":
                 case_obj = self.case(display_name=query_term, institute_id=search_institute_id)
                 if case_obj:
                     LOG.debug(f"Search for cases similar to case {case_obj.get('display_name')}")
                     for term in case_obj.get("phenotype_terms", []):
                         hpo_terms.append(term.get("phenotype_id"))
-            else:
+                    similar_cases = self.cases_by_phenotype(
+                        hpo_terms, case_obj["owner"], case_obj["_id"]
+                    )
+            else:  # similar HPO terms
                 LOG.debug(f"Search for cases with phenotype similar to HPO terms {hpo_terms}")
                 hpo_terms = query_term.split(",")
+                hpo_terms = [term.strip() for term in hpo_terms]
+                similar_cases = self.cases_by_phenotype(hpo_terms, owner or collaborator, None)
 
-            hpo_terms = [term.strip() for term in hpo_terms]
-            similar_cases = self.cases_by_phenotype(hpo_terms, case_obj["owner"], case_obj["_id"])
-            if similar_cases:
-                similar_case_ids = []
-                order = []
-                for i in similar_cases:
-                    similar_case_ids.append(i[0])
-                    order.append(i[1])
-                query["_id"] = {"$in": similar_case_ids}
+            if len(similar_cases) == 0:  # No cases similar to given phenotype
+                query["_id"] = {"$in": []}  # No result should be returned by query
+                return
+
+            similar_case_ids = []
+            order = []
+            for i in similar_cases:
+                similar_case_ids.append(i[0])
+            query["_id"] = {"$in": similar_case_ids}
 
         if query_field == "pinned" or query_field == "causative":
             if query_term == "":
@@ -153,7 +156,7 @@ class CaseHandler(object):
             hgnc_id = self.hgnc_id(hgnc_symbol=query_term)
             if hgnc_id is None:
                 LOG.debug(f"No gene with the HGNC symbol {hgnc_id} found.")
-                return
+                query["_id"] = {"$in": []}  # No result should be returned by query
 
             unwind = "$causatives"
             lookup_local = "causatives"
@@ -194,8 +197,6 @@ class CaseHandler(object):
                 )
             )
             query["assignees"] = {"$in": [user["email"] for user in users]}
-
-        return
 
     def cases(
         self,

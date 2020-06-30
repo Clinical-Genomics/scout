@@ -40,6 +40,7 @@ from scout.server.blueprints.variant.controllers import variant as variant_decor
 from scout.server.blueprints.variant.utils import predictions
 from scout.server.utils import institute_and_case, user_institutes
 from scout.utils.matchmaker import matchmaker_request
+from .forms import CaseFilterForm
 
 LOG = logging.getLogger(__name__)
 
@@ -107,6 +108,22 @@ def cases(store, case_query, prioritized_cases_query=None, limit=100):
         "limit": limit,
     }
     return data
+
+
+def populate_case_filter_form(params):
+    """Populate filter form with params previosly submitted by user
+
+    Args:
+        params(werkzeug.datastructures.ImmutableMultiDict)
+
+    Returns:
+        form(scout.server.blueprints.cases.forms.CaseFilterForm)
+    """
+    form = CaseFilterForm(params)
+    form.search_type.default = params.get("search_type")
+    search_term = form.search_term.data
+    form.search_term.data = search_term[search_term.index(":") + 1 :]  # remove prefix
+    return form
 
 
 def case(store, institute_obj, case_obj):

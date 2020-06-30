@@ -53,12 +53,13 @@ var selectHelper = {
 };
 
 $(document).ready(function(){
-  $("#search_type").change();
+  searchTerm.placeholder=selectHelper[sel.value]["placeholder"];
 });
 
 document.getElementById("search_type").onchange = function() {
   // modify placeholder of text input according to the type of search
   searchTerm.placeholder=selectHelper[sel.value]["placeholder"];
+  searchTerm.value="";
 };
 
 function appendSearchSuffix(){
