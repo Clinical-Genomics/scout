@@ -62,11 +62,12 @@ class CaseHandler(object):
         # Returns a list of tuples with highest score first
         return sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
 
-    def _set_similar_phenotype_query(self, query, query_field, query_term, institute_id):
+    def _set_similar_phenotype_query(self, query, order, query_field, query_term, institute_id):
         """Adds query parameters when search is performed by case or phenotype similarity
 
         Args:
             query(dict): cases search query
+            order(list): result order list
             query_field(str) example:"status"
             query_term(str) example:"active"
             name_query(dict) args provided by users in cases filter search
@@ -95,9 +96,13 @@ class CaseHandler(object):
             return
 
         similar_case_ids = []
+        order = []
         for i in similar_cases:
             similar_case_ids.append(i[0])
+            order.append(i[1])
         query["_id"] = {"$in": similar_case_ids}
+
+        return order
 
     def _set_genes_of_interest_query(self, query, query_field, query_term):
         """Adds query parameters when search is aimed at retrieving cases with a certain pinned or causative gene
@@ -141,7 +146,7 @@ class CaseHandler(object):
         case_ids = [case["_id"] for case in cases_with_gene_doc]
         query["_id"] = {"$in": case_ids}
 
-    def _populate_name_query(self, query, name_query, owner=None, collaborator=None):
+    def _populate_name_query(self, name_query, owner=None, collaborator=None):
         """Parses and adds query parameters provided by users in cases search filter.
 
         Args:
@@ -150,7 +155,7 @@ class CaseHandler(object):
             owner(dict): an institute id
             collaborator(dict): an institute id
         """
-
+        order = None
         query_field = name_query.split(":")[0]  # example:status
         query_term = name_query[name_query.index(":") + 1 :].replace(" ", "")  # example:active
 
@@ -199,7 +204,9 @@ class CaseHandler(object):
             query["cohorts"] = query_term
 
         if query_term != "" and (query_field == "similar_case" or query_field == "similar_pheno"):
-            self._set_similar_phenotype_query(query, query_field, query_term, owner or collaborator)
+            order = self._set_similar_phenotype_query(
+                query, query_field, query_term, owner or collaborator
+            )
 
         if query_term != "" and (query_field == "pinned" or query_field == "causative"):
             self._set_genes_of_interest_query(query, query_field, query_term)
@@ -214,6 +221,8 @@ class CaseHandler(object):
                 )
             )
             query["assignees"] = {"$in": [user["email"] for user in users]}
+
+        return order
 
     def cases(
         self,
@@ -309,7 +318,7 @@ class CaseHandler(object):
 
         if name_query:
             # Case search filter form query
-            self._populate_name_query(query, name_query, owner, collaborator)
+            order = self._populate_name_query(query, name_query, owner, collaborator)
 
         if within_days:
             verbs = []
