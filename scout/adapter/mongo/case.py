@@ -62,6 +62,43 @@ class CaseHandler(object):
         # Returns a list of tuples with highest score first
         return sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
 
+    def _set_similar_phenotype_query(self, query, query_field, query_term, institute_id):
+        """Adds query parameters when search is performed by case or phenotype similarity
+
+        Args:
+            query(dict): cases search query
+            query_field(str) example:"status"
+            query_term(str) example:"active"
+            name_query(dict) args provided by users in cases filter search
+            institute_id(str): institute to search cases for
+        """
+        hpo_terms = []
+
+        if query_field == "similar_case":
+            LOG.debug(f"Search for cases similar to case: {query}")
+            case_obj = self.case(display_name=query_term, institute_id=institute_id)
+            if case_obj is None:
+                query["_id"] = {"$in": []}  # No result should be returned by query
+                return
+
+            for term in case_obj.get("phenotype_terms", []):
+                hpo_terms.append(term.get("phenotype_id"))
+            similar_cases = self.cases_by_phenotype(hpo_terms, institute_id, case_obj["_id"])
+        else:  # similar HPO terms
+            LOG.debug(f"Search for cases with phenotype similar to HPO terms: {hpo_terms}")
+            hpo_terms = query_term.split(",")
+            hpo_terms = [term.strip() for term in hpo_terms]
+            similar_cases = self.cases_by_phenotype(hpo_terms, institute_id, None)
+
+        if len(similar_cases) == 0:  # No cases similar to given phenotype
+            query["_id"] = {"$in": []}  # No result should be returned by query
+            return
+
+        similar_case_ids = []
+        for i in similar_cases:
+            similar_case_ids.append(i[0])
+        query["_id"] = {"$in": similar_case_ids}
+
     def _populate_name_query(self, query, name_query, owner=None, collaborator=None):
         """Parses and adds query parameters provided by users in cases search filter.
 
@@ -118,37 +155,10 @@ class CaseHandler(object):
             query["cohorts"] = query_term
 
         if query_field == "similar_case" or query_field == "similar_pheno":
-            if owner is not None:
-                search_institute_id = owner
-            elif collaborator is not None:
-                search_institute_id = collaborator
-
-            hpo_terms = []
-            similar_cases = []
-            if query_field == "similar_case":
-                case_obj = self.case(display_name=query_term, institute_id=search_institute_id)
-                if case_obj:
-                    LOG.debug(f"Search for cases similar to case {case_obj.get('display_name')}")
-                    for term in case_obj.get("phenotype_terms", []):
-                        hpo_terms.append(term.get("phenotype_id"))
-                    similar_cases = self.cases_by_phenotype(
-                        hpo_terms, case_obj["owner"], case_obj["_id"]
-                    )
-            else:  # similar HPO terms
-                LOG.debug(f"Search for cases with phenotype similar to HPO terms {hpo_terms}")
-                hpo_terms = query_term.split(",")
-                hpo_terms = [term.strip() for term in hpo_terms]
-                similar_cases = self.cases_by_phenotype(hpo_terms, owner or collaborator, None)
-
-            if len(similar_cases) == 0:  # No cases similar to given phenotype
-                query["_id"] = {"$in": []}  # No result should be returned by query
-                return
-
-            similar_case_ids = []
-            order = []
-            for i in similar_cases:
-                similar_case_ids.append(i[0])
-            query["_id"] = {"$in": similar_case_ids}
+            if query_term != "":
+                self._set_similar_phenotype_query(
+                    query, query_field, query_term, owner or collaborator
+                )
 
         if query_field == "pinned" or query_field == "causative":
             if query_term == "":

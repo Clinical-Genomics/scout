@@ -122,7 +122,8 @@ def populate_case_filter_form(params):
     form = CaseFilterForm(params)
     form.search_type.default = params.get("search_type")
     search_term = form.search_term.data
-    form.search_term.data = search_term[search_term.index(":") + 1 :]  # remove prefix
+    if ":" in search_term:
+        form.search_term.data = search_term[search_term.index(":") + 1 :]  # remove prefix
     return form
 
 
