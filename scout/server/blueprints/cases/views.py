@@ -28,7 +28,6 @@ from flask import (
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
-from werkzeug import MultiDict
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
