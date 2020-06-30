@@ -171,13 +171,13 @@ def test_get_cases_no_HPO(adapter, case_obj):
     adapter.case_collection.insert_one(case_obj)
 
     # WHEN providing an empty value for term HP:
-    name_query = "HP:"
+    name_query = "exact_pheno:"
     # Then case should be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     assert sum(1 for i in cases) == 1
 
     # WHEN providing an empty value for phenotype group:
-    name_query = "PG:"
+    name_query = "pheno_group:"
     # Then case should be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     assert sum(1 for i in cases) == 1
@@ -239,7 +239,7 @@ def test_get_cases_existing_individual(real_adapter, case_obj):
     assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
     # WHEN retreiving cases by partial individual name
-    result = adapter.cases(name_query="NA1288")
+    result = adapter.cases(name_query="case:NA1288")
     # THEN we should get the correct case
     assert sum(1 for i in result) == 1
 
@@ -256,7 +256,7 @@ def test_get_cases_assignees(real_adapter, case_obj, user_obj):
     adapter.case_collection.insert_one(case_obj)
 
     # WHEN retreiving cases by partial individual name
-    result = adapter.cases(name_query="john")
+    result = adapter.cases(name_query="user:john")
     # THEN we should get the correct case
     assert sum(1 for i in result) == 1
 

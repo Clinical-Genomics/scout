@@ -2,7 +2,7 @@ var searchTerm = document.getElementById('search_term');
 var sel = document.getElementById('search_type');
 
 var selectHelper = {
-  "Case Name": {
+  "Case or individual name": {
       "placeholder" : "example:18201",
       "prefix": "case:"
   },

@@ -15,7 +15,7 @@ from wtforms import (
 from wtforms.widgets import TextInput
 
 CASE_SEARCH_KEY = [
-    "Case Name",
+    "Case or individual name",
     "HPO term",
     "Search synopsis",
     "Gene panel",
