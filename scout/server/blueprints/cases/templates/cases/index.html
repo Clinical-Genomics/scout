@@ -24,6 +24,9 @@
           {% if current_user.is_admin %}
             <span class="text-muted">({{ institute._id }})</span>
           {% endif %}
+            <a href="{{ url_for('overview.institute', institute_id=institute._id) }}" class="badge badge-primary ml-3 text-white">
+              edit
+            </a>
             <span class="badge badge-secondary badge-pill float-right">{{ case_count }} cases </span>
         </li>
       {% endfor %}
