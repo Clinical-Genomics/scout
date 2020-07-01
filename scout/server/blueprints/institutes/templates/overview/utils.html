@@ -9,9 +9,29 @@
                   <span id="collapse-text" class="menu-collapsed">Collapse</span>
               </div>
           </a>
-          <!-- Menu with submenu -->
-          {{ general_settings(institute) }}
+          <!-- settings menu -->
+          <a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start" onclick="hide_div(1)">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-wrench fa-fw mr-3"></span>
+                  <span class="menu-collapsed" data-toggle="tab" onclick="hide_div(1)">General settings</span>
+              </div>
+          </a>
 
+          <!-- users menu -->
+          <a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start" onclick="hide_div(2)">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-users fa-fw mr-3"></span>
+                  <span class="menu-collapsed" data-toggle="tab" onclick="hide_div(2)">Users</span>
+              </div>
+          </a>
+
+          <!-- shared data -->
+          <a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start" onclick="hide_div(3)">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-share-alt mr-3"></span>
+                  <span class="menu-collapsed" data-toggle="tab" onclick="hide_div(3)">Shared data</span>
+              </div>
+          </a>
       </ul><!-- List Group END-->
   </div><!-- sidebar-container END -->
 {% endmacro %}

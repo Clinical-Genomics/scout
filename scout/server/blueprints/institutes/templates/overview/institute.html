@@ -28,7 +28,16 @@
 
 {% macro institute_body(form, institute) %}
 <div class="col">
-  {{ institute_settings(form, institute) }}
+  <div class="multipage" id="tabs">
+    <div class="institute-pane" id="1">
+      {{ institute_settings(form, institute) }}
+    </div>
+    <div class="institute-pane" id="2">
+      Some random bullshit
+    </div>
+    <div class="institute-pane" id="3">
+      Shared data
+    </div>
 </div>
 {% endmacro %}
 
@@ -36,8 +45,7 @@
 <div class="container-float">
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
     {{ settings_actionbar(institute) }} <!-- This is the sidebar -->
-    <!-- institute settings page -->
-    {{ institute_body(form, institute) }}
+    {{ institute_body(form, institute) }} <!-- institute body -->
   </div> <!-- end of div id body-row -->
 </div>
 
@@ -111,7 +119,6 @@
         });
     });
 
-
     function SidebarCollapse () {
         $('.menu-collapsed').toggleClass('d-none');
         $('.sidebar-submenu').toggleClass('d-none');
@@ -140,6 +147,18 @@
     $('[data-toggle=sidebar-collapse]').click(function() {
       SidebarCollapse();
     });
+
+    function hide_div(show_div){
+      for (i=1; i<4; i++) {
+        var div_el = document.getElementById(i);
+        if (i==show_div){ //show div
+          div_el.style.display = "block";
+        }
+        else{ //hode other divs
+          div_el.style.display = "none";
+        }
+      }
+    }
   </script>
 
 {% endblock %}

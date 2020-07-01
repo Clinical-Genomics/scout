@@ -13,7 +13,13 @@ from .forms import InstituteForm
 
 LOG = logging.getLogger(__name__)
 
-blueprint = Blueprint("overview", __name__, template_folder="templates")
+blueprint = Blueprint(
+    "overview",
+    __name__,
+    template_folder="templates",
+    static_folder="static",
+    static_url_path="/overview/static",
+)
 
 
 @blueprint.route("/overview")
