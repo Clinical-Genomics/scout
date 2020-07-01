@@ -60,7 +60,6 @@ nav:
       - Backup and restore: 'admin-guide/backup.md'
 
   - Blog:
-      - Intro: 'blog/README.md'
       - Whats new in 3.0?: 'blog/new-3.0.md'
       - Whats new in 3.1?: 'blog/new-3.1.md'
       - Whats new in 3.2?: 'blog/new-3.2.md'
@@ -71,6 +70,3 @@ nav:
       - Whats new in 4.7?: 'blog/new-4.7.3.md'
       - Whats new in 4.17?: 'blog/new-4.17.md'
       - Whats new in 4.18?: 'blog/new-4.18.md'
-
-  - About:
-      -Glossary: 'GLOSSARY.md'
