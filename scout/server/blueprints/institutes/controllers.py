@@ -6,6 +6,7 @@ LOG = logging.getLogger(__name__)
 
 from flask import flash
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
+from scout.server.extensions import store
 
 
 def institute(store, institute_id):
@@ -24,6 +25,37 @@ def institute(store, institute_id):
 
     data = {"institute": institute_obj, "users": users}
     return data
+
+
+def populate_institute_form(form, institute_obj):
+    """ Populate institute settings form
+
+    Args:
+        form(scout.server.blueprints.institutes.models.InstituteForm)
+        institute_obj(dict) An institute object
+    """
+    # get all other institutes to populate the select of the possible collaborators
+    institutes_tuples = []
+    for inst in store.institutes():
+        if not inst["_id"] == institute_obj["_id"]:
+            institutes_tuples.append(((inst["_id"], inst["display_name"])))
+
+    form.display_name.default = institute_obj.get("display_name")
+    form.institutes.choices = institutes_tuples
+    form.coverage_cutoff.default = institute_obj.get("coverage_cutoff")
+    form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
+
+    # collect all available default HPO terms
+    default_phenotypes = [choice[0].split(" ")[0] for choice in form.pheno_groups.choices]
+    if institute_obj.get("phenotype_groups"):
+        for key, value in institute_obj["phenotype_groups"].items():
+            if not key in default_phenotypes:
+                custom_group = " ".join(
+                    [key, ",", value.get("name"), "( {} )".format(value.get("abbr"))]
+                )
+                form.pheno_groups.choices.append((custom_group, custom_group))
+
+    return default_phenotypes
 
 
 def update_institute_settings(store, institute_obj, form):

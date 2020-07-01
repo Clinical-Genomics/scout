@@ -33,10 +33,10 @@
       {{ institute_settings(form, institute) }}
     </div>
     <div class="institute-pane" id="2">
-      Some random bullshit
+      Users
     </div>
     <div class="institute-pane" id="3">
-      Shared data
+      data sharing
     </div>
 </div>
 {% endmacro %}
@@ -59,6 +59,7 @@
   <script>
     $(document).ready(function(){
       $('[data-toggle="tooltip"]').tooltip();
+      hide_div({{panel}});
     });
 
     var avail_terms = {{ default_phenotypes|safe }};
