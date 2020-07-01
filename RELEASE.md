@@ -17,7 +17,7 @@
     - in `scout/docs/blog/new-2.0.0.md`
     - Update `scout/docs/README.md` to include the blog post
 
-1. You can check the the new blog post looks as expected by running `mkdocs serve`. This way the updated pages will show in you browser if you open up the url specified by the terminal (http://127.0.0.1:8000/ or http://0.0.0.0:4000/). Pages will rebuild automatically any time there is a change.
+1. You can check the the new blog post looks as expected by running `mkdocs serve`. This way the updated pages will show in you browser if you open up the url written in the terminal (in general http://127.0.0.1:8000/ or http://0.0.0.0:4000/). Pages will rebuild automatically any time a change is introduced, so there is no need to run this command more than once.
 
 1. Commit changes, push to github and create a pull request
 
