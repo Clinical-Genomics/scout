@@ -75,8 +75,7 @@ def institute_settings(institute_id):
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
         flash(
-            "Current user doesn't have the permission to modify this institute",
-            "warning",
+            "Current user doesn't have the permission to modify this institute", "warning",
         )
         return redirect(request.referrer)
 
@@ -85,9 +84,7 @@ def institute_settings(institute_id):
 
     # if institute is to be updated
     if request.method == "POST" and form.validate_on_submit():
-        institute_obj = controllers.update_institute_settings(
-            store, institute_obj, request.form
-        )
+        institute_obj = controllers.update_institute_settings(store, institute_obj, request.form)
         if isinstance(institute_obj, dict):
             flash("institute was updated ", "success")
         else:  # an error message was retuned
@@ -112,8 +109,7 @@ def institute_users(institute_id):
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
         flash(
-            "Current user doesn't have the permission to modify this institute",
-            "warning",
+            "Current user doesn't have the permission to modify this institute", "warning",
         )
         return redirect(request.referrer)
     data = controllers.institute(store, institute_id)
@@ -135,9 +131,7 @@ def clinvar_rename_casedata(submission, case, old_name):
 def clinvar_update_submission(institute_id, submission):
     """Update a submission status to open/closed, register an official SUB number or delete the entire submission"""
 
-    controllers.update_clinvar_submission_status(
-        store, request, institute_id, submission
-    )
+    controllers.update_clinvar_submission_status(store, request, institute_id, submission)
     return redirect(request.referrer)
 
 
@@ -163,9 +157,7 @@ def clinvar_download_csv(submission, csv_type, clinvar_id):
         for line in lines:
             yield line + "\n"
 
-    clinvar_file_data = controllers.clinvar_submission_file(
-        store, submission, csv_type, clinvar_id
-    )
+    clinvar_file_data = controllers.clinvar_submission_file(store, submission, csv_type, clinvar_id)
 
     if clinvar_file_data is None:
         return redirect(request.referrer)
