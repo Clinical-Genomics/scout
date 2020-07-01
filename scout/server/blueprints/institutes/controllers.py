@@ -21,7 +21,7 @@ def institute(store, institute_id):
     """
 
     institute_obj = store.institute(institute_id)
-    users = store.users(institute_id)
+    users = list(store.users(institute_id))
 
     data = {"institute": institute_obj, "users": users}
     return data
@@ -46,7 +46,9 @@ def populate_institute_form(form, institute_obj):
     form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
 
     # collect all available default HPO terms
-    default_phenotypes = [choice[0].split(" ")[0] for choice in form.pheno_groups.choices]
+    default_phenotypes = [
+        choice[0].split(" ")[0] for choice in form.pheno_groups.choices
+    ]
     if institute_obj.get("phenotype_groups"):
         for key, value in institute_obj["phenotype_groups"].items():
             if not key in default_phenotypes:
@@ -84,7 +86,9 @@ def update_institute_settings(store, institute_obj, form):
 
     for pheno_group in form.getlist("pheno_groups"):
         phenotype_groups.append(pheno_group.split(" ,")[0])
-        group_abbreviations.append(pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")])
+        group_abbreviations.append(
+            pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")]
+        )
 
     if form.get("hpo_term") and form.get("pheno_abbrev"):
         phenotype_groups.append(form["hpo_term"].split(" |")[0])
@@ -126,13 +130,17 @@ def update_clinvar_submission_status(store, request, institute_id, submission_id
     update_status = request.form.get("update_submission")
 
     if update_status in ["open", "closed"]:  # open or close a submission
-        store.update_clinvar_submission_status(institute_id, submission_id, update_status)
+        store.update_clinvar_submission_status(
+            institute_id, submission_id, update_status
+        )
     if update_status == "register_id":  # register an official clinvar submission ID
         result = store.update_clinvar_id(
             clinvar_id=request.form.get("clinvar_id"), submission_id=submission_id,
         )
     if update_status == "delete":  # delete a submission
-        deleted_objects, deleted_submissions = store.delete_submission(submission_id=submission_id)
+        deleted_objects, deleted_submissions = store.delete_submission(
+            submission_id=submission_id
+        )
         flash(
             f"Removed {deleted_objects} objects and {deleted_submissions} submission from database",
             "info",
@@ -149,8 +157,13 @@ def update_clinvar_sample_names(store, submission_id, case_id, old_name, new_nam
         old_name(str): old name of an individual in case data
         new_name(str): new name of an individual in case data
     """
-    n_renamed = store.rename_casedata_samples(submission_id, case_id, old_name, new_name)
-    flash(f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'", "info")
+    n_renamed = store.rename_casedata_samples(
+        submission_id, case_id, old_name, new_name
+    )
+    flash(
+        f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'",
+        "info",
+    )
 
 
 def clinvar_submission_file(store, submission_id, csv_type, clinvar_subm_id):

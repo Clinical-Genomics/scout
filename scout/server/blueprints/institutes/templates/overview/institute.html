@@ -1,5 +1,5 @@
 {% extends "layout_bs4.html" %}
-{% from "overview/utils.html" import users_table, settings_actionbar, institute_settings %}
+{% from "overview/utils.html" import institute_actionbar, institute_settings %}
 
 {% block title %}
   {{ super() }} - Institutes
@@ -26,26 +26,14 @@
   </li>
 {% endblock %}
 
-{% macro institute_body(form, institute) %}
-<div class="col">
-  <div class="multipage" id="tabs">
-    <div class="institute-pane" id="1">
-      {{ institute_settings(form, institute) }}
-    </div>
-    <div class="institute-pane" id="2">
-      Users
-    </div>
-    <div class="institute-pane" id="3">
-      data sharing
-    </div>
-</div>
-{% endmacro %}
 
 {% block content_main %}
 <div class="container-float">
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
-    {{ settings_actionbar(institute) }} <!-- This is the sidebar -->
-    {{ institute_body(form, institute) }} <!-- institute body -->
+    {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
+  <div class="col">
+    {{ institute_settings(form, institute) }}
+  </div>
   </div> <!-- end of div id body-row -->
 </div>
 
@@ -148,18 +136,6 @@
     $('[data-toggle=sidebar-collapse]').click(function() {
       SidebarCollapse();
     });
-
-    function hide_div(show_div){
-      for (i=1; i<4; i++) {
-        var div_el = document.getElementById(i);
-        if (i==show_div){ //show div
-          div_el.style.display = "block";
-        }
-        else{ //hode other divs
-          div_el.style.display = "none";
-        }
-      }
-    }
   </script>
 
 {% endblock %}

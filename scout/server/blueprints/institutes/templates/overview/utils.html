@@ -1,4 +1,4 @@
-{% macro settings_actionbar(institute) %}
+{% macro institute_actionbar(institute) %}
 <!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
   <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
       <!-- Bootstrap List Group -->
@@ -10,18 +10,18 @@
               </div>
           </a>
           <!-- settings menu -->
-          <a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start" onclick="hide_div(1)">
+          <a href="{{ url_for('overview.institute_settings', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start" onclick="hide_div(1)">
               <div class="d-flex w-100 justify-content-start align-items-center">
                   <span class="fa fa-wrench fa-fw mr-3"></span>
-                  <span class="menu-collapsed" data-toggle="tab" onclick="hide_div(1)">General settings</span>
+                  <span class="menu-collapsed">General settings</span>
               </div>
           </a>
 
           <!-- users menu -->
-          <a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start" onclick="hide_div(2)">
+          <a href="{{ url_for('overview.institute_users', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start" onclick="hide_div(2)">
               <div class="d-flex w-100 justify-content-start align-items-center">
                   <span class="fa fa-users fa-fw mr-3"></span>
-                  <span class="menu-collapsed" data-toggle="tab" onclick="hide_div(2)">Users</span>
+                  <span class="menu-collapsed">Users</span>
               </div>
           </a>
 
@@ -29,24 +29,16 @@
           <a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start" onclick="hide_div(3)">
               <div class="d-flex w-100 justify-content-start align-items-center">
                   <span class="fa fa-share-alt mr-3"></span>
-                  <span class="menu-collapsed" data-toggle="tab" onclick="hide_div(3)">Shared data</span>
+                  <span class="menu-collapsed">Shared data</span>
               </div>
           </a>
       </ul><!-- List Group END-->
   </div><!-- sidebar-container END -->
 {% endmacro %}
 
-{% macro general_settings(institute) %}
-<a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
-    <div class="d-flex w-100 justify-content-start align-items-center">
-        <span class="fa fa-wrench fa-fw mr-3"></span>
-        <span class="menu-collapsed">General settings</span>
-    </div>
-</a>
-{% endmacro %}
 
 {% macro institute_settings(form, institute) %}
-<form action="{{ url_for('overview.institute', institute_id=institute._id) }}" method="POST"
+<form action="{{ url_for('overview.institute_settings', institute_id=institute._id) }}" method="POST"
   accept-charset="utf-8" id="institute_form">
 {{ form.csrf_token }}
 <div class="container">
@@ -197,11 +189,11 @@
     <tbody>
       {% for user in users %}
         <tr>
-          <th scope="row">{{loop.index}}</th>
+          <td>{{loop.index}}</td>
           <td>{{user.name}}</td>
           <td>{{user.email}}</td>
           <td>{{user.roles|join(', ')}}</td>
-          <td>{{user.accessed_at}}</td>
+          <td>{{user.accessed_at or "-"}}</td>
         </tr>
       {% endfor %}
     </tbody>
