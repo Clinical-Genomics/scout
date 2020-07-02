@@ -1,25 +1,10 @@
 {% extends "layout_bs4.html" %}
-{% from "overview/utils.html" import institute_actionbar, users_table %}
+{% from "overview/utils.html" import users_table %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
 
 {% block title %}
-  {{ super() }} - Institutes
+  {{ super() }} - Users
 {% endblock %}
-
-{% block top_nav %}
-  {{ super() }}
-  <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('overview.institutes') }}">
-      institutes
-    </a>
-  </li>
-  <li class="nav-item active">
-    <p class="navbar-text text-nowrap">{{ institute.display_name }}</p>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
-  </li>
-{% endblock %}
-
 
 {% block content_main %}
 <div class="container-float">

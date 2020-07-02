@@ -38,7 +38,7 @@ from scout.parse.matchmaker import (
 from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variant.utils import predictions
-from scout.server.utils import institute_and_case, user_institutes
+from scout.server.utils import institute_and_case
 from scout.utils.matchmaker import matchmaker_request
 
 LOG = logging.getLogger(__name__)
@@ -628,99 +628,6 @@ def vcf2cytosure(store, institute_id, case_name, individual_id):
             individual_obj = individual
 
     return (individual_obj["display_name"], individual_obj["vcf2cytosure"])
-
-
-def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
-    """Pre-process list of variants."""
-    # We need to call variants_collection.count_documents here
-    variant_count = variants_query.count()
-    skip_count = per_page * max(page - 1, 0)
-    more_variants = True if variant_count > (skip_count + per_page) else False
-    variant_res = variants_query.skip(skip_count).limit(per_page)
-
-    my_institutes = set(inst["_id"] for inst in user_institutes(store, current_user))
-
-    variants = []
-    for variant_obj in variant_res:
-        # Populate variant case_display_name
-        variant_case_obj = store.case(case_id=variant_obj["case_id"])
-        if not variant_case_obj:
-            # A variant with missing case was encountered
-            continue
-        case_display_name = variant_case_obj.get("display_name")
-        variant_obj["case_display_name"] = case_display_name
-
-        # hide other institutes for now
-        other_institutes = set([variant_case_obj.get("owner")])
-        other_institutes.update(set(variant_case_obj.get("collaborators", [])))
-        if my_institutes.isdisjoint(other_institutes):
-            # If the user does not have access to the information we skip it
-            continue
-
-        genome_build = variant_case_obj.get("genome_build", "37")
-        if genome_build not in ["37", "38"]:
-            genome_build = "37"
-
-        # Update the HGNC symbols if they are not set
-        variant_genes = variant_obj.get("genes")
-        if variant_genes is not None:
-            for gene_obj in variant_genes:
-                # If there is no hgnc id there is nothin we can do
-                if not gene_obj["hgnc_id"]:
-                    continue
-                # Else we collect the gene object and check the id
-                if gene_obj.get("hgnc_symbol") is None or gene_obj.get("description") is None:
-                    hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
-                    if not hgnc_gene:
-                        continue
-                    gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
-                    gene_obj["description"] = hgnc_gene["description"]
-
-        # Populate variant HGVS and predictions
-        gene_ids = []
-        gene_symbols = []
-        hgvs_c = []
-        hgvs_p = []
-        variant_genes = variant_obj.get("genes")
-
-        if variant_genes is not None:
-            functional_annotation = ""
-
-            for gene_obj in variant_genes:
-                hgnc_id = gene_obj["hgnc_id"]
-                gene_symbol = gene(store, hgnc_id)["symbol"]
-                gene_ids.append(hgnc_id)
-                gene_symbols.append(gene_symbol)
-
-                hgvs_nucleotide = "-"
-                hgvs_protein = ""
-                # gather HGVS info from gene transcripts
-                transcripts_list = gene_obj.get("transcripts")
-                for transcript_obj in transcripts_list:
-                    if (
-                        transcript_obj.get("is_canonical")
-                        and transcript_obj.get("is_canonical") is True
-                    ):
-                        hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
-                        hgvs_protein = str(transcript_obj.get("protein_sequence_name"))
-                hgvs_c.append(hgvs_nucleotide)
-                hgvs_p.append(hgvs_protein)
-
-            if len(gene_symbols) == 1:
-                if hgvs_p[0] != "None":
-                    hgvs = hgvs_p[0]
-                elif hgvs_c[0] != "None":
-                    hgvs = hgvs_c[0]
-                else:
-                    hgvs = "-"
-                variant_obj["hgvs"] = hgvs
-
-            # populate variant predictions for display
-            variant_obj.update(predictions(variant_genes))
-
-        variants.append(variant_obj)
-
-    return {"variants": variants, "more_variants": more_variants}
 
 
 def multiqc(store, institute_id, case_name):

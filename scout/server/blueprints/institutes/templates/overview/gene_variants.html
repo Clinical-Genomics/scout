@@ -1,6 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 {% from "utils.html" import comments_table %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - All SNVs and INDELs
@@ -9,95 +10,86 @@
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
-      {{ institute.display_name }} Cases
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.institutes') }}">
+      institutes
     </a>
   </li>
-  {% if config.SHOW_CAUSATIVES %}
-    <li class="nav-item">
-      <a class="nav-link" href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
-    </li>
-   {% endif %}
-   <li class="nav-item active">
-     <span class="navbar-text">All SNVs and INDELs</span>
-   </li>
-   <li class="nav-item">
-     <a class="nav-link" href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
-   </li>
-
+  <li class="nav-item active">
+    <p class="navbar-text text-nowrap">{{ institute.display_name }}</p>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
+  </li>
 {% endblock %}
 
-{% block content_main %}
-  <form method="POST" id="filters_form" action="{{url_for('cases.gene_variants', institute_id=institute._id)}}" enctype="multipart/form-data">
-    <div class="container-float">
-      <div id="accordion" >
-	       <div class="card mt-3">
-          <div class="card-header">
-            <h5>
-              <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
-		              Filters
-              </a>
-            </h5>
-          </div>
-          <div id="collapseFilters" class="panel-collapse collapse">
-            <div class="card-body">{{ filters_form() }}</div>
-          </div>
-	       </div>
-      </div>
+{% macro page_content() %}
+<form method="POST" id="filters_form" action="{{url_for('overview.gene_variants', institute_id=institute._id)}}" enctype="multipart/form-data">
+  <div class="container-float">
+    <div id="accordion" >
+       <div class="card mt-3">
+        <div class="card-header">
+          <h5>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
+                Filters
+            </a>
+          </h5>
+        </div>
+        <div id="collapseFilters" class="panel-collapse collapse">
+          <div class="card-body">{{ filters_form() }}</div>
+        </div>
+       </div>
     </div>
+  </div>
 
-    <div class="table-responsive" style="padding-top: 25px;">
-      <table class="table table-bordered table-hover">
-	<thead>
-          <tr>
-            <th scope="col">Case : Score</th>
-            <th scope="col">Gene</th>
-            <th scope="col">PopFreq</th>
-            <th scope="col">CADD</th>
-            <th scope="col">Gene annotation</th>
-            <th scope="col">Func. annotation</th>
-            <th scope="col">HGVS</th>
-          </tr>
-	</thead>
-	<tbody>
-          {% for variant in variants %}
-            {% if variant.dismiss_variant %}
-              <tr class="dismiss">
-	    {% else %}
-	      <tr>
-	    {% endif %}
-              <td class="align-middle">{{ cell_rank(variant) }}</td>
-              <td class="align-middle">{{ gene_cell(variant) }}</td>
-              <td class="align-middle">{{ frequency_cell(variant) }}</td>
-              <td class="align-middle">{{ cell_cadd(variant) }}</td>
-              <td class="align-middle">
-                {% for annotation in variant.region_annotations %}
-                  <div>{{ annotation }}</div>
-                {% endfor %}
-              </td>
-              <td class="align-middle">
-                {% for annotation in variant.functional_annotations %}
-                  <div>{{ annotation }}</div>
-                {% endfor %}
-              </td>
-              <td> {{ variant.hgvs }}</td>
-            </tr>
-          {% else %}
-          <tr>
-            <td colspan=7>
-              No matching variants
+  <div class="table-responsive" style="padding-top: 25px;">
+    <table class="table table-bordered table-hover">
+<thead>
+        <tr>
+          <th scope="col">Case : Score</th>
+          <th scope="col">Gene</th>
+          <th scope="col">PopFreq</th>
+          <th scope="col">CADD</th>
+          <th scope="col">Gene annotation</th>
+          <th scope="col">Func. annotation</th>
+          <th scope="col">HGVS</th>
+        </tr>
+</thead>
+<tbody>
+        {% for variant in variants %}
+          {% if variant.dismiss_variant %}
+            <tr class="dismiss">
+    {% else %}
+      <tr>
+    {% endif %}
+            <td class="align-middle">{{ cell_rank(variant) }}</td>
+            <td class="align-middle">{{ gene_cell(variant) }}</td>
+            <td class="align-middle">{{ frequency_cell(variant) }}</td>
+            <td class="align-middle">{{ cell_cadd(variant) }}</td>
+            <td class="align-middle">
+              {% for annotation in variant.region_annotations %}
+                <div>{{ annotation }}</div>
+              {% endfor %}
             </td>
+            <td class="align-middle">
+              {% for annotation in variant.functional_annotations %}
+                <div>{{ annotation }}</div>
+              {% endfor %}
+            </td>
+            <td> {{ variant.hgvs }}</td>
           </tr>
-          {% endfor %}
-	</tbody>
-      </table>
-      {{ footer() }}
-    </div>
-  </form>
-{% endblock %}
+        {% else %}
+        <tr>
+          <td colspan=7>
+            No matching variants
+          </td>
+        </tr>
+        {% endfor %}
+</tbody>
+    </table>
+    {{ footer() }}
+  </div>
+</form>
+{% endmacro %}
 
 {% macro cell_rank(variant) %}
     <a
@@ -187,6 +179,20 @@
         </div>
       </div>
 {% endmacro %}
+
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
+  <div class="col">
+    {{ page_content() }}
+  </div>
+  </div> <!-- end of div id body-row -->
+</div>
+{% endblock %}
+
+
 
 {% block scripts %}
   {{ super() }}

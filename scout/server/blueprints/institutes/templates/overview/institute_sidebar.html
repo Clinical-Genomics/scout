@@ -1,0 +1,62 @@
+{% macro institute_actionbar(institute) %}
+<!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
+  <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
+      <!-- Bootstrap List Group -->
+      <ul class="list-group">
+          <a href="#" data-toggle="sidebar-collapse" class="bg-dark list-group-item list-group-item-action d-flex align-items-center">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span id="collapse-icon" class="fa fa-2x mr-3"></span>
+                  <span id="collapse-text" class="menu-collapsed">Collapse</span>
+              </div>
+          </a>
+
+          <!-- cases menu item -->
+          <a href="{{ url_for('cases.index', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-sitemap  mr-3"></span>
+                  <span class="menu-collapsed">Cases</span>
+              </div>
+          </a>
+
+          <!-- causatives menu item-->
+          <a href="{{ url_for('overview.causatives', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-bullseye mr-3"></span>
+                  <span class="menu-collapsed">Causatives</span>
+              </div>
+          </a>
+
+          <!-- snvs and indeld menu item -->
+          <a href="{{ url_for('overview.gene_variants', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-search mr-3"></span>
+                  <span class="menu-collapsed">Search variants</span>
+              </div>
+          </a>
+
+          <!-- users menu item-->
+          <a href="{{ url_for('overview.institute_users', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-users mr-3"></span>
+                  <span class="menu-collapsed">Users</span>
+              </div>
+          </a>
+
+          <!-- shared data menu item -->
+          <a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-share-alt mr-3"></span>
+                  <span class="menu-collapsed">Shared data</span>
+              </div>
+          </a>
+
+          <!-- general settings menu item -->
+          <a href="{{ url_for('overview.institute_settings', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-wrench mr-3"></span>
+                  <span class="menu-collapsed">Settings</span>
+              </div>
+          </a>
+      </ul><!-- List Group END-->
+  </div><!-- sidebar-container END -->
+{% endmacro %}

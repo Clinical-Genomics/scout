@@ -1,4 +1,5 @@
 {% extends "layout_bs4.html" %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
 
 {% block title %}
 {{ super() }} - Institutes
@@ -11,29 +12,7 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.0/css/buttons.dataTables.min.css">
 {% endblock %}
 
-{% block top_nav %}
-{{ super() }}
-<li class="nav-item">
-  <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">{{ institute.display_name }}
-    Cases</a>
-</li>
-<li class="nav-item active">
-  <a class="nav-link" href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link"
-    href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All
-    SNVs and INDELs</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}">Clinvar
-    submissions</a>
-</li>
-{% endblock %}
-{% block content_main %}
+{% macro causatives() %}
 <div class="card mt-3">
   <div class="card-body">
       <table id="causatives_table" class="table display table-sm" cellspacing="0" width="100%">
@@ -122,6 +101,17 @@
         </tbody>
       </table>
   </div>
+</div>
+{% endmacro %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
+  <div class="col">
+    {{ causatives() }}
+  </div>
+  </div> <!-- end of div id body-row -->
 </div>
 {% endblock %}
 

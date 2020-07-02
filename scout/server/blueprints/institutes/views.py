@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import pymongo
 
 from flask import (
     Blueprint,
@@ -14,10 +15,16 @@ from flask_login import current_user
 from werkzeug.datastructures import Headers
 
 from . import controllers
-from scout.constants import PHENOTYPE_GROUPS, CASEDATA_HEADER, CLINVAR_HEADER
+from scout.constants import (
+    PHENOTYPE_GROUPS,
+    CASEDATA_HEADER,
+    CLINVAR_HEADER,
+    ACMG_COMPLETE_MAP,
+    ACMG_MAP,
+)
 from scout.server.extensions import store
 from scout.server.utils import user_institutes, templated, institute_and_case
-from .forms import InstituteForm
+from .forms import InstituteForm, GeneVariantFiltersForm
 
 LOG = logging.getLogger(__name__)
 
@@ -58,15 +65,102 @@ def institutes():
     return render_template("overview/institutes.html", **data)
 
 
-@blueprint.route("/overview/<institute_id>", methods=["GET"])
-def institute(institute_id):
-    """ Show institute data """
+@blueprint.route("/<institute_id>/causatives")
+@templated("overview/causatives.html")
+def causatives(institute_id):
+    institute_obj = institute_and_case(store, institute_id)
+    query = request.args.get("query", "")
+    hgnc_id = None
+    if "|" in query:
+        # filter accepts an array of IDs. Provide an array with one ID element
+        try:
+            hgnc_id = [int(query.split(" | ", 1)[0])]
+        except ValueError:
+            flash("Provided gene info could not be parsed!", "warning")
 
-    panel = int(request.args.get("panel", request.form.get("panel", 1)))
-    if panel == 1:
-        return redirect(url_for(".institute_settings", institute_id=institute_id))
+    variants = store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id)
+    if variants:
+        variants.sort("hgnc_symbols", pymongo.ASCENDING)
+    all_variants = {}
+    all_cases = {}
+    for variant_obj in variants:
+        if variant_obj["case_id"] not in all_cases:
+            case_obj = store.case(variant_obj["case_id"])
+            all_cases[variant_obj["case_id"]] = case_obj
+        else:
+            case_obj = all_cases[variant_obj["case_id"]]
+
+        if variant_obj["variant_id"] not in all_variants:
+            all_variants[variant_obj["variant_id"]] = []
+
+        all_variants[variant_obj["variant_id"]].append((case_obj, variant_obj))
+
+    acmg_map = {key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()}
+
+    return dict(institute=institute_obj, variant_groups=all_variants, acmg_map=acmg_map)
+
+
+@blueprint.route("/<institute_id>/gene_variants", methods=["GET", "POST"])
+@templated("overview/gene_variants.html")
+def gene_variants(institute_id):
+    """Display a list of SNV variants."""
+    page = int(request.form.get("page", 1))
+
+    institute_obj = institute_and_case(store, institute_id)
+
+    # populate form, conditional on request method
+    if request.method == "POST":
+        form = GeneVariantFiltersForm(request.form)
     else:
-        return f"panel------>{panel}"
+        form = GeneVariantFiltersForm(request.args)
+
+    variant_type = form.data.get("variant_type", "clinical")
+
+    # check if supplied gene symbols exist
+    hgnc_symbols = []
+    non_clinical_symbols = []
+    not_found_symbols = []
+    not_found_ids = []
+    data = {}
+    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
+        is_clinical = form.data.get("variant_type", "clinical") == "clinical"
+        # clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+        for hgnc_symbol in form.hgnc_symbols.data:
+            if hgnc_symbol.isdigit():
+                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
+                if hgnc_gene is None:
+                    not_found_ids.append(hgnc_symbol)
+                else:
+                    hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
+            elif store.hgnc_genes(hgnc_symbol).count() == 0:
+                not_found_symbols.append(hgnc_symbol)
+            # elif is_clinical and (hgnc_symbol not in clinical_symbols):
+            #     non_clinical_symbols.append(hgnc_symbol)
+            else:
+                hgnc_symbols.append(hgnc_symbol)
+
+        if not_found_ids:
+            flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
+        if not_found_symbols:
+            flash(
+                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning",
+            )
+        if non_clinical_symbols:
+            flash(
+                "Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)),
+                "warning",
+            )
+        form.hgnc_symbols.data = hgnc_symbols
+
+        LOG.debug("query {}".format(form.data))
+
+        variants_query = store.gene_variants(
+            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type,
+        )
+
+        data = controllers.gene_variants(store, variants_query, institute_id, page)
+
+    return dict(institute=institute_obj, form=form, page=page, **data)
 
 
 @blueprint.route("/overview/<institute_id>/settings", methods=["GET", "POST"])
@@ -75,8 +169,7 @@ def institute_settings(institute_id):
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
         flash(
-            "Current user doesn't have the permission to modify this institute",
-            "warning",
+            "Current user doesn't have the permission to modify this institute", "warning",
         )
         return redirect(request.referrer)
 
@@ -85,9 +178,7 @@ def institute_settings(institute_id):
 
     # if institute is to be updated
     if request.method == "POST" and form.validate_on_submit():
-        institute_obj = controllers.update_institute_settings(
-            store, institute_obj, request.form
-        )
+        institute_obj = controllers.update_institute_settings(store, institute_obj, request.form)
         if isinstance(institute_obj, dict):
             flash("institute was updated ", "success")
         else:  # an error message was retuned
@@ -98,7 +189,7 @@ def institute_settings(institute_id):
     default_phenotypes = controllers.populate_institute_form(form, institute_obj)
 
     return render_template(
-        "/overview/institute.html",
+        "/overview/institute_settings.html",
         form=form,
         default_phenotypes=default_phenotypes,
         panel=1,
@@ -112,8 +203,7 @@ def institute_users(institute_id):
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
         flash(
-            "Current user doesn't have the permission to modify this institute",
-            "warning",
+            "Current user doesn't have the permission to modify this institute", "warning",
         )
         return redirect(request.referrer)
     data = controllers.institute(store, institute_id)
@@ -135,9 +225,7 @@ def clinvar_rename_casedata(submission, case, old_name):
 def clinvar_update_submission(institute_id, submission):
     """Update a submission status to open/closed, register an official SUB number or delete the entire submission"""
 
-    controllers.update_clinvar_submission_status(
-        store, request, institute_id, submission
-    )
+    controllers.update_clinvar_submission_status(store, request, institute_id, submission)
     return redirect(request.referrer)
 
 
@@ -163,9 +251,7 @@ def clinvar_download_csv(submission, csv_type, clinvar_id):
         for line in lines:
             yield line + "\n"
 
-    clinvar_file_data = controllers.clinvar_submission_file(
-        store, submission, csv_type, clinvar_id
-    )
+    clinvar_file_data = controllers.clinvar_submission_file(store, submission, csv_type, clinvar_id)
 
     if clinvar_file_data is None:
         return redirect(request.referrer)

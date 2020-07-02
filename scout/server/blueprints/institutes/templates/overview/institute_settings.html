@@ -1,5 +1,6 @@
 {% extends "layout_bs4.html" %}
-{% from "overview/utils.html" import institute_actionbar, institute_settings %}
+{% from "overview/utils.html" import institute_settings %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
 
 {% block title %}
   {{ super() }} - Institutes
@@ -10,22 +11,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
 {% endblock %}
-
-{% block top_nav %}
-  {{ super() }}
-  <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('overview.institutes') }}">
-      institutes
-    </a>
-  </li>
-  <li class="nav-item active">
-    <p class="navbar-text text-nowrap">{{ institute.display_name }}</p>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
-  </li>
-{% endblock %}
-
 
 {% block content_main %}
 <div class="container-float">
