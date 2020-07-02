@@ -10,11 +10,8 @@
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
-  </li>
   <li class="nav-item active">
-    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">Cases</a>
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }} cases </a>
   </li>
 {% endblock %}
 

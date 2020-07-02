@@ -10,15 +10,13 @@
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('overview.institutes') }}">
-      institutes
-    </a>
-  </li>
-  <li class="nav-item active">
-    <p class="navbar-text text-nowrap">{{ institute.display_name }}</p>
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }} cases </a>
+  </li>
+  <li class="nav-item active">
+    <a class="nav-link">Search variants</a>
   </li>
 {% endblock %}
 
