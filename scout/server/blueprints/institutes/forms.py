@@ -8,7 +8,7 @@ from wtforms import (
     DecimalField,
     TextField,
     validators,
-    Field
+    Field,
 )
 from scout.constants import PHENOTYPE_GROUPS
 
@@ -58,6 +58,7 @@ class InstituteForm(FlaskForm):
     institutes = NonValidatingSelectMultipleField("Institutes to share cases with", choices=[])
     submit_btn = SubmitField("Save settings")
 
+
 # make a base class or other utility with this instead..
 class TagListField(Field):
     widget = TextInput()
@@ -73,6 +74,7 @@ class TagListField(Field):
             self.data = [x.strip() for x in valuelist[0].split(",") if x.strip()]
         else:
             self.data = []
+
 
 class GeneVariantFiltersForm(FlaskForm):
     """Base FiltersForm for SNVs"""
