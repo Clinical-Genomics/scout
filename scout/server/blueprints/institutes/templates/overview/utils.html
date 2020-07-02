@@ -105,7 +105,7 @@
 <form action="{{ url_for('overview.institute_settings', institute_id=institute.internal_id) }}">
 <div class="card mt-3">
   <div>
-  <h5 class="card-title"><a href="{{ url_for('cases.cases', institute_id=institute.internal_id) }}"> {{ institute.display_name }}</a>
+  <h5 class="card-title"><a href="{{ url_for('overview.cases', institute_id=institute.internal_id) }}"> {{ institute.display_name }}</a>
   {%- if current_user.is_admin or institute.internal_id in current_user.institutes %}
     <button class="float-right btn-primary btn-sm" type="submit" class="btn btn-primary btn-sm" title="settings">settings</button>
   {%- endif -%}

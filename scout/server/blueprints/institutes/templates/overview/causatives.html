@@ -12,6 +12,19 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.0/css/buttons.dataTables.min.css">
 {% endblock %}
 
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
+  </li>
+  <li class="nav-item active">
+    <span class="navbar-text">Causative variants</span>
+  </li>
+{% endblock %}
+
 {% macro causatives() %}
 <div class="card mt-3">
   <div class="card-body">

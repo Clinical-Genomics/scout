@@ -18,7 +18,7 @@
     <ul class="list-group">
       {% for institute, case_count in institutes %}
         <li class="list-group-item align-items-center">
-          <a href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+          <a href="{{ url_for('overview.cases', institute_id=institute._id) }}">
             {{ institute.display_name }}
           </a>
           {% if current_user.is_admin %}

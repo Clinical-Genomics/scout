@@ -6,9 +6,12 @@ LOG = logging.getLogger(__name__)
 
 from flask_login import current_user
 from flask import flash
+from scout.constants import CASE_STATUSES
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
+
+TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
 
 
 def institute(store, institute_id):
@@ -108,6 +111,129 @@ def update_institute_settings(store, institute_obj, form):
         cohorts=cohorts,
     )
     return updated_institute
+
+
+def cases(store, case_query, prioritized_cases_query=None, limit=100):
+    """Preprocess case objects.
+
+    Add the necessary information to display the 'cases' view
+
+    Args:
+        store(adapter.MongoAdapter)
+        case_query(pymongo.Cursor)
+        prioritized_cases_query(pymongo.Cursor)
+        limit(int): Maximum number of cases to display
+
+    Returns:
+        data(dict): includes the cases, how many there are and the limit.
+    """
+    case_groups = {status: [] for status in CASE_STATUSES}
+    nr_cases = 0
+
+    # local function to add info to case obj
+    def populate_case_obj(case_obj):
+        analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
+        LOG.debug("Analysis types found in %s: %s", case_obj["_id"], ",".join(analysis_types))
+        if len(analysis_types) > 1:
+            LOG.debug("Set analysis types to {'mixed'}")
+            analysis_types = set(["mixed"])
+
+        case_obj["analysis_types"] = list(analysis_types)
+        case_obj["assignees"] = [
+            store.user(user_email) for user_email in case_obj.get("assignees", [])
+        ]
+        case_obj["is_rerun"] = len(case_obj.get("analyses", [])) > 0
+        case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
+        case_obj["display_track"] = TRACKS[case_obj.get("track", "rare")]
+        return case_obj
+
+    for nr_cases, case_obj in enumerate(case_query.limit(limit), 1):
+        case_obj = populate_case_obj(case_obj)
+        case_groups[case_obj["status"]].append(case_obj)
+
+    if prioritized_cases_query:
+        extra_prioritized = 0
+        for case_obj in prioritized_cases_query:
+            if any(
+                group_obj.get("display_name") == case_obj.get("display_name")
+                for group_obj in case_groups[case_obj["status"]]
+            ):
+                continue
+            else:
+                extra_prioritized += 1
+                case_obj = populate_case_obj(case_obj)
+                case_groups[case_obj["status"]].append(case_obj)
+        # extra prioritized cases are potentially shown in addition to the case query limit
+        nr_cases += extra_prioritized
+
+    data = {
+        "cases": [(status, case_groups[status]) for status in CASE_STATUSES],
+        "found_cases": nr_cases,
+        "limit": limit,
+    }
+    return data
+
+
+def get_sanger_unevaluated(store, institute_id, user_id):
+    """Get all variants for an institute having Sanger validations ordered but still not evaluated
+
+        Args:
+            store(scout.adapter.MongoAdapter)
+            institute_id(str)
+
+        Returns:
+            unevaluated: a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, {'case2' : [varID_1, varID_2, .., varID_n]} ],
+                         where the keys are case_ids and the values are lists of variants with Sanger ordered but not yet validated
+
+    """
+
+    # Retrieve a list of ids for variants with Sanger ordered grouped by case from the 'event' collection
+    # This way is much faster than querying over all variants in all cases of an institute
+    sanger_ordered_by_case = store.sanger_ordered(institute_id, user_id)
+    unevaluated = []
+
+    # for each object where key==case and value==[variant_id with Sanger ordered]
+    for item in sanger_ordered_by_case:
+        case_id = item["_id"]
+        # Get the case to collect display name
+        case_obj = store.case(case_id=case_id)
+
+        if not case_obj:  # the case might have been removed
+            continue
+
+        case_display_name = case_obj.get("display_name")
+
+        # List of variant document ids
+        varid_list = item["vars"]
+
+        unevaluated_by_case = {}
+        unevaluated_by_case[case_display_name] = []
+
+        for var_id in varid_list:
+            # For each variant with sanger validation ordered
+            variant_obj = store.variant(document_id=var_id, case_id=case_id)
+
+            # Double check that Sanger was ordered (and not canceled) for the variant
+            if (
+                variant_obj is None
+                or variant_obj.get("sanger_ordered") is None
+                or variant_obj.get("sanger_ordered") is False
+            ):
+                continue
+
+            validation = variant_obj.get("validation", "not_evaluated")
+
+            # Check that the variant is not evaluated
+            if validation in ["True positive", "False positive"]:
+                continue
+
+            unevaluated_by_case[case_display_name].append(variant_obj["_id"])
+
+        # If for a case there is at least one Sanger validation to evaluate add the object to the unevaluated objects list
+        if len(unevaluated_by_case[case_display_name]) > 0:
+            unevaluated.append(unevaluated_by_case)
+
+    return unevaluated
 
 
 def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
