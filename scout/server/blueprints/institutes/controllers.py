@@ -9,6 +9,7 @@ from flask import flash
 from scout.constants import CASE_STATUSES
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.genes.controllers import gene
+from scout.server.blueprints.variant.utils import predictions
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
 
