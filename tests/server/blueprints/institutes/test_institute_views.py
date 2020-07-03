@@ -219,7 +219,7 @@ def test_causatives(app, user_obj, institute_obj, case_obj):
         assert var2_id not in str(resp.data)
 
 
-def test_search_institute_variants(app, user_obj, institute_obj):
+def test_all_snvs_indels(app, user_obj, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -235,6 +235,26 @@ def test_search_institute_variants(app, user_obj, institute_obj):
 
         # THEN it should return a page
         assert resp.status_code == 200
+
+
+def test_institute_users(app, institute_obj, user_obj):
+    """Test the link to all institute users"""
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN accessing the cases page
+        resp = client.get(
+            url_for("overview.institute_users", institute_id=institute_obj["internal_id"])
+        )
+
+        # THEN it should return a page
+        assert resp.status_code == 200
+
+        # Containing the test user's name
+        assert user_obj["name"] in str(resp.data)
 
 
 def test_clinvar_submissions(app, institute_obj, clinvar_variant, clinvar_casedata):
@@ -256,7 +276,7 @@ def test_clinvar_submissions(app, institute_obj, clinvar_variant, clinvar_caseda
 
         # When visiting the clinvar submission page (get request)
         resp = client.get(
-            url_for("overview.clinvar_submissions", institute_id=institute_obj["internal_id"])
+            url_for("overview.clinvar_submissions", institute_id=institute_obj["internal_id"],)
         )
 
         # a successful response should be returned
