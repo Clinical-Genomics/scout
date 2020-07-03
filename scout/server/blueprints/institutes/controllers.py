@@ -251,7 +251,6 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
 
     variants = []
     for variant_obj in variant_res:
-        LOG.error(variant_obj)
         # Populate variant case_display_name
         variant_case_obj = store.case(case_id=variant_obj["case_id"])
         if not variant_case_obj:

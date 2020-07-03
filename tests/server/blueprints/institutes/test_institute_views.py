@@ -219,22 +219,32 @@ def test_causatives(app, user_obj, institute_obj, case_obj):
         assert var2_id not in str(resp.data)
 
 
-def test_all_snvs_indels(app, user_obj, institute_obj):
+def test_gene_variants_filter(app, institute_obj, case_obj):
+    """Test the function that allows searching SNVs and INDELS using filters"""
+
     # GIVEN an initialized app
     # GIVEN a valid user and institute
-
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        # WHEN accessing the dashboard page
-        resp = client.get(
-            url_for("overview.gene_variants", institute_id=institute_obj["internal_id"])
-        )
+        # When user submits a query for a variants in a specific gene and a rank score
+        filter_query = {
+            "hgnc_symbols": "POT1",
+            "variant_type": ["clinical"],
+            "rank_score": 11,
+        }
 
+        resp = client.post(
+            url_for("overview.gene_variants", institute_id=institute_obj["internal_id"]),
+            data=filter_query,
+        )
         # THEN it should return a page
         assert resp.status_code == 200
+
+        # containing  variants in that genes
+        assert "POT1" in str(resp.data)
 
 
 def test_institute_users(app, institute_obj, user_obj):
