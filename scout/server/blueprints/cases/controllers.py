@@ -34,7 +34,6 @@ from scout.parse.matchmaker import (
     omim_terms,
     parse_matches,
 )
-from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variant.utils import predictions
 from scout.server.utils import institute_and_case

@@ -8,6 +8,7 @@ from flask_login import current_user
 from flask import flash
 from scout.constants import CASE_STATUSES
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
+from scout.server.blueprints.genes.controllers import gene
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
 
@@ -238,6 +239,7 @@ def get_sanger_unevaluated(store, institute_id, user_id):
 
 def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
     """Pre-process list of variants."""
+
     # We need to call variants_collection.count_documents here
     variant_count = variants_query.count()
     skip_count = per_page * max(page - 1, 0)
@@ -248,6 +250,7 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
 
     variants = []
     for variant_obj in variant_res:
+        LOG.error(variant_obj)
         # Populate variant case_display_name
         variant_case_obj = store.case(case_id=variant_obj["case_id"])
         if not variant_case_obj:
@@ -291,10 +294,10 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
 
         if variant_genes is not None:
             functional_annotation = ""
-
             for gene_obj in variant_genes:
                 hgnc_id = gene_obj["hgnc_id"]
                 gene_symbol = gene(store, hgnc_id)["symbol"]
+
                 gene_ids.append(hgnc_id)
                 gene_symbols.append(gene_symbol)
 

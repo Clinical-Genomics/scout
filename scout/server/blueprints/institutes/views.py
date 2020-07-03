@@ -170,7 +170,10 @@ def gene_variants(institute_id):
     else:
         form = GeneVariantFiltersForm(request.args)
 
-    variant_type = form.data.get("variant_type", "clinical")
+    if form.variant_type.data == []:
+        form.variant_type.data = ["clinical"]
+
+    variant_type = form.data.get("variant_type")
 
     # check if supplied gene symbols exist
     hgnc_symbols = []
