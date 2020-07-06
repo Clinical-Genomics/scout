@@ -29,6 +29,7 @@ CASE_SEARCH_KEY = [
     "Assigned user",
 ]
 
+
 class NonValidatingSelectMultipleField(SelectMultipleField):
     """Necessary to skip validation of dynamic multiple selects in form"""
 
