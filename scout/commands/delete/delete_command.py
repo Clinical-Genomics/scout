@@ -65,7 +65,7 @@ def user(mail):
             )
             if adapter.unassign(institute_obj, case_obj, user_obj, link, True):
                 updated_cases += 1
-    click.echo(f"User was removed as assignee from {updated_cases} cases.")
+    click.echo(f"User was removed as assignee from {updated_cases} case(s).")
 
 
 @click.command("genes", short_help="Delete genes")
