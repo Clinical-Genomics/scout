@@ -28,7 +28,7 @@
 {% macro causatives() %}
 <div class="card mt-3">
   <div class="card-body list-scroll">
-      <table id="causatives_table" class="table display table-sm" cellspacing="0" width="100%">
+      <table id="causatives_table" class="table display table-sm" cellspacing="0">
         <thead>
           <tr>
             <th>Gene</th>
@@ -50,16 +50,16 @@
           {% if variant._id in case.causatives %}
           <tr>
             <td>
-              <h5 class="mb-1">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</h5>
+              {{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}
             </td>
             <td><a href="{{ url_for('variant.variant',
                 institute_id=institute._id,
                 case_name=case.display_name,
-                variant_id=variant._id) }}">{{ variant.display_name|truncate(20, True) }}
+                variant_id=variant._id) }}" data-toggle='tooltip' data-container='body' title="{{ variant.display_name }}">{{ variant.display_name|truncate(10, True) }}
               </a>
             </td>
-            <td><span class="text-muted" style="display: inline-block; margin-left: 10px;">
-                {{ group_variant.reference|truncate(20, True) }} → {{ group_variant.alternative|truncate(20, True) }}
+            <td><span class="text-muted" style="display: inline-block; margin-left: 10px;" data-toggle='tooltip' data-container='body' title="{{ group_variant.reference|truncate(30, True) }} → {{ group_variant.alternative|truncate(30, True) }}">
+                {{ group_variant.reference|truncate(10, True) }} → {{ group_variant.alternative|truncate(10, True) }}
               </span>
             </td>
             <td><span class="badge badge-secondary">{{ variant.category|upper }}</span></td>
@@ -122,7 +122,9 @@
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
     {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
   <div class="col">
-    {{ causatives() }}
+    <div class="container-float">
+      {{ causatives() }}
+    </div>
   </div>
   </div> <!-- end of div id body-row -->
 </div>

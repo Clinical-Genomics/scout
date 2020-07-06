@@ -78,7 +78,7 @@
   {% set sort_option = 'asc'%}
 {% endif %}
 <div class="card mt-3">
-  <div class="card-body list-scroll" style="padding: 0;">
+  <div class="card-body" style="padding: 0;">
     <table class="table table-hover table-bordered">
       <thead>
         <tr>
@@ -282,7 +282,7 @@
           </div>
         </div>
       {% endif %}
-      <div>
+      <div class="list-scroll">
         {% set ordered_statuses = ['prioritized', 'inactive', 'active', 'archived', 'solved', ] -%}
         {% for status in ordered_statuses %}
           {% for group_name, case_group in cases %}
