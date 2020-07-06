@@ -216,6 +216,14 @@ def test_cases_similar_phenotype_query(app, case_obj, institute_obj, test_hpo_te
         assert case_obj["display_name"] in str(resp.data)
 
 
+def test_cases_by_pinned_gene_query(app, case_obj, institute_obj, variant_obj):
+    """Test cases filtering by providing the gene of one of its pinned variants"""
+
+    # GIVEN a case with a pinned variant
+
+
+
+
 def test_causatives(app, user_obj, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
