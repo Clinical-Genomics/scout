@@ -16,6 +16,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Created an institute wrapper page that contains list of cases, causatives, SNVs & Indels, user list, shared data and institute settings
 - Display case name instead of case ID on clinVar submissions
+- Changed icon of sample update in clinVar submissions
+
 
 ## [4.18]
 
