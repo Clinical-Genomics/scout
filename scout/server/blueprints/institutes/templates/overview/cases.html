@@ -1,4 +1,5 @@
 {% extends "layout_bs4.html" %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - Cases
@@ -10,92 +11,13 @@
     <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item active">
-    <a class="nav-link" href="#">{{ institute.display_name }} Cases</a>
-  </li>
-  {% if config.SHOW_CAUSATIVES %}
-    <li class="nav-item">
-      <a class="nav-link" href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
-    </li>
-  {% endif %}
-  <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All SNVs and INDELs</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}">Clinvar submissions</a>
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }} cases </a>
   </li>
 {% endblock %}
 
-{% block content_main %}
-<div class="container-float">
-  <div class="card panel-default">
-    <div class="card-body">
-      {{ search_form() }}
-    </div>
-    <div class="card-footer text-center">
-      Showing {{ limit if limit < found_cases else found_cases }} /  {{ nr_cases }} cases
-    </div>
-  </div>
-
-  {% if sanger_unevaluated %}
-    <div class="container alert alert-info alert-dismissible" role="alert">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      {% if sanger_unevaluated|length > 1%}
-      You have <strong>{{ sanger_unevaluated|length }}</strong> cases with Sanger validations to evaluate!
-      {% else %}
-      You have <strong>1</strong> case with Sanger validations to evaluate!&nbsp;
-      {% endif %}
-      <!-- Button trigger modal -->
-      <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#evaluateModal">
-        evaluate
-      </button>
-
-      <!-- Modal -->
-      <div class="modal fade" id="evaluateModal" tabindex="-1" role="dialog" aria-labelledby="sangerModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="sangerModalLabel">Sanger validations to evaluate:</h5>
-            </div>
-            <div class="modal-body">
-              <ul>
-                {% for uneval_obj in sanger_unevaluated %}
-                {% for case, var_list in uneval_obj.items() %}
-                <li>
-                  Case <strong><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case) }}" target="_blank">{{case}}</a></strong> ---> <strong>{{var_list|length}}</strong> variants:
-                  <ul>
-                    {% for var in var_list %}
-                      <li><a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case, variant_id=var) }}" target="_blank">{{var}}</a></li>
-                    {% endfor %}
-                  </ul>
-                </li>
-                {% endfor %}
-                {% endfor %}
-              </ul>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  {% endif %}
-  <div>
-    {% set ordered_statuses = ['prioritized', 'inactive', 'active', 'archived', 'solved', ] -%}
-    {% for status in ordered_statuses %}
-      {% for group_name, case_group in cases %}
-        {% if status == group_name and case_group|length > 0 %}
-          <div class="table-responsive">{{ cases_table(group_name, case_group) }}</div>
-        {% endif %}
-      {% endfor %}
-    {% endfor %}
-  </div>
-</div>
-
-{% endblock %}
 
 {% macro search_form() %}
-  <form action="{{ url_for('cases.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
+  <form action="{{ url_for('overview.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
     <div class="row">
       <div class="col-md-4 col-sm-4">
         <div class="input-group">
@@ -300,6 +222,82 @@
     </td>
   </tr>
 {% endmacro %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
+  <div class="col">
+    <div class="container-float">
+      <div class="card panel-default">
+        <div class="card-body">
+          {{ search_form() }}
+        </div>
+        <div class="card-footer text-center">
+          Showing {{ limit if limit < found_cases else found_cases }} /  {{ nr_cases }} cases
+        </div>
+      </div>
+
+      {% if sanger_unevaluated %}
+        <div class="container alert alert-info alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          {% if sanger_unevaluated|length > 1%}
+          You have <strong>{{ sanger_unevaluated|length }}</strong> cases with Sanger validations to evaluate!
+          {% else %}
+          You have <strong>1</strong> case with Sanger validations to evaluate!&nbsp;
+          {% endif %}
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#evaluateModal">
+            evaluate
+          </button>
+
+          <!-- Modal -->
+          <div class="modal fade" id="evaluateModal" tabindex="-1" role="dialog" aria-labelledby="sangerModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="sangerModalLabel">Sanger validations to evaluate:</h5>
+                </div>
+                <div class="modal-body">
+                  <ul>
+                    {% for uneval_obj in sanger_unevaluated %}
+                    {% for case, var_list in uneval_obj.items() %}
+                    <li>
+                      Case <strong><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=case) }}" target="_blank">{{case}}</a></strong> ---> <strong>{{var_list|length}}</strong> variants:
+                      <ul>
+                        {% for var in var_list %}
+                          <li><a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case, variant_id=var) }}" target="_blank">{{var}}</a></li>
+                        {% endfor %}
+                      </ul>
+                    </li>
+                    {% endfor %}
+                    {% endfor %}
+                  </ul>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      <div style="overflow-y: auto; height: 600px;">
+        {% set ordered_statuses = ['prioritized', 'inactive', 'active', 'archived', 'solved', ] -%}
+        {% for status in ordered_statuses %}
+          {% for group_name, case_group in cases %}
+            {% if status == group_name and case_group|length > 0 %}
+              <div class="table-responsive">{{ cases_table(group_name, case_group) }}</div>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </div> <!-- end of cases page content -->
+  </div> <!-- end of col div element -->
+  </div> <!-- end of div id body-row -->
+</div>
+
+{% endblock %}
 
 {% block scripts %}
   {{ super() }}

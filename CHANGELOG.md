@@ -14,6 +14,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - General report formatting issues whenever case and variant comments contain extremely long strings with no spaces
 
 ### Changed
+- Created an institute wrapper page that contains list of cases, causatives, SNVs & Indels, user list, shared data and institute settings
+- Display case name instead of case ID on clinVar submissions
+- Changed icon of sample update in clinVar submissions
 
 
 ## [4.18]
