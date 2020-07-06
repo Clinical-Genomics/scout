@@ -60,9 +60,11 @@
   <!-- Modal end -->
   <br>
   {% if submissions %}
+    <div class="overflow-auto">
     {% for submission in submissions|sort(attribute='status', reverse=True) %}
       {{ submission_panel(submission) }}
     {% endfor %}
+    </div>
   {% else %}
   <p>No clinvar submission was found. You can create one by clicking on "Submit to Clinvar" from the page of a pinned variant.</p>
   {% endif %}
