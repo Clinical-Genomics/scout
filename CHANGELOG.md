@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Export dynamic HPO gene list from case page
+- Remove users as case assignees when their account is deleted
 
 ### Fixed
 - Handle the ProxyFix ModuleNotFoundError when Werkzeug installed version is >1.0
