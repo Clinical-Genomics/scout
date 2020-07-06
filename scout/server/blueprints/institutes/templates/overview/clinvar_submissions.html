@@ -60,7 +60,7 @@
   <!-- Modal end -->
   <br>
   {% if submissions %}
-    <div style="overflow: scroll;">
+    <div class="overflow-y: scroll">
     {% for submission in submissions|sort(attribute='status', reverse=True) %}
       {{ submission_panel(submission) }}
     {% endfor %}

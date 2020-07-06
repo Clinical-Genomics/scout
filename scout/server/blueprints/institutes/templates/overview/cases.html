@@ -282,7 +282,7 @@
           </div>
         </div>
       {% endif %}
-      <div style="overflow: scroll;">
+      <div class="overflow-y: scroll">
         {% set ordered_statuses = ['prioritized', 'inactive', 'active', 'archived', 'solved', ] -%}
         {% for status in ordered_statuses %}
           {% for group_name, case_group in cases %}
