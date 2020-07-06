@@ -29,16 +29,11 @@ from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 
-from scout.constants import (
-    ACMG_COMPLETE_MAP,
-    ACMG_MAP,
-    SAMPLE_SOURCE,
-)
+from scout.constants import SAMPLE_SOURCE
 from scout.server.extensions import mail, store
 from scout.server.utils import institute_and_case, templated, user_institutes
 
 from . import controllers
-from .forms import GeneVariantFiltersForm
 
 LOG = logging.getLogger(__name__)
 
@@ -62,64 +57,6 @@ def index():
         if institute_obj
     )
     return dict(institutes=institutes_count)
-
-
-@cases_bp.route("/<institute_id>")
-@templated("cases/cases.html")
-def cases(institute_id):
-    """Display a list of cases for an institute."""
-
-    institute_obj = institute_and_case(store, institute_id)
-    name_query = request.args.get("search_term")
-
-    limit = 100
-    if request.args.get("search_limit"):
-        limit = int(request.args.get("search_limit"))
-
-    skip_assigned = request.args.get("skip_assigned")
-    is_research = request.args.get("is_research")
-    all_cases = store.cases(
-        collaborator=institute_id,
-        name_query=name_query,
-        skip_assigned=skip_assigned,
-        is_research=is_research,
-    )
-    form = controllers.populate_case_filter_form(request.args)
-
-    sort_by = request.args.get("sort")
-    sort_order = request.args.get("order") or "asc"
-    if sort_by:
-        pymongo_sort = pymongo.ASCENDING
-        if sort_order == "desc":
-            pymongo_sort = pymongo.DESCENDING
-        if sort_by == "analysis_date":
-            all_cases.sort("analysis_date", pymongo_sort)
-        elif sort_by == "track":
-            all_cases.sort("track", pymongo_sort)
-        elif sort_by == "status":
-            all_cases.sort("status", pymongo_sort)
-
-    LOG.debug("Prepare all cases")
-
-    prioritized_cases = store.prioritized_cases(institute_id=institute_id)
-
-    data = controllers.cases(store, all_cases, prioritized_cases, limit)
-    data["sort_order"] = sort_order
-    data["sort_by"] = sort_by
-    data["nr_cases"] = store.nr_cases(institute_id=institute_id)
-
-    sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id, current_user.email)
-    if len(sanger_unevaluated) > 0:
-        data["sanger_unevaluated"] = sanger_unevaluated
-
-    return dict(
-        institute=institute_obj,
-        skip_assigned=skip_assigned,
-        is_research=is_research,
-        query=name_query,
-        form=form,
-        **data,
-    )
 
 
 @cases_bp.route("/<institute_id>/<case_name>")
@@ -374,104 +311,6 @@ def matchmaker_delete(institute_id, case_name):
         category,
     )
     return redirect(request.referrer)
-
-
-@cases_bp.route("/<institute_id>/causatives")
-@templated("cases/causatives.html")
-def causatives(institute_id):
-    institute_obj = institute_and_case(store, institute_id)
-    query = request.args.get("query", "")
-    hgnc_id = None
-    if "|" in query:
-        # filter accepts an array of IDs. Provide an array with one ID element
-        try:
-            hgnc_id = [int(query.split(" | ", 1)[0])]
-        except ValueError:
-            flash("Provided gene info could not be parsed!", "warning")
-
-    variants = store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id)
-    if variants:
-        variants.sort("hgnc_symbols", pymongo.ASCENDING)
-    all_variants = {}
-    all_cases = {}
-    for variant_obj in variants:
-        if variant_obj["case_id"] not in all_cases:
-            case_obj = store.case(variant_obj["case_id"])
-            all_cases[variant_obj["case_id"]] = case_obj
-        else:
-            case_obj = all_cases[variant_obj["case_id"]]
-
-        if variant_obj["variant_id"] not in all_variants:
-            all_variants[variant_obj["variant_id"]] = []
-
-        all_variants[variant_obj["variant_id"]].append((case_obj, variant_obj))
-
-    acmg_map = {key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()}
-
-    return dict(institute=institute_obj, variant_groups=all_variants, acmg_map=acmg_map)
-
-
-@cases_bp.route("/<institute_id>/gene_variants", methods=["GET", "POST"])
-@templated("cases/gene_variants.html")
-def gene_variants(institute_id):
-    """Display a list of SNV variants."""
-    page = int(request.form.get("page", 1))
-
-    institute_obj = institute_and_case(store, institute_id)
-
-    # populate form, conditional on request method
-    if request.method == "POST":
-        form = GeneVariantFiltersForm(request.form)
-    else:
-        form = GeneVariantFiltersForm(request.args)
-
-    variant_type = form.data.get("variant_type", "clinical")
-
-    # check if supplied gene symbols exist
-    hgnc_symbols = []
-    non_clinical_symbols = []
-    not_found_symbols = []
-    not_found_ids = []
-    data = {}
-    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
-        is_clinical = form.data.get("variant_type", "clinical") == "clinical"
-        # clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
-        for hgnc_symbol in form.hgnc_symbols.data:
-            if hgnc_symbol.isdigit():
-                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
-                if hgnc_gene is None:
-                    not_found_ids.append(hgnc_symbol)
-                else:
-                    hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
-            elif store.hgnc_genes(hgnc_symbol).count() == 0:
-                not_found_symbols.append(hgnc_symbol)
-            # elif is_clinical and (hgnc_symbol not in clinical_symbols):
-            #     non_clinical_symbols.append(hgnc_symbol)
-            else:
-                hgnc_symbols.append(hgnc_symbol)
-
-        if not_found_ids:
-            flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
-        if not_found_symbols:
-            flash(
-                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning",
-            )
-        if non_clinical_symbols:
-            flash(
-                "Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)),
-                "warning",
-            )
-        form.hgnc_symbols.data = hgnc_symbols
-
-        LOG.debug("query {}".format(form.data))
-
-        variants_query = store.gene_variants(
-            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type,
-        )
-
-        data = controllers.gene_variants(store, variants_query, institute_id, page)
-
-    return dict(institute=institute_obj, form=form, page=page, **data)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/individuals", methods=["POST"])
