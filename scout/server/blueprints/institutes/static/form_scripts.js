@@ -7,7 +7,7 @@ var selectHelper = {
       "prefix": "case:"
   },
   "HPO term": {
-      "placeholder" : "HP:0001166",
+      "placeholder" : "example:HP:0001166",
       "prefix" : "exact_pheno:"
   },
   "Search synopsis" : {
@@ -23,15 +23,15 @@ var selectHelper = {
       "prefix" : "status:"
   },
   "Phenotype group" : {
-      "placeholder" : "HP:0001166",
+      "placeholder" : "example:HP:0001166",
       "prefix" : "pheno_group:"
   },
   "Patient cohort" : {
-    "placeholder" : "pedhep",
+    "placeholder" : "example:pedhep",
     "prefix" : "cohort:"
   },
   "Similar case" : {
-    "placeholder" : "18201",
+    "placeholder" : "example:18201",
     "prefix" : "similar_case:"
   },
   "Similar phenotype" : {
