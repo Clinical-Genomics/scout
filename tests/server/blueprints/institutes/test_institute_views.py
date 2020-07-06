@@ -162,6 +162,46 @@ def test_cases_panel_query(app, case_obj, parsed_panel, institute_obj):
         assert case_obj["display_name"] in str(resp.data)
 
 
+def test_cases_by_pinned_gene_query(app, case_obj, institute_obj):
+    """Test cases filtering by providing the gene of one of its pinned variants"""
+
+    # GIVEN a test variant hitting POT1 gene (hgnc_id:17284)
+    suspects = []
+    test_variant = store.variant_collection.find_one({"genes.hgnc_id": {"$in": [17284]}})
+    assert test_variant
+
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # GIVEN a case with this variant pinned
+        form = {
+            "action": "ADD",
+        }
+        client.post(
+            url_for(
+                "cases.pin_variant",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+                variant_id=test_variant["_id"],
+            ),
+            data=form,
+        )
+        updated_case = store.case_collection.find_one({"suspects": {"$in": [test_variant["_id"]]}})
+        assert updated_case
+
+        # WHEN the case search is performed using the POT1 gene
+        slice_query = f"pinned:POT1"
+
+        resp = client.get(
+            url_for("overview.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
+        )
+
+        # THEN it should return a page with the case
+        assert resp.status_code == 200
+        assert case_obj["display_name"] in str(resp.data)
+
+
 def test_cases_exact_phenotype_query(app, case_obj, institute_obj, test_hpo_terms):
     """Test cases filtering by providing one HPO term"""
 
@@ -214,14 +254,6 @@ def test_cases_similar_phenotype_query(app, case_obj, institute_obj, test_hpo_te
         # THEN it should return a page with the case
         assert resp.status_code == 200
         assert case_obj["display_name"] in str(resp.data)
-
-
-def test_cases_by_pinned_gene_query(app, case_obj, institute_obj, variant_obj):
-    """Test cases filtering by providing the gene of one of its pinned variants"""
-
-    # GIVEN a case with a pinned variant
-
-
 
 
 def test_causatives(app, user_obj, institute_obj, case_obj):
