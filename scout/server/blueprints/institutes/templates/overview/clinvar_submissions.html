@@ -142,7 +142,7 @@
                     <td><div class="badge badge-success">SNV</div></td>
                   {% endif %}
                 </td>
-                <td>{{subm_variant.case_id}}</td>
+                <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id]) }}" target="_blank">{{subm_obj.cases[subm_variant.case_id]}}</a></td>
                 <td>{{subm_variant.ref_seq or '-'}}</td>
                 <td>{{subm_variant.gene_symbol or '-'}}</td>
                 <td>{{subm_variant.hgvs or '-'}}</td>
@@ -201,16 +201,12 @@
               <tr class="text-center">
                 <td>{{loop.index}}</td>
                 <form id="rename_cd_{{subm_obj._id}}" action="{{ url_for('overview.clinvar_rename_casedata', submission=subm_obj._id, case=case.case_id, old_name=case.individual_id) }}" method="POST">
-                <td style="text-align: right;">
-                  <input type="text" name="new_name" value="{{case.individual_id}}">
-                </td>
-                <td style="text-align: left;">
-                  <button name="rename_sample" type="submit" class="btn btn-primary btn-xs"><span class="fa fa-floppy-o" aria-hidden="true"></span></button>
+                <td>
+                  <input type="text" name="new_name" value="{{case.individual_id}}"><button name="rename_sample" type="submit" class="btn btn-primary btn-xs mb-1"><span class="fa fa-floppy-o" aria-hidden="true"></span></button>
                 </td>
                 </form>
-                </td>
                 <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
-                <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}" target="_blank">{{case.case_id}}</a></td>
+                <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}" target="_blank">{{subm_obj.cases[case.case_id]}}</a></td>
                 <td>{{case.clin_features}}</td>
                 <td>{{var_key_name[case.linking_id]}}</td>
                 <td>{{case.allele_origin}}</td>
