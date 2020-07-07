@@ -305,7 +305,7 @@ def cancer_variants(institute_id, case_name):
         cytobands=cytobands,
         **data,
         expand_search=str(request.method == "POST"),
-        **data
+        **data,
     )
 
 
