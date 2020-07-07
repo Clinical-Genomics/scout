@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 
 ### Added
+- Show internal ID for case
+- Add internal ID for downloaded CGH files
 - Export dynamic HPO gene list from case page
 - Remove users as case assignees when their account is deleted
 
