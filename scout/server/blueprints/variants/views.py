@@ -303,7 +303,6 @@ def cancer_variants(institute_id, case_name):
     return dict(
         variant_type=variant_type,
         cytobands=cytobands,
-        **data,
         expand_search=str(request.method == "POST"),
         **data,
     )
@@ -383,7 +382,7 @@ def upload_panel(institute_id, case_name):
     # HTTP redirect code 307 asks that the browser preserves the method of request (POST).
     if category == "sv":
         return redirect(
-            url_for(".sv_variants", institute_id=institute_id, case_name=case_name, **form.data),
+            url_for(".sv_variants", institute_id=institute_id, case_name=case_name, **form.data,),
             code=307,
         )
     return redirect(
