@@ -69,13 +69,9 @@ def variants(institute_id, case_name):
     ]
 
     # populate available panel choices
-    available_panels = case_obj.get("panels", []) + [
-        {"panel_name": "hpo", "display_name": "HPO"}
-    ]
+    available_panels = case_obj.get("panels", []) + [{"panel_name": "hpo", "display_name": "HPO"}]
 
-    panel_choices = [
-        (panel["panel_name"], panel["display_name"]) for panel in available_panels
-    ]
+    panel_choices = [(panel["panel_name"], panel["display_name"]) for panel in available_panels]
 
     form.gene_panels.choices = panel_choices
 
@@ -96,9 +92,7 @@ def variants(institute_id, case_name):
 
         hgnc_symbols_set = set(form.hgnc_symbols.data)
         LOG.debug("Symbols prior to upload: {0}".format(hgnc_symbols_set))
-        new_hgnc_symbols = controllers.upload_panel(
-            store, institute_id, case_name, stream
-        )
+        new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
         hgnc_symbols_set.update(new_hgnc_symbols)
         form.hgnc_symbols.data = hgnc_symbols_set
         # reset gene panels
@@ -129,14 +123,10 @@ def variants(institute_id, case_name):
     if not_found_ids:
         flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
     if not_found_symbols:
-        flash(
-            "HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning"
-        )
+        flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning")
     if non_clinical_symbols:
         flash(
-            "Gene not included in clinical list: {}".format(
-                ", ".join(non_clinical_symbols)
-            ),
+            "Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)),
             "warning",
         )
     form.hgnc_symbols.data = hgnc_symbols
@@ -190,18 +180,14 @@ def str_variants(institute_id, case_name):
     query = form.data
     query["variant_type"] = variant_type
 
-    variants_query = store.variants(
-        case_obj["_id"], category=category, query=query
-    ).sort(
+    variants_query = store.variants(case_obj["_id"], category=category, query=query).sort(
         [
             ("str_repid", pymongo.ASCENDING),
             ("chromosome", pymongo.ASCENDING),
             ("position", pymongo.ASCENDING),
         ]
     )
-    data = controllers.str_variants(
-        store, institute_obj, case_obj, variants_query, page
-    )
+    data = controllers.str_variants(store, institute_obj, case_obj, variants_query, page)
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -229,9 +215,7 @@ def sv_variants(institute_id, case_name):
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
-    form = controllers.populate_sv_filters_form(
-        store, institute_obj, case_obj, category, request
-    )
+    form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
@@ -255,9 +239,7 @@ def sv_variants(institute_id, case_name):
     )
 
 
-@variants_bp.route(
-    "/<institute_id>/<case_name>/cancer/variants", methods=["GET", "POST"]
-)
+@variants_bp.route("/<institute_id>/<case_name>/cancer/variants", methods=["GET", "POST"])
 @templated("variants/cancer-variants.html")
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
@@ -275,9 +257,7 @@ def cancer_variants(institute_id, case_name):
             # Flash a message with errors
             for field, err_list in form.errors.items():
                 for err in err_list:
-                    flash(
-                        f"Content of field '{field}' has not a valid format", "warning"
-                    )
+                    flash(f"Content of field '{field}' has not a valid format", "warning")
             # And do not submit the form
             return redirect(
                 url_for(
@@ -303,13 +283,9 @@ def cancer_variants(institute_id, case_name):
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
 
-    available_panels = case_obj.get("panels", []) + [
-        {"panel_name": "hpo", "display_name": "HPO"}
-    ]
+    available_panels = case_obj.get("panels", []) + [{"panel_name": "hpo", "display_name": "HPO"}]
 
-    panel_choices = [
-        (panel["panel_name"], panel["display_name"]) for panel in available_panels
-    ]
+    panel_choices = [(panel["panel_name"], panel["display_name"]) for panel in available_panels]
     form.gene_panels.choices = panel_choices
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
@@ -332,9 +308,7 @@ def cancer_variants(institute_id, case_name):
     )
 
 
-@variants_bp.route(
-    "/<institute_id>/<case_name>/cancer/sv-variants", methods=["GET", "POST"]
-)
+@variants_bp.route("/<institute_id>/<case_name>/cancer/sv-variants", methods=["GET", "POST"])
 @templated("variants/cancer-sv-variants.html")
 def cancer_sv_variants(institute_id, case_name):
     """Display a list of cancer structural variants."""
@@ -351,9 +325,7 @@ def cancer_sv_variants(institute_id, case_name):
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
-    form = controllers.populate_sv_filters_form(
-        store, institute_obj, case_obj, category, request
-    )
+    form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
@@ -410,19 +382,11 @@ def upload_panel(institute_id, case_name):
     # HTTP redirect code 307 asks that the browser preserves the method of request (POST).
     if category == "sv":
         return redirect(
-            url_for(
-                ".sv_variants",
-                institute_id=institute_id,
-                case_name=case_name,
-                **form.data,
-            ),
+            url_for(".sv_variants", institute_id=institute_id, case_name=case_name, **form.data,),
             code=307,
         )
     return redirect(
-        url_for(
-            ".variants", institute_id=institute_id, case_name=case_name, **form.data
-        ),
-        code=307,
+        url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data), code=307,
     )
 
 
@@ -434,9 +398,7 @@ def download_verified():
     temp_excel_dir = os.path.join(variants_bp.static_folder, "verified_folder")
     os.makedirs(temp_excel_dir, exist_ok=True)
 
-    written_files = controllers.verified_excel_file(
-        store, user_institutes, temp_excel_dir
-    )
+    written_files = controllers.verified_excel_file(store, user_institutes, temp_excel_dir)
     if written_files:
         today = datetime.datetime.now().strftime("%Y-%m-%d")
         # zip the files on the fly and serve the archive to the user
@@ -453,8 +415,7 @@ def download_verified():
             data,
             mimetype="application/zip",
             as_attachment=True,
-            attachment_filename="_".join(["scout", "verified_variants", today])
-            + ".zip",
+            attachment_filename="_".join(["scout", "verified_variants", today]) + ".zip",
             cache_timeout=0,
         )
     flash("No verified variants could be exported for user's institutes", "warning")
