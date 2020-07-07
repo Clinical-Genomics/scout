@@ -1,6 +1,7 @@
 import logging
 
 import click
+from flask import url_for, current_app
 from flask.cli import with_appcontext
 from scout.server.extensions import store
 
@@ -25,28 +26,6 @@ def panel(panel_id, version):
         adapter.delete_panel(panel_obj)
 
 
-# @click.command('users', short_help='Display users')
-# @click.pass_context
-# def users(context):
-#     """Show all users in the database"""
-#     LOG.info("Running scout view users")
-#     adapter = context.obj['adapter']
-#
-#     ## TODO add a User interface to the adapter
-#     for user_obj in User.objects():
-#         click.echo(user_obj['name'])
-#
-# @click.command('institutes', short_help='Display institutes')
-# @click.pass_context
-# def institutes(context):
-#     """Show all institutes in the database"""
-#     LOG.info("Running scout view institutes")
-#     adapter = context.obj['adapter']
-#
-#     for institute_obj in adapter.institutes():
-#         click.echo(institute_obj['internal_id'])
-
-
 @click.command("index", short_help="Delete all indexes")
 @with_appcontext
 def index():
@@ -69,8 +48,24 @@ def user(mail):
     user_obj = adapter.user(mail)
     if not user_obj:
         LOG.warning("User {0} could not be found in database".format(mail))
-    else:
-        adapter.delete_user(mail)
+        return
+
+    result = adapter.delete_user(mail)
+    if result.deleted_count == 0:
+        return
+    click.echo(f"User was correctly removed from database.")
+    # remove this user as assignee from any case where it is found
+    assigned_cases = adapter.cases(assignee=mail)
+    updated_cases = 0
+    with current_app.test_request_context("/cases"):
+        for case_obj in assigned_cases:
+            institute_obj = adapter.institute(case_obj["owner"])
+            link = url_for(
+                "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+            )
+            if adapter.unassign(institute_obj, case_obj, user_obj, link, True):
+                updated_cases += 1
+    click.echo(f"User was removed as assignee from {updated_cases} case(s).")
 
 
 @click.command("genes", short_help="Delete genes")
