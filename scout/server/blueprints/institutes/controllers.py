@@ -39,6 +39,7 @@ def update_institute_settings(store, institute_obj, form):
     phenotype_groups = []
     group_abbreviations = []
     cohorts = []
+    loqusdb_id = []
 
     for email in form.getlist("sanger_emails"):
         sanger_recipients.append(email.strip())
@@ -57,6 +58,9 @@ def update_institute_settings(store, institute_obj, form):
     for cohort in form.getlist("cohorts"):
         cohorts.append(cohort.strip())
 
+    if form.get("loqusdb_id"):
+        loqusdb_id.append(form.get("loqusdb_id"))
+
     updated_institute = store.update_institute(
         internal_id=institute_obj["_id"],
         sanger_recipients=sanger_recipients,
@@ -68,5 +72,6 @@ def update_institute_settings(store, institute_obj, form):
         add_groups=False,
         sharing_institutes=sharing_institutes,
         cohorts=cohorts,
+        loqusdb_id =form.get("loqusdb_id")
     )
     return updated_institute

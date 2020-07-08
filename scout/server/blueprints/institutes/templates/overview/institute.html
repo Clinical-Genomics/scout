@@ -118,7 +118,13 @@
               </select>
             </div>
           </div>
-          <div class="form-row mt-3 d-flex justify-content-center">
+          <div class="form-row mt-3 d-flex justify-content-left" id="Custom_LoqusDB">
+            <div class="col-md-12 align-self-center">
+              {{ form.loqusdb_id.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Custom LoqudDB id") }}
+              {{ form.loqusdb_id(class='form-control', value=institute.loqusdb_id) }}
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-right">
               {{ form.submit_btn(class="btn-primary btn") }}
           </div>
           <br>

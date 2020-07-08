@@ -48,7 +48,7 @@ class InstituteHandler(object):
         group_abbreviations=None,
         add_groups=None,
         sharing_institutes=None,
-        cohorts=None,
+        cohorts=None
     ):
         """Update the information for an institute
 
@@ -124,12 +124,6 @@ class InstituteHandler(object):
             )
             updates["$set"]["display_name"] = display_name
 
-        if loqusdb_id:
-            LOG.info(
-                "Updating loqusdb id for institute: {0} to {1}".format(internal_id, loqusdb_id)
-            )
-            updates["$set"]["loqusdb_id"] = loqusdb_id
-
         if phenotype_groups is not None:
             if group_abbreviations:
                 group_abbreviations = list(group_abbreviations)
@@ -153,6 +147,12 @@ class InstituteHandler(object):
 
         if cohorts is not None:
             updates["$set"]["cohorts"] = cohorts
+
+        if loqusdb_id is not None:
+            LOG.info(
+                "Updating loqusdb id for institute: {0} to {1}".format(internal_id, loqusdb_id)
+            )
+            updates["$set"]["loqusdb_id"] = loqusdb_id
 
         if updates["$set"].keys() or updates.get("$push") or updates.get("$pull"):
             updates["$set"]["updated_at"] = datetime.now()
