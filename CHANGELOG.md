@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 ### Changed
+- Updated the documentation on how to create a new software release
 
 
 ## [4.19]
