@@ -1,4 +1,5 @@
 {% extends "layout_bs4.html" %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }}
@@ -10,23 +11,14 @@
     <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">{{ institute.display_name }}
-      Cases</a>
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }} cases </a>
   </li>
-  {% if config.SHOW_CAUSATIVES %}
-    <li class="nav-item">
-      <a class="nav-link" href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
-    </li>
-   {% endif %}
-    <li class="nav-item">
-      <a class="nav-link" href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All SNVs and INDELs</a>
-    </li>
   <li class="nav-item active">
     <span class="navbar-text">Clinvar submissions</span>
   </li>
 {% endblock %}
 
-{% block content_main %}
+{% macro submissions_macro(submissions) %}
 <div class="container-float">
   <h3>Clinvar submissions page<h5></h3><a data-target="#howto" href="#" data-toggle="modal">howto</a></h5><br>
   <!-- Modal -->
@@ -68,14 +60,16 @@
   <!-- Modal end -->
   <br>
   {% if submissions %}
+    <div style="overflow-y: auto; height: 700px;">
     {% for submission in submissions|sort(attribute='status', reverse=True) %}
       {{ submission_panel(submission) }}
     {% endfor %}
+    </div>
   {% else %}
   <p>No clinvar submission was found. You can create one by clicking on "Submit to Clinvar" from the page of a pinned variant.</p>
   {% endif %}
 </div>
-{% endblock %}
+{% endmacro %}
 
 {% macro submission_panel(subm_obj) %}
   <div class="card w-100 mt-3">
@@ -148,7 +142,7 @@
                     <td><div class="badge badge-success">SNV</div></td>
                   {% endif %}
                 </td>
-                <td>{{subm_variant.case_id}}</td>
+                <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id]) }}" target="_blank">{{subm_obj.cases[subm_variant.case_id]}}</a></td>
                 <td>{{subm_variant.ref_seq or '-'}}</td>
                 <td>{{subm_variant.gene_symbol or '-'}}</td>
                 <td>{{subm_variant.hgvs or '-'}}</td>
@@ -191,8 +185,9 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th width="5%"></th>
-              <th width="15%">Individual ID</th>
+              <th></th>
+              <th>Individual ID</th>
+              <th></th>
               <th></th>
               <th>Case ID</th>
               <th>Clinical features</th>
@@ -204,15 +199,14 @@
           <tbody>
             {% for case in subm_obj.case_data %}
               <tr class="text-center">
-                <td width="5%">{{loop.index}}</td>
-                <td width="20%">
-                  <form id="rename_cd_{{subm_obj._id}}" action="{{ url_for('overview.clinvar_rename_casedata', submission=subm_obj._id, case=case.case_id, old_name=case.individual_id) }}" method="POST">
-                    <input type="text" name="new_name" value="{{case.individual_id}}">
-                    <button name="rename_sample" type="submit" class="btn btn-primary btn-xs"><span class="fa fa-pencil" aria-hidden="true"></span></button>
-                  </form>
+                <td>{{loop.index}}</td>
+                <form id="rename_cd_{{subm_obj._id}}" action="{{ url_for('overview.clinvar_rename_casedata', submission=subm_obj._id, case=case.case_id, old_name=case.individual_id) }}" method="POST">
+                <td>
+                  <input type="text" name="new_name" value="{{case.individual_id}}"><button name="rename_sample" type="submit" class="btn btn-primary btn-xs mb-1"><span class="fa fa-floppy-o" aria-hidden="true"></span></button>
                 </td>
+                </form>
                 <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
-                <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}" target="_blank">{{case.case_id}}</a></td>
+                <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}" target="_blank">{{subm_obj.cases[case.case_id]}}</a></td>
                 <td>{{case.clin_features}}</td>
                 <td>{{var_key_name[case.linking_id]}}</td>
                 <td>{{case.allele_origin}}</td>
@@ -241,6 +235,17 @@
     </div><!-- end of card body-->
   </div><!-- end of card -->
 {% endmacro %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    {{ institute_actionbar(institute, "shared") }} <!-- This is the sidebar -->
+  <div class="col">
+    {{ submissions_macro(submissions) }}
+  </div>
+  </div> <!-- end of div id body-row -->
+</div>
+{% endblock %}
 
 {% block scripts %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

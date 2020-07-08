@@ -1,8 +1,111 @@
+{% macro institute_settings(form, institute) %}
+<form action="{{ url_for('overview.institute_settings', institute_id=institute._id) }}" method="POST"
+  accept-charset="utf-8" id="institute_form">
+{{ form.csrf_token }}
+<div class="container">
+  <div class="display:block">
+    <!-- institute settings panel -->
+    <div class="card w-100">
+      <div style="padding: 0;" class="card-body mt-3 ml-3 mr-3" >
+        <h5 class="header">General Institute Settings</h5>
+          <div class="form-row mt-3 d-flex justify-content-between">
+            <div class="form-group col-md-4">
+              {{ form.display_name.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Name of the institute which will be displayed on Scout pages.") }}
+              {{ form.display_name(class='form-control', value=institute.display_name) }}
+              {% for error in form.display_name.errors %}
+                <span style="color: red;">{{ error }}</span><br>
+              {% endfor %}
+            </div>
+            <div class="col-md-8">
+              {{form.sanger_emails.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Email addresses to send variant verification email to. Only accepts current Scout user emails: exceptions to this can be made by a db admin. Please ask for support!")}}
+              <select class="select2" id="sanger_tags" name="sanger_emails" multiple="true" style="width:100%;">
+                {% for email in institute.sanger_recipients %}
+                  <option value="{{ email }}" selected>{{ email }}</option>
+                {% endfor %}
+              </select>
+              {% for error in form.sanger_emails.errors %}
+                <span style="color: red;">{{ error }}</span><br>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-between">
+            <div class="form-group col-md-5">
+              {{ form.coverage_cutoff.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Read depth considered reliable for displaying variants. Used in coverage reports.") }}
+              {{ form.coverage_cutoff(class='form-control', value=institute.coverage_cutoff) }}
+              {% for error in form.coverage_cutoff.errors %}
+                <span style="color: red;">{{ error }}</span><br>
+              {% endfor %}
+            </div>
+            <div class="form-group col-md-5">
+              {{ form.frequency_cutoff.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Lower frequency threshold to display variants. NOTE: used as the institute's default in clinical filter.") }}
+              {{ form.frequency_cutoff(class='form-control', value=institute.frequency_cutoff) }}
+              {% for error in form.frequency_cutoff.errors %}
+                <span style="color: red;">{{ error }}</span><br>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-between">
+            <div class="form-group col-md-7">
+              {{ form.pheno_group.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Add a new phenotype group item to the list of phenotype shortcuts below.") }}
+              <input name="hpo_term" class="typeahead_hpo form-control" id="pheno_group" data-provide="typeahead" autocomplete="off" placeholder="Search HPO..">
+            </div>
+            <div class="d-block col-md-3">
+              {{ form.pheno_abbrev.label(class="control-label",data_toggle="tooltip", data_placement="top", title="A short name for this phenotype group.") }}
+              <input name="pheno_abbrev" class="form-control" name="pheno_abbrev" id="pheno_abbrev" placeholder="e.g.: NEUR" pattern=".{2,10}">
+            </div>
+            <div class="d-flex align-items-center col-md-2">
+              <button type="button" class="btn btn-secondary btn-small" onclick="validate_pheno()">Add custom phenotype group</button>
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-between">
+            <div class="form-group col-md-12">
+              {{ form.pheno_groups.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Phenotype groups are used to quickly assign a certain phenotype to a case, on the case page.") }}
+              <select multiple="multiple" name="pheno_groups" class="selectpicker">
+                {% for choice in form.pheno_groups.choices %}
+                  <option value="{{choice[0]}}" {% if choice[0].split(' ,')[0] in institute.phenotype_groups %} selected {% endif %}>{{choice[1]}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-row mt-3 mb-3">
+            <div class="col-md-2">
+              {{form.cohorts.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Categories used to subdivide patients")}}
+            </div>
+            <div class="col-md-10">
+              <select class="form-control" id="cohort_tags" name="cohorts" multiple="true" style="width:100%;">
+                {% for cohort in institute.cohorts %}
+                  <option value="{{ cohort }}" selected>{{ cohort }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-center">
+            <div class="col-md-12 align-self-center">
+              {{ form.institutes.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Allow case sharing only with preselected institutes.") }}
+              <select multiple="multiple" class="selectpicker" name="institutes">
+              {% for choice in form.institutes.choices %}
+                <option value="{{choice[0]}}" {% if choice[0] in institute.collaborators %} selected {% endif %}>{{choice[1]}}</option>
+              {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-row mt-3 d-flex justify-content-center">
+              {{ form.submit_btn(class="btn-primary btn") }}
+          </div>
+          <br>
+      </div>
+    </div>
+  </div> <!-- end of div class="row" -->
+</div> <!-- end of container div -->
+</form>
+{% endmacro %}
+
+
 {% macro institute_macro(institute, current_user) %}
-<form action="{{ url_for('overview.institute', institute_id=institute.internal_id) }}">
+<form action="{{ url_for('overview.institute_settings', institute_id=institute.internal_id) }}">
 <div class="card mt-3">
   <div>
-  <h5 class="card-title"><a href="{{ url_for('cases.cases', institute_id=institute.internal_id) }}"> {{ institute.display_name }}</a>
+  <h5 class="card-title"><a href="{{ url_for('overview.cases', institute_id=institute.internal_id) }}"> {{ institute.display_name }}</a>
   {%- if current_user.is_admin or institute.internal_id in current_user.institutes %}
     <button class="float-right btn-primary btn-sm" type="submit" class="btn btn-primary btn-sm" title="settings">settings</button>
   {%- endif -%}
@@ -47,11 +150,11 @@
     <tbody>
       {% for user in users %}
         <tr>
-          <th scope="row">{{loop.index}}</th>
+          <td>{{loop.index}}</td>
           <td>{{user.name}}</td>
           <td>{{user.email}}</td>
           <td>{{user.roles|join(', ')}}</td>
-          <td>{{user.accessed_at}}</td>
+          <td>{{user.accessed_at or "-"}}</td>
         </tr>
       {% endfor %}
     </tbody>

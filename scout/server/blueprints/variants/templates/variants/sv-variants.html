@@ -18,7 +18,7 @@
     <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
@@ -45,7 +45,8 @@
       <div class="card-header">
         <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">SvFilters</a></strong>
       </div>
-      <div id="collapseFilters" class="card-body panel-collapse collapse">
+      <!--Expand filters form if filters were used in a previous POST request-->
+      <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}">
         <div class="card-body">{{ sv_filters(form, institute, case) }}</div>
       </div>
     </div>
