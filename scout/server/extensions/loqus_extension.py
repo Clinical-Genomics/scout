@@ -49,7 +49,7 @@ class LoqusDB:
     def __init__(self, loqusdb_binary=None, loqusdb_args=None):
         """Initialise from args"""
         self.loqusdb_settings = [
-            {"id": "default", "binary_path": loqusdb_binary, "config_path": loqusdb_args}
+            {"id": "default", "binary_path": loqusdb_binary, "config_path": loqusdb_args,}
         ]
         LOG.info("Initializing loqus extension with config: %s", self.loqusdb_settings)
 

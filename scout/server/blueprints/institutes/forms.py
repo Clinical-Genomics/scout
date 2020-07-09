@@ -54,6 +54,6 @@ class InstituteForm(FlaskForm):
         "Available patient cohorts", validators=[validators.Optional()]
     )
     institutes = NonValidatingSelectMultipleField("Institutes to share cases with", choices=[])
-    loqusdb_id = TextField("LoqusDB id",  validators=[validators.Optional()])
+    loqusdb_id = TextField("LoqusDB id", validators=[validators.Optional()])
 
     submit_btn = SubmitField("Save settings")
