@@ -119,12 +119,17 @@
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-left" id="Custom_LoqusDB">
-            <div class="col-md-12 align-self-center">
-              {{ form.loqusdb_id.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Custom LoqudDB id") }}
-              {{ form.loqusdb_id(class='form-control', value=institute.loqusdb_id) }}
+            <div class="col-md-2 align-self-center" >
+              {{ form.loqusdb_id.label(class="control-label", data_toggle="tooltip", data_placement="top", title="LoqudDB id", placeholder="Search HPO.." ) }}
             </div>
+            <div class="col-md-6 align-self-center" >
+              {{ form.loqusdb_id(class='form-control')}}
+            </div>
+            <div class="col-md-6 align-self-center" ></div>
           </div>
-          <div class="form-row mt-3 d-flex justify-content-right">
+          <br>
+          <hr>
+          <div class="form-row mt-3 d-flex justify-content-center" id="SAVE-button">
               {{ form.submit_btn(class="btn-primary btn") }}
           </div>
           <br>
@@ -196,6 +201,16 @@
       tokenSeparators: [','],
       placeholder: "Add Sanger email",
     });
+
+
+    // Set Loqus ID in loqus_id field if exists, otherwise 'default'
+    {% if institute.loqusdb_id %}
+        loqus = "{{ institute.loqusdb_id|string }}"
+        $('#loqusdb_id').attr("value", loqus );
+    {% else %}
+        $('#loqusdb_id').attr("placeholder", "default");
+    {% endif%}
+
 
     $(function () {
       $('select[multiple]').selectpicker({
