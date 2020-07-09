@@ -54,11 +54,7 @@ class LoqusDB:
     def __init__(self, loqusdb_binary=None, loqusdb_args=None):
         """Initialise from args"""
         self.loqusdb_settings = [
-            {
-                "id": "default",
-                "binary_path": loqusdb_binary,
-                "config_path": loqusdb_args,
-            }
+            {"id": "default", "binary_path": loqusdb_binary, "config_path": loqusdb_args,}
         ]
         LOG.info("Initializing loqus extension with config: %s", self.loqusdb_settings)
 
@@ -73,9 +69,9 @@ class LoqusDB:
     def version_check(self):
         """Check if a compatible version is used otherwise raise an error"""
         if not self.version >= 2.5:
-            LOG.info(
-                "Please update your loqusdb version to >=2.5 (current: {})"
-            ).format(self.version)
+            LOG.info("Please update your loqusdb version to >=2.5 (current: {})").format(
+                self.version
+            )
             raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
 
     @staticmethod
