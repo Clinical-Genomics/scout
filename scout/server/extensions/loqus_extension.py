@@ -4,6 +4,7 @@ import json
 import logging
 import subprocess
 from subprocess import CalledProcessError
+from scout.exceptions.config import ConfigError
 
 LOG = logging.getLogger(__name__)
 
@@ -49,7 +50,11 @@ class LoqusDB:
     def __init__(self, loqusdb_binary=None, loqusdb_args=None):
         """Initialise from args"""
         self.loqusdb_settings = [
-            {"id": "default", "binary_path": loqusdb_binary, "config_path": loqusdb_args,}
+            {
+                "id": "default",
+                "binary_path": loqusdb_binary,
+                "config_path": loqusdb_args,
+            }
         ]
         LOG.info("Initializing loqus extension with config: %s", self.loqusdb_settings)
 
@@ -64,9 +69,9 @@ class LoqusDB:
     def version_check(self):
         """Check if a compatible version is used otherwise raise an error"""
         if not self.version >= 2.5:
-            LOG.info("Please update your loqusdb version to >=2.5 (current: {})").format(
-                self.version
-            )
+            LOG.info(
+                "Please update your loqusdb version to >=2.5 (current: {})"
+            ).format(self.version)
             raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
 
     @staticmethod
@@ -163,7 +168,10 @@ class LoqusDB:
         if isinstance(self.loqusdb_settings, list) and loqusdb_id is None:
             return self.default_setting().get("binary_path")
         elif isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
-            return self.search_dictlist(loqusdb_id).get("binary_path")
+            try:
+                return self.search_dictlist(loqusdb_id).get("binary_path")
+            except AttributeError:
+                raise ConfigError("LoqusDB id not found")
         else:
             return self.loqusdb_settings.get("binary_path")
 
@@ -173,7 +181,10 @@ class LoqusDB:
         if isinstance(self.loqusdb_settings, list) and loqusdb_id is None:
             return self.default_setting().get("config_path")
         elif isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
-            return self.search_dictlist(loqusdb_id).get("config_path")
+            try:
+                return self.search_dictlist(loqusdb_id).get("config_path")
+            except AttributeError:
+                raise ConfigError("LoqusDB id not found")
         else:
             return self.loqusdb_settings.get("config_path")
 
