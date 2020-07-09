@@ -72,6 +72,6 @@ def update_institute_settings(store, institute_obj, form):
         add_groups=False,
         sharing_institutes=sharing_institutes,
         cohorts=cohorts,
-        loqusdb_id =form.get("loqusdb_id")
+        loqusdb_id=form.get("loqusdb_id"),
     )
     return updated_institute
