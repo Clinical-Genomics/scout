@@ -48,7 +48,7 @@ class InstituteHandler(object):
         group_abbreviations=None,
         add_groups=None,
         sharing_institutes=None,
-        cohorts=None
+        cohorts=None,
     ):
         """Update the information for an institute
 
