@@ -12,6 +12,10 @@ LOG = logging.getLogger(__name__)
 # TODO: add in documentation requirement of loqusdb vsn 2.5 or greater
 
 
+BINARY_PATH = "binary_path"
+CONFIG_PATH = "config_path"
+
+
 def execute_command(cmd):
     """
         Prints stdout + stderr of command in real-time while being executed
@@ -114,8 +118,9 @@ class LoqusDB:
         loqus_id = variant_info["_id"]
         cmd = [self.get_bin_path(loqusdb_id)]
         args = self.get_config_path(loqusdb_id)
+
         if args:
-            cmd.extend(["--config", [args]])
+            cmd.extend(["--config", args])
         cmd.extend(["variants", "--to-json", "--variant-id", loqus_id])
         # TODO: add version check here instead? 2.5 needed for json export?!
         # If sv we need some more info
@@ -152,7 +157,7 @@ class LoqusDB:
         return res
 
     def search_dictlist(self, key):
-        """Search list of dicts, """
+        """Search list of dicts"""
         for i in self.loqusdb_settings:
             if i.get("id") == key:
                 return i
@@ -166,27 +171,27 @@ class LoqusDB:
         """Return path to `loqusdb` binary as configured per
         loqusdb_id or default"""
         if isinstance(self.loqusdb_settings, list) and loqusdb_id is None:
-            return self.default_setting().get("binary_path")
+            return self.default_setting().get(BINARY_PATH)
         elif isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
             try:
-                return self.search_dictlist(loqusdb_id).get("binary_path")
+                return self.search_dictlist(loqusdb_id).get(BINARY_PATH)
             except AttributeError:
                 raise ConfigError("LoqusDB id not found")
         else:
-            return self.loqusdb_settings.get("binary_path")
+            return self.loqusdb_settings.get(BINARY_PATH)
 
     def get_config_path(self, loqusdb_id=None):
         """Return path to `loqusdb` config arguments  as configured per
         loqusdb_id or default"""
         if isinstance(self.loqusdb_settings, list) and loqusdb_id is None:
-            return self.default_setting().get("config_path")
+            return self.default_setting().get(CONFIG_PATH)
         elif isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
             try:
-                return self.search_dictlist(loqusdb_id).get("config_path")
+                return self.search_dictlist(loqusdb_id).get(CONFIG_PATH)
             except AttributeError:
                 raise ConfigError("LoqusDB id not found")
         else:
-            return self.loqusdb_settings.get("config_path")
+            return self.loqusdb_settings.get(CONFIG_PATH)
 
     # XXX: not called since removal of version check >=2.5
     def case_count(self):
