@@ -43,7 +43,8 @@
         <div class="card-header">
           <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
         </div>
-        <div class="card-body panel-collapse collapse" id="collapseFilters">
+        <!--Expand filters form if filters were used in a previous POST request-->
+        <div class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}" id="collapseFilters">
             {{ snv_filters(form, institute, case) }}
         </div>
       </div>

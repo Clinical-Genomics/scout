@@ -43,7 +43,6 @@ variants_bp = Blueprint(
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
     page = int(request.form.get("page", 1))
-
     category = "snv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = request.args.get("variant_type", "clinical")
@@ -159,6 +158,7 @@ def variants(institute_id, case_name):
         severe_so_terms=SEVERE_SO_TERMS,
         cytobands=cytobands,
         page=page,
+        expand_search=str(request.method == "POST"),
         **data,
     )
 
@@ -234,6 +234,7 @@ def sv_variants(institute_id, case_name):
         severe_so_terms=SEVERE_SO_TERMS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
+        expand_search=str(request.method == "POST"),
         **data,
     )
 
@@ -263,7 +264,7 @@ def cancer_variants(institute_id, case_name):
                     ".cancer_variants",
                     institute_id=institute_id,
                     case_name=case_name,
-                    expand_search=True,
+                    expand_search="True",
                 ),
             )
         page = int(request.form.get("page", 1))
@@ -299,7 +300,12 @@ def cancer_variants(institute_id, case_name):
         store, institute_id, case_name, variants_query, form, page=page
     )
 
-    return dict(variant_type=variant_type, cytobands=cytobands, **data)
+    return dict(
+        variant_type=variant_type,
+        cytobands=cytobands,
+        expand_search=str(request.method == "POST"),
+        **data,
+    )
 
 
 @variants_bp.route("/<institute_id>/<case_name>/cancer/sv-variants", methods=["GET", "POST"])
@@ -340,6 +346,7 @@ def cancer_sv_variants(institute_id, case_name):
         manual_rank_options=MANUAL_RANK_OPTIONS,
         cytobands=cytobands,
         page=page,
+        expand_search=str(request.method == "POST"),
         **data,
     )
 
@@ -375,7 +382,7 @@ def upload_panel(institute_id, case_name):
     # HTTP redirect code 307 asks that the browser preserves the method of request (POST).
     if category == "sv":
         return redirect(
-            url_for(".sv_variants", institute_id=institute_id, case_name=case_name, **form.data),
+            url_for(".sv_variants", institute_id=institute_id, case_name=case_name, **form.data,),
             code=307,
         )
     return redirect(

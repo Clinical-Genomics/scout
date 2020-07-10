@@ -933,14 +933,13 @@ def vcf2cytosure(institute_id, case_name, individual_id):
     (display_name, vcf2cytosure) = controllers.vcf2cytosure(
         store, institute_id, case_name, individual_id
     )
-
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     outdir = os.path.abspath(os.path.dirname(vcf2cytosure))
     filename = os.path.basename(vcf2cytosure)
-
-    LOG.debug("Attempt to deliver file {0} from dir {1}".format(filename, outdir))
-
-    attachment_filename = display_name + ".vcf2cytosure.cgh"
-
+    attachment_filename = ".".join(
+        [display_name, case_obj["display_name"], case_obj["_id"], "vcf2cytosure.cgh"]
+    )
+    LOG.debug("Attempt to deliver file {0} from dir {1}".format(attachment_filename, outdir))
     return send_from_directory(
         outdir, filename, attachment_filename=attachment_filename, as_attachment=True
     )

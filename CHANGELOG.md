@@ -5,9 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
+### Added
+### Fixed
+### Changed
+- Updated the documentation on how to create a new software release
+- Genome build-aware cytobands coordinates
+
+
+## [4.19]
 
 ### Added
+- Show internal ID for case
+- Add internal ID for downloaded CGH files
 - Export dynamic HPO gene list from case page
+- Remove users as case assignees when their account is deleted
+- Keep variants filters panel expanded when filters have been used
 
 ### Fixed
 - Handle the ProxyFix ModuleNotFoundError when Werkzeug installed version is >1.0

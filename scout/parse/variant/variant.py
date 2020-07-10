@@ -124,7 +124,7 @@ def parse_variant(
     ################# Position specific #################
     parsed_variant["chromosome"] = chrom
 
-    coordinates = parse_coordinates(variant, category)
+    coordinates = parse_coordinates(variant, category, case.get("genome_build"))
 
     parsed_variant["position"] = coordinates["position"]
     parsed_variant["sub_category"] = coordinates["sub_category"]
