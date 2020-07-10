@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 ### Changed
 - Updated the documentation on how to create a new software release
+- Genome build-aware cytobands coordinates
 
 
 ## [4.19]
