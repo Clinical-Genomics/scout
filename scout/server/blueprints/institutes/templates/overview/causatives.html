@@ -1,4 +1,5 @@
 {% extends "layout_bs4.html" %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
 
 {% block title %}
 {{ super() }} - Institutes
@@ -12,43 +13,34 @@
 {% endblock %}
 
 {% block top_nav %}
-{{ super() }}
-<li class="nav-item">
-  <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">{{ institute.display_name }}
-    Cases</a>
-</li>
-<li class="nav-item active">
-  <a class="nav-link" href="{{ url_for('cases.causatives', institute_id=institute._id) }}">Causatives</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link"
-    href="{{ url_for('cases.gene_variants', institute_id=institute._id, variant_type=['clinical'], rank_score=15) }}">All
-    SNVs and INDELs</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}">Clinvar
-    submissions</a>
-</li>
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }} cases </a>
+  </li>
+  <li class="nav-item active">
+    <span class="navbar-text">Causative variants</span>
+  </li>
 {% endblock %}
-{% block content_main %}
+
+{% macro causatives() %}
 <div class="card mt-3">
-  <div class="card-body">
-      <table id="causatives_table" class="table display table-sm" cellspacing="0" width="100%">
+  <div class="card-body" style="overflow-y: auto; height: 700px;">
+      <table id="causatives_table" class="table display table-sm" cellspacing="0">
         <thead>
           <tr>
-            <th style="width:5%">Gene</th>
-            <th style="width:10%">Variant Name</th>
-            <th style="width:20%">Change</th>
-            <th style="width:3%">Category</th>
-            <th style="width:3%" data-toggle='tooltip' data-container='body' title="score(model version)">Rank score</th>
-            <th style="width:5%" data-toggle='tooltip' data-container='body' title="ref/alt-GQ">Zygosity</th>
-            <th style="width:3%">Inheritance</th>
-            <th style="width:5%">ACMG</th>
-            <th style="width:5%">Case Name</th>
-            <th style="width:3%">Case Status</th>
+            <th>Gene</th>
+            <th>Variant Name</th>
+            <th>Change</th>
+            <th>Category</th>
+            <th data-toggle='tooltip' data-container='body' title="score(model version)">Rank score</th>
+            <th data-toggle='tooltip' data-container='body' title="ref/alt-GQ">Zygosity</th>
+            <th>Inheritance</th>
+            <th>ACMG</th>
+            <th>Case Name</th>
+            <th>Case Status</th>
           </tr>
         </thead>
         <tbody>
@@ -58,16 +50,16 @@
           {% if variant._id in case.causatives %}
           <tr>
             <td>
-              <h5 class="mb-1">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</h5>
+              {{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}
             </td>
             <td><a href="{{ url_for('variant.variant',
                 institute_id=institute._id,
                 case_name=case.display_name,
-                variant_id=variant._id) }}">{{ variant.display_name|truncate(20, True) }}
+                variant_id=variant._id) }}" data-toggle='tooltip' data-container='body' title="{{ variant.display_name }}">{{ variant.display_name|truncate(10, True) }}
               </a>
             </td>
-            <td><span class="text-muted" style="display: inline-block; margin-left: 10px;">
-                {{ group_variant.reference|truncate(20, True) }} → {{ group_variant.alternative|truncate(20, True) }}
+            <td><span class="text-muted" style="display: inline-block; margin-left: 10px;" data-toggle='tooltip' data-container='body' title="{{ group_variant.reference|truncate(30, True) }} → {{ group_variant.alternative|truncate(30, True) }}">
+                {{ group_variant.reference|truncate(10, True) }} → {{ group_variant.alternative|truncate(10, True) }}
               </span>
             </td>
             <td><span class="badge badge-secondary">{{ variant.category|upper }}</span></td>
@@ -122,6 +114,19 @@
         </tbody>
       </table>
   </div>
+</div>
+{% endmacro %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
+  <div class="col">
+    <div class="container-float">
+      {{ causatives() }}
+    </div>
+  </div>
+  </div> <!-- end of div id body-row -->
 </div>
 {% endblock %}
 

@@ -102,6 +102,5 @@ class UserHandler(object):
 
         """
         LOG.info("Deleting user %s", email)
-        user_obj = self.user_collection.delete_one({"email": email})
-
-        return user_obj
+        result = self.user_collection.delete_one({"email": email})
+        return result

@@ -22,7 +22,7 @@
 
 {% block top_nav %}
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
@@ -448,9 +448,9 @@
                         <td><input type="text" name="assertion_method@{{pinned._id}}" placeholder="optional (Submitter's or other publication)" size="40" value="ACMG Guidelines, 2015"></td>
                       </tr>
                       <tr>
-                        <td>Assertion citation</td>
+                        <td>Assertion method citation</td>
                         <td>
-                          <textarea name="assertion_method_cit@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40">doi: 10.1038/gim.2015.30</textarea>
+                          <textarea name="assertion_method_cit@{{pinned._id}}" placeholder="(optional)" rows="3" cols="40">PMID:25741868</textarea>
                         </td>
                       </tr>
                       <tr>

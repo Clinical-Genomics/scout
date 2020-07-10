@@ -22,8 +22,8 @@
     <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
-      {{ institute.display_name }}
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }} cases
     </a>
   </li>
   <li class="nav-item active">
@@ -45,7 +45,9 @@
 <div class="container_spaced">
   <div class="card">
     <h4 class="card-header">Case: {{case.display_name}}</h4>
-      <p class="card-title {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">status: <strong>{{case.status}}</strong></p>
+    <p class="card-title {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">Status: <strong>{{case.status}}</strong>
+      <br>
+      Internal ID: <strong>{{case._id}}</strong></p>
     <div class="card-body">
 
       <div class="row text-center"> <!-- variants buttons -->
