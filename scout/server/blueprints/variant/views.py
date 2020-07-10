@@ -282,7 +282,7 @@ def clinvar(institute_id, case_name, variant_id):
     updated_submission = store.add_to_submission(open_submission["_id"], submission_objects)
 
     # Redirect to clinvar submissions handling page, and pass it the updated_submission_object
-    return redirect(url_for("cases.clinvar_submissions", institute_id=institute_id))
+    return redirect(url_for("overview.clinvar_submissions", institute_id=institute_id))
 
 
 @variant_bp.route(

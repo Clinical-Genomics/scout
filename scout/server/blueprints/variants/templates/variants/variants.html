@@ -17,7 +17,7 @@
     <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
@@ -43,7 +43,8 @@
         <div class="card-header">
           <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
         </div>
-        <div class="card-body panel-collapse collapse" id="collapseFilters">
+        <!--Expand filters form if filters were used in a previous POST request-->
+        <div class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}" id="collapseFilters">
             {{ snv_filters(form, institute, case) }}
         </div>
       </div>
@@ -177,46 +178,15 @@
     });
 
     var cytoStart = document.getElementById("cytoband_start");
-
-    cytoStart.addEventListener("change", function() {
-      if(cytoStart.options[cytoStart.selectedIndex].value === ""){
-        startElem.value = "";
-        return
-      }
-      populateStart();
-    });
+    initSearchConstraints(cytoStart, startElem)
 
     var cytoEnd = document.getElementById("cytoband_end");
-    cytoEnd.addEventListener("change", function() {
-      if(cytoEnd.options[cytoEnd.selectedIndex].value === ""){
-        endElem.value = "";
-        return
-      }
-      populateEnd();
-    });
+    initSearchConstraints(cytoEnd, endElem)
+
+
 
     window.onload=function() {
       populateCytobands({{cytobands|safe}});
-    }
-
-    function validateForm(){
-      var start = document.forms["filters_form"].elements["start"].value
-      var end = document.forms["filters_form"].elements["end"].value
-      if(start || end){
-        if(!chrom){
-          alert("Chromosome field is required");
-          return false;
-        }
-        else if( !start || !end){
-          alert("Both start and end coordinates are required");
-          return false;
-        }
-        else if( (isNaN(start) || isNaN(end)) || Number(end)<Number(start) ){
-          alert("Coordinate field not valid");
-          return false;
-        }
-      }
-      return true;
     }
 
     $('select[multiple]').selectpicker({

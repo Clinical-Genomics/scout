@@ -5,14 +5,43 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
+### Added
+### Fixed
+### Changed
+- Updated the documentation on how to create a new software release
+
+
+## [4.19]
 
 ### Added
+- Show internal ID for case
+- Add internal ID for downloaded CGH files
+- Export dynamic HPO gene list from case page
+- Remove users as case assignees when their account is deleted
+- Keep variants filters panel expanded when filters have been used
+
+### Fixed
+- Handle the ProxyFix ModuleNotFoundError when Werkzeug installed version is >1.0
+- General report formatting issues whenever case and variant comments contain extremely long strings with no spaces
+
+### Changed
+- Created an institute wrapper page that contains list of cases, causatives, SNVs & Indels, user list, shared data and institute settings
+- Display case name instead of case ID on clinVar submissions
+- Changed icon of sample update in clinVar submissions
+
+
+## [4.18]
+
+### Added
+- Filter cancer variants on cytoband coordinates
 - Show dismiss reasons in a badge with hover for clinical variants
 - Show an ellipsis if 10 cases or more to display with loqusdb matches
 - A new blog post for version 4.17
 - Tooltip to better describe Tumor and Normal columns in cancer variants
 - Filter cancer SNVs and SVs by chromosome coordinates
 - Default export of `Assertion method citation` to clinVar variants submission file
+- Button to export up to 500 cancer variants, filtered or not
+- Rename samples of a clinVar submission file
 
 ### Fixed
 - Apply default gene panel on return to cancer variantS from variant view
@@ -20,10 +49,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `scout download everything` command failing while downloading HPO terms
 
 ### Changed
-
-
-### Changed
 - Turn tumor and normal allelic fraction to decimal numbers in tumor variants page
+- Moved clinVar submissions code to the institutes blueprints
+- Changed name of clinVar export files to FILENAME.Variant.csv and FILENAME.CaseData.csv
+- Switched Google login libraries from Flask-OAuthlib to Authlib
+
 
 ## [4.17.1]
 

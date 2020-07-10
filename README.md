@@ -170,6 +170,16 @@ SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 --access-logfi
 > The `wsgi_gunicorn.py` file is included in the repo and configures Flask to work with Gunicorn.
 
 
+### Setting up a user login system
+
+Scout currently supports 3 mutually exclusive types of login:
+- Google authentication via OpenID Connect
+- LDAP authentication]
+- Simple authentication using userid and password
+
+A description on how to set up an advanced login system is available in the [admin guide](docs/admin-guide/login-system.md)
+
+
 ### Integration with MatchMaker Exchange
 
 Starting from release 4.4, Scout offers integration for patient data sharing via MatchMaker

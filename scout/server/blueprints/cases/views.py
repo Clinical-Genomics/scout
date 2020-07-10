@@ -12,7 +12,6 @@ from operator import itemgetter
 import pymongo
 from flask import (
     Blueprint,
-    Response,
     abort,
     current_app,
     flash,
@@ -22,24 +21,19 @@ from flask import (
     request,
     send_file,
     send_from_directory,
+    Response,
     url_for,
 )
+
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 
-from scout.constants import (
-    ACMG_COMPLETE_MAP,
-    ACMG_MAP,
-    CASEDATA_HEADER,
-    CLINVAR_HEADER,
-    SAMPLE_SOURCE,
-)
+from scout.constants import SAMPLE_SOURCE
 from scout.server.extensions import mail, store
 from scout.server.utils import institute_and_case, templated, user_institutes
 
 from . import controllers
-from .forms import GeneVariantFiltersForm
 
 LOG = logging.getLogger(__name__)
 
@@ -63,62 +57,6 @@ def index():
         if institute_obj
     )
     return dict(institutes=institutes_count)
-
-
-@cases_bp.route("/<institute_id>")
-@templated("cases/cases.html")
-def cases(institute_id):
-    """Display a list of cases for an institute."""
-
-    institute_obj = institute_and_case(store, institute_id)
-    query = request.args.get("query")
-
-    limit = 100
-    if request.args.get("limit"):
-        limit = int(request.args.get("limit"))
-
-    skip_assigned = request.args.get("skip_assigned")
-    is_research = request.args.get("is_research")
-    all_cases = store.cases(
-        collaborator=institute_id,
-        name_query=query,
-        skip_assigned=skip_assigned,
-        is_research=is_research,
-    )
-
-    sort_by = request.args.get("sort")
-    sort_order = request.args.get("order") or "asc"
-    if sort_by:
-        pymongo_sort = pymongo.ASCENDING
-        if sort_order == "desc":
-            pymongo_sort = pymongo.DESCENDING
-        if sort_by == "analysis_date":
-            all_cases.sort("analysis_date", pymongo_sort)
-        elif sort_by == "track":
-            all_cases.sort("track", pymongo_sort)
-        elif sort_by == "status":
-            all_cases.sort("status", pymongo_sort)
-
-    LOG.debug("Prepare all cases")
-
-    prioritized_cases = store.prioritized_cases(institute_id=institute_id)
-
-    data = controllers.cases(store, all_cases, prioritized_cases, limit)
-    data["sort_order"] = sort_order
-    data["sort_by"] = sort_by
-    data["nr_cases"] = store.nr_cases(institute_id=institute_id)
-
-    sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id, current_user.email)
-    if len(sanger_unevaluated) > 0:
-        data["sanger_unevaluated"] = sanger_unevaluated
-
-    return dict(
-        institute=institute_obj,
-        skip_assigned=skip_assigned,
-        is_research=is_research,
-        query=query,
-        **data,
-    )
 
 
 @cases_bp.route("/<institute_id>/<case_name>")
@@ -147,108 +85,6 @@ def sma(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case(store, institute_obj, case_obj)
     return dict(institute=institute_obj, case=case_obj, format="html", **data)
-
-
-@cases_bp.route("/<institute_id>/clinvar_submissions", methods=["GET", "POST"])
-@templated("cases/clinvar_submissions.html")
-def clinvar_submissions(institute_id):
-    def generate_csv(header, lines):
-        yield header + "\n"
-        for line in lines:  # lines have already quoted fields
-            yield line + "\n"
-
-    if request.method == "POST":
-        submission_id = request.form.get("submission_id")
-        if request.form.get("update_submission"):
-            if request.form.get("update_submission") == "close":  # close a submission
-                store.update_clinvar_submission_status(institute_id, submission_id, "closed")
-            elif request.form.get("update_submission") == "open":
-                store.update_clinvar_submission_status(
-                    institute_id, submission_id, "open"
-                )  # open a submission
-            elif request.form.get("update_submission") == "register_id" and request.form.get(
-                "clinvar_id"
-            ):  # provide an official clinvar submission ID
-                result = store.update_clinvar_id(
-                    clinvar_id=request.form.get("clinvar_id"), submission_id=submission_id,
-                )
-            elif request.form.get("update_submission") == "delete":  # delete a submission
-                deleted_objects, deleted_submissions = store.delete_submission(
-                    submission_id=submission_id
-                )
-                flash(
-                    "Removed {} objects and {} submission from database".format(
-                        deleted_objects, deleted_submissions
-                    ),
-                    "info",
-                )
-        elif request.form.get("delete_variant"):  # delete a variant from a submission
-            store.delete_clinvar_object(
-                object_id=request.form.get("delete_variant"),
-                object_type="variant_data",
-                submission_id=submission_id,
-            )  # remove variant and associated_casedata
-        elif request.form.get("delete_casedata"):  # delete a case from a submission
-            store.delete_clinvar_object(
-                object_id=request.form.get("delete_casedata"),
-                object_type="case_data",
-                submission_id=submission_id,
-            )  # remove just the casedata associated to a variant
-        else:  # Download submission CSV files (for variants or casedata)
-
-            clinvar_subm_id = request.form.get("clinvar_id")
-            if clinvar_subm_id == "":
-                flash(
-                    "In order to download a submission CSV file you should register a Clinvar submission Name first!",
-                    "warning",
-                )
-                return redirect(request.referrer)
-
-            csv_type = request.form.get("csv_type", "")
-
-            submission_objs = store.clinvar_objs(
-                submission_id=submission_id, key_id=csv_type
-            )  # a list of clinvar submission objects (variants or casedata)
-            if submission_objs:
-                csv_header_obj = controllers.clinvar_header(
-                    submission_objs, csv_type
-                )  # custom csv header (dict as in constants CLINVAR_HEADER and CASEDATA_HEADER, but with required fields only)
-                csv_lines = controllers.clinvar_lines(
-                    submission_objs, csv_header_obj
-                )  # csv lines (one for each variant/casedata to be submitted)
-                csv_header = list(csv_header_obj.values())
-                csv_header = [
-                    '"' + str(x) + '"' for x in csv_header
-                ]  # quote columns in header for csv rendering
-                download_day = str(datetime.datetime.now().strftime("%Y-%m-%d"))
-                headers = Headers()
-                headers.add(
-                    "Content-Disposition",
-                    "attachment",
-                    filename=f"{clinvar_subm_id}_{csv_type}_{download_day}.csv",
-                )
-                return Response(
-                    generate_csv(",".join(csv_header), csv_lines),
-                    mimetype="text/csv",
-                    headers=headers,
-                )
-
-            flash(
-                'There are no submission objects of type "{}" to include in the csv file!'.format(
-                    csv_type
-                ),
-                "warning",
-            )
-
-    institute_obj = institute_and_case(store, institute_id)
-
-    data = {
-        "submissions": controllers.clinvar_submissions(store, institute_id),
-        "institute": institute_obj,
-        "variant_header_fields": CLINVAR_HEADER,
-        "casedata_header_fields": CASEDATA_HEADER,
-    }
-    return data
 
 
 @cases_bp.route("/<institute_id>/<case_name>/mme_matches", methods=["GET", "POST"])
@@ -475,104 +311,6 @@ def matchmaker_delete(institute_id, case_name):
         category,
     )
     return redirect(request.referrer)
-
-
-@cases_bp.route("/<institute_id>/causatives")
-@templated("cases/causatives.html")
-def causatives(institute_id):
-    institute_obj = institute_and_case(store, institute_id)
-    query = request.args.get("query", "")
-    hgnc_id = None
-    if "|" in query:
-        # filter accepts an array of IDs. Provide an array with one ID element
-        try:
-            hgnc_id = [int(query.split(" | ", 1)[0])]
-        except ValueError:
-            flash("Provided gene info could not be parsed!", "warning")
-
-    variants = store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id)
-    if variants:
-        variants.sort("hgnc_symbols", pymongo.ASCENDING)
-    all_variants = {}
-    all_cases = {}
-    for variant_obj in variants:
-        if variant_obj["case_id"] not in all_cases:
-            case_obj = store.case(variant_obj["case_id"])
-            all_cases[variant_obj["case_id"]] = case_obj
-        else:
-            case_obj = all_cases[variant_obj["case_id"]]
-
-        if variant_obj["variant_id"] not in all_variants:
-            all_variants[variant_obj["variant_id"]] = []
-
-        all_variants[variant_obj["variant_id"]].append((case_obj, variant_obj))
-
-    acmg_map = {key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()}
-
-    return dict(institute=institute_obj, variant_groups=all_variants, acmg_map=acmg_map)
-
-
-@cases_bp.route("/<institute_id>/gene_variants", methods=["GET", "POST"])
-@templated("cases/gene_variants.html")
-def gene_variants(institute_id):
-    """Display a list of SNV variants."""
-    page = int(request.form.get("page", 1))
-
-    institute_obj = institute_and_case(store, institute_id)
-
-    # populate form, conditional on request method
-    if request.method == "POST":
-        form = GeneVariantFiltersForm(request.form)
-    else:
-        form = GeneVariantFiltersForm(request.args)
-
-    variant_type = form.data.get("variant_type", "clinical")
-
-    # check if supplied gene symbols exist
-    hgnc_symbols = []
-    non_clinical_symbols = []
-    not_found_symbols = []
-    not_found_ids = []
-    data = {}
-    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
-        is_clinical = form.data.get("variant_type", "clinical") == "clinical"
-        # clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
-        for hgnc_symbol in form.hgnc_symbols.data:
-            if hgnc_symbol.isdigit():
-                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
-                if hgnc_gene is None:
-                    not_found_ids.append(hgnc_symbol)
-                else:
-                    hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
-            elif store.hgnc_genes(hgnc_symbol).count() == 0:
-                not_found_symbols.append(hgnc_symbol)
-            # elif is_clinical and (hgnc_symbol not in clinical_symbols):
-            #     non_clinical_symbols.append(hgnc_symbol)
-            else:
-                hgnc_symbols.append(hgnc_symbol)
-
-        if not_found_ids:
-            flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
-        if not_found_symbols:
-            flash(
-                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning",
-            )
-        if non_clinical_symbols:
-            flash(
-                "Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)),
-                "warning",
-            )
-        form.hgnc_symbols.data = hgnc_symbols
-
-        LOG.debug("query {}".format(form.data))
-
-        variants_query = store.gene_variants(
-            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type,
-        )
-
-        data = controllers.gene_variants(store, variants_query, institute_id, page)
-
-    return dict(institute=institute_obj, form=form, page=page, **data)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/individuals", methods=["POST"])
@@ -1156,6 +894,38 @@ def update_clinical_filter_hpo(institute_id, case_name):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/<institute_id>/<case_name>/download-hpo-genes", methods=["GET"])
+def download_hpo_genes(institute_id, case_name):
+    """Download the genes contained in a case dynamic gene list"""
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    dynamic_gene_objs = case_obj.get("dynamic_gene_list")
+    csv_header = ["HGNC symbol", "HGNC ID", "Description"]
+    csv_lines = [
+        ",".join(
+            [
+                str(gene_obj.get("hgnc_symbol")),
+                str(gene_obj.get("hgnc_id")),
+                '"' + gene_obj.get("description") + '"',
+            ]
+        )
+        for gene_obj in dynamic_gene_objs
+    ]
+
+    download_day = str(datetime.datetime.now().strftime("%Y-%m-%d"))
+    # prepare headers:
+    headers = Headers()
+
+    headers.add(
+        "Content-Disposition",
+        "attachment",
+        filename=f"HPO_gene_list.{institute_id}.{case_name}.{download_day}.csv",
+    )
+    return Response(
+        _generate_csv(",".join(csv_header), csv_lines), mimetype="text/csv", headers=headers,
+    )
+
+
 @cases_bp.route("/<institute_id>/<case_name>/<individual_id>/cgh")
 def vcf2cytosure(institute_id, case_name, individual_id):
     """Download vcf2cytosure file for individual."""
@@ -1163,14 +933,13 @@ def vcf2cytosure(institute_id, case_name, individual_id):
     (display_name, vcf2cytosure) = controllers.vcf2cytosure(
         store, institute_id, case_name, individual_id
     )
-
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     outdir = os.path.abspath(os.path.dirname(vcf2cytosure))
     filename = os.path.basename(vcf2cytosure)
-
-    LOG.debug("Attempt to deliver file {0} from dir {1}".format(filename, outdir))
-
-    attachment_filename = display_name + ".vcf2cytosure.cgh"
-
+    attachment_filename = ".".join(
+        [display_name, case_obj["display_name"], case_obj["_id"], "vcf2cytosure.cgh"]
+    )
+    LOG.debug("Attempt to deliver file {0} from dir {1}".format(attachment_filename, outdir))
     return send_from_directory(
         outdir, filename, attachment_filename=attachment_filename, as_attachment=True
     )
@@ -1213,3 +982,10 @@ def host_image_aux(institute_id, case_name, image, imgstr):
     img_path = abs_path + "/" + imgstr
     LOG.debug("Attempting to send {}/{}".format(img_path, image))
     return send_from_directory(img_path, image)
+
+
+def _generate_csv(header, lines):
+    """Download a text file composed of any header and lines"""
+    yield header + "\n"
+    for line in lines:  # lines have already quoted fields
+        yield line + "\n"

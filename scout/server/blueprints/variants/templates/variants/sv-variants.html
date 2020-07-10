@@ -18,7 +18,7 @@
     <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
@@ -45,7 +45,8 @@
       <div class="card-header">
         <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">SvFilters</a></strong>
       </div>
-      <div id="collapseFilters" class="card-body panel-collapse collapse">
+      <!--Expand filters form if filters were used in a previous POST request-->
+      <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}">
         <div class="card-body">{{ sv_filters(form, institute, case) }}</div>
       </div>
     </div>
@@ -171,70 +172,28 @@
     });
 
     var cytoStart = document.getElementById("cytoband_start");
-
-    cytoStart.addEventListener("change", function() {
-      if(cytoStart.options[cytoStart.selectedIndex].value === ""){
-        startElem.value = "";
-        return
-      }
-      populateStart();
-    });
+    initSearchConstraints(cytoStart, startElem)
 
     var cytoEnd = document.getElementById("cytoband_end");
-    cytoEnd.addEventListener("change", function() {
-      if(cytoEnd.options[cytoEnd.selectedIndex].value === ""){
-        endElem.value = "";
-        return
-      }
-      populateEnd();
-    });
+    initSearchConstraints(cytoEnd, endElem)
 
-
-    window.onload=function() {
-      populateCytobands({{cytobands|safe}});
-    }
-
-    function validateForm(){
-      var valid_chroms = [];
-      i = 1;
-      while(valid_chroms.push(i++) <22){};
-      valid_chroms.push("X","Y","MT");
-      var chrom = document.forms["filters_form"].elements["chrom"].value;
-      if(chrom && !valid_chroms.map(String).includes(chrom)){
-        alert("Chromosome field is not valid. Accepted values are: "+valid_chroms)
-        return false
-      }
-      var start = document.forms["filters_form"].elements["start"].value
-      var end = document.forms["filters_form"].elements["end"].value
-      if(start || end){
-        if(!chrom){
-          alert("Chromosome field is required");
-          return false;
-        }
-        else if( !start || !end){
-          alert("Both start and end coordinates are required");
-          return false;
-        }
-        else if( (isNaN(start) || isNaN(end)) || end<start ){
-          alert("Coordinate field not valid");
-          return false;
-        }
-      }
-      return true;
-    }
 
     $('select[multiple]').selectpicker({
-      width: '100%'
+        width: '100%'
     });
 
+    window.onload=function() {
+        populateCytobands({{cytobands|safe}});
+    }
+
     $(function () {
-      $('[data-toggle="tooltip"]').tooltip();
-      $('[data-toggle="popover"]').popover({
-        sanitizeFn: function (content) {
-          return DOMPurify.sanitize(content)
-        },
-        container: 'body',
-      });
+        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-toggle="popover"]').popover({
+            sanitizeFn: function (content) {
+                return DOMPurify.sanitize(content)
+            },
+            container: 'body',
+        });
     })
   </script>
 {% endblock %}

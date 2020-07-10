@@ -2,7 +2,7 @@
 import pymongo
 from pprint import pprint as pp
 import pytest
-from scout.server.blueprints.cases.controllers import get_sanger_unevaluated
+from scout.server.blueprints.institutes.controllers import get_sanger_unevaluated
 
 
 def test_case_sanger_variants(adapter, institute_obj, case_obj, user_obj, variant_obj):
