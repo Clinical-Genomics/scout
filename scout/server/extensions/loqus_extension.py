@@ -166,28 +166,27 @@ class LoqusDB:
     def get_bin_path(self, loqusdb_id=None):
         """Return path to `loqusdb` binary as configured per
         loqusdb_id or default"""
+
         if isinstance(self.loqusdb_settings, list) and loqusdb_id is None:
             return self.default_setting().get(BINARY_PATH)
-        elif isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
+        if isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
             try:
                 return self.search_dictlist(loqusdb_id).get(BINARY_PATH)
             except AttributeError:
                 raise ConfigError("LoqusDB id not found")
-        else:
-            return self.loqusdb_settings.get(BINARY_PATH)
+        return self.loqusdb_settings.get(BINARY_PATH)
 
     def get_config_path(self, loqusdb_id=None):
         """Return path to `loqusdb` config arguments  as configured per
         loqusdb_id or default"""
         if isinstance(self.loqusdb_settings, list) and loqusdb_id is None:
             return self.default_setting().get(CONFIG_PATH)
-        elif isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
+        if isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
             try:
                 return self.search_dictlist(loqusdb_id).get(CONFIG_PATH)
             except AttributeError:
                 raise ConfigError("LoqusDB id not found")
-        else:
-            return self.loqusdb_settings.get(CONFIG_PATH)
+        return self.loqusdb_settings.get(CONFIG_PATH)
 
     # XXX: not called since removal of version check >=2.5
     def case_count(self):
