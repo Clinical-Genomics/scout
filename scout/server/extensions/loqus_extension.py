@@ -1,4 +1,8 @@
-"""Code for loqus flask extension"""
+"""Code for loqus flask extension
+
+* Requires loqusdb version 2.5 or greater.
+* If multiple instances are configured, version will be default's.
+"""
 import copy
 import json
 import logging
@@ -9,11 +13,9 @@ from scout.exceptions.config import ConfigError
 LOG = logging.getLogger(__name__)
 
 
-# TODO: add in documentation requirement of loqusdb vsn 2.5 or greater
-
-
 BINARY_PATH = "binary_path"
 CONFIG_PATH = "config_path"
+VERSION = "version"
 
 
 def execute_command(cmd):
@@ -42,36 +44,45 @@ def execute_command(cmd):
 class LoqusDB:
     """Interface to loqusdb from Flask
 
-     NOTE: * initialied in __init__.py
+     NOTE: * initialied in __init__.py called from server/extensins/__init.py__ but also
+             init_app is called from server/app.init.
            * in practice this is a singleton class
-           * configured in `confgi.py`"""
+           * configured in `scout/server/config.py` """
 
-    # TODO: rename 'config_path to args'
-    # TODO: decorator for try/catch undefined dict attributes
-    # TODO: version is no longer checked in init_app() -when? where? never?
-    # -could loqusdb be updated to return non-zero value and we handle that instead
-
-    def __init__(self, loqusdb_binary=None, loqusdb_args=None):
+    def __init__(self, loqusdb_binary=None, loqusdb_config=None, loqusdb_args=None, version=None):
         """Initialise from args"""
         self.loqusdb_settings = [
-            {"id": "default", "binary_path": loqusdb_binary, "config_path": loqusdb_args,}
+            {"id": "default", "binary_path": loqusdb_binary, "config_path": loqusdb_args}
         ]
-        LOG.info("Initializing loqus extension with config: %s", self.loqusdb_settings)
+        self.version = version
+        LOG.info(
+            "Initializing loqus extension with config: %s", self.loqusdb_settings,
+        )
 
     def init_app(self, app):
         """Initialize from Flask."""
         LOG.info("Init loqusdb app")
-        self.loqusdb_settings = app.config["LOQUSDB_SETTINGS"]
+        self.loqusdb_settings = self.app_config(app)
+        self.version = self.get_configured_version()
+        if not self.version:
+            self.version = self.get_version()
+        self.version_check()
         LOG.info("Use loqusdb config file %s", self.loqusdb_settings)
 
-    # version_check() is not called now after implementation of loqusdb per institute
-    # -don't know institute until page is loaded
+    @staticmethod
+    def app_config(app):
+        """Read config.py to handle single or multiple loqusdb configurations."""
+        cfg = app.config["LOQUSDB_SETTINGS"]
+        if isinstance(cfg, list):
+            return cfg
+        # backwards compatible, add default id
+        cfg["id"] = "default"
+        return [cfg]
+
     def version_check(self):
         """Check if a compatible version is used otherwise raise an error"""
         if not self.version >= 2.5:
-            LOG.info("Please update your loqusdb version to >=2.5 (current: {})").format(
-                self.version
-            )
+            LOG.info("Please update your loqusdb version to >=2.5")
             raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
 
     @staticmethod
@@ -110,6 +121,8 @@ class LoqusDB:
 
         Returns:
             loqus_variant(dict)
+        Raises:
+            EnvironmentError("Only compatible with loqusdb version >= 2.5")
         """
         loqus_id = variant_info["_id"]
         cmd = [self.get_bin_path(loqusdb_id)]
@@ -118,7 +131,6 @@ class LoqusDB:
         if args:
             cmd.extend(["--config", args])
         cmd.extend(["variants", "--to-json", "--variant-id", loqus_id])
-        # TODO: add version check here instead? 2.5 needed for json export?!
         # If sv we need some more info
         if variant_info.get("category", "snv") in ["sv"]:
             self.set_coordinates(variant_info)
@@ -136,10 +148,10 @@ class LoqusDB:
                     variant_info["end_chrom"],
                     "--sv-type",
                     variant_info["variant_type"],
+                    ["--case-count"],
                 ]
             )
 
-        cmd.extend(["--case-count"])
         output = ""
         try:
             output = execute_command(cmd)
@@ -166,7 +178,6 @@ class LoqusDB:
     def get_bin_path(self, loqusdb_id=None):
         """Return path to `loqusdb` binary as configured per
         loqusdb_id or default"""
-
         if isinstance(self.loqusdb_settings, list) and loqusdb_id is None:
             return self.default_setting().get(BINARY_PATH)
         if isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
@@ -188,7 +199,17 @@ class LoqusDB:
                 raise ConfigError("LoqusDB id not found")
         return self.loqusdb_settings.get(CONFIG_PATH)
 
-    # XXX: not called since removal of version check >=2.5
+    def get_configured_version(self, loqusdb_id=None):
+        """Return configured version"""
+        if isinstance(self.loqusdb_settings, list) and loqusdb_id is None:
+            return self.default_setting().get(VERSION)
+        if isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
+            try:
+                return self.search_dictlist(loqusdb_id).get(VERSION)
+            except AttributeError:
+                raise ConfigError("LoqusDB id not found")
+        return self.loqusdb_settings.get(VERSION)
+
     def case_count(self):
         """Returns number of cases in loqus instance
 
@@ -196,8 +217,7 @@ class LoqusDB:
             nr_cases(int)
         """
         nr_cases = 0
-        case_call = copy.deepcopy(self.base_call)
-
+        case_call = [self.get_bin_path()]
         case_call.extend(["cases", "--count"])
         output = ""
         try:
@@ -218,11 +238,13 @@ class LoqusDB:
         return nr_cases
 
     def get_version(self):
-        """Get LoqusDB verson as float"""
+        """Get LoqusDB version as float"""
+        if self.version:
+            return self.version
+
         call_str = [self.get_bin_path()]
+        LOG.debug("call_str: {}".format(call_str))
         call_str.extend(["--version"])
-        print("***-----")
-        print(call_str)
         try:
             output = execute_command(call_str)
         except CalledProcessError:
@@ -230,6 +252,7 @@ class LoqusDB:
             return -1.0
 
         version = output.rstrip().split(" ")[-1]
+        LOG.debug("version: {}".format(version))
         return float(version)
 
     def __repr__(self):
