@@ -13,13 +13,11 @@ def test_init_loqusextension(loqus_exe):
     # WHEN initialising a loqusdb extension
     loqus_obj = LoqusDB(loqusdb_binary=loqus_exe)
     # THEN assert that the binary is correct
-    assert loqus_obj.loqusdb_binary == loqus_exe
-    # THEN assert that the base call is correct
-    assert loqus_obj.base_call == [loqus_exe]
+    assert loqus_obj.get_bin_path() == loqus_exe
     # THEN assert that the version is 0
-    assert loqus_obj.version == 0
+    assert loqus_obj.version == None
     # THEN assert that there is no config
-    assert loqus_obj.loqusdb_config is None
+    assert loqus_obj.get_config_path() is None
 
 
 def test_init_loqusextension_version(loqus_exe, loqus_version):
@@ -28,13 +26,12 @@ def test_init_loqusextension_version(loqus_exe, loqus_version):
     # WHEN initialising a loqusdb extension
     loqus_obj = LoqusDB(loqusdb_binary=loqus_exe, version=loqus_version)
     # THEN assert that the binary is correct
-    assert loqus_obj.loqusdb_binary == loqus_exe
-    # THEN assert that the base call is correct
-    assert loqus_obj.base_call == [loqus_exe]
+    assert loqus_obj.get_bin_path() == loqus_exe
     # THEN assert that the version is correct
     assert loqus_obj.version == loqus_version
     # THEN assert that there is no config
-    assert loqus_obj.loqusdb_config is None
+    assert loqus_obj.get_config_path() is None
+
 
 
 def test_init_loqusextension_config(loqus_exe, loqus_config, loqus_version):
@@ -45,13 +42,11 @@ def test_init_loqusextension_config(loqus_exe, loqus_config, loqus_version):
         loqusdb_binary=loqus_exe, loqusdb_config=loqus_config, version=loqus_version
     )
     # THEN assert that the binary is correct
-    assert loqus_obj.loqusdb_binary == loqus_exe
-    # THEN assert that the base call is correct
-    assert loqus_obj.base_call == [loqus_exe, "--config", loqus_config]
+    assert loqus_obj.get_bin_path() == loqus_exe
     # THEN assert that the version is correct
     assert loqus_obj.version == loqus_version
     # THEN assert that there is no config
-    assert loqus_obj.loqusdb_config == loqus_config
+    assert loqus_obj.loqusdb_settings == [{"id": "default", "binary_path": loqus_exe, "config_path": None}]
 
 
 def test_init_loqusextension_init_app(loqus_exe, loqus_version):
@@ -65,11 +60,11 @@ def test_init_loqusextension_init_app(loqus_exe, loqus_version):
         app.config = configs
         loqus_obj.init_app(app)
         # THEN assert that the binary is correct
-        assert loqus_obj.loqusdb_binary == loqus_exe
+        assert loqus_obj.get_bin_path() == loqus_exe
         # THEN assert that the version is correct
         assert loqus_obj.version == loqus_version
-        # THEN assert that there is no config
-        assert loqus_obj.loqusdb_config is None
+        # THEN assert that config.py has been read
+        assert loqus_obj.loqusdb_settings is not None
 
 
 def test_init_loqusextension_init_app_no_version(mocker, loqus_exe, loqus_version):
@@ -85,10 +80,11 @@ def test_init_loqusextension_init_app_no_version(mocker, loqus_exe, loqus_versio
         app.config = configs
         loqus_obj.init_app(app)
         # THEN assert that the binary is correct
-        assert loqus_obj.loqusdb_binary == loqus_exe
+        assert loqus_obj.get_bin_path() == loqus_exe
         assert loqus_obj.version == loqus_version
         # THEN assert that there is no config
-        assert loqus_obj.loqusdb_config is None
+        # THEN assert that config.py has been read
+        assert loqus_obj.loqusdb_settings is not None
 
 
 def test_init_loqusextension_init_app_wrong_version(loqus_exe):
@@ -98,7 +94,7 @@ def test_init_loqusextension_init_app_wrong_version(loqus_exe):
     # WHEN initialising a loqusdb extension with init app
     app = Flask(__name__)
     loqus_obj = LoqusDB()
-    with pytest.raises(SyntaxError):
+    with pytest.raises(EnvironmentError):
         with app.app_context():
             app.config = configs
             loqus_obj.init_app(app)
@@ -122,8 +118,8 @@ def test_init_loqusextension_init_app_with_config(loqus_exe, loqus_config):
         app.config = configs
         loqus_obj.init_app(app)
         # THEN assert that the binary is correct
-        assert loqus_obj.loqusdb_binary == loqus_exe
+        assert loqus_obj.get_bin_path() == loqus_exe
         # THEN assert that the version is correct
         assert loqus_obj.version == version
         # THEN assert that the config is correct
-        assert loqus_obj.loqusdb_config == loqus_config
+        assert loqus_obj.get_config_path() == loqus_config

@@ -106,6 +106,6 @@ def test_loqusdb_wrong_version(loqus_exe):
     # GIVEN a loqusdb version < 2.5
     loqus_extension = LoqusDB(loqusdb_binary=loqus_exe, version=1.0)
     # WHEN instantiating an adapter
-    with pytest.raises(SyntaxError):
+    with pytest.raises(EnvironmentError):
         # THEN assert a syntax error is raised since version is wrong
         loqus_extension.version_check()
