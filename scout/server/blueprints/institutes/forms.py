@@ -14,7 +14,8 @@ from wtforms import (
 )
 from scout.constants import PHENOTYPE_GROUPS
 
-CASE_SEARCH_KEY = [
+
+LABELS= [
     "Case or individual name",
     "HPO term",
     "Search synopsis",
@@ -28,6 +29,9 @@ CASE_SEARCH_KEY = [
     "Causative gene",
     "Assigned user",
 ]
+
+# Generated HTML tag <option>'s 'value' and 'label' will be the same
+CASE_SEARCH_KEY = [(label, label) for label in LABELS]
 
 
 class NonValidatingSelectMultipleField(SelectMultipleField):
