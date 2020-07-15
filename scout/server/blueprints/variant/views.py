@@ -58,7 +58,6 @@ def sv_variant(institute_id, case_name, variant_id):
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
-        # TODO: add try/except, failed loqusdb calls should not stop excevution
         data["observations"] = observations(store, loqusdb, data["case"], data["variant"])
 
     return data

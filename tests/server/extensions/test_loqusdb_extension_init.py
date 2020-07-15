@@ -15,7 +15,7 @@ def test_init_loqusextension(loqus_exe):
     # THEN assert that the binary is correct
     assert loqus_obj.get_bin_path() == loqus_exe
     # THEN assert that the version is 0
-    assert loqus_obj.version == None
+    assert loqus_obj.version is None
     # THEN assert that there is no config
     assert loqus_obj.get_config_path() is None
 
