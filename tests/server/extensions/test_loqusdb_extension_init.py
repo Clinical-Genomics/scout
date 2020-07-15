@@ -33,7 +33,6 @@ def test_init_loqusextension_version(loqus_exe, loqus_version):
     assert loqus_obj.get_config_path() is None
 
 
-
 def test_init_loqusextension_config(loqus_exe, loqus_config, loqus_version):
     """Test a init a loqus extension object with a specified version"""
     # GIVEN a loqusdb binary, a version and a config
@@ -46,7 +45,9 @@ def test_init_loqusextension_config(loqus_exe, loqus_config, loqus_version):
     # THEN assert that the version is correct
     assert loqus_obj.version == loqus_version
     # THEN assert that there is no config
-    assert loqus_obj.loqusdb_settings == [{"id": "default", "binary_path": loqus_exe, "config_path": None}]
+    assert loqus_obj.loqusdb_settings == [
+        {"id": "default", "binary_path": loqus_exe, "config_path": None}
+    ]
 
 
 def test_init_loqusextension_init_app(loqus_exe, loqus_version):
