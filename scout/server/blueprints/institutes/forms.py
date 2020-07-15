@@ -15,7 +15,7 @@ from wtforms import (
 from scout.constants import PHENOTYPE_GROUPS
 
 
-LABELS= [
+LABELS = [
     "Case or individual name",
     "HPO term",
     "Search synopsis",
