@@ -7,7 +7,9 @@ import click
 import sys
 import logging
 import pytest
+
 LOG = logging.getLogger(__name__)
+
 
 def test_load_institute(empty_mock_app):
     """Testing the load institute cli command"""
@@ -35,7 +37,6 @@ def test_load_institute(empty_mock_app):
 
     ## THEN assert institute is added
     assert sum(1 for i in store.institute_collection.find()) == 1
-
 
 
 def test_load_institute2(empty_mock_app):
@@ -66,7 +67,7 @@ def test_load_institute2(empty_mock_app):
     ## THEN assert institute is added
     assert sum(1 for i in store.institute_collection.find()) == 1
 
-    
+
 def test_load_institute_exception(empty_mock_app):
     """Testing throwing an Click.Error"""
     ## GIVEN an empty database and some institute information
@@ -81,12 +82,3 @@ def test_load_institute_exception(empty_mock_app):
     result_error = runner.invoke(cli, ["load", "institute", "-i", ins_id, "-d", display_name])
     ## THEN assert exitcode is non-zero
     assert result_error.exit_code == 1
-
-
-    
-
-
-
-
-
-    
