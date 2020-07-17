@@ -185,7 +185,6 @@ class LoqusDB:
                 return self.search_dictlist(loqusdb_id).get(BINARY_PATH)
             except AttributeError:
                 raise ConfigError("LoqusDB id not found")
-        return self.loqusdb_settings.get(BINARY_PATH)
 
     def get_config_path(self, loqusdb_id=None):
         """Return path to `loqusdb` config arguments  as configured per
@@ -197,7 +196,6 @@ class LoqusDB:
                 return self.search_dictlist(loqusdb_id).get(CONFIG_PATH)
             except AttributeError:
                 raise ConfigError("LoqusDB id not found")
-        return self.loqusdb_settings.get(CONFIG_PATH)
 
     def get_configured_version(self, loqusdb_id=None):
         """Return configured version"""
@@ -208,7 +206,6 @@ class LoqusDB:
                 return self.search_dictlist(loqusdb_id).get(VERSION)
             except AttributeError:
                 raise ConfigError("LoqusDB id not found")
-        return self.loqusdb_settings.get(VERSION)
 
     def case_count(self):
         """Returns number of cases in loqus instance
