@@ -22,18 +22,11 @@ def institute(internal_id, display_name, sanger_recipients, loqusdb_id):
     """
     adapter = store
 
-    if not internal_id:
-        LOG.warning("A institute has to have an internal id")
-        raise click.Abort()
-
     if not display_name:
         display_name = internal_id
 
     if sanger_recipients:
         sanger_recipients = list(sanger_recipients)
-
-    if loqusdb_id:
-        loqusdb_id = loqusdb_id
 
     try:
         load_institute(
