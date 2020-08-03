@@ -30,14 +30,13 @@ def execute_command(cmd):
     """
     output = ""
     cmd = [x for x in cmd if x != []]  # remove empty lists
-    cmd_string = " ".join(cmd)  # remove empty list
+    cmd_string = " ".join(cmd)  # add spacing to create a command string
     LOG.info("Running: %s", cmd_string)
     try:
         output = subprocess.check_output(cmd, shell=False)
     except CalledProcessError as err:
         LOG.warning("Something went wrong with loqusdb")
         raise err
-
     return output.decode("utf-8")
 
 
@@ -221,10 +220,6 @@ class LoqusDB:
             output = execute_command(case_call)
         except CalledProcessError:
             LOG.warning("Something went wrong with loqus")
-            return nr_cases
-
-        if not output:
-            LOG.info("Could not find information about loqusdb cases")
             return nr_cases
 
         try:
