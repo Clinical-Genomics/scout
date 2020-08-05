@@ -1,6 +1,6 @@
 """Tests for loqusdb extension"""
 import subprocess
-
+from subprocess import CalledProcessError
 import pytest
 from flask import Flask
 
@@ -104,7 +104,7 @@ def test_init_loqusextension_init_app_wrong_version(loqus_exe):
 
 def test_init_loqusextension_init_app_with_config(loqus_exe, loqus_config):
     """Test a init a loqus extension object with flask app with version and config"""
-    # GIVEN a loqusdb binary
+    # GIVEN a loqusdb config as dict
     version = 2.5
     configs = {
         "LOQUSDB_SETTINGS": {
@@ -129,7 +129,7 @@ def test_init_loqusextension_init_app_with_config(loqus_exe, loqus_config):
 
 def test_init_loqusextension_init_app_with_config_multiple(loqus_exe, loqus_config):
     """Test a init a loqus extension object with flask app with version and config"""
-    # GIVEN a loqusdb binary
+    # GIVEN a loqusdb config as list
     version = 2.5
     configs = {
         "LOQUSDB_SETTINGS": [
@@ -185,3 +185,25 @@ def test_init_loqusextension_init_app_get_version(loqus_exe, loqus_version):
     # THEN initialising a loqusdb extension with init app
     loqus_obj = LoqusDB(version=loqus_version)
     assert loqus_obj.get_version() == loqus_version
+
+
+def test_init_loqusextension_init_app_get_version_CalledProcessError(
+    loqus_exe, loqus_config, mocker
+):
+    """Test a init a loqus extension object with flask app with version and config"""
+    # GIVEN mocking subprocess to raise CalledProcessError
+    mocker.patch.object(
+        subprocess, "check_output", side_effect=CalledProcessError(123, "case_count")
+    )
+    configs = {
+        "LOQUSDB_SETTINGS": [
+            {"binary_path": loqus_exe, "id": "default", "config_path": loqus_config,}
+        ]
+    }
+    app = Flask(__name__)
+    loqus_obj = LoqusDB()
+    with app.app_context():
+        app.config = configs
+        with pytest.raises(EnvironmentError):
+            # THEN during app init, version is set to -1 and EnvironmentError is raised
+            loqus_obj.init_app(app)
