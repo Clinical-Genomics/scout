@@ -118,6 +118,7 @@ def test_update_institute_sanger_IntegrityError(adapter, institute_obj, user_obj
             internal_id=institute_obj["internal_id"], sanger_recipient="missing_email"
         )
 
+
 def test_update_institute_sanger_loqusDB(adapter, institute_obj, user_obj):
     ## GIVEN an adapter without any institutes
     assert sum(1 for i in adapter.institutes()) == 0
@@ -130,7 +131,7 @@ def test_update_institute_sanger_loqusDB(adapter, institute_obj, user_obj):
     adapter.update_institute(
         internal_id=institute_obj["internal_id"],
         sanger_recipient=user_obj["email"],
-        loqusdb_id="mockID"
+        loqusdb_id="mockID",
     )
 
     ## THEN assert that the institute has been updated
@@ -142,7 +143,6 @@ def test_update_institute_sanger_loqusDB(adapter, institute_obj, user_obj):
     ## THEN assert updated_at was updated
 
     assert res["updated_at"] > institute_obj["created_at"]
-
 
 
 def test_update_display_name(adapter, institute_obj):
