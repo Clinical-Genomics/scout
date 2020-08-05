@@ -1,7 +1,7 @@
 """Tests for the loqusdb extension"""
 
 import subprocess
-
+from subprocess import CalledProcessError
 import pytest
 
 from scout.server.extensions.loqus_extension import LoqusDB
@@ -88,6 +88,17 @@ def test_loqusdb_variant(mocker, loqus_extension):
     assert var_info["total"] == 3
 
 
+def test_loqusdb_variant_CalledProcessError(mocker, loqus_extension):
+    """Test to fetch a variant from loqusdb that raises an exception"""
+    # GIVEN replacing subprocess.check_output to raise CalledProcessError
+    mocker.patch.object(
+        subprocess, "check_output", side_effect=CalledProcessError(123, "case_count")
+    )
+    with pytest.raises(CalledProcessError):
+        # THEN CalledProcessError is raised and thrown
+        var_info = loqus_extension.get_variant({"_id": "a variant"})
+
+
 def test_loqusdb_cases(mocker, loqus_extension):
     """Test the case count function in loqus extension"""
     # GIVEN a return value from loqusdb
@@ -99,6 +110,16 @@ def test_loqusdb_cases(mocker, loqus_extension):
     res = loqus_extension.case_count()
     # THEN assert the output is parsed correct
     assert res == nr_cases
+
+
+def test_loqusdb_case_count_CalledProcessError(mocker, loqus_extension):
+    """Test the case count function in loqus extension that raises an exception"""
+    # GIVEN mocking subprocess to raise CalledProcessError
+    mocker.patch.object(
+        subprocess, "check_output", side_effect=CalledProcessError(123, "case_count")
+    )
+    # THEN assert exception is caught and the value 0 is returned
+    assert 0 == loqus_extension.case_count()
 
 
 def test_loqusdb_wrong_version(loqus_exe):
