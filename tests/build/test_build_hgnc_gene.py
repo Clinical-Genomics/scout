@@ -32,26 +32,39 @@ def test_build_hgnc_gene():
     assert gene_obj["ensembl_id"] == gene_info["ensembl_gene_id"]
 
 
-def test_build_hgnc_gene_no_id():
-    gene_info = {
-        "hgnc_symbol": "TEST",
-        "ensembl_gene_id": "ENSTEST",
-        "chromosome": "1",
-        "start": 1,
-        "end": 1000,
-    }
-    with pytest.raises(KeyError):
-        gene_obj = build_hgnc_gene(gene_info)
+@pytest.mark.parametrize("key", ['hgnc_id'])
+def test_build_hgnc_gene_ValueError(test_gene, key):
+    ## GIVEN a dictionary with exon information
 
-
-def test_build_hgnc_gene_wrong_id():
-    gene_info = {
-        "hgnc_id": "test",
-        "hgnc_symbol": "TEST",
-        "ensembl_gene_id": "ENSTEST",
-        "chromosome": "1",
-        "start": 1,
-        "end": 1000,
-    }
+    # WHEN setting key to None
+    test_gene[key] = "cause_error"
+    # THEN calling build_transcript() will raise TypeError
     with pytest.raises(ValueError):
-        gene_obj = build_hgnc_gene(gene_info)
+        build_hgnc_gene(test_gene)
+
+@pytest.mark.parametrize('key', ['start', 'end'])
+def test_build_exon_TypeError(test_gene, key):
+    ## GIVEN a dictionary with exon information
+
+    # WHEN setting key to None
+    test_gene[key] = None
+    # THEN calling build_transcript() will raise TypeError
+    with pytest.raises(TypeError):
+        build_hgnc_gene(test_gene)
+
+
+
+# TODO: 'ensembl_gene_id' or 'ensembl_id' both seem to be used!?
+@pytest.mark.parametrize("key", ['hgnc_id', 'hgnc_symbol', 'chromosome', 'start', 'end'])
+def test_build_hgnc_gene_KeyError(test_gene, key):
+    ## GIVEN a dictionary with exon information
+
+    # WHEN deleteing key
+    test_gene.pop(key)
+    # THEN calling build_hgnc_gene() will raise KeyError
+    with pytest.raises(KeyError):
+        build_hgnc_gene(test_gene)
+
+
+
+

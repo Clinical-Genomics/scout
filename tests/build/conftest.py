@@ -26,6 +26,7 @@ def test_gene():
         # The primary symbol, required
         "hgnc_symbol": "test",
         "ensembl_id": "ensembl1",  # required
+        "ensembl_gene_id": "ensembl1",  # required
         "build": "37",  # '37' or '38', defaults to '37', required
         "chromosome": 1,  # required
         "start": 10,  # required
