@@ -32,50 +32,24 @@ def test_build_hgnc_transcripts(parsed_transcripts):
         assert tx_obj["hgnc_id"]
 
 
-def test_build_hgnc_transcripts_Exceptions(mocker, test_transcript):
-    # GIVEN a parsed transcript
+@pytest.mark.parametrize("key", ['hgnc_id', 'transcript_start', 'transcript_end', 'chrom', 'ensembl_transcript_id'])
+def test_build_hgnc_transcripts_KeyError(test_transcript, key):
+    ## GIVEN a dictionary with exon information
 
-    # WHEN setting 'hgnc_id' to None
-    test_transcript["hgnc_id"] = None
+    # WHEN key is deleted from dict
+    test_transcript.pop(key)
+    # THEN calling build_transcript() will raise KeyError
+    with pytest.raises(KeyError):
+        build_transcript(test_transcript)
+
+
+@pytest.mark.parametrize("key", ['hgnc_id', 'transcript_start', 'transcript_end'])
+def test_build_hgnc_transcript_TypeError(test_transcript, key):
+    ## GIVEN a dictionary with exon information
+
+    # WHEN setting key to None
+    test_transcript[key] = None
     # THEN calling build_transcript() will raise TypeError
     with pytest.raises(TypeError):
         build_transcript(test_transcript)
-    # WHEN deleting 'hgnc_id'
-    del test_transcript["hgnc_id"]
-    # THEN calling build_transcript() will raise KeyError
-    with pytest.raises(KeyError):
-        build_transcript(test_transcript)
 
-    # WHEN setting 'transcript_end' to None
-    test_transcript["transcript_end"] = None
-    # THEN calling build_transcript() will raise TypeError
-    with pytest.raises(TypeError):
-        build_transcript(test_transcript)
-    # WHEN deleting 'transcript_end'
-    del test_transcript["transcript_end"]
-    # THEN calling build_transcript() will raise KeyError
-    with pytest.raises(KeyError):
-        build_transcript(test_transcript)
-
-    # WHEN setting 'transcript_start' to None
-    test_transcript["transcript_start"] = None
-    # THEN calling build_transcript() will raise TypeError
-    with pytest.raises(TypeError):
-        build_transcript(test_transcript)
-    # WHEN deleting 'transcript_start'
-    del test_transcript["transcript_start"]
-    # THEN calling build_transcript() will raise KeyError
-    with pytest.raises(KeyError):
-        build_transcript(test_transcript)
-
-    # WHEN deleting 'chrom'
-    del test_transcript["chrom"]
-    # THEN calling build_transcript() will raise KeyError
-    with pytest.raises(KeyError):
-        build_transcript(test_transcript)
-
-    # WHEN deleting 'ensembl_transcript_id'
-    del test_transcript["ensembl_transcript_id"]
-    # THEN calling build_transcript() will raise KeyError
-    with pytest.raises(KeyError):
-        build_transcript(test_transcript)
