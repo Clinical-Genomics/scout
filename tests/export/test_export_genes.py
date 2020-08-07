@@ -3,7 +3,9 @@ from scout.export.gene import export_genes
 import types
 
 import logging
+
 LOG = logging.getLogger(__name__)
+
 
 def test_export_exons(real_populated_database):
     adapter = real_populated_database
@@ -12,6 +14,3 @@ def test_export_exons(real_populated_database):
     print(list(result))
     print("/r")
     assert isinstance(result, types.GeneratorType)
-
-  
-    
