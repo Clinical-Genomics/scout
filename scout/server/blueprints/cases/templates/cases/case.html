@@ -272,15 +272,15 @@
                 <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Match against&nbsp;<span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu">
-                  <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</a></li>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</a></li>
                   {% if mme_nodes|length >1 %}
-                    <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</a></li>
+                    <a class="dropdown-item" href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</a></li>
                   {% endif %}
                   {% for node in mme_nodes %}
-                    <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</a></li>
+                    <a class="dropdown-item" href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</a></li>
                   {% endfor %}
-                </ul>
+                </div>
               </div>
               <a class="btn btn-outline-secondary" href="#mme_form" data-toggle="collapse">Modify submission</a>
             </div>
