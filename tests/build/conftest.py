@@ -58,3 +58,24 @@ def test_transcript():
          'primary_transcripts': {'NM_080605'}
      }
      return transcript
+
+
+@pytest.fixture
+def test_disease():
+    disease_info = {
+        "mim_number": 615349,
+        "description": "EHLERS-DANLOS SYNDROME, PROGEROID TYPE, 2",
+        "hgnc_symbols": set(["B3GALT6"]),
+        "inheritance": set(["AR"]),
+    }
+    return disease_info
+
+
+@pytest.fixture
+def test_hpo_info():
+    hpo_info = {
+        "hpo_id": "HP:0000878",
+        "description": "11 pairs of ribs",
+        "genes": [1, 2],
+    }
+    return hpo_info
