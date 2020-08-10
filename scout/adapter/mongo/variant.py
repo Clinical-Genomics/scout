@@ -691,6 +691,54 @@ class VariantHandler(VariantLoader):
 
         return file_name
 
+    def case_variants_count(self, case_id, institute_id):
+        """Returns the sum of all variants for a case by type
+
+        Args:
+            case_id(str): _id of a case
+            institute_id(str): id of an institute
+
+        Returns:
+            variants_by_type(dict). A dictionary like this:
+                {
+                    "clinical": {
+                        "snv": 789, (or "cancer")
+                        "sv": 63 (or "cancer-sv")
+                    },
+                    "research":{
+                        "snv": 789, (or "cancer")
+                        "sv": 63 (or "cancer-sv")
+                    }
+                }
+        """
+        LOG.info(
+            "Retrieving variants by categori for case: {0}, institute: {1}".format(
+                case_id, institute_id
+            )
+        )
+        # Build query
+        match = {"$match": {"case_id": case_id, "institute": institute_id}}
+        group = {
+            "$group": {
+                "_id": {"type": "$variant_type", "category": "$category"},
+                "total": {"$sum": 1},
+            }
+        }
+        pipeline = [match, group]
+        results = self.variant_collection.aggregate(pipeline)
+
+        variants_by_type = {}
+        for item in results:
+            var_type = item["_id"]["type"]
+            var_category = item["_id"]["category"]
+            # classify by type (clinical or research)
+            if var_type in variants_by_type:
+                # classify by category (snv, sv, str, cancer, cancer-sv)
+                variants_by_type[var_type][var_category] = item["total"]
+            else:
+                variants_by_type[var_type] = {var_category: item["total"]}
+        return variants_by_type
+
     def sample_variants(self, variants, sample_name, category="snv"):
         """Given a list of variants get variant objects found in a specific patient
 

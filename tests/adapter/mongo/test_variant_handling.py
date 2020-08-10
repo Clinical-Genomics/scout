@@ -83,7 +83,6 @@ def test_load_variants(real_populated_database, variant_objs, case_obj):
     # WHEN adding a number of variants
     index = 0
     for index, variant_obj in enumerate(variant_objs):
-        # print(variant_obj)
         adapter.load_variant(variant_obj)
 
     # THEN the same number of variants should have been loaded
@@ -303,3 +302,31 @@ def test_variant_non_existing(adapter):
 
     # THEN that the variant return is None
     assert res is None
+
+
+def test_case_variants_count(real_populated_database, case_obj, institute_obj, variant_objs):
+    """Test the functions that counts the variants by category for a case"""
+
+    # GIVEN a database
+    adapter = real_populated_database
+    case_id = case_obj["_id"]
+    institute_id = institute_obj["_id"]
+
+    # Containing clinical variants
+    nr_clinical = adapter.load_variants(
+        case_obj=case_obj, variant_type="clinical", category="snv", rank_threshold=None
+    )
+    assert nr_clinical > 0
+
+    # And research variants
+    nr_research = adapter.load_variants(
+        case_obj=case_obj, variant_type="research", category="sv", rank_threshold=None
+    )
+    assert nr_research > 0
+
+    # WHEN the function that counts the variants by category is called
+    vars_by_type = adapter.case_variants_count(case_id, institute_id)
+
+    # THEN it should return the expected result
+    assert vars_by_type["clinical"]["snv"] == nr_clinical
+    assert vars_by_type["research"]["sv"] == nr_research
