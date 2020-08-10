@@ -5,7 +5,7 @@ from collections import OrderedDict
 from intervaltree import IntervalTree, Interval
 
 from scout.parse.cytoband import parse_cytoband
-from scout.resources import cytobands_path
+from scout.resources import cytoband_files
 from scout.utils.handle import get_file_handle
 
 from .indexes import INDEXES
@@ -52,7 +52,8 @@ from .variants_export import (
     VERIFIED_VARIANTS_HEADER,
 )
 
-cytobands_handle = get_file_handle(cytobands_path)
+cytobands_37_handle = get_file_handle(cytoband_files.get("37"))
+cytobands_38_handle = get_file_handle(cytoband_files.get("38"))
 
 COLLECTIONS = [
     "hgnc_gene",
@@ -69,7 +70,8 @@ COLLECTIONS = [
 
 BUILDS = ["37", "38", "GRCh38"]
 
-CYTOBANDS = parse_cytoband(cytobands_handle)
+CYTOBANDS_37 = parse_cytoband(cytobands_37_handle)
+CYTOBANDS_38 = parse_cytoband(cytobands_38_handle)
 
 CHROMOSOMES = (
     "1",

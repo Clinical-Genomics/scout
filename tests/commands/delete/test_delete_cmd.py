@@ -93,7 +93,7 @@ def test_delete_nonexisting_user(empty_mock_app, user_obj):
     assert "User unknown_email@email.com could not be found in database" in result.output
 
 
-def test_delete_user(empty_mock_app, user_obj):
+def test_delete_user(empty_mock_app, user_obj, case_obj, institute_obj):
     "Test the CLI command that will delete a user"
     mock_app = empty_mock_app
 
@@ -104,12 +104,27 @@ def test_delete_user(empty_mock_app, user_obj):
     store.user_collection.insert_one(user_obj)
     assert store.user_collection.find_one()
 
+    ## And the user is an assignee of a case of an institute
+    store.institute_collection.insert_one(institute_obj)
+
+    ## And no events in the database
+    assert store.event_collection.find_one() is None
+
+    case_obj["assignees"] = [user_obj["email"]]
+    store.case_collection.insert_one(case_obj)
+    assert store.case_collection.find_one({"assignees": {"$in": case_obj["assignees"]}})
+
     ## WHEN deleting the user from the CLI
     result = runner.invoke(cli, ["delete", "user", "-m", user_obj["email"]])
 
     ## THEN the user should be gone
     assert result.exit_code == 0
     assert store.user_collection.find_one() is None
+
+    ## The case should not have an assignee
+    assert store.case_collection.find_one({"assignees": {"$in": case_obj["assignees"]}}) is None
+    ## And a new event for unassigning the user should have been created in event collection
+    assert store.event_collection.find_one()
 
 
 def test_delete_genes(empty_mock_app, gene_bulk):

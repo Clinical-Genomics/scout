@@ -17,7 +17,7 @@
     <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
@@ -43,7 +43,8 @@
         <div class="card-header">
           <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
         </div>
-        <div class="card-body panel-collapse collapse" id="collapseFilters">
+        <!--Expand filters form if filters were used in a previous POST request-->
+        <div class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}" id="collapseFilters">
             {{ snv_filters(form, institute, case) }}
         </div>
         <div class="card-footer text-center py-3">
@@ -183,7 +184,7 @@
 
     var cytoStart = document.getElementById("cytoband_start");
     initSearchConstraints(cytoStart, startElem)
-    
+
     var cytoEnd = document.getElementById("cytoband_end");
     initSearchConstraints(cytoEnd, endElem)
 
@@ -192,7 +193,7 @@
     window.onload=function() {
       populateCytobands({{cytobands|safe}});
     }
-    
+
     $('select[multiple]').selectpicker({
       width: '100%'
     });

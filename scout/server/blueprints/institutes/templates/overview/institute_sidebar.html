@@ -1,0 +1,71 @@
+{% macro institute_actionbar(institute, highlight) %}
+<!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
+  <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
+      <!-- Bootstrap List Group -->
+      <ul class="list-group">
+          <!-- cases menu item -->
+          <a href="{{ url_for('overview.cases', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-sitemap  mr-3"></span>
+                  <span class="menu-collapsed">Cases</span>
+              </div>
+          </a>
+
+          <!-- causatives menu item-->
+          <a href="{{ url_for('overview.causatives', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-bullseye mr-3"></span>
+                  <span class="menu-collapsed">Causatives</span>
+              </div>
+          </a>
+
+          <!-- snvs and indeld menu item -->
+          <a href="{{ url_for('overview.gene_variants', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-search mr-3"></span>
+                  <span class="menu-collapsed">All SNVs and INDELs</span>
+              </div>
+          </a>
+
+          <!-- users menu item-->
+          <a href="{{ url_for('overview.institute_users', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-users mr-3"></span>
+                  <span class="menu-collapsed">Users</span>
+              </div>
+          </a>
+
+          <!-- shared data menu item -->
+          <a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="menu-collapsed">Shared data</span>
+                  <span class="submenu-icon ml-auto"></span>
+              </div>
+          </a>
+        {{ shared_submenu(institute, highlight) }}
+          <!-- general settings menu item -->
+          <a href="{{ url_for('overview.institute_settings', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-wrench mr-3"></span>
+                  <span class="menu-collapsed">Settings</span>
+              </div>
+          </a>
+      </ul><!-- List Group END-->
+  </div><!-- sidebar-container END -->
+{% endmacro %}
+
+{% macro shared_submenu(institute, highlight) %}
+<!-- Submenu content -->
+<div id='submenu1' class="{{ 'collapse' if highlight != 'shared'}} sidebar-submenu">
+  <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="bg-dark list-group-item flex-column align-items-start">
+    <span>Clinvar</span>
+    <i class="fa fa-share-alt mr-3 ml-3"></i>
+  </a>
+  <!-- To be implemented
+  <a href="#" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+    <span>MatchMaker</span>
+    <i class="fa fa-share-alt mr-3 ml-3"></i>
+  </a>
+  -->
+</div>
+{% endmacro %}

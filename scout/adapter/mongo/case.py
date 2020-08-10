@@ -76,6 +76,7 @@ class CaseHandler(object):
         name_query=None,
         yield_query=False,
         within_days=None,
+        assignee=None,
     ):
         """Fetches all cases from the backend.
 
@@ -97,6 +98,7 @@ class CaseHandler(object):
             yield_query(bool): If true, only return mongo query dict for use in
                                 compound querying.
             within_days(int): timespan (in days) for latest event on case
+            assignee(str): email of an assignee
 
         Returns:
             Cases ordered by date.
@@ -149,6 +151,9 @@ class CaseHandler(object):
 
         if cohort:
             query["cohorts"] = {"$exists": True, "$ne": []}
+
+        if assignee:
+            query["assignees"] = {"$in": [assignee]}
 
         if name_query:
             name_value = name_query.split(":")[
