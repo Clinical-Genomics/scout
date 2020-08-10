@@ -15,7 +15,7 @@ from wtforms import (
 from scout.constants import PHENOTYPE_GROUPS
 
 
-LABELS = [
+SEARCH_LABELS = [
     "Case or individual name",
     "HPO term",
     "Search synopsis",
@@ -31,7 +31,7 @@ LABELS = [
 ]
 
 # Generated HTML tag <option>'s 'value' and 'label' will be the same
-CASE_SEARCH_KEY = [(label, label) for label in LABELS]
+CASE_SEARCH_KEY = [(label, label) for label in SEARCH_LABELS]
 
 
 class NonValidatingSelectMultipleField(SelectMultipleField):
@@ -117,5 +117,5 @@ class CaseFilterForm(FlaskForm):
     search_term = TextField("Search cases")
     search_limit = IntegerField("Limit", [validators.Optional()], default=100)
     skip_assigned = BooleanField("Hide assigned")
-    is_research = BooleanField("Hide non-research")
+    is_research = BooleanField("Research only")
     search = SubmitField(label="Search")
