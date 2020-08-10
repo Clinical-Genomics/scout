@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display number of filtered variants vs number of total variants in variants page
 
 ### Fixed
+- Bug occurring when rerun is requested twice
+
 ### Changed
 - Updated the documentation on how to create a new software release
 - Genome build-aware cytobands coordinates
