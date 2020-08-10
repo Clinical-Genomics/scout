@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Display number of filtered variants vs number of total variants in variants page
+
 ### Fixed
 ### Changed
 - Updated the documentation on how to create a new software release
