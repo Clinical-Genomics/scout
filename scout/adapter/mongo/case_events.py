@@ -271,9 +271,6 @@ class CaseEventHandler(object):
         Return:
             updated_case
         """
-        if case.get("rerun_requested"):
-            raise ValueError("rerun already pending")
-
         if case.get("status") == "archived":
             # assign case to user requesting rerun
             self.assign(institute, case, user, link)
