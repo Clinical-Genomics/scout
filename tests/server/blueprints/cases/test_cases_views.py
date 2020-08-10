@@ -7,12 +7,52 @@ from pymongo import ReturnDocument
 from scout.demo import delivery_report_path
 from scout.server.blueprints.cases import controllers
 from scout.server.extensions import store
+from scout.server.extensions import mail
 from scout.server.blueprints.cases.views import (
     parse_raw_gene_symbols,
     parse_raw_gene_ids,
 )
 
 TEST_TOKEN = "test_token"
+
+
+def test_rerun(app, institute_obj, case_obj, monkeypatch):
+    """test case rerun function"""
+
+    # GIVEN an initialized app
+    # GIVEN a valid user
+
+    def send_email(*args, **kwargs):
+        return True
+
+    monkeypatch.setattr(mail, "send", send_email)
+
+    # GIVEN a test case without rerun pending
+    test_case = store.case_collection.find_one()
+    assert test_case.get("rerun_requested") is False
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN rerun request is sent
+        resp = client.post(
+            url_for(
+                "cases.rerun",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+        assert resp.status_code == 302
+        updated_case = store.case_collection.find_one()
+
+        # THEN the case should be updated
+        assert updated_case["rerun_requested"] is True
+        rerun_event = store.event_collection.find_one()
+
+        # AND a rerun event should be created
+        assert rerun_event.get("verb") == "rerun"
 
 
 def test_parse_raw_gene_symbols(app):

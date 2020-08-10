@@ -505,11 +505,12 @@ def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
 
 def rerun(store, mail, current_user, institute_id, case_name, sender, recipient):
     """Request a rerun by email."""
+
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
 
-    if case_obj.get("rerun_requested"):
+    if case_obj.get("rerun_requested") and case_obj["rerun_requested"] is True:
         flash("Rerun already pending", "info")
         return
 
