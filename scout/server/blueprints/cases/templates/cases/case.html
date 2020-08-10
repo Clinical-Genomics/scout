@@ -262,28 +262,22 @@
 <div class="card panel-default">
     <div class="panel-heading">Matching patients</div>
     <div class="card-body">
-      {% if case.mme_submission %} <!-- case was aready submitted to MatchMaker -->
+      {% if case.mme_submission %} <!-- case was already submitted to MatchMaker -->
         <p>This case is in MatchMaker!</p>
         <p>
-          <div class="text-center">
-            <div class="btn-group" role="group" aria-label="...">
-              <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-outline-secondary" role="button">Matches</a>
-              <div class="btn-group">
-                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Match against&nbsp;<span class="caret"></span>
-                </button>
-                <div class="dropdown-menu">
-                  <a class="dropdown-item" href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</a></li>
-                  {% if mme_nodes|length >1 %}
-                    <a class="dropdown-item" href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</a></li>
-                  {% endif %}
-                  {% for node in mme_nodes %}
-                    <a class="dropdown-item" href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</a></li>
-                  {% endfor %}
-                </div>
-              </div>
-              <a class="btn btn-outline-secondary" href="#mme_form" data-toggle="collapse">Modify submission</a>
-            </div>
+          <div class="text-center matchmaker-grid">
+              <select class="custom-select matchmaker-grid-item1" onchange="window.open(this.value,'_self');">
+                   <option selected>Match against</option>
+                    <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</option>
+                    {% if mme_nodes|length >1 %}
+                    <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</option>
+                    {% endif %}
+                    {% for node in mme_nodes %}
+                    <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</option>
+                 {% endfor %}
+              </select>
+              <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-outline-secondary matchmaker-grid-item2" role="button">Matches</a>
+              <a class="btn btn-outline-secondary matchmaker-grid-item3" href="#mme_form" data-toggle="collapse">Modify submission</a>
           </div>
         </p>
       {% else %} <!-- display option to submit case to MatchMaker -->
@@ -430,7 +424,6 @@
         });
 </script>
 
-
 <script>
 $(function () {
 
@@ -507,6 +500,32 @@ $('[data-toggle=sidebar-collapse]').click(function() {
   SidebarCollapse();
 });
 </script>
+
+<style>
+/*Matchmaker card styling*/
+.matchmaker-grid {
+  display: grid;
+  grid-gap: 15px;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+}
+
+.matchmaker-grid-item1 {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.matchmaker-grid-item2 {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.matchmaker-grid-item3 {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+</style>
 
 {% if case.chromograph_prefixes %}
   {{ case_ideograms(institute, case) }}
