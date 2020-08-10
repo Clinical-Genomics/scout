@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Search case by HPO terms
 
 ### Fixed
+- Bug occurring when rerun is requested twice
+
 
 ### Changed
 - Updated the documentation on how to create a new software release
