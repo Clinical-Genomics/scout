@@ -6,10 +6,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Search case by HPO terms
+
 ### Fixed
+
 ### Changed
 - Updated the documentation on how to create a new software release
 - Genome build-aware cytobands coordinates
+- Select search type in case search form
 
 
 ## [4.19]
