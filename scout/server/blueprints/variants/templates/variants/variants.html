@@ -47,6 +47,11 @@
         <div class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}" id="collapseFilters">
             {{ snv_filters(form, institute, case) }}
         </div>
+        <div class="card-footer text-center py-3">
+          {% if "all_variants" in session %}
+            Filtered {{session['filtered_variants']}} / {{session["all_variants"]}} variants
+          {% endif %}
+        </div>
       </div>
       <div class="card mt-3">
         <table class="table table-hover table-bordered">
