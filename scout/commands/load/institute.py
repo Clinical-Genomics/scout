@@ -13,7 +13,7 @@ from scout.server.extensions import store
 @click.option("-i", "--internal-id", required=True)
 @click.option("-d", "--display-name")
 @click.option("-s", "--sanger-recipients", multiple=True)
-@click.option("-l", "--loqusdb_id")
+@click.option("-l", "--loqusdb-id")
 @with_appcontext
 def institute(internal_id, display_name, sanger_recipients, loqusdb_id):
     """
