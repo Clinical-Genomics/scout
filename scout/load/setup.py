@@ -23,6 +23,7 @@ from scout.resources import cytoband_files
 from scout.load import load_hgnc_genes, load_hpo, load_transcripts, load_cytobands
 
 # Resources
+from scout.parse.case import parse_case_data
 from scout.parse.panel import parse_gene_panel
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import (
@@ -189,8 +190,8 @@ def setup_scout(
 
         case_handle = get_file_handle(load_path)
         case_data = yaml.load(case_handle, Loader=yaml.FullLoader)
-
-        adapter.load_case(case_data)
+        config_data = parse_case_data(config=case_data)
+        adapter.load_case(config_data)
 
     LOG.info("Creating indexes")
     adapter.load_indexes()
