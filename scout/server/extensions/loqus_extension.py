@@ -171,7 +171,11 @@ class LoqusDB:
         return None
 
     def default_setting(self):
-        """Get default loqusdb configuration  """
+        """Get default loqusdb configuration  
+        
+        Returns:
+            institute_settings(dict)
+        """
         return self.search_dictlist("default")
 
     def get_bin_path(self, loqusdb_id=None):
