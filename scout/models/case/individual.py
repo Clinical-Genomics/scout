@@ -5,35 +5,7 @@ import logging
 from datetime import datetime
 
 from . import STATUS
-
-# from scout.constants import ANALYSIS_TYPES
-
-
 logger = logging.getLogger(__name__)
-
-
-class Myy(dict):
-    def __keytransform__(self, key):
-        return key
-
-    def __init__(self):
-        super(Myy, self).__init__()
-
-    @property
-    def x(self):
-        return self.__x
-
-    @x.setter
-    def x(self, x):
-        self.__x = x
-
-    def __getitem(self, key):
-        return dict.__getitem__(self, self.__keytransform__(key))
-
-    def __setitem__(self, key, value):
-        if key == "y" and isinstance(value, str) is not True:
-            raise KeyError
-        return dict.__setitem__(self, self.__keytransform__(key), value)
 
 
 class Individual(dict):
