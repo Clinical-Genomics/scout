@@ -29,16 +29,19 @@ def export_exons(adapter, build="37"):
     ens_transcripts = adapter.ensembl_transcripts(build=build)
 
     hgnc_genes = {}
+    LOG.debug("------------")
     for gene_obj in adapter.all_genes(build=build):
         hgnc_genes[gene_obj["hgnc_id"]] = gene_obj
 
     exons = {}
+    LOG.debug("------------: {}".format(adapter.exons(build=build)))
+    print("--------------")
     for exon_obj in adapter.exons(build=build):
         ens_tx_id = exon_obj["transcript"]
         exon_id = exon_obj["exon_id"]
         tx_obj = ens_transcripts[ens_tx_id]
         hgnc_id = tx_obj["hgnc_id"]
-
+        LOG.debug("exon_obj: {}".format(exon_id))
         if not exon_id in exons:
             exon_obj["exon_transcripts"] = []
             exon_obj["hgnc_ids"] = []
@@ -54,7 +57,8 @@ def export_exons(adapter, build="37"):
         if not tx_refseq:
             exons[exon_id]["exon_transcripts"].append(ens_tx_id)
             exons[exon_id]["hgnc_ids"].append(hgnc_id)
-
+    LOG.debug("********")
+    LOG.debug("e: {}".format(exons))
     print_line = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}"
     for exon_id in exons:
         exon = exons[exon_id]
@@ -66,7 +70,7 @@ def export_exons(adapter, build="37"):
         hgncids_str = ",".join([str(i) for i in hgnc_ids])
         hgncsymbols_str = ",".join(hgnc_symbols)
 
-        yield print_line.format(
+        x=         print_line.format(
             exon["chrom"],
             exon["start"],
             exon["end"],
@@ -75,3 +79,5 @@ def export_exons(adapter, build="37"):
             hgncids_str,
             hgncsymbols_str,
         )
+        LOG.debug("x: {}".format(x))
+        yield x

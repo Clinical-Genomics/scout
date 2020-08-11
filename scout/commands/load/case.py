@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import traceback
 
 from pprint import pprint as pp
 
@@ -109,4 +110,6 @@ def case(
     except Exception as err:
         LOG.error("Something went wrong during loading")
         LOG.warning(err)
+        track = traceback.format_exc()
+        print(track)
         raise click.Abort()

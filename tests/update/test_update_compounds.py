@@ -13,6 +13,9 @@ from scout.build import build_variant
 
 from cyvcf2 import VCF
 
+class Myy(dict):
+    def __init__(self):
+        super(Myy, self).__init__()
 
 def test_compounds_region(real_populated_database, case_obj, variant_clinical_file):
     """When loading the variants not all variants will be loaded, only the ones that

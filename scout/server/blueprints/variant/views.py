@@ -40,7 +40,9 @@ def variant(institute_id, case_name, variant_id):
         LOG.warning(
             "An error occurred: variants view requesting data for variant {}".format(variant_id)
         )
+        LOG.debug("************************")
         flash("An error occurred while retrieving variant object", "danger")
+        LOG.debug("** {}".format(request.referrer))
         return redirect(request.referrer)
 
     if current_app.config.get("LOQUSDB_SETTINGS"):

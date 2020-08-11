@@ -59,8 +59,8 @@ peddy_sex_check: scout/demo/643594.sex_check.csv
 
 delivery_report: scout/demo/delivery_report.html
 
-default_gene_panels: [panel1]
-gene_panels: [panel1]
+#default_gene_panels: [panel1]
+#gene_panels: [panel1]
 chromograph_image_files: scout/demo/images
 chromograph_prefixes:
     'roh': "roh_chr"

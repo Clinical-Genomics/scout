@@ -3,7 +3,8 @@ from flask import url_for, current_app
 from flask_login import current_user
 from urllib.parse import urlencode
 from scout.server.extensions import store
-
+import logging
+LOG = logging.getLogger(__name__)
 
 def test_acmg(app):
 
@@ -16,7 +17,7 @@ def test_acmg(app):
         assert resp.data
 
 
-def test_variant(app, institute_obj, case_obj, variant_obj):
+def test_variant(mocker, app, institute_obj, case_obj, variant_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -36,6 +37,28 @@ def test_variant(app, institute_obj, case_obj, variant_obj):
         )
         # THEN it should return a page
         assert resp.status_code == 200
+
+def test_variant_data_is_None(mocker, app, institute_obj, case_obj, variant_obj):
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+        mocker.patch('scout.server.blueprints.variant.views.variant_controller', return_value = None)
+        # WHEN sending a request (GET) to the variant page
+        resp = client.get(
+            url_for(
+                "variant.variant",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+                variant_id=variant_obj["_id"],
+            )
+        )
+        LOG.debug("RESP: {}".format(resp.status_code))
+        # THEN it should return a HTML 302, FOUND
+        assert resp.status_code == 302
 
 
 def test_sv_variant(app, institute_obj, case_obj, variant_obj):
