@@ -73,8 +73,8 @@ class LoqusDB:
     def version_check(self):
         """Check if a compatible version is used"""
         if not self.version >= 2.5:
-            LOG.info("Please update your loqusdb version to >=2.5")
-            raise SyntaxError("Only compatible with loqusdb version >= 2.5")
+            LOG.info("Please update your loqusdb version to >=2.5 (currenctly: {})".format(self.version))
+            raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
 
     @staticmethod
     def set_coordinates(variant_info):
@@ -168,6 +168,7 @@ class LoqusDB:
         output = ""
         try:
             output = execute_command(case_call)
+            LOG.debug("OUTOUD: {}".format(output))
         except CalledProcessError:
             LOG.warning("Something went wrong with loqus")
             return nr_cases
@@ -179,6 +180,7 @@ class LoqusDB:
         try:
             nr_cases = int(output.strip())
         except ValueError:
+            LOG.debug("ERROROROR: {}".format(output))
             pass
 
         return nr_cases
