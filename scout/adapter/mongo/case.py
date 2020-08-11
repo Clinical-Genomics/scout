@@ -572,7 +572,6 @@ class CaseHandler(object):
 
             # XXX:
 
-
             self.update_case(case_obj)
 
             # update Sanger status for the new inserted variants
