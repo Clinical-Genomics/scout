@@ -112,12 +112,8 @@ def parse_case_data(
 
     ##################### Add information from peddy if existing #####################
     config_data["peddy_ped"] = peddy_ped or config_data.get("peddy_ped")
-    config_data["peddy_sex_check"] = (
-        peddy_sex or config_data.get("peddy_sex") or config_data.get("peddy_sex_check")
-    )
-    config_data["peddy_ped_check"] = (
-        peddy_check or config_data.get("peddy_check") or config_data.get("peddy_ped_check")
-    )
+    config_data["peddy_sex_check"] = peddy_sex or config_data.get("peddy_sex")
+    config_data["peddy_ped_check"] = peddy_check or config_data.get("peddy_check")
 
     # This will add information from peddy to the individuals
     add_peddy_information(config_data)
