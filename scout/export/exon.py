@@ -70,7 +70,7 @@ def export_exons(adapter, build="37"):
         hgncids_str = ",".join([str(i) for i in hgnc_ids])
         hgncsymbols_str = ",".join(hgnc_symbols)
 
-        x=         print_line.format(
+        x = print_line.format(
             exon["chrom"],
             exon["start"],
             exon["end"],

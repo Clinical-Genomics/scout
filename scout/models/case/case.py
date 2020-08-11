@@ -93,4 +93,3 @@ individual = dict(
     tumor_purity=float,
     tissue_type=str,
 )
-
