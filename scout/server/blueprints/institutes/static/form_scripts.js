@@ -17,7 +17,7 @@ var selectHelper = {
 };
 
 document.getElementById("search_type").onchange = function() {
-  searchTerm.placeholder=selectHelper[sel.value.substring(-1)];
+  searchTerm.placeholder=selectHelper[sel.value];
   searchTerm.value="";
 };
 
