@@ -14,8 +14,6 @@ from wtforms import (
 )
 from scout.constants import PHENOTYPE_GROUPS, CASE_SEARCH_TERMS
 
-
-# Generated HTML tag <option>'s 'value' and 'label' will be the same
 CASE_SEARCH_KEY = [(value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()]
 
 
