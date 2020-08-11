@@ -12,10 +12,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Bug occurring when rerun is requested twice
 
-
 ### Changed
 - Updated the documentation on how to create a new software release
 - Genome build-aware cytobands coordinates
+- Styling update of the Matchmaker card
 - Select search type in case search form
 
 
