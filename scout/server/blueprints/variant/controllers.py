@@ -262,9 +262,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
     }
 
     i = variant_obj["institute"]
-    LOG.debug("=======: {}".format(i))
     inst = store.institute(i)
-    LOG.debug("****: {}".format(inst))
     obs_data = loqusdb.get_variant(variant_query, loqusdb_id=inst.get("loqusdb_id")) or {}
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)

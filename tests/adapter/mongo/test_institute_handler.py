@@ -16,7 +16,6 @@ def test_add_institute(adapter, institute_obj):
     adapter.add_institute(institute_obj)
 
     ## THEN assert the institute has been inserted in the correct way
-    print(institute_obj)
     res = adapter.institute_collection.find_one({"_id": institute_obj["internal_id"]})
 
     assert res["_id"] == institute_obj["internal_id"]
@@ -108,7 +107,6 @@ def test_update_institute_sanger_IntegrityError(adapter, institute_obj, user_obj
     assert sum(1 for i in adapter.institutes()) == 0
 
     ## WHEN adding a institute and updating it without sanger_recipients
-    print(user_obj)
     adapter.add_institute(institute_obj)
     adapter.add_user(user_obj)
 
