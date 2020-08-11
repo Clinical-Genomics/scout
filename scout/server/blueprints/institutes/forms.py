@@ -12,26 +12,11 @@ from wtforms import (
     validators,
     Field,
 )
-from scout.constants import PHENOTYPE_GROUPS
+from scout.constants import PHENOTYPE_GROUPS, CASE_SEARCH_TERMS
 
-
-SEARCH_LABELS = [
-    "Case or individual name",
-    "HPO term",
-    "Search synopsis",
-    "Gene panel",
-    "Case status",
-    "Phenotype group",
-    "Patient cohort",
-    "Similar case",
-    "Similar phenotype",
-    "Pinned gene",
-    "Causative gene",
-    "Assigned user",
-]
 
 # Generated HTML tag <option>'s 'value' and 'label' will be the same
-CASE_SEARCH_KEY = [(label, label) for label in SEARCH_LABELS]
+CASE_SEARCH_KEY = [(value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()]
 
 
 class NonValidatingSelectMultipleField(SelectMultipleField):

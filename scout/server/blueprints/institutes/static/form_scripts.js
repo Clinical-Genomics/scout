@@ -2,70 +2,24 @@ var searchTerm = document.getElementById('search_term');
 var sel = document.getElementById('search_type');
 
 var selectHelper = {
-  "Case or individual name": {
-      "placeholder" : "example:18201",
-      "prefix": "case:"
-  },
-  "HPO term": {
-      "placeholder" : "example:HP:0001166",
-      "prefix" : "exact_pheno:"
-  },
-  "Search synopsis" : {
-      "placeholder" : "example:epilepsy",
-      "prefix" : "synopsis:"
-  },
-  "Gene panel" : {
-      "placeholder" : "example:NMD",
-      "prefix" : "panel:"
-  },
-  "Case status": {
-      "placeholder" : "example:active",
-      "prefix" : "status:"
-  },
-  "Phenotype group" : {
-      "placeholder" : "example:HP:0001166",
-      "prefix" : "pheno_group:"
-  },
-  "Patient cohort" : {
-    "placeholder" : "example:pedhep",
-    "prefix" : "cohort:"
-  },
-  "Similar case" : {
-    "placeholder" : "example:18201",
-    "prefix" : "similar_case:"
-  },
-  "Similar phenotype" : {
-    "placeholder" : "example:HP:0001166,HP:0001250,..",
-    "prefix" : "similar_pheno:"
-  },
-  "Pinned gene": {
-    "placeholder" : "example:POT1",
-    "prefix" : "pinned:"
-  },
-  "Causative gene": {
-    "placeholder" : "example:POT1",
-    "prefix" : "causative:"
-  },
-  "Assigned user": {
-    "placeholder" : "example:Kent",
-    "prefix" : "user:"
-  }
+  "case:": "example:18201",
+  "exact_pheno:": "example:HP:0001166",
+  "synopsis:" : "example:epilepsy",
+  "panel:" : "example:NMD",
+  "status:": "example:active",
+  "pheno_group:" : "example:HP:0001166",
+  "cohort:" : "example:pedhep",
+  "similar_case:" : "example:18201",
+  "similar_pheno:" : "example:HP:0001166,HP:0001250,..",
+  "pinned:": "example:POT1",
+  "causative:": "example:POT1",
+  "user:": "example:Kent",
 };
-
-$(document).ready(function(){
-  searchTerm.placeholder=selectHelper[sel.value]["placeholder"];
-});
 
 document.getElementById("search_type").onchange = function() {
-  // modify placeholder of text input according to the type of search
-  searchTerm.placeholder=selectHelper[sel.value]["placeholder"];
+  searchTerm.placeholder=selectHelper[sel.value.substring(-1)];
   searchTerm.value="";
 };
-
-function appendSearchPrefix(){
-  // adds a prefix to the search term to help adapter to execute right query
-  searchTerm.value=selectHelper[sel.value]["prefix"]+String(searchTerm.value);
-}
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip();

@@ -39,6 +39,7 @@ from .case_tags import (
     VERBS_MAP,
     VERBS,
     SAMPLE_SOURCE,
+    CASE_SEARCH_TERMS,
 )
 from .clnsig import CLINSIG_MAP, REV_CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 from .phenotype import PHENOTYPE_GROUPS, COHORT_TAGS
