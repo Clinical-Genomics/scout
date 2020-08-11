@@ -30,6 +30,17 @@ LOQUSDB_SETTINGS = dict(
 #     {"binary_path": "/bin/yetanother/loqusdb", "id": "Mayo"},
 # ]
 
+
+
+# Suggestion from github by MM:
+# LOQUSDB_SETTING = [
+#     {"binary_path": "loqusdb", "config_path": "rare_disease_37.yml", "name": "default"},
+#     {"binary_path": "loqusdb", "config_path": "rare_disease_38.yml", "name": "rd38"},
+#     {"binary_path": "loqusdb", "config_path": "melanoma_37.yml", "name": "melanoma37"},
+# ]
+
+
+
 # )
 # If not on localhost 27017 one needs to provide uri with
 # connection details for LoqusDB MongoDB database
