@@ -3,7 +3,7 @@ import os
 
 from scout.constants import REV_PHENOTYPE_MAP, REV_SEX_MAP, ANALYSIS_TYPES
 from scout.exceptions import PedigreeError
-
+from scout.models.case.individual import Individual
 log = logging.getLogger(__name__)
 
 
@@ -49,7 +49,7 @@ def build_individual(ind):
     """
 
     try:
-        ind_obj = dict(individual_id=ind["individual_id"])
+        ind_obj = Individual(individual_id = ind["individual_id"])
         log.info("Building Individual with id:{0}".format(ind["individual_id"]))
     except KeyError as err:
         raise PedigreeError("Individual is missing individual_id")
