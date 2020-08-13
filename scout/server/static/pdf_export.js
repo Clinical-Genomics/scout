@@ -1,4 +1,5 @@
-let generatePDF = () => {
+/* exported generatePDF */
+var generatePDF = () => {
 
 		let htmlWidth = $('.container').width();
 		let htmlHeight = $('.container').height();
