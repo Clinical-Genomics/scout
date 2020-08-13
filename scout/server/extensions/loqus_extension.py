@@ -110,7 +110,6 @@ class LoqusDB:
             LOG.info("Updating length to %s", end)
         variant_info["end"] = end
 
-
     def get_variant(self, variant_info, loqusdb_id=None):
         """Return information for a variant from loqusdb
 
@@ -280,4 +279,3 @@ class LoqusDB:
         if args:
             path.extend(["--config", args])
         return path
-
