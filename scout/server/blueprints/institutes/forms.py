@@ -2,7 +2,9 @@
 from flask_wtf import FlaskForm
 from wtforms.widgets import TextInput
 from wtforms import (
+    BooleanField,
     IntegerField,
+    SelectField,
     SelectMultipleField,
     SubmitField,
     DecimalField,
@@ -10,7 +12,9 @@ from wtforms import (
     validators,
     Field,
 )
-from scout.constants import PHENOTYPE_GROUPS
+from scout.constants import PHENOTYPE_GROUPS, CASE_SEARCH_TERMS
+
+CASE_SEARCH_KEY = [(value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()]
 
 
 class NonValidatingSelectMultipleField(SelectMultipleField):
@@ -87,3 +91,14 @@ class GeneVariantFiltersForm(FlaskForm):
     phenotype_groups = TagListField("Phenotype groups")
     similar_case = TagListField("Phenotypically similar case")
     cohorts = TagListField("Cohorts")
+
+
+class CaseFilterForm(FlaskForm):
+    """Takes care of cases filtering in cases page"""
+
+    search_type = SelectField("Search by", [validators.Optional()], choices=CASE_SEARCH_KEY)
+    search_term = TextField("Search cases")
+    search_limit = IntegerField("Limit", [validators.Optional()], default=100)
+    skip_assigned = BooleanField("Hide assigned")
+    is_research = BooleanField("Research only")
+    search = SubmitField(label="Search")

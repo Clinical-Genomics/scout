@@ -22,6 +22,7 @@ from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
 )
+from scout.constants import CASE_SEARCH_TERMS
 from scout.server.extensions import store
 from scout.server.utils import user_institutes, templated, institute_and_case
 from .forms import InstituteForm, GeneVariantFiltersForm
@@ -71,20 +72,24 @@ def cases(institute_id):
     """Display a list of cases for an institute."""
 
     institute_obj = institute_and_case(store, institute_id)
-    query = request.args.get("query")
+
+    name_query = None
+    if request.args.get("search_term"):
+        name_query = "".join([request.args.get("search_type"), request.args.get("search_term")])
 
     limit = 100
-    if request.args.get("limit"):
-        limit = int(request.args.get("limit"))
+    if request.args.get("search_limit"):
+        limit = int(request.args.get("search_limit"))
 
     skip_assigned = request.args.get("skip_assigned")
     is_research = request.args.get("is_research")
     all_cases = store.cases(
         collaborator=institute_id,
-        name_query=query,
+        name_query=name_query,
         skip_assigned=skip_assigned,
         is_research=is_research,
     )
+    form = controllers.populate_case_filter_form(request.args)
 
     sort_by = request.args.get("sort")
     sort_order = request.args.get("order") or "asc"
@@ -116,7 +121,9 @@ def cases(institute_id):
         institute=institute_obj,
         skip_assigned=skip_assigned,
         is_research=is_research,
-        query=query,
+        query=name_query,
+        search_terms=CASE_SEARCH_TERMS,
+        form=form,
         **data,
     )
 

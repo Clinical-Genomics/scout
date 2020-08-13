@@ -1,3 +1,4 @@
+{% import "bootstrap/wtf.html" as wtf %}
 {% extends "layout_bs4.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 
@@ -17,59 +18,35 @@
 
 
 {% macro search_form() %}
-  <form action="{{ url_for('overview.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
-    <div class="row">
-      <div class="col-md-4 col-sm-4">
-        <div class="input-group">
-          <span class="input-group-addon">
-            <span class="glyphicon glyphicon-search"></span>
-          </span>
-          <input type="search" class="form-control" value="{{ query if query }}" name="query" placeholder="search cases"
-          data-toggle="tooltip" data-placement="right" data-html="true" title="
-            <div class='text-left'>
-              <u>Examples:</u><br>case_id=<strong>18201</strong>,
-              HPO&nbsp;term=<strong>HP:0001166</strong>,
-              synopsis=<strong>synopsis:epilepsy</strong>,
-              panel=<strong>panel:NMD</strong>,
-              status=<strong>status:active</strong>,
-              phenotype&nbsp;group=<strong>PG:0100022</strong>,
-              cohort=<strong>cohort:pedhep</strong>,
-              similar&nbsp;case=<strong>similar:18201</strong>,
-              gene_pinned=<strong>pinned:POT1</strong>,
-              gene_causative=<strong>causative:POT1</strong>,
-              assigned_user=<strong>Kent</strong>.<br><br>
-              Use key without value to search for cases with missing info (<strong>HP:</strong>, <strong>PG:</strong>, <strong>synopsis:</strong>).
-            </div>
-          "></input>
-        </div>
+<form action="{{ url_for('overview.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
+    <div class="row d-flex align-items-center">
+      <div class="form-group col3">
+        {{ form.search_type.label(class="control-label") }}
+        {{ form.search_type(class="form-control") }}
       </div>
-      <div class="col-md-2 col-sm-2">
-        <button type="submit" class="form-control">Search</button>
+      <div class="form-group col-4">
+        {{ form.search_term.label(class="control-label") }}
+        {{ form.search_term(class="form-control", placeholder='example:18201') }}
       </div>
-      <div class="col-md-2 col-sm-2">
-        <div class="number">
-          <label>
-              <input name="limit" type="number" step="100" class="form-control" placeholder="Limit" value={{limit}}>
-          </label>
-        </div>
+      <div class="form-group col-2">
+        {{ form.search(class="btn btn-primary form-control", style="margin-top: 30px;") }}
       </div>
-      <div class="col-md-2 col-sm-2">
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" name="skip_assigned" {% if skip_assigned %}checked{% endif %}> Hide assigned
-          </label>
-        </div>
+      <div class="form-group col-1">
+        {{ form.search_limit.label(class="control-label") }}
+        {{ form.search_limit(class="form-control") }}
       </div>
-      <div class="col-md-2 col-sm-2">
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" name="is_research" {% if is_research %}checked{% endif %}> Hide non-research
-          </label>
-        </div>
+      <div class="form-group col-1" >
+        {{ form.skip_assigned.label(class="control-label") }}
+        {{ form.skip_assigned(class="form-control") }}
+      </div>
+      <div class="form-group col-1">
+        {{ form.is_research.label(class="control-label") }}
+        {{ form.is_research(class="form-control") }}
       </div>
     </div>
   </form>
 {% endmacro %}
+
 
 {% macro cases_table(group_name, cases) %}
 {% if sort_order == 'asc' %}
@@ -301,36 +278,6 @@
 
 {% block scripts %}
   {{ super() }}
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-  <script>
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip();
-      $('table').stickyTableHeaders({
-        fixedOffset: $(".navbar-fixed-top")
-      });
-    });
-
-    function updateArgs(caseGroup, sortItem, sortOrder) {
-      sort_items = ['sort=status', 'sort=analysis_date', 'sort=track', 'order=asc', 'order=desc'];
-      //modifying the sorting of cases
-      let searchList = window.location.search.split('&');
-      if(!searchList[0]){
-        //fix url if sorting is the only param
-        searchList[0] = '?';
-      }
-      //remove all sort params
-      searchList = searchList.filter(f => !sort_items.includes(f))
-      //add specific sort param
-      searchList.push(sortItem);
-      searchList.push("order="+sortOrder)
-
-      sort_link = document.getElementById( caseGroup.concat('_',sortItem.split('=')[1]));
-      const url = window.location.href.split('?')[0].concat(searchList.join('&'));
-      sort_link.href = url;
-      //submit link
-      sort_link.submit();
-    }
-
-  </script>
+  <script src="{{ url_for('overview.static', filename='form_scripts.js') }}"></script>
 {% endblock %}

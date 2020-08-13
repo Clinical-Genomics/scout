@@ -12,6 +12,8 @@ from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.utils import predictions
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
+from .forms import CaseFilterForm
+
 
 TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
 
@@ -174,6 +176,23 @@ def cases(store, case_query, prioritized_cases_query=None, limit=100):
         "limit": limit,
     }
     return data
+
+
+def populate_case_filter_form(params):
+    """Populate filter form with params previosly submitted by user
+
+    Args:
+        params(werkzeug.datastructures.ImmutableMultiDict)
+
+    Returns:
+        form(scout.server.blueprints.cases.forms.CaseFilterForm)
+    """
+    form = CaseFilterForm(params)
+    form.search_type.default = params.get("search_type")
+    search_term = form.search_term.data
+    if ":" in search_term:
+        form.search_term.data = search_term[search_term.index(":") + 1 :]  # remove prefix
+    return form
 
 
 def get_sanger_unevaluated(store, institute_id, user_id):
