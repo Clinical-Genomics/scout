@@ -116,7 +116,7 @@ class LoqusDB:
         SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
         with coordinates.
 
-        Args:=
+        Args:
             variant_info(dict)
             loqusdb_id(string)
 
