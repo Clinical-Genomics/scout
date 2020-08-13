@@ -1,4 +1,4 @@
-/* exported generatePDF */
+/* eslint-disable no-unused-vars */
 var generatePDF = () => {
 
 		let htmlWidth = $('.container').width();
