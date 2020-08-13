@@ -149,9 +149,7 @@ class InstituteHandler(object):
             updates["$set"]["cohorts"] = cohorts
 
         if loqusdb_id is not None:
-            LOG.info(
-                "Updating loqusdb id for institute: {0} to {1}".format(internal_id, loqusdb_id)
-            )
+            LOG.info("Updating loqusdb id for institute: %s to %s", internal_id, loqusdb_id))
             updates["$set"]["loqusdb_id"] = loqusdb_id
 
         if updates["$set"].keys() or updates.get("$push") or updates.get("$pull"):
