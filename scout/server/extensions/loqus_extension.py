@@ -108,6 +108,7 @@ class LoqusDB:
             LOG.info("Updating length to %s", end)
         variant_info["end"] = end
 
+
     def get_variant(self, variant_info, loqusdb_id=None):
         """Return information for a variant from loqusdb
 
@@ -126,7 +127,6 @@ class LoqusDB:
         loqus_id = variant_info["_id"]
         cmd = [self.get_bin_path(loqusdb_id)]
         args = self.get_config_path(loqusdb_id)
-
         if args:
             cmd.extend(["--config", args])
         cmd.extend(["variants", "--to-json", "--variant-id", loqus_id])
@@ -179,36 +179,54 @@ class LoqusDB:
         return self.search_dictlist("default")
 
     def get_bin_path(self, loqusdb_id=None):
-        """Return path to `loqusdb` binary as configured per
-        loqusdb_id or default"""
-        if isinstance(self.loqusdb_settings, list) and loqusdb_id is None:
+        """Return path to `loqusdb` binary as configured per loqusdb_id or default
+
+        Args:
+            loqusdb(str)
+
+        Returns:
+            path_to_bin(str)
+        """
+        if loqusdb_id is None:
             return self.default_setting().get(BINARY_PATH)
-        if isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
-            try:
-                return self.search_dictlist(loqusdb_id).get(BINARY_PATH)
-            except AttributeError:
-                raise ConfigError("LoqusDB id not found")
+
+        try:
+            return self.search_dictlist(loqusdb_id).get(BINARY_PATH)
+        except AttributeError:
+            raise ConfigError("LoqusDB id not found")
 
     def get_config_path(self, loqusdb_id=None):
-        """Return path to `loqusdb` config arguments  as configured per
-        loqusdb_id or default"""
-        if isinstance(self.loqusdb_settings, list) and loqusdb_id is None:
+        """Return path to `loqusdb` config arguments  as configured per loqusdb_id or default
+
+        Args:
+            loqusdb(str)
+
+        Returns:
+            path_to_cfg(str)
+        """
+        if loqusdb_id is None:
             return self.default_setting().get(CONFIG_PATH)
-        if isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
-            try:
-                return self.search_dictlist(loqusdb_id).get(CONFIG_PATH)
-            except AttributeError:
-                raise ConfigError("LoqusDB id not found")
+
+        try:
+            return self.search_dictlist(loqusdb_id).get(CONFIG_PATH)
+        except AttributeError:
+            raise ConfigError("LoqusDB id not found")
 
     def get_configured_version(self, loqusdb_id=None):
-        """Return configured version"""
-        if isinstance(self.loqusdb_settings, list) and loqusdb_id is None:
+        """Return configured version
+        Args:
+            loqusdb(str)
+
+        Returns:
+            loqus_versio(str)
+        """
+        if loqusdb_id is None:
             return self.default_setting().get(VERSION)
-        if isinstance(self.loqusdb_settings, list) and loqusdb_id is not None:
-            try:
-                return self.search_dictlist(loqusdb_id).get(VERSION)
-            except AttributeError:
-                raise ConfigError("LoqusDB id not found")
+
+        try:
+            return self.search_dictlist(loqusdb_id).get(VERSION)
+        except AttributeError:
+            raise ConfigError("LoqusDB id not found")
 
     def case_count(self):
         """Returns number of cases in loqus instance

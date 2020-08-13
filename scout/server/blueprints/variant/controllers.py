@@ -22,6 +22,8 @@ from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import institute_and_case, user_institutes, variant_case
 from scout.utils.scout_requests import fetch_refseq_version
 
+
+
 from .utils import (
     add_gene_info,
     callers,
@@ -261,9 +263,9 @@ def observations(store, loqusdb, case_obj, variant_obj):
         "category": variant_obj["category"],
     }
 
-    i = variant_obj["institute"]
-    inst = store.institute(i)
-    obs_data = loqusdb.get_variant(variant_query, loqusdb_id=inst.get("loqusdb_id")) or {}
+    institute_id = variant_obj["institute"]
+    institute_obj = store.institute(institute_id)
+    obs_data = loqusdb.get_variant(variant_query, loqusdb_id=institute_obj.get("loqusdb_id")) or {}
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)
         obs_data["total"] = loqusdb.case_count()
@@ -272,7 +274,6 @@ def observations(store, loqusdb, case_obj, variant_obj):
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
 
     obs_data["cases"] = []
-    institute_id = variant_obj["institute"]
     for i, case_id in enumerate(obs_data.get("families", [])):
         if i > 10:
             break
