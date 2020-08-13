@@ -162,8 +162,10 @@ class LoqusDB:
             res = json.loads(output)
         return res
 
-    def search_dictlist(self, key):
-        """Search list of dicts"""
+    def search_setting(self, key):
+        """Search settings for 'key' and return configuration for matchin 'id'
+
+        Returns: {'binary_path':(str), 'id': (str), 'config_path': (str)}"""
         for i in self.loqusdb_settings:
             if i.get("id") == key:
                 return i
@@ -175,7 +177,7 @@ class LoqusDB:
         Returns:
             institute_settings(dict)
         """
-        return self.search_dictlist("default")
+        return self.search_setting("default")
 
     def get_bin_path(self, loqusdb_id=None):
         """Return path to `loqusdb` binary as configured per loqusdb_id or default
@@ -190,7 +192,7 @@ class LoqusDB:
             return self.default_setting().get(BINARY_PATH)
 
         try:
-            return self.search_dictlist(loqusdb_id).get(BINARY_PATH)
+            return self.search_setting(loqusdb_id).get(BINARY_PATH)
         except AttributeError:
             raise ConfigError("LoqusDB id not found")
 
@@ -207,7 +209,7 @@ class LoqusDB:
             return self.default_setting().get(CONFIG_PATH)
 
         try:
-            return self.search_dictlist(loqusdb_id).get(CONFIG_PATH)
+            return self.search_setting(loqusdb_id).get(CONFIG_PATH)
         except AttributeError:
             raise ConfigError("LoqusDB id not found")
 
@@ -223,7 +225,7 @@ class LoqusDB:
             return self.default_setting().get(VERSION)
 
         try:
-            return self.search_dictlist(loqusdb_id).get(VERSION)
+            return self.search_setting(loqusdb_id).get(VERSION)
         except AttributeError:
             raise ConfigError("LoqusDB id not found")
 
