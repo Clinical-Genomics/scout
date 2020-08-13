@@ -32,7 +32,7 @@ MAIL_USE_SSL = False
 
 # )
 # If not on localhost 27017 one needs to provide uri with
-# connection details for LoqusDB MongoDB database
+# connection details for LoqusDB MongoDB database in the loqusdb config file
 #    uri=("mongodb://{}:{}@localhost:{}/loqusdb".format(MONGO_USERNAME, MONGO_PASSWORD, MONGO_PORT))
 
 
