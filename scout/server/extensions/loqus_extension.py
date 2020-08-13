@@ -25,7 +25,7 @@ def execute_command(cmd):
     Args:
         cmd (list): command sequence
 
-    Yields:
+    Returns:
         line (str): line of output from command
     """
     output = ""
@@ -70,7 +70,9 @@ class LoqusDB:
 
     @staticmethod
     def app_config(app):
-        """Read config.py to handle single or multiple loqusdb configurations."""
+        """Read config.py to handle single or multiple loqusdb configurations.
+
+        Returns: loqus_db_settings(list)"""
         cfg = app.config["LOQUSDB_SETTINGS"]
         if isinstance(cfg, list):
             return cfg
@@ -125,10 +127,7 @@ class LoqusDB:
             EnvironmentError("Only compatible with loqusdb version >= 2.5")
         """
         loqus_id = variant_info["_id"]
-        cmd = [self.get_bin_path(loqusdb_id)]
-        args = self.get_config_path(loqusdb_id)
-        if args:
-            cmd.extend(["--config", args])
+        cmd = self.get_command(loqusdb_id)
         cmd.extend(["variants", "--to-json", "--variant-id", loqus_id])
         # If sv we need some more info
         if variant_info.get("category", "snv") in ["sv"]:
@@ -235,7 +234,7 @@ class LoqusDB:
             nr_cases(int)
         """
         nr_cases = 0
-        case_call = [self.get_bin_path()]
+        case_call = self.get_command()
         case_call.extend(["cases", "--count"])
         output = ""
         try:
@@ -256,9 +255,9 @@ class LoqusDB:
         if self.version:
             return self.version
 
-        call_str = [self.get_bin_path()]
-        LOG.debug("call_str: {}".format(call_str))
+        call_str = self.get_command()
         call_str.extend(["--version"])
+        LOG.debug("call_str: {}".format(call_str))
         try:
             output = execute_command(call_str)
         except CalledProcessError:
@@ -271,3 +270,14 @@ class LoqusDB:
 
     def __repr__(self):
         return f"LoqusDB(loqusdb_settings={self.loqusdb_settings},"
+
+    def get_command(self, loqusdb_id=None):
+        """Get command string, with additional arguments if configured
+
+        Returns: path(str)"""
+        path = [self.get_bin_path(loqusdb_id)]
+        args = self.get_config_path(loqusdb_id)
+        if args:
+            path.extend(["--config", args])
+        return path
+
