@@ -110,14 +110,13 @@ class LoqusDB:
             LOG.info("Updating length to %s", end)
         variant_info["end"] = end
 
-
     def get_variant(self, variant_info, loqusdb_id=None):
         """Return information for a variant from loqusdb
 
         SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
         with coordinates.
 
-        Args:=
+        Args:
             variant_info(dict)
             loqusdb_id(string)
 
@@ -282,4 +281,3 @@ class LoqusDB:
         if args:
             path.extend(["--config", args])
         return path
-
