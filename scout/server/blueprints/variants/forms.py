@@ -58,7 +58,6 @@ class TagListField(Field):
 
     def _value(self):
         if self.data:
-            LOG.warning(self.data)
             return ", ".join(self.data)
         return ""
 

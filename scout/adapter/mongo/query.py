@@ -167,7 +167,7 @@ class QueryHandler(object):
             # the query content is clear.
 
             elif criterion in ["hgnc_symbols", "gene_panels"] and gene_query is None:
-                gene_query = self.gene_filter(query, mongo_query)
+                self.gene_filter(query, mongo_query)
 
             elif criterion == "chrom" and query.get("chrom"):  # filter by coordinates
                 coordinate_query = None
@@ -408,7 +408,7 @@ class QueryHandler(object):
 
         """
         LOG.debug("Adding panel and genes-related parameters to the query")
-        gene_query = []
+        gene_query = None
         hgnc_symbols = query.get("hgnc_symbols")
         gene_panels = query.get("gene_panels")
 
@@ -419,8 +419,8 @@ class QueryHandler(object):
                     continue
                 hgnc_symbols += self.panel_to_genes(panel)
 
-        mongo_query["hgnc_symbols"] = {"$in": hgnc_symbols}
-        return gene_query
+        if hgnc_symbols and len(hgnc_symbols) > 0:
+            gene_query = {"$in": hgnc_symbols}
 
     def secondary_query(self, query, mongo_query, secondary_filter=None):
         """Creates a secondary query object based on secondary parameters specified by user
