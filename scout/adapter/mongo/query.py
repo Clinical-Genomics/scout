@@ -134,7 +134,6 @@ class QueryHandler(object):
             mongo_query : A dictionary in the mongo query format
 
         """
-        LOG.error(f"QUERY IS:{query}")
         query = query or {}
         mongo_query = {}
         coordinate_query = None
@@ -167,7 +166,9 @@ class QueryHandler(object):
             # the query content is clear.
 
             elif criterion in ["hgnc_symbols", "gene_panels"]:
-                self.gene_filter(query, mongo_query)
+                gene_query = self.gene_filter(query, mongo_query)
+                if len(gene_query) > 0:
+                    mongo_query["hgnc_symbols"] = {"$in": gene_query}
 
             elif criterion == "chrom" and query.get("chrom"):  # filter by coordinates
                 coordinate_query = None
@@ -381,22 +382,19 @@ class QueryHandler(object):
             mongo_query(dict): the query that is going to be submitted to the database
 
         Returns:
-            mongo_query(dict): returned object contains gene and panel-related filters
+            hgnc_symbols: The genes to filter by
 
         """
         LOG.debug("Adding panel and genes-related parameters to the query")
-        hgnc_symbols = query.get("hgnc_symbols")
-        gene_panels = query.get("gene_panels")
+        hgnc_symbols = set(query.get("hgnc_symbols", []))
 
         # Grab all genes from selected gene panels:
-        if gene_panels:
-            for panel in gene_panels:
-                if panel == "hpo":
-                    continue
-                hgnc_symbols += self.panel_to_genes(panel)
+        for panel in query.get("gene_panels", []):
+            if panel == "hpo":
+                continue
+            hgnc_symbols.update(self.panel_to_genes(panel))
 
-        if hgnc_symbols and len(hgnc_symbols) > 0:
-            mongo_query["hgnc_symbols"] = {"$in": hgnc_symbols}
+        return list(hgnc_symbols)
 
     def secondary_query(self, query, mongo_query, secondary_filter=None):
         """Creates a secondary query object based on secondary parameters specified by user

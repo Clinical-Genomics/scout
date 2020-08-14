@@ -65,7 +65,34 @@ def test_gene_panel_query(adapter, case_obj, variant_objs):
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
 
     # THEN the query should countain the gene(s) of the gene panel
-    assert mongo_query["hgnc_symbols"] == "MEH"
+    assert mongo_query == {
+        "case_id": case_obj["_id"],
+        "category": "snv",
+        "variant_type": "clinical",
+        "hgnc_symbols": {"$in": [test_gene]},
+    }
+
+
+def test_gene_symbol_gene_panel_query(adapter, case_obj, variant_obj):
+    """Test variants query using a gene panel cointaining a certain gene and a hgnc symbol of another gene"""
+
+    # GIVEN a database containing a minimal gene panel
+    test_gene = "POT1"
+    test_panel = dict(panel_name="POT panel", version=1, genes=[{"symbol": test_gene}])
+    adapter.panel_collection.insert_one(test_panel)
+    ínserted_panel = adapter.panel_collection.find_one()
+
+    # WHEN the panel _id is provided to the query builder + a gene symbol for another gene
+    query = {"hgnc_symbols": ["ATM"], "gene_panels": [ínserted_panel["_id"]]}
+    mongo_query = adapter.build_query(case_obj["_id"], query=query)
+
+    # THEN the query should countain both genes in the hgnc_symbols list
+    assert mongo_query == {
+        "case_id": case_obj["_id"],
+        "category": "snv",
+        "variant_type": "clinical",
+        "hgnc_symbols": {"$in": ["POT1", "ATM"]},
+    }
 
 
 def test_build_gnomad_query(adapter):
