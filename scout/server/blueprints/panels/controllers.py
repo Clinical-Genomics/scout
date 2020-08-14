@@ -32,7 +32,7 @@ def panel(store, panel_obj):
 
 def existing_gene(store, panel_obj, hgnc_id):
     """Check if gene is already added to a panel."""
-    existing_genes = {gene["hgnc_id"]: gene for gene in panel_obj["genes"]}
+    existing_genes = {gene["hgnc_id"]: gene for gene in panel_obj.get("genes", {})}
     return existing_genes.get(hgnc_id)
 
 

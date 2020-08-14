@@ -595,9 +595,8 @@ def panel_choices(store, case_panels):
     panel_choices = []
     for panel in available_panels:
         panel_id = panel["_id"]
-        panel_name = (
-            f"{panel['panel_name']} ({str(panel['version'])}) - {str(len(panel['genes']))} genes"
-        )
+        n_genes = len(panel.get("genes", []))
+        panel_name = f"{panel['panel_name']} ({str(panel['version'])}) - {str(n_genes)} genes"
         panel_choices.append((panel_id, panel_name))
     panel_choices.append(("hpo", "HPO"))
     return panel_choices

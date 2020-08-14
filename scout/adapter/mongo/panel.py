@@ -315,9 +315,9 @@ class PanelHandler:
         """
         gene_list = []
         panel_obj = self.panel(panel_id)
-        if panel_obj is None:
-            return gene_list
-        gene_list = [gene_obj["symbol"] for gene_obj in panel_obj.get("genes", [])]
+        if panel_obj:
+            gene_list = [gene_obj["symbol"] for gene_obj in panel_obj.get("genes", [])]
+
         return gene_list
 
     def update_panel(self, panel_obj, version=None, date_obj=None, maintainer=None):
@@ -455,7 +455,7 @@ class PanelHandler:
                     gene_obj[field] = info[field]
             new_genes.append(gene_obj)
 
-        for gene in panel_obj["genes"]:
+        for gene in panel_obj.get("genes", []):
             hgnc_id = gene["hgnc_id"]
 
             if hgnc_id not in updates:
