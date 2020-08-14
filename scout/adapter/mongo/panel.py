@@ -303,6 +303,23 @@ class PanelHandler:
 
         return gene_dict
 
+    def panel_to_genes(self, panel_id):
+        """Return all hgnc_ids for a given gene panel
+
+            Args:
+                panel_id(ObjectId): _id of a gene panel
+
+            Returns:
+                gene_list(list): a list of hgnc terms
+
+        """
+        gene_list = []
+        panel_obj = self.panel(panel_id)
+        if panel_obj is None:
+            return gene_list
+        gene_list = [gene_obj["hgnc_id"] for gene_obj in panel_obj.get("genes", [])]
+        return gene_list
+
     def update_panel(self, panel_obj, version=None, date_obj=None, maintainer=None):
         """Replace a existing gene panel with a new one
 

@@ -412,15 +412,12 @@ class QueryHandler(object):
         hgnc_symbols = query.get("hgnc_symbols")
         gene_panels = query.get("gene_panels")
 
-        if hgnc_symbols and gene_panels:
-            gene_query.append({"hgnc_symbols": {"$in": hgnc_symbols}})
-            gene_query.append({"panels": {"$in": gene_panels}})
-        elif hgnc_symbols:
-            mongo_query["hgnc_symbols"] = {"$in": hgnc_symbols}
-            LOG.debug("Adding hgnc_symbols: %s to query" % ", ".join(hgnc_symbols))
-        elif gene_panels:  # gene_panels
-            mongo_query["panels"] = {"$in": gene_panels}
+        # Grab all genes from selected gene panels:
+        if gene_panels:
+            for panel in gene_panels:
+                hgnc_symbols += self.panel_to_genes(panel)
 
+        mongo_query["hgnc_symbols"] = {"$in": hgnc_symbols}
         return gene_query
 
     def secondary_query(self, query, mongo_query, secondary_filter=None):

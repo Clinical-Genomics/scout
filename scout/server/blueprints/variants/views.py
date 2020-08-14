@@ -70,11 +70,7 @@ def variants(institute_id, case_name):
     ]
 
     # populate available panel choices
-    available_panels = case_obj.get("panels", []) + [{"panel_name": "hpo", "display_name": "HPO"}]
-
-    panel_choices = [(panel["panel_name"], panel["display_name"]) for panel in available_panels]
-
-    form.gene_panels.choices = panel_choices
+    form.gene_panels.choices = controllers.panel_choices(store, case_obj["panels"])
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
@@ -143,6 +139,8 @@ def variants(institute_id, case_name):
         form.hgnc_symbols.data = list(current_symbols)
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
+
+    flash(form.data)
 
     variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
 
@@ -293,10 +291,7 @@ def cancer_variants(institute_id, case_name):
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
 
-    available_panels = case_obj.get("panels", []) + [{"panel_name": "hpo", "display_name": "HPO"}]
-
-    panel_choices = [(panel["panel_name"], panel["display_name"]) for panel in available_panels]
-    form.gene_panels.choices = panel_choices
+    form.gene_panels.choices = controllers.panel_choices(store, case_obj["panels"])
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
