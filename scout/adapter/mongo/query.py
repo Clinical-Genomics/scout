@@ -136,7 +136,6 @@ class QueryHandler(object):
         """
         query = query or {}
         mongo_query = {}
-        gene_query = None
         coordinate_query = None
 
         ##### Base query params
@@ -166,7 +165,7 @@ class QueryHandler(object):
             # panel is used, addition of this is delayed until after the rest of
             # the query content is clear.
 
-            elif criterion in ["hgnc_symbols", "gene_panels"] and gene_query is None:
+            elif criterion in ["hgnc_symbols", "gene_panels"]:
                 self.gene_filter(query, mongo_query)
 
             elif criterion == "chrom" and query.get("chrom"):  # filter by coordinates
@@ -213,13 +212,7 @@ class QueryHandler(object):
             # If there are no primary criteria given, all secondary criteria are added as a
             # top level '$and' to the query.
             if primary_terms is False:
-                if gene_query:
-                    mongo_query["$and"] = [
-                        {"$or": gene_query},
-                        {"$and": secondary_filter},
-                    ]
-                else:
-                    mongo_query["$and"] = secondary_filter
+                mongo_query["$and"] = secondary_filter
 
             # If there is only one primary criterion given without any secondary, it will also be
             # added as a top level '$and'.
@@ -230,34 +223,17 @@ class QueryHandler(object):
                 # add the clnsig query as a major criteria, but only
                 # trust clnsig entries with trusted revstat levels.
                 if query.get("clinsig_confident_always_returned") is True:
-                    if gene_query:
-                        mongo_query["$and"] = [
-                            {"$or": gene_query},
-                            {"$or": [{"$and": secondary_filter}, clinsign_filter]},
-                        ]
-                    else:
-                        mongo_query["$or"] = [
-                            {"$and": secondary_filter},
-                            clinsign_filter,
-                        ]
+                    mongo_query["$or"] = [
+                        {"$and": secondary_filter},
+                        clinsign_filter,
+                    ]
                 else:  # clisig terms are provided but no need for trusted revstat levels
                     secondary_filter.append(clinsign_filter)
-                    if gene_query:
-                        mongo_query["$and"] = [
-                            {"$or": gene_query},
-                            {"$and": secondary_filter},
-                        ]
-                    else:
-                        mongo_query["$and"] = secondary_filter
+                    mongo_query["$and"] = secondary_filter
 
         elif primary_terms is True:  # clisig is provided without secondary terms query
             # use implicit and
             mongo_query["clnsig"] = clinsign_filter["clnsig"]
-            if gene_query:
-                mongo_query["$and"] = [{"$or": gene_query}]
-
-        elif gene_query:  # no primary or secondary filters provided
-            mongo_query["$and"] = [{"$or": gene_query}]
 
         # if chromosome coordinates exist in query, add them as first element of the mongo_query['$and']
         if coordinate_query:
@@ -408,7 +384,6 @@ class QueryHandler(object):
 
         """
         LOG.debug("Adding panel and genes-related parameters to the query")
-        gene_query = None
         hgnc_symbols = query.get("hgnc_symbols")
         gene_panels = query.get("gene_panels")
 
@@ -420,7 +395,7 @@ class QueryHandler(object):
                 hgnc_symbols += self.panel_to_genes(panel)
 
         if hgnc_symbols and len(hgnc_symbols) > 0:
-            gene_query = {"$in": hgnc_symbols}
+            mongo_query["hgnc_symbols"] = {"$in": hgnc_symbols}
 
     def secondary_query(self, query, mongo_query, secondary_filter=None):
         """Creates a secondary query object based on secondary parameters specified by user
