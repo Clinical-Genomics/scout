@@ -39,22 +39,23 @@
 {% endblock %}
 
 {% block content_main %}
-<form method="POST" id="filters_form" action="{{url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name)}}" >
   <div class="container-float">
-    <div class="card panel-default" id="accordion">
-      <div class="card-header">
-        <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">SvFilters</a></strong>
+    <form method="POST" id="filters_form" action="{{url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name)}}" >
+      <div class="card panel-default" id="accordion">
+        <div class="card-header">
+          <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">SvFilters</a></strong>
+        </div>
+        <!--Expand filters form if filters were used in a previous POST request-->
+        <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}">
+          <div class="card-body">{{ sv_filters(form, institute, case) }}</div>
+        </div>
+        <div class="card-footer text-center py-3">
+          {% if "all_variants" in session %}
+            Filtered {{session['filtered_variants']}} / {{session["all_variants"]}} variants
+          {% endif %}
+        </div>
       </div>
-      <!--Expand filters form if filters were used in a previous POST request-->
-      <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}">
-        <div class="card-body">{{ sv_filters(form, institute, case) }}</div>
-      </div>
-      <div class="card-footer text-center py-3">
-        {% if "all_variants" in session %}
-          Filtered {{session['filtered_variants']}} / {{session["all_variants"]}} variants
-        {% endif %}
-      </div>
-    </div>
+    </form>
   </div>
   <div class="card mt-3">
     <table id="variantsTable" class="table table-hover table-bordered">
@@ -88,7 +89,6 @@
   <div class="container-fluid">
     {{ pagination() }}
   </div>
-</form>
 {% endblock %}
 
 {% macro filters_form() %}

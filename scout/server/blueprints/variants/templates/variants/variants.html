@@ -38,23 +38,24 @@
   {{ super() }}
 {% endblock %}
 {% block content_main %}
-  <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
-    enctype="multipart/form-data" onsubmit="return validateForm()">
     <div class="container-float">
-      <div class="card panel-default" id="accordion">
-        <div class="card-header">
-          <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
+       <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
+         enctype="multipart/form-data" onsubmit="return validateForm()">
+        <div class="card panel-default" id="accordion">
+          <div class="card-header">
+            <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
+          </div>
+          <!--Expand filters form if filters were used in a previous POST request-->
+          <div class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}" id="collapseFilters">
+              {{ snv_filters(form, institute, case) }}
+          </div>
+          <div class="card-footer text-center py-3">
+            {% if "all_variants" in session %}
+              Filtered {{session['filtered_variants']}} / {{session["all_variants"]}} variants
+            {% endif %}
+          </div>
         </div>
-        <!--Expand filters form if filters were used in a previous POST request-->
-        <div class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}" id="collapseFilters">
-            {{ snv_filters(form, institute, case) }}
-        </div>
-        <div class="card-footer text-center py-3">
-          {% if "all_variants" in session %}
-            Filtered {{session['filtered_variants']}} / {{session["all_variants"]}} variants
-          {% endif %}
-        </div>
-      </div>
+      </form>
       <div class="card mt-3">
         <table class="table table-hover table-bordered">
           <thead>
@@ -111,7 +112,6 @@
       </div><!-- end of <div class="card mt-3">-->
     </div> <!-- end of class="container-float"> -->
       {{ footer() }}
-  </form>
 {% endblock %}
 
 {% macro cell_cadd(variant) %}
