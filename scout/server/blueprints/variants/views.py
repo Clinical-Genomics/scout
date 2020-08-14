@@ -21,8 +21,13 @@ from flask import (
 )
 from flask_login import current_user
 
-from scout.constants import CANCER_TIER_OPTIONS, MANUAL_RANK_OPTIONS, SEVERE_SO_TERMS, DISMISS_VARIANT_OPTIONS, \
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS
+from scout.constants import (
+    CANCER_TIER_OPTIONS,
+    MANUAL_RANK_OPTIONS,
+    SEVERE_SO_TERMS,
+    DISMISS_VARIANT_OPTIONS,
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+)
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated
 
@@ -160,7 +165,6 @@ def variants(institute_id, case_name):
     return dict(
         institute=institute_obj,
         case=case_obj,
-
         form=form,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         dismiss_variant_options=dismiss_options,
@@ -414,7 +418,7 @@ def upload_panel(institute_id, case_name):
     # HTTP redirect code 307 asks that the browser preserves the method of request (POST).
     if category == "sv":
         return redirect(
-            url_for(".sv_variants", institute_id=institute_id, case_name=case_name, **form.data, ),
+            url_for(".sv_variants", institute_id=institute_id, case_name=case_name, **form.data,),
             code=307,
         )
     return redirect(
@@ -456,8 +460,5 @@ def download_verified():
 
 def return_dismissed_variants(case_track, dismiss_options=DISMISS_VARIANT_OPTIONS):
     if case_track == "cancer":
-        dismiss_options = {
-            **DISMISS_VARIANT_OPTIONS,
-            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS
-        }
+        dismiss_options = {**DISMISS_VARIANT_OPTIONS, **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS}
     return dismiss_options
