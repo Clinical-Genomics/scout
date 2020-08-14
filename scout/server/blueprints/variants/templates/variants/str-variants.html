@@ -2,6 +2,8 @@
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 {% from "utils.html" import comments_table %}
 {% from "variants/utils.html" import cell_rank %}
+{% from "variant/buttons.html" import dismiss_variant_table_button %}
+
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - STR variants
@@ -37,10 +39,11 @@
       <thead>
         <tr>
           <th style="width:8%" title="Index">Index</th>
+          <th style="width:10%" title="Dismiss Variant">Dismiss variant</th>
           <th style="width:8%" title="Repeat ID">Repeat locus</th>
-          <th style="width:12%" title="Repeat unit">Reference repeat unit</th>
+          <th style="width:6%" title="Repeat unit">Reference repeat unit</th>
           <th style="width:8%" title="ALT">Estimated size</th>
-          <th style="width:8%" title="ReferenceSize">Reference size</th>
+          <th style="width:4%" title="ReferenceSize">Reference size</th>
           <th style="width:10%" title="Status">Status</th>
           <th style="width:8%" title="Max normal">Max normal</th>
           <th style="width:8%" title="Min pathologic">Min pathologic</th>
@@ -68,6 +71,7 @@
 	            <tr>
 	        {% endif %}
             <td>{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
+            <td>{{ dismiss_variant_table_button(variant, institute, case, dismiss_variant_options) }}</td>
             <td>{{ variant.str_repid }}</td>
 	          <td class="text-right">{{ variant.str_ru }}</td>
             <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>

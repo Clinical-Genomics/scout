@@ -1,6 +1,8 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
+{% from "variant/buttons.html" import dismiss_variant_table_button %}
+
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} variants
@@ -57,16 +59,17 @@
         <table class="table table-hover table-bordered">
           <thead>
             <tr>
-              <th style="width:12%" title="Rank position">Rank </th>
-              <th style="width:6%" title="Rank score">Score</th>
-              <th style="width:6%" title="Chromosome">Chr.</th>
+              <th style="width:4%" title="Rank position">Rank </th>
+              <th style="width:30%" title="Dismiss Variant">Dismiss variant</th>
+              <th style="width:4%" title="Rank score">Score</th>
+              <th style="width:4%" title="Chromosome">Chr.</th>
               <th style="width:8%" title="HGNC symbols">Gene</th>
-              <th style="width:8%" title="Poulation frequency">PopFreq</th>
-              <th style="width:8%" title="CADD score">CADD</th>
+              <th style="width:4%" title="Poulation frequency">PopFreq</th>
+              <th style="width:4%" title="CADD score">CADD</th>
               <th style="width:8%" title="Gene region annotation">Gene annotation</th>
-              <th style="width:18%"" title="Functional annotation">Func. annotation</th>
-              <th style="width:18%" title="Inheritance models">Inheritance model</th>
-              <th style="width:8%"" title="Overlapping">Overlapping</th>
+              <th style="width:14%" title="Functional annotation">Func. annotation</th>
+              <th style="width:12%" title="Inheritance models">Inheritance model</th>
+              <th style="width:4%" title="Overlapping">Overlapping</th>
             </tr>
           </thead>
           <tbody>
@@ -77,6 +80,7 @@
                 <tr>
               {% endif %}
                 <td class="text-left">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
+                <td>{{ dismiss_variant_table_button(variant, institute, case, dismiss_variant_options) }}</td>
                 <td class="text-right">{{ variant.rank_score|int }}</td>
                 <td>{{ variant.chromosome }}</td>
                 <td>{{ gene_cell(variant) }}</td>

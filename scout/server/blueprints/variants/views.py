@@ -21,7 +21,8 @@ from flask import (
 )
 from flask_login import current_user
 
-from scout.constants import CANCER_TIER_OPTIONS, MANUAL_RANK_OPTIONS, SEVERE_SO_TERMS
+from scout.constants import CANCER_TIER_OPTIONS, MANUAL_RANK_OPTIONS, SEVERE_SO_TERMS, DISMISS_VARIANT_OPTIONS, \
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated
 
@@ -153,12 +154,16 @@ def variants(institute_id, case_name):
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
+    dismiss_options = return_dismissed_variants(case_obj.get("track"))
+
     data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
     return dict(
         institute=institute_obj,
         case=case_obj,
+
         form=form,
         manual_rank_options=MANUAL_RANK_OPTIONS,
+        dismiss_variant_options=dismiss_options,
         cancer_tier_options=CANCER_TIER_OPTIONS,
         severe_so_terms=SEVERE_SO_TERMS,
         cytobands=cytobands,
@@ -192,10 +197,13 @@ def str_variants(institute_id, case_name):
             ("position", pymongo.ASCENDING),
         ]
     )
+    dismiss_options = return_dismissed_variants(case_obj.get("track"))
+
     data = controllers.str_variants(store, institute_obj, case_obj, variants_query, page)
     return dict(
         institute=institute_obj,
         case=case_obj,
+        dismiss_variant_options=dismiss_options,
         variant_type=variant_type,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         form=form,
@@ -235,9 +243,12 @@ def sv_variants(institute_id, case_name):
 
     data = controllers.sv_variants(store, institute_obj, case_obj, variants_query, page)
 
+    dismiss_options = return_dismissed_variants(case_obj.get("track"))
+
     return dict(
         institute=institute_obj,
         case=case_obj,
+        dismiss_variant_options=dismiss_options,
         variant_type=variant_type,
         form=form,
         cytobands=cytobands,
@@ -310,9 +321,12 @@ def cancer_variants(institute_id, case_name):
         store, institute_id, case_name, variants_query, form, page=page
     )
 
+    dismiss_options = return_dismissed_variants(case_obj.get("track"))
+
     return dict(
         variant_type=variant_type,
         cytobands=cytobands,
+        dismiss_variant_options=dismiss_options,
         expand_search=str(request.method == "POST"),
         **data,
     )
@@ -351,9 +365,12 @@ def cancer_sv_variants(institute_id, case_name):
 
     data = controllers.sv_variants(store, institute_obj, case_obj, variants_query, page)
 
+    dismiss_options = return_dismissed_variants(case_obj.get("track"))
+
     return dict(
         institute=institute_obj,
         case=case_obj,
+        dismiss_variant_options=dismiss_options,
         variant_type=variant_type,
         form=form,
         severe_so_terms=SEVERE_SO_TERMS,
@@ -397,7 +414,7 @@ def upload_panel(institute_id, case_name):
     # HTTP redirect code 307 asks that the browser preserves the method of request (POST).
     if category == "sv":
         return redirect(
-            url_for(".sv_variants", institute_id=institute_id, case_name=case_name, **form.data,),
+            url_for(".sv_variants", institute_id=institute_id, case_name=case_name, **form.data, ),
             code=307,
         )
     return redirect(
@@ -435,3 +452,12 @@ def download_verified():
         )
     flash("No verified variants could be exported for user's institutes", "warning")
     return redirect(request.referrer)
+
+
+def return_dismissed_variants(case_track, dismiss_options=DISMISS_VARIANT_OPTIONS):
+    if case_track == "cancer":
+        dismiss_options = {
+            **DISMISS_VARIANT_OPTIONS,
+            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS
+        }
+    return dismiss_options

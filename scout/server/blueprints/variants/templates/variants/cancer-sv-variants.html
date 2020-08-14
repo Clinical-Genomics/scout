@@ -1,6 +1,8 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_table %}
 {% from "variants/utils.html" import sv_filters,cell_rank %}
+{% from "variant/buttons.html" import dismiss_variant_table_button %}
+
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
@@ -59,6 +61,7 @@
       <thead>
         <tr>
           <th>Index</th>
+          <th style="width:4%" title="Dismiss variant">Dismiss variant</th>
           <th>Score</th>
           <th>Type</th>
           <th>Chr</th>
@@ -189,6 +192,7 @@
     <td>
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
+    <td>{{ dismiss_variant_table_button(variant, institute, case, dismiss_variant_options) }}</td>
     <td>{{ variant.rank_score|int }}</td>
     <td>{{ variant.sub_category|upper }}</td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
