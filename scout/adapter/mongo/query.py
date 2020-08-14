@@ -415,6 +415,8 @@ class QueryHandler(object):
         # Grab all genes from selected gene panels:
         if gene_panels:
             for panel in gene_panels:
+                if panel == "hpo":
+                    continue
                 hgnc_symbols += self.panel_to_genes(panel)
 
         mongo_query["hgnc_symbols"] = {"$in": hgnc_symbols}
