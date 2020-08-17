@@ -602,6 +602,9 @@ def institute_panel_choices(store, institute_obj):
         )
         panel_choices.append((panel_id, panel_name))
 
+    # include HPO panel option
+    panel_choices.append(("hpo", "HPO"))
+
     return panel_choices
 
 
