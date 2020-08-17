@@ -61,7 +61,11 @@
           <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-6">
               {{ form.gene_panels.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Select gene panels that will be available for variants filtering.") }}
-              {{ form.gene_panels(class="selectpicker") }}
+              <select multiple="multiple" name="gene_panels" class="selectpicker">
+                {% for choice in form.gene_panels.choices or [] %}
+                  <option value="{{choice[0]}}" {% if choice[0] in institute.gene_panels %} selected {% endif %}>{{choice[1]}}</option>
+                {% endfor %}
+              </select>
             </div>
             <div class="form-group col-md-6">
               {{ form.pheno_groups.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Phenotype groups are used to quickly assign a certain phenotype to a case, on the case page.") }}

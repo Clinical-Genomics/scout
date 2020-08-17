@@ -73,7 +73,7 @@ def populate_institute_form(form, institute_obj):
     )
     panel_choices = []
     for panel in available_panels:
-        panel_id = panel["_id"]
+        panel_id = str(panel["_id"])
         n_genes = len(panel.get("genes", []))
         panel_name = f"{panel['panel_name']} ({str(panel['version'])}) - {str(n_genes)} genes"
         panel_choices.append((panel_id, panel_name))
