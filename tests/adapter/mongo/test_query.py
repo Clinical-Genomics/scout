@@ -87,12 +87,9 @@ def test_gene_symbol_gene_panel_query(adapter, case_obj, variant_obj):
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
 
     # THEN the query should countain both genes in the hgnc_symbols list
-    assert mongo_query == {
-        "case_id": case_obj["_id"],
-        "category": "snv",
-        "variant_type": "clinical",
-        "hgnc_symbols": {"$in": ["POT1", "ATM"]},
-    }
+    mongo_query_gene_list = mongo_query["hgnc_symbols"]["$in"]
+    for gene in ["ATM", "POT1"]:
+        assert gene in mongo_query_gene_list
 
 
 def test_build_gnomad_query(adapter):
