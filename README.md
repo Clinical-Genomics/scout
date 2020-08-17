@@ -193,7 +193,7 @@ be found [here][matchmaker-scout-sharing].
 
 ## Development
 
-To keep the code base consistent, formatting with [Black](https://github.com/psf/black) is enforced.
+To keep the code base consistent, formatting with [Black](https://github.com/psf/black) is always applied as part of the PR submission process via GitHub Actions. While not strictly required, to avoid confusion, it is suggested that developers apply Black locally.
 Black defaults to 88 characters per line, we use 100.
 
 To format all the files in the project run:
