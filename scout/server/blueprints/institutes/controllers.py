@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
+import pymongo
 
 LOG = logging.getLogger(__name__)
 
@@ -64,7 +65,20 @@ def populate_institute_form(form, institute_obj):
                 )
                 form.pheno_groups.choices.append((custom_group, custom_group))
 
-    return default_phenotypes
+    # populate gene panels multiselect
+    available_panels = list(
+        store.gene_panels().sort(
+            [("panel_name", pymongo.ASCENDING), ("version", pymongo.ASCENDING)]
+        )
+    )
+    panel_choices = []
+    for panel in available_panels:
+        panel_id = panel["_id"]
+        n_genes = len(panel.get("genes", []))
+        panel_name = f"{panel['panel_name']} ({str(panel['version'])}) - {str(n_genes)} genes"
+        panel_choices.append((panel_id, panel_name))
+    panel_choices.append(("hpo", "HPO"))
+    form.gene_panels.choices = panel_choices
 
 
 def update_institute_settings(store, institute_obj, form):
@@ -82,6 +96,7 @@ def update_institute_settings(store, institute_obj, form):
     sanger_recipients = []
     sharing_institutes = []
     phenotype_groups = []
+    gene_panels = []
     group_abbreviations = []
     cohorts = []
 
@@ -99,6 +114,9 @@ def update_institute_settings(store, institute_obj, form):
         phenotype_groups.append(form["hpo_term"].split(" |")[0])
         group_abbreviations.append(form["pheno_abbrev"])
 
+    for panel_id in form.getlist("gene_panels"):
+        gene_panels.append(panel_id)
+
     for cohort in form.getlist("cohorts"):
         cohorts.append(cohort.strip())
 
@@ -109,6 +127,7 @@ def update_institute_settings(store, institute_obj, form):
         frequency_cutoff=float(form.get("frequency_cutoff")),
         display_name=form.get("display_name"),
         phenotype_groups=phenotype_groups,
+        gene_panels=gene_panels,
         group_abbreviations=group_abbreviations,
         add_groups=False,
         sharing_institutes=sharing_institutes,

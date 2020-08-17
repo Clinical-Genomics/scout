@@ -581,27 +581,6 @@ def upload_panel(store, institute_id, case_name, stream):
     return hgnc_symbols
 
 
-def panel_choices(store, case_panels):
-    """Creates the a list of tuples containing the available gene panels used in the variants filter.
-
-        Args:
-            store(scout.adapter.MongoAdapter)
-            case_panels(list): case-specific gene panels
-
-        Returns:
-            panel_choices(list): a list of tuples
-    """
-    available_panels = list(store.gene_panels())
-    panel_choices = []
-    for panel in available_panels:
-        panel_id = panel["_id"]
-        n_genes = len(panel.get("genes", []))
-        panel_name = f"{panel['panel_name']} ({str(panel['version'])}) - {str(n_genes)} genes"
-        panel_choices.append((panel_id, panel_name))
-    panel_choices.append(("hpo", "HPO"))
-    return panel_choices
-
-
 def populate_filters_form(store, institute_obj, case_obj, user_obj, category, request_form):
     # Update filter settings if Clinical Filter was requested
     clinical_filter_panels = []

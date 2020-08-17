@@ -6,7 +6,8 @@
   <div class="display:block">
     <!-- institute settings panel -->
     <div class="card w-100">
-      <div style="padding: 0;" class="card-body mt-3 ml-3 mr-3" >
+      <div style="paddinginstitute_settings
+      : 0;" class="card-body mt-3 ml-3 mr-3" >
         <h5 class="header">General Institute Settings</h5>
           <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-4">
@@ -58,10 +59,14 @@
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-between">
-            <div class="form-group col-md-12">
+            <div class="form-group col-md-6">
+              {{ form.gene_panels.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Select gene panels that will be available for variants filtering.") }}
+              {{ form.gene_panels(class="selectpicker") }}
+            </div>
+            <div class="form-group col-md-6">
               {{ form.pheno_groups.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Phenotype groups are used to quickly assign a certain phenotype to a case, on the case page.") }}
               <select multiple="multiple" name="pheno_groups" class="selectpicker">
-                {% for choice in form.pheno_groups.choices %}
+                {% for choice in form.pheno_groups.choices or [] %}
                   <option value="{{choice[0]}}" {% if choice[0].split(' ,')[0] in institute.phenotype_groups %} selected {% endif %}>{{choice[1]}}</option>
                 {% endfor %}
               </select>
