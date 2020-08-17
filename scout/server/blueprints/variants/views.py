@@ -21,7 +21,13 @@ from flask import (
 )
 from flask_login import current_user
 
-from scout.constants import CANCER_TIER_OPTIONS, MANUAL_RANK_OPTIONS, SEVERE_SO_TERMS
+from scout.constants import (
+    CANCER_TIER_OPTIONS,
+    MANUAL_RANK_OPTIONS,
+    SEVERE_SO_TERMS,
+    DISMISS_VARIANT_OPTIONS,
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+)
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated
 
@@ -155,6 +161,7 @@ def variants(institute_id, case_name):
         case=case_obj,
         form=form,
         manual_rank_options=MANUAL_RANK_OPTIONS,
+        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
         severe_so_terms=SEVERE_SO_TERMS,
         cytobands=cytobands,
@@ -188,10 +195,12 @@ def str_variants(institute_id, case_name):
             ("position", pymongo.ASCENDING),
         ]
     )
+
     data = controllers.str_variants(store, institute_obj, case_obj, variants_query, page)
     return dict(
         institute=institute_obj,
         case=case_obj,
+        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         variant_type=variant_type,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         form=form,
@@ -234,6 +243,7 @@ def sv_variants(institute_id, case_name):
     return dict(
         institute=institute_obj,
         case=case_obj,
+        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         variant_type=variant_type,
         form=form,
         cytobands=cytobands,
@@ -306,6 +316,10 @@ def cancer_variants(institute_id, case_name):
     return dict(
         variant_type=variant_type,
         cytobands=cytobands,
+        dismiss_variant_options={
+            **DISMISS_VARIANT_OPTIONS,
+            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+        },
         expand_search=str(request.method == "POST"),
         **data,
     )
@@ -347,6 +361,10 @@ def cancer_sv_variants(institute_id, case_name):
     return dict(
         institute=institute_obj,
         case=case_obj,
+        dismiss_variant_options={
+            **DISMISS_VARIANT_OPTIONS,
+            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+        },
         variant_type=variant_type,
         form=form,
         severe_so_terms=SEVERE_SO_TERMS,

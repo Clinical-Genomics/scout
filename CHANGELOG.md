@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Display number of filtered variants vs number of total variants in variants page
 - Search case by HPO terms
+- Dismiss variant column in the variant tables.
 
 ### Fixed
 - Bug occurring when rerun is requested twice
