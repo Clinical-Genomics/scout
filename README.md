@@ -191,6 +191,33 @@ A user-oriented guide describing how to share case and variant data to MatchMake
 be found [here][matchmaker-scout-sharing].
 
 
+## Development
+
+To keep the code base consistent, formatting with [Black](https://github.com/psf/black) is enforced.
+Black defaults to 88 characters per line, we use 100.
+
+To format all the files in the project run:
+
+```bash
+black --line-length 100 .
+```
+
+We recommend using Black with [pre-commit](https://github.com/pre-commit/pre-commit).
+In `.pre-commit-config.yaml` you can find the pre-commit configuration.
+To enable this configuration run:
+
+```bash
+pre-commit install
+```
+
+### Test
+
+To run unit tests:
+
+```bash
+pytest
+```
+
 ## Example of analysis config
 
 TODO.

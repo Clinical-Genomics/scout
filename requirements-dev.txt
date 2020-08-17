@@ -12,7 +12,9 @@ wheel>=0.23
 twine
 
 # utils
+black
 invoke
+pre-commit
 
 # docs
 mkdocs
