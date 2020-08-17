@@ -61,7 +61,7 @@ class InstituteHandler(object):
             display_name(str): New display name
             remove_sanger(str): Email adress for sanger user to be removed
             phenotype_groups(iterable(str)): New phenotype groups
-            gene_panels(list(ObjId)): a list of gene panel object IDs
+            gene_panels(list([str])): a list of gene panel object IDs converted to string
             group_abbreviations(iterable(str))
             add_groups(bool): If groups should be added. If False replace groups
             sharing_institutes(list(str)): Other institutes to share cases with
@@ -142,7 +142,7 @@ class InstituteHandler(object):
                 existing_groups[hpo_term] = {"name": description, "abbr": abbreviation}
             updates["$set"]["phenotype_groups"] = existing_groups
 
-        if len(gene_panels) > 0:
+        if gene_panels is not None and len(gene_panels) > 0:
             updates["$set"]["gene_panels"] = gene_panels
 
         if sharing_institutes is not None:
