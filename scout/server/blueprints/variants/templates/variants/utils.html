@@ -158,7 +158,7 @@
 <div class="form-group">
   <div class="row">
     <div class="col-4">
-      {{ form.gene_panels.label}}
+      {{ form.gene_panels.label(class="control-label", data_toggle="tooltip", data_placement="left", title="This can be modified in the institute settings page.") }}
       {{ form.gene_panels(class="selectpicker") }}
     </div>
     <div class="col-2">
@@ -275,7 +275,7 @@
 <div class="form-group">
   <div class="row">
     <div class="col-4">
-      {{ form.gene_panels.label(class="control-label") }}
+      {{ form.gene_panels.label(data_toggle="tooltip", data_placement="left", title="This can be modified in the institute settings page") }}
       {{ form.gene_panels(class="selectpicker") }}
     </div>
     <div class="col-2">
@@ -390,7 +390,7 @@
     <div class="form-group">
       <div class="row">
         <div class="col-2">
-          {{ form.gene_panels.label(class="control-label") }}
+          {{ form.gene_panels.label(data_toggle="tooltip", data_placement="left", title="This can be modified in the institute settings page") }}
           {{ form.gene_panels(class="selectpicker") }}
         </div>
         <div class="col-2">
