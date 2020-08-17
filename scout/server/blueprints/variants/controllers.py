@@ -581,6 +581,30 @@ def upload_panel(store, institute_id, case_name, stream):
     return hgnc_symbols
 
 
+def institute_panel_choices(store, institute_obj):
+    """Populates the multiselect containing all the gene panels to be used in variants filtering
+        Args:
+            store(scout.adapter.MongoAdapter)
+            institute_id(str): Institute ID
+
+        Returns:
+            panel_choices(list): a list of tuples containing the multiselect values/display name
+    """
+    panel_choices = []
+    for panel_id in institute_obj.get("gene_panels", []):
+        panel_obj = store.panel(panel_id)
+        if panel_obj is None:
+            continue
+        panel_id = str(panel_obj["_id"])
+        n_genes = len(panel_obj.get("genes", []))
+        panel_name = (
+            f"{panel_obj['panel_name']} ({str(panel_obj['version'])}) - {str(n_genes)} genes"
+        )
+        panel_choices.append((panel_id, panel_name))
+
+    return panel_choices
+
+
 def populate_filters_form(store, institute_obj, case_obj, user_obj, category, request_form):
     # Update filter settings if Clinical Filter was requested
     clinical_filter_panels = []
@@ -693,7 +717,7 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     ]
 
     # populate available panel choices
-    form.gene_panels.choices = panel_choices(store, case_obj["panels"])
+    form.gene_panels.choices = institute_panel_choices(store, institute_obj)
 
     # check if supplied gene symbols exist
     hgnc_symbols = []

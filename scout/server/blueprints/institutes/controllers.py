@@ -77,7 +77,6 @@ def populate_institute_form(form, institute_obj):
         n_genes = len(panel.get("genes", []))
         panel_name = f"{panel['panel_name']} ({str(panel['version'])}) - {str(n_genes)} genes"
         panel_choices.append((panel_id, panel_name))
-    panel_choices.append(("hpo", "HPO"))
     form.gene_panels.choices = panel_choices
 
 
