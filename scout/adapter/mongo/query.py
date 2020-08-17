@@ -134,6 +134,7 @@ class QueryHandler(object):
             mongo_query : A dictionary in the mongo query format
 
         """
+        LOG.error(f"HERE:{query}")
         query = query or {}
         mongo_query = {}
         coordinate_query = None

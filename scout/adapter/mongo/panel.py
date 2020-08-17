@@ -6,6 +6,7 @@ from copy import deepcopy
 
 import pymongo
 from bson import ObjectId
+from bson.errors import InvalidId
 
 from scout.build import build_panel
 from scout.exceptions import IntegrityError
@@ -314,7 +315,11 @@ class PanelHandler:
 
         """
         gene_list = []
-        panel_obj = self.panel(panel_id)
+        panel_obj = None
+        try:
+            panel_obj = self.panel(panel_id)
+        except InvalidId:  # Occurrs when clinical filter panel is used
+            panel_obj = self.gene_panel(panel_id)
         if panel_obj:
             gene_list = [gene_obj["symbol"] for gene_obj in panel_obj.get("genes", [])]
 
