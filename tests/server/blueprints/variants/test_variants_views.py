@@ -10,7 +10,12 @@ def test_variants_clinical_filter(app, institute_obj, case_obj):
 
     # GIVEN a variant without clinVar annotations
     test_var = store.variant_collection.find_one(
-        {"clnsig": {"$exists": False}, "variant_type": "clinical", "category": "snv"}
+        {
+            "clnsig": {"$exists": False},
+            "variant_type": "clinical",
+            "category": "snv",
+            "panels": {"$in": ["panel1"]},
+        }
     )
     assert test_var
 
