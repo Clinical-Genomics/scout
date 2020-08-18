@@ -4,7 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [x.x.x]
+## [x.x.1]
+### Added
+### Fixed
+### Changed
+
+
+## [4.19.1]
 ### Added
 - Display number of filtered variants vs number of total variants in variants page
 - Search case by HPO terms
