@@ -43,7 +43,6 @@ def institute_and_case(store, institute_id, case_name=None):
 
     # Check if user is authenticated. This should prevent the access to malicious users ad registered users with expired sessions as well
     if current_user.is_authenticated is False:
-        flash("Session might have expired, please log in again", "danger")
         return abort(401)
 
     institute_obj = store.institute(institute_id)
