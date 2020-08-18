@@ -8,8 +8,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Display number of filtered variants vs number of total variants in variants page
 - Search case by HPO terms
-- Dismiss variant column in the variant tables.
+- Dismiss variant column in the variants tables
 - Black and pre-commit packages to dev requirements
+- Highlight on causative variants in the variants tables
 
 ### Fixed
 - Bug occurring when rerun is requested twice
@@ -20,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Genome build-aware cytobands coordinates
 - Styling update of the Matchmaker card
 - Select search type in case search form
+- Highlight color on normal STRs in the variants table from green to blue
 
 
 ## [4.19]
