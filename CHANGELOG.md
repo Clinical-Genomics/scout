@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 
 
-## [4.19.1]
+## [4.20]
 ### Added
 - Display number of filtered variants vs number of total variants in variants page
 - Search case by HPO terms
