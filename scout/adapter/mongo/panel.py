@@ -318,10 +318,10 @@ class PanelHandler:
         panel_obj = None
         try:
             panel_obj = self.panel(panel_id)
-        except InvalidId:  # Occurrs when clinical filter panel is used
+        except InvalidId:  # Occurs when clinical filter panel is used
             panel_obj = self.gene_panel(panel_id)
         if panel_obj:
-            gene_list = [gene_obj["symbol"] for gene_obj in panel_obj.get("genes", [])]
+            gene_list = [gene_obj.get("symbol", "") for gene_obj in panel_obj.get("genes", [])]
 
         return gene_list
 
