@@ -3,7 +3,7 @@ import logging
 import os
 from functools import wraps
 
-from flask import abort, flash, render_template, request, url_for, redirect
+from flask import abort, flash, render_template, request
 from flask_login import current_user
 
 LOG = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ def public_endpoint(function):
 def institute_and_case(store, institute_id, case_name=None):
     """Fetch insitiute and case objects."""
 
-    # Check if user is authenticated. This should prevent the access to malicious users ad registered users with expired sessions as well
+    # Check if user is authenticated. This should prevent the access to un-authenticated users and registered users with expired session
     if current_user.is_authenticated is False:
         return abort(401)
 
