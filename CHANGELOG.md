@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Bug occurring when rerun is requested twice
 - Peddy info fields in the demo config file
+- Added load config safety check for multiple alignment files for one individual
 
 ### Changed
 - Updated the documentation on how to create a new software release
