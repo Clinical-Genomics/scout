@@ -204,6 +204,24 @@ def test_parse_case_alignment_path(scout_config):
         assert ind["bam_file"] == bam_path
 
 
+def test_parse_case_multiple_alignment_files(scout_config):
+    # GIVEN a load config with both cram and bam files
+    bam_path = "a bam"
+    for sample in scout_config["samples"]:
+        sample["bam_file"] = bam_path
+
+    cram_path = "a cram"
+    for sample in scout_config["samples"]:
+        sample["alignment_path"] = cram_path
+
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+
+    # THEN assert that cram files are added correctly, ignoring bam
+    for ind in case_data["individuals"]:
+        assert ind["bam_file"] == cram_path
+
+
 def test_parse_ped_file(ped_file):
     # GIVEN a pedigree with three samples
     with open(ped_file, "r") as case_lines:
