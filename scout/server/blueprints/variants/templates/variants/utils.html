@@ -599,6 +599,10 @@
     {% endfor %}
   {% endif %}
 
+  {% if variant._id in case.causatives %}
+    <span class="badge badge-success" style="margin-left:1px" data-toggle="tooltip" data-placement="right" title="Causative variant">Causative</span>
+  {% endif %}
+
   {% if comment_count > 0 %}
     {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
     <a href="#"
