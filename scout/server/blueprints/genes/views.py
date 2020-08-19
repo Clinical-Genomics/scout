@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import json
+from bson import json_util
 from flask import abort, Blueprint, request, jsonify, redirect, url_for, flash
 
 from scout.server.extensions import store
@@ -9,7 +11,6 @@ genes_bp = Blueprint("genes", __name__, template_folder="templates")
 
 
 @genes_bp.route("/genes")
-@templated("genes/genes.html")
 def genes():
     """Render seach box for genes."""
     query = request.args.get("query", "")
@@ -22,7 +23,10 @@ def genes():
     if hgnc_id:
         return redirect(url_for(".gene", hgnc_id=hgnc_id))
     gene_q = store.all_genes(limit=20)
-    return dict(genes=gene_q)
+    genes_dict = json.loads(json_util.dumps({"genes": list(gene_q)}))
+    resp = jsonify(genes_dict)
+    resp.status_code = 200
+    return resp
 
 
 @genes_bp.route("/genes/<int:hgnc_id>")
