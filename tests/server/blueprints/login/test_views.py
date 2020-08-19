@@ -20,18 +20,15 @@ def test_unathorized_login(app, institute_obj, case_obj):
 
         # And also WHEN requesting a (known) case page
         attribute_error = False
-        try:
-            resp = client.get(
-                url_for(
-                    "cases.case",
-                    institute_id=institute_obj["internal_id"],
-                    case_name=case_obj["display_name"],
-                )
+        resp = client.get(
+            url_for(
+                "cases.case",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
             )
-        except AttributeError:
-            attribute_error = True
-        # THEN an error is raised
-        assert attribute_error
+        )
+        # The response is HTTP error code 401 (NAUTHORIZED)
+        assert response.status_code == 401
 
 
 def test_authorized_login(app, user_obj):
