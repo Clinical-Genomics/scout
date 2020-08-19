@@ -271,63 +271,27 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
             # If the user does not have access to the information we skip it
             continue
 
-        genome_build = variant_case_obj.get("genome_build", "37")
-        if genome_build not in ["37", "38"]:
-            genome_build = "37"
-
-        # Update the HGNC symbols if they are not set
+        genome_build = get_genome_build(variant_case_obj)
         variant_genes = variant_obj.get("genes")
-        if variant_genes is not None:
-            for gene_obj in variant_genes:
-                # If there is no hgnc id there is nothin we can do
-                if not gene_obj["hgnc_id"]:
-                    continue
-                # Else we collect the gene object and check the id
-                if gene_obj.get("hgnc_symbol") is None or gene_obj.get("description") is None:
-                    hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
-                    if not hgnc_gene:
-                        continue
-                    gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
-                    gene_obj["description"] = hgnc_gene["description"]
+        gene_object = update_HGNC_symbols(store, variant_genes, genome_build)
 
         # Populate variant HGVS and predictions
-        gene_ids = []
-        gene_symbols = []
+        variant_genes = variant_obj.get("genes")
         hgvs_c = []
         hgvs_p = []
-        variant_genes = variant_obj.get("genes")
-
         if variant_genes is not None:
-            functional_annotation = ""
             for gene_obj in variant_genes:
                 hgnc_id = gene_obj["hgnc_id"]
                 gene_symbol = gene(store, hgnc_id)["symbol"]
+                gene_symbols = [gene_symbol]
 
-                gene_ids.append(hgnc_id)
-                gene_symbols.append(gene_symbol)
-
-                hgvs_nucleotide = "-"
-                hgvs_protein = ""
                 # gather HGVS info from gene transcripts
-                transcripts_list = gene_obj.get("transcripts")
-                for transcript_obj in transcripts_list:
-                    if (
-                        transcript_obj.get("is_canonical")
-                        and transcript_obj.get("is_canonical") is True
-                    ):
-                        hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
-                        hgvs_protein = str(transcript_obj.get("protein_sequence_name"))
+                (hgvs_nucleotide, hgvs_protein) = get_hgvs(gene_obj)
                 hgvs_c.append(hgvs_nucleotide)
                 hgvs_p.append(hgvs_protein)
 
             if len(gene_symbols) == 1:
-                if hgvs_p[0] != "None":
-                    hgvs = hgvs_p[0]
-                elif hgvs_c[0] != "None":
-                    hgvs = hgvs_c[0]
-                else:
-                    hgvs = "-"
-                variant_obj["hgvs"] = hgvs
+                variant_obj["hgvs"] = hgvs_str(gene_symbols, hgvs_p, hgvs_c)
 
             # populate variant predictions for display
             variant_obj.update(predictions(variant_genes))
@@ -461,3 +425,54 @@ def clinvar_lines(clinvar_objects, clinvar_header_obj):
 
     clinvar_lines = clinvar_submission_lines(clinvar_objects, clinvar_header_obj)
     return clinvar_lines
+
+
+def update_HGNC_symbols(store, variant_genes, genome_build):
+    """ Update the HGNC symbols if they are not set
+    Returns:
+        gene_object()"""
+
+    if variant_genes is not None:
+        for gene_obj in variant_genes:
+            # If there is no hgnc id there is nothin we can do
+            if not gene_obj["hgnc_id"]:
+                continue
+            # Else we collect the gene object and check the id
+            if gene_obj.get("hgnc_symbol") is None or gene_obj.get("description") is None:
+                hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
+                if not hgnc_gene:
+                    continue
+                gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
+                gene_obj["description"] = hgnc_gene["description"]
+
+
+def get_genome_build(variant_case_obj):
+    """Find genom build in `variant_case_obj`. If not found use build #37"""
+    build = variant_case_obj.get("genome_build")
+    if build in ["37", "38"]:
+        return build
+    return "37"
+
+
+def get_hgvs(gene_obj):
+    """Analyse gene object
+    Return:
+       (hgvs_nucleotide, hgvs_protein)"""
+    hgvs_nucleotide = "-"
+    hgvs_protein = ""
+
+    transcripts_list = gene_obj.get("transcripts")
+    for transcript_obj in transcripts_list:
+        if transcript_obj.get("is_canonical") is True:
+            hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
+            hgvs_protein = str(transcript_obj.get("protein_sequence_name"))
+    return (hgvs_nucleotide, hgvs_protein)
+
+
+def hgvs_str(gene_symbols, hgvs_p, hgvs_c):
+    """"""
+    if hgvs_p[0] != "None":
+        return hgvs_p[0]
+    if hgvs_c[0] != "None":
+        return hgvs_c[0]
+    return "-"
