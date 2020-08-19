@@ -366,11 +366,17 @@ def parse_individual(sample):
     ind_info["predicted_ancestry"] = sample.get("predicted_ancestry")
 
     # IGV files these can be bam or cram format
-    bam_path_options = ["bam_path", "bam_file", "alignment_path"]
+    bam_path_options = ["alignment_path", "bam_path", "bam_file"]
     for option in bam_path_options:
         if sample.get(option) and not sample.get(option).strip() == "":
-            ind_info["bam_file"] = sample[option]
-            break
+            if "bam_file" in ind_info:
+                LOG.warning(
+                    "Multiple alignment paths given for individual %s in load config. Using %s",
+                    ind_info["individual_id"],
+                    ind_info["bam_file"],
+                )
+            else:
+                ind_info["bam_file"] = sample[option]
 
     ind_info["rhocall_bed"] = sample.get("rhocall_bed", sample.get("rhocall_bed"))
     ind_info["rhocall_wig"] = sample.get("rhocall_wig", sample.get("rhocall_wig"))

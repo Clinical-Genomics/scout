@@ -6,6 +6,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+### Changed
+
+
+## [4.20]
+### Added
 - Display number of filtered variants vs number of total variants in variants page
 - Search case by HPO terms
 - Dismiss variant column in the variant tables.
@@ -14,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Bug occurring when rerun is requested twice
 - Peddy info fields in the demo config file
+- Added load config safety check for multiple alignment files for one individual
 
 ### Changed
 - Updated the documentation on how to create a new software release
