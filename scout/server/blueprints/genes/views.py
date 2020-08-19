@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from bson import json_util
-from flask import abort, Blueprint, request, jsonify, redirect, url_for, flash, jsonify
+from flask import abort, Blueprint, request, jsonify, redirect, url_for, flash
 
 from scout.server.extensions import store
 from scout.server.utils import templated, public_endpoint
