@@ -6,15 +6,13 @@ class HelloWorld extends React.Component {
 	render() {
 		return (
 			<div className="loadingAnimation">
-				Hi! I am a tiny React app
 				<motion.div
-					animate={{
-						rotate: 360,
-					}}
-					transition={{
-						duration: 1.5,
-						ease: "easeInOut",
-						loop: Infinity,
+					drag
+					dragConstraints={{
+						top: -250,
+						left: -250,
+						right: 250,
+						bottom: 250,
 					}}
 				/>
 			</div>

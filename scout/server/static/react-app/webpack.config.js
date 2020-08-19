@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const config = {
-	entry: __dirname + '/scripts/index.js',
+	entry: __dirname + '/app/index.js',
 	output: {
 		path: __dirname + '/dist',
 		filename: 'bundle.js',
