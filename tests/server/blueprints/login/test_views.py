@@ -27,8 +27,8 @@ def test_unathorized_login(app, institute_obj, case_obj):
                 case_name=case_obj["display_name"],
             )
         )
-        # The response is HTTP error code 401 (NAUTHORIZED)
-        assert response.status_code == 401
+        # The response is HTTP error code 401 (UNAUTHORIZED)
+        assert resp.status_code == 401
 
 
 def test_authorized_login(app, user_obj):
