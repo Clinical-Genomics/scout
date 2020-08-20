@@ -18,18 +18,6 @@ def test_unathorized_login(app, institute_obj, case_obj):
         # And current user should NOT be authenticated
         assert current_user.is_authenticated is False
 
-        # And also WHEN requesting a (known) case page
-        attribute_error = False
-        resp = client.get(
-            url_for(
-                "cases.case",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            )
-        )
-        # The response is HTTP error code 401 (UNAUTHORIZED)
-        assert resp.status_code == 401
-
 
 def test_authorized_login(app, user_obj):
     """Test successful authentication against scout database"""
