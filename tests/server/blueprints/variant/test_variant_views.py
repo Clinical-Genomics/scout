@@ -3,9 +3,6 @@ from flask import url_for, current_app
 from flask_login import current_user
 from urllib.parse import urlencode
 from scout.server.extensions import store
-import logging
-
-LOG = logging.getLogger(__name__)
 
 
 def test_acmg(app):
@@ -59,7 +56,6 @@ def test_variant_data_is_None(mocker, app, institute_obj, case_obj, variant_obj)
                 variant_id=variant_obj["_id"],
             )
         )
-        LOG.debug("RESP: {}".format(resp.status_code))
         # THEN it should return a HTML 302, FOUND
         assert resp.status_code == 302
 

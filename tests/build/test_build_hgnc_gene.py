@@ -53,8 +53,7 @@ def test_build_exon_TypeError(test_gene, key):
         build_hgnc_gene(test_gene)
 
 
-
-# TODO: 'ensembl_gene_id' or 'ensembl_id' both seem to be used!?
+# TODO: are 'ensembl_gene_id' and 'ensembl_id' the same thing? -both seem to be used!
 @pytest.mark.parametrize("key", ['hgnc_id', 'hgnc_symbol', 'chromosome', 'start', 'end'])
 def test_build_hgnc_gene_KeyError(test_gene, key):
     ## GIVEN a dictionary with exon information

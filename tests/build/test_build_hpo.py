@@ -20,6 +20,3 @@ def test_build_hpo_term_KeyError(adapter, test_hpo_info, key):
     ## THEN calling build_hgnc_gene() will raise KeyError
     with pytest.raises(KeyError):
         build_hpo_term(test_hpo_info)
-
-
-
