@@ -73,7 +73,9 @@ class LoqusDB:
     def version_check(self):
         """Check if a compatible version is used"""
         if not self.version >= 2.5:
-            LOG.info("Please update your loqusdb version to >=2.5 (currenctly: {})".format(self.version))
+            LOG.info(
+                "Please update your loqusdb version to >=2.5 (currenctly: {})".format(self.version)
+            )
             raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
 
     @staticmethod

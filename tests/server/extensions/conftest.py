@@ -10,7 +10,6 @@ def fixture_loqus_exe():
     return "a/path/to/loqusdb"
 
 
-
 @pytest.fixture(name="loqus_version")
 def fixture_loqus_version():
     """Return a loqus version"""
@@ -21,6 +20,7 @@ def fixture_loqus_version():
 def fixture_loqus_config():
     """Return the path to a loqus config"""
     return "configs/loqus-config.yaml"
+
 
 # TODO: is this used?
 @pytest.fixture(name="app_config")
@@ -36,23 +36,25 @@ def fixture_app_config(loqus_exe, loqus_config, loqus_version):
 
     return _configs
 
+
 # TODO: is this used?
 @pytest.fixture(name="app_config_multiple")
 def fixture_app_config_multiple(loqus_exe, loqus_config, loqus_version):
     """Return a dictionary with loqus configs"""
     _configs = {
-        "LOQUSDB_SETTINGS": [{
-            "id": 'test_a',
-            "binary_path": loqus_exe,
-            "version": loqus_version,
-            "config_path": loqus_config,
-        },
-        {
-            "id": 'test_b',
-            "binary_path": loqus_exe,
-            "version": loqus_version,
-            "config_path": loqus_config,
-        }
+        "LOQUSDB_SETTINGS": [
+            {
+                "id": "test_a",
+                "binary_path": loqus_exe,
+                "version": loqus_version,
+                "config_path": loqus_config,
+            },
+            {
+                "id": "test_b",
+                "binary_path": loqus_exe,
+                "version": loqus_version,
+                "config_path": loqus_config,
+            },
         ]
     }
 
