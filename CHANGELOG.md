@@ -6,7 +6,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Highlight causative variants in the variants list
 ### Fixed
+- Report pages redirect to login instead of crashing when session expires
 ### Changed
 
 
