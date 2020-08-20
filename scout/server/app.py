@@ -6,6 +6,7 @@ from flask import Flask, current_app, redirect, request, url_for
 from flask_babel import Babel
 from flask_login import current_user
 from flaskext.markdown import Markdown
+from flask_wtf.csrf import CSRFProtect
 
 from scout.utils.matchmaker import mme_nodes
 
@@ -96,6 +97,7 @@ def configure_extensions(app):
     extensions.login_manager.init_app(app)
     extensions.mail.init_app(app)
 
+    CSRFProtect(app)
     Markdown(app)
 
     if app.config.get("SQLALCHEMY_DATABASE_URI"):

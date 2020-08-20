@@ -273,11 +273,13 @@ def cancer_variants(institute_id, case_name):
             store, institute_obj, case_obj, user_obj, category, request.form
         )
 
+        flash(f"submitted info was {request.form}")
+
         if form.validate_on_submit() is False:
             # Flash a message with errors
             for field, err_list in form.errors.items():
                 for err in err_list:
-                    flash(f"Content of field '{field}' has not a valid format", "warning")
+                    flash(f"Content of field '{err_list}' has not a valid format", "warning")
             # And do not submit the form
             return redirect(
                 url_for(
