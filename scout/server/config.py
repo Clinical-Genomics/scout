@@ -17,30 +17,9 @@ MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 
 # connection details for LoqusDB MongoDB database
-#
-# 1. One LoqusDB
-LOQUSDB_SETTINGS = dict(
- binary_path="/miniconda3/envs/loqus2.5/bin/loqusdb")
+# LOQUSDB_SETTINGS = dict(
+# binary_path="path/to/loqusdb",
 # config_path=<path/to/loqus/config>
-#
-# 2. LoqusDB configurable per Institute
-# LOQUSDB_SETTINGS = [
-#     {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "id": "default"},
-#     {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "id": "hejhej"},
-#     {"binary_path": "/bin/yetanother/loqusdb", "id": "Mayo"},
-# ]
-
-
-
-# Suggestion from github by MM:
-# LOQUSDB_SETTING = [
-#     {"binary_path": "loqusdb", "config_path": "rare_disease_37.yml", "name": "default"},
-#     {"binary_path": "loqusdb", "config_path": "rare_disease_38.yml", "name": "rd38"},
-#     {"binary_path": "loqusdb", "config_path": "melanoma_37.yml", "name": "melanoma37"},
-# ]
-
-
-
 # )
 # If not on localhost 27017 one needs to provide uri with
 # connection details for LoqusDB MongoDB database

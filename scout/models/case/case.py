@@ -6,13 +6,44 @@ from datetime import datetime
 
 from . import STATUS
 from .individual import Individual
-from .individual import Individualsdfdsfds
 
 from scout.models import PhenotypeTerm
 from scout.models.panel import GenePanel
 from scout.constants import ANALYSIS_TYPES
 
 logger = logging.getLogger(__name__)
+
+individual = dict(
+    individual_id=str,  # required
+    display_name=str,
+    sex=str,
+    phenotype=int,
+    father=str,  # Individual id of father
+    mother=str,  # Individual id of mother
+    capture_kits=list,  # List of names of capture kits
+    bam_file=str,  # Path to bam file
+    rhocall_bed=str,  # Path to bed file
+    rhocall_wig=str,  # Path to wig file
+    tiddit_coverage_wig=str,  # Path to wig file
+    upd_regions_bed=str,  # Path to bed file
+    upd_sites_bed=str,  # Path to bed file
+    vcf2cytosure=str,  # Path to CGH file
+    analysis_type=str,  # choices=ANALYSIS_TYPES
+    confirmed_sex=bool,  # True or False. None if no check has been done
+    confirmed_parent=bool,
+    is_sma=bool,  # True / False if SMA status determined - None if not done.
+    is_sma_carrier=bool,  # True / False if SMA carriership determined - None if not done.
+    smn1_cn=int,  # CopyNumber
+    smn2_cn=int,  # CopyNumber
+    smn2delta78_cn=int,  # CopyNumber
+    smn_27134_cn=int,  # CopyNumber
+    predicted_ancestry=str,  # one of AFR AMR EAS EUR SAS UNKNOWN
+    tumor_type=str,
+    tmb=str,
+    msi=str,
+    tumor_purity=float,
+    tissue_type=str,
+)
 
 case = dict(
     # This is a string with the id for the family:
@@ -59,37 +90,4 @@ case = dict(
     has_strvariants=bool,  # default=False
     is_migrated=bool,  # default=False
     multiqc=str,  # path to multiqc report
-)
-
-
-individual = dict(
-    individual_id=str,  # required
-    display_name=str,
-    sex=str,
-    phenotype=int,
-    father=str,  # Individual id of father
-    mother=str,  # Individual id of mother
-    capture_kits=list,  # List of names of capture kits
-    bam_file=str,  # Path to bam file
-    rhocall_bed=str,  # Path to bed file
-    rhocall_wig=str,  # Path to wig file
-    tiddit_coverage_wig=str,  # Path to wig file
-    upd_regions_bed=str,  # Path to bed file
-    upd_sites_bed=str,  # Path to bed file
-    vcf2cytosure=str,  # Path to CGH file
-    analysis_type=str,  # choices=ANALYSIS_TYPES
-    confirmed_sex=bool,  # True or False. None if no check has been done
-    confirmed_parent=bool,
-    is_sma=bool,  # True / False if SMA status determined - None if not done.
-    is_sma_carrier=bool,  # True / False if SMA carriership determined - None if not done.
-    smn1_cn=int,  # CopyNumber
-    smn2_cn=int,  # CopyNumber
-    smn2delta78_cn=int,  # CopyNumber
-    smn_27134_cn=int,  # CopyNumber
-    predicted_ancestry=str,  # one of AFR AMR EAS EUR SAS UNKNOWN
-    tumor_type=str,
-    tmb=str,
-    msi=str,
-    tumor_purity=float,
-    tissue_type=str,
 )

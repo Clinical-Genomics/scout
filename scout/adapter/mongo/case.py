@@ -570,8 +570,6 @@ class CaseHandler(object):
             if case_obj["status"] in ["active", "archived"]:
                 case_obj["status"] = "inactive"
 
-            # XXX:
-
             self.update_case(case_obj)
 
             # update Sanger status for the new inserted variants
@@ -635,9 +633,9 @@ class CaseHandler(object):
         updated_at = datetime.datetime.now()
         if keep_date:
             updated_at = old_case["updated_at"]
+
         # collect already available info from individuals
         old_individuals = old_case.get("individuals")
-
         for ind in case_obj.get("individuals"):
             for old_ind in old_individuals:
                 # if the same individual is present in new case and old case
@@ -648,8 +646,6 @@ class CaseHandler(object):
                     ind["age"] = old_ind.get("age")
                 if ind.get("tissue_type") is None:
                     ind["tissue_type"] = old_ind.get("tissue_type")
-        # import pdb; pdb.set_trace()
-        LOG.debug("case_coll: {}".format(self.case_collection))
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
             {
