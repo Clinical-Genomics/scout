@@ -57,26 +57,28 @@
         </div>
       </form>
       <div class="card mt-3">
-        <table class="table table-hover table-bordered">
+        <table class="table table-hover table-bordered" style="table-layout: fixed">
           <thead>
             <tr>
-              <th style="width:4%" title="Rank position">Rank </th>
-              <th style="width:30%" title="Dismiss Variant">Dismiss variant</th>
-              <th style="width:4%" title="Rank score">Score</th>
+              <th style="width:6%" title="Rank position">Rank </th>
+              <th style="width:18%" title="Dismiss Variant">Dismiss variant</th>
+              <th style="width:5%" title="Rank score">Score</th>
               <th style="width:4%" title="Chromosome">Chr.</th>
               <th style="width:8%" title="HGNC symbols">Gene</th>
               <th style="width:4%" title="Poulation frequency">PopFreq</th>
-              <th style="width:4%" title="CADD score">CADD</th>
+              <th style="width:5%" title="CADD score">CADD</th>
               <th style="width:8%" title="Gene region annotation">Gene annotation</th>
-              <th style="width:14%" title="Functional annotation">Func. annotation</th>
+              <th style="width:12%" title="Functional annotation">Func. annotation</th>
               <th style="width:12%" title="Inheritance models">Inheritance model</th>
-              <th style="width:4%" title="Overlapping">Overlapping</th>
+              <th style="width:6%" title="Overlapping">Overlapping</th>
             </tr>
           </thead>
           <tbody>
             {% for variant in variants %}
               {% if variant.dismiss_variant %}
                 <tr class="dismiss">
+              {% elif variant._id in case.causatives %}
+                <tr class="causative">
               {% else %}
                 <tr>
               {% endif %}
