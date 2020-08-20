@@ -26,6 +26,7 @@ def test_gene():
         # The primary symbol, required
         "hgnc_symbol": "test",
         "ensembl_id": "ensembl1",  # required
+        "ensembl_gene_id": "ensembl1",  # required
         "build": "37",  # '37' or '38', defaults to '37', required
         "chromosome": 1,  # required
         "start": 10,  # required
@@ -41,3 +42,41 @@ def test_gene():
         "vega_id": "1",
     }
     return gene
+
+
+@pytest.fixture
+def test_transcript():
+    transcript ={
+        'chrom': '1',
+        'transcript_start': 1167629,
+        'transcript_end': 1170421,
+        'mrna': {'NM_080605'},
+        'mrna_predicted': set(),
+        'nc_rna': set(),
+        'ensembl_gene_id': 'ENSG00000176022',
+        'ensembl_transcript_id': 'ENST00000379198',
+        'hgnc_id': 17978,
+        'primary_transcripts': {'NM_080605'}
+    }
+    return transcript
+
+
+@pytest.fixture
+def test_disease():
+    disease_info = {
+        "mim_number": 615349,
+        "description": "EHLERS-DANLOS SYNDROME, PROGEROID TYPE, 2",
+        "hgnc_symbols": set(["B3GALT6"]),
+        "inheritance": set(["AR"]),
+    }
+    return disease_info
+
+
+@pytest.fixture
+def test_hpo_info():
+    hpo_info = {
+        "hpo_id": "HP:0000878",
+        "description": "11 pairs of ribs",
+        "genes": [1, 2],
+    }
+    return hpo_info

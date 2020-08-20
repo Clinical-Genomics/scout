@@ -9,15 +9,40 @@ def test_build_exon(parsed_exon):
     exon_obj = build_exon(parsed_exon)
 
     ## THEN assert that a dictionary is returned
-
     assert isinstance(exon_obj, dict)
 
 
-def test_build_exon_no_hgnc(parsed_exon):
+@pytest.mark.parametrize("key", ["hgnc_id", "start", "end", "rank", "strand", "hgnc_id"])
+def test_build_exon_TypeError(parsed_exon, key):
     ## GIVEN a dictionary with exon information
-    parsed_exon.pop("hgnc_id")
 
-    ## WHEN building a exon object
+   # WHEN setting key to None
+     parsed_exon[key] = None
+     # THEN calling build_transcript() will raise TypeError
+     with pytest.raises(TypeError):
+         build_exon(parsed_exon)
+
+
+@pytest.mark.parametrize(
+    "key",
+    [
+        "hgnc_id",
+        "start",
+        "end",
+        "rank",
+        "strand",
+        "hgnc_id",
+        "transcript",
+        "exon_id",
+        "chrom",
+        "ens_exon_id",
+    ],
+)
+def test_build_exon_KeyError(parsed_exon, key):
+    ## GIVEN a dictionary with exon information
+
+    # WHEN key is deleted from dict
+    parsed_exon.pop(key)
+    # THEN calling build_transcript() will raise KeyError
     with pytest.raises(KeyError):
-        ## THEN assert that a exception is raised since there is no hgnc_id
-        exon_obj = build_exon(parsed_exon)
+        build_exon(parsed_exon)

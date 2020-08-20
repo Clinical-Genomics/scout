@@ -1,5 +1,5 @@
 import datetime
-
+import pytest
 from scout.build.user import build_user
 
 
@@ -15,3 +15,14 @@ def test_build_user(parsed_user):
     assert user_obj["name"] == user_obj["name"]
 
     assert isinstance(user_obj["created_at"], datetime.datetime)
+
+
+@pytest.mark.parametrize("key", ['email', 'name'])    
+def test_build_user_KeyError(parsed_user, key):
+    ## GIVEN a dictionary with hpo information
+
+    ## WHEN deleteing key
+    parsed_user.pop(key)
+    ## THEN calling build_hgnc_gene() will raise KeyError
+    with pytest.raises(KeyError):
+        build_user(parsed_user)
