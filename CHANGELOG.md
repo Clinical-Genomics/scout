@@ -9,7 +9,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Highlight causative variants in the variants list
 ### Fixed
 - Report pages redirect to login instead of crashing when session expires
+- Variants filter loading in cancer variants page
 ### Changed
+- Highlight color on normal STRs in the variants table from green to blue
 
 
 ## [4.20]
@@ -29,7 +31,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Genome build-aware cytobands coordinates
 - Styling update of the Matchmaker card
 - Select search type in case search form
-- Highlight color on normal STRs in the variants table from green to blue
 
 
 ## [4.19]
