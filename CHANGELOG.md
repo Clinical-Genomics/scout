@@ -18,7 +18,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Search case by HPO terms
 - Dismiss variant column in the variants tables
 - Black and pre-commit packages to dev requirements
-- Highlight on causative variants in the variants tables
 
 ### Fixed
 - Bug occurring when rerun is requested twice
