@@ -19,7 +19,7 @@ def test_build_user(parsed_user):
 
 @pytest.mark.parametrize("key", ['email', 'name'])    
 def test_build_user_missing_key(parsed_user, key):
-    ## GIVEN a parsed_used(dict) containing user information
+    ## GIVEN a parsed_user (dict) containing user information
 
     ## WHEN deleting key
     parsed_user.pop(key)
