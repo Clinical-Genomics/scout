@@ -146,6 +146,7 @@ def variants(institute_id, case_name):
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
+    flash(form.data)
     variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
 
     # Setup variant count session with variant count by category
