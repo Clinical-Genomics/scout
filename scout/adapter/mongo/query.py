@@ -167,8 +167,7 @@ class QueryHandler(object):
 
             elif criterion in ["hgnc_symbols", "gene_panels"]:
                 gene_query = self.gene_filter(query, mongo_query)
-                if len(gene_query) > 0:
-                    mongo_query["hgnc_symbols"] = {"$in": gene_query}
+                mongo_query["hgnc_symbols"] = {"$in": gene_query}
 
             elif criterion == "chrom" and query.get("chrom"):  # filter by coordinates
                 coordinate_query = None
