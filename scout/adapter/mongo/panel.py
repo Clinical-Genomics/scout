@@ -321,7 +321,7 @@ class PanelHandler:
         except InvalidId:  # Occurs when clinical filter panel is used
             panel_obj = self.gene_panel(panel_id)
 
-        if panel_obj:
+        if panel_obj is not None:
             gene_list = [gene_obj.get("symbol", "") for gene_obj in panel_obj.get("genes", [])]
 
         return gene_list
