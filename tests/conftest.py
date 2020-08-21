@@ -112,20 +112,21 @@ def unparsed_transcript(request):
     )
     return unparsed_transcript
 
+
 @pytest.fixture
 def transcript_info():
     """Get a dictionary with parsed transcript information"""
-    transcript ={
-        'chrom': '1',
-        'ensembl_gene_id': 'ENSG00000176022',
-        'ensembl_transcript_id': 'ENST00000379198',
-        'hgnc_id': 17978,
-        'mrna': {'NM_080605'},
-        'mrna_predicted': set(),
-        'nc_rna': set(),
-        'primary_transcripts': {'NM_080605'},
-        'transcript_end': 1170421,
-        'transcript_start': 1167629
+    transcript = {
+        "chrom": "1",
+        "ensembl_gene_id": "ENSG00000176022",
+        "ensembl_transcript_id": "ENST00000379198",
+        "hgnc_id": 17978,
+        "mrna": {"NM_080605"},
+        "mrna_predicted": set(),
+        "nc_rna": set(),
+        "primary_transcripts": {"NM_080605"},
+        "transcript_end": 1170421,
+        "transcript_start": 1167629,
     }
     return transcript
 
