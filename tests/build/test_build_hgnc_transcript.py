@@ -27,11 +27,11 @@ def test_build_hgnc_transcripts_missing_key(transcript_info, key):
 
 
 @pytest.mark.parametrize("key", ['hgnc_id', 'transcript_start', 'transcript_end'])
-def test_build_hgnc_transcript_inappropriate_type(test_transcript, key):
+def test_build_hgnc_transcript_inappropriate_type(transcript_info, key):
     ## GIVEN a dictionary with transcript information
 
     # WHEN setting key to None
-    test_transcript[key] = None
+    transcript_info[key] = None
     # THEN calling build_transcript() will raise TypeError
     with pytest.raises(TypeError):
-        build_transcript(test_transcript)
+        build_transcript(transcript_info)
