@@ -74,7 +74,7 @@ def create_app(config_file=None, config=None):
     def check_user():
         if not app.config.get("LOGIN_DISABLED") and request.endpoint:
             # check if the endpoint requires authentication
-            static_endpoint = "static" in request.endpoint or "report" in request.endpoint
+            static_endpoint = "static" in request.endpoint
             public_endpoint = getattr(app.view_functions[request.endpoint], "is_public", False)
             relevant_endpoint = not (static_endpoint or public_endpoint)
             # if endpoint requires auth, check if user is authenticated

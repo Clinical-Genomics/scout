@@ -6,14 +6,25 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Highlight causative variants in the variants list
+### Fixed
+- Report pages redirect to login instead of crashing when session expires
+- Variants filter loading in cancer variants page
+### Changed
+- Highlight color on normal STRs in the variants table from green to blue
+
+
+## [4.20]
+### Added
 - Display number of filtered variants vs number of total variants in variants page
 - Search case by HPO terms
-- Dismiss variant column in the variant tables.
+- Dismiss variant column in the variants tables
 - Black and pre-commit packages to dev requirements
 
 ### Fixed
 - Bug occurring when rerun is requested twice
 - Peddy info fields in the demo config file
+- Added load config safety check for multiple alignment files for one individual
 
 ### Changed
 - Updated the documentation on how to create a new software release
