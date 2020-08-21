@@ -34,7 +34,7 @@ def test_build_hgnc_gene():
 
 @pytest.mark.parametrize("key", ['hgnc_id'])
 def test_build_hgnc_gene_inappropriate_value(test_gene, key):
-    ## GIVEN a dictionary with exon information
+    ## GIVEN a dictionary with gene information
 
     # WHEN setting key to None
     test_gene[key] = "cause_error"
