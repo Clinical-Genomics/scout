@@ -317,9 +317,10 @@ class PanelHandler:
         gene_list = []
         panel_obj = None
         try:
-            panel_obj = self.panel(panel_id)
+            panel_obj = self.panel(panel_id) or self.gene_panel(panel_id)
         except InvalidId:  # Occurs when clinical filter panel is used
             panel_obj = self.gene_panel(panel_id)
+
         if panel_obj:
             gene_list = [gene_obj.get("symbol", "") for gene_obj in panel_obj.get("genes", [])]
 
