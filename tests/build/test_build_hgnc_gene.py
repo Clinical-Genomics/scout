@@ -36,7 +36,7 @@ def test_build_hgnc_gene():
 def test_build_hgnc_gene_inappropriate_value(test_gene, key):
     ## GIVEN a dictionary with gene information
 
-    # WHEN setting key to None
+    # WHEN setting key to a non-valid value
     test_gene[key] = "cause_error"
     # THEN calling build_hgnc_gene() will raise ValueError
     with pytest.raises(ValueError):
