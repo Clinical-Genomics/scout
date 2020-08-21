@@ -98,19 +98,35 @@ def gene_obj():
 
 
 @pytest.fixture
-def transcript_info(request):
-    """Get a dictionary with parsed transcript information"""
-    transcript = dict(
+def unparsed_transcript(request):
+    """Get a dictionary with *unparsed* transcript information"""
+    unparsed_transcript = dict(
         chrom="1",
+        end=1170421,
         ens_gene_id="ENSG00000176022",
         ens_transcript_id="ENST00000379198",
-        start=1167629,
-        end=1170421,
         refseq_mrna="NM_080605",
         refseq_mrna_pred="",
         refseq_ncrna="",
+        start=1167629,
     )
+    return unparsed_transcript
 
+@pytest.fixture
+def transcript_info():
+    """Get a dictionary with parsed transcript information"""
+    transcript ={
+        'chrom': '1',
+        'ensembl_gene_id': 'ENSG00000176022',
+        'ensembl_transcript_id': 'ENST00000379198',
+        'hgnc_id': 17978,
+        'mrna': {'NM_080605'},
+        'mrna_predicted': set(),
+        'nc_rna': set(),
+        'primary_transcripts': {'NM_080605'},
+        'transcript_end': 1170421,
+        'transcript_start': 1167629
+    }
     return transcript
 
 

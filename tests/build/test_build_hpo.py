@@ -12,11 +12,11 @@ def test_build_hpo_term(adapter, test_hpo_info):
 
 
 @pytest.mark.parametrize("key", ['hpo_id', 'description'])    
-def test_build_hpo_term_KeyError(adapter, test_hpo_info, key):
+def test_build_hpo_term_missing_key(adapter, test_hpo_info, key):
     ## GIVEN a dictionary with hpo information
 
     ## WHEN deleteing key
     test_hpo_info.pop(key)
-    ## THEN calling build_hgnc_gene() will raise KeyError
+    ## THEN calling build_hpo_term() will raise KeyError
     with pytest.raises(KeyError):
         build_hpo_term(test_hpo_info)

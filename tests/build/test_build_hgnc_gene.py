@@ -33,29 +33,29 @@ def test_build_hgnc_gene():
 
 
 @pytest.mark.parametrize("key", ['hgnc_id'])
-def test_build_hgnc_gene_ValueError(test_gene, key):
+def test_build_hgnc_gene_inappropriate_value(test_gene, key):
     ## GIVEN a dictionary with exon information
 
     # WHEN setting key to None
     test_gene[key] = "cause_error"
-    # THEN calling build_transcript() will raise TypeError
+    # THEN calling build_hgnc_gene() will raise ValueError
     with pytest.raises(ValueError):
         build_hgnc_gene(test_gene)
 
 @pytest.mark.parametrize('key', ['start', 'end'])
-def test_build_exon_TypeError(test_gene, key):
+def test_build_hgnc_gene_inappropriate_type(test_gene, key):
     ## GIVEN a dictionary with exon information
 
     # WHEN setting key to None
     test_gene[key] = None
-    # THEN calling build_transcript() will raise TypeError
+    # THEN calling build_hgnc_gene() will raise TypeError
     with pytest.raises(TypeError):
         build_hgnc_gene(test_gene)
 
 
 # TODO: are 'ensembl_gene_id' and 'ensembl_id' the same thing? -both seem to be used!
 @pytest.mark.parametrize("key", ['hgnc_id', 'hgnc_symbol', 'chromosome', 'start', 'end'])
-def test_build_hgnc_gene_KeyError(test_gene, key):
+def test_build_hgnc_gene_missing_key(test_gene, key):
     ## GIVEN a dictionary with exon information
 
     # WHEN deleteing key

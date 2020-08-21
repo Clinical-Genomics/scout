@@ -21,20 +21,20 @@ def test_build_disease_term(adapter, test_disease):
 
 
 @pytest.mark.parametrize("key", ['mim_number', 'description'])
-def test_build_disease_KeyError(mocker, key, test_disease):
+def test_build_disease_missing_key(key, test_disease):
     ## GIVEN a dictionary with disease information and genes
     alias_genes = {}
     alias_genes["B3GALT6"] = {"true": 17978, "ids": [17978]}
 
     # WHEN deleteing key
     test_disease.pop(key)
-    # THEN calling build_hgnc_gene() will raise KeyError
+    # THEN calling build_disease_term() will raise KeyError
     with pytest.raises(KeyError):
         build_disease_term(test_disease, alias_genes)
 
 
 @pytest.mark.parametrize("key", ['mim_number'])
-def test_build_disease_ValueError(mocker, key, test_disease):
+def test_build_disease_inappropriate_value(key, test_disease):
     alias_genes = {}
     alias_genes["B3GALT6"] = {"true": 17978, "ids": [17978]}
     test_disease[key] = "not_an_int"

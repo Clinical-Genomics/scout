@@ -18,11 +18,11 @@ def test_build_user(parsed_user):
 
 
 @pytest.mark.parametrize("key", ['email', 'name'])    
-def test_build_user_KeyError(parsed_user, key):
-    ## GIVEN a dictionary with hpo information
+def test_build_user_missing_key(parsed_user, key):
+    ## GIVEN a parsed_used(dict) containing user information
 
-    ## WHEN deleteing key
+    ## WHEN deleting key
     parsed_user.pop(key)
-    ## THEN calling build_hgnc_gene() will raise KeyError
+    ## THEN calling build_user() will raise KeyError
     with pytest.raises(KeyError):
         build_user(parsed_user)

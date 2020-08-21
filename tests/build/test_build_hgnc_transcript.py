@@ -16,19 +16,19 @@ def test_build_hgnc_transcripts(parsed_transcripts):
 
 
 @pytest.mark.parametrize("key", ['hgnc_id', 'transcript_start', 'transcript_end', 'chrom', 'ensembl_transcript_id'])
-def test_build_hgnc_transcripts_KeyError(test_transcript, key):
-    ## GIVEN a dictionary with exon information
+def test_build_hgnc_transcripts_missing_key(transcript_info, key):
+    ## GIVEN a dictionary with transcript information
 
     # WHEN key is deleted from dict
-    test_transcript.pop(key)
+    transcript_info.pop(key)
     # THEN calling build_transcript() will raise KeyError
     with pytest.raises(KeyError):
-        build_transcript(test_transcript)
+        build_transcript(transcript_info)
 
 
 @pytest.mark.parametrize("key", ['hgnc_id', 'transcript_start', 'transcript_end'])
-def test_build_hgnc_transcript_TypeError(test_transcript, key):
-    ## GIVEN a dictionary with exon information
+def test_build_hgnc_transcript_inappropriate_type(test_transcript, key):
+    ## GIVEN a dictionary with transcript information
 
     # WHEN setting key to None
     test_transcript[key] = None
