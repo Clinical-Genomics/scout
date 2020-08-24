@@ -161,7 +161,7 @@ class PanelHandler:
             Args:
                 panel_obj(dict)
         """
-        panel_name = panel_obj["panel_name"]
+        panel_name = panel_obj["panel_name"].strip()
         panel_version = panel_obj["version"]
         display_name = panel_obj.get("display_name", panel_name)
 
