@@ -28,10 +28,10 @@ def test_build_panel(institute_database, test_gene):
     adapter.load_hgnc_gene(test_gene)
 
     panel_info = {
-        "panel_id": "panel1",
+        "panel_id": " panel1",
         "institute": "cust000",
         "date": datetime.now(),
-        "display_name": "first panel",
+        "display_name": "first panel ",
         "description": "first panel description",
         "genes": [{"hgnc_id": 1}],
         "version": 1.0,
@@ -41,6 +41,8 @@ def test_build_panel(institute_database, test_gene):
 
     ## THEN assert that the panel was given the right attributes
     assert panel_obj["institute"] == panel_info["institute"]
+    assert panel_obj["panel_name"] == "panel1"
+    assert panel_obj["display_name"] == "first panel"
     assert len(panel_info["genes"]) == len(panel_obj["genes"])
 
 

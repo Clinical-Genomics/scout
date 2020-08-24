@@ -118,8 +118,11 @@ def build_panel(panel_info, adapter):
 
     """
 
-    panel_name = panel_info.get("panel_id", panel_info.get("panel_name")).strip()
-    if not panel_name:
+    panel_name = panel_info.get("panel_id", panel_info.get("panel_name"))
+
+    if panel_name:
+        panel_name = panel_name.strip()
+    else:
         raise KeyError("Panel has to have a id")
 
     panel_obj = dict(panel_name=panel_name)
@@ -144,7 +147,9 @@ def build_panel(panel_info, adapter):
         raise KeyError("Panel has to have a date")
 
     panel_obj["maintainer"] = panel_info.get("maintainer", [])
-    panel_obj["display_name"] = panel_info.get("display_name", panel_obj["panel_name"]).strip()
+    panel_obj["display_name"] = panel_info.get("display_name", panel_obj["panel_name"])
+    if panel_obj["display_name"]:
+        panel_obj["display_name"] = panel_obj["display_name"].strip()
     panel_obj["description"] = panel_info.get("description")
 
     gene_objs = []
