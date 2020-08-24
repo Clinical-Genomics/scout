@@ -45,7 +45,9 @@ class ManagedVariantHandler(object):
         try:
             result = self.managed_variant_collection.insert_one(managed_variant_obj)
         except DuplicateKeyError as err:
-            check_variant_obj = self.find_managed_variant(managed_variant_obj["variant_id"],)
+            check_variant_obj = self.find_managed_variant(
+                managed_variant_obj["managed_variant_id"],
+            )
             if check_variant_obj:
                 LOG.debug("Variant %s already exists in database", check_variant_obj["display_id"])
 
@@ -75,7 +77,7 @@ class ManagedVariantHandler(object):
 
         return managed_variant_obj
 
-    def find_managed_variant(self, variant_id):
+    def find_managed_variant(self, managed_variant_id):
         """ Fetch eg search for a managed variant.
 
             Arguments:
@@ -86,7 +88,9 @@ class ManagedVariantHandler(object):
             Returns:
                 ManagedVariant
         """
-        managed_variant = self.managed_variant_collection.find_one({"variant_id": variant_id})
+        managed_variant = self.managed_variant_collection.find_one(
+            {"managed_variant_id": managed_variant_id}
+        )
 
         return managed_variant
 
@@ -108,7 +112,7 @@ class ManagedVariantHandler(object):
 
         return managed_variants_res
 
-    def delete_managed_variant(self, variant_id):
+    def delete_managed_variant(self, managed_variant_id):
         """ Delete a managed variant of known id.
 
         Arguments:
@@ -118,12 +122,18 @@ class ManagedVariantHandler(object):
             ManagedVariant
         """
 
-        managed_variant_obj = self.managed_variant_collection.find_one({"variant_id": variant_id})
+        managed_variant_obj = self.managed_variant_collection.find_one(
+            {"managed_variant_id": managed_variant_id}
+        )
         if not managed_variant_obj:
-            LOG.info("FAILED deleting managed variant: variant_id %s not found.", variant_id)
+            LOG.info(
+                "FAILED deleting managed variant: variant_id %s not found.", managed_variant_id
+            )
         else:
             LOG.info("Deleting managed variant %s.", managed_variant_obj.get("display_name"))
 
-        result = self.managed_variant_collection.find_one_and_delete({"variant_id": variant_id})
+        result = self.managed_variant_collection.find_one_and_delete(
+            {"managed_variant_id": managed_variant_id}
+        )
 
         return result

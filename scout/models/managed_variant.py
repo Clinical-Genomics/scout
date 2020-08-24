@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
+from scout.utils.md5 import generate_md5_key
 
 """ Managed variant
 
@@ -58,7 +59,7 @@ class ManagedVariant(dict):
         self["alternative"] = alternative
         self["build"] = build
 
-        self["variant_id"] = "_".join(
+        self["managed_variant_id"] = "_".join(
             [
                 str(part)
                 for part in (
@@ -74,6 +75,9 @@ class ManagedVariant(dict):
         )
         self["display_id"] = "_".join(
             [str(part) for part in (chromosome, position, reference, alternative)]
+        )
+        self["variant_id"] = generate_md5_key(
+            [str(part) for part in (chromosome, position, reference, alternative, "clinical")]
         )
         self["date"] = date or datetime.now()
 
