@@ -27,6 +27,7 @@ def test_build_panel(institute_database, test_gene):
     adapter = institute_database
     adapter.load_hgnc_gene(test_gene)
 
+    # panel_id and display_name contain leading and trailing whitespaces to test that the spaces are removed
     panel_info = {
         "panel_id": " panel1",
         "institute": "cust000",
@@ -39,7 +40,7 @@ def test_build_panel(institute_database, test_gene):
     ## WHEN building a gene panel
     panel_obj = build_panel(panel_info, adapter)
 
-    ## THEN assert that the panel was given the right attributes
+    ## THEN assert that the panel was given the right attributes and that the leading and trailing spaces were removed
     assert panel_obj["institute"] == panel_info["institute"]
     assert panel_obj["panel_name"] == "panel1"
     assert panel_obj["display_name"] == "first panel"
