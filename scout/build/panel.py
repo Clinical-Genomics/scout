@@ -44,9 +44,7 @@ def build_gene(gene_info, adapter):
             raise KeyError()
     except KeyError as err:
         raise KeyError(
-            "Gene {0} is missing hgnc id. Panel genes has to have hgnc_id".format(
-                symbol
-            )
+            "Gene {0} is missing hgnc id. Panel genes has to have hgnc_id".format(symbol)
         )
 
     hgnc_gene = adapter.hgnc_gene(hgnc_id)
@@ -58,8 +56,7 @@ def build_gene(gene_info, adapter):
     gene_obj["symbol"] = hgnc_gene["hgnc_symbol"]
     if symbol != gene_obj["symbol"]:
         LOG.warning(
-            "Symbol in database does not correspond to symbol in panel file for gene %s",
-            hgnc_id,
+            "Symbol in database does not correspond to symbol in panel file for gene %s", hgnc_id,
         )
         LOG.warning(
             "Using symbol %s for gene %s, instead of %s"
@@ -121,7 +118,7 @@ def build_panel(panel_info, adapter):
 
     """
 
-    panel_name = panel_info.get("panel_id", panel_info.get("panel_name"))
+    panel_name = panel_info.get("panel_id", panel_info.get("panel_name")).strip()
     if not panel_name:
         raise KeyError("Panel has to have a id")
 
@@ -147,7 +144,7 @@ def build_panel(panel_info, adapter):
         raise KeyError("Panel has to have a date")
 
     panel_obj["maintainer"] = panel_info.get("maintainer", [])
-    panel_obj["display_name"] = panel_info.get("display_name", panel_obj["panel_name"])
+    panel_obj["display_name"] = panel_info.get("display_name", panel_obj["panel_name"]).strip()
     panel_obj["description"] = panel_info.get("description")
 
     gene_objs = []
@@ -161,9 +158,7 @@ def build_panel(panel_info, adapter):
             fail = True
 
     if fail:
-        raise IntegrityError(
-            "Some genes did not exist in database. Please see log messages."
-        )
+        raise IntegrityError("Some genes did not exist in database. Please see log messages.")
 
     panel_obj["genes"] = gene_objs
 
