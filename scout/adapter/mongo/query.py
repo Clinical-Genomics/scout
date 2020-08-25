@@ -139,7 +139,6 @@ class QueryHandler(object):
         gene_query = None
         coordinate_query = None
 
-        LOG.error(f"QUERY BEFORE:{query}")
         ##### Base query params
 
         # set up the fundamental query params: case_id, category, type and
@@ -267,7 +266,7 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
-        LOG.error("mongo query: %s", mongo_query)
+        LOG.info("mongo query: %s", mongo_query)
         return mongo_query
 
     def clinsig_query(self, query, mongo_query):
