@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Support to configure on LoqusDB per institute
 - Highlight causative variants in the variants list
 - Add tests. Mostly regarding building internal datatypes.
 - Remove leading and trailing whitespaces from panel_name and display_name when panel is created
