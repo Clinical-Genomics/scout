@@ -79,11 +79,11 @@ def login():
 
     if request.args.get("email"):  # log in against Scout database
         user_mail = request.args.get("email")
-        LOG.info("Validating user {} against Scout database".format(user_id))
+        LOG.info("Validating user email {} against Scout database".format(user_mail))
 
     user_obj = store.user(email=user_mail, user_id=user_id)
     if user_obj is None:
-        flash("User not whitelisted", "warning")
+        flash("User not found", "warning")
         return redirect(url_for("public.index"))
 
     user_obj["accessed_at"] = datetime.now()
