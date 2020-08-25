@@ -63,7 +63,7 @@ def user(mail):
             link = url_for(
                 "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
             )
-            if adapter.unassign(institute_obj, case_obj, user_obj, link, True):
+            if adapter.unassign(institute_obj, case_obj, user_obj, link, False):
                 updated_cases += 1
     click.echo(f"User was removed as assignee from {updated_cases} case(s).")
 
