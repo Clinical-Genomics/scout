@@ -77,9 +77,7 @@ def create_app(config_file=None, config=None):
         if not app.config.get("LOGIN_DISABLED") and request.endpoint:
             # check if the endpoint requires authentication
             static_endpoint = "static" in request.endpoint
-            public_endpoint = getattr(
-                app.view_functions[request.endpoint], "is_public", False
-            )
+            public_endpoint = getattr(app.view_functions[request.endpoint], "is_public", False)
             relevant_endpoint = not (static_endpoint or public_endpoint)
             # if endpoint requires auth, check if user is authenticated
             if relevant_endpoint and not current_user.is_authenticated:
@@ -228,8 +226,7 @@ def configure_email_logging(app):
     mail_handler.setLevel(logging.ERROR)
     mail_handler.setFormatter(
         logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s: %(message)s "
-            "[in %(pathname)s:%(lineno)d]"
+            "%(asctime)s - %(name)s - %(levelname)s: %(message)s " "[in %(pathname)s:%(lineno)d]"
         )
     )
     app.logger.addHandler(mail_handler)
