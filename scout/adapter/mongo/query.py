@@ -139,6 +139,7 @@ class QueryHandler(object):
         gene_query = None
         coordinate_query = None
 
+        LOG.error(f"QUERY BEFORE:{query}")
         ##### Base query params
 
         # set up the fundamental query params: case_id, category, type and
