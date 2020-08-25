@@ -106,7 +106,7 @@ class VariantFiltersForm(FlaskForm):
     delete_filter = SubmitField(label="Delete filter")
 
     chrom = SelectField(
-        "Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS, default=("", "All")
+        "Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS, default=""
     )
     start = IntegerField("Start position", [validators.Optional()])
     end = IntegerField("End position", [validators.Optional()])
