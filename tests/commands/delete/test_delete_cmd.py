@@ -111,6 +111,7 @@ def test_delete_user(empty_mock_app, user_obj, case_obj, institute_obj):
     assert store.event_collection.find_one() is None
 
     case_obj["assignees"] = [user_obj["email"]]
+    case_obj["status"] = "active"
     store.case_collection.insert_one(case_obj)
     assert store.case_collection.find_one({"assignees": {"$in": case_obj["assignees"]}})
 
@@ -121,8 +122,11 @@ def test_delete_user(empty_mock_app, user_obj, case_obj, institute_obj):
     assert result.exit_code == 0
     assert store.user_collection.find_one() is None
 
-    ## The case should not have an assignee
-    assert store.case_collection.find_one({"assignees": {"$in": case_obj["assignees"]}}) is None
+    # The case should keep the original status and should not have an assignee
+    updated_case = store.case_collection.find_one({"_id": case_obj["_id"]})
+    assert updated_case["status"] == "active"
+    assert updated_case["assignees"] == []
+
     ## And a new event for unassigning the user should have been created in event collection
     assert store.event_collection.find_one()
 
