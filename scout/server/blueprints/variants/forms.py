@@ -113,6 +113,7 @@ class VariantFiltersForm(FlaskForm):
 
     filter_variants = SubmitField(label="Filter variants")
     export = SubmitField(label="Filter and export")
+    clinical_filter = SubmitField(label="Clinical filter")
 
 
 class FiltersForm(VariantFiltersForm):
@@ -124,7 +125,6 @@ class FiltersForm(VariantFiltersForm):
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
 
     local_obs = IntegerField("Local obs. (archive)")
-    clinical_filter = SubmitField(label="Clinical filter")
 
 
 class CancerFiltersForm(VariantFiltersForm):
@@ -159,5 +159,3 @@ class SvFiltersForm(VariantFiltersForm):
     decipher = BooleanField("Decipher")
     clingen_ngi = IntegerField("ClinGen NGI obs")
     swegen = IntegerField("SweGen obs")
-
-    clinical_filter = SubmitField(label="Clinical filter")
