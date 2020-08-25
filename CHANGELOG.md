@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Highlight causative variants in the variants list
 - Add tests. Mostly regarding building internal datatypes.
+- Remove leading and trailing whitespaces from panel_name and display_name when panel is created
 ### Fixed
 - Report pages redirect to login instead of crashing when session expires
 - Variants filter loading in cancer variants page
