@@ -60,6 +60,21 @@ GOOGLE = dict(
 PHENOMIZER_USERNAME = 'phenoUser'
 PHENOMIZER_PASSWORD = 'phenoPassword'
 ```
+### Minimal config
+
+Unless you aim to install all subsystems that Scout can interact with, you are well advised to start by commenting out anything more than what you use. Try the default one in scout/scout/server/config.py - or start from the following:
+
+```python
+# minimal.flask.conf.py
+
+# to encrypt cookie data
+SECRET_KEY = 'makeThisSomethingNonGuessable'  # required
+
+# connection details for MongoDB
+MONGO_DBNAME = 'scout'                        # required
+MONGO_PORT = 27017
+```
+
 
 ## Development
 
@@ -89,6 +104,17 @@ gunicorn \
     --keyfile="/path/to/myserver.key" \
     --certfile="/path/to/server.crt" \
     scout.server.auto:app
+```
+
+If you are running a larger environment, where this is one component, we encourage a reverse proxy configuration where Scout is served by gunicorn, and reverse proxied by NGIX. Then NGIX will handle the secure communication, and the start config reduces to something like
+```bash
+SCOUT_CONFIG="/full/path/to/scout_flask_conf.py" \
+gunicorn \
+    --workers=4 \
+    --bind="HOST:PORT" \
+    --access-logfile=-
+    --error-logfile=-
+    wsgi_gunicorn:app
 ```
 
 [gunicorn]: http://gunicorn.org/
