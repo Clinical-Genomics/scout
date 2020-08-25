@@ -1,4 +1,5 @@
 """Code for flask app"""
+import datetime
 import logging
 import re
 import coloredlogs
@@ -65,6 +66,7 @@ def create_app(config_file=None, config=None):
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
+    register_context_processors(app)
 
     if not (app.debug or app.testing) and app.config.get("MAIL_USERNAME"):
         # setup email logging of errors
@@ -75,7 +77,9 @@ def create_app(config_file=None, config=None):
         if not app.config.get("LOGIN_DISABLED") and request.endpoint:
             # check if the endpoint requires authentication
             static_endpoint = "static" in request.endpoint
-            public_endpoint = getattr(app.view_functions[request.endpoint], "is_public", False)
+            public_endpoint = getattr(
+                app.view_functions[request.endpoint], "is_public", False
+            )
             relevant_endpoint = not (static_endpoint or public_endpoint)
             # if endpoint requires auth, check if user is authenticated
             if relevant_endpoint and not current_user.is_authenticated:
@@ -181,6 +185,15 @@ def register_filters(app):
         return re.sub(r"(?<=[.,:;?!])(?=[^\s])", r" ", text)
 
 
+def register_context_processors(app):
+    """Inject variable into the context of any template of the app"""
+
+    @app.context_processor
+    def inject_timestamp():
+        # return {'timestamp': datetime.datetime.now().timestamp()}
+        return {"inject_timestamp": "MEH"}
+
+
 def configure_oauth_login(app):
     """Register the Google Oauth login client using config settings"""
 
@@ -215,7 +228,8 @@ def configure_email_logging(app):
     mail_handler.setLevel(logging.ERROR)
     mail_handler.setFormatter(
         logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s: %(message)s " "[in %(pathname)s:%(lineno)d]"
+            "%(asctime)s - %(name)s - %(levelname)s: %(message)s "
+            "[in %(pathname)s:%(lineno)d]"
         )
     )
     app.logger.addHandler(mail_handler)
