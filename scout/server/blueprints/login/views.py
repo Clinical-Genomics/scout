@@ -79,7 +79,7 @@ def login():
 
     if request.args.get("email"):  # log in against Scout database
         user_mail = request.args.get("email")
-        LOG.info("Validating user email {} against Scout database".format(user_mail))
+        LOG.info("Validating user %s email %s against Scout database", user_id, user_mail)
 
     user_obj = store.user(email=user_mail, user_id=user_id)
     if user_obj is None:
