@@ -113,9 +113,9 @@ This is an example of the config file:
 # list of email addresses to send errors to in production
 ADMINS = ['paul.anderson@magnolia.com']
 
-MONGO_HOST = 'localhost'
+MONGO_HOST = 'localhost'		
 MONGO_PORT = 27017
-MONGO_DBNAME = 'scoutTest'
+MONGO_DBNAME = 'scout'
 MONGO_USERNAME = 'testUser'
 MONGO_PASSWORD = 'testPass'
 
@@ -147,6 +147,8 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False  # this is essential in production
 TEMPLATES_AUTO_RELOAD = False  			# consider turning off in production
 SECRET_KEY = 'secret key'               # override in production!
 ```
+
+Most of the config settings are optional. A minimal config would consist of SECRET_KEY and MONGO_DBNAME.
 
 Starting the server in now really easy, for the demo and local development we will use the CLI:
 
