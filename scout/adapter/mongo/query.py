@@ -266,7 +266,7 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
-        LOG.info("mongo query: %s", mongo_query)
+        LOG.error("mongo query: %s", mongo_query)
         return mongo_query
 
     def clinsig_query(self, query, mongo_query):
