@@ -114,7 +114,7 @@ gunicorn \
     --bind="HOST:PORT" \
     --access-logfile=-
     --error-logfile=-
-    wsgi_gunicorn:app
+    scout.server.auto:app
 ```
 
 [gunicorn]: http://gunicorn.org/
