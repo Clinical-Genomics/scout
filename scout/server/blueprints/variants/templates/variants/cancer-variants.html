@@ -1,9 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
-{% from "variants/utils.html" import cancer_filters, tier_cell, cell_rank %}
+{% from "variants/utils.html" import cancer_filters, tier_cell, cell_rank, pagination_footer, pagination_hidden_div %}
 {% from "variant/buttons.html" import dismiss_variant_table_button %}
-
-
 
 {% block title %}
   {{ variant_type|capitalize }} cancer variants
@@ -37,6 +35,7 @@
 {% block content_main %}
 <div class="container-float">
   <form method="POST" id="filters_form" action="{{url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name)}}">
+    {{ pagination_hidden_div(page) }}
     <div class="card panel-default" id="accordion">
       <div class="card-header">
         <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
@@ -111,35 +110,10 @@
   <br>
 </div><!--end of container-float -->
 <div class="container-fluid">
-  {{ pagination() }}
+  {{ pagination_footer() }}
 </div>
 
 {% endblock %}
-
-{% macro pagination() %}
-  <div class="container-fluid">
-    {% if more_variants %}
-    <div class="d-flex justify-content-around">
-        <div>
-          <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
-            First page
-          </a>
-        </div>
-        <div>
-          <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
-            Next page
-          </a>
-        </div>
-    </div>
-    {% else %}
-      <i class="text-muted">No more variants to display</i>
-      <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
-        First page
-      </a>
-    {% endif %}
-  </div>
-
-{% endmacro %}
 
 {% macro actions_cell(variant) %}
   <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
