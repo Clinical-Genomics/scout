@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Variants filter loading in cancer variants page
 - User, Causative and Cases tables not scaling to full page
 - Improved docs for an initial production setup
+- Restore pagination to variants pages
 ### Changed
 - Highlight color on normal STRs in the variants table from green to blue
 
