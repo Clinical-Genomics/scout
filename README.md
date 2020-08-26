@@ -168,7 +168,7 @@ This is also how we can multiprocess the server and use encrypted HTTPS connecti
 SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 scout.server.auto:app
 ```
 
-For added security and flexibility, we recommend a reverse proxy solution like NGIX.
+For added security and flexibility, we recommend a reverse proxy solution like NGINX.
 
 ### Setting up a user login system
 

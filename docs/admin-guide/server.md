@@ -106,6 +106,6 @@ gunicorn \
     scout.server.auto:app
 ```
 
-If you are running a larger environment, where this is one component, we encourage a reverse proxy configuration where Scout is served by gunicorn, and reverse proxied by NGIX. Then NGIX will handle the secure communication.
+If you are running a larger environment, where this is one component, we encourage a reverse proxy configuration where Scout is served by Gunicorn, and reverse proxied by [NGINX](https://nginx.org/en/). Then NGINX will handle the secure communication.
 
 [gunicorn]: http://gunicorn.org/
