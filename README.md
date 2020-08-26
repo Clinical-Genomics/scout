@@ -113,9 +113,9 @@ This is an example of the config file:
 # list of email addresses to send errors to in production
 ADMINS = ['paul.anderson@magnolia.com']
 
-MONGO_HOST = 'localhost'
+MONGO_HOST = 'localhost'		
 MONGO_PORT = 27017
-MONGO_DBNAME = 'scoutTest'
+MONGO_DBNAME = 'scout'
 MONGO_USERNAME = 'testUser'
 MONGO_PASSWORD = 'testPass'
 
@@ -148,6 +148,8 @@ TEMPLATES_AUTO_RELOAD = False  			# consider turning off in production
 SECRET_KEY = 'secret key'               # override in production!
 ```
 
+Most of the config settings are optional. A minimal config would consist of SECRET_KEY and MONGO_DBNAME.
+
 Starting the server in now really easy, for the demo and local development we will use the CLI:
 
 ```bash
@@ -163,12 +165,10 @@ such as Gunicorn.
 This is also how we can multiprocess the server and use encrypted HTTPS connections.
 
 ```bash
-SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 --access-logfile - --error-logfile
- - --keyfile /tmp/myserver.key --certfile /tmp/server.crt wsgi_gunicorn:app
+SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 scout.server.auto:app
 ```
 
-> The `wsgi_gunicorn.py` file is included in the repo and configures Flask to work with Gunicorn.
-
+For added security and flexibility, we recommend a reverse proxy solution like NGIX.
 
 ### Setting up a user login system
 
