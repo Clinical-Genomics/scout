@@ -41,6 +41,10 @@
     <div class="container-float">
        <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
          enctype="multipart/form-data" onsubmit="return validateForm()">
+         <div class="hidden">
+           <input type="submit" name="page" id="paginate-first" value=1 hidden="true">
+           <input type="submit" name="page" id="paginate-next" value={{page+1}} hidden="true">
+         </div>
         <div class="card panel-default" id="accordion">
           <div class="card-header">
             <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
@@ -55,6 +59,7 @@
             {% endif %}
           </div>
         </div>
+
       </form>
       <div class="card mt-3">
         <table class="table table-hover table-bordered" style="table-layout: fixed">
@@ -159,21 +164,21 @@
       {% if more_variants %}
         <div class="d-flex justify-content-around">
 	         <div>
-             <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+             <label for="paginate-first" class="btn btn-outline-secondary mx-auto d-block">
               First page
-            </a>
+            </label>
           </div>
           <div>
-            <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
+            <label for="paginate-next" class="btn btn-outline-secondary mx-auto d-block">
               Next page
-            </a>
+            </label>
           </div>
 	     </div>
       {% else %}
         <i class="text-muted">No more variants to display</i>
-        <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+        <label for="paginate-first"  class="btn btn-outline-secondary mx-auto d-block">
           First page
-        </a>
+        </label>
       {% endif %}
   </div>
 {% endmacro %}
