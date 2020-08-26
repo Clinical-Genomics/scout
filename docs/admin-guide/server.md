@@ -106,15 +106,6 @@ gunicorn \
     scout.server.auto:app
 ```
 
-If you are running a larger environment, where this is one component, we encourage a reverse proxy configuration where Scout is served by gunicorn, and reverse proxied by NGIX. Then NGIX will handle the secure communication, and the start config reduces to something like
-```bash
-SCOUT_CONFIG="/full/path/to/scout_flask_conf.py" \
-gunicorn \
-    --workers=4 \
-    --bind="HOST:PORT" \
-    --access-logfile=-
-    --error-logfile=-
-    wsgi_gunicorn:app
-```
+If you are running a larger environment, where this is one component, we encourage a reverse proxy configuration where Scout is served by gunicorn, and reverse proxied by NGIX. Then NGIX will handle the secure communication.
 
 [gunicorn]: http://gunicorn.org/

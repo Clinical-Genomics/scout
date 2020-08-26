@@ -165,12 +165,10 @@ such as Gunicorn.
 This is also how we can multiprocess the server and use encrypted HTTPS connections.
 
 ```bash
-SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 --access-logfile - --error-logfile
- - --keyfile /tmp/myserver.key --certfile /tmp/server.crt wsgi_gunicorn:app
+SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 scout.server.auto:app
 ```
 
-> The `wsgi_gunicorn.py` file is included in the repo and configures Flask to work with Gunicorn.
-
+For added security and flexibility, we recommend a reverse proxy solution like NGIX.
 
 ### Setting up a user login system
 
