@@ -101,7 +101,9 @@ def test_cases(app, institute_obj):
         }
         resp = client.get(
             url_for(
-                "overview.cases", institute_id=institute_obj["internal_id"], params=request_data,
+                "overview.cases",
+                institute_id=institute_obj["internal_id"],
+                params=request_data,
             )
         )
         # response should return a page
@@ -134,7 +136,11 @@ def test_cases_query_case_name(app, case_obj, institute_obj):
 
         # WHEN accessing the cases page with a query
         resp = client.get(
-            url_for("overview.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
+            url_for(
+                "overview.cases",
+                query=slice_query,
+                institute_id=institute_obj["internal_id"],
+            )
         )
 
         # THEN it should return a page with the case
@@ -154,7 +160,11 @@ def test_cases_panel_query(app, case_obj, parsed_panel, institute_obj):
 
         # WHEN accessing the cases page with a query
         resp = client.get(
-            url_for("overview.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
+            url_for(
+                "overview.cases",
+                query=slice_query,
+                institute_id=institute_obj["internal_id"],
+            )
         )
 
         # THEN it should return a page with the case
@@ -194,7 +204,11 @@ def test_cases_by_pinned_gene_query(app, case_obj, institute_obj):
         slice_query = f"pinned:POT1"
 
         resp = client.get(
-            url_for("overview.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
+            url_for(
+                "overview.cases",
+                query=slice_query,
+                institute_id=institute_obj["internal_id"],
+            )
         )
 
         # THEN it should return a page with the case
@@ -207,7 +221,8 @@ def test_cases_exact_phenotype_query(app, case_obj, institute_obj, test_hpo_term
 
     # GIVEN a case with some HPO terms
     store.case_collection.find_one_and_update(
-        {"_id": case_obj["_id"]}, {"$set": {"phenotype_terms": test_hpo_terms}},
+        {"_id": case_obj["_id"]},
+        {"$set": {"phenotype_terms": test_hpo_terms}},
     )
     one_hpo_term = test_hpo_terms[0]["phenotype_id"]
     slice_query = f"exact_pheno:{one_hpo_term}"
@@ -218,7 +233,11 @@ def test_cases_exact_phenotype_query(app, case_obj, institute_obj, test_hpo_term
 
         # WHEN accessing the cases page with the query
         resp = client.get(
-            url_for("overview.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
+            url_for(
+                "overview.cases",
+                query=slice_query,
+                institute_id=institute_obj["internal_id"],
+            )
         )
 
         # THEN it should return a page with the case
@@ -231,7 +250,8 @@ def test_cases_similar_phenotype_query(app, case_obj, institute_obj, test_hpo_te
 
     # GIVEN a case with some HPO terms
     store.case_collection.find_one_and_update(
-        {"_id": case_obj["_id"]}, {"$set": {"phenotype_terms": test_hpo_terms}},
+        {"_id": case_obj["_id"]},
+        {"$set": {"phenotype_terms": test_hpo_terms}},
     )
 
     # WHEN similar but distinct HPO terms are used in the query
@@ -248,7 +268,11 @@ def test_cases_similar_phenotype_query(app, case_obj, institute_obj, test_hpo_te
 
         # WHEN accessing the cases page with the query
         resp = client.get(
-            url_for("overview.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
+            url_for(
+                "overview.cases",
+                query=slice_query,
+                institute_id=institute_obj["internal_id"],
+            )
         )
 
         # THEN it should return a page with the case
@@ -380,7 +404,10 @@ def test_clinvar_submissions(app, institute_obj, clinvar_variant, clinvar_caseda
 
         # When visiting the clinvar submission page (get request)
         resp = client.get(
-            url_for("overview.clinvar_submissions", institute_id=institute_obj["internal_id"],)
+            url_for(
+                "overview.clinvar_submissions",
+                institute_id=institute_obj["internal_id"],
+            )
         )
 
         # a successful response should be returned
@@ -407,7 +434,9 @@ def test_rename_clinvar_samples(app, institute_obj, clinvar_variant, clinvar_cas
         case_id = clinvar_casedata["case_id"]
         old_name = clinvar_casedata["individual_id"]
 
-        form_data = dict(new_name="new_sample_name",)
+        form_data = dict(
+            new_name="new_sample_name",
+        )
 
         # WHEN the sample name is edited from the submission page (POST request)
         resp = client.post(

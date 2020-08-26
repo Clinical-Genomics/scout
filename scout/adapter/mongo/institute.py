@@ -15,8 +15,8 @@ class InstituteHandler(object):
     def add_institute(self, institute_obj):
         """Add a institute to the database
 
-            Args:
-                institute_obj(Institute)
+        Args:
+            institute_obj(Institute)
         """
         internal_id = institute_obj["internal_id"]
         display_name = institute_obj["display_name"]
@@ -155,7 +155,9 @@ class InstituteHandler(object):
         if updates["$set"].keys() or updates.get("$push") or updates.get("$pull"):
             updates["$set"]["updated_at"] = datetime.now()
             updated_institute = self.institute_collection.find_one_and_update(
-                {"_id": internal_id}, updates, return_document=pymongo.ReturnDocument.AFTER,
+                {"_id": internal_id},
+                updates,
+                return_document=pymongo.ReturnDocument.AFTER,
             )
 
             LOG.info("Institute updated")
@@ -165,11 +167,11 @@ class InstituteHandler(object):
     def institute(self, institute_id):
         """Featch a single institute from the backend
 
-            Args:
-                institute_id(str)
+        Args:
+            institute_id(str)
 
-            Returns:
-                Institute object
+        Returns:
+            Institute object
         """
         LOG.debug("Fetch institute {}".format(institute_id))
         institute_obj = self.institute_collection.find_one({"_id": institute_id})

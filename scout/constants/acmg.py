@@ -16,7 +16,12 @@ REV_ACMG_MAP = OrderedDict([(value, key) for key, value in ACMG_MAP.items()])
 
 ACMG_OPTIONS = [
     {"code": "pathogenic", "short": "P", "label": "Pathogenic", "color": "danger"},
-    {"code": "likely_pathogenic", "short": "LP", "label": "Likely Pathogenic", "color": "warning",},
+    {
+        "code": "likely_pathogenic",
+        "short": "LP",
+        "label": "Likely Pathogenic",
+        "color": "warning",
+    },
     {
         "code": "uncertain_significance",
         "short": "VUS",

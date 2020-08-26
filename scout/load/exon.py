@@ -13,9 +13,9 @@ LOG = logging.getLogger(__name__)
 
 def load_exons(adapter, exon_lines, build="37", nr_exons=None):
     """Build and load all the exons of a build
-    
+
     Transcript information is from ensembl.
-    
+
     First check that the gene that the transcript belongs to exist in the database.
     If so check that the exon belongs to one of the identifier transcripts of that gene.
 
@@ -23,7 +23,7 @@ def load_exons(adapter, exon_lines, build="37", nr_exons=None):
         adapter(MongoAdapter)
         exon_lines(iterable): iterable with ensembl exon lines
         build(str)
-    
+
     """
     nr_exons = nr_exons or 100000
     # Fetch all genes with ensemblid as keys

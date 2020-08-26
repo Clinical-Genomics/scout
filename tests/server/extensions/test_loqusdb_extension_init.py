@@ -197,7 +197,11 @@ def test_init_loqusextension_init_app_get_version_CalledProcessError(
     )
     configs = {
         "LOQUSDB_SETTINGS": [
-            {"binary_path": loqus_exe, "id": "default", "config_path": loqus_config,}
+            {
+                "binary_path": loqus_exe,
+                "id": "default",
+                "config_path": loqus_config,
+            }
         ]
     }
     app = Flask(__name__)

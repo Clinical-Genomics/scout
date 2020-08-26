@@ -51,14 +51,14 @@ def export_variants(adapter, collaborator, document_id=None, case_id=None):
 
 def export_verified_variants(aggregate_variants, unique_callers):
     """Create the lines for an excel file with verified variants for
-        an institute
+    an institute
 
-        Args:
-            aggregate_variants(list): a list of variants with aggregates case data
-            unique_callers(set): a unique list of available callers
+    Args:
+        aggregate_variants(list): a list of variants with aggregates case data
+        unique_callers(set): a unique list of available callers
 
-        Returns:
-            document_lines(list): list of lines to include in the document
+    Returns:
+        document_lines(list): list of lines to include in the document
     """
     document_lines = []
     for variant in aggregate_variants:

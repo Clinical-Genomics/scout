@@ -209,7 +209,8 @@ def gene_variants(institute_id):
             flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
         if not_found_symbols:
             flash(
-                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning",
+                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)),
+                "warning",
             )
         if non_clinical_symbols:
             flash(
@@ -221,7 +222,10 @@ def gene_variants(institute_id):
         LOG.debug("query {}".format(form.data))
 
         variants_query = store.gene_variants(
-            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type,
+            query=form.data,
+            institute_id=institute_id,
+            category="snv",
+            variant_type=variant_type,
         )
 
         data = controllers.gene_variants(store, variants_query, institute_id, page)
@@ -235,7 +239,8 @@ def institute_settings(institute_id):
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
         flash(
-            "Current user doesn't have the permission to modify this institute", "warning",
+            "Current user doesn't have the permission to modify this institute",
+            "warning",
         )
         return redirect(request.referrer)
 
@@ -269,7 +274,8 @@ def institute_users(institute_id):
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
         flash(
-            "Current user doesn't have the permission to modify this institute", "warning",
+            "Current user doesn't have the permission to modify this institute",
+            "warning",
         )
         return redirect(request.referrer)
     data = controllers.institute(store, institute_id)
@@ -282,7 +288,11 @@ def clinvar_rename_casedata(submission, case, old_name):
 
     new_name = request.form.get("new_name")
     controllers.update_clinvar_sample_names(
-        store, submission, case, old_name, new_name,
+        store,
+        submission,
+        case,
+        old_name,
+        new_name,
     )
     return redirect(request.referrer)
 
@@ -324,7 +334,9 @@ def clinvar_download_csv(submission, csv_type, clinvar_id):
 
     headers = Headers()
     headers.add(
-        "Content-Disposition", "attachment", filename=clinvar_file_data[0],
+        "Content-Disposition",
+        "attachment",
+        filename=clinvar_file_data[0],
     )
     return Response(
         generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),

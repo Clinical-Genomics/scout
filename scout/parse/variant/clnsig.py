@@ -77,7 +77,11 @@ def parse_clnsig(variant, transcripts=None):
             revstats = revstat_group.split(",")
             for accession, significance, revstat in zip(accessions, significances, revstats):
                 clnsig_accessions.append(
-                    {"value": int(significance), "accession": accession, "revstat": revstat,}
+                    {
+                        "value": int(significance),
+                        "accession": accession,
+                        "revstat": revstat,
+                    }
                 )
 
     return clnsig_accessions

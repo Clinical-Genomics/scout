@@ -244,9 +244,7 @@ def phenotype_to_genes_file(request):
 
 @pytest.fixture
 def hpo_terms_handle(request, hpo_terms_file):
-    """Get a file handle to a hpo terms file (http://purl.obolibrary.org/obo/hp.obo)
-
-    """
+    """Get a file handle to a hpo terms file (http://purl.obolibrary.org/obo/hp.obo)"""
     hpo_lines = get_file_handle(hpo_terms_file)
     return hpo_lines
 
@@ -742,13 +740,17 @@ def real_populated_database(request, real_panel_database, parsed_case):
 @pytest.fixture(scope="function")
 def variant_database(request, populated_database):
     """Returns an adapter to a database populated with user, institute, case
-       and variants"""
+    and variants"""
     adapter = populated_database
     # Load variants
     case_obj = adapter.case_collection.find_one()
 
     adapter.load_variants(
-        case_obj, variant_type="clinical", category="snv", rank_threshold=-10, build="37",
+        case_obj,
+        variant_type="clinical",
+        category="snv",
+        rank_threshold=-10,
+        build="37",
     )
 
     return adapter
@@ -757,13 +759,17 @@ def variant_database(request, populated_database):
 @pytest.fixture(scope="function")
 def real_variant_database(request, real_populated_database):
     """Returns an adapter to a database populated with user, institute, case
-       and variants"""
+    and variants"""
     adapter = real_populated_database
 
     case_obj = adapter.case_collection.find_one()
     # Load variants
     adapter.load_variants(
-        case_obj, variant_type="clinical", category="snv", rank_threshold=-10, build="37",
+        case_obj,
+        variant_type="clinical",
+        category="snv",
+        rank_threshold=-10,
+        build="37",
     )
 
     return adapter
@@ -772,7 +778,7 @@ def real_variant_database(request, real_populated_database):
 @pytest.fixture(scope="function")
 def sv_database(request, populated_database, variant_objs, sv_variant_objs):
     """Returns an adapter to a database populated with user, institute, case
-       and variants"""
+    and variants"""
     adapter = populated_database
 
     case_obj = adapter.case_collection.find_one()
@@ -1217,7 +1223,7 @@ def variant_clinical_file(request):
 @pytest.fixture(scope="function")
 def vep_97_annotated_variant_clinical_file(request):
     """Get a path to a VCF file annotated with VEP and containing conservation
-       and REVEL score in the CSQ field
+    and REVEL score in the CSQ field
     """
     return vep_97_annotated_path
 
@@ -1225,7 +1231,7 @@ def vep_97_annotated_variant_clinical_file(request):
 @pytest.fixture(scope="function")
 def vep_94_manta_annotated_SV_variants_file(request):
     """Get a path to a Manta VCF outfile annotated containg SVs
-       annotated with VEP
+    annotated with VEP
     """
     return cancer_sv_path
 
@@ -1437,7 +1443,10 @@ def mme_submission():
 @pytest.fixture(scope="function")
 def mme_patient():
     json_patient = {
-        "contact": {"href": "mailto:contact_email@email.com", "name": "A contact at an institute",},
+        "contact": {
+            "href": "mailto:contact_email@email.com",
+            "name": "A contact at an institute",
+        },
         "features": [{"id": "HP:0001644", "label": "Dilated cardiomyopathy", "observed": "yes"}],
         "genomicFeatures": [
             {

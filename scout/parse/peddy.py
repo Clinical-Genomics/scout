@@ -3,10 +3,10 @@ from scout.utils.convert import make_bool, convert_number
 
 def parse_peddy_ped(lines):
     """Parse a peddy.ped file
-    
+
     Args:
         lines(iterable(str))
-    
+
     Returns:
         peddy_ped(list(dict))
     """
@@ -44,10 +44,10 @@ def parse_peddy_ped(lines):
 
 def parse_peddy_ped_check(lines):
     """Parse a .ped_check.csv file
-    
+
     Args:
         lines(iterable(str))
-    
+
     Returns:
         ped_check(list(dict))
     """
@@ -113,10 +113,10 @@ def parse_peddy_ped_check(lines):
 
 def parse_peddy_sex_check(lines):
     """Parse a .ped_check.csv file
-    
+
     Args:
         lines(iterable(str))
-    
+
     Returns:
         sex_check(list(dict))
     """
