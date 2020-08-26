@@ -159,15 +159,21 @@
       {% if more_variants %}
         <div class="d-flex justify-content-around">
 	         <div>
-            <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
+             <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+              First page
+            </a>
           </div>
           <div>
-            <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value={{ page + 1 }}>Next page</button>
+            <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
+              Next page
+            </a>
           </div>
 	     </div>
       {% else %}
         <i class="text-muted">No more variants to display</i>
-        <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
+        <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+          First page
+        </a>
       {% endif %}
   </div>
 {% endmacro %}
