@@ -601,7 +601,13 @@ def institute_panel_choices(store, institute_obj, case_obj):
     Returns:
         panel_choices(list): a list of tuples containing the multiselect values/display name
     """
-    panel_choices = []
+
+    # Polulate panel select with default case panels
+    panel_choices = [
+        (panel["panel_name"], panel["display_name"]) for panel in case_obj.get("panels", [])
+    ]
+
+    # Add the institute default panels
     for panel_id in institute_obj.get("gene_panels", []):
         panel_obj = store.panel(panel_id)
         if panel_obj is None:
