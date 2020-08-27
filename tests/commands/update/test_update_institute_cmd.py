@@ -13,7 +13,7 @@ def test_update_institute(mock_app):
     # Test CLI base, no arguments provided
     result = runner.invoke(cli, ["update", "institute"])
     # it should return error message
-    assert 'Error: Missing argument "institute-id"' in result.output
+    assert "Error: Missing argument" in result.output
 
     # Test CLI passing institute id that is not in database
     result = runner.invoke(cli, ["update", "institute", "cust666"])
@@ -52,8 +52,7 @@ def test_update_institute(mock_app):
 
     # Test CLI to remove a sanger recipient
     result = runner.invoke(
-        cli,
-        ["update", "institute", "cust000", "-r", institute_obj["sanger_recipients"][0]],
+        cli, ["update", "institute", "cust000", "-r", institute_obj["sanger_recipients"][0]],
     )
     # it should return error message
     assert result.exit_code == 0
@@ -66,8 +65,7 @@ def test_update_institute(mock_app):
 
     # Test CLI to update sanger recipients
     result = runner.invoke(
-        cli,
-        ["update", "institute", "cust000", "-s", institute_obj["sanger_recipients"][0]],
+        cli, ["update", "institute", "cust000", "-s", institute_obj["sanger_recipients"][0]],
     )
     # it should return error message
     assert result.exit_code == 0
