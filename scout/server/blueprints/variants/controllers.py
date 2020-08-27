@@ -636,8 +636,6 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)
-    # no longer needed?
-    #            form.csrf_token = request.args.get('csrf_token')
     elif bool(request_form.get("save_filter")):
         # The form should be applied and remain set the page after saving
         form = FiltersFormClass(request_form)
