@@ -15,7 +15,7 @@ def test_update_panel(mock_app):
     # Test CLI base, no arguments provided
     result = runner.invoke(cli, ["update", "panel"])
     # it should return error message
-    assert 'Missing option "--panel"' in result.output
+    assert "Missing option" in result.output
 
     # Test CLI providing unknown panel
     result = runner.invoke(cli, ["update", "panel", "-p", "unknown_panel"])
@@ -27,8 +27,7 @@ def test_update_panel(mock_app):
 
     # update panel version specifying original panel version
     result = runner.invoke(
-        cli,
-        ["update", "panel", "-p", "panel1", "--version", 1.0, "--update-version", 2.0],
+        cli, ["update", "panel", "-p", "panel1", "--version", 1.0, "--update-version", 2.0],
     )
     assert "$set': {'panels.$.version': 2.0" in result.output
 
