@@ -13,7 +13,10 @@ LOG = logging.getLogger(__name__)
 @click.option("--case-id", "-c", required=True)
 @click.option("--ind-id", "-i", required=True)
 @click.option(
-    "--alignment-path", "-a", type=click.Path(exists=True), help="Replace alignment file",
+    "--alignment-path",
+    "-a",
+    type=click.Path(exists=True),
+    help="Replace alignment file",
 )
 def individual(case_id, ind_id, alignment_path):
     """Update information on individual level in Scout"""

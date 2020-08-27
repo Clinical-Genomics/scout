@@ -97,6 +97,15 @@
               </select>
             </div>
           </div>
+          <div class="form-row mt-3 d-flex justify-content-left" id="Custom_LoqusDB">
+            <div class="col-md-2 align-self-center" >
+              {{ form.loqusdb_id.label(class="control-label", data_toggle="tooltip", data_placement="top", title="LoqudDB id", placeholder="Search HPO.." ) }}
+            </div>
+            <div class="col-md-6 align-self-center" >
+              {{ form.loqusdb_id(class='form-control')}}
+            </div>
+            <div class="col-md-6 align-self-center" ></div>
+          </div>
           <div class="form-row mt-3 d-flex justify-content-center">
               {{ form.submit_btn(class="btn-primary btn") }}
           </div>

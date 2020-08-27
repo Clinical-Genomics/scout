@@ -4,21 +4,21 @@ from scout.models.hgnc_map import HgncTranscript
 def build_transcript(transcript_info, build="37"):
     """Build a hgnc_transcript object
 
-        Args:
-            transcript_info(dict): Transcript information
+    Args:
+        transcript_info(dict): Transcript information
 
-        Returns:
-            transcript_obj(HgncTranscript)
-            {
-                transcript_id: str, required
-                hgnc_id: int, required
-                build: str, required
-                refseq_id: str,
-                chrom: str, required
-                start: int, required
-                end: int, required
-                is_primary: bool
-            }
+    Returns:
+        transcript_obj(HgncTranscript)
+        {
+            transcript_id: str, required
+            hgnc_id: int, required
+            build: str, required
+            refseq_id: str,
+            chrom: str, required
+            start: int, required
+            end: int, required
+            is_primary: bool
+        }
     """
     try:
         transcript_id = transcript_info["ensembl_transcript_id"]

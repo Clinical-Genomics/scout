@@ -20,7 +20,7 @@ TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
 
 
 def institute(store, institute_id):
-    """ Process institute data.
+    """Process institute data.
 
     Args:
         store(adapter.MongoAdapter)
@@ -38,7 +38,7 @@ def institute(store, institute_id):
 
 
 def populate_institute_form(form, institute_obj):
-    """ Populate institute settings form
+    """Populate institute settings form
 
     Args:
         form(scout.server.blueprints.institutes.models.InstituteForm)
@@ -81,7 +81,7 @@ def populate_institute_form(form, institute_obj):
 
 
 def update_institute_settings(store, institute_obj, form):
-    """ Update institute settings with data collected from institute form
+    """Update institute settings with data collected from institute form
 
     Args:
         score(adapter.MongoAdapter)
@@ -98,6 +98,7 @@ def update_institute_settings(store, institute_obj, form):
     gene_panels = []
     group_abbreviations = []
     cohorts = []
+    loqusdb_id = []
 
     for email in form.getlist("sanger_emails"):
         sanger_recipients.append(email.strip())
@@ -119,6 +120,9 @@ def update_institute_settings(store, institute_obj, form):
     for cohort in form.getlist("cohorts"):
         cohorts.append(cohort.strip())
 
+    if form.get("loqusdb_id"):
+        loqusdb_id.append(form.get("loqusdb_id"))
+
     updated_institute = store.update_institute(
         internal_id=institute_obj["_id"],
         sanger_recipients=sanger_recipients,
@@ -131,6 +135,7 @@ def update_institute_settings(store, institute_obj, form):
         add_groups=False,
         sharing_institutes=sharing_institutes,
         cohorts=cohorts,
+        loqusdb_id=form.get("loqusdb_id"),
     )
     return updated_institute
 
@@ -216,13 +221,13 @@ def populate_case_filter_form(params):
 def get_sanger_unevaluated(store, institute_id, user_id):
     """Get all variants for an institute having Sanger validations ordered but still not evaluated
 
-        Args:
-            store(scout.adapter.MongoAdapter)
-            institute_id(str)
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str)
 
-        Returns:
-            unevaluated: a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, {'case2' : [varID_1, varID_2, .., varID_n]} ],
-                         where the keys are case_ids and the values are lists of variants with Sanger ordered but not yet validated
+    Returns:
+        unevaluated: a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, {'case2' : [varID_1, varID_2, .., varID_n]} ],
+                     where the keys are case_ids and the values are lists of variants with Sanger ordered but not yet validated
 
     """
 
@@ -303,63 +308,27 @@ def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
             # If the user does not have access to the information we skip it
             continue
 
-        genome_build = variant_case_obj.get("genome_build", "37")
-        if genome_build not in ["37", "38"]:
-            genome_build = "37"
-
-        # Update the HGNC symbols if they are not set
+        genome_build = get_genome_build(variant_case_obj)
         variant_genes = variant_obj.get("genes")
-        if variant_genes is not None:
-            for gene_obj in variant_genes:
-                # If there is no hgnc id there is nothin we can do
-                if not gene_obj["hgnc_id"]:
-                    continue
-                # Else we collect the gene object and check the id
-                if gene_obj.get("hgnc_symbol") is None or gene_obj.get("description") is None:
-                    hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
-                    if not hgnc_gene:
-                        continue
-                    gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
-                    gene_obj["description"] = hgnc_gene["description"]
+        gene_object = update_HGNC_symbols(store, variant_genes, genome_build)
 
         # Populate variant HGVS and predictions
-        gene_ids = []
-        gene_symbols = []
+        variant_genes = variant_obj.get("genes")
         hgvs_c = []
         hgvs_p = []
-        variant_genes = variant_obj.get("genes")
-
         if variant_genes is not None:
-            functional_annotation = ""
             for gene_obj in variant_genes:
                 hgnc_id = gene_obj["hgnc_id"]
                 gene_symbol = gene(store, hgnc_id)["symbol"]
+                gene_symbols = [gene_symbol]
 
-                gene_ids.append(hgnc_id)
-                gene_symbols.append(gene_symbol)
-
-                hgvs_nucleotide = "-"
-                hgvs_protein = ""
                 # gather HGVS info from gene transcripts
-                transcripts_list = gene_obj.get("transcripts")
-                for transcript_obj in transcripts_list:
-                    if (
-                        transcript_obj.get("is_canonical")
-                        and transcript_obj.get("is_canonical") is True
-                    ):
-                        hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
-                        hgvs_protein = str(transcript_obj.get("protein_sequence_name"))
+                (hgvs_nucleotide, hgvs_protein) = get_hgvs(gene_obj)
                 hgvs_c.append(hgvs_nucleotide)
                 hgvs_p.append(hgvs_protein)
 
             if len(gene_symbols) == 1:
-                if hgvs_p[0] != "None":
-                    hgvs = hgvs_p[0]
-                elif hgvs_c[0] != "None":
-                    hgvs = hgvs_c[0]
-                else:
-                    hgvs = "-"
-                variant_obj["hgvs"] = hgvs
+                variant_obj["hgvs"] = hgvs_str(gene_symbols, hgvs_p, hgvs_c)
 
             # populate variant predictions for display
             variant_obj.update(predictions(variant_genes))
@@ -390,7 +359,8 @@ def update_clinvar_submission_status(store, request, institute_id, submission_id
         store.update_clinvar_submission_status(institute_id, submission_id, update_status)
     if update_status == "register_id":  # register an official clinvar submission ID
         result = store.update_clinvar_id(
-            clinvar_id=request.form.get("clinvar_id"), submission_id=submission_id,
+            clinvar_id=request.form.get("clinvar_id"),
+            submission_id=submission_id,
         )
     if update_status == "delete":  # delete a submission
         deleted_objects, deleted_submissions = store.delete_submission(submission_id=submission_id)
@@ -412,7 +382,8 @@ def update_clinvar_sample_names(store, submission_id, case_id, old_name, new_nam
     """
     n_renamed = store.rename_casedata_samples(submission_id, case_id, old_name, new_name)
     flash(
-        f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'", "info",
+        f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'",
+        "info",
     )
 
 
@@ -465,7 +436,7 @@ def clinvar_submission_file(store, submission_id, csv_type, clinvar_subm_id):
 
 
 def clinvar_header(submission_objs, csv_type):
-    """ Call clinvar parser to extract required fields to include in csv header from clinvar submission objects
+    """Call clinvar parser to extract required fields to include in csv header from clinvar submission objects
 
     Args:
         submission_objs(list)
@@ -480,7 +451,7 @@ def clinvar_header(submission_objs, csv_type):
 
 
 def clinvar_lines(clinvar_objects, clinvar_header_obj):
-    """ Call clinvar parser to extract required lines to include in csv file from clinvar submission objects and header
+    """Call clinvar parser to extract required lines to include in csv file from clinvar submission objects and header
 
     Args:
         clinvar_objects(list)
@@ -493,3 +464,54 @@ def clinvar_lines(clinvar_objects, clinvar_header_obj):
 
     clinvar_lines = clinvar_submission_lines(clinvar_objects, clinvar_header_obj)
     return clinvar_lines
+
+
+def update_HGNC_symbols(store, variant_genes, genome_build):
+    """Update the HGNC symbols if they are not set
+    Returns:
+        gene_object()"""
+
+    if variant_genes is not None:
+        for gene_obj in variant_genes:
+            # If there is no hgnc id there is nothin we can do
+            if not gene_obj["hgnc_id"]:
+                continue
+            # Else we collect the gene object and check the id
+            if gene_obj.get("hgnc_symbol") is None or gene_obj.get("description") is None:
+                hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
+                if not hgnc_gene:
+                    continue
+                gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
+                gene_obj["description"] = hgnc_gene["description"]
+
+
+def get_genome_build(variant_case_obj):
+    """Find genom build in `variant_case_obj`. If not found use build #37"""
+    build = variant_case_obj.get("genome_build")
+    if build in ["37", "38"]:
+        return build
+    return "37"
+
+
+def get_hgvs(gene_obj):
+    """Analyse gene object
+    Return:
+       (hgvs_nucleotide, hgvs_protein)"""
+    hgvs_nucleotide = "-"
+    hgvs_protein = ""
+
+    transcripts_list = gene_obj.get("transcripts")
+    for transcript_obj in transcripts_list:
+        if transcript_obj.get("is_canonical") is True:
+            hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
+            hgvs_protein = str(transcript_obj.get("protein_sequence_name"))
+    return (hgvs_nucleotide, hgvs_protein)
+
+
+def hgvs_str(gene_symbols, hgvs_p, hgvs_c):
+    """"""
+    if hgvs_p[0] != "None":
+        return hgvs_p[0]
+    if hgvs_c[0] != "None":
+        return hgvs_c[0]
+    return "-"

@@ -31,7 +31,14 @@ class InstituteForm(FlaskForm):
     hpo_tuples = []
     for key in PHENOTYPE_GROUPS.keys():
         option_name = " ".join(
-            [key, ",", PHENOTYPE_GROUPS[key]["name"], "(", PHENOTYPE_GROUPS[key]["abbr"], ")",]
+            [
+                key,
+                ",",
+                PHENOTYPE_GROUPS[key]["name"],
+                "(",
+                PHENOTYPE_GROUPS[key]["abbr"],
+                ")",
+            ]
         )
         hpo_tuples.append((option_name, option_name))
 
@@ -43,7 +50,8 @@ class InstituteForm(FlaskForm):
         "Sanger recipients", validators=[validators.Optional()]
     )
     coverage_cutoff = IntegerField(
-        "Coverage cutoff", validators=[validators.Optional(), validators.NumberRange(min=1)],
+        "Coverage cutoff",
+        validators=[validators.Optional(), validators.NumberRange(min=1)],
     )
     frequency_cutoff = DecimalField(
         "Frequency cutoff",
@@ -65,6 +73,8 @@ class InstituteForm(FlaskForm):
         "Available patient cohorts", validators=[validators.Optional()]
     )
     institutes = NonValidatingSelectMultipleField("Institutes to share cases with", choices=[])
+    loqusdb_id = TextField("LoqusDB id", validators=[validators.Optional()])
+
     submit_btn = SubmitField("Save settings")
 
 
