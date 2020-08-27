@@ -66,7 +66,6 @@ def user(mail):
             inactivate_case = case_obj.get("status", "active") == "active" and case_obj[
                 "assignees"
             ] == [mail]
-            LOG.error(f"Inactivate is:{inactivate_case}")
             if adapter.unassign(institute_obj, case_obj, user_obj, link, inactivate_case):
                 updated_cases += 1
     click.echo(f"User was removed as assignee from {updated_cases} case(s).")
