@@ -593,13 +593,13 @@ def upload_panel(store, institute_id, case_name, stream):
 
 def institute_panel_choices(store, institute_obj, case_obj):
     """Populates the multiselect containing all the gene panels to be used in variants filtering
-        Args:
-            store(scout.adapter.MongoAdapter)
-            institute_id(str): Institute ID
-            case_obj(dict): a case object disctionary
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str): Institute ID
+        case_obj(dict): a case object disctionary
 
-        Returns:
-            panel_choices(list): a list of tuples containing the multiselect values/display name
+    Returns:
+        panel_choices(list): a list of tuples containing the multiselect values/display name
     """
     panel_choices = []
     for panel_id in institute_obj.get("gene_panels", []):

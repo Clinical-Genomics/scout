@@ -309,11 +309,11 @@ class PanelHandler:
     def panel_to_genes(self, panel_id):
         """Return all hgnc_ids for a given gene panel
 
-            Args:
-                panel_id(ObjectId): _id of a gene panel
+        Args:
+            panel_id(ObjectId): _id of a gene panel
 
-            Returns:
-                gene_list(list): a list of hgnc terms
+        Returns:
+            gene_list(list): a list of hgnc terms
 
         """
         gene_list = []
