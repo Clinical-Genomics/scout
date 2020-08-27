@@ -84,7 +84,13 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         return event
 
     def events(
-        self, institute, case=None, variant_id=None, level=None, comments=False, panel=None,
+        self,
+        institute,
+        case=None,
+        variant_id=None,
+        level=None,
+        comments=False,
+        panel=None,
     ):
         """Fetch events from the database.
 
@@ -293,7 +299,14 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         return updated_case
 
     def comment(
-        self, institute, case, user, link, variant=None, content="", comment_level="specific",
+        self,
+        institute,
+        case,
+        user,
+        link,
+        variant=None,
+        content="",
+        comment_level="specific",
     ):
         """Add a comment to a variant or a case.
 
@@ -375,7 +388,10 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
         # collect all comments for the old variant
         comments_query = self.events(
-            variant_id=old_var["variant_id"], comments=True, institute=institute_obj, case=case_obj,
+            variant_id=old_var["variant_id"],
+            comments=True,
+            institute=institute_obj,
+            case=case_obj,
         )
 
         # and create the same comment for the new variant

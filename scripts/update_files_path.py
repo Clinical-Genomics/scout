@@ -130,11 +130,17 @@ def do_replace(db_uri, old_path, new_path, test, discover, case_id):
                             update = True
                             ind_obj[ind_file] = ind_file_path.replace(old_path, new_path)
                             replace_fields.append(
-                                ["case[individuals][{}][{}]".format(z, ind_file), ind_file_path,]
+                                [
+                                    "case[individuals][{}][{}]".format(z, ind_file),
+                                    ind_file_path,
+                                ]
                             )
                         elif ind_file_path:
                             fields.append(
-                                ["case[individuals][{}][{}]".format(z, ind_file), ind_file_path,]
+                                [
+                                    "case[individuals][{}][{}]".format(z, ind_file),
+                                    ind_file_path,
+                                ]
                             )
 
                     case["individuals"][z] = ind_obj

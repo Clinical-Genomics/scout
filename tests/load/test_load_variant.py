@@ -122,7 +122,13 @@ def test_load_variants(real_populated_database, case_obj, variant_clinical_file)
 
     assert sum(1 for i in adapter.variant_collection.find()) > 0
     pathogenic_categories = set(
-        ["pathogenic", "likely_pathogenic", "conflicting_interpretations_of_pathogenecity", 4, 5,]
+        [
+            "pathogenic",
+            "likely_pathogenic",
+            "conflicting_interpretations_of_pathogenecity",
+            4,
+            5,
+        ]
     )
     for variant in adapter.variant_collection.find():
         pathogenic = False
@@ -147,7 +153,10 @@ def test_load_sv_variants(real_populated_database, case_obj, sv_clinical_file):
     # WHEN loading a variant into the database
     rank_threshold = 0
     adapter.load_variants(
-        case_obj=case_obj, variant_type="clinical", category="sv", rank_threshold=rank_threshold,
+        case_obj=case_obj,
+        variant_type="clinical",
+        category="sv",
+        rank_threshold=rank_threshold,
     )
     # THEN assert the variant is loaded
 
@@ -208,7 +217,10 @@ def test_load_mitochondrial(real_populated_database, case_obj, variant_clinical_
     # WHEN loading a variant into the database
 
     adapter.load_variants(
-        case_obj=case_obj, variant_type="clinical", category="snv", rank_threshold=rank_threshold,
+        case_obj=case_obj,
+        variant_type="clinical",
+        category="snv",
+        rank_threshold=rank_threshold,
     )
     # THEN assert all MT variants is loaded
 
@@ -235,7 +247,10 @@ def test_compounds_region(real_populated_database, case_obj):
 
     ## WHEN loading a variant into the database
     adapter.load_variants(
-        case_obj=case_obj, variant_type=variant_type, category=category, rank_threshold=-10,
+        case_obj=case_obj,
+        variant_type=variant_type,
+        category=category,
+        rank_threshold=-10,
     )
 
     adapter.load_indexes()
@@ -248,7 +263,12 @@ def test_compounds_region(real_populated_database, case_obj):
 
     query = adapter.build_query(
         case_id=case_obj["_id"],
-        query={"variant_type": variant_type, "chrom": chrom, "start": start, "end": end,},
+        query={
+            "variant_type": variant_type,
+            "chrom": chrom,
+            "start": start,
+            "end": end,
+        },
         category=category,
     )
     ## THEN assert that there are variants with compounds without information
@@ -370,7 +390,11 @@ def test_updated_panel(real_variant_database, case_obj):
     new_caseobj = adapter.case_collection.find_one({"_id": "second_case"})
 
     adapter.load_variants(
-        new_caseobj, variant_type="clinical", category="snv", rank_threshold=-10, build="37",
+        new_caseobj,
+        variant_type="clinical",
+        category="snv",
+        rank_threshold=-10,
+        build="37",
     )
 
     # These are the new variants

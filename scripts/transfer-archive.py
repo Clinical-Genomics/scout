@@ -54,7 +54,10 @@ def archive_info(database: Database, archive_case: dict) -> dict:
     for key in ["phenotype_terms", "phenotype_groups"]:
         for archive_term in archive_case.get(key, []):
             data[key].append(
-                {"phenotype_id": archive_term["phenotype_id"], "feature": archive_term["feature"],}
+                {
+                    "phenotype_id": archive_term["phenotype_id"],
+                    "feature": archive_term["feature"],
+                }
             )
 
     return data

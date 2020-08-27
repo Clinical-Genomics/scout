@@ -49,7 +49,10 @@ def test_send_gene_request(ensembl_gene_response, ensembl_rest_client_37):
     url = "https://grch37.rest.ensembl.org/overlap/id/ENSG00000103591?feature=gene"
     client = ensembl_rest_client_37
     responses.add(
-        responses.GET, url, json=ensembl_gene_response, status=200,
+        responses.GET,
+        url,
+        json=ensembl_gene_response,
+        status=200,
     )
     data = client.send_request(url)
 
@@ -70,7 +73,10 @@ def test_send_request_fakey_url(ensembl_rest_client_37):
     # GIVEN a client
     client = ensembl_rest_client_37
     responses.add(
-        responses.GET, url, body=MissingSchema(), status=404,
+        responses.GET,
+        url,
+        body=MissingSchema(),
+        status=404,
     )
     data = client.send_request(url)
     assert isinstance(data, MissingSchema)
@@ -84,7 +90,10 @@ def test_send_request_wrong_url(ensembl_rest_client_37):
     url = "https://grch37.rest.ensembl.org/fakeyurl"
     client = ensembl_rest_client_37
     responses.add(
-        responses.GET, url, body=HTTPError(), status=404,
+        responses.GET,
+        url,
+        body=HTTPError(),
+        status=404,
     )
     data = client.send_request(url)
     assert isinstance(data, HTTPError)
@@ -99,7 +108,10 @@ def test_use_api(ensembl_rest_client_38, ensembl_transcripts_response):
     client = ensembl_rest_client_38
     url = client.build_url(endpoint, params)
     responses.add(
-        responses.GET, url, json=ensembl_transcripts_response, status=200,
+        responses.GET,
+        url,
+        json=ensembl_transcripts_response,
+        status=200,
     )
 
     # get all transctipts for an ensembl gene, They should be a list of items

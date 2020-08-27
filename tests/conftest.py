@@ -746,7 +746,11 @@ def variant_database(request, populated_database):
     case_obj = adapter.case_collection.find_one()
 
     adapter.load_variants(
-        case_obj, variant_type="clinical", category="snv", rank_threshold=-10, build="37",
+        case_obj,
+        variant_type="clinical",
+        category="snv",
+        rank_threshold=-10,
+        build="37",
     )
 
     return adapter
@@ -761,7 +765,11 @@ def real_variant_database(request, real_populated_database):
     case_obj = adapter.case_collection.find_one()
     # Load variants
     adapter.load_variants(
-        case_obj, variant_type="clinical", category="snv", rank_threshold=-10, build="37",
+        case_obj,
+        variant_type="clinical",
+        category="snv",
+        rank_threshold=-10,
+        build="37",
     )
 
     return adapter
@@ -1435,7 +1443,10 @@ def mme_submission():
 @pytest.fixture(scope="function")
 def mme_patient():
     json_patient = {
-        "contact": {"href": "mailto:contact_email@email.com", "name": "A contact at an institute",},
+        "contact": {
+            "href": "mailto:contact_email@email.com",
+            "name": "A contact at an institute",
+        },
         "features": [{"id": "HP:0001644", "label": "Dilated cardiomyopathy", "observed": "yes"}],
         "genomicFeatures": [
             {

@@ -96,7 +96,9 @@ class PanelHandler:
         alias_genes = self.genes_by_alias()
 
         genes = get_omim_panel_genes(
-            genemap2_lines=genemap2_lines, mim2gene_lines=mim2gene_lines, alias_genes=alias_genes,
+            genemap2_lines=genemap2_lines,
+            mim2gene_lines=mim2gene_lines,
+            alias_genes=alias_genes,
         )
 
         for gene in genes:
@@ -336,7 +338,9 @@ class PanelHandler:
         panel_obj["date"] = date
 
         updated_panel = self.panel_collection.find_one_and_replace(
-            {"_id": panel_obj["_id"]}, panel_obj, return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": panel_obj["_id"]},
+            panel_obj,
+            return_document=pymongo.ReturnDocument.AFTER,
         )
 
         return updated_panel
@@ -393,7 +397,9 @@ class PanelHandler:
             del panel_obj["pending"]
 
         updated_panel = self.panel_collection.find_one_and_replace(
-            {"_id": panel_obj["_id"]}, panel_obj, return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": panel_obj["_id"]},
+            panel_obj,
+            return_document=pymongo.ReturnDocument.AFTER,
         )
         return updated_panel
 
@@ -467,7 +473,9 @@ class PanelHandler:
         if new_panel["version"] == panel_obj["version"]:
             # replace panel_obj with new_panel
             result = self.panel_collection.find_one_and_replace(
-                {"_id": panel_obj["_id"]}, new_panel, return_document=pymongo.ReturnDocument.AFTER,
+                {"_id": panel_obj["_id"]},
+                new_panel,
+                return_document=pymongo.ReturnDocument.AFTER,
             )
             inserted_id = result["_id"]
         else:  # create a new version of the same panel

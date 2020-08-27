@@ -376,7 +376,12 @@ class QueryHandler(object):
             position_query = {
                 "$or": [
                     {"end": {"$gte": int(query["start"]), "$lte": int(query["end"])}},  # 1
-                    {"position": {"$lte": int(query["end"]), "$gte": int(query["start"]),}},  # 2
+                    {
+                        "position": {
+                            "$lte": int(query["end"]),
+                            "$gte": int(query["start"]),
+                        }
+                    },  # 2
                     {
                         "$and": [
                             {"position": {"$gte": int(query["start"])}},
@@ -463,7 +468,12 @@ class QueryHandler(object):
             if criterion == "local_obs":
                 local_obs = query.get("local_obs")
                 mongo_secondary_query.append(
-                    {"$or": [{"local_obs_old": None}, {"local_obs_old": {"$lt": local_obs + 1}},]}
+                    {
+                        "$or": [
+                            {"local_obs_old": None},
+                            {"local_obs_old": {"$lt": local_obs + 1}},
+                        ]
+                    }
                 )
 
             if criterion in ["clingen_ngi", "swegen"]:
@@ -557,7 +567,10 @@ class QueryHandler(object):
 
                 if query.get("size_shorter"):
                     size_query = {
-                        "$or": [{"length": {"$lt": int(size)}}, {"length": {"$exists": False}},]
+                        "$or": [
+                            {"length": {"$lt": int(size)}},
+                            {"length": {"$exists": False}},
+                        ]
                     }
                     LOG.debug("Adding size less than, undef inclusive to query.")
 

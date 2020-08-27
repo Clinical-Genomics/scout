@@ -55,7 +55,8 @@ class LoqusDB:
         ]
         self.version = version
         LOG.info(
-            "Initializing loqus extension with config: %s", self.loqusdb_settings,
+            "Initializing loqus extension with config: %s",
+            self.loqusdb_settings,
         )
 
     def init_app(self, app):

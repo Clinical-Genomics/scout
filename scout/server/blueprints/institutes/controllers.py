@@ -341,7 +341,8 @@ def update_clinvar_submission_status(store, request, institute_id, submission_id
         store.update_clinvar_submission_status(institute_id, submission_id, update_status)
     if update_status == "register_id":  # register an official clinvar submission ID
         result = store.update_clinvar_id(
-            clinvar_id=request.form.get("clinvar_id"), submission_id=submission_id,
+            clinvar_id=request.form.get("clinvar_id"),
+            submission_id=submission_id,
         )
     if update_status == "delete":  # delete a submission
         deleted_objects, deleted_submissions = store.delete_submission(submission_id=submission_id)
@@ -363,7 +364,8 @@ def update_clinvar_sample_names(store, submission_id, case_id, old_name, new_nam
     """
     n_renamed = store.rename_casedata_samples(submission_id, case_id, old_name, new_name)
     flash(
-        f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'", "info",
+        f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'",
+        "info",
     )
 
 

@@ -138,7 +138,8 @@ class ClinVarHandler(object):
         """
 
         LOG.info(
-            "Adding new variants and case data to clinvar submission '%s'", submission_id,
+            "Adding new variants and case data to clinvar submission '%s'",
+            submission_id,
         )
 
         # Insert variant submission_objects into clinvar collection

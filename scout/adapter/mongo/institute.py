@@ -155,7 +155,9 @@ class InstituteHandler(object):
         if updates["$set"].keys() or updates.get("$push") or updates.get("$pull"):
             updates["$set"]["updated_at"] = datetime.now()
             updated_institute = self.institute_collection.find_one_and_update(
-                {"_id": internal_id}, updates, return_document=pymongo.ReturnDocument.AFTER,
+                {"_id": internal_id},
+                updates,
+                return_document=pymongo.ReturnDocument.AFTER,
             )
 
             LOG.info("Institute updated")

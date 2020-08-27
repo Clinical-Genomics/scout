@@ -342,7 +342,10 @@ def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, cr
     variant_obj = store.variant(variant_id)
     user_obj = store.user(user_email)
     variant_link = url_for(
-        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id,
+        "variant.variant",
+        institute_id=institute_id,
+        case_name=case_name,
+        variant_id=variant_id,
     )
     classification = store.submit_evaluation(
         institute_obj=institute_obj,

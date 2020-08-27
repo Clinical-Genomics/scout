@@ -15,7 +15,9 @@ LOG = logging.getLogger(__name__)
 @click.argument("panel", nargs=-1, metavar="<panel_name>")
 @builds_option
 @click.option(
-    "--version", type=float, help="Specify panel version, only works if one panel is provided",
+    "--version",
+    type=float,
+    help="Specify panel version, only works if one panel is provided",
 )
 @click.option("--bed", help="Export genes in bed like format", is_flag=True)
 @with_appcontext

@@ -130,7 +130,10 @@ class GeneHandler(object):
                 return self.hgnc_collection.find(query)
 
             return self.hgnc_collection.find(
-                {"aliases": {"$regex": hgnc_symbol, "$options": "i"}, "build": str(build),}
+                {
+                    "aliases": {"$regex": hgnc_symbol, "$options": "i"},
+                    "build": str(build),
+                }
             )
 
         return self.hgnc_collection.find({"build": build, "aliases": hgnc_symbol})

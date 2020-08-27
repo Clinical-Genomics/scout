@@ -48,7 +48,9 @@ class VariantLoader(object):
         LOG.debug("Updating variant %s", variant_obj.get("simple_id"))
 
         new_variant = self.variant_collection.find_one_and_replace(
-            {"_id": variant_obj["_id"]}, variant_obj, return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": variant_obj["_id"]},
+            variant_obj,
+            return_document=pymongo.ReturnDocument.AFTER,
         )
         return new_variant
 
@@ -64,7 +66,11 @@ class VariantLoader(object):
         """
         # Get all variants sorted by rank score
         variants = self.variant_collection.find(
-            {"case_id": case_obj["_id"], "category": category, "variant_type": variant_type,}
+            {
+                "case_id": case_obj["_id"],
+                "category": category,
+                "variant_type": variant_type,
+            }
         ).sort("rank_score", pymongo.DESCENDING)
 
         LOG.info("Updating variant_rank for all variants")
@@ -481,7 +487,8 @@ class VariantLoader(object):
                 if nr_variants != 0 and nr_variants % 5000 == 0:
                     LOG.info("%s variants parsed", str(nr_variants))
                     LOG.info(
-                        "Time to parse variants: %s", (datetime.now() - start_five_thousand),
+                        "Time to parse variants: %s",
+                        (datetime.now() - start_five_thousand),
                     )
                     start_five_thousand = datetime.now()
 
