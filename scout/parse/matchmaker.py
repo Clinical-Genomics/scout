@@ -8,20 +8,20 @@ LOG = logging.getLogger(__name__)
 
 def hpo_terms(case_obj):
     """Extract all phenotype-associated terms for a case. Drawback of this method is that
-        it returns the same phenotype terms for each affected individual
-        of the case.
-        Args:
-            case_obj(dict): a scout case object
-        Returns:
-            features(list): a list of phenotype objects that looks like this:
-            [
-              {
-                "id": "HP:0001644",
-                "label": "Dilated cardiomyopathy",
-                "observed": "yes"
-              },
-              ...
-            ]
+    it returns the same phenotype terms for each affected individual
+    of the case.
+    Args:
+        case_obj(dict): a scout case object
+    Returns:
+        features(list): a list of phenotype objects that looks like this:
+        [
+          {
+            "id": "HP:0001644",
+            "label": "Dilated cardiomyopathy",
+            "observed": "yes"
+          },
+          ...
+        ]
     """
     LOG.info("Collecting phenotype terms for case {}".format(case_obj.get("display_name")))
     features = []

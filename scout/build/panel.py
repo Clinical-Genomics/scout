@@ -56,7 +56,8 @@ def build_gene(gene_info, adapter):
     gene_obj["symbol"] = hgnc_gene["hgnc_symbol"]
     if symbol != gene_obj["symbol"]:
         LOG.warning(
-            "Symbol in database does not correspond to symbol in panel file for gene %s", hgnc_id,
+            "Symbol in database does not correspond to symbol in panel file for gene %s",
+            hgnc_id,
         )
         LOG.warning(
             "Using symbol %s for gene %s, instead of %s"

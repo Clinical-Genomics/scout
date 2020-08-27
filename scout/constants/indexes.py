@@ -8,20 +8,32 @@ INDEXES = {
             background=True,
         ),
         IndexModel(
-            [("build", ASCENDING), ("hgnc_id", ASCENDING)], name="build_hgncid", background=True,
+            [("build", ASCENDING), ("hgnc_id", ASCENDING)],
+            name="build_hgncid",
+            background=True,
         ),
         IndexModel(
-            [("build", ASCENDING), ("aliases", ASCENDING)], name="build_aliases", background=True,
+            [("build", ASCENDING), ("aliases", ASCENDING)],
+            name="build_aliases",
+            background=True,
         ),
     ],
     "variant": [
         IndexModel(
-            [("case_id", ASCENDING), ("category", ASCENDING), ("rank_score", DESCENDING),],
+            [
+                ("case_id", ASCENDING),
+                ("category", ASCENDING),
+                ("rank_score", DESCENDING),
+            ],
             name="caseid_rankscore",
             background=True,
         ),
         IndexModel(
-            [("case_id", ASCENDING), ("category", ASCENDING), ("variant_rank", ASCENDING),],
+            [
+                ("case_id", ASCENDING),
+                ("category", ASCENDING),
+                ("variant_rank", ASCENDING),
+            ],
             name="caseid_variantrank",
             background=True,
         ),
@@ -47,7 +59,11 @@ INDEXES = {
             partialFilterExpression={"rank_score": {"$gt": 5}, "category": "snv"},
         ),
         IndexModel(
-            [("case_id", ASCENDING), ("category", ASCENDING), ("variant_id", ASCENDING),],
+            [
+                ("case_id", ASCENDING),
+                ("category", ASCENDING),
+                ("variant_id", ASCENDING),
+            ],
             name="caseid_variantid",
             background=True,
         ),
@@ -83,7 +99,9 @@ INDEXES = {
     ],
     "exon": [
         IndexModel(
-            [("build", ASCENDING), ("hgnc_id", ASCENDING)], name="build_hgncid", background=True,
+            [("build", ASCENDING), ("hgnc_id", ASCENDING)],
+            name="build_hgncid",
+            background=True,
         )
     ],
     "hpo_term": [IndexModel([("hpo_number", ASCENDING)], name="number", background=True)],

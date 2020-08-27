@@ -153,7 +153,10 @@ def parse_coordinates(variant, category, build="37"):
         if sub_category == "bnd":
             end_chrom = get_end_chrom(alt, chrom)
         end = sv_end(
-            pos=position, alt=alt, svend=variant.INFO.get("END"), svlen=variant.INFO.get("SVLEN"),
+            pos=position,
+            alt=alt,
+            svend=variant.INFO.get("END"),
+            svlen=variant.INFO.get("SVLEN"),
         )
         length = sv_length(
             pos=position,

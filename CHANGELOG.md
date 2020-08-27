@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Support to configure LoqusDB per institute
 - Highlight causative variants in the variants list
 - Add tests. Mostly regarding building internal datatypes.
 - Remove leading and trailing whitespaces from panel_name and display_name when panel is created
@@ -13,6 +14,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Report pages redirect to login instead of crashing when session expires
 - Variants filter loading in cancer variants page
 - User, Causative and Cases tables not scaling to full page
+- Improved docs for an initial production setup
+- Compatibility with latest version of Black
+- Fixed tests for Click>7
+- Clinical filter required an extra click to Filter to return variants
 ### Changed
 - Highlight color on normal STRs in the variants table from green to blue
 
