@@ -19,6 +19,3 @@ pre-commit
 # docs
 mkdocs
 mkdocs-material==4.6.1
-
-#compatibility
-click<7.0
