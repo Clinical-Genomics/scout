@@ -10,42 +10,42 @@ log = logging.getLogger(__name__)
 def build_individual(ind):
     """Build a Individual object
 
-        Args:
-            ind (dict): A dictionary with individual information
+    Args:
+        ind (dict): A dictionary with individual information
 
-        Returns:
-            ind_obj (dict): A Individual object
+    Returns:
+        ind_obj (dict): A Individual object
 
-        Raises:
-            PedigreeError: if sex is unknown,
-            if phenotype is unknown,
-            if analysis_type is unknwon,
-            or missing individual_id
+    Raises:
+        PedigreeError: if sex is unknown,
+        if phenotype is unknown,
+        if analysis_type is unknwon,
+        or missing individual_id
 
-        dict(
-            individual_id = str, # required
-            display_name = str,
-            sex = str,
-            phenotype = int,
-            father = str, # Individual id of father
-            mother = str, # Individual id of mother
-            capture_kits = list, # List of names of capture kits
-            bam_file = str, # Path to bam file,
-            rhocall_wig = str, # Path to a rhocall wig file showing heterozygosity levels
-            rhocall_bed = str, # Path to a rhocall bed file marking LOH regions
-            tiddit_coverage_wig = str, # Path to a TIDDIT coverage wig - overview coverage
-            upd_regions_bed = str, # Path to a UPD regions bed marking UPD calls
-            upd_sites_bed = str, # Path to a UPD sites bed, showing UPD info for vars
-            vcf2cytosure = str, # Path to CGH file
-            is_sma = boolean,
-            is_sma_carrier = boolean,
-            smn1_cn = int,
-            smn2_cn = int,
-            smn2delta78_cn = int,
-            smn_27134_cn = int,
-            predicted_ancestry = str,
-            analysis_type = str, # choices=ANALYSIS_TYPES
-        )
+    dict(
+        individual_id = str, # required
+        display_name = str,
+        sex = str,
+        phenotype = int,
+        father = str, # Individual id of father
+        mother = str, # Individual id of mother
+        capture_kits = list, # List of names of capture kits
+        bam_file = str, # Path to bam file,
+        rhocall_wig = str, # Path to a rhocall wig file showing heterozygosity levels
+        rhocall_bed = str, # Path to a rhocall bed file marking LOH regions
+        tiddit_coverage_wig = str, # Path to a TIDDIT coverage wig - overview coverage
+        upd_regions_bed = str, # Path to a UPD regions bed marking UPD calls
+        upd_sites_bed = str, # Path to a UPD sites bed, showing UPD info for vars
+        vcf2cytosure = str, # Path to CGH file
+        is_sma = boolean,
+        is_sma_carrier = boolean,
+        smn1_cn = int,
+        smn2_cn = int,
+        smn2delta78_cn = int,
+        smn_27134_cn = int,
+        predicted_ancestry = str,
+        analysis_type = str, # choices=ANALYSIS_TYPES
+    )
     """
 
     try:

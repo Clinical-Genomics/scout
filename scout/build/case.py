@@ -232,9 +232,7 @@ def build_case(case_data, adapter):
     case_obj["delivery_report"] = case_data.get("delivery_report")
 
     case_obj["has_svvariants"] = False
-    if case_obj["vcf_files"].get("vcf_sv") or case_obj["vcf_files"].get(
-        "vcf_sv_research"
-    ):
+    if case_obj["vcf_files"].get("vcf_sv") or case_obj["vcf_files"].get("vcf_sv_research"):
         case_obj["has_svvariants"] = True
 
     case_obj["has_strvariants"] = False

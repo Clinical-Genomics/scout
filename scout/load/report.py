@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def load_delivery_report(
     adapter: MongoAdapter, report_path: str, case_id: str, update: bool = False
 ):
-    """ Load a delivery report into a case in the database
+    """Load a delivery report into a case in the database
 
     If the report already exists the function will exit.
     If the user want to load a report that is already in the database

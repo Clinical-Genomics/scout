@@ -95,7 +95,12 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
 
         variants.append(
             parse_variant(
-                store, institute_obj, case_obj, variant_obj, update=True, genome_build=genome_build,
+                store,
+                institute_obj,
+                case_obj,
+                variant_obj,
+                update=True,
+                genome_build=genome_build,
             )
         )
 
@@ -283,7 +288,10 @@ def parse_variant(
         variant_obj = store.update_variant(variant_obj)
 
     variant_obj["comments"] = store.events(
-        institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True,
+        institute_obj,
+        case=case_obj,
+        variant_id=variant_obj["variant_id"],
+        comments=True,
     )
 
     if variant_genes:
@@ -309,15 +317,15 @@ def parse_variant(
 
 
 def download_variants(store, case_obj, variant_objs):
-    """ Download filtered variants for a case to an excel file
+    """Download filtered variants for a case to an excel file
 
-        Args:
-            store(adapter.MongoAdapter)
-            case_obj(dict)
-            variant_objs(PyMongo cursor)
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(dict)
+        variant_objs(PyMongo cursor)
 
-        Returns:
-            an HTTP response containing a csv file
+    Returns:
+        an HTTP response containing a csv file
     """
     document_header = variants_export_header(case_obj)
     export_lines = []
@@ -337,19 +345,21 @@ def download_variants(store, case_obj, variant_objs):
     )
     # return a csv with the exported variants
     return Response(
-        generate(",".join(document_header), export_lines), mimetype="text/csv", headers=headers,
+        generate(",".join(document_header), export_lines),
+        mimetype="text/csv",
+        headers=headers,
     )
 
 
 def variant_export_lines(store, case_obj, variants_query):
     """Get variants info to be exported to file, one list (line) per variant.
-        Args:
-            store(scout.adapter.MongoAdapter)
-            case_obj(scout.models.Case)
-            variants_query: a list of variant objects, each one is a dictionary
-        Returns:
-            export_variants: a list of strings. Each string  of the list corresponding to the fields
-                             of a variant to be exported to file, separated by comma
+    Args:
+        store(scout.adapter.MongoAdapter)
+        case_obj(scout.models.Case)
+        variants_query: a list of variant objects, each one is a dictionary
+    Returns:
+        export_variants: a list of strings. Each string  of the list corresponding to the fields
+                         of a variant to be exported to file, separated by comma
     """
 
     export_variants = []
@@ -398,11 +408,11 @@ def variant_export_lines(store, case_obj, variants_query):
 def variant_export_genes_info(store, gene_list):
     """Adds gene info to a list of fields corresponding to a variant to be exported.
 
-        Args:
-            gene_list(list) A list of gene objects contained in the variant
+    Args:
+        gene_list(list) A list of gene objects contained in the variant
 
-        Returns:
-            gene_info(list) A list of gene-relates string info
+    Returns:
+        gene_info(list) A list of gene-relates string info
     """
     gene_ids = []
     gene_names = []
@@ -437,11 +447,11 @@ def variant_export_genes_info(store, gene_list):
 
 def variants_export_header(case_obj):
     """Returns a header for the CSV file with the filtered variants to be exported.
-        Args:
-            case_obj(scout.models.Case)
-        Returns:
-            header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
-                    + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
+    Args:
+        case_obj(scout.models.Case)
+    Returns:
+        header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
+                + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
     """
     header = []
     header = header + EXPORT_HEADER
@@ -539,14 +549,14 @@ def variant_count_session(store, institute_id, case_id, var_type, var_category):
 
 def get_clinvar_submission(store, institute_id, case_name, variant_id, submission_id):
     """Collects all variants from the clinvar submission collection with a specific submission_id
-        Args:
-            store(scout.adapter.MongoAdapter)
-            institute_id(str): Institute ID
-            case_name(str): case ID
-            variant_id(str): variant._id
-            submission_id(str): clinvar submission id, i.e. SUB76578
-        Returns:
-            A dictionary with all the data to display the clinvar_update.html template page
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str): Institute ID
+        case_name(str): case ID
+        variant_id(str): variant._id
+        submission_id(str): clinvar submission id, i.e. SUB76578
+    Returns:
+        A dictionary with all the data to display the clinvar_update.html template page
     """
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -658,7 +668,7 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
 
 
 def populate_sv_filters_form(store, institute_obj, case_obj, category, request_obj):
-    """ Populate a filters form object of the type SvFiltersForm
+    """Populate a filters form object of the type SvFiltersForm
 
     Accepts:
         store(adapter.MongoAdapter)
@@ -791,13 +801,13 @@ def verified_excel_file(store, institute_list, temp_excel_dir):
 
 
 def activate_case(store, institute_obj, case_obj, current_user):
-    """ Activate case when visited for the first time.
+    """Activate case when visited for the first time.
 
-        Args:
-            store(adapter.MongoAdapter)
-            institute_obj(dict) a scout institutet object
-            case_obj(dict) a scout case object
-            current_user(UserMixin): a scout user
+    Args:
+        store(adapter.MongoAdapter)
+        institute_obj(dict) a scout institutet object
+        case_obj(dict) a scout case object
+        current_user(UserMixin): a scout user
     """
 
     # update status of case if visited for the first time
@@ -806,6 +816,8 @@ def activate_case(store, institute_obj, case_obj, current_user):
 
         user_obj = store.user(current_user.email)
         case_link = url_for(
-            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
+            "cases.case",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
         )
         store.update_status(institute_obj, case_obj, user_obj, "active", case_link)

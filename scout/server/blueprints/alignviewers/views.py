@@ -92,7 +92,8 @@ def igv():
         if request.form.get("tiddit_coverage_wig"):
             tiddit_coverage_files = request.form.get("tiddit_coverage_wig").split(",")
             LOG.debug(
-                "loading the following tiddit_coverage tracks: %s", tiddit_coverage_files,
+                "loading the following tiddit_coverage tracks: %s",
+                tiddit_coverage_files,
             )
         if request.form.get("upd_regions_bed"):
             updregion_files = request.form.get("upd_regions_bed").split(",")
