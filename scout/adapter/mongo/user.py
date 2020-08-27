@@ -14,11 +14,11 @@ class UserHandler(object):
     def update_user(self, user_obj):
         """Update an existing user.
 
-            Args:
-                user_obj(dict)
+        Args:
+            user_obj(dict)
 
-            Returns:
-                updated_user(dict)
+        Returns:
+            updated_user(dict)
         """
         LOG.info("Updating user %s", user_obj["_id"])
         updated_user = self.user_collection.find_one_and_replace(
@@ -29,11 +29,11 @@ class UserHandler(object):
     def add_user(self, user_obj):
         """Add a user object to the database
 
-            Args:
-                user_obj(scout.models.User): A dictionary with user information
+        Args:
+            user_obj(scout.models.User): A dictionary with user information
 
-            Returns:
-                user_info(dict): a copy of what was inserted
+        Returns:
+            user_info(dict): a copy of what was inserted
         """
         LOG.info("Adding user %s to the database", user_obj["email"])
         if not "_id" in user_obj:
@@ -50,11 +50,11 @@ class UserHandler(object):
     def users(self, institute=None):
         """Return all users from the database
 
-            Args:
-                institute(str): A institute_id
+        Args:
+            institute(str): A institute_id
 
-            Returns:
-                res(pymongo.Cursor): A cursor with users
+        Returns:
+            res(pymongo.Cursor): A cursor with users
         """
         query = {}
         if institute:
@@ -69,12 +69,12 @@ class UserHandler(object):
     def user(self, email=None, user_id=None):
         """Fetch a user from the database.
 
-            Args:
-                email(str)
-                user_id(str)
+        Args:
+            email(str)
+            user_id(str)
 
-            Returns:
-                user_obj(dict)
+        Returns:
+            user_obj(dict)
         """
         if not (user_id or email):
             LOG.warning("No key provided to fetch user")

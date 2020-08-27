@@ -177,7 +177,7 @@ def database(
 @click.pass_context
 def demo(context):
     """Setup a scout demo instance. This instance will be populated with a
-       case, a gene panel and some variants.
+    case, a gene panel and some variants.
     """
     LOG.info("Running scout setup demo")
     institute_name = context.obj["institute_name"]

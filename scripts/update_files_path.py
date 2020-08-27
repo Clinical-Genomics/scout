@@ -32,9 +32,9 @@ INDIVIDUAL_FILES = ["bam_file", "mt_bam", "vcf2cytosure"]
 )
 @click.option("-c", "--case_id", help="id of a case that needs fixing")
 def do_replace(db_uri, old_path, new_path, test, discover, case_id):
-    """ This script replaces a substring of the path to files (delivery_report, vcf files
-        and individual bam and vcf2cytosure files) with a new substring provided by the user.
-        Useful when cases are moved to a new server"""
+    """This script replaces a substring of the path to files (delivery_report, vcf files
+    and individual bam and vcf2cytosure files) with a new substring provided by the user.
+    Useful when cases are moved to a new server"""
 
     try:
         db_name = db_uri.split("/")[-1]  # get database name from connection string

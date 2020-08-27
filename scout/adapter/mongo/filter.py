@@ -14,11 +14,11 @@ class FilterHandler(object):
     def retrieve_filter(self, filter_id):
         """Retrieve a known stored filter object from the db
 
-            Arguments:
-                filter_id(str) - a unique id cast to ObjectId
+        Arguments:
+            filter_id(str) - a unique id cast to ObjectId
 
-            Returns:
-                filter_obj(dict)
+        Returns:
+            filter_obj(dict)
         """
         LOG.debug("Retrieve filter {}".format(filter_id))
         filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
@@ -32,15 +32,15 @@ class FilterHandler(object):
     ):
         """Store away filter settings for later use.
 
-            Arguments:
-                filter_obj(MultiDict)
-                institute_obj(dict)
-                user_obj(dict)
-                case_obj(dict)
-                category(str): in ['cancer', 'snv', 'str', 'sv']
+        Arguments:
+            filter_obj(MultiDict)
+            institute_obj(dict)
+            user_obj(dict)
+            case_obj(dict)
+            category(str): in ['cancer', 'snv', 'str', 'sv']
 
-            Returns:
-                filter_id(str) - a unique id that can be cast to ObjectId
+        Returns:
+            filter_id(str) - a unique id that can be cast to ObjectId
         """
 
         LOG.info(

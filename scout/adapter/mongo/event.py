@@ -20,8 +20,8 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
     def delete_event(self, event_id):
         """Delete a event
 
-            Arguments:
-                event_id (str): The database key for the event
+        Arguments:
+            event_id (str): The database key for the event
         """
         LOG.info("Deleting event{0}".format(event_id))
         if not isinstance(event_id, ObjectId):
@@ -88,16 +88,16 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
     ):
         """Fetch events from the database.
 
-          Args:
-            institute (dict): An institute
-            case (dict): A case
-            variant_id (str, optional): global variant id
-            level (str, optional): restrict comments to 'specific' or 'global'
-            comments (bool, optional): restrict events to include only comments
-            panel (str): A panel name
+        Args:
+          institute (dict): An institute
+          case (dict): A case
+          variant_id (str, optional): global variant id
+          level (str, optional): restrict comments to 'specific' or 'global'
+          comments (bool, optional): restrict events to include only comments
+          panel (str): A panel name
 
-          Returns:
-              pymongo.Cursor: Query result
+        Returns:
+            pymongo.Cursor: Query result
         """
 
         query = {}
@@ -159,16 +159,16 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
     ):
         """Add a new phenotype term to a case
 
-            Create a phenotype term and event with the given information
+        Create a phenotype term and event with the given information
 
-            Args:
-                institute (Institute): A Institute object
-                case (Case): Case object
-                user (User): A User object
-                link (str): The url to be used in the event
-                hpo_term (str): A hpo id
-                omim_term (str): A omim id
-                is_group (bool): is phenotype term a group?
+        Args:
+            institute (Institute): A Institute object
+            case (Case): Case object
+            user (User): A User object
+            link (str): The url to be used in the event
+            hpo_term (str): A hpo id
+            omim_term (str): A omim id
+            is_group (bool): is phenotype term a group?
 
         """
         hpo_results = []

@@ -63,7 +63,7 @@ def test_send_gene_request(ensembl_gene_response, ensembl_rest_client_37):
 @responses.activate
 def test_send_request_fakey_url(ensembl_rest_client_37):
     """Successful requests are tested by other tests in this file.
-       This test will trigger errors instead.
+    This test will trigger errors instead.
     """
     # GIVEN a completely invalid URL
     url = "fakeyurl"
@@ -79,7 +79,7 @@ def test_send_request_fakey_url(ensembl_rest_client_37):
 @responses.activate
 def test_send_request_wrong_url(ensembl_rest_client_37):
     """Successful requests are tested by other tests in this file.
-       This test will trigger errors instead.
+    This test will trigger errors instead.
     """
     url = "https://grch37.rest.ensembl.org/fakeyurl"
     client = ensembl_rest_client_37
@@ -143,7 +143,7 @@ def test_xml_attributes(ensembl_biomart_client_37):
 @responses.activate
 def test_test_query_biomart_38_xml(ensembl_biomart_xml_query):
     """Prepare a test xml document for the biomart service build 38
-     and query the service using it
+    and query the service using it
     """
     # GIVEN client with a xml query for a gene
     build = "38"

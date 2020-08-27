@@ -162,8 +162,8 @@ class VariantLoader(object):
     def update_mongo_compound_variants(self, bulk):
         """Update the compound information for a bulk of variants in the database
 
-            Args:
-                bulk(dict): {'_id': scout.models.Variant}
+        Args:
+            bulk(dict): {'_id': scout.models.Variant}
 
         """
         requests = []

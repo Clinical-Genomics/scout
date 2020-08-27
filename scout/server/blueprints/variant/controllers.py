@@ -358,15 +358,15 @@ def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, cr
 def clinvar_export(store, institute_id, case_name, variant_id):
     """Gather the required data for creating the clinvar submission form
 
-        Args:
-            store(scout.adapter.MongoAdapter)
-            institute_id(str): Institute ID
-            case_name(str): case ID
-            variant_id(str): variant._id
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str): Institute ID
+        case_name(str): case ID
+        variant_id(str): variant._id
 
-        Returns:
-            data(dict): all the required data (case and variant level) to pre-fill in fields
-                        in the clinvar submission form
+    Returns:
+        data(dict): all the required data (case and variant level) to pre-fill in fields
+                    in the clinvar submission form
 
     """
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)

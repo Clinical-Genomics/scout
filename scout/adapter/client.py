@@ -34,13 +34,13 @@ def get_connection(
 ):
     """Get a client to the mongo database
 
-        host(str): Host of database
-        port(int): Port of database
-        username(str)
-        password(str)
-        uri(str)
-        authdb (str): database to use for authentication
-        timeout(int): How long should the client try to connect
+    host(str): Host of database
+    port(int): Port of database
+    username(str)
+    password(str)
+    uri(str)
+    authdb (str): database to use for authentication
+    timeout(int): How long should the client try to connect
 
     """
     authdb = authdb or mongodb

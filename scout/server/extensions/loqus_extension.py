@@ -43,10 +43,10 @@ def execute_command(cmd):
 class LoqusDB:
     """Interface to loqusdb from Flask
 
-     NOTE: * initialied in __init__.py called from server/extensins/__init.py__ but also
-             init_app is called from server/app.init.
-           * in practice this is a singleton class
-           * configured in `scout/server/config.py` """
+    NOTE: * initialied in __init__.py called from server/extensins/__init.py__ but also
+            init_app is called from server/app.init.
+          * in practice this is a singleton class
+          * configured in `scout/server/config.py`"""
 
     def __init__(self, loqusdb_binary=None, loqusdb_config=None, loqusdb_args=None, version=None):
         """Initialise from args"""
@@ -171,8 +171,8 @@ class LoqusDB:
         return None
 
     def default_setting(self):
-        """Get default loqusdb configuration  
-        
+        """Get default loqusdb configuration
+
         Returns:
             institute_settings(dict)
         """

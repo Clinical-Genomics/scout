@@ -633,10 +633,10 @@ class CaseHandler(object):
 
     def _add_case(self, case_obj):
         """Add a case to the database
-           If the case already exists exception is raised
+        If the case already exists exception is raised
 
-            Args:
-                case_obj(Case)
+         Args:
+             case_obj(Case)
         """
         if self.case(case_obj["_id"]):
             raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
@@ -1010,17 +1010,17 @@ class CaseHandler(object):
 
     def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
         """Update existing variants for a case according to a previous
-            verification status.
+        verification status.
 
-            Accepts:
-                institute_obj(dict): an institute object
-                case_obj(dict): a case object
+        Accepts:
+            institute_obj(dict): an institute object
+            case_obj(dict): a case object
 
-            Returns:
-                updated_variants(dict): a dictionary like this: {
-                    'updated_verified' : [list of variant ids],
-                    'updated_ordered' : [list of variant ids]
-                }
+        Returns:
+            updated_variants(dict): a dictionary like this: {
+                'updated_verified' : [list of variant ids],
+                'updated_ordered' : [list of variant ids]
+            }
 
         """
         LOG.debug("Updating verification status for variants in case:{}".format(case_obj["_id"]))

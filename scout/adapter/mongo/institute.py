@@ -15,8 +15,8 @@ class InstituteHandler(object):
     def add_institute(self, institute_obj):
         """Add a institute to the database
 
-            Args:
-                institute_obj(Institute)
+        Args:
+            institute_obj(Institute)
         """
         internal_id = institute_obj["internal_id"]
         display_name = institute_obj["display_name"]
@@ -165,11 +165,11 @@ class InstituteHandler(object):
     def institute(self, institute_id):
         """Featch a single institute from the backend
 
-            Args:
-                institute_id(str)
+        Args:
+            institute_id(str)
 
-            Returns:
-                Institute object
+        Returns:
+            Institute object
         """
         LOG.debug("Fetch institute {}".format(institute_id))
         institute_obj = self.institute_collection.find_one({"_id": institute_id})

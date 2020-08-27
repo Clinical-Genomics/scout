@@ -222,10 +222,10 @@ def test_load_mitochondrial(real_populated_database, case_obj, variant_clinical_
 
 def test_compounds_region(real_populated_database, case_obj):
     """When loading the variants not all variants will be loaded, only the ones that
-       have a rank score above a treshold.
-       This implies that some compounds will have the status 'not_loaded'=True.
-       When loading all variants for a region then all variants should
-       have status 'not_loaded'=False.
+    have a rank score above a treshold.
+    This implies that some compounds will have the status 'not_loaded'=True.
+    When loading all variants for a region then all variants should
+    have status 'not_loaded'=False.
     """
     adapter = real_populated_database
     variant_type = "clinical"

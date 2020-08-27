@@ -9,14 +9,14 @@ from datetime import datetime
 class User(dict):
     """User dictionary
 
-        _id = str, # required, unique, same as email
-        email = str, # required, unique
-        name = str, # required=True
-        created_at = datetime,
-        accessed_at = datetime,
-        location = str,
-        institutes = list, # List of institute_ids
-        roles = list, # List of roles
+    _id = str, # required, unique, same as email
+    email = str, # required, unique
+    name = str, # required=True
+    created_at = datetime,
+    accessed_at = datetime,
+    location = str,
+    institutes = list, # List of institute_ids
+    roles = list, # List of roles
     """
 
     def __init__(

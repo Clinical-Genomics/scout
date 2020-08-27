@@ -46,12 +46,12 @@ class GeneHandler(object):
     def hgnc_gene(self, hgnc_identifier, build="37"):
         """Fetch a hgnc gene
 
-            Args:
-                hgnc_identifier(int)
-                build(str)
+        Args:
+            hgnc_identifier(int)
+            build(str)
 
-            Returns:
-                gene_obj(HgncGene)
+        Returns:
+            gene_obj(HgncGene)
         """
         if build:
             build = str(build)
@@ -105,15 +105,15 @@ class GeneHandler(object):
     def hgnc_genes(self, hgnc_symbol, build="37", search=False):
         """Fetch all hgnc genes that match a hgnc symbol
 
-            Check both hgnc_symbol and aliases
+        Check both hgnc_symbol and aliases
 
-            Args:
-                hgnc_symbol(str)
-                build(str): The build in which to search
-                search(bool): if partial searching should be used
+        Args:
+            hgnc_symbol(str)
+            build(str): The build in which to search
+            search(bool): if partial searching should be used
 
-            Returns:
-                result()
+        Returns:
+            result()
         """
         LOG.debug("Fetching genes with symbol %s" % hgnc_symbol)
         if search:
@@ -351,13 +351,13 @@ class GeneHandler(object):
     def to_hgnc(self, hgnc_alias, build="37"):
         """Check if a hgnc symbol is an alias
 
-            Return the correct hgnc symbol, if not existing return None
+        Return the correct hgnc symbol, if not existing return None
 
-            Args:
-                hgnc_alias(str)
+        Args:
+            hgnc_alias(str)
 
-            Returns:
-                hgnc_symbol(str)
+        Returns:
+            hgnc_symbol(str)
         """
         result = self.hgnc_genes(hgnc_symbol=hgnc_alias, build=str(build))
         if result:

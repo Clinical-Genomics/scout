@@ -508,13 +508,13 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
 
 
 def parse_raw_gene_ids(raw_symbols):
-    """ Parse raw gene symbols for hgnc_symbols from web form autocompletion.
+    """Parse raw gene symbols for hgnc_symbols from web form autocompletion.
 
-        Arguments:
-            raw_symbol_strings(list(string)) - formated "17284 | POT1 (hPot1, POT1)"
+    Arguments:
+        raw_symbol_strings(list(string)) - formated "17284 | POT1 (hPot1, POT1)"
 
-        Returns:
-            hgnc_ids(set(int))
+    Returns:
+        hgnc_ids(set(int))
     """
     hgnc_ids = set()
 
@@ -538,13 +538,13 @@ def parse_raw_gene_ids(raw_symbols):
 
 
 def parse_raw_gene_symbols(raw_symbols_list):
-    """ Parse list of concatenated gene symbol list for hgnc_symbols from Phenomizer.
+    """Parse list of concatenated gene symbol list for hgnc_symbols from Phenomizer.
 
-        Arguments:
-            raw_symbols(list(string)) - e.g. ("POT1 | MUTYH", "POT1 | ATXN1 | ATXN7")
+    Arguments:
+        raw_symbols(list(string)) - e.g. ("POT1 | MUTYH", "POT1 | ATXN1 | ATXN7")
 
-        Returns:
-            hgnc_symbols(set(string)) - set of (unique) gene symbols without intervening chars
+    Returns:
+        hgnc_symbols(set(string)) - set of (unique) gene symbols without intervening chars
     """
     hgnc_symbols = set()
 
@@ -765,7 +765,7 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
 @cases_bp.route("/<institute_id>/<case_name>/check-case", methods=["POST"])
 def check_case(institute_id, case_name):
     """Mark a case that is has been checked.
-       This means to set case['needs_check'] to False
+    This means to set case['needs_check'] to False
     """
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     store.case_collection.find_one_and_update(

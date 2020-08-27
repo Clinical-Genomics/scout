@@ -60,8 +60,8 @@ def variants(
 ):
     """Upload variants to a case
 
-        Note that the files has to be linked with the case,
-        if they are not use 'scout update case'.
+    Note that the files has to be linked with the case,
+    if they are not use 'scout update case'.
     """
     LOG.info("Running scout load variants")
     adapter = store
