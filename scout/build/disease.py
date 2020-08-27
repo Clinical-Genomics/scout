@@ -7,17 +7,17 @@ LOG = logging.getLogger(__name__)
 
 def build_disease_term(disease_info, alias_genes={}):
     """Build a disease phenotype object
-    
+
     Args:
         disease_info(dict): Dictionary with phenotype information
         alias_genes(dict): {
                     <alias_symbol>: {
                                         'true': hgnc_id or None,
                                         'ids': [<hgnc_id>, ...]}}
-    
+
     Returns:
         disease_obj(dict): Formated for mongodb
-        
+
         disease_term = dict(
             _id = str, # Same as disease_id
             disease_id = str, # required, like OMIM:600233
@@ -25,10 +25,10 @@ def build_disease_term(disease_info, alias_genes={}):
             description = str, # required
             source = str, # required
             inheritance = list, # list of strings
-            genes = list, # List with integers that are hgnc_ids 
-            hpo_terms = list, # List with str that are hpo_terms 
+            genes = list, # List with integers that are hgnc_ids
+            hpo_terms = list, # List with str that are hpo_terms
         )
-        
+
     """
 
     try:
