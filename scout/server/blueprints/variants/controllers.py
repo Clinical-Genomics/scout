@@ -603,11 +603,10 @@ def gene_panel_choices(store, institute_obj, case_obj):
     """
 
     panel_set = set()
-    # Add the case default panels and the institute-specific panels to the panel select options
+    # Add case default panels and the institute-specific panels to the panel select options
     available_panels = [
         panel["panel_name"] for panel in case_obj.get("panels", [])
     ] + institute_obj.get("gene_panels", [])
-    LOG.error(available_panels)
     for panel in available_panels:
         panel_set.add((panel, panel))
 
@@ -712,7 +711,14 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     if request_obj.method == "GET":
         form = SvFiltersForm(request_obj.args)
         form.variant_type.data = request_obj.args.get("variant_type", "clinical")
-        form.chrom.data = request_obj.args.get("chrom", None)
+        # set chromosome to all chromosomes
+        form.chrom.data = request_obj.args.get("chrom", "")
+        # set gene panels to case-specific gene panels
+        form.gene_panels.data = [
+            panel["panel_name"]
+            for panel in case_obj.get("panels", [])
+            if panel["is_default"] is True
+        ]
 
     else:  # POST
         form = populate_filters_form(

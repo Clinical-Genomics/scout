@@ -6,7 +6,6 @@ from copy import deepcopy
 
 import pymongo
 from bson import ObjectId
-from bson.errors import InvalidId
 
 from scout.build import build_panel
 from scout.exceptions import IntegrityError

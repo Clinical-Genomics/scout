@@ -67,7 +67,14 @@ def variants(institute_id, case_name):
         form = FiltersForm(request.args)
         # set form variant data type the first time around
         form.variant_type.data = variant_type
-        form.chrom.data = request.args.get("chrom", None)
+        # set chromosome to all chromosomes
+        form.chrom.data = request.args.get("chrom", "")
+        # set gene panels to case-specific gene panels
+        form.gene_panels.data = [
+            panel["panel_name"]
+            for panel in case_obj.get("panels", [])
+            if panel["is_default"] is True
+        ]
 
     # populate filters dropdown
     available_filters = store.filters(institute_id, category)
@@ -146,7 +153,6 @@ def variants(institute_id, case_name):
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
-    flash(form.data)
     variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
 
     # Setup variant count session with variant count by category
