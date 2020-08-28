@@ -620,7 +620,7 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
     clinical_filter_panels = []
 
     default_panels = []
-    for panel in case_obj["panels"]:
+    for panel in case_obj.get("panels", []):
         if panel.get("is_default"):
             default_panels.append(panel["panel_name"])
 

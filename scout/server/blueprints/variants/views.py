@@ -314,7 +314,7 @@ def cancer_variants(institute_id, case_name):
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
 
-    form.gene_panels.choices = controllers.institute_panel_choices(store, institute_obj, case_obj)
+    form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
