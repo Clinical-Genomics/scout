@@ -261,7 +261,6 @@ def institute_settings(institute_id):
 
     flash(form.gene_panels.choices)
 
-
     return render_template(
         "/overview/institute_settings.html",
         form=form,
