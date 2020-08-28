@@ -35,5 +35,5 @@ If you would like the services to start automatically after a reboot of your com
 run
 
 ```
-sudo loginctl enable-linger $USER
+loginctl enable-linger $USER
 ```
