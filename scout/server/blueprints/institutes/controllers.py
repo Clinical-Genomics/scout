@@ -71,7 +71,7 @@ def populate_institute_form(form, institute_obj):
         available_panels += list(store.latest_panels(collaborator))
     panel_set = set()
     for panel in available_panels:
-        panel_set.add((panel["panel_name"], panel["panel_name"]))
+        panel_set.add((panel["panel_name"], panel["display_nam"]))
     form.gene_panels.choices = list(panel_set)
 
 

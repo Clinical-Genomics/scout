@@ -301,52 +301,6 @@ def test_filter_cancer_variants_by_vaf(app, institute_obj, cancer_case_obj, vari
         # Without the variant
         assert variant_obj["_id"] not in str(resp.data)
 
-    """
-    # Given a test variant in database
-    test_var = store.variant_collection.find_one({"variant_type": "clinical", "category": "snv", "gene_panels":{"$in":case_obj["panels"]}})
-
-    # with control and cancer frequencies, and category = cancer
-    store.variant_collection.find_one_and_update(
-        {"_id": test_var["_id"]}, {"$set": {"tumor": {"alt_freq": 0.49}, "category": "cancer"}}
-    )
-
-    # GIVEN an initialized app
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-
-        # When the cancer SNV variants page is loaded by GET request
-        # WHEN accessing the sv-variants page
-        resp = client.get(
-            url_for(
-                "variants.cancer_variants",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            )
-        )
-        # THEN it should return a page
-        assert resp.status_code == 200
-        # With the above variant
-        assert test_var["_id"] in str(resp.data)
-
-        # When a POST request filter with VAF > than the VAF in test_var is sent to the page
-        form_data = {
-            "tumor_frequency": 0.5,
-        }
-        resp = client.post(
-            url_for(
-                "variants.cancer_variants",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            ),
-            data=form_data,
-        )
-        # THEN it should return a page
-        assert resp.status_code == 200
-        # Without the variant
-        assert test_var["_id"] not in str(resp.data)
-    """
-
 
 def test_sv_cancer_variants(app, institute_obj, case_obj):
     # GIVEN an initialized app
