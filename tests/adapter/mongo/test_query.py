@@ -61,7 +61,7 @@ def test_gene_panel_query(adapter, case_obj, variant_objs):
     ínserted_panel = adapter.panel_collection.find_one()
 
     # WHEN the panel _id is provided to the query builder
-    query = {"hgnc_symbols": [], "gene_panels": [ínserted_panel["_id"]]}
+    query = {"hgnc_symbols": [], "gene_panels": ["POT panel"]}
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
 
     # THEN the query should countain the gene(s) of the gene panel
@@ -83,7 +83,7 @@ def test_gene_symbol_gene_panel_query(adapter, case_obj, variant_obj):
     ínserted_panel = adapter.panel_collection.find_one()
 
     # WHEN the panel _id is provided to the query builder + a gene symbol for another gene
-    query = {"hgnc_symbols": ["ATM"], "gene_panels": [ínserted_panel["_id"]]}
+    query = {"hgnc_symbols": ["ATM"], "gene_panels": ["POT panel"]}
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
 
     # THEN the query should countain both genes in the hgnc_symbols list

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
-import pymongo
 
 LOG = logging.getLogger(__name__)
 

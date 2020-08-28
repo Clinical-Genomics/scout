@@ -13,7 +13,6 @@ from wtforms import (
     Field,
 )
 from scout.constants import PHENOTYPE_GROUPS, CASE_SEARCH_TERMS
-from scout.server.extensions import store
 
 CASE_SEARCH_KEY = [(value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()]
 
