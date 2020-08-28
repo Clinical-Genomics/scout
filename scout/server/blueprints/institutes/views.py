@@ -259,6 +259,9 @@ def institute_settings(institute_id):
     data = controllers.institute(store, institute_id)
     default_phenotypes = controllers.populate_institute_form(form, institute_obj)
 
+    flash(form.gene_panels.choices)
+
+
     return render_template(
         "/overview/institute_settings.html",
         form=form,
