@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_table %}
-{% from "variants/utils.html" import sv_filters, cell_rank %}
+{% from "variants/utils.html" import sv_filters, cell_rank, pagination_footer, pagination_hidden_div %}
 {% from "variants/components.html" import frequency_cell_general %}
 {% from "variant/buttons.html" import dismiss_variant_table_button %}
 
@@ -43,6 +43,7 @@
   <div class="container-float">
     <form method="POST" id="filters_form" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name)}}"
   onsubmit="return validateForm()">
+    {{ pagination_hidden_div(page) }}
       <div class="card panel-default" id="accordion">
         <div class="card-header">
           <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">SvFilters</a></strong>
@@ -56,7 +57,7 @@
             Showing {{session['filtered_variants']}} / {{session["all_variants"]}} variants
           {% endif %}
         </div>
-    </div>
+      </div>
     </form>
   </div>
   <div class="card mt-3">
@@ -88,7 +89,7 @@
     </table>
   </div>
   <div class="container-fluid">
-    {{ pagination() }}
+    {{ pagination_footer(more_variants) }}
   </div>
 {% endblock %}
 
@@ -144,24 +145,6 @@
       </div>
     </td>
   </tr>
-{% endmacro %}
-
-{% macro pagination() %}
-  <div class="container-fluid">
-    {% if more_variants %}
-    <div class="d-flex justify-content-around">
-        <div>
-            <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
-        </div>
-       <div>
-          <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value={{ page + 1 }}>Next page</button>
-       </div>
-    </div>
-    {% else %}
-      <i class="text-muted">No more variants to display</i>
-      <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
-    {% endif %}
-  </div>
 {% endmacro %}
 
 
