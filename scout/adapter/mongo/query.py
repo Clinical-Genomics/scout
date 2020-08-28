@@ -397,7 +397,7 @@ class QueryHandler(object):
         for panel in query.get("gene_panels", []):
             if panel == "hpo":
                 continue
-            hgnc_symbols.update(self.panel_to_genes(panel))
+            hgnc_symbols.update(self.panel_to_genes(panel_name=panel))
 
         return list(hgnc_symbols)
 

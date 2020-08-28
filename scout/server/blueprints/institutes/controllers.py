@@ -65,19 +65,15 @@ def populate_institute_form(form, institute_obj):
                 )
                 form.pheno_groups.choices.append((custom_group, custom_group))
 
-    # populate gene panels multiselect
-    available_panels = list(
-        store.gene_panels().sort(
-            [("panel_name", pymongo.ASCENDING), ("version", pymongo.ASCENDING)]
-        )
-    )
-    panel_choices = []
+    # populate gene panels multiselect with panels from institute
+    available_panels = list(store.latest_panels(institute_obj["_id"]))
+    # And from institute's collaborators
+    for collaborator in institute_obj.get("collaborators", []):
+        available_panels += list(store.latest_panels(collaborator))
+    panel_set = set()
     for panel in available_panels:
-        panel_id = str(panel["_id"])
-        n_genes = len(panel.get("genes", []))
-        panel_name = f"{panel['display_name']} ({str(panel['version'])}) - {str(n_genes)} genes"
-        panel_choices.append((panel_id, panel_name))
-    form.gene_panels.choices = panel_choices
+        panel_set.add((panel["panel_name"], panel["panel_name"]))
+    form.gene_panels.choices = list(panel_set)
 
 
 def update_institute_settings(store, institute_obj, form):

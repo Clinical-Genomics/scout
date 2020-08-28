@@ -591,7 +591,7 @@ def upload_panel(store, institute_id, case_name, stream):
     return hgnc_symbols
 
 
-def institute_panel_choices(store, institute_obj, case_obj):
+def gene_panel_choices(store, institute_obj, case_obj):
     """Populates the multiselect containing all the gene panels to be used in variants filtering
     Args:
         store(scout.adapter.MongoAdapter)
@@ -599,31 +599,21 @@ def institute_panel_choices(store, institute_obj, case_obj):
         case_obj(dict): a case object disctionary
 
     Returns:
-        panel_choices(list): a list of tuples containing the multiselect values/display name
+        panel_set(list): a list of tuples containing the multiselect panel values/display name
     """
 
-    # Polulate panel select with default case panels
-    panel_choices = [
-        (panel["panel_name"], panel["display_name"]) for panel in case_obj.get("panels", [])
-    ]
+    panel_set = set()
+    # Add the case default panels and the institute-specific panels to the panel select options
+    available_panels = [
+        panel["panel_name"] for panel in case_obj.get("panels", [])
+    ] + institute_obj.get("gene_panels", [])
+    LOG.error(available_panels)
+    for panel in available_panels:
+        panel_set.add((panel, panel))
 
-    # Add the institute default panels
-    for panel_id in institute_obj.get("gene_panels", []):
-        panel_obj = store.panel(panel_id)
-        if panel_obj is None:
-            continue
-        panel_id = str(panel_obj["_id"])
-        n_genes = len(panel_obj.get("genes", []))
-        panel_name = (
-            f"{panel_obj['panel_name']} ({str(panel_obj['version'])}) - {str(n_genes)} genes"
-        )
-        panel_choices.append((panel_id, panel_name))
-
-    # include HPO panel option
-    hpo_genes = len(case_obj.get("dynamic_gene_list", []))
-    panel_choices.append(("hpo", f"HPO - {str(hpo_genes)} genes"))
-
-    return panel_choices
+    # Add HPO panel
+    panel_set.add(("hpo", "HPO"))
+    return list(panel_set)
 
 
 def populate_filters_form(store, institute_obj, case_obj, user_obj, category, request_form):
@@ -736,7 +726,7 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     ]
 
     # populate available panel choices
-    form.gene_panels.choices = institute_panel_choices(store, institute_obj, case_obj)
+    form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
 
     # check if supplied gene symbols exist
     hgnc_symbols = []
