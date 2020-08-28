@@ -54,7 +54,7 @@ def populate_institute_form(form, institute_obj):
     form.coverage_cutoff.default = institute_obj.get("coverage_cutoff")
     form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
 
-    # collect all available default HPO terms
+    # collect all available default HPO terms and populate
     default_phenotypes = [choice[0].split(" ")[0] for choice in form.pheno_groups.choices]
     if institute_obj.get("phenotype_groups"):
         for key, value in institute_obj["phenotype_groups"].items():
@@ -71,8 +71,9 @@ def populate_institute_form(form, institute_obj):
         available_panels += list(store.latest_panels(collaborator))
     panel_set = set()
     for panel in available_panels:
-        panel_set.add((panel["panel_name"], panel["display_nam"]))
+        panel_set.add((panel["panel_name"], panel["display_name"]))
     form.gene_panels.choices = list(panel_set)
+    return default_phenotypes
 
 
 def update_institute_settings(store, institute_obj, form):
