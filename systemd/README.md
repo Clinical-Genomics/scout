@@ -30,3 +30,10 @@ systemctl --user enable scout-scout.service
 systemctl --user start scout-pod.service
 firefox http://localhost:5000
 ```
+
+If you would like the services to start automatically after a reboot of your computer,
+run
+
+```
+sudo loginctl enable-linger $USER
+```
