@@ -630,6 +630,7 @@
 {% endmacro %}
 
 {% macro pagination_hidden_div(page) %}
+{# Used inside filters form to introduce submit buttons for footer pagniation #}
   <div class="hidden">
     <input type="submit" name="page" id="paginate-first" value=1 hidden="true">
     <input type="submit" name="page" id="paginate-next" value={{page+1}} hidden="true">
@@ -637,6 +638,7 @@
 {% endmacro %}
 
 {% macro pagination_footer(more_variants) %}
+{# Used outside filters form to introduce footer pagniation labels #}
   <div class="container-fluid">
       {% if more_variants %}
         <div class="d-flex justify-content-around">
