@@ -321,6 +321,7 @@ def parse_individual(sample):
                 'msi': str,
                 'tumor_purity': float,
                 'tissue_type': str,
+                'chromograph_images': str
             }
 
     """
@@ -413,6 +414,7 @@ def parse_individual(sample):
         ind_info["tumor_purity"] = float(Fraction(ind_info["tumor_purity"]))
 
     ind_info["tissue_type"] = sample.get("tissue_type")
+    ind_info["chromograph_images"] = sample.get("chromograph_images")
 
     # Remove key-value pairs from ind_info where key==None and return
     return removeNoneValues(ind_info)
@@ -504,7 +506,9 @@ def parse_case(config):
         "multiqc": config.get("multiqc"),
         "track": config.get("track", "rare"),
         "chromograph_image_files": config.get("chromograph_image_files"),
-        "chromograph_prefixes": config.get("chromograph_prefixes"),
+        "chromograph_prefixes": config.get("chromograph_prefixes", {'roh': "roh_chr",
+                                                                    'upd': "upd_chr",
+                                                                    'chr': "cytoband.txt.chr"}),
     }
 
     # add SMN info

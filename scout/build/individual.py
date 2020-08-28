@@ -45,9 +45,9 @@ def build_individual(ind):
             smn_27134_cn = int,
             predicted_ancestry = str,
             analysis_type = str, # choices=ANALYSIS_TYPES
+            chromograph_images = str
         )
     """
-
     try:
         ind_obj = dict(individual_id=ind["individual_id"])
         log.info("Building Individual with id:{0}".format(ind["individual_id"]))
@@ -90,6 +90,7 @@ def build_individual(ind):
         "tiddit_coverage_wig",
         "upd_regions_bed",
         "upd_sites_bed",
+        "chromograph_images"
     ]
 
     for ind_file in ind_files:
