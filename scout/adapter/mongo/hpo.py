@@ -102,11 +102,11 @@ class HpoHandler(object):
 
     def generate_hpo_gene_list(self, *hpo_terms):
         """Generate a sorted list with namedtuples of hpogenes
-            Each namedtuple of the list looks like (hgnc_id, count)
-            Args:
-                hpo_terms(iterable(str))
-            Returns:
-                hpo_genes(list(HpoGene))
+        Each namedtuple of the list looks like (hgnc_id, count)
+        Args:
+            hpo_terms(iterable(str))
+        Returns:
+            hpo_genes(list(HpoGene))
         """
         genes = {}
         for term in hpo_terms:

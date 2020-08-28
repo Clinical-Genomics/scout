@@ -23,7 +23,10 @@ LOG = logging.getLogger(__name__)
 
 
 def load_hpo(
-    adapter, disease_lines=None, hpo_lines=None, hpo_gene_lines=None,
+    adapter,
+    disease_lines=None,
+    hpo_lines=None,
+    hpo_gene_lines=None,
 ):
     """Load the hpo terms and hpo diseases into database
 

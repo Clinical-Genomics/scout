@@ -13,7 +13,7 @@ def test_export_mt_report(mock_app, case_obj):
     # Thy the CLI without parameters
     result = runner.invoke(cli, ["export", "mt_report"])
     # it should return error
-    assert 'Missing option "--case_id"' in result.output
+    assert "Missing option" in result.output
 
     # Test the CLI providing case_id
     result = runner.invoke(cli, ["export", "mt_report", "--case_id", case_obj["_id"], "--test"])

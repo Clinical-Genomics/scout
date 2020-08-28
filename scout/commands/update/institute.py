@@ -11,10 +11,16 @@ LOG = logging.getLogger(__name__)
 @click.command("institute", short_help="Update institute for a case")
 @click.argument("institute-id")
 @click.option(
-    "-c", "--coverage-cutoff", type=int, help="Set a new coverage cutoff for a institute",
+    "-c",
+    "--coverage-cutoff",
+    type=int,
+    help="Set a new coverage cutoff for a institute",
 )
 @click.option(
-    "-f", "--frequency-cutoff", type=float, help="Set a new frequency cutoff for a institute",
+    "-f",
+    "--frequency-cutoff",
+    type=float,
+    help="Set a new frequency cutoff for a institute",
 )
 @click.option(
     "-s",

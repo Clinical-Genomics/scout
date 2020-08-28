@@ -2,8 +2,8 @@ from scout.parse.matchmaker import parse_matches
 
 
 def test_parse_matches(case_obj, match_objs):
-    """ tests that a list of MatchMaker matches returned by the server is interpreted
-        as it should
+    """tests that a list of MatchMaker matches returned by the server is interpreted
+    as it should
     """
     case_id = case_obj["_id"]
     affected_id = ""
