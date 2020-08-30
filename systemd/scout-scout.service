@@ -10,7 +10,7 @@ Wants=scout-setup-demo.service
 Environment=PODMAN_SYSTEMD_UNIT=%n
 Restart=on-failure
 ExecStartPre=/bin/rm -f %t/scout-scout.pid %t/scout-scout.ctr-id
-ExecStart=/usr/bin/podman run -d --conmon-pidfile %t/scout-scout.pid --cidfile %t/scout-scout.ctr-id --cgroups=no-conmon --pod-id-file %t/scout-pod.pod-id --replace --name scout-scout --security-opt label=disable  localhost/scout scout --demo serve
+ExecStart=/usr/bin/podman run -d --conmon-pidfile %t/scout-scout.pid --cidfile %t/scout-scout.ctr-id --cgroups=no-conmon --pod-id-file %t/scout-pod.pod-id --replace --name scout-scout --security-opt label=disable localhost/scout scout --demo serve
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/scout-scout.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/scout-scout.ctr-id
 PIDFile=%t/scout-scout.pid

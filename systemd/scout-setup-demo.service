@@ -3,7 +3,7 @@ Description=Podman scout-setup-demo.service
 Wants=network.target
 After=network-online.target
 BindsTo=scout-pod.service
-After=scout-pod.service  scout-mongo.service 
+After=scout-pod.service scout-mongo.service 
 Requires=scout-pod.service scout-mongo.service
 ConditionPathExists=!%S/scout-mongo-data/demo_has_been_set_up
 
