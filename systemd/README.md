@@ -27,6 +27,12 @@ systemctl --user start scout-pod.service
 firefox http://localhost:5000
 ```
 
+To see the status of the services
+
+```
+systemctl --user status scout-pod.service scout-create-datadir.service scout-mongo.service scout-setup-demo.service scout-scout.service
+```
+
 If you would like the services to start automatically after a reboot of your computer,
 run
 
