@@ -19,4 +19,3 @@ Type=forking
 
 [Install]
 WantedBy=multi-user.target default.target
-Also=scout-create-datadir.service scout-mongo.service scout-setup-demo.service scout-scout.service
