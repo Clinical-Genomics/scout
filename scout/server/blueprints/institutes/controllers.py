@@ -17,7 +17,7 @@ TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
 
 
 def institute(store, institute_id):
-    """ Process institute data.
+    """Process institute data.
 
     Args:
         store(adapter.MongoAdapter)
@@ -35,7 +35,7 @@ def institute(store, institute_id):
 
 
 def populate_institute_form(form, institute_obj):
-    """ Populate institute settings form
+    """Populate institute settings form
 
     Args:
         form(scout.server.blueprints.institutes.models.InstituteForm)
@@ -66,7 +66,7 @@ def populate_institute_form(form, institute_obj):
 
 
 def update_institute_settings(store, institute_obj, form):
-    """ Update institute settings with data collected from institute form
+    """Update institute settings with data collected from institute form
 
     Args:
         score(adapter.MongoAdapter)
@@ -179,13 +179,13 @@ def cases(store, case_query, prioritized_cases_query=None, limit=100):
 def get_sanger_unevaluated(store, institute_id, user_id):
     """Get all variants for an institute having Sanger validations ordered but still not evaluated
 
-        Args:
-            store(scout.adapter.MongoAdapter)
-            institute_id(str)
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str)
 
-        Returns:
-            unevaluated: a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, {'case2' : [varID_1, varID_2, .., varID_n]} ],
-                         where the keys are case_ids and the values are lists of variants with Sanger ordered but not yet validated
+    Returns:
+        unevaluated: a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, {'case2' : [varID_1, varID_2, .., varID_n]} ],
+                     where the keys are case_ids and the values are lists of variants with Sanger ordered but not yet validated
 
     """
 
@@ -353,7 +353,8 @@ def update_clinvar_submission_status(store, request, institute_id, submission_id
         store.update_clinvar_submission_status(institute_id, submission_id, update_status)
     if update_status == "register_id":  # register an official clinvar submission ID
         result = store.update_clinvar_id(
-            clinvar_id=request.form.get("clinvar_id"), submission_id=submission_id,
+            clinvar_id=request.form.get("clinvar_id"),
+            submission_id=submission_id,
         )
     if update_status == "delete":  # delete a submission
         deleted_objects, deleted_submissions = store.delete_submission(submission_id=submission_id)
@@ -375,7 +376,8 @@ def update_clinvar_sample_names(store, submission_id, case_id, old_name, new_nam
     """
     n_renamed = store.rename_casedata_samples(submission_id, case_id, old_name, new_name)
     flash(
-        f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'", "info",
+        f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'",
+        "info",
     )
 
 
@@ -428,7 +430,7 @@ def clinvar_submission_file(store, submission_id, csv_type, clinvar_subm_id):
 
 
 def clinvar_header(submission_objs, csv_type):
-    """ Call clinvar parser to extract required fields to include in csv header from clinvar submission objects
+    """Call clinvar parser to extract required fields to include in csv header from clinvar submission objects
 
     Args:
         submission_objs(list)
@@ -443,7 +445,7 @@ def clinvar_header(submission_objs, csv_type):
 
 
 def clinvar_lines(clinvar_objects, clinvar_header_obj):
-    """ Call clinvar parser to extract required lines to include in csv file from clinvar submission objects and header
+    """Call clinvar parser to extract required lines to include in csv file from clinvar submission objects and header
 
     Args:
         clinvar_objects(list)

@@ -276,7 +276,7 @@ def get_case_groups(adapter, total_cases, institute_id=None, slice_query=None):
 
 
 def get_analysis_types(adapter, total_cases, institute_id=None, slice_query=None):
-    """ Return information about analysis types.
+    """Return information about analysis types.
         Group cases based on analysis type for the individuals.
     Args:
         adapter(adapter.MongoAdapter)

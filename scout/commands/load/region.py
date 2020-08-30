@@ -22,5 +22,10 @@ def region(hgnc_id, case_id, chromosome, start, end):
     """Load all variants in a region to a existing case"""
     adapter = store
     load_region(
-        adapter=adapter, case_id=case_id, hgnc_id=hgnc_id, chrom=chromosome, start=start, end=end,
+        adapter=adapter,
+        case_id=case_id,
+        hgnc_id=hgnc_id,
+        chrom=chromosome,
+        start=start,
+        end=end,
     )

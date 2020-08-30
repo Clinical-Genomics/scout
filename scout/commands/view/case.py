@@ -17,10 +17,14 @@ LOG = logging.getLogger(__name__)
 @click.option("-c", "--case-id", help="Search for a specific case")
 @click.option("--nr-variants", is_flag=True, help="Show number of clinical and research variants")
 @click.option(
-    "--similar", is_flag=True, help="Show the cases that are phenotypic similar to a given case",
+    "--similar",
+    is_flag=True,
+    help="Show the cases that are phenotypic similar to a given case",
 )
 @click.option(
-    "--variants-treshold", default=0, help="Only show cases with more variants than treshold",
+    "--variants-treshold",
+    default=0,
+    help="Only show cases with more variants than treshold",
 )
 @with_appcontext
 def cases(institute, display_name, case_id, nr_variants, variants_treshold, similar):
