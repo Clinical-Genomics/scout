@@ -8,14 +8,32 @@
 
 In the Git repo root directory, run
 
+
 ```
-podman build -t scout .
 mkdir -p ~/.config/systemd/user
 cp systemd/scout-pod.service ~/.config/systemd/user
 cp systemd/scout-create-datadir.service ~/.config/systemd/user
 cp systemd/scout-mongo.service ~/.config/systemd/user
 cp systemd/scout-setup-demo.service ~/.config/systemd/user
-cp systemd/scout-scout.service ~/.config/systemd/user
+
+```
+
+Then either build a local scout container
+
+```
+podman build -t scout .
+cp systemd/scout_from_podman_build/scout-scout.service ~/.config/systemd/user
+```
+
+or use a scout container from Dockerhub
+
+```
+cp systemd/dockerhub/scout-scout.service ~/.config/systemd/user
+``
+
+Then 
+
+```
 systemctl --user daemon-reload
 systemctl --user enable scout-pod.service
 ```
