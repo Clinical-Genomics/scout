@@ -15,11 +15,11 @@ jobs:
           bash systemd/rewrite.sh
       - uses: docker://quay.io/coreos/fcct:release
         with:
-          args: --pretty --strict -d ./systemd -o output/example.ign example.fcc
+          args: --pretty --strict -d ./systemd -o output/scout.ign systemd/scout.fcc
       - uses: actions/upload-artifact@master
         with:
-          name: example.ign
-          path: output/example.ign
+          name: scout.ign
+          path: output/scout.ign
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3.6.4
         with:
