@@ -16,7 +16,7 @@ StateDirectoryMode=0700
 ExecStart=/bin/mkdir %S/scout-mongo-data/data
 
 KillMode=none
-Type=oneshoot
+Type=oneshot
 RemainAfterExit=yes
 
 [Install]
