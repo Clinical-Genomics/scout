@@ -8,6 +8,7 @@
 
 In the Git repo root directory, run
 
+1. Copy systemd unit files to ~/.config/systemd/user
 
 ```
 mkdir -p ~/.config/systemd/user
@@ -15,23 +16,19 @@ cp systemd/scout-pod.service ~/.config/systemd/user
 cp systemd/scout-create-datadir.service ~/.config/systemd/user
 cp systemd/scout-mongo.service ~/.config/systemd/user
 cp systemd/scout-setup-demo.service ~/.config/systemd/user
-
+cp systemd/scout-scout.service ~/.config/systemd/user
 ```
 
-Then either build a local scout container
+2. Optional step
+If you would like to use a locally built scout container instead of the one from dockerhub
 
 ```
 podman build -t scout .
-cp systemd/scout_from_podman_build/scout-scout.service ~/.config/systemd/user
+sed -i 's/docker.io\/eriksjolund\/scout:dockerhub/localhost\/scout/g' ~/.config/systemd/user/scout-scout.service
+sed -i '/TimeoutStartSec=/d' ~/.config/systemd/user/scout-scout.service
 ```
 
-or use a scout container from Dockerhub
-
-```
-cp systemd/dockerhub/scout-scout.service ~/.config/systemd/user
-``
-
-Then 
+3.
 
 ```
 systemctl --user daemon-reload
