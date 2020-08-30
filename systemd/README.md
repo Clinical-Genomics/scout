@@ -18,10 +18,6 @@ cp systemd/scout-setup-demo.service ~/.config/systemd/user
 cp systemd/scout-scout.service ~/.config/systemd/user
 systemctl --user daemon-reload
 systemctl --user enable scout-pod.service
-systemctl --user enable scout-create-datadir.service
-systemctl --user enable scout-mongo.service
-systemctl --user enable scout-setup-demo.service
-systemctl --user enable scout-scout.service
 ```
 
 ## Usage
