@@ -1,0 +1,27 @@
+name: Run Fedora CoreOS Configuration Transpiler
+on: 
+  push:
+    branch:
+      - master
+
+jobs:
+  run_fcct:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          mkdir output
+          mkdir rewritten
+          bash systemd/rewrite.sh
+      - uses: docker://quay.io/coreos/fcct:release
+        with:
+          args: --pretty --strict -d ./systemd -o output/example.ign example.fcc
+      - uses: actions/upload-artifact@master
+        with:
+          name: example.ign
+          path: output/example.ign
+      - name: deploy
+        uses: peaceiris/actions-gh-pages@v3.6.4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./output

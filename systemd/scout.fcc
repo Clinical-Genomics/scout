@@ -1,0 +1,57 @@
+variant: fcos
+version: 1.1.0
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - ssh-rsa ssh-rsa AAAAB3NOTVALID/NOTVALID/NOTVALIDUV5Xw9QTBQEVXpEXrY1jGQ3D7ckUowZiVidT5DoPpuO36r3G4HUXolP2R/TnIM5XgrFIpkbCpOUBdV8gsjuLwh2hOIM6PlKTYWy//CnS0W0Kd0o/M8xQS+2VcOBsyKpeE2harGKLpANGcTT1rFANB/6VHh0aRqOJCfP7qt6nXvYfbr8rmA9mxEOhcwfy4zJ/ZP0tguKvnLneAX6K2+3jDy3OOIwJmkFrv0pCFJCmDcf/mV6pA6x70EE5kZpHJCS1W9sALxDfVHj1Vy15x7h+b6HSnuEGwxBCsdpDqbxElyZgK6DWTnzmVSeSoa/BNF2w8vuOkKdjklJ+p8u/tpPtPP0T+nREkv4bUsc+qG9J6vdHm8eJZP3JSmS25dxkTeFVDhf6wWpxkYoxrQEyZF0WLeNtpZua/sCp4qAtsfqg9MVg3gmD6zLuthzmV3GzT7bDzwayNnZ/CqxkT/3EY2fVMFeyjTpvM2MvwbcAjRi3gvLxHctuNhEGxysbIi4xkL8= example@laptop
+storage:
+  files:
+    - path: /etc/systemd/system/scout-pod.service
+      user:
+        name: root
+      group:
+        name: root
+      mode: 0644
+      contents:
+        local: rewritten/scout-pod.service
+    - path: /etc/systemd/system/scout-create-datadir.service
+      user:
+        name: root
+      group:
+        name: root
+      mode: 0644
+      contents:
+        local: rewritten/scout-create-datadir.service
+    - path: /etc/systemd/system/scout-mongo.service
+      user:
+        name: root
+      group:
+        name: root
+      mode: 0644
+      contents:
+        local: rewritten/scout-mongo.service
+    - path: /etc/systemd/system/scout-setup-demo.service
+      user:
+        name: root
+      group:
+        name: root
+      mode: 0644
+      contents:
+        local: rewritten/scout-setup-demo.service
+    - path: /etc/systemd/system/scout-scout.service
+      user:
+        name: root
+      group:
+        name: root
+      mode: 0644
+      contents:
+        local: rewritten/scout-scout.service
+    - path: /etc/systemd/system-preset/system-preset/20-scout.preset
+      user:
+        name: root
+      group:
+        name: root
+      mode: 0644
+      contents:
+        local: 20-scout.preset
