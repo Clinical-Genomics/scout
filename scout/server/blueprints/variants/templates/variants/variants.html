@@ -1,5 +1,5 @@
 {% extends "layout_bs4.html" %}
-{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank %}
+{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div%}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 {% from "variant/buttons.html" import dismiss_variant_table_button %}
 
@@ -41,6 +41,7 @@
     <div class="container-float">
 <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
          enctype="multipart/form-data" onsubmit="return validateForm()">
+         {{ pagination_hidden_div(page) }}
         <div class="card panel-default" id="accordion">
           <div class="card-header">
             <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
@@ -55,6 +56,7 @@
             {% endif %}
           </div>
         </div>
+
       </form>
       <div class="card mt-3">
         <table class="table table-hover table-bordered" style="table-layout: fixed">
@@ -113,7 +115,7 @@
         </table>
       </div><!-- end of <div class="card mt-3">-->
     </div> <!-- end of class="container-float"> -->
-      {{ footer() }}
+      {{ pagination_footer(more_variants) }}
 {% endblock %}
 
 {% macro cell_cadd(variant) %}
@@ -152,24 +154,6 @@
   {% else %}
     -
   {% endif %}
-{% endmacro %}
-
-{% macro footer() %}
-  <div class="container-fluid">
-      {% if more_variants %}
-        <div class="d-flex justify-content-around">
-	         <div>
-            <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
-          </div>
-          <div>
-            <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value={{ page + 1 }}>Next page</button>
-          </div>
-	     </div>
-      {% else %}
-        <i class="text-muted">No more variants to display</i>
-        <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
-      {% endif %}
-  </div>
 {% endmacro %}
 
 {% block scripts %}

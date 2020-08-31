@@ -133,6 +133,9 @@ def parse_transcripts(raw_transcripts, allele=None):
         # Check if the transcript is marked cannonical by vep
         transcript["is_canonical"] = entry.get("CANONICAL") == "YES"
 
+        # Get MANE transcript
+        transcript["mane_transcript"] = entry.get("MANE")
+
         # Check if the CADD score is available on transcript level
         cadd_phred = entry.get("CADD_PHRED")
         if cadd_phred:
