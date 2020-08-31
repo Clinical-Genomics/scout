@@ -1,11 +1,11 @@
 function populateCytobands(cytobands){
   var chrom = document.forms["filters_form"].elements["chrom"].value;
-
   if(chrom===""){
     startElem.value = "";
     endElem.value = "";
     return //only reset cytoband select element
   }
+
 
   var chrom_cytobands = cytobands[chrom]["cytobands"]; // chromosome-specific cytobands
 
@@ -48,10 +48,51 @@ function populateCytobands(cytobands){
   }
 }
 
-function populateStart(){
-  startElem.value = cytoStart.options[cytoStart.selectedIndex].value
+
+
+// ValidateForm()
+// Controll user input fields (start, end) in varaint filter.
+//
+function validateForm(){
+    var start = document.forms["filters_form"].elements["start"].value
+    var end = document.forms["filters_form"].elements["end"].value
+    if(start || end){
+        if(!chrom){
+            alert("Chromosome field is required");
+            return false;
+        }
+        else if( !start || !end){
+            alert("Both start and end coordinates are required");
+            return false;
+        }
+        else if( (isNaN(start) || isNaN(end)) || Number(end)<Number(start) ){
+            alert("Coordinate field not valid");
+            return false;
+        }
+    }
+    return true;
 }
 
-function populateEnd(){
-  endElem.value = cytoEnd.options[cytoEnd.selectedIndex].value
+
+// syncSearchConstraints(selectorId:HTML-selector, textId:HTML-textfield)
+//
+// Initialize and synchronize 'startelem' and 'cyto_start', used for setting
+// contrsaints when searching variants in cytoband.
+function initSearchConstraints(selectorId, textId){
+    console.log("init cytoband search: selector and text")
+    selectorId.addEventListener("change", function() {
+        if(selectorId.options[selectorId.selectedIndex].value === ""){
+            textId.value = "";
+            return
+        }
+        // populate textfield
+        textId.value = selectorId.options[selectorId.selectedIndex].value
+    });
 }
+
+
+
+
+
+
+

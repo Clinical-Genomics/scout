@@ -98,19 +98,36 @@ def gene_obj():
 
 
 @pytest.fixture
-def transcript_info(request):
-    """Get a dictionary with parsed transcript information"""
-    transcript = dict(
+def unparsed_transcript(request):
+    """Get a dictionary with *unparsed* transcript information"""
+    unparsed_transcript = dict(
         chrom="1",
+        end=1170421,
         ens_gene_id="ENSG00000176022",
         ens_transcript_id="ENST00000379198",
-        start=1167629,
-        end=1170421,
         refseq_mrna="NM_080605",
         refseq_mrna_pred="",
         refseq_ncrna="",
+        start=1167629,
     )
+    return unparsed_transcript
 
+
+@pytest.fixture
+def transcript_info():
+    """Get a dictionary with parsed transcript information"""
+    transcript = {
+        "chrom": "1",
+        "ensembl_gene_id": "ENSG00000176022",
+        "ensembl_transcript_id": "ENST00000379198",
+        "hgnc_id": 17978,
+        "mrna": {"NM_080605"},
+        "mrna_predicted": set(),
+        "nc_rna": set(),
+        "primary_transcripts": {"NM_080605"},
+        "transcript_end": 1170421,
+        "transcript_start": 1167629,
+    }
     return transcript
 
 
@@ -227,9 +244,7 @@ def phenotype_to_genes_file(request):
 
 @pytest.fixture
 def hpo_terms_handle(request, hpo_terms_file):
-    """Get a file handle to a hpo terms file (http://purl.obolibrary.org/obo/hp.obo)
-
-    """
+    """Get a file handle to a hpo terms file (http://purl.obolibrary.org/obo/hp.obo)"""
     hpo_lines = get_file_handle(hpo_terms_file)
     return hpo_lines
 
@@ -386,20 +401,58 @@ def case_obj(request, parsed_case):
 #############################################################
 @pytest.fixture(scope="function")
 def clinvar_variant(request):
-    clivar_variant = {
-        "_id": "3eecfca5efea445eec6c19a53299043b",
-        "##Local_ID": "3eecfca5efea445eec6c19a53299043b",
-        "Reference_allele": "C",
-        "Alternate_allele": "A",
-        "Chromosome": "7",
-        "Start": "124491972",
-        "Stop": "124491972",
-        "Clinical_significance": "Likely Pathogenic",
-        "Condition_ID_value": "HP:0001298;HP:0002121",
-        "clinvar_submission": "SUB666",
+
+    variant = {
+        "_id": "internal_id_4c7d5c70d955875504db72ef8e1abe77",
+        "csv_type": "variant",
+        "case_id": "internal_id",
+        "category": "snv",
+        "local_id": "4c7d5c70d955875504db72ef8e1abe77",
+        "linking_id": "4c7d5c70d955875504db72ef8e1abe77",
+        "gene_symbol": "POT1",
+        "ref_seq": "NM_001042594.1",
+        "hgvs": "c.510G>T",
+        "chromosome": "7",
+        "start": "124491972",
+        "stop": "124491972",
+        "ref": "C",
+        "alt": "A",
+        "variations_ids": "rs116916706",
+        "clinsig": "Pathogenic",
+        "last_evaluated": "2020-06-09",
+        "assertion_method": "ACMG Guidelines, 2015",
+        "assertion_method_cit": "PMID:25741868",
+        "inheritance_mode": "Autosomal recessive inheritance",
+    }
+    return variant
+
+
+@pytest.fixture(scope="function")
+def clinvar_casedata(request):
+
+    casedata = {
+        "_id": "internal_id_4c7d5c70d955875504db72ef8e1abe77_NA12882",
+        "csv_type": "casedata",
+        "case_id": "internal_id",
+        "category": "snv",
+        "linking_id": "4c7d5c70d955875504db72ef8e1abe77",
+        "individual_id": "NA12882",
+        "collection_method": "clinical testing",
+        "allele_origin": "germline",
+        "is_affected": "yes",
+        "sex": "male",
+        "fam_history": "no",
+        "is_proband": "yes",
+        "is_secondary_finding": "no",
+        "is_mosaic": "no",
+        "zygosity": "compound heterozygote",
+        "platform_type": "next-gen sequencing",
+        "platform_name": "Whole exome sequencing, Illumina",
+        "method_purpose": "discovery",
+        "reported_at": "2016-10-12",
     }
 
-    return clivar_variant
+    return casedata
 
 
 #############################################################
@@ -553,19 +606,6 @@ def adapter(request, pymongo_client):
 
 
 @pytest.fixture(scope="function")
-def clinvar_database(request, adapter, clinvar_variant, user_obj, institute_obj, case_obj):
-    "Returns an adapter to a database populated with one variant"
-
-    user_id = user_obj["_id"]
-    institute_id = institute_obj["internal_id"]
-    case_id = case_obj["_id"]
-
-    adapter.add_clinvar_submission([clinvar_variant], user_id, institute_id, case_id)
-
-    return adapter
-
-
-@pytest.fixture(scope="function")
 def institute_database(request, adapter, institute_obj, user_obj):
     "Returns an adapter to a database populated with institute"
     adapter.add_institute(institute_obj)
@@ -700,13 +740,17 @@ def real_populated_database(request, real_panel_database, parsed_case):
 @pytest.fixture(scope="function")
 def variant_database(request, populated_database):
     """Returns an adapter to a database populated with user, institute, case
-       and variants"""
+    and variants"""
     adapter = populated_database
     # Load variants
     case_obj = adapter.case_collection.find_one()
 
     adapter.load_variants(
-        case_obj, variant_type="clinical", category="snv", rank_threshold=-10, build="37",
+        case_obj,
+        variant_type="clinical",
+        category="snv",
+        rank_threshold=-10,
+        build="37",
     )
 
     return adapter
@@ -715,13 +759,17 @@ def variant_database(request, populated_database):
 @pytest.fixture(scope="function")
 def real_variant_database(request, real_populated_database):
     """Returns an adapter to a database populated with user, institute, case
-       and variants"""
+    and variants"""
     adapter = real_populated_database
 
     case_obj = adapter.case_collection.find_one()
     # Load variants
     adapter.load_variants(
-        case_obj, variant_type="clinical", category="snv", rank_threshold=-10, build="37",
+        case_obj,
+        variant_type="clinical",
+        category="snv",
+        rank_threshold=-10,
+        build="37",
     )
 
     return adapter
@@ -730,7 +778,7 @@ def real_variant_database(request, real_populated_database):
 @pytest.fixture(scope="function")
 def sv_database(request, populated_database, variant_objs, sv_variant_objs):
     """Returns an adapter to a database populated with user, institute, case
-       and variants"""
+    and variants"""
     adapter = populated_database
 
     case_obj = adapter.case_collection.find_one()
@@ -1175,7 +1223,7 @@ def variant_clinical_file(request):
 @pytest.fixture(scope="function")
 def vep_97_annotated_variant_clinical_file(request):
     """Get a path to a VCF file annotated with VEP and containing conservation
-       and REVEL score in the CSQ field
+    and REVEL score in the CSQ field
     """
     return vep_97_annotated_path
 
@@ -1183,7 +1231,7 @@ def vep_97_annotated_variant_clinical_file(request):
 @pytest.fixture(scope="function")
 def vep_94_manta_annotated_SV_variants_file(request):
     """Get a path to a Manta VCF outfile annotated containg SVs
-       annotated with VEP
+    annotated with VEP
     """
     return cancer_sv_path
 
@@ -1395,7 +1443,10 @@ def mme_submission():
 @pytest.fixture(scope="function")
 def mme_patient():
     json_patient = {
-        "contact": {"href": "mailto:contact_email@email.com", "name": "A contact at an institute",},
+        "contact": {
+            "href": "mailto:contact_email@email.com",
+            "name": "A contact at an institute",
+        },
         "features": [{"id": "HP:0001644", "label": "Dilated cardiomyopathy", "observed": "yes"}],
         "genomicFeatures": [
             {

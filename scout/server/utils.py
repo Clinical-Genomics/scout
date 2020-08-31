@@ -40,6 +40,7 @@ def public_endpoint(function):
 
 def institute_and_case(store, institute_id, case_name=None):
     """Fetch insitiute and case objects."""
+
     institute_obj = store.institute(institute_id)
     if institute_obj is None:
         flash("Can't find institute: {}".format(institute_id), "warning")
@@ -51,7 +52,6 @@ def institute_and_case(store, institute_id, case_name=None):
             return abort(404)
 
     # validate that user has access to the institute
-
     if not current_user.is_admin:
         if institute_id not in current_user.institutes:
             if not case_name or not any(
@@ -130,9 +130,17 @@ def case_append_alignments(case_obj):
         {"path": "mt_bam", "append_to": "mt_bams", "index": "mt_bais"},
         {"path": "rhocall_bed", "append_to": "rhocall_beds", "index": "no_index"},
         {"path": "rhocall_wig", "append_to": "rhocall_wigs", "index": "no_index"},
-        {"path": "upd_regions_bed", "append_to": "upd_regions_beds", "index": "no_index",},
+        {
+            "path": "upd_regions_bed",
+            "append_to": "upd_regions_beds",
+            "index": "no_index",
+        },
         {"path": "upd_sites_bed", "append_to": "upd_sites_beds", "index": "no_index"},
-        {"path": "tiddit_coverage_wig", "append_to": "tiddit_coverage_wigs", "index": "no_index",},
+        {
+            "path": "tiddit_coverage_wig",
+            "append_to": "tiddit_coverage_wigs",
+            "index": "no_index",
+        },
     ]
 
     for individual in case_obj["individuals"]:

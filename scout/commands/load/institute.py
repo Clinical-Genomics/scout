@@ -13,17 +13,14 @@ from scout.server.extensions import store
 @click.option("-i", "--internal-id", required=True)
 @click.option("-d", "--display-name")
 @click.option("-s", "--sanger-recipients", multiple=True)
+@click.option("-l", "--loqusdb-id")
 @with_appcontext
-def institute(internal_id, display_name, sanger_recipients):
+def institute(internal_id, display_name, sanger_recipients, loqusdb_id):
     """
     Create a new institute and add it to the database
 
     """
     adapter = store
-
-    if not internal_id:
-        LOG.warning("A institute has to have an internal id")
-        raise click.Abort()
 
     if not display_name:
         display_name = internal_id
@@ -37,6 +34,7 @@ def institute(internal_id, display_name, sanger_recipients):
             internal_id=internal_id,
             display_name=display_name,
             sanger_recipients=sanger_recipients,
+            loqusdb_id=loqusdb_id,
         )
     except Exception as e:
         LOG.warning(e)

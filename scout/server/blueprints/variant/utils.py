@@ -249,19 +249,34 @@ def frequencies(variant_obj):
     if variant_obj["category"] == "sv":
         freqs = {
             "gnomad_frequency": {"display_name": "GnomAD", "link": None},
-            "clingen_cgh_benign": {"display_name": "ClinGen CGH (benign)", "link": None,},
-            "clingen_cgh_pathogenic": {"display_name": "ClinGen CGH (pathogenic)", "link": None,},
+            "clingen_cgh_benign": {
+                "display_name": "ClinGen CGH (benign)",
+                "link": None,
+            },
+            "clingen_cgh_pathogenic": {
+                "display_name": "ClinGen CGH (pathogenic)",
+                "link": None,
+            },
             "clingen_ngi": {"display_name": "ClinGen NGI", "link": None},
             "clingen_mip": {"display_name": "ClinGen MIP", "link": None},
             "swegen": {"display_name": "SweGen", "link": None},
             "decipher": {"display_name": "Decipher", "link": None},
             "thousand_genomes_frequency": {"display_name": "1000G", "link": None},
-            "thousand_genomes_frequency_left": {"display_name": "1000G(left)", "link": None,},
-            "thousand_genomes_frequency_right": {"display_name": "1000G(right)", "link": None,},
+            "thousand_genomes_frequency_left": {
+                "display_name": "1000G(left)",
+                "link": None,
+            },
+            "thousand_genomes_frequency_right": {
+                "display_name": "1000G(right)",
+                "link": None,
+            },
         }
     else:
         freqs = {
-            "gnomad_frequency": {"display_name": "GnomAD", "link": variant_obj.get("gnomad_link"),},
+            "gnomad_frequency": {
+                "display_name": "GnomAD",
+                "link": variant_obj.get("gnomad_link"),
+            },
             "thousand_genomes_frequency": {
                 "display_name": "1000G",
                 "link": variant_obj.get("thousandg_link"),
@@ -270,7 +285,10 @@ def frequencies(variant_obj):
                 "display_name": "1000G(max)",
                 "link": variant_obj.get("thousandg_link"),
             },
-            "exac_frequency": {"display_name": "ExAC", "link": variant_obj.get("exac_link"),},
+            "exac_frequency": {
+                "display_name": "ExAC",
+                "link": variant_obj.get("exac_link"),
+            },
             "max_exac_frequency": {
                 "display_name": "ExAC(max)",
                 "link": variant_obj.get("exac_link"),

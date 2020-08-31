@@ -7,16 +7,16 @@ LOG = logging.getLogger(__name__)
 
 def build_hpo_term(hpo_info):
     """Build a hpo_term object
-    
-    Check that the information is correct and add the correct hgnc ids to the 
+
+    Check that the information is correct and add the correct hgnc ids to the
     array of genes.
-    
+
         Args:
             hpo_info(dict)
-        
+
         Returns:
             hpo_obj(scout.models.HpoTerm): A dictionary with hpo information
-    
+
     """
 
     try:

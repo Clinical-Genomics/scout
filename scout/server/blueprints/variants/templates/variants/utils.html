@@ -452,26 +452,46 @@
         </div>
       </div>
     </div>
-    <div class="form-group">
-      <div class="row">
+    <div class="form-group" id="chromosome_search">
+      <div class="row" style="margin-top:20px;">
+        <div class="col-1" style="margin-right:3em">
+          {{ wtf.form_field(form.chrom) }}
+        </div>
 
-            </div>
+        <div class="col-md-2 col-lg-2 col-xl-1">
+          {{ wtf.form_field(form.start) }}
+        </div>
+        <div class="col-md-2 col-lg-2 col-xl-1" style="margin-right:3em">
+          {{ wtf.form_field(form.end) }}
+        </div>
+
+        <div class="col-md-3 col-lg-3 col-xl-2">
+          {{ wtf.form_field(form.cytoband_start) }}
+        </div>
+        <div class="col-md-3 col-lg-3 col-xl-2">
+          {{ wtf.form_field(form.cytoband_end) }}
+        </div>
+        <div class="col-md-1 col-lg-1 col-xl-5" id="empty_space"></div>
+      </div>
     </div>
-    <br>
-    <div class="form-group">
-      <div class="row">
-        <div class="col-3">
+
+    <div class="form-group" id="buttons">
+      <div class="row justify-content-center" style="margin-top:20px;">
+        <div class="col-4">
           <button class="btn btn-primary form-control">Filter variants</button>
         </div>
-        <div class="col-1 align-self-start">
+        <div class="col-4">
+          {{ form.export(class="btn btn-warning form-control") }}
+        </div>
+      </div>
+      <div class="row justify-content-between" style="margin-top:20px;">
+        <div class="col-2">
           <a href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
             case_name=case.display_name, variant_type=form.variant_type.data,
             gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
             class="btn btn-secondary" style="color: #ffffff !important;">
             Reset&nbsp;filters
           </a>
-        </div>
-        <div class="col-2">
         </div>
         <div class="col-6">
           {{ stash_filter_buttons(form, institute, case) }}
@@ -528,37 +548,13 @@
 
 {% macro tier_cell(variant, manual_rank_options, cancer_tier_options) %}
   {% if variant.cancer_tier %}
-    {% if variant.cancer_tier == '1A' %}
-      {% set label_class = 'danger' %}
-    {% elif variant.cancer_tier == '1B' %}
-      {% set label_class = 'danger' %}
-    {% elif variant.cancer_tier == '2A' %}
-      {% set label_class = 'warning' %}
-    {% elif variant.cancer_tier == '2B' %}
-      {% set label_class = 'warning' %}
-    {% elif variant.cancer_tier == '3' %}
-      {% set label_class = 'primary' %}
-    {% elif variant.cancer_tier == '4' %}
-      {% set label_class = 'default' %}
-    {% endif %}
-    <span class="badge badge-{{ label_class }}" data-toggle="tooltip" data-placement="right"
+    <span class="badge badge-{{ cancer_tier_options[variant.cancer_tier].label_class }}" data-toggle="tooltip" data-placement="right"
       title="Tier: {{ cancer_tier_options[variant.cancer_tier].description }}">
       {{ cancer_tier_options[variant.cancer_tier].label }}</span>
   {% endif %}
 
   {% if variant.manual_rank %}
-    {% if variant.manual_rank == 1 %}
-      {% set label_class = 'default' %}
-    {% elif variant.manual_rank == 2 %}
-      {% set label_class = 'info' %}
-    {% elif variant.manual_rank == 3 %}
-      {% set label_class = 'primary' %}
-    {% elif variant.manual_rank == 4 %}
-      {% set label_class = 'warning' %}
-    {% elif variant.manual_rank == 5 %}
-      {% set label_class = 'danger' %}
-    {% endif %}
-    <span class="badge badge-{{ label_class }}" data-toggle="tooltip" data-placement="right"
+    <span class="badge badge-{{ manual_rank_options[variant.manual_rank].label_class }}" data-toggle="tooltip" data-placement="right"
       title="Manual rank: {{ manual_rank_options[variant.manual_rank].description }}">
       {{ manual_rank_options[variant.manual_rank].label }}</span>
   {% endif %}
@@ -578,32 +574,33 @@
 
   {% set comment_count = variant.comments.count() %}
 
-  {% if variant.acmg_classification %}
-    <span class="badge badge-primary" data-toggle="tooltip" data-placement="right" title="ACMG: {{ variant.acmg_classification.label }}">
-      {{ variant.acmg_classification.short }}
-    </span>
-  {% endif %}
-  {% if variant.manual_rank %}
-    <span class="badge badge-primary" data-toggle="tooltip" data-placement="right"
-        title="Manual rank: {{ manual_rank_options[variant.manual_rank].description }}">
-        {{ manual_rank_options[variant.manual_rank].label }}</span>
-  {% endif %}
   {% if variant.evaluations %}
     {% for evaluation in (variant.evaluations or []) %}
       <span class="badge badge-secondary" style="margin-left:1px" data-toggle="tooltip" data-placement="right"
-      title="Previously classified as {{ evaluation.classification.label }}">
-      {{ evaluation.classification.short }}
+        title="Previously classified as {{ evaluation.classification.label }}">
+        {{ evaluation.classification.short }}
       </span>
     {% endfor %}
   {% endif %}
-  {% if form.variant_type.data == 'research' %}
-    {% if variant.clinical_assessments %}
-      {% for assessment in variant.clinical_assessments %}
-        <span class="badge badge-secondary" data-toggle="tooltip" data-placement="right"
-            title="{{ assessment.title }}">
-            {{ assessment.label }}</span>
-      {% endfor %}
-    {% endif %}
+
+  {% if variant.research_assessments %}
+    {% for assessment in (variant.research_assessments or []) %}
+      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
+        title="Research {{ assessment.title }}">
+        {{ assessment.label }}</span>
+    {% endfor %}
+  {% endif %}
+
+  {% if variant.clinical_assessments %}
+    {% for assessment in (variant.clinical_assessments or []) %}
+      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
+          title="Clinical {{ assessment.title }}">
+          {{ assessment.label }}</span>
+    {% endfor %}
+  {% endif %}
+
+  {% if variant._id in case.causatives %}
+    <span class="badge badge-success" style="margin-left:1px" data-toggle="tooltip" data-placement="right" title="Causative variant">Causative</span>
   {% endif %}
 
   {% if comment_count > 0 %}
@@ -630,4 +627,37 @@
     <i class="fa fa-map-pin"></i>
   {% endif %}
 
+{% endmacro %}
+
+{% macro pagination_hidden_div(page) %}
+{# Used inside filters form to introduce submit buttons for footer pagniation #}
+  <div class="hidden">
+    <input type="submit" name="page" id="paginate-first" value=1 hidden="true">
+    <input type="submit" name="page" id="paginate-next" value={{page+1}} hidden="true">
+  </div>
+{% endmacro %}
+
+{% macro pagination_footer(more_variants) %}
+{# Used outside filters form to introduce footer pagniation labels #}
+  <div class="container-fluid">
+      {% if more_variants %}
+        <div class="d-flex justify-content-around">
+	         <div>
+             <label for="paginate-first" class="btn btn-outline-secondary mx-auto d-block" tabindex="0">
+              First page
+            </label>
+          </div>
+          <div>
+            <label for="paginate-next" class="btn btn-outline-secondary mx-auto d-block" tabindex="0">
+              Next page
+            </label>
+          </div>
+	     </div>
+      {% else %}
+        <i class="text-muted">No more variants to display</i>
+        <label for="paginate-first" class="btn btn-outline-secondary mx-auto d-block" tabindex="0">
+          First page
+        </label>
+      {% endif %}
+  </div>
 {% endmacro %}

@@ -1,38 +1,7 @@
 """Tests for the cases controllers"""
-import copy
-
 from flask import Flask
 
-from scout.server.blueprints.cases.controllers import case, case_report_content, cases
-
-
-def test_cases(adapter, case_obj, institute_obj):
-
-    # GIVEN a non prioritized case
-    case = case_obj
-    assert case["status"] == "inactive"
-    adapter.case_collection.insert_one(case)
-
-    # GIVEN a priotized case
-    case2 = copy.deepcopy(case)
-    case2["_id"] = "internal_id2"
-    case2["status"] = "prioritized"
-    adapter.case_collection.insert_one(case2)
-
-    all_cases = adapter.cases(collaborator=institute_obj["_id"])
-    assert len(list(all_cases)) == 2
-
-    prio_cases = adapter.prioritized_cases(institute_id=institute_obj["_id"])
-    assert len(list(prio_cases)) == 1
-
-    all_cases = adapter.cases(collaborator=institute_obj["_id"])
-    prio_cases = adapter.prioritized_cases(institute_id=institute_obj["_id"])
-
-    # WHEN the cases controller is invoked
-    data = cases(store=adapter, case_query=all_cases, prioritized_cases_query=prio_cases, limit=1)
-
-    # THEN 2 cases should be returned
-    assert data["found_cases"] == 2
+from scout.server.blueprints.cases.controllers import case, case_report_content
 
 
 def test_case_report_content(adapter, institute_obj, case_obj, variant_obj):
@@ -63,17 +32,6 @@ def test_case_report_content(adapter, institute_obj, case_obj, variant_obj):
             assert len(data[var_type]) == 1
             continue
         assert len(data[var_type]) == 0
-
-
-def test_cases_controller(adapter, dummy_case):
-    # GIVEN an adapter with a case
-    adapter.case_collection.insert_one(dummy_case)
-    case_query = adapter.case_collection.find()
-    # WHEN fetching a case with the controller
-    data = cases(adapter, case_query)
-    # THEN
-    assert isinstance(data, dict)
-    assert data["found_cases"] == 1
 
 
 def test_case_controller_rank_model_link(adapter, institute_obj, dummy_case):

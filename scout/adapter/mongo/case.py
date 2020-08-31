@@ -20,11 +20,13 @@ LOG = logging.getLogger(__name__)
 class CaseHandler(object):
     """Part of the pymongo adapter that handles cases and institutes"""
 
-    def get_similar_cases(self, case_obj):
+    def cases_by_phenotype(self, phenotype_terms, owner, case_id=None):
         """Take a case obj and return a iterable with the most phenotypically similar cases
 
         Args:
-            case_obj(models.Case)
+            phenotype_terms(list):[ "HP:0001250", "HP:0000707",.. ]
+            owner(str): institute id
+            case_id(str): Id of a case, when searching for cases similar to another
 
         Returns:
             scores(list(tuple)): Returns a list of tuples like (case_id, score) with the most
@@ -32,20 +34,20 @@ class CaseHandler(object):
         """
         scores = {}
         set_1 = set()
-        if not case_obj.get("phenotype_terms"):
-            LOG.warning("No phenotypes could be found for case %s", case_obj["_id"])
+        if len(phenotype_terms) == 0:
+            LOG.warning("No phenotype terms provided, please provide ar least one HPO term")
             return None
         # Add all ancestors of all terms
-        for term in case_obj["phenotype_terms"]:
-            hpo_term = self.hpo_term(term["phenotype_id"])
+        for term in phenotype_terms:
+            hpo_term = self.hpo_term(term)
             if not hpo_term:
                 continue
             set_1 = set_1.union(set(hpo_term.get("all_ancestors", [])))
         # Need to control what cases to look for here
         # Fetch all cases with phenotypes
-        for case in self.cases(phenotype_terms=True, owner=case_obj["owner"]):
+        for case in self.cases(phenotype_terms=True, owner=owner):
             set_2 = set()
-            if case["_id"] == case_obj["_id"]:
+            if case["_id"] == case_id:
                 continue
             # Add all ancestors if all terms
             for term in case["phenotype_terms"]:
@@ -53,10 +55,173 @@ class CaseHandler(object):
                 if not hpo_term:
                     continue
                 set_2 = set_2.union(set(hpo_term.get("all_ancestors", [])))
-            LOG.debug("Check phenotypic similarity of %s and %s", case_obj["_id"], case["_id"])
+            LOG.debug(
+                f"Check phenotypic similarity between terms:{phenotype_terms} and case {case['_id']}"
+            )
             scores[case["_id"]] = ui_score(set_1, set_2)
         # Returns a list of tuples with highest score first
         return sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
+
+    def _set_similar_phenotype_query(self, query, query_field, query_term, institute_id):
+        """Adds query parameters when search is performed by case or phenotype similarity
+
+        Args:
+            query(dict): cases search query
+            query_field(str) example:"status"
+            query_term(str) example:"active"
+            name_query(dict) args provided by users in cases filter search
+            institute_id(str): institute to search cases for
+        """
+        hpo_terms = []
+        order = None
+        if query_field == "similar_case":
+            LOG.debug(f"Search for cases similar to case: {query}")
+            case_obj = self.case(display_name=query_term, institute_id=institute_id)
+            if case_obj is None:
+                query["_id"] = {"$in": []}  # No result should be returned by query
+                return
+
+            for term in case_obj.get("phenotype_terms", []):
+                hpo_terms.append(term.get("phenotype_id"))
+            similar_cases = self.cases_by_phenotype(hpo_terms, institute_id, case_obj["_id"])
+        else:  # similar HPO terms
+            LOG.debug(f"Search for cases with phenotype similar to HPO terms: {hpo_terms}")
+            hpo_terms = query_term.split(",")
+            hpo_terms = [term.strip() for term in hpo_terms]
+            similar_cases = self.cases_by_phenotype(hpo_terms, institute_id, None)
+
+        if len(similar_cases) == 0:  # No cases similar to given phenotype
+            query["_id"] = {"$in": []}  # No result should be returned by query
+            return
+
+        similar_case_ids = []
+        order = []
+        for i in similar_cases:
+            similar_case_ids.append(i[0])
+            order.append(i[1])
+        query["_id"] = {"$in": similar_case_ids}
+
+        return order
+
+    def _set_genes_of_interest_query(self, query, query_field, query_term):
+        """Adds query parameters when search is aimed at retrieving cases with a certain pinned or causative gene
+
+        Args:
+            query(dict): cases search query
+            query_field(str) "pinned" or "causative"
+            query_term(str) example:"POT1"
+        """
+        hgnc_id = self.hgnc_id(hgnc_symbol=query_term)
+        if hgnc_id is None:
+            LOG.debug(f"No gene with the HGNC symbol {hgnc_id} found.")
+            query["_id"] = {"$in": []}  # No result should be returned by query
+
+        unwind = "$causatives"
+        lookup_local = "causatives"
+        lookups_as = "causative_variant"
+        match = "causative_variant.hgnc_ids"
+
+        if query_field == "pinned":
+            unwind = "$suspects"
+            lookup_local = "suspects"
+            lookups_as = "suspect_variant"
+            match = "suspect_variant.hgnc_ids.hgnc_ids"
+
+        cases_with_gene_doc = self.case_collection.aggregate(
+            [
+                {"$unwind": unwind},
+                {
+                    "$lookup": {
+                        "from": "variant",
+                        "localField": lookup_local,
+                        "foreignField": "_id",
+                        "as": lookups_as,
+                    }
+                },
+                {"$match": {match: hgnc_id}},
+                {"$project": {"_id": 1}},
+            ]
+        )
+        case_ids = [case["_id"] for case in cases_with_gene_doc]
+        query["_id"] = {"$in": case_ids}
+
+    def _populate_name_query(self, query, name_query, owner=None, collaborator=None):
+        """Parses and adds query parameters provided by users in cases search filter.
+
+        Args:
+            query(dict): cases search query
+            name_query(dict): args provided by users in cases filter search
+            owner(dict): an institute id
+            collaborator(dict): an institute id
+        """
+        order = None
+        query_field = name_query.split(":")[0]  # example:status
+        query_term = name_query[name_query.index(":") + 1 :].replace(" ", "")  # example:active
+
+        if query_field == "case" and query_term != "":
+            LOG.debug("Case display name query")
+            query["$or"] = [
+                {"display_name": {"$regex": query_term}},
+                {"individuals.display_name": {"$regex": query_term}},
+            ]
+
+        if query_field == "exact_pheno":
+            LOG.debug("Exact HPO phenotype query")
+            if query_term != "":
+                query["phenotype_terms.phenotype_id"] = query_term
+            else:  # query for cases with no HPO terms
+                query["$or"] = [
+                    {"phenotype_terms": {"$size": 0}},
+                    {"phenotype_terms": {"$exists": False}},
+                ]
+        if query_field == "synopsis":
+            LOG.debug("Case synopsis query")
+            if query_term != "":
+                query["$text"] = {"$search": query_term}
+            else:
+                query["synopsis"] = ""
+
+        if query_field == "panel":
+            LOG.debug("Gene panel query")
+            query["panels"] = {"$elemMatch": {"panel_name": query_term, "is_default": True}}
+
+        if query_field == "status":
+            LOG.debug("Case status query")
+            query["status"] = query_term
+
+        if query_field == "pheno_group":
+            LOG.debug("Phenotye group query")
+            if query_term != "":
+                query["phenotype_groups.phenotype_id"] = query_term
+            else:
+                query["$or"] = [
+                    {"phenotype_groups": {"$size": 0}},
+                    {"phenotype_groups": {"$exists": False}},
+                ]
+        if query_field == "cohort":
+            LOG.debug("Case cohort query")
+            query["cohorts"] = query_term
+
+        if query_term != "" and (query_field == "similar_case" or query_field == "similar_pheno"):
+            order = self._set_similar_phenotype_query(
+                query, query_field, query_term, owner or collaborator
+            )
+
+        if query_term != "" and (query_field == "pinned" or query_field == "causative"):
+            self._set_genes_of_interest_query(query, query_field, query_term)
+
+        if query_field == "user":
+            LOG.debug(f"Search for cases with assignee '{query_term}'.")
+            users = self.user_collection.find({"name": {"$regex": query_term, "$options": "i"}})
+            nr_users = sum(
+                1
+                for i in self.user_collection.find(
+                    {"name": {"$regex": query_term, "$options": "i"}}
+                )
+            )
+            query["assignees"] = {"$in": [user["email"] for user in users]}
+
+        return order
 
     def cases(
         self,
@@ -76,6 +241,7 @@ class CaseHandler(object):
         name_query=None,
         yield_query=False,
         within_days=None,
+        assignee=None,
     ):
         """Fetches all cases from the backend.
 
@@ -97,6 +263,7 @@ class CaseHandler(object):
             yield_query(bool): If true, only return mongo query dict for use in
                                 compound querying.
             within_days(int): timespan (in days) for latest event on case
+            assignee(str): email of an assignee
 
         Returns:
             Cases ordered by date.
@@ -150,127 +317,12 @@ class CaseHandler(object):
         if cohort:
             query["cohorts"] = {"$exists": True, "$ne": []}
 
+        if assignee:
+            query["assignees"] = {"$in": [assignee]}
+
         if name_query:
-            name_value = name_query.split(":")[
-                -1
-            ]  # capture ant value provided after query descriptor
-            users = self.user_collection.find({"name": {"$regex": name_query, "$options": "i"}})
-            nr_users = sum(
-                1
-                for i in self.user_collection.find(
-                    {"name": {"$regex": name_query, "$options": "i"}}
-                )
-            )
-            if nr_users > 0:
-                query["assignees"] = {"$in": [user["email"] for user in users]}
-            elif name_query.startswith("HP:"):
-                LOG.debug("HPO case query")
-                if name_value:
-                    query["phenotype_terms.phenotype_id"] = name_query
-                else:  # query for cases with no HPO terms
-                    query["$or"] = [
-                        {"phenotype_terms": {"$size": 0}},
-                        {"phenotype_terms": {"$exists": False}},
-                    ]
-            elif name_query.startswith("PG:"):
-                LOG.debug("PG case query")
-                if name_value:
-                    phenotype_group_query = name_query.replace("PG:", "HP:")
-                    query["phenotype_groups.phenotype_id"] = phenotype_group_query
-                else:  # query for cases with no phenotype groups
-                    query["$or"] = [
-                        {"phenotype_groups": {"$size": 0}},
-                        {"phenotype_groups": {"$exists": False}},
-                    ]
-            elif name_query.startswith("similar:"):
-                LOG.debug("Case HPO similarity query")
-                if name_value:
-                    # first, see that we can find a unique case with the given display name to match against for owner
-                    if owner:
-                        search_institute_id = owner
-                    elif collaborator:
-                        search_institute_id = collaborator
-                    else:
-                        raise ValueError("No owner or collaborator institute_id given.")
-                    case_obj = self.case(display_name=name_value, institute_id=search_institute_id)
-                    if case_obj:
-                        LOG.debug(
-                            "Search for cases similar to %s", case_obj.get("display_name"),
-                        )
-                        similar_cases = self.get_similar_cases(case_obj)
-                        LOG.debug("Similar cases: %s", similar_cases)
-                        if similar_cases:
-                            similar_case_ids = []
-                            order = []
-                            for i in similar_cases:
-                                similar_case_ids.append(i[0])
-                                order.append(i[1])
-                            query["_id"] = {"$in": similar_case_ids}
-            elif name_query.startswith("causative:"):
-                if name_value:
-                    hgnc_id = self.hgnc_id(hgnc_symbol=name_value)
-                    if hgnc_id:
-                        cases_with_gene_doc = self.case_collection.aggregate(
-                            [
-                                {"$unwind": "$causatives"},
-                                {
-                                    "$lookup": {
-                                        "from": "variant",
-                                        "localField": "causatives",
-                                        "foreignField": "_id",
-                                        "as": "causative_variant",
-                                    }
-                                },
-                                {"$match": {"causative_variant.hgnc_ids": hgnc_id}},
-                                {"$project": {"_id": 1}},
-                            ]
-                        )
-                        case_ids = [case["_id"] for case in cases_with_gene_doc]
-                        query["_id"] = {"$in": case_ids}
-                    else:
-                        LOG.info("No gene with the HGNC symbol {} found.".format(name_value))
-            elif name_query.startswith("pinned:"):
-                if name_value:
-                    hgnc_id = self.hgnc_id(hgnc_symbol=name_value)
-                    if hgnc_id:
-                        cases_with_gene_doc = self.case_collection.aggregate(
-                            [
-                                {"$unwind": "$suspects"},
-                                {
-                                    "$lookup": {
-                                        "from": "variant",
-                                        "localField": "suspects",
-                                        "foreignField": "_id",
-                                        "as": "suspect_variant",
-                                    }
-                                },
-                                {"$match": {"suspect_variant.hgnc_ids": hgnc_id}},
-                                {"$project": {"_id": 1}},
-                            ]
-                        )
-                        case_ids = [case["_id"] for case in cases_with_gene_doc]
-                        query["_id"] = {"$in": case_ids}
-                    else:
-                        LOG.info("No gene with the HGNC symbol {} found.".format(name_value))
-            elif name_query.startswith("synopsis:"):
-                if name_value:
-                    query["$text"] = {"$search": name_value}
-                else:  # query for cases with missing synopsis
-                    query["synopsis"] = ""
-            elif name_query.startswith("cohort:"):
-                query["cohorts"] = name_value
-            elif name_query.startswith("panel:"):
-                query["panels"] = {"$elemMatch": {"panel_name": name_value, "is_default": True}}
-            elif name_query.startswith("status:"):
-                status_query = name_query.replace("status:", "")
-                query["status"] = status_query
-            elif name_query.startswith("is_research"):
-                query["is_research"] = {"$exists": True, "$eq": True}
-            else:
-                query["$or"] = [
-                    {"display_name": {"$regex": name_query}},
-                    {"individuals.display_name": {"$regex": name_query}},
-                ]
+            # Case search filter form query
+            order = self._populate_name_query(query, name_query, owner, collaborator)
 
         if within_days:
             verbs = []
@@ -303,7 +355,7 @@ class CaseHandler(object):
         if yield_query:
             return query
 
-        LOG.info("Get cases with query {0}".format(query))
+        LOG.info(f"Get cases with query {query}")
         if order:
             return self.case_collection.find(query)
 
@@ -512,7 +564,9 @@ class CaseHandler(object):
 
         if old_case:
             LOG.info(
-                "Update case id for existing case: %s -> %s", old_caseid, case_obj["_id"],
+                "Update case id for existing case: %s -> %s",
+                old_caseid,
+                case_obj["_id"],
             )
             self.update_caseid(old_case, case_obj["_id"])
             update = True
@@ -532,8 +586,16 @@ class CaseHandler(object):
         files = [
             {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
             {"file_name": "vcf_sv", "variant_type": "clinical", "category": "sv"},
-            {"file_name": "vcf_cancer", "variant_type": "clinical", "category": "cancer",},
-            {"file_name": "vcf_cancer_sv", "variant_type": "clinical", "category": "cancer_sv",},
+            {
+                "file_name": "vcf_cancer",
+                "variant_type": "clinical",
+                "category": "cancer",
+            },
+            {
+                "file_name": "vcf_cancer_sv",
+                "variant_type": "clinical",
+                "category": "cancer_sv",
+            },
             {"file_name": "vcf_str", "variant_type": "clinical", "category": "str"},
         ]
 
@@ -548,7 +610,9 @@ class CaseHandler(object):
                 category = vcf_file["category"]
                 if update:
                     self.delete_variants(
-                        case_id=case_obj["_id"], variant_type=variant_type, category=category,
+                        case_id=case_obj["_id"],
+                        variant_type=variant_type,
+                        category=category,
                     )
                 self.load_variants(
                     case_obj=case_obj,
@@ -581,10 +645,10 @@ class CaseHandler(object):
 
     def _add_case(self, case_obj):
         """Add a case to the database
-           If the case already exists exception is raised
+        If the case already exists exception is raised
 
-            Args:
-                case_obj(Case)
+         Args:
+             case_obj(Case)
         """
         if self.case(case_obj["_id"]):
             raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
@@ -702,7 +766,9 @@ class CaseHandler(object):
         case_obj["updated_at"] = datetime.datetime.now()
 
         updated_case = self.case_collection.find_one_and_replace(
-            {"_id": case_obj["_id"]}, case_obj, return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": case_obj["_id"]},
+            case_obj,
+            return_document=pymongo.ReturnDocument.AFTER,
         )
 
         return updated_case
@@ -795,7 +861,8 @@ class CaseHandler(object):
             len(case_verif_variants["sanger_verified"]),
         )
         LOG.info(
-            "Nr variants with sanger ordered found: %s", len(case_verif_variants["sanger_ordered"]),
+            "Nr variants with sanger ordered found: %s",
+            len(case_verif_variants["sanger_ordered"]),
         )
 
         return case_verif_variants
@@ -958,17 +1025,17 @@ class CaseHandler(object):
 
     def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
         """Update existing variants for a case according to a previous
-            verification status.
+        verification status.
 
-            Accepts:
-                institute_obj(dict): an institute object
-                case_obj(dict): a case object
+        Accepts:
+            institute_obj(dict): an institute object
+            case_obj(dict): a case object
 
-            Returns:
-                updated_variants(dict): a dictionary like this: {
-                    'updated_verified' : [list of variant ids],
-                    'updated_ordered' : [list of variant ids]
-                }
+        Returns:
+            updated_variants(dict): a dictionary like this: {
+                'updated_verified' : [list of variant ids],
+                'updated_ordered' : [list of variant ids]
+            }
 
         """
         LOG.debug("Updating verification status for variants in case:{}".format(case_obj["_id"]))
@@ -998,7 +1065,11 @@ class CaseHandler(object):
                 )
 
                 old_event = self.event_collection.find_one(
-                    {"case": case_obj["_id"], "verb": verb, "variant_id": old_var["variant_id"],}
+                    {
+                        "case": case_obj["_id"],
+                        "verb": verb,
+                        "variant_id": old_var["variant_id"],
+                    }
                 )
 
                 if old_event is None:

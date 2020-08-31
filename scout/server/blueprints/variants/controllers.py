@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import datetime
 import logging
 import os.path
@@ -6,7 +5,7 @@ import urllib.parse
 from datetime import date
 from pprint import pprint as pp
 
-from flask import Response, flash, request, url_for
+from flask import Response, flash, request, url_for, session
 from flask_login import current_user
 from flask_mail import Message
 from werkzeug.datastructures import Headers, MultiDict
@@ -67,43 +66,41 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         overlapping_svs = [sv for sv in store.overlapping(variant_obj)]
         variant_obj["overlapping"] = overlapping_svs or None
 
-        # show previous classifications for research variants,
-        is_research = variant_obj["variant_type"] == "research"
-
-        # Get all previous ACMG evalautions of the variant
         evaluations = []
+        is_research = variant_obj["variant_type"] == "research"
+        # Get previous ACMG evalautions of the variant from other cases
         for evaluation_obj in store.get_evaluations(variant_obj):
-            classification = evaluation_obj["classification"]
-            # Only show pathogenic/likely pathogenic from other cases on variants page
             if evaluation_obj["case_id"] == case_obj["_id"]:
-                # research cases will have have previous evaluation shown regardless
-                if not is_research:
-                    continue
-            if not classification in ["pathogenic", "likely_pathogenic"]:
-                # research cases will have have previous evaluation shown regardless
-                if not is_research:
-                    continue
-            # Convert the classification int to readable string
-            evaluation_obj["classification"] = ACMG_COMPLETE_MAP.get(classification)
-            evaluations.append(evaluation_obj)
+                continue
+
+            classification = evaluation_obj["classification"]
+
+            if is_research or classification not in ["pathogenic", "likely_pathogenic"]:
+                evaluation_obj["classification"] = ACMG_COMPLETE_MAP.get(classification)
+                evaluations.append(evaluation_obj)
+
         variant_obj["evaluations"] = evaluations
 
-        # Show previous classifications from the clinical side for research
+        clinical_var_obj = variant_obj
         if is_research:
-            # get variant by simple_id.
+            variant_obj["research_assessments"] = get_manual_assessments(variant_obj)
+
             clinical_var_obj = store.variant(
                 case_id=case_obj["_id"],
                 simple_id=variant_obj["simple_id"],
                 variant_type="clinical",
             )
 
-            if clinical_var_obj is not None:
-                # Get all previous ACMG evalautions of the variant
-                variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
+        variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
         variants.append(
             parse_variant(
-                store, institute_obj, case_obj, variant_obj, update=True, genome_build=genome_build,
+                store,
+                institute_obj,
+                case_obj,
+                variant_obj,
+                update=True,
+                genome_build=genome_build,
             )
         )
 
@@ -123,18 +120,15 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
 
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
         # show previous classifications for research variants
+        clinical_var_obj = variant_obj
         if variant_obj["variant_type"] == "research":
-            # get variant by simple_id. That will really just return the first variant found -
-            # but mostly that would be clinical.. Its a start.
             clinical_var_obj = store.variant(
                 case_id=case_obj["_id"],
                 simple_id=variant_obj["simple_id"],
                 variant_type="clinical",
             )
-
-            if clinical_var_obj is not None:
-                # Get all previous ACMG evalautions of the variant
-                variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
+        if clinical_var_obj is not None:
+            variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
         variants.append(
             parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build)
@@ -144,68 +138,83 @@ def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page
 
 
 def get_manual_assessments(variant_obj):
-    """Return manual assessments ready for display. """
+    """Return manual assessments ready for display.
 
-    ## display manual input of interest: classified, commented, tagged or dismissed.
+    An assessment dict of str has keys "title", "label" and "display_class".
+
+    args:
+        variant_obj(variant)
+
+    returns:
+        assessments(array(dict))
+    """
+
+    ## display manual input of interest: classified, commented, tagged, mosaicism or dismissed.
     assessment_keywords = [
+        "acmg_classification",
         "manual_rank",
         "cancer_tier",
-        "acmg_classification",
         "dismiss_variant",
         "mosaic_tags",
     ]
 
     assessments = []
 
+    if variant_obj is None:
+        return assessments
+
     for assessment_type in assessment_keywords:
         assessment = {}
         if variant_obj.get(assessment_type) is not None:
             if assessment_type == "manual_rank":
                 manual_rank = variant_obj[assessment_type]
-                LOG.info("Assessement type {}: {}".format(assessment_type, manual_rank))
-                assessment["title"] = "Clinical manual rank: {}".format(
+                assessment["title"] = "Manual rank: {}".format(
                     MANUAL_RANK_OPTIONS[manual_rank]["description"]
                 )
                 assessment["label"] = MANUAL_RANK_OPTIONS[manual_rank]["label"]
+                assessment["display_class"] = MANUAL_RANK_OPTIONS[manual_rank]["label_class"]
 
             if assessment_type == "cancer_tier":
                 cancer_tier = variant_obj[assessment_type]
-                assessment["title"] = "Clinical cancer tier: {}".format(
+                assessment["title"] = "Cancer tier: {}".format(
                     CANCER_TIER_OPTIONS[cancer_tier]["description"]
                 )
                 assessment["label"] = CANCER_TIER_OPTIONS[cancer_tier]["label"]
+                assessment["display_class"] = CANCER_TIER_OPTIONS[cancer_tier]["label_class"]
 
             if assessment_type == "acmg_classification":
                 classification = variant_obj[assessment_type]
-                LOG.info("Assessment type {}: {}".format(assessment_type, classification))
                 if isinstance(classification, int):
                     acmg_code = ACMG_MAP[classification]
                     classification = ACMG_COMPLETE_MAP[acmg_code]
 
-                assessment["title"] = "Clinical ACMG: {}".format(classification["label"])
+                assessment["title"] = "ACMG: {}".format(classification["label"])
                 assessment["label"] = classification["short"]
+                assessment["display_class"] = classification["color"]
 
             if assessment_type == "dismiss_variant":
                 assessment["label"] = "Dismissed"
-                assessment["title"] = "Dismissed clinically:"
+                assessment["title"] = "dismiss:<br>"
                 for reason in variant_obj[assessment_type]:
                     if not isinstance(reason, int):
                         reason = int(reason)
-                    assessment["title"] += " {} - {}".format(
-                        DISMISS_VARIANT_OPTIONS[reason]["label"],
-                        DISMISS_VARIANT_OPTIONS[reason]["description"],
-                    )
+                        assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
+                            DISMISS_VARIANT_OPTIONS[reason]["label"],
+                            DISMISS_VARIANT_OPTIONS[reason]["description"],
+                        )
+                assessment["display_class"] = "secondary"
 
             if assessment_type == "mosaic_tags":
                 assessment["label"] = "Mosaicism"
-                assessment["title"] = "Mosaicism clinically:"
+                assessment["title"] = "mosaicism:<br>"
                 for reason in variant_obj[assessment_type]:
                     if not isinstance(reason, int):
                         reason = int(reason)
-                    assessment["title"] += " {} - {}".format(
+                    assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
                         MOSAICISM_OPTIONS[reason]["label"],
                         MOSAICISM_OPTIONS[reason]["description"],
                     )
+                assessment["display_class"] = "secondary"
 
             assessments.append(assessment)
 
@@ -279,7 +288,10 @@ def parse_variant(
         variant_obj = store.update_variant(variant_obj)
 
     variant_obj["comments"] = store.events(
-        institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True,
+        institute_obj,
+        case=case_obj,
+        variant_id=variant_obj["variant_id"],
+        comments=True,
     )
 
     if variant_genes:
@@ -305,15 +317,15 @@ def parse_variant(
 
 
 def download_variants(store, case_obj, variant_objs):
-    """ Download filtered variants for a case to an excel file
+    """Download filtered variants for a case to an excel file
 
-        Args:
-            store(adapter.MongoAdapter)
-            case_obj(dict)
-            variant_objs(PyMongo cursor)
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(dict)
+        variant_objs(PyMongo cursor)
 
-        Returns:
-            an HTTP response containing a csv file
+    Returns:
+        an HTTP response containing a csv file
     """
     document_header = variants_export_header(case_obj)
     export_lines = []
@@ -333,19 +345,21 @@ def download_variants(store, case_obj, variant_objs):
     )
     # return a csv with the exported variants
     return Response(
-        generate(",".join(document_header), export_lines), mimetype="text/csv", headers=headers,
+        generate(",".join(document_header), export_lines),
+        mimetype="text/csv",
+        headers=headers,
     )
 
 
 def variant_export_lines(store, case_obj, variants_query):
     """Get variants info to be exported to file, one list (line) per variant.
-        Args:
-            store(scout.adapter.MongoAdapter)
-            case_obj(scout.models.Case)
-            variants_query: a list of variant objects, each one is a dictionary
-        Returns:
-            export_variants: a list of strings. Each string  of the list corresponding to the fields
-                             of a variant to be exported to file, separated by comma
+    Args:
+        store(scout.adapter.MongoAdapter)
+        case_obj(scout.models.Case)
+        variants_query: a list of variant objects, each one is a dictionary
+    Returns:
+        export_variants: a list of strings. Each string  of the list corresponding to the fields
+                         of a variant to be exported to file, separated by comma
     """
 
     export_variants = []
@@ -362,38 +376,18 @@ def variant_export_lines(store, case_obj, variants_query):
 
         # gather gene info:
         gene_list = variant.get("genes")  # this is a list of gene objects
-        gene_ids = []
-        gene_names = []
-        hgvs_c = []
 
         # if variant is in genes
-        if len(gene_list) > 0:
-            for gene_obj in gene_list:
-                hgnc_id = gene_obj["hgnc_id"]
-                gene_name = gene(store, hgnc_id)["symbol"]
-
-                gene_ids.append(hgnc_id)
-                gene_names.append(gene_name)
-
-                hgvs_nucleotide = "-"
-                # gather HGVS info from gene transcripts
-                transcripts_list = gene_obj.get("transcripts")
-                for transcript_obj in transcripts_list:
-                    if (
-                        transcript_obj.get("is_canonical")
-                        and transcript_obj.get("is_canonical") is True
-                    ):
-                        hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
-                hgvs_c.append(hgvs_nucleotide)
-
-            variant_line.append(";".join(str(x) for x in gene_ids))
-            variant_line.append(";".join(str(x) for x in gene_names))
-            variant_line.append(";".join(str(x) for x in hgvs_c))
+        if gene_list is not None and len(gene_list) > 0:
+            gene_info = variant_export_genes_info(store, gene_list)
+            variant_line += gene_info
         else:
-            i = 0
-            while i < 4:
-                variant_line.append("-")  # instead of gene ids
-                i = i + 1
+            empty_col = 0
+            while empty_col < 3:
+                variant_line.append(
+                    "-"
+                )  # empty HGNC id, emoty gene name and empty transcripts columns
+                empty_col += 1
 
         variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
         for individual in case_obj["individuals"]:
@@ -411,13 +405,53 @@ def variant_export_lines(store, case_obj, variants_query):
     return export_variants
 
 
+def variant_export_genes_info(store, gene_list):
+    """Adds gene info to a list of fields corresponding to a variant to be exported.
+
+    Args:
+        gene_list(list) A list of gene objects contained in the variant
+
+    Returns:
+        gene_info(list) A list of gene-relates string info
+    """
+    gene_ids = []
+    gene_names = []
+    hgvs_c = []
+
+    gene_info = []
+
+    for gene_obj in gene_list:
+        hgnc_id = gene_obj["hgnc_id"]
+        gene_name = gene(store, hgnc_id)["symbol"]
+
+        gene_ids.append(hgnc_id)
+        gene_names.append(gene_name)
+
+        hgvs_nucleotide = "-"
+        # gather HGVS info from gene transcripts
+        transcripts_list = gene_obj.get("transcripts")
+        for transcript_obj in transcripts_list:
+            if (
+                transcript_obj.get("is_canonical") is not None
+                and transcript_obj.get("is_canonical") is True
+            ):
+                hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
+        hgvs_c.append(hgvs_nucleotide)
+
+    gene_info.append(";".join(str(x) for x in gene_ids))
+    gene_info.append(";".join(str(x) for x in gene_names))
+    gene_info.append(";".join(str(x) for x in hgvs_c))
+
+    return gene_info
+
+
 def variants_export_header(case_obj):
     """Returns a header for the CSV file with the filtered variants to be exported.
-        Args:
-            case_obj(scout.models.Case)
-        Returns:
-            header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
-                    + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
+    Args:
+        case_obj(scout.models.Case)
+    Returns:
+        header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
+                + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
     """
     header = []
     header = header + EXPORT_HEADER
@@ -454,14 +488,19 @@ def get_variant_info(genes):
     return data
 
 
-def cancer_variants(store, institute_id, case_name, form, page=1):
+def cancer_variants(store, institute_id, case_name, variants_query, form, page=1):
     """Fetch data related to cancer variants for a case."""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     per_page = 50
     skip_count = per_page * max(page - 1, 0)
-    variants_query = store.variants(case_obj["_id"], category="cancer", query=form.data)
+
     variant_count = variants_query.count()
+
+    # Setup variant count session with variant count by category
+    variant_count_session(store, institute_id, case_obj["_id"], "clinical", "cancer")
+    session["filtered_variants"] = variant_count
+
     more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = variants_query.skip(skip_count).limit(per_page)
     data = dict(
@@ -480,16 +519,44 @@ def cancer_variants(store, institute_id, case_name, form, page=1):
     return data
 
 
+def variant_count_session(store, institute_id, case_id, var_type, var_category):
+    """Create a session object containing variant count for each variant category
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str): Institute ID
+        case_id(str): Case ID
+        var_type(str): "research" or "clinical"
+        var_category(str): "snv", "cancer", "cancer_sv", "sv"
+    """
+    # Run the query just once for a case
+    if (
+        session.get("institute") != institute_id
+        or session.get("case") != case_id
+        or session["case_variants"] is None
+    ):
+        session["case"] = case_id
+        session["institute"] = institute_id
+        case_variants = store.case_variants_count(case_id, institute_id)
+        session["case_variants"] = case_variants
+
+    if session["case_variants"].get(var_type):
+        session["all_variants"] = session["case_variants"][var_type].get(var_category, "NA")
+    else:
+        # Something might always go wrong I guess?
+        session["all_variants"] = "NA"
+
+
 def get_clinvar_submission(store, institute_id, case_name, variant_id, submission_id):
     """Collects all variants from the clinvar submission collection with a specific submission_id
-        Args:
-            store(scout.adapter.MongoAdapter)
-            institute_id(str): Institute ID
-            case_name(str): case ID
-            variant_id(str): variant._id
-            submission_id(str): clinvar submission id, i.e. SUB76578
-        Returns:
-            A dictionary with all the data to display the clinvar_update.html template page
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str): Institute ID
+        case_name(str): case ID
+        variant_id(str): variant._id
+        submission_id(str): clinvar submission id, i.e. SUB76578
+    Returns:
+        A dictionary with all the data to display the clinvar_update.html template page
     """
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -579,8 +646,6 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)
-    # no longer needed?
-    #            form.csrf_token = request.args.get('csrf_token')
     elif bool(request_form.get("save_filter")):
         # The form should be applied and remain set the page after saving
         form = FiltersFormClass(request_form)
@@ -603,7 +668,7 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
 
 
 def populate_sv_filters_form(store, institute_obj, case_obj, category, request_obj):
-    """ Populate a filters form object of the type SvFiltersForm
+    """Populate a filters form object of the type SvFiltersForm
 
     Accepts:
         store(adapter.MongoAdapter)
@@ -736,13 +801,13 @@ def verified_excel_file(store, institute_list, temp_excel_dir):
 
 
 def activate_case(store, institute_obj, case_obj, current_user):
-    """ Activate case when visited for the first time.
+    """Activate case when visited for the first time.
 
-        Args:
-            store(adapter.MongoAdapter)
-            institute_obj(dict) a scout institutet object
-            case_obj(dict) a scout case object
-            current_user(UserMixin): a scout user
+    Args:
+        store(adapter.MongoAdapter)
+        institute_obj(dict) a scout institutet object
+        case_obj(dict) a scout case object
+        current_user(UserMixin): a scout user
     """
 
     # update status of case if visited for the first time
@@ -751,6 +816,8 @@ def activate_case(store, institute_obj, case_obj, current_user):
 
         user_obj = store.user(current_user.email)
         case_link = url_for(
-            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
+            "cases.case",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
         )
         store.update_status(institute_obj, case_obj, user_obj, "active", case_link)

@@ -1,0 +1,282 @@
+{% extends "layout_bs4.html" %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }}
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }} cases </a>
+  </li>
+  <li class="nav-item active">
+    <span class="navbar-text">Clinvar submissions</span>
+  </li>
+{% endblock %}
+
+{% macro submissions_macro(submissions) %}
+<div class="container-float">
+  <h3>Clinvar submissions page<h5></h3><a data-target="#howto" href="#" data-toggle="modal">howto</a></h5><br>
+  <!-- Modal -->
+  <div class="modal fade w-100" role="dialog" id="howto" aria-hidden="true" tabindex="-1">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <h5>Requirements</h5>
+          <p>
+            Make sure to <strong>register a user</strong> to the <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/submission_portal/" target="_blank">clinVar submission portal.</a><br>
+                        If your organization is not already present in clinVar you should follow the instructions to <strong>register a submitting organization</strong> to the same portal.
+                        The first time an organization is registered in the ClinVar Submission Portal, the content will be reviewed, so it will take some time before getting approved in order to start a variant submission.
+          </p><br>
+          <h5>Obtain a submission ID</h5>
+          <p>
+            If the requirements above are fullfilled, you can start a new submission by using the "<strong>Upload new file submission</strong>" button from the <a href="https://submit.ncbi.nlm.nih.gov/clinvar/" target="_blank">submission page</a>.<br>This button is a link to a multi-panel (4 panels) submission page. The first panel (submission information) has a precompiled field named "<strong>Submission name</strong>".
+          </p><br>
+          <h5>Fill in panel 1 and 2</h5>
+          <p>
+            Fill in submission forms in panel 1 and 2, respectively named "Submission information" and "Organization". In the "<strong>Submission format</strong>" in panel 1 make sure to select the value "<strong>Comma-separated values</strong>".<br>
+            <strong>Assemby name</strong> fields should be filled in before proceding further with the submission.
+          </p><br>
+          <h5>Download the files</h5>
+          <p>
+            You'll need to register the <strong>Submission Name</strong> obtained from Clinvar portal in order to download variants and casedata submission files.
+          </p><br>
+          <h5>Upload the files to Clinvar</h5>
+          <p>
+            Upload the files obtained above (either the variants .csv file or the variants .csv + the casedata .csv files) in the "<strong>Submission Files</strong>" field in the third panel of the submission.
+          The field named <strong>"Assertion Criteria File" should be left blank</strong>, since the default information is already filled in the "Variants sheet" <strong>(ACMG Guidelines, 2015)</strong>.
+          </p>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal end -->
+  <br>
+  {% if submissions %}
+    <div style="overflow-y: auto; height: 700px;">
+    {% for submission in submissions|sort(attribute='status', reverse=True) %}
+      {{ submission_panel(submission) }}
+    {% endfor %}
+    </div>
+  {% else %}
+  <p>No clinvar submission was found. You can create one by clicking on "Submit to Clinvar" from the page of a pinned variant.</p>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% macro submission_panel(subm_obj) %}
+  <div class="card w-100 mt-3">
+    <div class="card-header {{ 'bg-primary' if subm_obj.status=='open' else 'bg-warning' }}">
+      Submission <strong>{{subm_obj._id}} - ({{subm_obj.status|upper}})</strong> / Created: <strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong> / Last updated: <strong>{{subm_obj.updated_at.strftime('%Y-%m-%d')}}</strong>
+    </div><!-- end of card header-->
+    <div class="card-body">
+      <form id="update_{{subm_obj._id}}" action="{{ url_for('overview.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb align-items-center">
+            <li class="breadcrumb-item">
+              <!-- Download the Variant data CSV file -->
+              <a href="{{url_for('overview.clinvar_download_csv', submission=subm_obj._id, csv_type='variant_data', clinvar_id=subm_obj.clinvar_subm_id or 'None')}}" class="btn btn-primary btn-xs text-white">
+                Download variants file
+              </a>
+              <a href="{{url_for('overview.clinvar_download_csv', submission=subm_obj._id, csv_type='case_data', clinvar_id=subm_obj.clinvar_subm_id or 'None')}}" class="btn btn-primary btn-xs text-white">
+                Download casedata file
+              </a>
+            </li>
+            {% if subm_obj.status=='open'%}
+              <li class="breadcrumb-item"><button type="submit" name="update_submission" value="closed" class="btn btn-warning btn-xs">Close submission</button></li>
+            {% else %}
+              <li class="breadcrumb-item"><button type="submit" name="update_submission" value="open" class="btn btn-success btn-xs">Re-open submission</button></li>
+            {% endif %}
+            <li class="breadcrumb-item"><button type="submit" name="update_submission" value="delete" class="btn btn-danger btn-xs">Delete submission</button></li>
+          </ol>
+        </nav>
+        <div class="form-inline mb-3">
+          <label for="clinvar_id">submission name</label>
+          <input type="text" class="form-control mx-sm-3" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}">
+          <button type="submit" class="btn btn-primary" name="update_submission" value="register_id">Update</button>
+        </div>
+      </form>
+      <div> <!--variant data div -->
+        <h4>Variant data:</h4>
+        {% if subm_obj.variant_data and subm_obj.variant_data.count() > 0 %}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th width="5%"></th>
+              <th width="15%">ID</th>
+              <th></th>
+              <th>Type</th>
+              <th>Case</th>
+              <th>Refseq</th>
+              <th>Gene</th>
+              <th>HGVS</th>
+              <th>Significance</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% set var_key_name = {} %}
+            {% for subm_variant in subm_obj.variant_data  %} <!-- loop over the submitted variants-->
+              <tr>
+                <td width="5%">{{loop.index}}</td>
+                  {% if subm_variant.category == 'sv' %}
+                    {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.chromosome, subm_variant.breakpoint1, subm_variant.ref[0:5], subm_variant.alt[0:5]]) }) %}
+                    <td width="15%">
+                      <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
+                    </td>
+                    <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
+                    <td><div class="badge badge-warning">SV</div></td>
+                  {% else %}
+                    {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.chromosome, subm_variant.start, subm_variant.ref[0:5], subm_variant.alt[0:5]]) }) %}
+                    <td width="15%">
+                      <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
+                    </td>
+                    <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
+                    <td><div class="badge badge-success">SNV</div></td>
+                  {% endif %}
+                </td>
+                <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id]) }}" target="_blank">{{subm_obj.cases[subm_variant.case_id]}}</a></td>
+                <td>{{subm_variant.ref_seq or '-'}}</td>
+                <td>{{subm_variant.gene_symbol or '-'}}</td>
+                <td>{{subm_variant.hgvs or '-'}}</td>
+                <td>{{subm_variant.clinsig}}</td>
+                <form id="delete_variant_{{subm_variant._id}}" action="{{ url_for('overview.clinvar_delete_object', submission=subm_obj._id, object_type='variant_data') }}" method="POST">
+                  <td><button type="submit" name="delete_object" value="{{subm_variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o fa-lg" aria-hidden="true"></span></button></td>
+                </form>
+              </tr>
+              <tr>
+                <td colspan=9>
+                  <div class="vardata">
+                    <div id="vardiv{{subm_variant._id}}" class="panel-body" style="display:none;">
+                        {% if subm_variant.category == 'sv' %}
+                          <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank"><h4>{{subm_variant.chromosome}}_{{subm_variant.breakpoint1}}_{{subm_variant.var_type}}</h4></a>
+                        {% else %}
+                          <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank"><h4>{{subm_variant.chromosome}}_{{subm_variant.start}}_{{subm_variant.ref}}>{{subm_variant.alt}}</h4></a>
+                          {% endif %}
+
+                        {% for key, value in variant_header_fields.items() %}
+                          {% if subm_variant[key]%}
+                            <li>{{ value }}: <strong>{{ subm_variant[key]|replace(subm_variant[key][75:], '..') if subm_variant[key]|length > 75 else subm_variant[key]}}</strong></li>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+          <p>This submission is open but has no variants yet.</p>
+        {% endif %}
+      </div> <!--variant data div end -->
+      <div> <!--case data div -->
+        <h4>Case data:</h4>
+        {% if subm_obj.case_data and subm_obj.case_data.count() > 0 %}
+        <input type="hidden" name="oldSampleName" id="oldSampleName" value="">
+        <input type="hidden" name="newSampleName" id="newSampleName" value="">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Individual ID</th>
+              <th></th>
+              <th></th>
+              <th>Case ID</th>
+              <th>Clinical features</th>
+              <th>Variant ID</th>
+              <th>Allele origin</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for case in subm_obj.case_data %}
+              <tr class="text-center">
+                <td>{{loop.index}}</td>
+                <form id="rename_cd_{{subm_obj._id}}" action="{{ url_for('overview.clinvar_rename_casedata', submission=subm_obj._id, case=case.case_id, old_name=case.individual_id) }}" method="POST">
+                <td>
+                  <input type="text" name="new_name" value="{{case.individual_id}}"><button name="rename_sample" type="submit" class="btn btn-primary btn-xs mb-1"><span class="fa fa-floppy-o" aria-hidden="true"></span></button>
+                </td>
+                </form>
+                <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
+                <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}" target="_blank">{{subm_obj.cases[case.case_id]}}</a></td>
+                <td>{{case.clin_features}}</td>
+                <td>{{var_key_name[case.linking_id]}}</td>
+                <td>{{case.allele_origin}}</td>
+                <form id="delete_casedata_{{case._id}}" action="{{ url_for('overview.clinvar_delete_object', submission=subm_obj._id, object_type='case_data') }}" method="POST">
+                  <td><button type="submit" name="delete_object" value="{{case._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o fa-lg" aria-hidden="true"></span></button></td>
+                </form>
+              </tr>
+              <tr>
+                <td colspan=8>
+                  <div id="cddiv{{case._id}}" class="panel-body" style="display:none;">
+                    {% for key, value in casedata_header_fields.items() %}
+                      {% if case[key]%}
+                        <li>{{ value }}: <strong>{{ case[key] }}</strong></li>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+          <p>No case data provided for the above variants</p>
+        {% endif %}
+      </div>
+    </div><!-- end of card body-->
+  </div><!-- end of card -->
+{% endmacro %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    {{ institute_actionbar(institute, "shared") }} <!-- This is the sidebar -->
+  <div class="col">
+    {{ submissions_macro(submissions) }}
+  </div>
+  </div> <!-- end of div id body-row -->
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script type="text/javascript">
+
+  $(function () {
+      $('.casedata  div').hide();
+      $('.vardata  div').hide();
+      $('.cd_btn').on('click', function(){
+          var bid = $(this)[0].id;
+          var sel = '#cddiv' + bid;
+          if($(sel).is(':visible')){
+            $(sel).hide();
+          }
+          else{
+            $('.casedata  div').hide();
+            $(sel).fadeToggle();
+          }
+      });
+      $('.var_btn').on('click', function(){
+          var bid = $(this)[0].id;
+          var sel = '#vardiv' + bid;
+          if($(sel).is(':visible')){
+            $(sel).hide();
+          }
+          else{
+            $('.vardata div').hide();
+            $(sel).fadeToggle();
+          }
+      });
+  });
+</script>
+{% endblock %}

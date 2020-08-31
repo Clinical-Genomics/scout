@@ -10,7 +10,11 @@ LOG = logging.getLogger(__name__)
 @click.option("--hgnc-symbol", "-s", help="A valid hgnc symbol")
 @click.option("--hgnc-id", "-i", type=int, help="A valid hgnc id")
 @click.option(
-    "--build", "-b", type=click.Choice(["37", "38"]), default="37", help="Specify the genome build",
+    "--build",
+    "-b",
+    type=click.Choice(["37", "38"]),
+    default="37",
+    help="Specify the genome build",
 )
 @with_appcontext
 def hgnc(hgnc_symbol, hgnc_id, build):

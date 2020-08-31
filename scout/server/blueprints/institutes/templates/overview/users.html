@@ -1,0 +1,71 @@
+{% extends "layout_bs4.html" %}
+{% from "overview/utils.html" import users_table %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
+
+{% block title %}
+  {{ super() }} - Users
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }} cases </a>
+  </li>
+  <li class="nav-item active">
+    <a class="nav-link">Users</a>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
+  <div class="col">
+    {{ users_table(users) }}
+  </div>
+  </div> <!-- end of div id body-row -->
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    function SidebarCollapse () {
+        $('.menu-collapsed').toggleClass('d-none');
+        $('.sidebar-submenu').toggleClass('d-none');
+        $('.submenu-icon').toggleClass('d-none');
+        $('#sidebar-container').toggleClass('sidebar-expanded sidebar-collapsed');
+
+        // Treating d-flex/d-none on separators with title
+        var SeparatorTitle = $('.sidebar-separator-title');
+        if ( SeparatorTitle.hasClass('d-flex') ) {
+            SeparatorTitle.removeClass('d-flex');
+        } else {
+            SeparatorTitle.addClass('d-flex');
+        }
+
+        // Collapse/Expand icon
+        $('#collapse-icon').toggleClass('fa-angle-double-left fa-angle-double-right');
+    }
+
+    // Hide submenus
+    $('#body-row .collapse').collapse('hide');
+
+    // Collapse/Expand icon
+    $('#collapse-icon').addClass('fa-angle-double-left');
+
+    // Collapse click
+    $('[data-toggle=sidebar-collapse]').click(function() {
+      SidebarCollapse();
+    });
+  </script>
+
+{% endblock %}

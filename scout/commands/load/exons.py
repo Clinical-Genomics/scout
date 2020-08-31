@@ -17,7 +17,10 @@ LOG = logging.getLogger(__name__)
 
 @click.command("exons", short_help="Load exons")
 @click.option(
-    "-e", "--exons-file", type=click.Path(exists=True), help="Path to file with ensembl exons",
+    "-e",
+    "--exons-file",
+    type=click.Path(exists=True),
+    help="Path to file with ensembl exons",
 )
 @click.option("-b", "--build", type=click.Choice(["37", "38"]), default="37", show_default=True)
 @with_appcontext

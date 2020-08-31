@@ -26,7 +26,7 @@ class LoqusdbMock:
     def case_count(self):
         return self.nr_cases
 
-    def get_variant(self, var_dict):
+    def get_variant(self, var_dict, loqusdb_id=None):
         var = self.variants.get(var_dict["_id"], {})
         var["total"] = self.nr_cases
         return var
@@ -252,7 +252,10 @@ def variant_gene():
                 "polyphen_prediction": "unknown",
                 "swiss_prot": "unknown",
                 "biotype": "retained_intron",
-                "functional_annotations": ["intron_variant", "non_coding_transcript_variant",],
+                "functional_annotations": [
+                    "intron_variant",
+                    "non_coding_transcript_variant",
+                ],
                 "region_annotations": ["intronic", "ncRNA_exonic"],
                 "intron": "2/5",
                 "strand": "+",
@@ -278,7 +281,10 @@ def variant_gene():
                 "polyphen_prediction": "unknown",
                 "swiss_prot": "unknown",
                 "biotype": "processed_transcript",
-                "functional_annotations": ["intron_variant", "non_coding_transcript_variant",],
+                "functional_annotations": [
+                    "intron_variant",
+                    "non_coding_transcript_variant",
+                ],
                 "region_annotations": ["intronic", "ncRNA_exonic"],
                 "intron": "8/10",
                 "strand": "+",

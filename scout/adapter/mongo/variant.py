@@ -232,15 +232,15 @@ class VariantHandler(VariantLoader):
     ):
         """Returns the specified variant.
 
-           Arguments:
-               document_id : A md5 key that represents the variant or "variant_id"
-               gene_panels(List[GenePanel])
-               case_id (str): case id (will search with "variant_id")
-               simple_id (str): a variant simple_id (example: 1_161184089_G_GTA)
-               variant_type(str): 'research' or 'clinical' - default 'clinical'
+        Arguments:
+            document_id : A md5 key that represents the variant or "variant_id"
+            gene_panels(List[GenePanel])
+            case_id (str): case id (will search with "variant_id")
+            simple_id (str): a variant simple_id (example: 1_161184089_G_GTA)
+            variant_type(str): 'research' or 'clinical' - default 'clinical'
 
-           Returns:
-               variant_object(Variant): A odm variant object
+        Returns:
+            variant_object(Variant): A odm variant object
         """
         query = {}
         if case_id and document_id:
@@ -263,7 +263,9 @@ class VariantHandler(VariantLoader):
 
         if case_obj:
             variant_obj = self.add_gene_info(
-                variant_obj=variant_obj, gene_panels=gene_panels, build=case_obj["genome_build"],
+                variant_obj=variant_obj,
+                gene_panels=gene_panels,
+                build=case_obj["genome_build"],
             )
         else:
             variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels)
@@ -302,7 +304,10 @@ class VariantHandler(VariantLoader):
             cohorts
         """
         mongo_variant_query = self.build_variant_query(
-            query=query, institute_id=institute_id, category=category, variant_type=variant_type,
+            query=query,
+            institute_id=institute_id,
+            category=category,
+            variant_type=variant_type,
         )
 
         sorting = [("rank_score", pymongo.DESCENDING)]
@@ -350,12 +355,12 @@ class VariantHandler(VariantLoader):
     def get_causatives(self, institute_id, case_id=None):
         """Return all causative variants for an institute
 
-            Args:
-                institute_id(str)
-                case_id(str)
+        Args:
+            institute_id(str)
+            case_id(str)
 
-            Yields:
-                str: variant document id
+        Yields:
+            str: variant document id
         """
 
         causatives = []
@@ -369,7 +374,12 @@ class VariantHandler(VariantLoader):
 
             query = self.case_collection.aggregate(
                 [
-                    {"$match": {"collaborators": institute_id, "causatives": {"$exists": True},}},
+                    {
+                        "$match": {
+                            "collaborators": institute_id,
+                            "causatives": {"$exists": True},
+                        }
+                    },
                     {"$unwind": "$causatives"},
                     {"$group": {"_id": "$causatives"}},
                 ]
@@ -381,17 +391,17 @@ class VariantHandler(VariantLoader):
     def check_causatives(self, case_obj=None, institute_obj=None, limit_genes=None):
         """Check if there are any variants that are previously marked causative
 
-            Loop through all variants that are marked 'causative' for an
-            institute and check if any of the variants are present in the
-            current case.
+        Loop through all variants that are marked 'causative' for an
+        institute and check if any of the variants are present in the
+        current case.
 
-            Args:
-                case_obj (dict): A Case object
-                institute_obj (dict): check across the whole institute
-                limit_genes (list): list of gene hgnc_ids to limit the search to
+        Args:
+            case_obj (dict): A Case object
+            institute_obj (dict): check across the whole institute
+            limit_genes (list): list of gene hgnc_ids to limit the search to
 
-            Returns:
-                causatives(iterable(Variant))
+        Returns:
+            causatives(iterable(Variant))
         """
         institute_id = case_obj["owner"] if case_obj else institute_obj["_id"]
         var_causative_events = self.event_collection.find(
@@ -492,12 +502,12 @@ class VariantHandler(VariantLoader):
     def delete_variants(self, case_id, variant_type, category=None):
         """Delete variants of one type for a case
 
-            This is used when a case is reanalyzed
+        This is used when a case is reanalyzed
 
-            Args:
-                case_id(str): The case id
-                variant_type(str): 'research' or 'clinical'
-                category(str): 'snv', 'sv', 'cancer' or 'cancer_sv'
+        Args:
+            case_id(str): The case id
+            variant_type(str): 'research' or 'clinical'
+            category(str): 'snv', 'sv', 'cancer' or 'cancer_sv'
         """
         category = category or ""
         LOG.info(
@@ -690,6 +700,54 @@ class VariantHandler(VariantLoader):
                 raise FileNotFoundError("Could not find index for {}".format(variant_file))
 
         return file_name
+
+    def case_variants_count(self, case_id, institute_id):
+        """Returns the sum of all variants for a case by type
+
+        Args:
+            case_id(str): _id of a case
+            institute_id(str): id of an institute
+
+        Returns:
+            variants_by_type(dict). A dictionary like this:
+                {
+                    "clinical": {
+                        "snv": 789, (or "cancer")
+                        "sv": 63 (or "cancer-sv")
+                    },
+                    "research":{
+                        "snv": 789, (or "cancer")
+                        "sv": 63 (or "cancer-sv")
+                    }
+                }
+        """
+        LOG.info(
+            "Retrieving variants by categori for case: {0}, institute: {1}".format(
+                case_id, institute_id
+            )
+        )
+        # Build query
+        match = {"$match": {"case_id": case_id, "institute": institute_id}}
+        group = {
+            "$group": {
+                "_id": {"type": "$variant_type", "category": "$category"},
+                "total": {"$sum": 1},
+            }
+        }
+        pipeline = [match, group]
+        results = self.variant_collection.aggregate(pipeline)
+
+        variants_by_type = {}
+        for item in results:
+            var_type = item["_id"]["type"]
+            var_category = item["_id"]["category"]
+            # classify by type (clinical or research)
+            if var_type in variants_by_type:
+                # classify by category (snv, sv, str, cancer, cancer-sv)
+                variants_by_type[var_type][var_category] = item["total"]
+            else:
+                variants_by_type[var_type] = {var_category: item["total"]}
+        return variants_by_type
 
     def sample_variants(self, variants, sample_name, category="snv"):
         """Given a list of variants get variant objects found in a specific patient

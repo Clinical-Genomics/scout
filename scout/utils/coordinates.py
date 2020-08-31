@@ -3,12 +3,12 @@ from scout.constants import PAR_COORDINATES, CHR_PATTERN
 
 def is_par(chromosome, position, build="37"):
     """Check if a variant is in the Pseudo Autosomal Region or not
-    
+
     Args:
         chromosome(str)
         position(int)
         build(str): The genome build
-    
+
     Returns:
         bool
     """
@@ -28,10 +28,10 @@ def is_par(chromosome, position, build="37"):
 def check_coordinates(chromosome, pos, coordinates):
     """Check if the variant is in the interval given by the coordinates
 
-        Args:
-            chromosome(str): Variant chromosome
-            pos(int): Variant position
-            coordinates(dict): Dictionary with the region of interest
+    Args:
+        chromosome(str): Variant chromosome
+        pos(int): Variant position
+        coordinates(dict): Dictionary with the region of interest
     """
     chrom_match = CHR_PATTERN.match(chromosome)
     chrom = chrom_match.group(2)

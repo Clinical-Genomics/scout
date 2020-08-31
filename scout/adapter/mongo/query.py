@@ -270,14 +270,14 @@ class QueryHandler(object):
         return mongo_query
 
     def clinsig_query(self, query, mongo_query):
-        """ Add clinsig filter values to the mongo query object
+        """Add clinsig filter values to the mongo query object
 
-            Args:
-                query(dict): a dictionary of query filters specified by the users
-                mongo_query(dict): the query that is going to be submitted to the database
+        Args:
+            query(dict): a dictionary of query filters specified by the users
+            mongo_query(dict): the query that is going to be submitted to the database
 
-            Returns:
-                clinsig_query(dict): a dictionary with clinsig key-values
+        Returns:
+            clinsig_query(dict): a dictionary with clinsig key-values
 
         """
         LOG.debug("clinsig is a query parameter")
@@ -326,7 +326,7 @@ class QueryHandler(object):
         return clnsig_query
 
     def coordinate_filter(self, query, mongo_query):
-        """ Adds genomic coordinated-related filters to the query object
+        """Adds genomic coordinated-related filters to the query object
             This method is called to buid coordinate query for non-sv variants
 
         Args:
@@ -343,7 +343,7 @@ class QueryHandler(object):
         return mongo_query
 
     def sv_coordinate_query(self, query):
-        """ Adds genomic coordinated-related filters to the query object
+        """Adds genomic coordinated-related filters to the query object
             This method is called to buid coordinate query for sv variants
 
         Args:
@@ -376,7 +376,12 @@ class QueryHandler(object):
             position_query = {
                 "$or": [
                     {"end": {"$gte": int(query["start"]), "$lte": int(query["end"])}},  # 1
-                    {"position": {"$lte": int(query["end"]), "$gte": int(query["start"]),}},  # 2
+                    {
+                        "position": {
+                            "$lte": int(query["end"]),
+                            "$gte": int(query["start"]),
+                        }
+                    },  # 2
                     {
                         "$and": [
                             {"position": {"$gte": int(query["start"])}},
@@ -397,7 +402,7 @@ class QueryHandler(object):
         return coordinate_query
 
     def gene_filter(self, query, mongo_query):
-        """ Adds gene-related filters to the query object
+        """Adds gene-related filters to the query object
 
         Args:
             query(dict): a dictionary of query filters specified by the users
@@ -426,12 +431,12 @@ class QueryHandler(object):
     def secondary_query(self, query, mongo_query, secondary_filter=None):
         """Creates a secondary query object based on secondary parameters specified by user
 
-            Args:
-                query(dict): a dictionary of query filters specified by the users
-                mongo_query(dict): the query that is going to be submitted to the database
+        Args:
+            query(dict): a dictionary of query filters specified by the users
+            mongo_query(dict): the query that is going to be submitted to the database
 
-            Returns:
-                mongo_secondary_query(list): a dictionary with secondary query parameters
+        Returns:
+            mongo_secondary_query(list): a dictionary with secondary query parameters
 
         """
         LOG.debug("Creating a query object with secondary parameters")
@@ -463,7 +468,12 @@ class QueryHandler(object):
             if criterion == "local_obs":
                 local_obs = query.get("local_obs")
                 mongo_secondary_query.append(
-                    {"$or": [{"local_obs_old": None}, {"local_obs_old": {"$lt": local_obs + 1}},]}
+                    {
+                        "$or": [
+                            {"local_obs_old": None},
+                            {"local_obs_old": {"$lt": local_obs + 1}},
+                        ]
+                    }
                 )
 
             if criterion in ["clingen_ngi", "swegen"]:
@@ -557,7 +567,10 @@ class QueryHandler(object):
 
                 if query.get("size_shorter"):
                     size_query = {
-                        "$or": [{"length": {"$lt": int(size)}}, {"length": {"$exists": False}},]
+                        "$or": [
+                            {"length": {"$lt": int(size)}},
+                            {"length": {"$exists": False}},
+                        ]
                     }
                     LOG.debug("Adding size less than, undef inclusive to query.")
 

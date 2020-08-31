@@ -124,7 +124,7 @@ def parse_variant(
     ################# Position specific #################
     parsed_variant["chromosome"] = chrom
 
-    coordinates = parse_coordinates(variant, category)
+    coordinates = parse_coordinates(variant, category, case.get("genome_build"))
 
     parsed_variant["position"] = coordinates["position"]
     parsed_variant["sub_category"] = coordinates["sub_category"]
@@ -152,7 +152,9 @@ def parse_variant(
 
     ################# Add compound information #################
     compounds = parse_compounds(
-        compound_info=variant.INFO.get("Compounds"), case_id=genmod_key, variant_type=variant_type,
+        compound_info=variant.INFO.get("Compounds"),
+        case_id=genmod_key,
+        variant_type=variant_type,
     )
     if compounds:
         parsed_variant["compounds"] = compounds
