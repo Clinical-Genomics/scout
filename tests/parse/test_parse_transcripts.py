@@ -130,7 +130,7 @@ def test_parse_vep_freq_exac():
 
 
 def test_parse_vep_freq_thousand_g_max():
-    """Test parsing AFR_AF|AMR_AF from the CSQ field"""
+    """Test parsing thousandg_max value from the CSQ field"""
 
     ## GIVEN a transcript with the 1000G AFR_AF and AMR_AF frequencies
     freqs = [0.01, 0.001]
@@ -167,7 +167,7 @@ def test_parse_superdups_fractmatch():
         assert transcript["superdups_fracmatch"] == fract_match
 
 
-def test_parse_hg_38_mane_transcripts():
+def test_parse_hg38_mane_transcripts():
     """Testing MANE trascripts parsing for genome build 38"""
 
     header = [word.upper() for word in csq_build_38_header.split("|")]
