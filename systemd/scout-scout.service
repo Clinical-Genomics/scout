@@ -3,8 +3,8 @@ Description=Podman scout-scout.service
 Wants=network.target
 BindsTo=scout-pod.service
 After=network-online.target scout-pod.service scout-mongo.service scout-setup-demo.service 
-Requires=scout-pod.service scout-mongo.service
-Wants=scout-setup-demo.service
+Requires=scout-pod.service scout-mongo.service scout-setup-demo.service 
+#Wants=scout-setup-demo.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
