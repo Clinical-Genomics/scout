@@ -62,7 +62,7 @@
               {{ form.gene_panels.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Select gene panels that will be available for variants filtering.") }}
               <select multiple="multiple" name="gene_panels" class="selectpicker">
                 {% for choice in form.gene_panels.choices or [] %}
-                  <option value="{{choice[0]}}" {% if choice[0] in institute.gene_panels %} selected {% endif %}>{{choice[1]}}</option>
+                  <option value="{{choice[0]}}" {% if institute.gene_panels and choice[0] in institute.gene_panels.keys() %} selected {% endif %}>{{choice[1]}}</option>
                 {% endfor %}
               </select>
             </div>

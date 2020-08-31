@@ -145,7 +145,14 @@ class InstituteHandler(object):
             updates["$set"]["phenotype_groups"] = existing_groups
 
         if gene_panels is not None and len(gene_panels) > 0:
-            updates["$set"]["gene_panels"] = gene_panels
+            panels = {}
+            for panel_name in gene_panels:
+                # get the latest panel with provided name
+                panel_obj = self.gene_panel(panel_name)
+                if panel_obj is None:
+                    continue
+                panels[panel_name] = panel_obj["display_name"]
+            updates["$set"]["gene_panels"] = panels
 
         if sharing_institutes is not None:
             updates["$set"]["collaborators"] = sharing_institutes

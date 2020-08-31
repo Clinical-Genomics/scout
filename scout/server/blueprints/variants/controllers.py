@@ -604,11 +604,14 @@ def gene_panel_choices(store, institute_obj, case_obj):
 
     panel_set = set()
     # Add case default panels and the institute-specific panels to the panel select options
-    available_panels = [
-        panel["panel_name"] for panel in case_obj.get("panels", [])
-    ] + institute_obj.get("gene_panels", [])
-    for panel in available_panels:
-        panel_set.add((panel, panel))
+    for panel in case_obj.get("panels", []):
+        panel_set.add((panel["panel_name"], panel["display_name"]))
+
+    institute_choices = institute_obj.get("gene_panels", {})
+
+    for panel_name, display_name in institute_choices.items():
+        LOG.error(f"{panel_name}-{display_name}")
+        panel_set.add((panel_name, display_name))
 
     # Add HPO panel
     panel_set.add(("hpo", "HPO"))

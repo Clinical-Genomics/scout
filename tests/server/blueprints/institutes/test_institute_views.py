@@ -22,6 +22,7 @@ def test_overview(app, user_obj, institute_obj):
 def test_institute(app, user_obj, institute_obj):
     """Test function that creates institute update form and updates an institute"""
 
+    # GIVEN a database with some HPO terms
     # insert 2 mock HPO terms in database, for later use
     mock_disease_terms = [
         {"_id": "HP:0001298", "description": "Encephalopathy", "hpo_id": "HP:0001298"},
@@ -30,6 +31,10 @@ def test_institute(app, user_obj, institute_obj):
     for term in mock_disease_terms:
         store.load_hpo_term(term)
         assert store.hpo_term(term["_id"])
+
+    # And a test gene panel
+    test_panel = store.panel_collection.find_one()
+    assert test_panel
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -53,7 +58,7 @@ def test_institute(app, user_obj, institute_obj):
             "frequency_cutoff": "0.001",
             "cohorts": ["test cohort 1", "test cohort 2"],
             "institutes": ["cust111", "cust222"],
-            "gene_panels": ["test_panel_id"],
+            "gene_panels": [test_panel["panel_name"]],
             "pheno_groups": [
                 "HP:0001298 , Encephalopathy ( ENC )",
                 "HP:0001250 , Seizures ( EP )",
@@ -75,7 +80,9 @@ def test_institute(app, user_obj, institute_obj):
         assert updated_institute["frequency_cutoff"] == float(form_data["frequency_cutoff"])
         assert updated_institute["cohorts"] == form_data["cohorts"]
         assert updated_institute["collaborators"] == form_data["institutes"]
-        assert updated_institute["gene_panels"] == form_data["gene_panels"]
+        assert updated_institute["gene_panels"] == {
+            test_panel["panel_name"]: test_panel["display_name"]
+        }
         assert len(updated_institute["phenotype_groups"]) == 2  # one for each HPO term
 
 
