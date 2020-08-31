@@ -14,6 +14,7 @@ Restart=on-failure
 StateDirectory=scout-mongo-data
 StateDirectoryMode=0700
 ExecStart=/bin/mkdir %S/scout-mongo-data/data
+# Activate-on-FedoraCoreOS ExecStart=/usr/bin/chown core:core %S/scout-mongo-data/data
 
 KillMode=none
 Type=oneshot
