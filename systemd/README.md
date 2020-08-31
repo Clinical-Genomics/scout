@@ -121,3 +121,21 @@ append the kernel arguments
 
 * `coreos.inst.install_dev=/dev/sda`
 * `coreos.inst.ignition_url=https://eriksjolund.github.io/scout/scout.ign`
+
+
+# Add users to Scout
+
+A sketch (untested)
+
+1. ssh -i ssh_private_key core@<IPADDRESS OF FEDORA-COREOS-MACHINE>
+2. 
+
+
+```
+podman exec scout-scout scout load user -i $INSTID -u $NAME -id $ADID -m $USERMAIL $ADMIN
+```
+or maybe
+
+```
+podman exec -ti scout-scout scout load user -i $INSTID -u $NAME -id $ADID -m $USERMAIL $ADMIN
+```
