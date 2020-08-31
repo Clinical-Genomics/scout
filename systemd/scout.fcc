@@ -47,7 +47,7 @@ storage:
       mode: 0644
       contents:
         local: rewritten/scout-scout.service
-    - path: /etc/systemd/system-preset/system-preset/20-scout.preset
+    - path: /etc/systemd/system-preset/20-scout.preset
       user:
         name: root
       group:
