@@ -169,7 +169,7 @@ def test_parse_superdups_fractmatch():
 
 def test_parse_hg38_mane_transcripts():
     """Testing MANE trascripts parsing for genome build 38"""
-
+    # GIVEN a transcript with the MANE trancript value in th CSQ
     header = [word.upper() for word in csq_build_38_header.split("|")]
     raw_transcripts = [
         dict(zip(header, entry.split("|"))) for entry in csq_build_38_entry.split(",")
