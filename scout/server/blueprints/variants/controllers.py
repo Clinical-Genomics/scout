@@ -610,7 +610,6 @@ def gene_panel_choices(store, institute_obj, case_obj):
     institute_choices = institute_obj.get("gene_panels", {})
 
     for panel_name, display_name in institute_choices.items():
-        LOG.error(f"{panel_name}-{display_name}")
         panel_set.add((panel_name, display_name))
 
     # Add HPO panel
