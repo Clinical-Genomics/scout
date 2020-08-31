@@ -127,7 +127,11 @@ append the kernel arguments
 
 A sketch (untested)
 
-1. ssh -i ssh_private_key core@<IPADDRESS OF FEDORA-COREOS-MACHINE>
+1.
+``` 
+ssh -i ssh_private_key core@<IPADDRESS OF FEDORA-COREOS-MACHINE>
+```
+
 2. 
 
 
