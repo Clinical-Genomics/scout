@@ -91,7 +91,7 @@ def update_institute_settings(store, institute_obj, form):
     sanger_recipients = []
     sharing_institutes = []
     phenotype_groups = []
-    gene_panels = []
+    gene_panels = {}
     group_abbreviations = []
     cohorts = []
     loqusdb_id = []
@@ -110,8 +110,11 @@ def update_institute_settings(store, institute_obj, form):
         phenotype_groups.append(form["hpo_term"].split(" |")[0])
         group_abbreviations.append(form["pheno_abbrev"])
 
-    for panel_id in form.getlist("gene_panels"):
-        gene_panels.append(panel_id)
+    for panel_name in form.getlist("gene_panels"):
+        panel_obj = store.gene_panel(panel_name)
+        if panel_obj is None:
+            continue
+        gene_panels[panel_name] = panel_obj["display_name"]
 
     for cohort in form.getlist("cohorts"):
         cohorts.append(cohort.strip())
