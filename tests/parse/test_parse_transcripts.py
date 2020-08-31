@@ -178,6 +178,6 @@ def test_parse_hg38_mane_transcripts():
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
 
-    ## THEN assert that the gnomAD_AF annotation is parsed correctly
+    ## THEN assert that the MANE annotation is parsed correctly
     for transcript in transcripts:
         assert transcript["mane_transcript"] == "NM_198576.4"
