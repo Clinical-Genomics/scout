@@ -59,9 +59,8 @@ loginctl enable-linger $USER
 
 The generated Ignition file
 https://eriksjolund.github.io/scout/scout.ign
-was generated with [.github/workflows/run_fcct.yaml](.github/workflows/run_fcct.yaml))
+was generated with [.github/workflows/run_fcct.yaml](.github/workflows/run_fcct.yaml)
 from the input file [scout.fcc](./scout.fcc)
-
 
 
 References:
@@ -114,7 +113,7 @@ wget https://eriksjolund.github.io/scout/scout.ign
 aws ec2 run-instances <other options> --image-id <ami> --user-data file://scout.ign
 ```
 
-## Erase computer and instal Scout instead
+## Erase computer and install Scout instead
 
 :warning: this will erase the harddrive of the computer
 In case you want to install to the drive _/dev/sda_
