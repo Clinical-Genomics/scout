@@ -144,7 +144,11 @@ MANUAL_RANK_OPTIONS = {
         "description": "Uncertain significance, but can discard",
         "label_class": "info",
     },
-    1: {"label": "Benign", "description": "Does not cause phenotype", "label_class": "success",},
+    1: {
+        "label": "Benign",
+        "description": "Does not cause phenotype",
+        "label_class": "success",
+    },
     0: {
         "label": "Other",
         "description": "Phenotype not related to disease",
