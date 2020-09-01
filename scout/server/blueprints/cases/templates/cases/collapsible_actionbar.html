@@ -33,8 +33,7 @@
 {% endmacro %}
 
 {% macro default_gene_panel(institute, case) %}
-  {% for panel in case.panels %}
-    {% if panel.is_default %}>
+  {% for panel in case.panels if panel.is_default %}>
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex w-100 justify-content-start align-items-center">
           <span class="fa fa-tag fa-fw mr-3"></span>
@@ -44,7 +43,6 @@
             </a>
         </div>
       </div>
-    {% endif %}
   {% endfor %}
 {% endmacro %}
 
