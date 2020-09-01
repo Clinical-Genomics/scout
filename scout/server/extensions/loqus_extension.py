@@ -195,7 +195,7 @@ class LoqusDB:
         Returns:
             path_to_bin(str)
         """
-        if loqusdb_id is None:
+        if loqusdb_id is None or loqusdb_id is "":
             return self.default_setting().get(BINARY_PATH)
         try:
             return self.search_setting(loqusdb_id).get(BINARY_PATH)
@@ -211,7 +211,7 @@ class LoqusDB:
         Returns:
             path_to_cfg(str)
         """
-        if loqusdb_id is None:
+        if loqusdb_id is None or loqusdb_id is "":
             return self.default_setting().get(CONFIG_PATH)
 
         try:
@@ -227,7 +227,7 @@ class LoqusDB:
         Returns:
             loqus_versio(str)
         """
-        if loqusdb_id is None:
+        if loqusdb_id is None or loqusdb_id is "":
             return self.default_setting().get(VERSION)
 
         try:
