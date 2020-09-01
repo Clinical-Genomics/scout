@@ -106,11 +106,13 @@ CANCER_TIER_OPTIONS = {
 MANUAL_RANK_OPTIONS = {
     8: {
         "label": "KP",
+        "name": "Known pathogenic",
         "description": "Known pathogenic, previously known pathogenic in ClinVar, HGMD, literature, etc",
         "label_class": "danger",
     },
     7: {
         "label": "P",
+        "name": "Pathogenic",
         "description": (
             "Pathogenic, novel mutation but overlapping phenotype with known pathogenic, "
             "no further experimental validation needed"
@@ -119,11 +121,13 @@ MANUAL_RANK_OPTIONS = {
     },
     6: {
         "label": "NVP",
+        "name": "Novel validated pathogenic",
         "description": "Novel validated pathogenic, novel mutation and validated experimentally",
         "label_class": "danger",
     },
     5: {
         "label": "PPP",
+        "name": "Pathogenic partial phenotype",
         "description": (
             "Pathogenic partial phenotype, pathogenic variant explains part of patients phenotype, but "
             "not all symptoms"
@@ -132,27 +136,32 @@ MANUAL_RANK_OPTIONS = {
     },
     4: {
         "label": "LP",
+        "name": "Likely pathogenic",
         "description": "Likely pathogenic, experimental validation required to prove causality",
         "label_class": "warning",
     },
     3: {
         "label": "PP",
+        "name": "Possibly pathogenic",
         "description": "Possibly pathogenic, uncertain significance, but cannot disregard yet",
         "label_class": "primary",
     },
     2: {
         "label": "LB",
+        "name": "Likely benign",
         "description": "Likely benign, uncertain significance, but can discard",
         "label_class": "info",
     },
     1: {
-        "label": "Benign",
-        "description": "Does not cause phenotype",
+        "label": "B",
+        "name": "Benign",
+        "description": "Benign, does not cause phenotype",
         "label_class": "success",
     },
     0: {
-        "label": "Other",
-        "description": "Phenotype not related to disease",
+        "label": "O",
+        "name": "Other",
+        "description": "Other, phenotype not related to disease",
         "label_class": "default",
     },
 }
