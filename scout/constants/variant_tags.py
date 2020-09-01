@@ -125,7 +125,8 @@ MANUAL_RANK_OPTIONS = {
     5: {
         "label": "PPP",
         "description": (
-            "Pathogenic partial phenotype, pathogenic variant explains part of patients phenotype, but " "not all symptoms"
+            "Pathogenic partial phenotype, pathogenic variant explains part of patients phenotype, but "
+            "not all symptoms"
         ),
         "label_class": "danger",
     },
