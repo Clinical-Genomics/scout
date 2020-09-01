@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add tests. Mostly regarding building internal datatypes.
 - Remove leading and trailing whitespaces from panel_name and display_name when panel is created
 - Mark MANE transcript in list of transcripts in "Transcript overview" on variant page
+
 ### Fixed
 - Report pages redirect to login instead of crashing when session expires
 - Variants filter loading in cancer variants page
@@ -20,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed tests for Click>7
 - Clinical filter required an extra click to Filter to return variants
 - Restore pagination to variants pages
+- Removing a user from the command line now inactivates the case only if user is last assignee and case is active
 
 ### Changed
 - Highlight color on normal STRs in the variants table from green to blue
