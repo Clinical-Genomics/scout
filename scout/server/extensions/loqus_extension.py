@@ -147,7 +147,7 @@ class LoqusDB:
                     variant_info["end_chrom"],
                     "--sv-type",
                     variant_info["variant_type"],
-                    ["--case-count"],
+                    "--case-count",
                 ]
             )
 
