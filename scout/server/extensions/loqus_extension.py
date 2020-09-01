@@ -58,6 +58,10 @@ class LoqusDB:
             "Initializing loqus extension with config: %s",
             self.loqusdb_settings,
         )
+        print(
+            "Initializing loqus extension with config: %s",
+            self.loqusdb_settings,
+        )
 
     def init_app(self, app):
         """Initialize from Flask."""
@@ -190,11 +194,10 @@ class LoqusDB:
         """
         if loqusdb_id is None:
             return self.default_setting().get(BINARY_PATH)
-
         try:
             return self.search_setting(loqusdb_id).get(BINARY_PATH)
         except AttributeError:
-            raise ConfigError("LoqusDB id not found")
+            raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
     def get_config_path(self, loqusdb_id=None):
         """Return path to `loqusdb` config arguments  as configured per loqusdb_id or default
