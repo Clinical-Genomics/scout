@@ -58,10 +58,6 @@ class LoqusDB:
             "Initializing loqus extension with config: %s",
             self.loqusdb_settings,
         )
-        print(
-            "Initializing loqus extension with config: %s",
-            self.loqusdb_settings,
-        )
 
     def init_app(self, app):
         """Initialize from Flask."""
@@ -72,7 +68,6 @@ class LoqusDB:
             self.version = self.get_version()
         self.version_check()
         LOG.info("Use loqusdb config file %s", self.loqusdb_settings)
-        print("Use loqusdb config file %s", self.loqusdb_settings)
 
     @staticmethod
     def app_config(app):
@@ -131,7 +126,6 @@ class LoqusDB:
         Raises:
             EnvironmentError("Only compatible with loqusdb version >= 2.5")
         """
-        LOG.info("get_variant for: {}".format(loqusdb_id))
         loqus_id = variant_info["_id"]
         cmd = self.get_command(loqusdb_id)
         cmd.extend(["variants", "--to-json", "--variant-id", loqus_id])
@@ -172,7 +166,6 @@ class LoqusDB:
         """Search settings for 'key' and return configuration for matchin 'id'
 
         Returns: {'binary_path':(str), 'id': (str), 'config_path': (str)}"""
-        LOG.info("search_setting: {}".format(key))
         for i in self.loqusdb_settings:
             if i.get("id") == key:
                 return i
@@ -200,7 +193,7 @@ class LoqusDB:
         try:
             return self.search_setting(loqusdb_id).get(BINARY_PATH)
         except AttributeError:
-            raise ConfigError("LoqusDB id not found: __{}__".format(loqusdb_id))
+            raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
     def get_config_path(self, loqusdb_id=None):
         """Return path to `loqusdb` config arguments  as configured per loqusdb_id or default
@@ -217,7 +210,7 @@ class LoqusDB:
         try:
             return self.search_setting(loqusdb_id).get(CONFIG_PATH)
         except AttributeError:
-            raise ConfigError("LoqusDB id not found")
+            raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
     def get_configured_version(self, loqusdb_id=None):
         """Return configured version
@@ -233,7 +226,7 @@ class LoqusDB:
         try:
             return self.search_setting(loqusdb_id).get(VERSION)
         except AttributeError:
-            raise ConfigError("LoqusDB id not found")
+            raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
     def case_count(self):
         """Returns number of cases in loqus instance
