@@ -20,7 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Compatibility with latest version of Black
 - Fixed tests for Click>7
 - Clinical filter required an extra click to Filter to return variants
-- Restore pagination to variants pages
+- Restore pagination and shrink badges in the variants page tables
 - Removing a user from the command line now inactivates the case only if user is last assignee and case is active
 
 ### Changed
@@ -38,6 +38,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bug occurring when rerun is requested twice
 - Peddy info fields in the demo config file
 - Added load config safety check for multiple alignment files for one individual
+- Formatting of cancer variants table
 
 ### Changed
 - Updated the documentation on how to create a new software release
