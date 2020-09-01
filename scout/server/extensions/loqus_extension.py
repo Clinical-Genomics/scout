@@ -29,6 +29,7 @@ def execute_command(cmd):
         line (str): line of output from command
     """
     output = ""
+    LOG.info("cmd: {}".format(cmd))
     cmd = [x for x in cmd if x != []]  # remove empty lists
     cmd_string = " ".join(cmd)  # add spacing to create a command string
     LOG.info("Running: %s", cmd_string)
