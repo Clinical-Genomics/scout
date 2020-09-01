@@ -956,32 +956,36 @@ def multiqc(institute_id, case_name):
     return send_from_directory(out_dir, filename)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/roh_images/<image>")
-def host_roh_image(institute_id, case_name, image):
+@cases_bp.route("/<institute_id>/<case_name>/<individual>/roh_images/<image>", methods=['GET', 'POST'])
+def host_roh_image(institute_id, case_name, individual, image):
     """Generate ROH image file paths"""
-    return host_image_aux(institute_id, case_name, image, "roh_images")
+    return host_image_aux(institute_id, case_name, individual, image, "roh_images")
 
 
-@cases_bp.route("/<institute_id>/<case_name>/upd_images/<image>")
-def host_upd_image(institute_id, case_name, image):
+@cases_bp.route("/<institute_id>/<case_name>/<individual>/upd_images/<image>", methods=['GET', 'POST'])
+def host_upd_image(institute_id, case_name, individual, image):
     """Generate UPD image file paths"""
-    return host_image_aux(institute_id, case_name, image, "upd_images")
+    return host_image_aux(institute_id, case_name, individual, image, "upd_images")
 
 
-@cases_bp.route("/<institute_id>/<case_name>/chr_images/<image>")
-def host_chr_image(institute_id, case_name, image):
+@cases_bp.route("/<institute_id>/<case_name>/<individual>/chr_images/<image>", methods=['GET', 'POST'])
+def host_chr_image(institute_id, case_name, individual, image):
     """Generate CHR image file paths"""
-    return host_image_aux(institute_id, case_name, image, "chr_images")
+    return host_image_aux(institute_id, case_name, individual, image, "chr_images")
 
 
-def host_image_aux(institute_id, case_name, image, imgstr):
+def host_image_aux(institute_id, case_name, individual, image, imgstr):
     """Auxilary function for generate absolute file paths"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    chr_path = case_obj.get("chromograph_image_files")
-    abs_path = os.path.abspath(chr_path)
-    img_path = abs_path + "/" + imgstr
-    LOG.debug("Attempting to send {}/{}".format(img_path, image))
-    return send_from_directory(img_path, image)
+
+    # Find path
+    for ind in case_obj['individuals']:
+        if ind['individual_id'] == individual:
+            abs_path = os.path.abspath(ind['chromograph_images'])
+            img_path = abs_path + "/" + imgstr
+            LOG.debug("Attempting to send {}/{}".format(img_path, image))
+            return send_from_directory(img_path, image)
+    return "TODO: handle missing image"
 
 
 def _generate_csv(header, lines):

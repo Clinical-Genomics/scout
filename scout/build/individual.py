@@ -89,8 +89,8 @@ def build_individual(ind):
         "rhocall_wig",
         "tiddit_coverage_wig",
         "upd_regions_bed",
-        "upd_sites_bed",
-        "chromograph_images"
+        "upd_sites_bed"
+        # "chromograph_images"
     ]
 
     for ind_file in ind_files:
@@ -106,6 +106,10 @@ def build_individual(ind):
     ind_obj["confirmed_sex"] = ind.get("confirmed_sex")
     ind_obj["confirmed_parent"] = ind.get("confirmed_parent")
     ind_obj["predicted_ancestry"] = ind.get("predicted_ancestry")
+    log.debug("{}".format(ind))
+    ind_obj['chromograph_images'] = ind.get("chromograph_images")
+    log.debug("{}".format(ind_obj))    
+
 
     # Check if the analysis type is ok
     # Can be anyone of ('wgs', 'wes', 'mixed', 'unknown')

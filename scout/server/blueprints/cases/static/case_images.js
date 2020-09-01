@@ -147,7 +147,16 @@ function make_names(prefix){
 
 
 /**
- *
+ * Replace escape charater. Used to make configurations very dynamic.
+ * 
+ */
+function replace_escape_char(str, escape_char, substitution){
+    return s.replaceAll(str, escape_char, substitution)
+}
+
+
+/**
+ * Create and add chromosome id (1-22,x,y) to html dom
  *
  */
 function chromosome_text(text, x, y){
@@ -159,20 +168,21 @@ function chromosome_text(text, x, y){
 }
 
 
-// Male
+/**
+ * Males shall display 24 png:s. Females shall display 23 png:s
+ *
+ */
 function get_chromosomes(sex){
     if(sex=="1"){
-        
         return CHROMSPECS_LIST}
     else{
         return CHROMSPECS_LIST.slice(0, CHROMSPECS_LIST.length-1)}
     }
 
 
-
 /**
- *
- *
+ * Create a polygon path. Used to give cytoband images -rectangular- rounded 
+ * ends and a waist at the centromere.
  */
 function make_clipPath(chrom, x_offset, y_offset){
     const c = 10
@@ -220,7 +230,7 @@ function make_clipPath(chrom, x_offset, y_offset){
 
 
 /**
- *
+ * Get centromeres upper waist
  *
  */
 function calc_centromere_upper(pos){
@@ -238,7 +248,7 @@ function calc_centromere_upper(pos){
 
 
 /**
- *
+ * Get centromeres lower waist
  *
  */
 function calc_centromere_lower(pos){
@@ -304,34 +314,4 @@ function make_polygon(x_cyt, y_cyt, pos, link, ) {
     return a;
 }
 
-
-/**
- *
- *
- */
-function urlExists(url){
-    var http = new XMLHttpRequest();
-    http.open('HEAD', url, false);
-    http.send();
-    return http.status!=404;
-}
-
-
-/**
- *
- *
- */
-function getSex(individuals){
-    for (var i=0; i<individuals.length; i++){
-        if(individuals[i].phenotype == 2){
-            if(individuals[i].sex == 1){
-                return 'xy'
-            }
-            if(individuals[i].sex == 2){
-                return 'xx'
-            }
-        }
-    }
-    return false
-}
 
