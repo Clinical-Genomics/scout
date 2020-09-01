@@ -1,5 +1,5 @@
 {% macro gene_cell(variant) %}
-  <div class="d-flex justify-content-between align-items-center">
+  <div class="align-items-center">
     {% for gene in variant.genes %}
       <a data-toggle="tooltip" data-html="true" title="
       <div>
@@ -23,7 +23,6 @@
       </div>"
         href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
       </a>
-      <br>
     {% endfor %}
     {% if variant.panels|count > 0 %}
         <a
