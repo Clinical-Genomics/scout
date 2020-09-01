@@ -628,3 +628,36 @@
   {% endif %}
 
 {% endmacro %}
+
+{% macro pagination_hidden_div(page) %}
+{# Used inside filters form to introduce submit buttons for footer pagniation #}
+  <div class="hidden">
+    <input type="submit" name="page" id="paginate-first" value=1 hidden="true">
+    <input type="submit" name="page" id="paginate-next" value={{page+1}} hidden="true">
+  </div>
+{% endmacro %}
+
+{% macro pagination_footer(more_variants) %}
+{# Used outside filters form to introduce footer pagniation labels #}
+  <div class="container-fluid">
+      {% if more_variants %}
+        <div class="d-flex justify-content-around">
+	         <div>
+             <label for="paginate-first" class="btn btn-outline-secondary mx-auto d-block" tabindex="0">
+              First page
+            </label>
+          </div>
+          <div>
+            <label for="paginate-next" class="btn btn-outline-secondary mx-auto d-block" tabindex="0">
+              Next page
+            </label>
+          </div>
+	     </div>
+      {% else %}
+        <i class="text-muted">No more variants to display</i>
+        <label for="paginate-first" class="btn btn-outline-secondary mx-auto d-block" tabindex="0">
+          First page
+        </label>
+      {% endif %}
+  </div>
+{% endmacro %}
