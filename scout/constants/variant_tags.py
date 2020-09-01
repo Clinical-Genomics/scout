@@ -105,43 +105,43 @@ CANCER_TIER_OPTIONS = {
 
 MANUAL_RANK_OPTIONS = {
     8: {
-        "label": "Known pathogenic",
-        "description": "Previously known pathogenic in ClinVar, HGMD, literature, etc",
+        "label": "KP",
+        "description": "Known pathogenic, previously known pathogenic in ClinVar, HGMD, literature, etc",
         "label_class": "danger",
     },
     7: {
-        "label": "Pathogenic",
+        "label": "P",
         "description": (
-            "Novel mutation but overlapping phenotype with known pathogenic, "
+            "Pathogenic, novel mutation but overlapping phenotype with known pathogenic, "
             "no further experimental validation needed"
         ),
         "label_class": "danger",
     },
     6: {
-        "label": "Novel validated pathogenic",
-        "description": "Novel mutation and validated experimentally",
+        "label": "NVP",
+        "description": "Novel validated pathogenic, novel mutation and validated experimentally",
         "label_class": "danger",
     },
     5: {
-        "label": "Pathogenic partial phenotype",
+        "label": "PPP",
         "description": (
-            "Pathogenic variant explains part of patients phenotype, but " "not all symptoms"
+            "Pathogenic partial phenotype, pathogenic variant explains part of patients phenotype, but " "not all symptoms"
         ),
         "label_class": "danger",
     },
     4: {
-        "label": "Likely pathogenic",
-        "description": "Experimental validation required to prove causality",
+        "label": "LP",
+        "description": "Likely pathogenic, experimental validation required to prove causality",
         "label_class": "warning",
     },
     3: {
-        "label": "Possibly pathogenic",
-        "description": "Uncertain significance, but cannot disregard yet",
+        "label": "PP",
+        "description": "Possibly pathogenic, uncertain significance, but cannot disregard yet",
         "label_class": "primary",
     },
     2: {
-        "label": "Likely benign",
-        "description": "Uncertain significance, but can discard",
+        "label": "LB",
+        "description": "Likely benign, uncertain significance, but can discard",
         "label_class": "info",
     },
     1: {
