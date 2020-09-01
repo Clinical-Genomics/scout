@@ -5,7 +5,7 @@
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
 {% from "cases/phenotype.html" import cohort_panel, diagnosis_phenotypes, diagnosis_genes, phenotype_groups_panel, phenotype_terms_panel, phenotypes_panel %}
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
-{% from "cases/case_ideograms.html" import case_ideograms %}
+
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
@@ -73,29 +73,8 @@
         {% endif %}
       </div>
 
-      <div class="row">
-         <div class="col-sm-12">{{ roh_panel() }}</div> 
-      </div>
 
-      <div class="row">
-        <div class="col-md-12">
-          <div id="testcollapse">
-	    <div class="card panel-default">
-	      <div class="panel-heading" >
-                    <div class="panel-heading" href="#collapseT" data-toggle="collapse" datatarget="#collapseT" aria-expanded="true" aria-controls="collapseT" data-parent="#testcollapse"> <h5 class="panel-heading">Hej</h5>	<span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span> </div>
-              </div>
-              <div id="collapseT" class="collapse" data-parent="#testcollapse" >
-              <div class="card-body" >
-                sfsdfdsf<br>
-
-                
-                Panel content   gfdgdfgf  fdgdfgfdgry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan </div>
-	    </div>
-            </div>
-                      </div>
-        </div>
-      </div>
-
+      {{ multi_roh_panel() }}
 
 
 
@@ -223,28 +202,51 @@
   </div>
 {% endmacro %}
 
-{% macro roh_panel() %}
-  {% if case.chromograph_prefixes %}
-  <div class="d-flex p-2 ">
-    <div class="card panel-default" id="rohPanel">
-      <div class="panel-heading">Ideogram, UPD, ROH</div>
-      <p>Chromograph </p>
-      <br>
-      <div class="panel-body">
-        <svg id="roh_svg" width="1500" height="1250"></svg>
-      </div>
-    </div>
-  </div>
-  {% else %}
-  <p>NO chromograph</p>
-  {{"no chromograph"|pprint}}
-  {% endif %}
 
+<!-- Iterate through Individuals, if chromograph_files is presenet add a panel for images -->
+{% macro multi_roh_panel() %}
+  {% for i in case.individuals %}
+  {% if i.chromograph_images %}
+  {{ add_collapsable_panel(i.individual_id) }}
+  {% else %}
+    <a> {{i.individual_id}} images not configured</a>
+      {% endif  %}
+  {% endfor %}
 {% endmacro %}
 
 
 
-  
+{% macro add_collapsable_panel(id_tag) %}
+  <div class="row">
+    <div class="col-md-12">
+      <div id={{"collapse_" + id_tag}}>
+	<div class="card panel-default">
+	  <div class="panel-heading" >
+            <div class="panel-heading" href={{"#collapsing_" + id_tag}} data-toggle="collapse" datatarget={{"#collapsing_" + id_tag}} aria-expanded="true" aria-controls={{"collapsing_" + id_tag}} data-parent={{"#collapse_" + id_tag}}> <h5 class="panel-heading">Images {{id_tag}} &gt</h5>	<span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span> </div>
+          </div>
+          <div id={{"collapsing_" + id_tag}} class="collapse" data-parent={{"#collapse_" + id_tag}} >
+            <div class="card-body">
+              <svg id={{"svg_"+id_tag}} width="1200" height="1250"> </svg>
+	    </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endmacro %}
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% macro modal_synopsis() %}
   <form action="{{ url_for('cases.case_synopsis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
     <div class="modal fade" id="edit-synopsis" role="dialog">
@@ -434,15 +436,34 @@
   </form>
 {% endmacro %}
 
-  
+
+
+
+
+
+
+
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
+  <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
+  <script src="{{ url_for('cases.static', filename='case_images.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
 <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 
+
+<script>
+  window.onload=function(){
+      console.log("Window is loaded!")
+
+      add_image_to_individual_panel( {{case.individuals|tojson}},
+                                     {{case.chromograph_prefixes|tojson}},
+                                     "{{institute._id}}",
+                                     "{{case.display_name}}"
+                                   )
+  }
+</script>
 
 <script>
  $('#panel-table').DataTable({
@@ -531,31 +552,8 @@ $('[data-toggle=sidebar-collapse]').click(function() {
   SidebarCollapse();
 });
 
-  
 
-  // TEST
-   $('.panel-collapse').on('show.bs.collapse', function () {
-    $(this).siblings('.panel-heading').addClass('active');
-  });
 
-  $('.panel-collapse').on('hide.bs.collapse', function () {
-    $(this).siblings('.panel-heading').removeClass('active');
-  });
-
-  
-// $(document).on('click', '.panel-heading span.clickable', function(e){
-//     var $this = $(this);
-// 	if(!$this.hasClass('panel-collapsed')) {
-// 		$this.parents('.panel').find('.panel-body').slideUp();
-// 		$this.addClass('panel-collapsed');
-// 		$this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
-// 	} else {
-// 		$this.parents('.panel').find('.panel-body').slideDown();
-// 		$this.removeClass('panel-collapsed');
-// 		$this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
-// 	}
-// })
-</script>
 
 <style>
 /*Matchmaker card styling*/
@@ -582,15 +580,6 @@ $('[data-toggle=sidebar-collapse]').click(function() {
 }
 
 </style>
-
-<!-- Draw ideagrams, roh and ... PNGs in xxx panel -->
-{% if case.chromograph_prefixes %}
-{{"adfs"|pprint}}
-
-{{ case_ideograms(institute, case) }}
-{% else %}
-
-{% endif %}
 
 
 {% endblock %}
