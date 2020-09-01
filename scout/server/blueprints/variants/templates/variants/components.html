@@ -22,7 +22,8 @@
         {% endif %}
       </div>"
         href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
-      </a>&nbsp;&nbsp;
+      </a>
+      <br>
     {% endfor %}
     {% if variant.panels|count > 0 %}
         <a
