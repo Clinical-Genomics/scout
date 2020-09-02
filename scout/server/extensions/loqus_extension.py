@@ -138,7 +138,7 @@ class LoqusDB:
                     "sv",
                     "-c",
                     variant_info["chrom"],
-p                    "-s",
+                    "-s",
                     str(variant_info["pos"]),
                     "-e",
                     str(variant_info["end"]),
