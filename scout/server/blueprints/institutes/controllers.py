@@ -54,7 +54,7 @@ def populate_institute_form(form, institute_obj):
     form.coverage_cutoff.default = institute_obj.get("coverage_cutoff")
     form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
 
-    # collect all available default HPO terms and populate
+    # collect all available default HPO terms and populate the pheno_groups form select with these values
     default_phenotypes = [choice[0].split(" ")[0] for choice in form.pheno_groups.choices]
     if institute_obj.get("phenotype_groups"):
         for key, value in institute_obj["phenotype_groups"].items():

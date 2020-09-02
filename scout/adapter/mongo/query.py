@@ -161,9 +161,9 @@ class QueryHandler(object):
 
             # Requests to filter based on gene panels, hgnc_symbols or
             # coordinate ranges must always be honored. They are always added to
-            # query as top level, implicit '$and'. When both hgnc_symbols and a
-            # panel is used, addition of this is delayed until after the rest of
-            # the query content is clear.
+            # query as top level, implicit '$and'. When hgnc_symbols or gene panels
+            # are used, addition of relative gene symbols is delayed until after
+            # the rest of the query content is clear.
 
             elif criterion in ["hgnc_symbols", "gene_panels"]:
                 gene_query = self.gene_filter(query, mongo_query)
@@ -244,7 +244,7 @@ class QueryHandler(object):
             else:
                 mongo_query["$and"] = coordinate_query
 
-        LOG.error("mongo query: %s", mongo_query)
+        LOG.info("mongo query: %s", mongo_query)
         return mongo_query
 
     def clinsig_query(self, query, mongo_query):
@@ -380,7 +380,7 @@ class QueryHandler(object):
         return coordinate_query
 
     def gene_filter(self, query, mongo_query):
-        """Adds gene-related filters to the query object
+        """Adds gene symbols to the query. Gene symbols query is a list of combined hgnc_symbols and genes included in the given panels
 
         Args:
             query(dict): a dictionary of query filters specified by the users
@@ -393,10 +393,9 @@ class QueryHandler(object):
         LOG.debug("Adding panel and genes-related parameters to the query")
         hgnc_symbols = set(query.get("hgnc_symbols", []))
 
-        # Grab all genes from selected gene panels:
         for panel in query.get("gene_panels", []):
             if panel == "hpo":
-                continue
+                continue  # HPO genes are already provided in the eventual hgnc_symbols fields
             hgnc_symbols.update(self.panel_to_genes(panel_name=panel))
 
         return list(hgnc_symbols)
