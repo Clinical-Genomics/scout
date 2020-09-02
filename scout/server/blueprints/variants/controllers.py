@@ -739,7 +739,7 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     ]
 
     # populate available panel choices
-    form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
+    form.gene_panels.choices = gene_panel_choices(institute_obj, case_obj)
 
     # check if supplied gene symbols exist
     hgnc_symbols = []
