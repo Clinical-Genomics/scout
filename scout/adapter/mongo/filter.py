@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from bson.objectid import ObjectId
-from flask import url_for, flash
+from flask import url_for
 
 import pymongo
 
@@ -118,7 +118,6 @@ class FilterHandler(object):
         """
         filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
         if filter_obj is None:
-            flash("Requested filter was not found", "warning")
             return
 
         LOG.info(

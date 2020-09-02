@@ -593,6 +593,7 @@ def upload_panel(store, institute_id, case_name, stream):
 
 def populate_filters_form(store, institute_obj, case_obj, user_obj, category, request_form):
     # Update filter settings if Clinical Filter was requested
+    form = None
     clinical_filter_panels = []
 
     default_panels = []
@@ -659,13 +660,15 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
             form = FiltersFormClass(MultiDict(filter_obj))
         else:
             flash("Requested filter was not found", "warning")
-            form = FiltersFormClass(request_form)
     elif bool(request_form.get("delete_filter")):
         filter_id = request_form.get("filters")
         institute_id = institute_obj.get("_id")
         filter_obj = store.delete_filter(filter_id, institute_id, current_user.email)
-        form = FiltersFormClass(request_form)
-    else:
+        if filter_obj is not None:
+            form = FiltersFormClass(request_form)
+        else:
+            flash("Requested filter was not found", "warning")
+    if form is None:
         form = FiltersFormClass(request_form)
 
     return form
