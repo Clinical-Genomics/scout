@@ -146,7 +146,7 @@ class LoqusDB:
                     variant_info["end_chrom"],
                     "--sv-type",
                     variant_info["variant_type"],
-                    ["--case-count"],
+                    "--case-count",
                 ]
             )
 
@@ -188,13 +188,12 @@ class LoqusDB:
         Returns:
             path_to_bin(str)
         """
-        if loqusdb_id is None:
+        if loqusdb_id is None or loqusdb_id == "":
             return self.default_setting().get(BINARY_PATH)
-
         try:
             return self.search_setting(loqusdb_id).get(BINARY_PATH)
         except AttributeError:
-            raise ConfigError("LoqusDB id not found")
+            raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
     def get_config_path(self, loqusdb_id=None):
         """Return path to `loqusdb` config arguments  as configured per loqusdb_id or default
@@ -205,13 +204,13 @@ class LoqusDB:
         Returns:
             path_to_cfg(str)
         """
-        if loqusdb_id is None:
+        if loqusdb_id is None or loqusdb_id == "":
             return self.default_setting().get(CONFIG_PATH)
 
         try:
             return self.search_setting(loqusdb_id).get(CONFIG_PATH)
         except AttributeError:
-            raise ConfigError("LoqusDB id not found")
+            raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
     def get_configured_version(self, loqusdb_id=None):
         """Return configured version
@@ -221,13 +220,13 @@ class LoqusDB:
         Returns:
             loqus_versio(str)
         """
-        if loqusdb_id is None:
+        if loqusdb_id is None or loqusdb_id == "":
             return self.default_setting().get(VERSION)
 
         try:
             return self.search_setting(loqusdb_id).get(VERSION)
         except AttributeError:
-            raise ConfigError("LoqusDB id not found")
+            raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
     def case_count(self):
         """Returns number of cases in loqus instance
