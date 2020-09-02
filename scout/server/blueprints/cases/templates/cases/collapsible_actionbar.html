@@ -11,6 +11,7 @@
           </a>
           <!-- Menu with submenu -->
           {{ reports(institute,case) }}
+          {{ default_gene_panel(institute, case) }}
           {{ analysis_date(case) }}
           {{ genome_build(case) }}
           {{ rank_model(case) }}
@@ -29,6 +30,20 @@
           {{ archive_case(institute,case) }}
       </ul><!-- List Group END-->
   </div><!-- sidebar-container END -->
+{% endmacro %}
+
+{% macro default_gene_panel(institute, case) %}
+  {% for panel in case.panels if panel.is_default %}>
+      <div href="#" class="bg-dark list-group-item text-white">
+        <div class="d-flex w-100 justify-content-start align-items-center">
+          <span class="fa fa-tag fa-fw mr-3"></span>
+          <span class="menu-collapsed">
+            <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
+              {{ panel.display_name|truncate(18, True) }}
+            </a>
+        </div>
+      </div>
+  {% endfor %}
 {% endmacro %}
 
 {% macro reports(institute,case) %}
