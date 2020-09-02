@@ -658,7 +658,7 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
         if filter_obj is not None:
             form = FiltersFormClass(MultiDict(filter_obj))
         else:
-            flash("Could not find filter")
+            flash("Requested filter was not found", "warning")
             form = FiltersFormClass(request_form)
     elif bool(request_form.get("delete_filter")):
         filter_id = request_form.get("filters")
