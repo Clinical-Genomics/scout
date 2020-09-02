@@ -11,8 +11,6 @@ jobs:
       - uses: actions/checkout@v2
       - run: |
           mkdir output
-          mkdir rewritten
-          bash systemd/rewrite.sh
       - uses: docker://quay.io/coreos/fcct:release
         with:
           args: --pretty --strict -d ./systemd -o output/scout.ign systemd/scout.fcc
