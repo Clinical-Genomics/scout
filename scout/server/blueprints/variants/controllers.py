@@ -599,13 +599,13 @@ def gene_panel_choices(institute_obj, case_obj):
         case_obj(dict): a case object disctionary
 
     Returns:
-        panel_set(list): a list of tuples containing the multiselect panel values/display name
+        panel_list(list): a list of tuples containing the multiselect panel values/display name
     """
 
-    panel_set = set()
+    panel_list = []
     # Add case default panels and the institute-specific panels to the panel select options
     for panel in case_obj.get("panels", []):
-        panel_set.add(
+        panel_set.append(
             (
                 panel["panel_name"],
                 f"{ panel['display_name'] } v.{ panel['version'] } ({ panel['nr_genes'] } genes)",
@@ -615,11 +615,11 @@ def gene_panel_choices(institute_obj, case_obj):
     institute_choices = institute_obj.get("gene_panels", {})
 
     for panel_name, display_name in institute_choices.items():
-        panel_set.add((panel_name, f"{display_name} (latest)"))
+        panel_set.append((panel_name, f"{display_name} (latest)"))
 
     # Add HPO panel
-    panel_set.add(("hpo", "HPO"))
-    return list(panel_set)
+    panel_set.append(("hpo", "HPO"))
+    return panel_set
 
 
 def populate_filters_form(store, institute_obj, case_obj, user_obj, category, request_form):
