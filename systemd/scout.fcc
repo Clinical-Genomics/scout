@@ -7,51 +7,141 @@ passwd:
         - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDG6qzOyjn5VwADYIK/1oYdBF/DUcNe9KqxEYpJuCovTcLP0oPOGQmUSAW+UvRlaExx/b/TIJW3HWgdbYe6gcT7iFkGv+//0ZxcFyzuYWMo9u243q2DK71cD3YqE/M81eeI9mzCrMVSp2JMQqCS8ILq3rVbN4GgrLY9uUDniE+cuHoz4ZirrZ9bYDnkN+HuAJabBDv2+WTdWSkVUHUgsGEaCpXtaVoUfSIKaRE08HTok39rplkyNlyMpb2J9m1pxJO0H0f2XX4pHUhEbK4D6dqMnZcMiYJdDhorkyrGeXCbPpR5FOPc1iH3JNy63IBN/spXW6jUWjnZNm8lTb9a98UBvC0esXNz6Nj9Sc8xbi/1HrW2EDlaGteElxOaUs2ClVrNc/uqM/BRQY7LM6pcLn95zdSxjqKb/HjR2NQKEsFb34MUBJzYQfJwXFFud8EgMfs/x4F1ZPXfHkN89s12m7NtNEkK/i3g3NJp5iZuSjpIbLPGrvmbxJUrmMXrQ0QjSDM= example@laptop
 storage:
   files:
-    - path: /etc/systemd/system/scout-pod.service
+    - path: /home/core/.config/systemd/user/scout-pod.service
       user:
-        name: root
+        name: core
       group:
-        name: root
+        name: core
       mode: 0644
       contents:
-        local: rewritten/scout-pod.service
-    - path: /etc/systemd/system/scout-create-datadir.service
+        local: scout-pod.service
+    - path: /home/core/.config/systemd/user/scout-create-datadir.service
       user:
-        name: root
+        name: core
       group:
-        name: root
+        name: core
       mode: 0644
       contents:
-        local: rewritten/scout-create-datadir.service
-    - path: /etc/systemd/system/scout-mongo.service
+        local: scout-create-datadir.service
+    - path: /home/core/.config/systemd/user/scout-mongo.service
       user:
-        name: root
+        name: core
       group:
-        name: root
+        name: core
       mode: 0644
       contents:
-        local: rewritten/scout-mongo.service
-    - path: /etc/systemd/system/scout-setup-demo.service
+        local: scout-mongo.service
+    - path: /home/core/.config/systemd/user/scout-setup-demo.service
       user:
-        name: root
+        name: core
       group:
-        name: root
+        name: core
       mode: 0644
       contents:
-        local: rewritten/scout-setup-demo.service
-    - path: /etc/systemd/system/scout-scout.service
+        local: scout-setup-demo.service
+    - path: /home/core/.config/systemd/user/scout-scout.service
       user:
-        name: root
+        name: core
       group:
-        name: root
+        name: core
       mode: 0644
       contents:
-        local: rewritten/scout-scout.service
-    - path: /etc/systemd/system-preset/20-scout.preset
+        local: scout-scout.service
+    - path: /var/lib/systemd/linger/core
       user:
-        name: root
+        name: core
       group:
-        name: root
+        name: core
       mode: 0644
       contents:
-        local: 20-scout.preset
+        local: var_lib_systemd_linger_core
+  directories:
+    - path: /var/home/core/.config
+      user:
+        name: core
+      group:
+        name: core
+      mode: 0700
+    - path: /var/home/core/.config/systemd
+      user:
+        name: core
+      group:
+        name: core
+      mode: 0700
+    - path: /var/home/core/.config/systemd/user
+      user:
+        name: core
+      group:
+        name: core
+      mode: 0700
+  links:
+    - path: /var/home/core/.config/systemd/user/multi-user.target.wants/scout-pod.service
+      user:
+        name: core
+      group:
+        name: core
+      target: /var/home/core/.config/systemd/user/scout-pod.service
+      hard: false
+    - path: /var/home/core/.config/systemd/user/default.target.wants/scout-pod.service
+      user:
+        name: core
+      group:
+        name: core
+      target: /var/home/core/.config/systemd/user/scout-pod.service
+      hard: false
+    - path: /var/home/core/.config/systemd/user/multi-user.target.wants/scout-create-datadir.service
+      user:
+        name: core
+      group:
+        name: core
+      target: /var/home/core/.config/systemd/user/scout-create-datadir.service
+      hard: false
+    - path: /var/home/core/.config/systemd/user/default.target.wants/scout-create-datadir.service
+      user:
+        name: core
+      group:
+        name: core
+      target: /var/home/core/.config/systemd/user/scout-create-datadir.service
+      hard: false
+    - path: /var/home/core/.config/systemd/user/multi-user.target.wants/scout-mongo.service
+      user:
+        name: core
+      group:
+        name: core
+      target: /var/home/core/.config/systemd/user/scout-mongo.service
+      hard: false
+    - path: /var/home/core/.config/systemd/user/default.target.wants/scout-mongo.service
+      user:
+        name: core
+      group:
+        name: core
+      target: /var/home/core/.config/systemd/user/scout-mongo.service
+      hard: false
+    - path: /var/home/core/.config/systemd/user/multi-user.target.wants/scout-setup-demo.service
+      user:
+        name: core
+      group:
+        name: core
+      target: /var/home/core/.config/systemd/user/scout-setup-demo.service
+      hard: false
+    - path: /var/home/core/.config/systemd/user/default.target.wants/scout-setup-demo.service
+      user:
+        name: core
+      group:
+        name: core
+      target: /var/home/core/.config/systemd/user/scout-setup-demo.service
+      hard: false
+    - path: /var/home/core/.config/systemd/user/multi-user.target.wants/scout-scout.service
+      user:
+        name: core
+      group:
+        name: core
+      target: /var/home/core/.config/systemd/user/scout-scout.service
+      hard: false
+    - path: /var/home/core/.config/systemd/user/default.target.wants/scout-scout.service
+      user:
+        name: core
+      group:
+        name: core
+      target: /var/home/core/.config/systemd/user/scout-scout.service
+      hard: false

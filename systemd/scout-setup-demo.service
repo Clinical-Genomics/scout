@@ -19,6 +19,9 @@ ExecStartPost=/bin/touch %S/scout-mongo-data/demo_has_been_set_up
 KillMode=none
 Type=oneshot
 RemainAfterExit=yes
+# Pulling the container docker.io/eriksjolund/scout:dockerhub from Dockerhub may take a while as its size is about 700 Mb
+# Let's increase the TimeoutStartSec value
+TimeoutStartSec=1800s
 
 [Install]
 WantedBy=multi-user.target default.target
