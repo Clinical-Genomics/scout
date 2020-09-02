@@ -591,7 +591,7 @@ def upload_panel(store, institute_id, case_name, stream):
     return hgnc_symbols
 
 
-def gene_panel_choices(store, institute_obj, case_obj):
+def gene_panel_choices(institute_obj, case_obj):
     """Populates the multiselect containing all the gene panels to be used in variants filtering
     Args:
         store(scout.adapter.MongoAdapter)

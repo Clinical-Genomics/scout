@@ -2,6 +2,7 @@ import copy
 import logging
 
 from scout.server.blueprints.variants.controllers import (
+    gene_panel_choices,
     variants_export_header,
     variant_export_lines,
     variants,
@@ -9,6 +10,38 @@ from scout.server.blueprints.variants.controllers import (
 )
 
 LOG = logging.getLogger(__name__)
+
+
+def test_gene_panel_choices(institute_obj, case_obj):
+    """test controller function that populates gene panel filter select"""
+
+    # GIVEN a case with a gene panel
+    case_panel = {
+        "panel_name": "case_panel",
+        "version": 1,
+        "display_name": "Case panel",
+        "nr_genes": 3,
+    }
+    case_obj["panels"] = [case_panel]
+
+    # AND an institute with a custom gene panel:
+    institute_obj["gene_panels"]: {"institute_panel_name": "Institute Panel display name"}
+
+    # WHEN the functions creates the option for the filters select
+    panel_options = gene_panel_choices(institute_obj, case_obj)
+
+    # THEN case-specific panel should be represented
+    case_panel_option = (
+        case_panel["panel_name"],
+        f"{ case_panel['display_name'] } v.{ case_panel['version'] } ({ case_panel['nr_genes'] } genes)",
+    )
+    assert case_panel_option in panel_options
+
+    # HPO panel should also be represented
+    assert ("hpo", "HPO") in panel_options
+
+    # And institute-specific panel should be in the choices as well
+    assert ("institute_panel_name", "Institute Panel display name (lates)")
 
 
 def test_variants_research_no_shadow_clinical_assessments(
