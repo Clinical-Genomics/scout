@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clinical filter required an extra click to Filter to return variants
 - Restore pagination to variants pages
 - Removing a user from the command line now inactivates the case only if user is last assignee and case is active
+- Bugfix, LoqusDB per institute feature crashed when institute id was empty string
 
 ### Changed
 - Highlight color on normal STRs in the variants table from green to blue
