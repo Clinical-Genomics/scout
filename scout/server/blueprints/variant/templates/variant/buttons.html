@@ -8,7 +8,7 @@
           <option value="-1">Select a tag...</option>
           {% for rank, data in manual_rank_options.items() %}
             <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
-              {{ data.label }}
+              {{ data.name }}
             </option>
           {% endfor %}
         </select>
