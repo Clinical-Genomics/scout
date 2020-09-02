@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from bson.objectid import ObjectId
-from flask import url_for
+from flask import url_for, flash
 
 import pymongo
 
@@ -20,11 +20,12 @@ class FilterHandler(object):
         Returns:
             filter_obj(dict)
         """
+        filter_obj = None
         LOG.debug("Retrieve filter {}".format(filter_id))
         filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
-
-        # use _id to preselect the currently loaded filter, and drop it while we are at it
-        filter_obj.update([("filters", filter_obj.pop("_id", None))])
+        if filter_obj is not None:
+            # use _id to preselect the currently loaded filter, and drop it while we are at it
+            filter_obj.update([("filters", filter_obj.pop("_id", None))])
         return filter_obj
 
     def stash_filter(
@@ -116,6 +117,9 @@ class FilterHandler(object):
             result()
         """
         filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
+        if filter_obj is None:
+            flash("Requested filter was not found", "warning")
+            return
 
         LOG.info(
             "User {} deleting filter {} for institute {}.".format(
