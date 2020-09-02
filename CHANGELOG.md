@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add tests. Mostly regarding building internal datatypes.
 - Remove leading and trailing whitespaces from panel_name and display_name when panel is created
 - Mark MANE transcript in list of transcripts in "Transcript overview" on variant page
+- Show default panel name in case sidebar
 
 ### Fixed
 - Report pages redirect to login instead of crashing when session expires
