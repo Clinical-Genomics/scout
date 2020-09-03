@@ -40,14 +40,14 @@ const CHROMSPECS_LIST =
  * is set, get panels on the page and add image content
  */
 function add_image_to_individual_panel(individuals, prefixes, institute, case_name){
-    console.log(individuals)
-    console.log(prefixes)
     for (var i=0; i<individuals.length; i++){
-        if(individuals[i].chromograph_images){            
+        if(individuals[i].chromograph_images){
             draw_tracks(individuals[i], prefixes, institute, case_name)
         }
     }
 }
+
+
 
 
 // <svg id="svg_ADM1059A1"> </svg>
@@ -58,32 +58,29 @@ function add_image_to_individual_panel(individuals, prefixes, institute, case_na
  * genome regions- onto the dashboard.
  */
 function draw_tracks(individual, prefixes, institute, case_name){
-    console.log("DRAW TRACKS")
-    console.log(individual)
     const CYT_HEIGHT = 50 ;
     const CYT_WIDTH = 500 ;
     var svg_element = document.getElementById("svg_" + individual["individual_id"])
-    var roh_imgPath = create_path(institute, case_name, individual, 'roh_images')
-    var upd_imgPath = create_path(institute, case_name, individual, 'upd_images')
-    var ideo_imgPath = create_path(institute, case_name, individual, 'chr_images')
-    console.log("- - -")
-    console.log(prefixes)
-    console.log(institute)
-    console.log(case_name)
 
-    var roh_imgObj = new Image();
-    var upd_imgObj = new Image();
-    var roh_images = make_names(prefixes.roh);
-    var upd_images = make_names(prefixes.upd);
-    var ideo_images = make_names(prefixes.chr);
+    if (individual.chromograph_images.roh){
+        var roh_imgPath = create_path(institute, case_name, individual, 'roh_images')
+        var roh_images = make_names("roh-");
+    }
+    if (individual.chromograph_images.upd){
+        var upd_imgPath = create_path(institute, case_name, individual, 'upd_images')
+        var upd_images = make_names("upd-");
+    }
+
+    // ideograms always exist
+    var ideo_imgPath = static_path_ideograms(institute, case_name, individual, 'ideaograms')
+    var ideo_images = make_names(prefixes.chr)
+
+    var roh_imgObj = new Image()
+    var upd_imgObj = new Image()
+
     var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
-    var chromspecs_list
-    console.log(roh_images)
-    chromspecs_list = get_chromosomes(individual.sex)
-    console.log("***")
-    console.log(svg_element)
-    console.log("svg_" + individual["individual_id"])
-   
+    var chromspecs_list = get_chromosomes(individual.sex)
+
     for(i = 0; i< chromspecs_list.length; i++){
         roh_imgObj.src = roh_imgPath + roh_images[i]
         upd_imgObj.src = upd_imgPath + upd_images[i]
@@ -96,39 +93,52 @@ function draw_tracks(individual, prefixes, institute, case_name){
                                        y_pos,
                                        "25px", "500px", );
 
-        var upd_image = make_svgimage(upd_imgPath + upd_images[i],
-                                      x_pos,
-                                      y_pos + 30,
-                                      "25px", "500px", );
+        if(individual.chromograph_images.upd){
+            var upd_image = make_svgimage(upd_imgPath + upd_images[i],
+                                          x_pos,
+                                          y_pos + 30,
+                                          "25px", "500px", );
+            g.appendChild(upd_image);
+        }
 
-        var roh_image = make_svgimage(roh_imgPath + roh_images[i],
-                                      x_pos + 17,  // compensate for image pixel start
-                                      y_pos + 55 , // place below UPD
-                                      "25px", "500px", );
-
+        if(individual.chromograph_images.roh){
+            var roh_image = make_svgimage(roh_imgPath + roh_images[i],
+                                          x_pos + 17,  // compensate for image pixel start
+                                          y_pos + 55 , // place below UPD
+                                          "25px", "500px", );
+            g.appendChild(roh_image);
+        }
 
         var t = chromosome_text(CHROMOSOMES[i], x_pos, y_pos+17);
         var clipPath = make_clipPath(CHROMSPECS_LIST[i], x_pos, y_pos)
         ideo_image.setAttributeNS(null, 'clip-path', "url(#clip-chr"+CHROMSPECS_LIST[i].name +")")
 
-        g.appendChild(roh_image);
-        g.appendChild(upd_image);
         g.appendChild(ideo_image);
         g.appendChild(clipPath);
         g.appendChild(t);
-
         svg_element.append(g)
     }
 }
 
 
 /**
- * Create an URL path 
- * 
+ * Create an URL path
+ *
  */
 function create_path(institute, case_name, individual, dir_name){
     // XXX: institute is not in use, institute is magically(?) added to the url in a request
     return case_name + "/" + individual["individual_id"] + "/" + dir_name + "/"
+}
+
+/**
+ * Create an URL path. Ideaograms are static on format:
+ *
+ *     http://localhost:5000/public/static/ideograms/chromosome-1.png
+ *
+ */
+// TODO: accesses not as above, couldn't figure out how to get the correct URL for Flask
+function static_path_ideograms(institute, case_name, individual, dir_name){
+    return "/public/static/ideograms/chromosome-"
 }
 
 
@@ -148,7 +158,7 @@ function make_names(prefix){
 
 /**
  * Replace escape charater. Used to make configurations very dynamic.
- * 
+ *
  */
 function replace_escape_char(str, escape_char, substitution){
     return s.replaceAll(str, escape_char, substitution)
@@ -181,7 +191,7 @@ function get_chromosomes(sex){
 
 
 /**
- * Create a polygon path. Used to give cytoband images -rectangular- rounded 
+ * Create a polygon path. Used to give cytoband images -rectangular- rounded
  * ends and a waist at the centromere.
  */
 function make_clipPath(chrom, x_offset, y_offset){
@@ -285,15 +295,15 @@ function make_svgimage(src, x, y, height, width){
 
 
 /**
- * x_cyt: upper x coordinate of corresponding cytoband 
+ * x_cyt: upper x coordinate of corresponding cytoband
  * y_cyt: upper y coordinate of corresponding cytoband
- *                                                    
- *                                                    
- *  (a_x, a_y) --------- (b_x, b_y)                   
- *          \              /                          
- *           \            /                           
- *            \          /                            
- *             (c_x, c_y)                             
+ *
+ *
+ *  (a_x, a_y) --------- (b_x, b_y)
+ *          \              /
+ *           \            /
+ *            \          /
+ *             (c_x, c_y)
  *
  */
 function make_polygon(x_cyt, y_cyt, pos, link, ) {

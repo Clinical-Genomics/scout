@@ -959,33 +959,40 @@ def multiqc(institute_id, case_name):
 @cases_bp.route("/<institute_id>/<case_name>/<individual>/roh_images/<image>", methods=['GET', 'POST'])
 def host_roh_image(institute_id, case_name, individual, image):
     """Generate ROH image file paths"""
-    return host_image_aux(institute_id, case_name, individual, image, "roh_images")
+    return host_image_aux(institute_id, case_name, individual, image, 'roh')
 
 
 @cases_bp.route("/<institute_id>/<case_name>/<individual>/upd_images/<image>", methods=['GET', 'POST'])
 def host_upd_image(institute_id, case_name, individual, image):
     """Generate UPD image file paths"""
-    return host_image_aux(institute_id, case_name, individual, image, "upd_images")
+    return host_image_aux(institute_id, case_name, individual, image, 'upd')
 
 
-@cases_bp.route("/<institute_id>/<case_name>/<individual>/chr_images/<image>", methods=['GET', 'POST'])
+@cases_bp.route("/<institute_id>/<case_name>/<individual>/ideograms/<image>", methods=['GET', 'POST'])
 def host_chr_image(institute_id, case_name, individual, image):
-    """Generate CHR image file paths"""
-    return host_image_aux(institute_id, case_name, individual, image, "chr_images")
+    """Generate CHR image file paths. Points to servers 'public/static'"""
+    public_folder = "/public/static/ideograms/"
+    img_path = public_folder + image
+    LOG.debug("ideaogram: {}".format(img_path))
+    return send_from_directory(img_path, image)
 
 
-def host_image_aux(institute_id, case_name, individual, image, imgstr):
+def host_image_aux(institute_id, case_name, individual, image, key):
     """Auxilary function for generate absolute file paths"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
     # Find path
     for ind in case_obj['individuals']:
         if ind['individual_id'] == individual:
-            abs_path = os.path.abspath(ind['chromograph_images'])
-            img_path = abs_path + "/" + imgstr
-            LOG.debug("Attempting to send {}/{}".format(img_path, image))
-            return send_from_directory(img_path, image)
-    return "TODO: handle missing image"
+            LOG.debug("ind host_image_aux: {}".format(ind))
+            try:
+                # path contains both dir structure and a file prefix
+                path = ind['chromograph_images'][key]
+                abs_path = os.path.abspath(path)
+                img_path = abs_path + image.split("-")[-1] # get suffix
+                return send_file(img_path)
+            except Exception as err:
+                LOG.debug("Error : {}".format(err))
 
 
 def _generate_csv(header, lines):
@@ -993,3 +1000,5 @@ def _generate_csv(header, lines):
     yield header + "\n"
     for line in lines:  # lines have already quoted fields
         yield line + "\n"
+
+

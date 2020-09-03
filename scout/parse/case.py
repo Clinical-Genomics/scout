@@ -417,7 +417,7 @@ def parse_individual(sample):
     ind_info["chromograph_images"] = sample.get("chromograph_images", {'roh': "roh_chr",
                                                                        'upd': "upd_chr",
                                                                        'chr': "cytoband.txt.chr"})
-    LOG.debug("OKOKOKOKO")
+
     # Remove key-value pairs from ind_info where key==None and return
     return removeNoneValues(ind_info)
 
