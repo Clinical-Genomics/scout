@@ -14,17 +14,18 @@ class FilterHandler(object):
     def retrieve_filter(self, filter_id):
         """Retrieve a known stored filter object from the db
 
-            Arguments:
-                filter_id(str) - a unique id cast to ObjectId
+        Arguments:
+            filter_id(str) - a unique id cast to ObjectId
 
-            Returns:
-                filter_obj(dict)
+        Returns:
+            filter_obj(dict)
         """
+        filter_obj = None
         LOG.debug("Retrieve filter {}".format(filter_id))
         filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
-
-        # use _id to preselect the currently loaded filter, and drop it while we are at it
-        filter_obj.update([("filters", filter_obj.pop("_id", None))])
+        if filter_obj is not None:
+            # use _id to preselect the currently loaded filter, and drop it while we are at it
+            filter_obj.update([("filters", filter_obj.pop("_id", None))])
         return filter_obj
 
     def stash_filter(
@@ -32,15 +33,15 @@ class FilterHandler(object):
     ):
         """Store away filter settings for later use.
 
-            Arguments:
-                filter_obj(MultiDict)
-                institute_obj(dict)
-                user_obj(dict)
-                case_obj(dict)
-                category(str): in ['cancer', 'snv', 'str', 'sv']
+        Arguments:
+            filter_obj(MultiDict)
+            institute_obj(dict)
+            user_obj(dict)
+            case_obj(dict)
+            category(str): in ['cancer', 'snv', 'str', 'sv']
 
-            Returns:
-                filter_id(str) - a unique id that can be cast to ObjectId
+        Returns:
+            filter_id(str) - a unique id that can be cast to ObjectId
         """
 
         LOG.info(
@@ -116,6 +117,8 @@ class FilterHandler(object):
             result()
         """
         filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
+        if filter_obj is None:
+            return
 
         LOG.info(
             "User {} deleting filter {} for institute {}.".format(

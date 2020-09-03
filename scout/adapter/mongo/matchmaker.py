@@ -10,12 +10,12 @@ class MMEHandler(object):
 
     def case_mme_update(self, case_obj, user_obj, mme_subm_obj):
         """Updates a case after a submission to MatchMaker Exchange
-            Args:
-                case_obj(dict): a scout case object
-                user_obj(dict): a scout user object
-                mme_subm_obj(dict): contains MME submission params and server response
-            Returns:
-                updated_case(dict): the updated scout case
+        Args:
+            case_obj(dict): a scout case object
+            user_obj(dict): a scout user object
+            mme_subm_obj(dict): contains MME submission params and server response
+        Returns:
+            updated_case(dict): the updated scout case
         """
         created = None
         patient_ids = []

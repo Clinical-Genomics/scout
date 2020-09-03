@@ -76,12 +76,18 @@ def setup_scout(
         LOG.info("Database deleted")
 
     institute_obj = build_institute(
-        internal_id=institute_id, display_name=institute_id, sanger_recipients=[user_mail],
+        internal_id=institute_id,
+        display_name=institute_id,
+        sanger_recipients=[user_mail],
     )
     adapter.add_institute(institute_obj)
 
     user_obj = dict(
-        _id=user_mail, email=user_mail, name=user_name, roles=["admin"], institutes=[institute_id],
+        _id=user_mail,
+        email=user_mail,
+        name=user_name,
+        roles=["admin"],
+        institutes=[institute_id],
     )
 
     adapter.add_user(user_obj)

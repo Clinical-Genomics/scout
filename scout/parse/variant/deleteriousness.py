@@ -1,10 +1,10 @@
 def parse_cadd(variant, transcripts):
     """Check if the cadd phred score is annotated
-    
+
     Args:
         variant(cyvcf2.Variant)
         transcripts(list(dict))
-    
+
     Returns:
         cadd(int)
     """

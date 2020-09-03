@@ -171,8 +171,8 @@ def register_filters(app):
 
     @app.template_filter()
     def cosmic_prefix(cosmicId):
-        """ If cosmicId is an integer, add 'COSM' as prefix
-            otherwise return unchanged """
+        """If cosmicId is an integer, add 'COSM' as prefix
+        otherwise return unchanged"""
         if isinstance(cosmicId, int):
             return "COSM" + str(cosmicId)
         return cosmicId

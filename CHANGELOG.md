@@ -6,12 +6,29 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Support to configure LoqusDB per institute
 - Highlight causative variants in the variants list
+- Add tests. Mostly regarding building internal datatypes.
+- Remove leading and trailing whitespaces from panel_name and display_name when panel is created
+- Mark MANE transcript in list of transcripts in "Transcript overview" on variant page
+- Show default panel name in case sidebar
+
 ### Fixed
 - Report pages redirect to login instead of crashing when session expires
 - Variants filter loading in cancer variants page
+- User, Causative and Cases tables not scaling to full page
+- Improved docs for an initial production setup
+- Compatibility with latest version of Black
+- Fixed tests for Click>7
+- Clinical filter required an extra click to Filter to return variants
+- Restore pagination and shrink badges in the variants page tables
+- Removing a user from the command line now inactivates the case only if user is last assignee and case is active
+- Bugfix, LoqusDB per institute feature crashed when institute id was empty string
+- filter removal and upload for filters deleted from another page/other user
+
 ### Changed
 - Highlight color on normal STRs in the variants table from green to blue
+- Display breakpoints coordinates in verification emails only for structural variants
 
 
 ## [4.20]
@@ -25,6 +42,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bug occurring when rerun is requested twice
 - Peddy info fields in the demo config file
 - Added load config safety check for multiple alignment files for one individual
+- Formatting of cancer variants table
 
 ### Changed
 - Updated the documentation on how to create a new software release

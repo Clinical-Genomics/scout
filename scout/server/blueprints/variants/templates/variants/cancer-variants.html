@@ -1,9 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
-{% from "variants/utils.html" import cancer_filters, tier_cell, cell_rank %}
+{% from "variants/utils.html" import cancer_filters, tier_cell, cell_rank, pagination_footer, pagination_hidden_div %}
 {% from "variant/buttons.html" import dismiss_variant_table_button %}
-
-
 
 {% block title %}
   {{ variant_type|capitalize }} cancer variants
@@ -36,7 +34,8 @@
 
 {% block content_main %}
 <div class="container-float">
-  <form method="POST" id="filters_form">
+  <form method="POST" id="filters_form" action="{{url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name)}}">
+    {{ pagination_hidden_div(page) }}
     <div class="card panel-default" id="accordion">
       <div class="card-header">
         <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
@@ -50,25 +49,25 @@
           Filtered {{session['filtered_variants']}} / {{session["all_variants"]}} variants
         {% endif %}
       </div>
-      </form>
     </div>
+  </form>
 
   <div class="card mt-3">
-    <table class="table table-hover table-bordered">
+    <table class="table table-hover table-bordered" style="table-layout:fixed">
       <thead>
             <tr>
-              <th style="width:4%" title="Rank position">Rank</th>
-              <th style="width:18%" title="Dismiss variant">Dismiss variant</th>
-              <th>Gene:Transcript:Exon:HGVS</th>
-              <th>Tier</th>
-              <th>Score</th>
-              <th>Gene</th>
-              <th>Chr pos</th>
-              <th>ExAC</th>
-              <th>Type</th>
-              <th>Consequence</th>
-              <th data-toggle="tooltip" data-placement="top" title="Tumor alt. AF. &#013; Alt. allele count | Ref. allele count">Tumor</th>
-              <th data-toggle="tooltip" data-placement="top" title="Normal alt. AF. &#013; Alt. allele count | Ref. allele count">Normal</th>
+              <th style="width:6%" title="Rank position">Rank</th>
+              <th style="width:15%" title="Dismiss variant">Dismiss variant</th>
+              <th style="width:12%">Gene:Transcript:Exon:HGVS</th>
+              <th style="width:6%" >Tier</th>
+              <th style="width:5%" >Score</th>
+              <th style="width:10%">Gene</th>
+              <th style="width:6%">Chr pos</th>
+              <th style="width:6%">ExAC</th>
+              <th style="width:6%">Type</th>
+              <th style="width:14%">Consequence</th>
+              <th style="width:6%" data-toggle="tooltip" data-placement="top" title="Tumor alt. AF. &#013; Alt. allele count | Ref. allele count">Tumor</th>
+              <th style="width:6%" data-toggle="tooltip" data-placement="top" title="Normal alt. AF. &#013; Alt. allele count | Ref. allele count">Normal</th>
             </tr>
       </thead>
       <tbody>
@@ -109,30 +108,12 @@
     </table>
   </div><!-- end of card-->
   <br>
-  <div class="container-fluid">
-      {{ pagination() }}
-  </div>
 </div><!--end of container-float -->
-{% endblock %}
+<div class="container-fluid">
+  {{ pagination_footer() }}
+</div>
 
-{% macro pagination() %}
-  <div class="container-fluid">
-    {% if more_variants %}
-    <div class="d-flex justify-content-around">
-        <div>
-            <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
-        </div>
-        <div>
-          <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value={{ page + 1 }}>Next page</button>
-        </div>
-    </div>
-    {% else %}
-      <i class="text-muted">No more variants to display</i>
-      <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
-    {% endif %}
-  </div>
-</form>
-{% endmacro %}
+{% endblock %}
 
 {% macro actions_cell(variant) %}
   <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,

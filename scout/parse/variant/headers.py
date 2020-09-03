@@ -5,13 +5,13 @@ Functions to parse information from vcf headers
 
 def parse_rank_results_header(vcf_obj):
     """Return a list with the rank results header
-    
-    Check if the rank result is in the vcf header. If it exists return a list 
+
+    Check if the rank result is in the vcf header. If it exists return a list
     with the rank results headers
-    
+
     Args:
         vcf_obj(cyvcf2.VCF)
-    
+
     Returns:
         rank_results_header(list)
     """
@@ -25,12 +25,12 @@ def parse_rank_results_header(vcf_obj):
 
 def parse_header_format(description):
     """Get the format from a vcf header line description
-    
+
     If format begins with white space it will be stripped
-    
+
     Args:
         description(str): Description from a vcf header line
-    
+
     Return:
         format(str): The format information from description
     """
@@ -42,13 +42,13 @@ def parse_header_format(description):
 
 def parse_vep_header(vcf_obj):
     """Return a list with the VEP header
-    
+
     The vep header is collected from CSQ in the vcf file
     All keys are capitalized
-    
+
     Args:
         vcf_obj(cyvcf2.VCF)
-    
+
     Returns:
         vep_header(list)
     """

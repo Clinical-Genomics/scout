@@ -16,7 +16,9 @@ LOG = logging.getLogger(__name__)
 @click.option("--collaborator", "-c", help="Add a collaborator to the case")
 @click.option("--vcf", type=click.Path(exists=True), help="path to clinical VCF file to be added")
 @click.option(
-    "--vcf-sv", type=click.Path(exists=True), help="path to clinical SV VCF file to be added",
+    "--vcf-sv",
+    type=click.Path(exists=True),
+    help="path to clinical SV VCF file to be added",
 )
 @click.option(
     "--vcf-cancer",
@@ -29,7 +31,9 @@ LOG = logging.getLogger(__name__)
     help="path to clinical cancer structural VCF file to be added",
 )
 @click.option(
-    "--vcf-research", type=click.Path(exists=True), help="path to research VCF file to be added",
+    "--vcf-research",
+    type=click.Path(exists=True),
+    help="path to research VCF file to be added",
 )
 @click.option(
     "--vcf-sv-research",
@@ -47,7 +51,9 @@ LOG = logging.getLogger(__name__)
     help="path to research VCF with cancer structural variants to be added",
 )
 @click.option(
-    "--reupload-sv", is_flag=True, help="Remove all SVs and re upload from existing files",
+    "--reupload-sv",
+    is_flag=True,
+    help="Remove all SVs and re upload from existing files",
 )
 @click.option("--rankscore-treshold", help="Set a new rank score treshold if desired")
 @click.option("--rankmodel-version", help="Update the rank model version")
@@ -145,7 +151,9 @@ def case(
             updates["vcf_files.vcf_sv_research"] = vcf_sv_research
 
         updated_case = adapter.case_collection.find_one_and_update(
-            {"_id": case_id}, {"$set": updates}, return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": case_id},
+            {"$set": updates},
+            return_document=pymongo.ReturnDocument.AFTER,
         )
         rankscore_treshold = rankscore_treshold or updated_case.get("rank_score_threshold", 5)
         # Delete and reload the clinical SV variants
