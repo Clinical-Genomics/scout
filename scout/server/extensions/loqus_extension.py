@@ -145,7 +145,7 @@ class LoqusDB:
                     "--end-chromosome",
                     variant_info["end_chrom"],
                     "--sv-type",
-                    variant_info["variant_type"]
+                    variant_info["variant_type"],
                 ]
             )
         if self.version > 2.4:
