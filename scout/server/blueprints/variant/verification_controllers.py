@@ -72,8 +72,16 @@ def variant_verification(
     display_name = variant_obj.get("display_name")
     chromosome = variant_obj["chromosome"]
     end_chrom = variant_obj.get("end_chrom", chromosome)
-    breakpoint_1 = ":".join([chromosome, str(variant_obj["position"])])
-    breakpoint_2 = ":".join([end_chrom, str(variant_obj.get("end"))])
+    breakpoint_1 = (
+        ":".join([chromosome, str(variant_obj["position"])])
+        if category in ["sv", "cancer_sv"]
+        else "-"
+    )
+    breakpoint_2 = (
+        ":".join([end_chrom, str(variant_obj.get("end"))])
+        if category in ["sv", "cancer_sv"]
+        else "-"
+    )
     variant_size = variant_obj.get("length")
     panels = ", ".join(variant_obj.get("panels", []))
     gene_identifiers = [
