@@ -126,11 +126,7 @@ def case(store, institute_obj, case_obj):
     if case_obj.get("rank_model_version"):
         rank_model_link_postfix = current_app.config.get("RANK_MODEL_LINK_POSTFIX", "")
         rank_model_link = "".join(
-            [
-                rank_model_link_prefix,
-                str(case_obj["rank_model_version"]),
-                rank_model_link_postfix,
-            ]
+            [rank_model_link_prefix, str(case_obj["rank_model_version"]), rank_model_link_postfix,]
         )
         print(rank_model_link)
         case_obj["rank_model_link"] = rank_model_link
@@ -182,6 +178,7 @@ def case(store, institute_obj, case_obj):
     data = {
         "status_class": STATUS_MAP.get(case_obj["status"]),
         "other_causatives": [var for var in store.check_causatives(case_obj=case_obj)],
+        "managed_variants": [var for var in store.check_managed(case_obj=case_obj)],
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "hpo_groups": pheno_groups,
         "events": events,
@@ -404,9 +401,7 @@ def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
     # create event only if synopsis was actually changed
     if case_obj["synopsis"] != new_synopsis:
         link = url_for(
-            "cases.case",
-            institute_id=institute_obj["_id"],
-            case_name=case_obj["display_name"],
+            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
         )
         store.update_synopsis(institute_obj, case_obj, user_obj, link, content=new_synopsis)
 
@@ -430,9 +425,7 @@ def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissu
 
     # create an associated event
     link = url_for(
-        "cases.case",
-        institute_id=institute_obj["_id"],
-        case_name=case_obj["display_name"],
+        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
     )
     store.create_event(
         institute=institute_obj,
@@ -470,9 +463,7 @@ def update_cancer_samples(
 
     # create an associated event
     link = url_for(
-        "cases.case",
-        institute_id=institute_obj["_id"],
-        case_name=case_obj["display_name"],
+        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
     )
 
     store.create_event(

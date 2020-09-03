@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
-{% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives %}
+{% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants %}
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
 {% from "cases/phenotype.html" import cohort_panel, diagnosis_phenotypes, diagnosis_genes, phenotype_groups_panel, phenotype_terms_panel, phenotypes_panel %}
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
@@ -59,6 +59,13 @@
           <div class="col-xs-12 col-md-12">{{ matching_causatives(other_causatives, institute, case) }}</div>
         </div>
       {% endif %}
+
+      {% if managed_variants|length > 0%}
+        <div class="row ">
+          <div class="col-xs-12 col-md-12">{{ matching_managed_variants(managed_variants, institute, case) }}</div>
+        </div>
+      {% endif %}
+
 
       <div class="row ">
         <div class="col-xs-12 col-md-6">{{ causatives_list(causatives, partial_causatives, institute, case) }}</div>

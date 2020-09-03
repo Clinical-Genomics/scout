@@ -263,9 +263,7 @@ class VariantHandler(VariantLoader):
 
         if case_obj:
             variant_obj = self.add_gene_info(
-                variant_obj=variant_obj,
-                gene_panels=gene_panels,
-                build=case_obj["genome_build"],
+                variant_obj=variant_obj, gene_panels=gene_panels, build=case_obj["genome_build"],
             )
         else:
             variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels)
@@ -304,10 +302,7 @@ class VariantHandler(VariantLoader):
             cohorts
         """
         mongo_variant_query = self.build_variant_query(
-            query=query,
-            institute_id=institute_id,
-            category=category,
-            variant_type=variant_type,
+            query=query, institute_id=institute_id, category=category, variant_type=variant_type,
         )
 
         sorting = [("rank_score", pymongo.DESCENDING)]
@@ -374,12 +369,7 @@ class VariantHandler(VariantLoader):
 
             query = self.case_collection.aggregate(
                 [
-                    {
-                        "$match": {
-                            "collaborators": institute_id,
-                            "causatives": {"$exists": True},
-                        }
-                    },
+                    {"$match": {"collaborators": institute_id, "causatives": {"$exists": True},}},
                     {"$unwind": "$causatives"},
                     {"$group": {"_id": "$causatives"}},
                 ]
@@ -397,7 +387,7 @@ class VariantHandler(VariantLoader):
 
         return [
             managed_variant["variant_id"]
-            for managed_variant in self.managed_variants(self, category, build)
+            for managed_variant in self.managed_variants(category, build)
         ]
 
     def check_managed(self, case_obj=None, institute_obj=None, limit_genes=None):
@@ -416,9 +406,9 @@ class VariantHandler(VariantLoader):
 
         institute_id = case_obj["owner"] if case_obj else institute_obj["_id"]
 
-        positional_variant_ids = _get_managed_variants(institue_id)
+        positional_variant_ids = self._get_managed_variants(institute_id)
 
-        return match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
+        return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
 
     def _find_affected(self, case_obj):
         """ Internal method to find affected individuals.
