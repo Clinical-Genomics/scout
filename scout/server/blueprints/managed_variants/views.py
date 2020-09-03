@@ -30,7 +30,12 @@ def managed_variants():
     managed_variants_query = store.managed_variants(category=category)
     data = controllers.managed_variants(store, managed_variants_query)
 
-    return dict(filters_form=filters_form, add_form=add_form, modify_form=modify_form, **data,)
+    return dict(
+        filters_form=filters_form,
+        add_form=add_form,
+        modify_form=modify_form,
+        **data,
+    )
 
 
 @managed_variants_bp.route("/managed_variant/<variant_id>/modify", methods=["POST"])

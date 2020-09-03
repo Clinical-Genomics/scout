@@ -263,7 +263,9 @@ class VariantHandler(VariantLoader):
 
         if case_obj:
             variant_obj = self.add_gene_info(
-                variant_obj=variant_obj, gene_panels=gene_panels, build=case_obj["genome_build"],
+                variant_obj=variant_obj,
+                gene_panels=gene_panels,
+                build=case_obj["genome_build"],
             )
         else:
             variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels)
@@ -302,7 +304,10 @@ class VariantHandler(VariantLoader):
             cohorts
         """
         mongo_variant_query = self.build_variant_query(
-            query=query, institute_id=institute_id, category=category, variant_type=variant_type,
+            query=query,
+            institute_id=institute_id,
+            category=category,
+            variant_type=variant_type,
         )
 
         sorting = [("rank_score", pymongo.DESCENDING)]
@@ -369,7 +374,12 @@ class VariantHandler(VariantLoader):
 
             query = self.case_collection.aggregate(
                 [
-                    {"$match": {"collaborators": institute_id, "causatives": {"$exists": True},}},
+                    {
+                        "$match": {
+                            "collaborators": institute_id,
+                            "causatives": {"$exists": True},
+                        }
+                    },
                     {"$unwind": "$causatives"},
                     {"$group": {"_id": "$causatives"}},
                 ]
@@ -379,7 +389,7 @@ class VariantHandler(VariantLoader):
         return causatives
 
     def _get_managed_variants(self, institute_id=None, category="snv", build="37"):
-        """ Return managed variant_ids. Limit by institute, category and build.
+        """Return managed variant_ids. Limit by institute, category and build.
 
         Returns:
             managed_variant_ids(iterable(variant_id: String))
@@ -411,7 +421,7 @@ class VariantHandler(VariantLoader):
         return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
 
     def _find_affected(self, case_obj):
-        """ Internal method to find affected individuals.
+        """Internal method to find affected individuals.
 
         Assumes an affected individual has phenotype == 2
 
@@ -432,16 +442,16 @@ class VariantHandler(VariantLoader):
         return affected_ids
 
     def match_affected_gt(self, case_obj, institute_obj, positional_variant_ids, limit_genes):
-        """ Match positional_variant_ids against variants from affected individuals
-            in a case, ensuring that they at least are carriers.
+        """Match positional_variant_ids against variants from affected individuals
+        in a case, ensuring that they at least are carriers.
 
-            Args:
-                case_obj (dict): A Case object
-                institute_obj (dict): check across the whole institute
-                limit_genes (list): list of gene hgnc_ids to limit the search to
+        Args:
+            case_obj (dict): A Case object
+            institute_obj (dict): check across the whole institute
+            limit_genes (list): list of gene hgnc_ids to limit the search to
 
-            Returns:
-                causatives(iterable(Variant))
+        Returns:
+            causatives(iterable(Variant))
         """
         affected_ids = self._find_affected(case_obj)
         if len(affected_ids) == 0:

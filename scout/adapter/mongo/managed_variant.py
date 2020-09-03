@@ -23,7 +23,8 @@ class ManagedVariantHandler(object):
             result = self.managed_variant_collection.insert_one(managed_variant_obj)
         except DuplicateKeyError as err:
             raise IntegrityError(
-                "Variant %s already exists in database", managed_variant_obj["display_id"],
+                "Variant %s already exists in database",
+                managed_variant_obj["display_id"],
             )
 
         return result.inserted_id
@@ -52,7 +53,8 @@ class ManagedVariantHandler(object):
                 LOG.debug("Variant %s already exists in database", check_variant_obj["display_id"])
 
             result = self.managed_variant_collection.find_one_and_update(
-                {"variant_id": managed_variant_obj["variant_id"]}, {"$set": managed_variant_obj},
+                {"variant_id": managed_variant_obj["variant_id"]},
+                {"$set": managed_variant_obj},
             )
 
         updated_managed_variant = self.variant_collection.find_one(
@@ -62,7 +64,7 @@ class ManagedVariantHandler(object):
         return updated_managed_variant
 
     def managed_variant(self, document_id):
-        """ Retrieve a managed variant of known id.
+        """Retrieve a managed variant of known id.
 
         Arguments:
             document_id(ObjectId)
@@ -78,15 +80,15 @@ class ManagedVariantHandler(object):
         return managed_variant_obj
 
     def find_managed_variant(self, managed_variant_id):
-        """ Fetch eg search for a managed variant.
+        """Fetch eg search for a managed variant.
 
-            Arguments:
-                display_id(str): chrom_pos_ref_alt_category_build
-                    category: "snv", "cancer" - "sv", "cancer_sv" possible but not expected
-                    build: "37" or "38"
+        Arguments:
+            display_id(str): chrom_pos_ref_alt_category_build
+                category: "snv", "cancer" - "sv", "cancer_sv" possible but not expected
+                build: "37" or "38"
 
-            Returns:
-                ManagedVariant
+        Returns:
+            ManagedVariant
         """
         managed_variant = self.managed_variant_collection.find_one(
             {"managed_variant_id": managed_variant_id}
@@ -95,7 +97,7 @@ class ManagedVariantHandler(object):
         return managed_variant
 
     def managed_variants(self, category="snv", build="37"):
-        """ Return a cursor to all managed variants of a particular category and build.
+        """Return a cursor to all managed variants of a particular category and build.
 
         Arguments:
             category(str):
@@ -113,7 +115,7 @@ class ManagedVariantHandler(object):
         return managed_variants_res
 
     def delete_managed_variant(self, managed_variant_id):
-        """ Delete a managed variant of known id.
+        """Delete a managed variant of known id.
 
         Arguments:
             variant_id(str)
