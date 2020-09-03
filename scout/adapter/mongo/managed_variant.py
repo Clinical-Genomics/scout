@@ -1,8 +1,12 @@
 import logging
 from datetime import datetime
 
+from pymongo.errors import DuplicateKeyError
+
 from bson import ObjectId
 import pymongo
+
+from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
 
