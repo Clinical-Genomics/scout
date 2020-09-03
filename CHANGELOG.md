@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ### Changed
 - Highlight color on normal STRs in the variants table from green to blue
+- Do not display breakpoints for structural variants in verification email
 
 
 ## [4.20]
