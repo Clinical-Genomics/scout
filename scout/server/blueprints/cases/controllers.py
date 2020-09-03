@@ -7,14 +7,13 @@ import os
 import query_phenomizer
 import requests
 from bs4 import BeautifulSoup
-from flask import current_app, url_for
+from flask import current_app, url_for, flash
 from flask_login import current_user
 from flask_mail import Message
 from xlsxwriter import Workbook
 
 from scout.constants import (
     CANCER_PHENOTYPE_MAP,
-    CASE_STATUSES,
     MT_EXPORT_HEADER,
     PHENOTYPE_GROUPS,
     PHENOTYPE_MAP,
@@ -29,85 +28,19 @@ from scout.constants.variant_tags import (
     MANUAL_RANK_OPTIONS,
 )
 from scout.export.variant import export_mt_variants
-from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.parse.matchmaker import (
     genomic_features,
     hpo_terms,
     omim_terms,
     parse_matches,
 )
-from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
-from scout.server.blueprints.variant.utils import predictions
-from scout.server.utils import institute_and_case, user_institutes
+from scout.server.utils import institute_and_case
 from scout.utils.matchmaker import matchmaker_request
 
 LOG = logging.getLogger(__name__)
 
 STATUS_MAP = {"solved": "bg-success", "archived": "bg-warning"}
-
-TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
-
-
-def cases(store, case_query, prioritized_cases_query=None, limit=100):
-    """Preprocess case objects.
-
-    Add the necessary information to display the 'cases' view
-
-    Args:
-        store(adapter.MongoAdapter)
-        case_query(pymongo.Cursor)
-        prioritized_cases_query(pymongo.Cursor)
-        limit(int): Maximum number of cases to display
-
-    Returns:
-        data(dict): includes the cases, how many there are and the limit.
-    """
-    case_groups = {status: [] for status in CASE_STATUSES}
-    nr_cases = 0
-
-    # local function to add info to case obj
-    def populate_case_obj(case_obj):
-        analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
-        LOG.debug("Analysis types found in %s: %s", case_obj["_id"], ",".join(analysis_types))
-        if len(analysis_types) > 1:
-            LOG.debug("Set analysis types to {'mixed'}")
-            analysis_types = set(["mixed"])
-
-        case_obj["analysis_types"] = list(analysis_types)
-        case_obj["assignees"] = [
-            store.user(user_email) for user_email in case_obj.get("assignees", [])
-        ]
-        case_obj["is_rerun"] = len(case_obj.get("analyses", [])) > 0
-        case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
-        case_obj["display_track"] = TRACKS[case_obj.get("track", "rare")]
-        return case_obj
-
-    for nr_cases, case_obj in enumerate(case_query.limit(limit), 1):
-        case_obj = populate_case_obj(case_obj)
-        case_groups[case_obj["status"]].append(case_obj)
-
-    if prioritized_cases_query:
-        extra_prioritized = 0
-        for case_obj in prioritized_cases_query:
-            if any(
-                group_obj.get("display_name") == case_obj.get("display_name")
-                for group_obj in case_groups[case_obj["status"]]
-            ):
-                continue
-            else:
-                extra_prioritized += 1
-                case_obj = populate_case_obj(case_obj)
-                case_groups[case_obj["status"]].append(case_obj)
-        # extra prioritized cases are potentially shown in addition to the case query limit
-        nr_cases += extra_prioritized
-
-    data = {
-        "cases": [(status, case_groups[status]) for status in CASE_STATUSES],
-        "found_cases": nr_cases,
-        "limit": limit,
-    }
-    return data
 
 
 def case(store, institute_obj, case_obj):
@@ -193,7 +126,11 @@ def case(store, institute_obj, case_obj):
     if case_obj.get("rank_model_version"):
         rank_model_link_postfix = current_app.config.get("RANK_MODEL_LINK_POSTFIX", "")
         rank_model_link = "".join(
-            [rank_model_link_prefix, str(case_obj["rank_model_version"]), rank_model_link_postfix,]
+            [
+                rank_model_link_prefix,
+                str(case_obj["rank_model_version"]),
+                rank_model_link_postfix,
+            ]
         )
         print(rank_model_link)
         case_obj["rank_model_link"] = rank_model_link
@@ -398,7 +335,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
 
     # send get request to chanjo report
     # disable default certificate verification
-    resp = requests.post(base_url + "reports/report", data=request_data, verify=False)
+    resp = requests.post(base_url + "reports/report", data=request_data)
 
     # read response content
     soup = BeautifulSoup(resp.text)
@@ -411,26 +348,6 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     coverage_data = "".join(["%s" % x for x in soup.body.contents])
 
     return coverage_data
-
-
-def clinvar_submissions(store, institute_id):
-    """Get all Clinvar submissions for a user and an institute"""
-    submissions = list(store.clinvar_submissions(institute_id))
-    return submissions
-
-
-def clinvar_header(submission_objs, csv_type):
-    """ Call clinvar parser to extract required fields to include in csv header from clinvar submission objects"""
-
-    clinvar_header_obj = clinvar_submission_header(submission_objs, csv_type)
-    return clinvar_header_obj
-
-
-def clinvar_lines(clinvar_objects, clinvar_header):
-    """ Call clinvar parser to extract required lines to include in csv file from clinvar submission objects and header"""
-
-    clinvar_lines = clinvar_submission_lines(clinvar_objects, clinvar_header)
-    return clinvar_lines
 
 
 def mt_excel_files(store, case_obj, temp_excel_dir):
@@ -487,7 +404,9 @@ def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
     # create event only if synopsis was actually changed
     if case_obj["synopsis"] != new_synopsis:
         link = url_for(
-            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
+            "cases.case",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
         )
         store.update_synopsis(institute_obj, case_obj, user_obj, link, content=new_synopsis)
 
@@ -511,7 +430,9 @@ def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissu
 
     # create an associated event
     link = url_for(
-        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
+        "cases.case",
+        institute_id=institute_obj["_id"],
+        case_name=case_obj["display_name"],
     )
     store.create_event(
         institute=institute_obj,
@@ -549,7 +470,9 @@ def update_cancer_samples(
 
     # create an associated event
     link = url_for(
-        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
+        "cases.case",
+        institute_id=institute_obj["_id"],
+        case_name=case_obj["display_name"],
     )
 
     store.create_event(
@@ -592,9 +515,15 @@ def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
 
 def rerun(store, mail, current_user, institute_id, case_name, sender, recipient):
     """Request a rerun by email."""
+
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
+
+    if case_obj.get("rerun_requested") and case_obj["rerun_requested"] is True:
+        flash("Rerun already pending", "info")
+        return
+
     store.request_rerun(institute_obj, case_obj, user_obj, link)
 
     # this should send a JSON document to the SuSy API in the future
@@ -651,165 +580,10 @@ def vcf2cytosure(store, institute_id, case_name, individual_id):
     return (individual_obj["display_name"], individual_obj["vcf2cytosure"])
 
 
-def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
-    """Pre-process list of variants."""
-    # We need to call variants_collection.count_documents here
-    variant_count = variants_query.count()
-    skip_count = per_page * max(page - 1, 0)
-    more_variants = True if variant_count > (skip_count + per_page) else False
-    variant_res = variants_query.skip(skip_count).limit(per_page)
-
-    my_institutes = set(inst["_id"] for inst in user_institutes(store, current_user))
-
-    variants = []
-    for variant_obj in variant_res:
-        # Populate variant case_display_name
-        variant_case_obj = store.case(case_id=variant_obj["case_id"])
-        if not variant_case_obj:
-            # A variant with missing case was encountered
-            continue
-        case_display_name = variant_case_obj.get("display_name")
-        variant_obj["case_display_name"] = case_display_name
-
-        # hide other institutes for now
-        other_institutes = set([variant_case_obj.get("owner")])
-        other_institutes.update(set(variant_case_obj.get("collaborators", [])))
-        if my_institutes.isdisjoint(other_institutes):
-            # If the user does not have access to the information we skip it
-            continue
-
-        genome_build = variant_case_obj.get("genome_build", "37")
-        if genome_build not in ["37", "38"]:
-            genome_build = "37"
-
-        # Update the HGNC symbols if they are not set
-        variant_genes = variant_obj.get("genes")
-        if variant_genes is not None:
-            for gene_obj in variant_genes:
-                # If there is no hgnc id there is nothin we can do
-                if not gene_obj["hgnc_id"]:
-                    continue
-                # Else we collect the gene object and check the id
-                if gene_obj.get("hgnc_symbol") is None or gene_obj.get("description") is None:
-                    hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
-                    if not hgnc_gene:
-                        continue
-                    gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
-                    gene_obj["description"] = hgnc_gene["description"]
-
-        # Populate variant HGVS and predictions
-        gene_ids = []
-        gene_symbols = []
-        hgvs_c = []
-        hgvs_p = []
-        variant_genes = variant_obj.get("genes")
-
-        if variant_genes is not None:
-            functional_annotation = ""
-
-            for gene_obj in variant_genes:
-                hgnc_id = gene_obj["hgnc_id"]
-                gene_symbol = gene(store, hgnc_id)["symbol"]
-                gene_ids.append(hgnc_id)
-                gene_symbols.append(gene_symbol)
-
-                hgvs_nucleotide = "-"
-                hgvs_protein = ""
-                # gather HGVS info from gene transcripts
-                transcripts_list = gene_obj.get("transcripts")
-                for transcript_obj in transcripts_list:
-                    if (
-                        transcript_obj.get("is_canonical")
-                        and transcript_obj.get("is_canonical") is True
-                    ):
-                        hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
-                        hgvs_protein = str(transcript_obj.get("protein_sequence_name"))
-                hgvs_c.append(hgvs_nucleotide)
-                hgvs_p.append(hgvs_protein)
-
-            if len(gene_symbols) == 1:
-                if hgvs_p[0] != "None":
-                    hgvs = hgvs_p[0]
-                elif hgvs_c[0] != "None":
-                    hgvs = hgvs_c[0]
-                else:
-                    hgvs = "-"
-                variant_obj["hgvs"] = hgvs
-
-            # populate variant predictions for display
-            variant_obj.update(predictions(variant_genes))
-
-        variants.append(variant_obj)
-
-    return {"variants": variants, "more_variants": more_variants}
-
-
 def multiqc(store, institute_id, case_name):
     """Find MultiQC report for the case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     return dict(institute=institute_obj, case=case_obj)
-
-
-def get_sanger_unevaluated(store, institute_id, user_id):
-    """Get all variants for an institute having Sanger validations ordered but still not evaluated
-
-        Args:
-            store(scout.adapter.MongoAdapter)
-            institute_id(str)
-
-        Returns:
-            unevaluated: a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, {'case2' : [varID_1, varID_2, .., varID_n]} ],
-                         where the keys are case_ids and the values are lists of variants with Sanger ordered but not yet validated
-
-    """
-
-    # Retrieve a list of ids for variants with Sanger ordered grouped by case from the 'event' collection
-    # This way is much faster than querying over all variants in all cases of an institute
-    sanger_ordered_by_case = store.sanger_ordered(institute_id, user_id)
-    unevaluated = []
-
-    # for each object where key==case and value==[variant_id with Sanger ordered]
-    for item in sanger_ordered_by_case:
-        case_id = item["_id"]
-        # Get the case to collect display name
-        case_obj = store.case(case_id=case_id)
-
-        if not case_obj:  # the case might have been removed
-            continue
-
-        case_display_name = case_obj.get("display_name")
-
-        # List of variant document ids
-        varid_list = item["vars"]
-
-        unevaluated_by_case = {}
-        unevaluated_by_case[case_display_name] = []
-
-        for var_id in varid_list:
-            # For each variant with sanger validation ordered
-            variant_obj = store.variant(document_id=var_id, case_id=case_id)
-
-            # Double check that Sanger was ordered (and not canceled) for the variant
-            if (
-                variant_obj is None
-                or variant_obj.get("sanger_ordered") is None
-                or variant_obj.get("sanger_ordered") is False
-            ):
-                continue
-
-            validation = variant_obj.get("validation", "not_evaluated")
-
-            # Check that the variant is not evaluated
-            if validation in ["True positive", "False positive"]:
-                continue
-
-            unevaluated_by_case[case_display_name].append(variant_obj["_id"])
-
-        # If for a case there is at least one Sanger validation to evaluate add the object to the unevaluated objects list
-        if len(unevaluated_by_case[case_display_name]) > 0:
-            unevaluated.append(unevaluated_by_case)
-
-    return unevaluated
 
 
 def mme_add(

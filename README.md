@@ -113,9 +113,9 @@ This is an example of the config file:
 # list of email addresses to send errors to in production
 ADMINS = ['paul.anderson@magnolia.com']
 
-MONGO_HOST = 'localhost'
+MONGO_HOST = 'localhost'		
 MONGO_PORT = 27017
-MONGO_DBNAME = 'scoutTest'
+MONGO_DBNAME = 'scout'
 MONGO_USERNAME = 'testUser'
 MONGO_PASSWORD = 'testPass'
 
@@ -148,6 +148,8 @@ TEMPLATES_AUTO_RELOAD = False  			# consider turning off in production
 SECRET_KEY = 'secret key'               # override in production!
 ```
 
+Most of the config settings are optional. A minimal config would consist of SECRET_KEY and MONGO_DBNAME.
+
 Starting the server in now really easy, for the demo and local development we will use the CLI:
 
 ```bash
@@ -163,11 +165,19 @@ such as Gunicorn.
 This is also how we can multiprocess the server and use encrypted HTTPS connections.
 
 ```bash
-SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 --access-logfile - --error-logfile
- - --keyfile /tmp/myserver.key --certfile /tmp/server.crt wsgi_gunicorn:app
+SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 scout.server.auto:app
 ```
 
-> The `wsgi_gunicorn.py` file is included in the repo and configures Flask to work with Gunicorn.
+For added security and flexibility, we recommend a reverse proxy solution like NGINX.
+
+### Setting up a user login system
+
+Scout currently supports 3 mutually exclusive types of login:
+- Google authentication via OpenID Connect
+- LDAP authentication]
+- Simple authentication using userid and password
+
+A description on how to set up an advanced login system is available in the [admin guide](docs/admin-guide/login-system.md)
 
 
 ### Integration with MatchMaker Exchange
@@ -180,6 +190,33 @@ integration with Scout check scouts [matchmaker docs][matchmaker-scout].
 A user-oriented guide describing how to share case and variant data to MatchMaker using Scout can
 be found [here][matchmaker-scout-sharing].
 
+
+## Development
+
+To keep the code base consistent, formatting with [Black](https://github.com/psf/black) is always applied as part of the PR submission process via GitHub Actions. While not strictly required, to avoid confusion, it is suggested that developers apply Black locally.
+Black defaults to 88 characters per line, we use 100.
+
+To format all the files in the project run:
+
+```bash
+black --line-length 100 .
+```
+
+We recommend using Black with [pre-commit](https://github.com/pre-commit/pre-commit).
+In `.pre-commit-config.yaml` you can find the pre-commit configuration.
+To enable this configuration run:
+
+```bash
+pre-commit install
+```
+
+### Test
+
+To run unit tests:
+
+```bash
+pytest
+```
 
 ## Example of analysis config
 

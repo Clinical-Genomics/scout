@@ -54,8 +54,8 @@ vcf_sv_research: scout/demo/643594.research.SV.vcf.gz
 madeline: scout/demo/madeline.xml
 
 peddy_ped: scout/demo/643594.peddy.ped
-peddy_ped_check: scout/demo/643594.ped_check.csv
-peddy_sex_check: scout/demo/643594.sex_check.csv
+peddy_check: scout/demo/643594.ped_check.csv
+peddy_sex: scout/demo/643594.sex_check.csv
 
 delivery_report: scout/demo/delivery_report.html
 

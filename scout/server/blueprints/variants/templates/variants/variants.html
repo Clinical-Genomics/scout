@@ -1,6 +1,8 @@
 {% extends "layout_bs4.html" %}
-{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank %}
+{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div%}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
+{% from "variant/buttons.html" import dismiss_variant_table_button %}
+
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} variants
@@ -17,7 +19,7 @@
     <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
@@ -36,41 +38,54 @@
   {{ super() }}
 {% endblock %}
 {% block content_main %}
-  <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
-    enctype="multipart/form-data" onsubmit="return validateForm()">
     <div class="container-float">
-      <div class="card panel-default" id="accordion">
-        <div class="card-header">
-          <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
+       <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
+         enctype="multipart/form-data" onsubmit="return validateForm()">
+         {{ pagination_hidden_div(page) }}
+        <div class="card panel-default" id="accordion">
+          <div class="card-header">
+            <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
+          </div>
+          <!--Expand filters form if filters were used in a previous POST request-->
+          <div class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}" id="collapseFilters">
+              {{ snv_filters(form, institute, case) }}
+          </div>
+          <div class="card-footer text-center py-3">
+            {% if "all_variants" in session %}
+              Filtered {{session['filtered_variants']}} / {{session["all_variants"]}} variants
+            {% endif %}
+          </div>
         </div>
-        <div class="card-body panel-collapse collapse" id="collapseFilters">
-            {{ snv_filters(form, institute, case) }}
-        </div>
-      </div>
+
+      </form>
       <div class="card mt-3">
-        <table class="table table-hover table-bordered">
+        <table class="table table-hover table-bordered" style="table-layout: fixed">
           <thead>
             <tr>
-              <th style="width:8%" title="Rank position">Rank </th>
-              <th style="width:8%" title="Rank score">Score</th>
-              <th style="width:8%" title="Chromosome">Chr.</th>
+              <th style="width:6%" title="Rank position">Rank </th>
+              <th style="width:18%" title="Dismiss Variant">Dismiss variant</th>
+              <th style="width:5%" title="Rank score">Score</th>
+              <th style="width:4%" title="Chromosome">Chr.</th>
               <th style="width:8%" title="HGNC symbols">Gene</th>
-              <th style="width:8%" title="Poulation frequency">PopFreq</th>
-              <th style="width:8%" title="CADD score">CADD</th>
+              <th style="width:4%" title="Poulation frequency">PopFreq</th>
+              <th style="width:5%" title="CADD score">CADD</th>
               <th style="width:8%" title="Gene region annotation">Gene annotation</th>
-              <th style="width:18%"" title="Functional annotation">Func. annotation</th>
-              <th style="width:18%" title="Inheritance models">Inheritance model</th>
-              <th style="width:8%"" title="Overlapping">Overlapping</th>
+              <th style="width:12%" title="Functional annotation">Func. annotation</th>
+              <th style="width:12%" title="Inheritance models">Inheritance model</th>
+              <th style="width:6%" title="Overlapping">Overlapping</th>
             </tr>
           </thead>
           <tbody>
             {% for variant in variants %}
               {% if variant.dismiss_variant %}
                 <tr class="dismiss">
+              {% elif variant._id in case.causatives %}
+                <tr class="causative">
               {% else %}
                 <tr>
               {% endif %}
                 <td class="text-left">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
+                <td>{{ dismiss_variant_table_button(variant, institute, case, dismiss_variant_options) }}</td>
                 <td class="text-right">{{ variant.rank_score|int }}</td>
                 <td>{{ variant.chromosome }}</td>
                 <td>{{ gene_cell(variant) }}</td>
@@ -100,8 +115,7 @@
         </table>
       </div><!-- end of <div class="card mt-3">-->
     </div> <!-- end of class="container-float"> -->
-      {{ footer() }}
-  </form>
+      {{ pagination_footer(more_variants) }}
 {% endblock %}
 
 {% macro cell_cadd(variant) %}
@@ -142,24 +156,6 @@
   {% endif %}
 {% endmacro %}
 
-{% macro footer() %}
-  <div class="container-fluid">
-      {% if more_variants %}
-        <div class="d-flex justify-content-around">
-	         <div>
-            <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
-          </div>
-          <div>
-            <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value={{ page + 1 }}>Next page</button>
-          </div>
-	     </div>
-      {% else %}
-        <i class="text-muted">No more variants to display</i>
-        <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
-      {% endif %}
-  </div>
-{% endmacro %}
-
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
@@ -177,46 +173,15 @@
     });
 
     var cytoStart = document.getElementById("cytoband_start");
-
-    cytoStart.addEventListener("change", function() {
-      if(cytoStart.options[cytoStart.selectedIndex].value === ""){
-        startElem.value = "";
-        return
-      }
-      populateStart();
-    });
+    initSearchConstraints(cytoStart, startElem)
 
     var cytoEnd = document.getElementById("cytoband_end");
-    cytoEnd.addEventListener("change", function() {
-      if(cytoEnd.options[cytoEnd.selectedIndex].value === ""){
-        endElem.value = "";
-        return
-      }
-      populateEnd();
-    });
+    initSearchConstraints(cytoEnd, endElem)
+
+
 
     window.onload=function() {
       populateCytobands({{cytobands|safe}});
-    }
-
-    function validateForm(){
-      var start = document.forms["filters_form"].elements["start"].value
-      var end = document.forms["filters_form"].elements["end"].value
-      if(start || end){
-        if(!chrom){
-          alert("Chromosome field is required");
-          return false;
-        }
-        else if( !start || !end){
-          alert("Both start and end coordinates are required");
-          return false;
-        }
-        else if( (isNaN(start) || isNaN(end)) || Number(end)<Number(start) ){
-          alert("Coordinate field not valid");
-          return false;
-        }
-      }
-      return true;
     }
 
     $('select[multiple]').selectpicker({

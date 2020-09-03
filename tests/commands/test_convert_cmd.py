@@ -14,7 +14,7 @@ def test_convert_missing_args(mock_app):
     result = runner.invoke(cli, ["convert"])
 
     # It should return error message
-    assert 'Missing argument "panel"' in result.output
+    assert "Missing argument 'PANEL'" in result.output
 
 
 def test_convert_wrong_path(mock_app):
@@ -24,7 +24,7 @@ def test_convert_wrong_path(mock_app):
     # Provide a non-valid path to a panel file
     result = runner.invoke(cli, ["convert", "wrong/path/to/file"])
     assert result.exit_code != 0
-    assert 'Invalid value for "panel": Could not open file: wrong/path/to/file:' in result.output
+    assert "Could not open file: wrong/path/to/file:" in result.output
     runner = mock_app.test_cli_runner()
 
 

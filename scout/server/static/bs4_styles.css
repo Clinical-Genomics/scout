@@ -52,6 +52,11 @@ table.dataTable {margin-bottom: 0rem}
    background-color: #C9C9C9;
 }
 
+/* causative table row */
+.causative {
+   background-color: #dff0d8;
+}
+
 /* Custom navbar theme */
 .navbar{
   background-color:#1181B2;
@@ -324,18 +329,6 @@ option {
 
 .list-group-item {
   background: #f6f6f6;
-}
-
-textarea.form-control {
-  background-color: #f6f6f6 !important;
-}
-
-input.form-control{
-  background-color: #f6f6f6 !important;
-}
-
-select.form-control {
-  background-color: #f6f6f6 !important;
 }
 
 .nav .nav-item, .nav > .active > a {

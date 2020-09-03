@@ -20,7 +20,7 @@
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item">
-    <a class="nav-link text-nowrap" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
       {{ institute.display_name }}
     </a>
   </li>
@@ -238,7 +238,7 @@
         <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control" target="_blank">Submit to ClinVar</a>
       {% endif %}
       {% if variant.clinvar_clinsig%}
-        <a href="{{ url_for('cases.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-default form-control">Modify clinvar submission</a>
+        <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-default form-control">Modify clinvar submission</a>
       {% endif %}
       </ul>
     </div> <!-- end of card body -->

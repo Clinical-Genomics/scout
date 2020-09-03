@@ -27,7 +27,10 @@ def test_specific_comment(adapter, institute_obj, case_obj, user_obj, variant_ob
     )
     # THEN assert that the events function returns the correct event.
     comments = adapter.events(
-        institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True,
+        institute_obj,
+        case=case_obj,
+        variant_id=variant_obj["variant_id"],
+        comments=True,
     )
 
     for comment in comments:
@@ -38,7 +41,10 @@ def test_specific_comment(adapter, institute_obj, case_obj, user_obj, variant_ob
     other_case["_id"] = "case2"
 
     comments = adapter.events(
-        institute_obj, case=other_case, variant_id=variant_obj["variant_id"], comments=True,
+        institute_obj,
+        case=other_case,
+        variant_id=variant_obj["variant_id"],
+        comments=True,
     )
     assert sum(1 for i in comments) == 0
 
@@ -63,7 +69,10 @@ def test_global_comment(adapter, institute_obj, case_obj, user_obj, variant_obj)
     )
     # THEN assert that the events function returns the correct event.
     comments = adapter.events(
-        institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True,
+        institute_obj,
+        case=case_obj,
+        variant_id=variant_obj["variant_id"],
+        comments=True,
     )
 
     for comment in comments:
@@ -74,7 +83,10 @@ def test_global_comment(adapter, institute_obj, case_obj, user_obj, variant_obj)
     other_case["_id"] = "case2"
 
     comments = adapter.events(
-        institute_obj, case=other_case, variant_id=variant_obj["variant_id"], comments=True,
+        institute_obj,
+        case=other_case,
+        variant_id=variant_obj["variant_id"],
+        comments=True,
     )
     assert sum(1 for i in comments) == 1
 
@@ -111,7 +123,10 @@ def test_global_and_specific_comments_one_case(
 
     ## THEN assert that when fetching comments for a variant two events are returned
     comments = adapter.events(
-        institute=institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True,
+        institute=institute_obj,
+        case=case_obj,
+        variant_id=variant_obj["variant_id"],
+        comments=True,
     )
     assert sum(1 for i in comments) == 2
 

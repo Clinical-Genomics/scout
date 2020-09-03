@@ -39,6 +39,20 @@ SV_TYPE_CHOICES = [(term, term.replace("_", " ").upper()) for term in SV_TYPES]
 SPIDEX_CHOICES = [(term, term.replace("_", " ")) for term in SPIDEX_LEVELS]
 
 
+class NonValidatingSelectMultipleField(SelectMultipleField):
+    """Necessary to skip validation of dynamic multiple selects in form"""
+
+    def pre_validate(self, form):
+        pass
+
+
+class NonValidatingSelectField(SelectField):
+    """Necessary to skip validation of dynamic selects in form"""
+
+    def pre_validate(self, form):
+        pass
+
+
 class TagListField(Field):
     widget = TextInput()
 
@@ -72,24 +86,35 @@ class BetterDecimalField(DecimalField):
 class VariantFiltersForm(FlaskForm):
     variant_type = HiddenField(default="clinical")
 
-    gene_panels = SelectMultipleField(choices=[])
+    gene_panels = NonValidatingSelectMultipleField(choices=[])
     hgnc_symbols = TagListField("HGNC Symbols/Ids (case sensitive)")
 
     region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
     functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
 
-    cadd_score = BetterDecimalField("CADD", places=2)
+    cadd_score = BetterDecimalField("CADD", places=2, validators=[validators.Optional()])
     cadd_inclusive = BooleanField("CADD inclusive")
-    clinsig = SelectMultipleField("CLINSIG", choices=CLINSIG_OPTIONS)
+    clinsig = NonValidatingSelectMultipleField("CLINSIG", choices=CLINSIG_OPTIONS)
 
-    gnomad_frequency = BetterDecimalField("gnomadAF", places=2)
+    gnomad_frequency = BetterDecimalField("gnomadAF", places=2, validators=[validators.Optional()])
 
-    filters = SelectField(choices=[])
+    filters = NonValidatingSelectField(choices=[], validators=[validators.Optional()])
     filter_display_name = StringField(default="")
     save_filter = SubmitField(label="Save filter")
     load_filter = SubmitField(label="Load filter")
     delete_filter = SubmitField(label="Delete filter")
+
+    chrom = SelectField(
+        "Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS, default=""
+    )
+    start = IntegerField("Start position", [validators.Optional()])
+    end = IntegerField("End position", [validators.Optional()])
+    cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
+    cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
+
+    filter_variants = SubmitField(label="Filter variants")
+    export = SubmitField(label="Filter and export")
 
 
 class FiltersForm(VariantFiltersForm):
@@ -99,25 +124,21 @@ class FiltersForm(VariantFiltersForm):
 
     clinsig_confident_always_returned = BooleanField("CLINSIG Confident")
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
-
-    chrom = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS)
-    cytoband_start = SelectField("Cytoband start", choices=[])
-    cytoband_end = SelectField("Cytoband end", choices=[])
-    start = IntegerField("Start position", [validators.Optional()])
-    end = IntegerField("End position", [validators.Optional()])
     local_obs = IntegerField("Local obs. (archive)")
-
-    filter_variants = SubmitField(label="Filter variants")
     clinical_filter = SubmitField(label="Clinical filter")
-    export = SubmitField(label="Filter and export")
 
 
 class CancerFiltersForm(VariantFiltersForm):
     """Base filters for CancerFiltersForm - extends VariantsFiltersForm"""
 
-    depth = IntegerField("Depth >")
-    alt_count = IntegerField("Min alt count >")
-    control_frequency = BetterDecimalField("Control freq. <", places=2)
+    depth = IntegerField("Depth >", validators=[validators.Optional()])
+    alt_count = IntegerField("Min alt count", validators=[validators.Optional()])
+    control_frequency = BetterDecimalField(
+        "Normal alt AF <", places=2, validators=[validators.Optional()]
+    )
+    tumor_frequency = BetterDecimalField(
+        "Tumor alt AF >", places=2, validators=[validators.Optional()]
+    )
     mvl_tag = BooleanField("In Managed Variant List")
 
 
@@ -125,7 +146,6 @@ class StrFiltersForm(FlaskForm):
     """docstring for StrFiltersForm"""
 
     variant_type = HiddenField(default="clinical")
-
     chrom = TextField("Chromosome")
     gene_panels = SelectMultipleField(choices=[])
     repids = TagListField()
@@ -137,17 +157,7 @@ class SvFiltersForm(VariantFiltersForm):
     size = TextField("Length")
     size_shorter = BooleanField("Length shorter than")
     svtype = SelectMultipleField("SVType", choices=SV_TYPE_CHOICES)
-
     decipher = BooleanField("Decipher")
     clingen_ngi = IntegerField("ClinGen NGI obs")
     swegen = IntegerField("SweGen obs")
-
-    chrom = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS)
-    cytoband_start = SelectField("Cytoband start", choices=[])
-    cytoband_end = SelectField("Cytoband end", choices=[])
-    start = IntegerField("Start position", [validators.Optional()])
-    end = IntegerField("End position", [validators.Optional()])
-
-    filter_variants = SubmitField(label="Filter variants")
     clinical_filter = SubmitField(label="Clinical filter")
-    export = SubmitField(label="Filter and export")

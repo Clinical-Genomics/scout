@@ -8,7 +8,7 @@
           <option value="-1">Select a tag...</option>
           {% for rank, data in manual_rank_options.items() %}
             <option {% if rank == variant.manual_rank %} selected {% endif %} value="{{ rank }}">
-              {{ data.label }}
+              {{ data.name }}
             </option>
           {% endfor %}
         </select>
@@ -56,6 +56,25 @@
       </div>
       <div class="col-4">
         <button type="submit" name="dismiss" class="btn btn-outline-secondary form-control">Save</button>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro dismiss_variant_table_button(variant, institute, case, dismiss_variant_options) %}
+  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+    <div class="row">
+      <div class="col-lg-8"  style="width: 200px">
+        <select multiple="multiple" name="dismiss_variant" class="selectpicker dismiss-dropdown" data-width="100%">
+          {% for rank, data in dismiss_variant_options.items() %}
+            <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
+              {{ data.label }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-lg-4">
+        <button type="submit" name="dismiss" class="btn btn-outline-secondary form-control dismiss-button" style="width: 63px; margin-left: -15px;">Save</button>
       </div>
     </div>
   </form>

@@ -44,6 +44,11 @@ class CytobandHandler(object):
                 }
 
         """
+        if "38" in str(build):
+            build = "38"
+        else:
+            build = "37"
+
         match = {"$match": {"build": build}}
         group = {
             "$group": {

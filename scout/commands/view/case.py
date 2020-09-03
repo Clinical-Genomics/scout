@@ -17,16 +17,21 @@ LOG = logging.getLogger(__name__)
 @click.option("-c", "--case-id", help="Search for a specific case")
 @click.option("--nr-variants", is_flag=True, help="Show number of clinical and research variants")
 @click.option(
-    "--similar", is_flag=True, help="Show the cases that are phenotypic similar to a given case",
+    "--similar",
+    is_flag=True,
+    help="Show the cases that are phenotypic similar to a given case",
 )
 @click.option(
-    "--variants-treshold", default=0, help="Only show cases with more variants than treshold",
+    "--variants-treshold",
+    default=0,
+    help="Only show cases with more variants than treshold",
 )
 @with_appcontext
 def cases(institute, display_name, case_id, nr_variants, variants_treshold, similar):
     """Display cases from the database"""
     LOG.info("Running scout view institutes")
     adapter = store
+    name_query = None
 
     models = []
     if case_id:
@@ -34,7 +39,11 @@ def cases(institute, display_name, case_id, nr_variants, variants_treshold, simi
         if case_obj:
             models.append(case_obj)
         if similar:
-            similar = adapter.get_similar_cases(case_obj)
+            hpo_terms = []
+            for term in case_obj.get("phenotype_terms", []):
+                hpo_terms.append(term.get("phenotype_id"))
+
+            similar = adapter.cases_by_phenotype(hpo_terms, case_obj["owner"], case_obj["_id"])
             if not similar:
                 LOG.info("No more cases with phenotypes found")
                 return
@@ -44,7 +53,9 @@ def cases(institute, display_name, case_id, nr_variants, variants_treshold, simi
             return
 
     else:
-        models = adapter.cases(collaborator=institute, name_query=display_name)
+        if display_name:
+            name_query = f"case:{display_name}"
+        models = adapter.cases(collaborator=institute, name_query=name_query)
         models = [case_obj for case_obj in models]
 
     if not models:

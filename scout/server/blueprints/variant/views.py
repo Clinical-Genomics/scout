@@ -75,7 +75,12 @@ def sv_variant(institute_id, case_name, variant_id):
 def str_variant(institute_id, case_name, variant_id):
     """Display a specific STR variant."""
     data = variant_controller(
-        store, institute_id, case_name, variant_id, add_other=False, get_overlapping=False,
+        store,
+        institute_id,
+        case_name,
+        variant_id,
+        add_other=False,
+        get_overlapping=False,
     )
 
     return data
@@ -104,7 +109,12 @@ def variant_acmg(institute_id, case_name, variant_id):
     )
     flash("classified as: {}".format(acmg), "info")
     return redirect(
-        url_for(".variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id,)
+        url_for(
+            ".variant",
+            institute_id=institute_id,
+            case_name=case_name,
+            variant_id=variant_id,
+        )
     )
 
 
@@ -133,7 +143,8 @@ def variant_update(institute_id, case_name, variant_id):
             flash("updated variant tag: {}".format(new_manual_rank), "info")
         else:
             flash(
-                "reset variant tag: {}".format(variant_obj.get("manual_rank", "NA")), "info",
+                "reset variant tag: {}".format(variant_obj.get("manual_rank", "NA")),
+                "info",
             )
     elif cancer_tier:
         try:
@@ -150,7 +161,8 @@ def variant_update(institute_id, case_name, variant_id):
             flash("updated variant tag: {}".format(new_cancer_tier), "info")
         else:
             flash(
-                "reset variant tag: {}".format(variant_obj.get("cancer_tier", "NA")), "info",
+                "reset variant tag: {}".format(variant_obj.get("cancer_tier", "NA")),
+                "info",
             )
     elif request.form.get("acmg_classification"):
         new_acmg = request.form["acmg_classification"]
@@ -184,7 +196,8 @@ def variant_update(institute_id, case_name, variant_id):
                 institute_obj, case_obj, user_obj, link, variant_obj, new_dismiss
             )
             flash(
-                "Reset variant dismissal: {}".format(variant_obj.get("dismiss_variant")), "info",
+                "Reset variant dismissal: {}".format(variant_obj.get("dismiss_variant")),
+                "info",
             )
         else:
             LOG.debug(
@@ -288,11 +301,12 @@ def clinvar(institute_id, case_name, variant_id):
     updated_submission = store.add_to_submission(open_submission["_id"], submission_objects)
 
     # Redirect to clinvar submissions handling page, and pass it the updated_submission_object
-    return redirect(url_for("cases.clinvar_submissions", institute_id=institute_id))
+    return redirect(url_for("overview.clinvar_submissions", institute_id=institute_id))
 
 
 @variant_bp.route(
-    "/<institute_id>/<case_name>/<variant_id>/<variant_category>/<order>", methods=["POST"],
+    "/<institute_id>/<case_name>/<variant_id>/<variant_category>/<order>",
+    methods=["POST"],
 )
 def verify(institute_id, case_name, variant_id, variant_category, order):
     """Start procedure to validate variant using other techniques."""

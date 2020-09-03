@@ -216,6 +216,78 @@ def test_cancer_variants(app, institute_obj, case_obj):
     assert resp.status_code == 200
 
 
+def test_filter_cancer_variants_wrong_params(app, institute_obj, case_obj):
+    """test filter cancer SNV variants with filter form filled with parameters having the wrong format"""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # When a POST request with filter containing wrongly formatted parameters is sent
+        form_data = {
+            "control_frequency": "not a number!",
+        }
+        resp = client.post(
+            url_for(
+                "variants.cancer_variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=form_data,
+        )
+        # THEN it should return a redirected page
+        assert resp.status_code == 302
+
+
+def test_filter_cancer_variants_by_vaf(app, institute_obj, case_obj):
+    """Tests the cancer form filter by VAF"""
+
+    # Given a test variant in database
+    test_var = store.variant_collection.find_one({"variant_type": "clinical", "category": "snv"})
+
+    # with control and cancer frequencies, and category = cancer
+    store.variant_collection.find_one_and_update(
+        {"_id": test_var["_id"]}, {"$set": {"tumor": {"alt_freq": 0.49}, "category": "cancer"}}
+    )
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # When the cancer SNV variants page is loaded by GET request
+        # WHEN accessing the sv-variants page
+        resp = client.get(
+            url_for(
+                "variants.cancer_variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+        # THEN it should return a page
+        assert resp.status_code == 200
+        # With the above variant
+        assert test_var["_id"] in str(resp.data)
+
+        # When a POST request filter with VAF > than the VAF in test_var is sent to the page
+        form_data = {
+            "tumor_frequency": 0.5,
+        }
+        resp = client.post(
+            url_for(
+                "variants.cancer_variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=form_data,
+        )
+        # THEN it should return a page
+        assert resp.status_code == 200
+        # Without the variant
+        assert test_var["_id"] not in str(resp.data)
+
+
 def test_sv_cancer_variants(app, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -235,3 +307,31 @@ def test_sv_cancer_variants(app, institute_obj, case_obj):
     )
     # THEN it should return a page
     assert resp.status_code == 200
+
+
+def test_filter_export_cancer_variants(app, institute_obj, case_obj):
+    """Test the variant export functionaliy in  cancer_variants page"""
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        form_data = {
+            "export": "test",
+        }
+
+        # WHEN clicking on "Filter and export" button
+        resp = client.post(
+            url_for(
+                "variants.cancer_variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=form_data,
+        )
+        # THEN it should return a valid response
+        assert resp.status_code == 200
+        # containing a text file
+        assert resp.mimetype == "text/csv"

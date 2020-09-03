@@ -13,11 +13,10 @@ from flask import (
     render_template,
 )
 from flask_login import login_user, logout_user
-from flask_oauthlib.client import OAuthException
 from flask_ldap3_login.forms import LDAPLoginForm
 from flask_ldap3_login import AuthenticationResponseStatus
 
-from scout.server.extensions import google, login_manager, store, ldap_manager
+from scout.server.extensions import login_manager, store, ldap_manager, oauth_client
 from scout.server.utils import public_endpoint
 from . import controllers
 from .models import LoginUser, LdapUser
@@ -49,12 +48,6 @@ def load_user(user_id):
     return user_inst
 
 
-@google.tokengetter
-def get_google_token():
-    """Returns a tuple of Google tokens, if they exist"""
-    return session.get("google_token")
-
-
 @login_bp.route("/login", methods=["GET", "POST"])
 @public_endpoint
 def login():
@@ -75,19 +68,22 @@ def login():
     if current_app.config.get("GOOGLE"):
         if session.get("email"):
             user_mail = session["email"]
-            session.pop("email")
+            session.pop("email", None)
         else:
-            LOG.info("Validating Google user login")
-            callback_url = url_for(".authorized", _external=True)
-            return google.authorize(callback=callback_url)
+            LOG.info("Google Login!")
+            redirect_uri = url_for(".authorized", _external=True)
+            try:
+                return oauth_client.google.authorize_redirect(redirect_uri)
+            except Exception as ex:
+                flash("An error has occurred while logging in user using Google OAuth")
 
     if request.args.get("email"):  # log in against Scout database
         user_mail = request.args.get("email")
-        LOG.info("Validating user {} against Scout database".format(user_id))
+        LOG.info("Validating user %s email %s against Scout database", user_id, user_mail)
 
     user_obj = store.user(email=user_mail, user_id=user_id)
     if user_obj is None:
-        flash("User not whitelisted", "warning")
+        flash("User not found", "warning")
         return redirect(url_for("public.index"))
 
     user_obj["accessed_at"] = datetime.now()
@@ -100,46 +96,27 @@ def login():
     return perform_login(user_dict)
 
 
-@login_bp.route("/logout")
-def logout():
-    logout_user()
-    flash("you logged out", "success")
-    return redirect(url_for("public.index"))
-
-
 @login_bp.route("/authorized")
 @public_endpoint
 def authorized():
-    oauth_response = None
-    try:
-        oauth_response = google.authorized_response()
-    except OAuthException as error:
-        current_app.logger.warning("Google OAuthException: {}".format(error))
-        flash("{} - try again!".format(error), "warning")
-        return redirect(url_for("public.index"))
+    """Google auth callback function"""
+    token = oauth_client.google.authorize_access_token()
+    google_user = oauth_client.google.parse_id_token(token)
+    session["email"] = google_user.get("email").lower()
+    session["name"] = google_user.get("name")
+    session["locale"] = google_user.get("locale")
 
-    if oauth_response is None:
-        flash(
-            "Access denied: reason={} error={}".format(
-                request.args.get["error_reason"], request.args["error_description"]
-            ),
-            "danger",
-        )
-        return redirect(url_for("public.index"))
+    return redirect(url_for(".login"))
 
-    # add token to session, do it before validation to be able to fetch
-    # additional data (like email) on the authenticated user
-    session["google_token"] = (oauth_response["access_token"], "")
 
-    # get additional user info with the access token
-    google_user = google.get("userinfo")
-    google_data = google_user.data
-
-    session["email"] = google_data["email"].lower()
-    session["name"] = google_data["name"]
-    session["locale"] = google_data["locale"]
-
-    return redirect(url_for("login.login"))
+@login_bp.route("/logout")
+def logout():
+    logout_user()
+    session.pop("email", None)
+    session.pop("name", None)
+    session.pop("locale", None)
+    flash("you logged out", "success")
+    return redirect(url_for("public.index"))
 
 
 @login_bp.route("/users")
