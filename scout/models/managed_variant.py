@@ -13,27 +13,27 @@ from scout.utils.md5 import generate_md5_key
 
 class ManagedVariant(dict):
     """
-        # required primary fields
-        chromosome=str,  # required
-        position=int,  # required
-        end=int,  # required
-        reference=str,  # required
-        alternative=str,  # required
-        build=str, # required, ["37","38"], default "37"
-        date=datetime.datetime
-        # required derived fields
-        # display name is variant_id (no md5) chrom_pos_ref_alt (simple_id)
-        display_name=str,  # required
+    # required primary fields
+    chromosome=str,  # required
+    position=int,  # required
+    end=int,  # required
+    reference=str,  # required
+    alternative=str,  # required
+    build=str, # required, ["37","38"], default "37"
+    date=datetime.datetime
+    # required derived fields
+    # display name is variant_id (no md5) chrom_pos_ref_alt (simple_id)
+    display_name=str,  # required
 
-        #optional fields
-        # maintainer user_id list
-        maintainer=list(user_id), # optional
-        institute=institute_id, # optional
+    #optional fields
+    # maintainer user_id list
+    maintainer=list(user_id), # optional
+    institute=institute_id, # optional
 
-        # optional fields foreseen for future use
-        category=str,  # choices=('sv', 'snv', 'str', 'cancer', 'cancer_sv')
-        sub_category=str,  # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd', 'str')
-        description=str,
+    # optional fields foreseen for future use
+    category=str,  # choices=('sv', 'snv', 'str', 'cancer', 'cancer_sv')
+    sub_category=str,  # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd', 'str')
+    description=str,
     """
 
     def __init__(
