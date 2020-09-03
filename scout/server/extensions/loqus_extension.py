@@ -149,7 +149,7 @@ class LoqusDB:
                 ]
             )
         if self.version > 2.4:
-            variant_call.extend(["--case-count"])
+            cmd.extend(["--case-count"])
 
         output = ""
         try:
