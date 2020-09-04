@@ -16,8 +16,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Adds a gh action that deploys new releases automatically to pypi
 - Define institute-specific gene panels for filtering in institute settings
 - Use institute-specific gene panels in variants filtering
-- Define institute-specific gene panels for filtering in institute settings
-- Use institute-specific gene panels in variants filtering
 
 ### Fixed
 - Report pages redirect to login instead of crashing when session expires

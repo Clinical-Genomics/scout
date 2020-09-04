@@ -25,7 +25,7 @@ def test_gene_panel_choices(institute_obj, case_obj):
     case_obj["panels"] = [case_panel]
 
     # AND an institute with a custom gene panel:
-    institute_obj["gene_panels"]: {"institute_panel_name": "Institute Panel display name"}
+    institute_obj["gene_panels"] = {"institute_panel_name": "Institute Panel display name"}
 
     # WHEN the functions creates the option for the filters select
     panel_options = gene_panel_choices(institute_obj, case_obj)

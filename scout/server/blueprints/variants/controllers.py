@@ -594,25 +594,24 @@ def upload_panel(store, institute_id, case_name, stream):
 def gene_panel_choices(institute_obj, case_obj):
     """Populates the multiselect containing all the gene panels to be used in variants filtering
     Args:
-        store(scout.adapter.MongoAdapter)
-        institute_id(str): Institute ID
-        case_obj(dict): a case object disctionary
+        institute_obj(dict): an institute dictionary
+        case_obj(dict): a case dictionary
 
     Returns:
         panel_list(list): a list of tuples containing the multiselect panel values/display name
     """
-
     panel_list = []
     # Add case default panels and the institute-specific panels to the panel select options
     for panel in case_obj.get("panels", []):
         panel_option = (panel["panel_name"], panel["display_name"])
-        if panel_option not in panel_list:
-            panel_list.append(panel_option)
+        panel_list.append(panel_option)
 
     institute_choices = institute_obj.get("gene_panels", {})
 
     for panel_name, display_name in institute_choices.items():
-        panel_list.append((panel_name, f"{display_name} (latest)"))
+        panel_option = (panel_name, display_name)
+        if panel_option not in panel_list:
+            panel_list.append(panel_option)
 
     # Add HPO panel
     panel_list.append(("hpo", "HPO"))
