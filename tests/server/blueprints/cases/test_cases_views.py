@@ -249,7 +249,7 @@ def test_case_outdated_panel(app, institute_obj, case_obj, dummy_case):
         # THEN it should return a valid page
         assert resp.status_code == 200
 
-        # THEN it should show that the gene panel is outdated
+        # WITH a tooltip explaining that the gene panel is outdated
         assert "Panel version used in the analysis (1.0) is outdated." in str(resp.data)
 
 
