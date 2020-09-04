@@ -13,9 +13,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Mark MANE transcript in list of transcripts in "Transcript overview" on variant page
 - Show default panel name in case sidebar
 - Adds a gh action that checks that the changelog is updated
+<<<<<<< HEAD
 - Adds a gh action that deploys new releases automatically to pypi
 - Define institute-specific gene panels for filtering in institute settings
 - Use institute-specific gene panels in variants filtering
+=======
+- Define institute-specific gene panels for filtering in institute settings
+- Use institute-specific gene panels in variants filtering
+
+>>>>>>> 2be7b72eb99da3c0fca0f4b90db7497f3a5796ab
 
 ### Fixed
 - Report pages redirect to login instead of crashing when session expires
