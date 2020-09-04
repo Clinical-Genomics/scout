@@ -12,8 +12,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove leading and trailing whitespaces from panel_name and display_name when panel is created
 - Mark MANE transcript in list of transcripts in "Transcript overview" on variant page
 - Show default panel name in case sidebar
+- Adds a gh action that checks that the changelog is updated
 - Define institute-specific gene panels for filtering in institute settings
 - Use institute-specific gene panels in variants filtering
+
 
 ### Fixed
 - Report pages redirect to login instead of crashing when session expires
