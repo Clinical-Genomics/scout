@@ -33,6 +33,7 @@
 
 {% block content_main %}
 <div class="container-float">
+  {{case}}
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
     {{ action_bar(institute, case, collaborators) }} <!-- This is the sidebar -->
     {{ case_page() }}

@@ -96,23 +96,39 @@ def case(store, institute_obj, case_obj):
     # Set of all unique genes in the default gene panels
     distinct_genes = set()
     case_obj["panel_names"] = []
+    case_obj["outdated_panels"] = {}
     for panel_info in case_obj.get("panels", []):
         if not panel_info.get("is_default"):
             continue
         panel_name = panel_info["panel_name"]
         panel_version = panel_info.get("version")
         panel_obj = store.gene_panel(panel_name, version=panel_version)
+        latest_panel = store.gene_panel(panel_name)
         if not panel_obj:
-            LOG.warning("Could not fetch gene panel %s, version %s", panel_name, panel_version)
-            LOG.info("Try to fetch latest existing version")
-            panel_obj = store.gene_panel(panel_name)
+            panel_obj = latest_panel
             if not panel_obj:
-                LOG.warning("Could not find any version of gene panel %s", panel_name)
+                flash(f"Case default panel '{panel_name}' could not be found.", "warning")
                 continue
-            LOG.info("Using panel %s, version %s", panel_name, panel_obj["version"])
+            flash(
+                f"Case default panel '{panel_name}' version {panel_version} could not be found, using latest existing version",
+                "warning",
+            )
+
+        # Check if case-specific panel is up-to-date with latest version of the panel
+        if panel_obj["version"] < latest_panel["version"]:
+            extra_genes = [gene for gene in panel_obj["genes"] if gene not in latest_panel["genes"]]
+            missing_genes = [
+                gene for gene in latest_panel["genes"] if gene not in panel_obj["genes"]
+            ]
+            case_obj["outdated_panels"][panel_name] = {
+                "missing_genes": missing_genes,
+                "extra_genes": extra_genes,
+            }
+
         distinct_genes.update([gene["hgnc_id"] for gene in panel_obj.get("genes", [])])
         full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
         case_obj["panel_names"].append(full_name)
+
     case_obj["default_genes"] = list(distinct_genes)
 
     for hpo_term in itertools.chain(

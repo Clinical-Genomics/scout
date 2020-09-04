@@ -41,6 +41,9 @@
             <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
               {{ panel.display_name|truncate(18, True) }}
             </a>
+            {% if panel.panel_name in case.outdated_panels %}
+              <span class="badge badge-pill badge-warning">!</span>
+            {% endif %}
         </div>
       </div>
   {% endfor %}
