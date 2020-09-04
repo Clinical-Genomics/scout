@@ -116,9 +116,15 @@ def case(store, institute_obj, case_obj):
 
         # Check if case-specific panel is up-to-date with latest version of the panel
         if panel_obj["version"] < latest_panel["version"]:
-            extra_genes = [gene for gene in panel_obj["genes"] if gene not in latest_panel["genes"]]
+            extra_genes = [
+                gene.get("symbol", gene["hgnc_id"])
+                for gene in panel_obj["genes"]
+                if gene not in latest_panel["genes"]
+            ]
             missing_genes = [
-                gene for gene in latest_panel["genes"] if gene not in panel_obj["genes"]
+                gene.get("symbol", gene["hgnc_id"])
+                for gene in latest_panel["genes"]
+                if gene not in panel_obj["genes"]
             ]
             case_obj["outdated_panels"][panel_name] = {
                 "missing_genes": missing_genes,
