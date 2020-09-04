@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show default panel name in case sidebar
 - Adds a gh action that checks that the changelog is updated
 - Adds a gh action that deploys new releases automatically to pypi
+- Warn users if case default panels are outdated
 
 ### Fixed
 - Report pages redirect to login instead of crashing when session expires
