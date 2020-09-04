@@ -16,6 +16,42 @@ from scout.server.blueprints.cases.views import (
 TEST_TOKEN = "test_token"
 
 
+def test_case_outdated_panel(app, institute_obj, case_obj, dummy_case):
+    """Test case displaying an outdated panel warning badge"""
+
+    # GIVEN an adapter with a case with a gene panel of version 1
+    case_panel = case_obj["panels"][0]
+    assert case_panel["version"] == 1
+
+    # AND an updated version of the same panel in the database
+    updated_panel = {
+        "panel_name": case_panel["panel_name"],
+        "display_name": case_panel["display_name"],
+        "version": 2,
+        "genes": [{"symbol": "POT1", "hgnc_id": 17284}],
+    }
+    store.panel_collection.insert_one(updated_panel)
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN case page is loaded
+        resp = client.get(
+            url_for(
+                "cases.case",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+        # THEN it shoulr return a page
+        assert resp.status_code == 200
+
+        # THEN it should show that the gene panel is outdated
+        assert "Panel version used in the analysis (1.0) is outdated." in str(resp.data)
+
+
 def test_rerun(app, institute_obj, case_obj, monkeypatch):
     """test case rerun function"""
 
