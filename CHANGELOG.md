@@ -43,6 +43,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Peddy info fields in the demo config file
 - Added load config safety check for multiple alignment files for one individual
 - Formatting of cancer variants table
+- Missing Score in SV variants table
 
 ### Changed
 - Updated the documentation on how to create a new software release
