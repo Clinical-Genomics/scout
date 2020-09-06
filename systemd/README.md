@@ -168,7 +168,7 @@ mytest@laptop:~$
 mytest@laptop:~$ virt-install --connect qemu:///system -n firsttest -r "2048" --os-variant=fedora31 --import --graphics=none --disk "size=15,backing_store=/home/mytest/fedora-coreos-32.20200824.1.0-qemu.x86_64.qcow2"         --qemu-commandline="-fw_cfg name=opt/com.coreos/config,file=/home/mytest/scout.ign"
 ```
 The IP address is printed on the screen the installation.
-Another way is to list the IP address with the command `virsh net-dhcp-leases default`
+Another way to list the IP address, is to run the command `virsh net-dhcp-leases default`
 
 ```
 mytest@laptop:~$ virsh net-dhcp-leases default 
