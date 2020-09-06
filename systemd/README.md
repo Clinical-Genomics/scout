@@ -187,7 +187,7 @@ mytest@laptop:~$
 
 ## Erase computer and install Scout instead
 
-:warning: this will erase the harddrive of the computer.
+:warning: This will erase the harddrive of the computer.
 
 In case you want to install to the drive _/dev/sda_
 append the kernel arguments
