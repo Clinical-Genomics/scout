@@ -1,0 +1,22 @@
+[Unit]
+Description=Podman scout-pod.service
+Wants=network.target
+After=network-online.target
+Requires= scout-create-datadir.service scout-mongo.service scout-setup-demo.service scout-scout.service
+Before= scout-create-datadir.service scout-mongo.service scout-setup-demo.service scout-scout.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=on-failure
+ExecStartPre=/bin/rm -f %t/scout-pod.pid %t/scout-pod.pod-id
+ExecStartPre=/usr/bin/podman pod create --infra-conmon-pidfile %t/scout-pod.pid --pod-id-file %t/scout-pod.pod-id --publish 5000:5000 --name scout-pod --replace
+ExecStart=/usr/bin/podman pod start --pod-id-file %t/scout-pod.pod-id
+ExecStop=/usr/bin/podman pod stop --ignore --pod-id-file %t/scout-pod.pod-id -t 10
+ExecStopPost=/usr/bin/podman pod rm --ignore -f --pod-id-file %t/scout-pod.pod-id
+PIDFile=%t/scout-pod.pid
+KillMode=none
+Type=forking
+
+[Install]
+WantedBy=multi-user.target default.target
+Also=scout-create-datadir.service scout-mongo.service scout-setup-demo.service scout-scout.service
