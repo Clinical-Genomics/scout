@@ -59,7 +59,7 @@ loginctl enable-linger $USER
 
 The generated Ignition file
 https://eriksjolund.github.io/scout/scout.ign
-was generated with [.github/workflows/run_fcct.yaml](.github/workflows/run_fcct.yaml)
+was generated with [.github/workflows/run_fcct.yaml](/.github/workflows/run_fcct.yaml)
 from the input file [scout.fcc](./scout.fcc)
 
 
