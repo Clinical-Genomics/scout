@@ -64,8 +64,8 @@ from the input file [scout.fcc](./scout.fcc)
 
 
 References:
-https://github.com/coreos/fcct
-https://github.com/coreos/fcct/blob/master/docs/specs.md
+* https://github.com/coreos/fcct
+* https://github.com/coreos/fcct/blob/master/docs/specs.md
 
 The Ignition file can be used to run Scout in different ways:
 
