@@ -12,7 +12,7 @@ into a Linux users home directory. The Scout software and Mongodb software will 
 | Systemd service | Description |
 | --              | --          |
 | [scout-pod.service](./scout-pod.service) | Runs a pod in which the other containers will be running |
-| [scout-create-datadir.service](./scout-create-datadir.service) | Creates an empty directory that will be used by Mongo to store data |
+| [scout-create-datadir.service](./scout-create-datadir.service) | Creates an empty directory that will be used by Mongodb to store data |
 | [scout-mongo.service](./scout-mongo.service) | Runs Mongodb in the container docker.io/library/mongo |
 | [scout-setup-demo.service](./scout-setup-demo.service) | Loads the demo data by running the container docker.io/eriksjolund/scout:dockerhub  |
 | [scout-scout.service](./scout-scout.service) | Serves the Scout webserver by running the container docker.io/eriksjolund/scout:dockerhub |
