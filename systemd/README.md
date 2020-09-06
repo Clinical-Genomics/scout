@@ -19,8 +19,7 @@ cp systemd/scout-setup-demo.service ~/.config/systemd/user
 cp systemd/scout-scout.service ~/.config/systemd/user
 ```
 
-2. Optional step
-If you would like to use a locally built scout container instead of the one from dockerhub, run
+2. __Optional step__ If you would like to use a locally built scout container instead of the one from dockerhub, run
 
 ```
 podman build -t scout .
