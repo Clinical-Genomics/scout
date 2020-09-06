@@ -83,6 +83,7 @@ The Ignition file can be used to run Scout in different ways:
 
 Fedora CoreOS documentation:
 https://docs.fedoraproject.org/en-US/fedora-coreos/
+
 See for instance __User guides__ -> __Provisioning Machines__
 
 ## Run Scout in live mode in RAM memory from a USB stick
