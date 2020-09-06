@@ -7,15 +7,15 @@
 ## Introduction 
 
 Scout can be run by installing a few systemd unit files (the text files scout-*.service) 
-into a Linux users home directory. The Scout software and Mongodb software are run in containers from Dockerhub.
+into a Linux users home directory. The Scout software and Mongodb software will then be run in containers from Dockerhub.
 
 | Systemd service | Description |
 | --              | --          |
 | [scout-pod.service](./scout-pod.service) | Runs a pod in which the other containers will be running |
 | [scout-create-datadir.service](./scout-create-datadir.service) | Creates an empty directory that will be used by Mongo to store data |
-| [scout-mongo.service](./scout-mongo.service) | Runs the container docker.io/library/mongo |
+| [scout-mongo.service](./scout-mongo.service) | Runs Mongodb in the container docker.io/library/mongo |
 | [scout-setup-demo.service](./scout-setup-demo.service) | Loads the demo data by running the container docker.io/eriksjolund/scout:dockerhub  |
-| [scout-scout.service](./scout-scout.service) |  Runs the container docker.io/eriksjolund/scout:dockerhub |
+| [scout-scout.service](./scout-scout.service) | Serves the Scout webserver by running the container docker.io/eriksjolund/scout:dockerhub |
 
 
 It is also possible to run the Scout systemd services in the same way but on a new Fedora CoreOS computer.
