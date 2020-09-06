@@ -7,7 +7,7 @@
 ## Introduction 
 
 Scout can be run by installing a few systemd unit files (the text files scout-*.service) 
-into a Linux users home directory. The Scout software and Mongodb software will then be run in containers from Dockerhub.
+into a Linux user's home directory. The Scout software and Mongodb software will then be run in containers from Dockerhub.
 
 | Systemd service | Description |
 | --              | --          |
