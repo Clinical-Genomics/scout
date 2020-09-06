@@ -83,7 +83,7 @@ podman run --rm -v ./systemd:/input:Z quay.io/coreos/fcct:release --pretty --str
 
 (run from the root directory of the Scout repository)
 
-It is possible to automate the generation of _scout.ign_ with a Github action [run_fcct.yaml](./run_fcct.yaml) so that
+It is possible to automate the generation of _scout.ign_ with the Github action [run_fcct.yaml](./run_fcct.yaml) so that
 it is downloadable from Github pages (e.g. https://< username >.github.io/scout/scout.ign)
 
 References:
