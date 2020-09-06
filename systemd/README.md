@@ -19,14 +19,6 @@ into a Linux user's home directory. The Scout software and Mongodb software will
 
 
 It is also possible to run the Scout systemd services in the same way but on a new Fedora CoreOS computer.
-To start Fedora CoreOS, the [Ignition file](https://docs.fedoraproject.org/en-US/fedora-coreos/producing-ign/) _scout.ign_ is needed.
-It is generated from from the input file [scout.fcc](./scout.fcc) with the command
-
-```
-podman run --rm -v ./systemd:/input:Z quay.io/coreos/fcct:release --pretty --strict -d /input /input/scout.fcc > ./scout.ign
-```
-
-(run from the root directory of the Scout repository)
 
 ## Installation into the home directory of a Linux user
 
@@ -78,19 +70,29 @@ run
 loginctl enable-linger $USER
 ```
 
-# Using the generated Ignition file to run Fedora CoreOS
+# Using Fedora CoreOS
 
-The generated Ignition file
-https://eriksjolund.github.io/scout/scout.ign
-was generated with [.github/workflows/run_fcct.yaml](/.github/workflows/run_fcct.yaml)
-from the input file [scout.fcc](./scout.fcc)
+## Generating the Ignition file _scout.ign_
 
+To start Fedora CoreOS, the [Ignition file](https://docs.fedoraproject.org/en-US/fedora-coreos/producing-ign/) _scout.ign_ is needed.
+It is generated from from the input file [scout.fcc](./scout.fcc) with the command
+
+```
+podman run --rm -v ./systemd:/input:Z quay.io/coreos/fcct:release --pretty --strict -d /input /input/scout.fcc > ./scout.ign
+```
+
+(run from the root directory of the Scout repository)
+
+It is possible to automate the generation of _scout.ign_ with a Github action [run_fcct.yaml](./run_fcct.yaml) so that
+it is downloadable from Github pages (e.g. https://< username >.github.io/scout/scout.ign)
 
 References:
 * https://github.com/coreos/fcct
 * https://github.com/coreos/fcct/blob/master/docs/specs.md
 
-The Ignition file can be used to run Scout in different ways:
+# Using the generated Ignition file to run Fedora CoreOS
+
+The Ignition file _scout.ign_ can be used to run Scout in different ways:
 
 * AWS
 * Azure
@@ -116,12 +118,11 @@ Download the Bare metal __ISO__ from
 https://getfedora.org/en/coreos/download?tab=metal_virtualized&stream=next
 
 Either stop grub in the early boot phase and append the kernel argument
-`ignition.config.url=https://eriksjolund.github.io/scout/scout.ign`
+`ignition.config.url=https://example.com/scout.ign` (adjust URL)
 
 or alternatively embed the ignition file _scout.ign_ into the ISO before writing it to the USB stick
 
 ```
-wget https://eriksjolund.github.io/scout/scout.ign
 cat scout.ign | coreos-installer iso embed file.iso
 ```
 
@@ -133,7 +134,6 @@ https://docs.fedoraproject.org/en-US/fedora-coreos/provisioning-aws/
 A sketch (untested)
 
 ```
-wget https://eriksjolund.github.io/scout/scout.ign
 aws ec2 run-instances <other options> --image-id <ami> --user-data file://scout.ign
 ```
 
@@ -150,7 +150,6 @@ mytest@laptop:~$
 
 Download and decompress
 ```
-mytest@laptop:~$ wget https://eriksjolund.github.io/scout/scout.ign
 mytest@laptop:~$ wget https://builds.coreos.fedoraproject.org/prod/streams/next/builds/32.20200901.1.0/x86_64/fedora-coreos-32.20200901.1.0-qemu.x86_64.qcow2.xz
 mytest@laptop:~$ unxz fedora-coreos-32.20200901.1.0-qemu.x86_64.qcow2.xz
 ```
@@ -216,7 +215,7 @@ In case you want to install to the drive _/dev/sda_
 append the kernel arguments
 
 * `coreos.inst.install_dev=/dev/sda`
-* `coreos.inst.ignition_url=https://eriksjolund.github.io/scout/scout.ign`
+* `coreos.inst.ignition_url=https://example.com/scout.ign`
 
 
 # Add users to Scout
