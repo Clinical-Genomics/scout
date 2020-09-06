@@ -38,7 +38,6 @@ cp systemd/scout-scout.service ~/.config/systemd/user
 2. __Optional step__ If you would like to use a locally built scout container instead of the one from dockerhub, run
 
 ```
-podman build -t scout .
 sed -i 's/docker.io\/eriksjolund\/scout:dockerhub/localhost\/scout/g' ~/.config/systemd/user/scout-scout.service
 sed -i '/TimeoutStartSec=/d' ~/.config/systemd/user/scout-scout.service
 ```
