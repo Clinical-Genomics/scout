@@ -127,8 +127,8 @@ mytest@laptop:~$
 Download and decompress
 ```
 mytest@laptop:~$ wget https://eriksjolund.github.io/scout/scout.ign
-mytest@laptop:~$ wget https://builds.coreos.fedoraproject.org/prod/streams/next/builds/32.20200824.1.0/x86_64/fedora-coreos-32.20200824.1.0-qemu.x86_64.qcow2.xz
-mytest@laptop:~$ unxz fedora-coreos-32.20200824.1.0-qemu.x86_64.qcow2.xz
+mytest@laptop:~$ wget https://builds.coreos.fedoraproject.org/prod/streams/next/builds/32.20200901.1.0/x86_64/fedora-coreos-32.20200901.1.0-qemu.x86_64.qcow2.xz
+mytest@laptop:~$ unxz fedora-coreos-32.20200901.1.0-qemu.x86_64.qcow2.xz
 ```
 
 Add the line 
