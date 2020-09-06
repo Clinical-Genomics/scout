@@ -32,7 +32,7 @@ podman run --rm -v ./systemd:/input:Z quay.io/coreos/fcct:release --pretty --str
 
 In the Git repo root directory, run
 
-1. Copy systemd unit files to ~/.config/systemd/user
+1. Copy the systemd unit files to _~/.config/systemd/user_
 
 ```
 mkdir -p ~/.config/systemd/user
