@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove leading and trailing whitespaces from panel_name and display_name when panel is created
 - Mark MANE transcript in list of transcripts in "Transcript overview" on variant page
 - Show default panel name in case sidebar
+- Previous buttons for variants pagination
 - Adds a gh action that checks that the changelog is updated
 - Adds a gh action that deploys new releases automatically to pypi
 
