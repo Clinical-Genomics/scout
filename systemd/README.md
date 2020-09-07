@@ -1,3 +1,5 @@
+__Status:__ Experimental. (Don't use for production).
+
 # Systemd services of Scout
 
 ## Requirements
