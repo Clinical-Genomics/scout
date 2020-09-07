@@ -131,7 +131,7 @@ def case(store, institute_obj, case_obj):
             missing_genes = [
                 gene["symbol"] for gene in hgnc_ids_latest_panel if gene not in hgnc_ids_case_panel
             ]
-            if len(extra_genes) or len(missing_genes):
+            if extra_genes or missing_genes:
                 case_obj["outdated_panels"][panel_name] = {
                     "missing_genes": missing_genes,
                     "extra_genes": extra_genes,
