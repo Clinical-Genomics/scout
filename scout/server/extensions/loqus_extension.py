@@ -31,7 +31,7 @@ def execute_command(cmd):
     output = ""
     cmd = [x for x in cmd if x != []]  # remove empty lists
     cmd_string = " ".join(cmd)  # add spacing to create a command string
-    LOG.info("Running: %s", cmd_string)
+    LOG.info("Running command: %s", cmd_string)
     try:
         output = subprocess.check_output(cmd, shell=False)
     except CalledProcessError as err:
@@ -146,9 +146,10 @@ class LoqusDB:
                     variant_info["end_chrom"],
                     "--sv-type",
                     variant_info["variant_type"],
-                    "--case-count",
                 ]
             )
+        if self.version > 2.4:
+            cmd.extend(["--case-count"])
 
         output = ""
         try:
@@ -160,6 +161,10 @@ class LoqusDB:
         res = {}
         if output:
             res = json.loads(output)
+
+        if self.version < 2.5:
+            res["total"] = self.case_count()
+
         return res
 
     def search_setting(self, key):

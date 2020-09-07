@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Restore pagination and shrink badges in the variants page tables
 - Removing a user from the command line now inactivates the case only if user is last assignee and case is active
 - Bugfix, LoqusDB per institute feature crashed when institute id was empty string
+- Bugfix, LoqusDB calls where missing case count
 - filter removal and upload for filters deleted from another page/other user
 
 ### Changed
