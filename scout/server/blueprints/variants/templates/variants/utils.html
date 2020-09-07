@@ -648,18 +648,19 @@
     {% endif %}
     <div class="row justify-content-center">
         <div class="btn-group" role="group">
+          {% if page > 1 %}
+             <div>
+               <label for="paginate-first" class="btn btn-outline-secondary" tabindex="0">
+                 First page
+               </label>
+             </div>
+          {% endif %}
           {% if page > 2 %}
             <div>
               <label for="paginate-previous" class="btn btn-outline-secondary" tabindex="0">
                 Previous page
               </label>
             </div>
-          {% elif page > 1 %}
-             <div>
-               <label for="paginate-first" class="btn btn-outline-secondary" tabindex="0">
-                 First page
-               </label>
-             </div>
           {% endif %}
           {% if more_variants %}
             <div>
