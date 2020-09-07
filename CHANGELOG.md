@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Previous buttons for variants pagination
 - Adds a gh action that checks that the changelog is updated
 - Adds a gh action that deploys new releases automatically to pypi
+- Show somatic VAF for pinned and causative variants on case page
 
 ### Fixed
 - Report pages redirect to login instead of crashing when session expires
