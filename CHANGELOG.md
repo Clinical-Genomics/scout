@@ -12,6 +12,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove leading and trailing whitespaces from panel_name and display_name when panel is created
 - Mark MANE transcript in list of transcripts in "Transcript overview" on variant page
 - Show default panel name in case sidebar
+- Adds a gh action that checks that the changelog is updated
+- Adds a gh action that deploys new releases automatically to pypi
 
 ### Fixed
 - Report pages redirect to login instead of crashing when session expires
@@ -24,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Restore pagination and shrink badges in the variants page tables
 - Removing a user from the command line now inactivates the case only if user is last assignee and case is active
 - Bugfix, LoqusDB per institute feature crashed when institute id was empty string
+- Bugfix, LoqusDB calls where missing case count
 - filter removal and upload for filters deleted from another page/other user
 
 ### Changed

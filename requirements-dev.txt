@@ -7,13 +7,9 @@ pytest-flask
 mongomock<=3.12
 responses
 
-# packaging
-wheel>=0.23
-twine
-
 # utils
-black
 invoke
+black
 pre-commit
 
 # docs
