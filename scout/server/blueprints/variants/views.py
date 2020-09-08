@@ -298,7 +298,7 @@ def cancer_variants(institute_id, case_name):
         form = CancerFiltersForm(request.args)
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
-        # set gene panels to case-specific gene panels
+        # set gene panels to case-specific default gene panels
         form.gene_panels.data = [
             panel["panel_name"]
             for panel in case_obj.get("panels", [])
