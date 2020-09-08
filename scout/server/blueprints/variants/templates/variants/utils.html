@@ -631,31 +631,43 @@
 {# Used inside filters form to introduce submit buttons for footer pagniation #}
   <div class="hidden">
     <input type="submit" name="page" id="paginate-first" value=1 hidden="true">
+    <input type="submit" name="page" id="paginate-previous" value={{page-1}} hidden="true">
     <input type="submit" name="page" id="paginate-next" value={{page+1}} hidden="true">
   </div>
 {% endmacro %}
 
-{% macro pagination_footer(more_variants) %}
+{% macro pagination_footer(more_variants, page) %}
 {# Used outside filters form to introduce footer pagniation labels #}
   <div class="container-fluid">
-      {% if more_variants %}
-        <div class="d-flex justify-content-around">
-	         <div>
-             <label for="paginate-first" class="btn btn-outline-secondary mx-auto d-block" tabindex="0">
-              First page
-            </label>
-          </div>
-          <div>
-            <label for="paginate-next" class="btn btn-outline-secondary mx-auto d-block" tabindex="0">
-              Next page
-            </label>
-          </div>
-	     </div>
-      {% else %}
+    {% if not more_variants %}
+      <div class="row justify-content-center">
         <i class="text-muted">No more variants to display</i>
-        <label for="paginate-first" class="btn btn-outline-secondary mx-auto d-block" tabindex="0">
-          First page
-        </label>
-      {% endif %}
-  </div>
+      </div>
+    {% endif %}
+    <div class="row justify-content-center">
+        <div class="btn-group" role="group">
+          {% if page > 1 %}
+             <div>
+               <label for="paginate-first" class="btn btn-outline-secondary" tabindex="0">
+                 First page
+               </label>
+             </div>
+          {% endif %}
+          {% if page > 2 %}
+            <div>
+              <label for="paginate-previous" class="btn btn-outline-secondary" tabindex="0">
+                Previous page
+              </label>
+            </div>
+          {% endif %}
+          {% if more_variants %}
+            <div>
+              <label for="paginate-next" class="btn btn-outline-secondary" tabindex="0">
+                Next page
+              </label>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
 {% endmacro %}
