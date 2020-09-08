@@ -6,6 +6,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+### Changed
+
+
+## [4.21]
+### Added
 - Support to configure LoqusDB per institute
 - Highlight causative variants in the variants list
 - Add tests. Mostly regarding building internal datatypes.
@@ -33,6 +39,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bugfix, LoqusDB per institute feature crashed when institute id was empty string
 - Bugfix, LoqusDB calls where missing case count
 - filter removal and upload for filters deleted from another page/other user
+- Visualize outdated gene panels info in a popover instead of a tooltip in case page side panel
 
 ### Changed
 - Highlight color on normal STRs in the variants table from green to blue
