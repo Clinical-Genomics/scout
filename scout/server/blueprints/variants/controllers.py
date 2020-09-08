@@ -723,7 +723,6 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
         form.variant_type.data = request_obj.args.get("variant_type", "clinical")
         # set chromosome to all chromosomes
         form.chrom.data = request_obj.args.get("chrom", "")
-        # set gene panels to case-specific gene panels
         form.gene_panels.data = [
             panel["panel_name"]
             for panel in case_obj.get("panels", [])
