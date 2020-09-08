@@ -122,8 +122,45 @@
     </table>
   </div>
   <br>
-  {{ pagination_footer(more_variants) }}
+  {{ footer() }}
 {% endblock %}
+
+{% macro footer() %}
+<form>
+  <div class="container-fluid">
+      {% if not more_variants %}
+        <div class="row justify-content-center">
+          <i class="text-muted">No more variants to display</i>
+        </div>
+      {% endif %}
+      <div class="row justify-content-center">
+        <div class="btn-group" role="group">
+          {% if page > 1 %}
+            <div>
+              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+                First page
+              </a>
+            </div>
+          {% endif %}
+          {% if page > 2 %}
+            <div>
+              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=(page - 1), **form.data) }}">
+                Previous page
+              </a>
+            </div>
+          {% endif %}
+          {% if more_variants %}
+            <div class="col">
+              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
+                Next page
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+</form>
+{% endmacro %}
 
 {% block scripts %}
   {{ super() }}
