@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Warn users if case default panels are outdated
 - Define institute-specific gene panels for filtering in institute settings
 - Use institute-specific gene panels in variants filtering
+- Show somatic VAF for pinned and causative variants on case page
 
 ### Fixed
 - Report pages redirect to login instead of crashing when session expires
