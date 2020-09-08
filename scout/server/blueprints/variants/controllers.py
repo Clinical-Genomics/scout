@@ -591,13 +591,40 @@ def upload_panel(store, institute_id, case_name, stream):
     return hgnc_symbols
 
 
+def gene_panel_choices(institute_obj, case_obj):
+    """Populates the multiselect containing all the gene panels to be used in variants filtering
+    Args:
+        institute_obj(dict): an institute dictionary
+        case_obj(dict): a case dictionary
+
+    Returns:
+        panel_list(list): a list of tuples containing the multiselect panel values/display name
+    """
+    panel_list = []
+    # Add case default panels and the institute-specific panels to the panel select options
+    for panel in case_obj.get("panels", []):
+        panel_option = (panel["panel_name"], panel["display_name"])
+        panel_list.append(panel_option)
+
+    institute_choices = institute_obj.get("gene_panels", {})
+
+    for panel_name, display_name in institute_choices.items():
+        panel_option = (panel_name, display_name)
+        if panel_option not in panel_list:
+            panel_list.append(panel_option)
+
+    # Add HPO panel
+    panel_list.append(("hpo", "HPO"))
+    return panel_list
+
+
 def populate_filters_form(store, institute_obj, case_obj, user_obj, category, request_form):
     # Update filter settings if Clinical Filter was requested
     form = None
     clinical_filter_panels = []
 
     default_panels = []
-    for panel in case_obj["panels"]:
+    for panel in case_obj.get("panels", []):
         if panel.get("is_default"):
             default_panels.append(panel["panel_name"])
 
@@ -694,7 +721,13 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     if request_obj.method == "GET":
         form = SvFiltersForm(request_obj.args)
         form.variant_type.data = request_obj.args.get("variant_type", "clinical")
-        form.chrom.data = request_obj.args.get("chrom", None)
+        # set chromosome to all chromosomes
+        form.chrom.data = request_obj.args.get("chrom", "")
+        form.gene_panels.data = [
+            panel["panel_name"]
+            for panel in case_obj.get("panels", [])
+            if panel["is_default"] is True
+        ]
 
     else:  # POST
         form = populate_filters_form(
@@ -708,11 +741,7 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     ]
 
     # populate available panel choices
-    available_panels = case_obj.get("panels", []) + [{"panel_name": "hpo", "display_name": "HPO"}]
-
-    panel_choices = [(panel["panel_name"], panel["display_name"]) for panel in available_panels]
-
-    form.gene_panels.choices = panel_choices
+    form.gene_panels.choices = gene_panel_choices(institute_obj, case_obj)
 
     # check if supplied gene symbols exist
     hgnc_symbols = []

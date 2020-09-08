@@ -39,7 +39,7 @@
 {% endblock %}
 {% block content_main %}
     <div class="container-float">
-       <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
+<form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
          enctype="multipart/form-data" onsubmit="return validateForm()">
          {{ pagination_hidden_div(page) }}
         <div class="card panel-default" id="accordion">
@@ -52,7 +52,7 @@
           </div>
           <div class="card-footer text-center py-3">
             {% if "all_variants" in session %}
-              Filtered {{session['filtered_variants']}} / {{session["all_variants"]}} variants
+              Showing {{session['filtered_variants']}} / {{session["all_variants"]}} variants
             {% endif %}
           </div>
         </div>
@@ -115,7 +115,7 @@
         </table>
       </div><!-- end of <div class="card mt-3">-->
     </div> <!-- end of class="container-float"> -->
-      {{ pagination_footer(more_variants) }}
+      {{ pagination_footer(more_variants, page) }}
 {% endblock %}
 
 {% macro cell_cadd(variant) %}
