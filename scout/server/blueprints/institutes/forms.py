@@ -63,6 +63,10 @@ class InstituteForm(FlaskForm):
     pheno_group = TextField("New phenotype group", validators=[validators.Optional()])
     pheno_abbrev = TextField("Abbreviation", validators=[validators.Optional()])
 
+    gene_panels = NonValidatingSelectMultipleField(
+        "Gene panels for variants filtering", validators=[validators.Optional()]
+    )
+
     pheno_groups = NonValidatingSelectMultipleField("Custom phenotype groups", choices=hpo_tuples)
     cohorts = NonValidatingSelectMultipleField(
         "Available patient cohorts", validators=[validators.Optional()]

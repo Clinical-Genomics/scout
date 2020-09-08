@@ -305,6 +305,29 @@ class PanelHandler:
 
         return gene_dict
 
+    def panel_to_genes(self, panel_id=None, panel_name=None):
+        """Return all hgnc_ids for a given gene panel
+
+        Args:
+            panel_id(ObjectId): _id of a gene panel (to collect specific version of a panel)
+            panel_name(str): Name of a gene panel (to collect latest version of a panel)
+
+        Returns:
+            gene_list(list): a list of hgnc terms
+
+        """
+        gene_list = []
+        panel_obj = None
+        if panel_id:
+            panel_obj = self.panel(panel_id)
+        elif panel_name:
+            panel_obj = self.gene_panel(panel_name)
+
+        if panel_obj is not None:
+            gene_list = [gene_obj.get("symbol", "") for gene_obj in panel_obj.get("genes", [])]
+
+        return gene_list
+
     def update_panel(self, panel_obj, version=None, date_obj=None, maintainer=None):
         """Replace a existing gene panel with a new one
 
@@ -444,7 +467,7 @@ class PanelHandler:
                     gene_obj[field] = info[field]
             new_genes.append(gene_obj)
 
-        for gene in panel_obj["genes"]:
+        for gene in panel_obj.get("genes", []):
             hgnc_id = gene["hgnc_id"]
 
             if hgnc_id not in updates:
