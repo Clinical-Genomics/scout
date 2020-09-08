@@ -6,6 +6,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+### Changed
+
+
+## [4.21]
+### Added
 - Support to configure LoqusDB per institute
 - Highlight causative variants in the variants list
 - Add tests. Mostly regarding building internal datatypes.
