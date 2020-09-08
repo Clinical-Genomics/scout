@@ -42,7 +42,7 @@
               {{ panel.display_name|truncate(18, True) }}
             </a>
             {% if panel.panel_name in case.outdated_panels %}
-              <span class="badge badge-pill badge-sm badge-warning" data-toggle="tooltip" data-placement="right" title="Panel version used in the analysis ({{panel.version}}) is outdated. Genes present in case panel and not in latest version: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}. Genes present only in latest version: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}">!</span>
+              <span class="badge badge-pill badge-sm badge-warning" data-toggle="tooltip" data-placement="right" title="Panel version used in the analysis ({{panel.version}}) is outdated. Case panel version is used in variants filtering. Genes present in case panel and not in latest version: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}. Genes present only in latest version: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.">!</span>
             {% endif %}
         </div>
       </div>

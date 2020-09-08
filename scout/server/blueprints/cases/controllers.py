@@ -223,25 +223,19 @@ def _check_outdated_gene_panel(panel_obj, latest_panel):
         missing_genes, extra_genes
     """
     # Create a list of minified gene object for the case panel {hgnc_id, gene_symbol}
-    hgnc_ids_case_panel = [
+    case_panel_genes = [
         {"hgnc_id": gene["hgnc_id"], "symbol": gene.get("symbol", gene["hgnc_id"])}
         for gene in panel_obj["genes"]
     ]
     # And for the latest panel
-
-    hgnc_ids_latest_panel = [
+    latest_panel_genes = [
         {"hgnc_id": gene["hgnc_id"], "symbol": gene.get("symbol", gene["hgnc_id"])}
         for gene in latest_panel["genes"]
     ]
     # Extract the genes unique to case panel
-    extra_genes = [
-        gene["symbol"] for gene in hgnc_ids_case_panel if gene not in hgnc_ids_latest_panel
-    ]
+    extra_genes = [gene["symbol"] for gene in case_panel_genes if gene not in latest_panel_genes]
     # Extract the genes unique to latest panel
-    missing_genes = [
-        gene["symbol"] for gene in hgnc_ids_latest_panel if gene not in hgnc_ids_case_panel
-    ]
-
+    missing_genes = [gene["symbol"] for gene in latest_panel_genes if gene not in case_panel_genes]
     return extra_genes, missing_genes
 
 
