@@ -299,9 +299,7 @@ def cancer_variants(institute_id, case_name):
         form = CancerFiltersForm(request.args)
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
-        if request.args.get("gene_panels"):
-            form.gene_panels.data = [request.args.get("gene_panels")]
-        else:
+        if form.gene_panels.data == []:
             form.gene_panels.data = [
                 panel["panel_name"]
                 for panel in case_obj.get("panels", [])
