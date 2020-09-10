@@ -67,7 +67,15 @@ def variants(institute_id, case_name):
         form = FiltersForm(request.args)
         # set form variant data type the first time around
         form.variant_type.data = variant_type
-        form.chrom.data = request.args.get("chrom", None)
+        # set chromosome to all chromosomes
+        form.chrom.data = request.args.get("chrom", "")
+
+        if form.gene_panels.data == []:
+            form.gene_panels.data = [
+                panel["panel_name"]
+                for panel in case_obj.get("panels", [])
+                if panel["is_default"] is True
+            ]
 
     # populate filters dropdown
     available_filters = store.filters(institute_id, category)
@@ -76,11 +84,7 @@ def variants(institute_id, case_name):
     ]
 
     # populate available panel choices
-    available_panels = case_obj.get("panels", []) + [{"panel_name": "hpo", "display_name": "HPO"}]
-
-    panel_choices = [(panel["panel_name"], panel["display_name"]) for panel in available_panels]
-
-    form.gene_panels.choices = panel_choices
+    form.gene_panels.choices = controllers.gene_panel_choices(institute_obj, case_obj)
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
@@ -293,7 +297,14 @@ def cancer_variants(institute_id, case_name):
     else:
         page = int(request.args.get("page", 1))
         form = CancerFiltersForm(request.args)
-        form.chrom.data = request.args.get("chrom", None)
+        # set chromosome to all chromosomes
+        form.chrom.data = request.args.get("chrom", "")
+        if form.gene_panels.data == []:
+            form.gene_panels.data = [
+                panel["panel_name"]
+                for panel in case_obj.get("panels", [])
+                if panel["is_default"] is True
+            ]
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
@@ -304,10 +315,7 @@ def cancer_variants(institute_id, case_name):
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
 
-    available_panels = case_obj.get("panels", []) + [{"panel_name": "hpo", "display_name": "HPO"}]
-
-    panel_choices = [(panel["panel_name"], panel["display_name"]) for panel in available_panels]
-    form.gene_panels.choices = panel_choices
+    form.gene_panels.choices = controllers.gene_panel_choices(institute_obj, case_obj)
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 

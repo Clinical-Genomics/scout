@@ -46,7 +46,7 @@
       </div>
       <div class="card-footer text-center py-3">
         {% if "all_variants" in session %}
-          Filtered {{session['filtered_variants']}} / {{session["all_variants"]}} variants
+          Showing {{session['filtered_variants']}} / {{session["all_variants"]}} variants
         {% endif %}
       </div>
     </div>
@@ -110,7 +110,7 @@
   <br>
 </div><!--end of container-float -->
 <div class="container-fluid">
-  {{ pagination_footer() }}
+  {{ pagination_footer(more_variants, page) }}
 </div>
 
 {% endblock %}

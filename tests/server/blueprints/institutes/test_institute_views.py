@@ -19,10 +19,14 @@ def test_overview(app, user_obj, institute_obj):
         assert resp.status_code == 200
 
 
-def test_institute(app, user_obj, institute_obj):
+def test_institute_settings(app, user_obj, institute_obj):
     """Test function that creates institute update form and updates an institute"""
 
-    # insert 2 mock HPO terms in database, for later use
+    # GIVEN a gene panel
+    test_panel = store.panel_collection.find_one()
+    assert test_panel
+
+    # AND 2 mock HPO terms in database
     mock_disease_terms = [
         {"_id": "HP:0001298", "description": "Encephalopathy", "hpo_id": "HP:0001298"},
         {"_id": "HP:0001250", "description": "Seizures", "hpo_id": "HP:0001250"},
@@ -57,6 +61,7 @@ def test_institute(app, user_obj, institute_obj):
                 "HP:0001298 , Encephalopathy ( ENC )",
                 "HP:0001250 , Seizures ( EP )",
             ],
+            "gene_panels": [test_panel["panel_name"]],
         }
 
         # via POST request
@@ -75,6 +80,9 @@ def test_institute(app, user_obj, institute_obj):
         assert updated_institute["cohorts"] == form_data["cohorts"]
         assert updated_institute["collaborators"] == form_data["institutes"]
         assert len(updated_institute["phenotype_groups"]) == 2  # one for each HPO term
+        assert updated_institute["gene_panels"] == {
+            test_panel["panel_name"]: test_panel["display_name"]
+        }
 
 
 def test_cases(app, institute_obj):

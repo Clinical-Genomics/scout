@@ -6,14 +6,27 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+- Small change to Prop Freq column in variants ang gene panels to avoid strange text shrinking on small screens
+- Direct use of HPO list for Clinical HPO SNV (and cancer SNV) filtering
+### Changed
+
+
+## [4.21]
+### Added
 - Support to configure LoqusDB per institute
 - Highlight causative variants in the variants list
 - Add tests. Mostly regarding building internal datatypes.
 - Remove leading and trailing whitespaces from panel_name and display_name when panel is created
 - Mark MANE transcript in list of transcripts in "Transcript overview" on variant page
 - Show default panel name in case sidebar
+- Previous buttons for variants pagination
 - Adds a gh action that checks that the changelog is updated
 - Adds a gh action that deploys new releases automatically to pypi
+- Warn users if case default panels are outdated
+- Define institute-specific gene panels for filtering in institute settings
+- Use institute-specific gene panels in variants filtering
+- Show somatic VAF for pinned and causative variants on case page
 
 ### Fixed
 - Report pages redirect to login instead of crashing when session expires
@@ -28,6 +41,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bugfix, LoqusDB per institute feature crashed when institute id was empty string
 - Bugfix, LoqusDB calls where missing case count
 - filter removal and upload for filters deleted from another page/other user
+- Visualize outdated gene panels info in a popover instead of a tooltip in case page side panel
 
 ### Changed
 - Highlight color on normal STRs in the variants table from green to blue

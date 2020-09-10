@@ -96,23 +96,37 @@ def case(store, institute_obj, case_obj):
     # Set of all unique genes in the default gene panels
     distinct_genes = set()
     case_obj["panel_names"] = []
+    case_obj["outdated_panels"] = {}
     for panel_info in case_obj.get("panels", []):
         if not panel_info.get("is_default"):
             continue
         panel_name = panel_info["panel_name"]
         panel_version = panel_info.get("version")
         panel_obj = store.gene_panel(panel_name, version=panel_version)
+        latest_panel = store.gene_panel(panel_name)
         if not panel_obj:
-            LOG.warning("Could not fetch gene panel %s, version %s", panel_name, panel_version)
-            LOG.info("Try to fetch latest existing version")
-            panel_obj = store.gene_panel(panel_name)
+            panel_obj = latest_panel
             if not panel_obj:
-                LOG.warning("Could not find any version of gene panel %s", panel_name)
+                flash(f"Case default panel '{panel_name}' could not be found.", "warning")
                 continue
-            LOG.info("Using panel %s, version %s", panel_name, panel_obj["version"])
+            flash(
+                f"Case default panel '{panel_name}' version {panel_version} could not be found, using latest existing version",
+                "warning",
+            )
+
+        # Check if case-specific panel is up-to-date with latest version of the panel
+        if panel_obj["version"] < latest_panel["version"]:
+            extra_genes, missing_genes = _check_outdated_gene_panel(panel_obj, latest_panel)
+            if extra_genes or missing_genes:
+                case_obj["outdated_panels"][panel_name] = {
+                    "missing_genes": missing_genes,
+                    "extra_genes": extra_genes,
+                }
+
         distinct_genes.update([gene["hgnc_id"] for gene in panel_obj.get("genes", [])])
         full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
         case_obj["panel_names"].append(full_name)
+
     case_obj["default_genes"] = list(distinct_genes)
 
     for hpo_term in itertools.chain(
@@ -197,6 +211,33 @@ def case(store, institute_obj, case_obj):
     }
 
     return data
+
+
+def _check_outdated_gene_panel(panel_obj, latest_panel):
+    """Compare genes of a case gene panel with the latest panel version and return differences
+
+    Args:
+        panel_obj(dict): the gene panel of a case
+        latest_panel(dict): the latest version of that gene panel
+
+    returns:
+        missing_genes, extra_genes
+    """
+    # Create a list of minified gene object for the case panel {hgnc_id, gene_symbol}
+    case_panel_genes = [
+        {"hgnc_id": gene["hgnc_id"], "symbol": gene.get("symbol", gene["hgnc_id"])}
+        for gene in panel_obj["genes"]
+    ]
+    # And for the latest panel
+    latest_panel_genes = [
+        {"hgnc_id": gene["hgnc_id"], "symbol": gene.get("symbol", gene["hgnc_id"])}
+        for gene in latest_panel["genes"]
+    ]
+    # Extract the genes unique to case panel
+    extra_genes = [gene["symbol"] for gene in case_panel_genes if gene not in latest_panel_genes]
+    # Extract the genes unique to latest panel
+    missing_genes = [gene["symbol"] for gene in latest_panel_genes if gene not in case_panel_genes]
+    return extra_genes, missing_genes
 
 
 def case_report_content(store, institute_obj, case_obj):

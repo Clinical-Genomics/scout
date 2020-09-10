@@ -1,5 +1,6 @@
 """Tests for the cases controllers"""
-from flask import Flask
+from flask import Flask, url_for
+from scout.server.extensions import store
 
 from scout.server.blueprints.cases.controllers import case, case_report_content
 
@@ -77,7 +78,7 @@ def test_case_controller_no_panels(adapter, institute_obj, dummy_case):
     assert fetched_case["panel_names"] == []
 
 
-def test_case_controller_with_panel(adapter, institute_obj, panel, dummy_case):
+def test_case_controller_with_panel(app, institute_obj, panel, dummy_case):
     # GIVEN an adapter with a case with a gene panel
     dummy_case["panels"] = [
         {
@@ -87,20 +88,20 @@ def test_case_controller_with_panel(adapter, institute_obj, panel, dummy_case):
             "is_default": True,
         }
     ]
-    adapter.case_collection.insert_one(dummy_case)
-    adapter.institute_collection.insert_one(institute_obj)
+    store.case_collection.insert_one(dummy_case)
+
     # GIVEN an adapter with a gene panel
-    adapter.panel_collection.insert_one(panel)
-    fetched_case = adapter.case_collection.find_one()
+    store.panel_collection.insert_one(panel)
+    fetched_case = store.case_collection.find_one()
     app = Flask(__name__)
     # WHEN fetching a case with the controller
     with app.app_context():
-        data = case(adapter, institute_obj, fetched_case)
+        data = case(store, institute_obj, fetched_case)
     # THEN assert that the display information has been added to case
     assert len(fetched_case["panel_names"]) == 1
 
 
-def test_case_controller_panel_wrong_version(adapter, institute_obj, panel, dummy_case):
+def test_case_controller_panel_wrong_version(adapter, app, institute_obj, panel, dummy_case):
     # GIVEN an adapter with a case with a gene panel with wrong version
     dummy_case["panels"] = [
         {
@@ -115,15 +116,19 @@ def test_case_controller_panel_wrong_version(adapter, institute_obj, panel, dumm
     # GIVEN an adapter with a gene panel
     adapter.panel_collection.insert_one(panel)
     fetched_case = adapter.case_collection.find_one()
-    app = Flask(__name__)
-    # WHEN fetching a case with the controller
-    with app.app_context():
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN fetching a case with the controller
         data = case(adapter, institute_obj, fetched_case)
     # THEN assert that it succeded to fetch another panel version
     assert str(panel["version"]) in fetched_case["panel_names"][0]
 
 
-def test_case_controller_non_existing_panel(adapter, institute_obj, dummy_case, panel):
+def test_case_controller_non_existing_panel(adapter, app, institute_obj, dummy_case, panel):
     # GIVEN an adapter with a case with a gene panel but no panel objects
     dummy_case["panels"] = [
         {
@@ -134,11 +139,14 @@ def test_case_controller_non_existing_panel(adapter, institute_obj, dummy_case, 
         }
     ]
     adapter.case_collection.insert_one(dummy_case)
-    adapter.institute_collection.insert_one(institute_obj)
     fetched_case = adapter.case_collection.find_one()
-    app = Flask(__name__)
-    # WHEN fetching a case with the controller
-    with app.app_context():
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN fetching a case with the controller
         data = case(adapter, institute_obj, fetched_case)
     # THEN assert that it succeded to fetch another panel version
     assert len(fetched_case["panel_names"]) == 0

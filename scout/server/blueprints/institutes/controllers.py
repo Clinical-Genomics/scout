@@ -54,7 +54,7 @@ def populate_institute_form(form, institute_obj):
     form.coverage_cutoff.default = institute_obj.get("coverage_cutoff")
     form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
 
-    # collect all available default HPO terms
+    # collect all available default HPO terms and populate the pheno_groups form select with these values
     default_phenotypes = [choice[0].split(" ")[0] for choice in form.pheno_groups.choices]
     if institute_obj.get("phenotype_groups"):
         for key, value in institute_obj["phenotype_groups"].items():
@@ -64,6 +64,15 @@ def populate_institute_form(form, institute_obj):
                 )
                 form.pheno_groups.choices.append((custom_group, custom_group))
 
+    # populate gene panels multiselect with panels from institute
+    available_panels = list(store.latest_panels(institute_obj["_id"]))
+    # And from institute's collaborators
+    for collaborator in institute_obj.get("collaborators", []):
+        available_panels += list(store.latest_panels(collaborator))
+    panel_set = set()
+    for panel in available_panels:
+        panel_set.add((panel["panel_name"], panel["display_name"]))
+    form.gene_panels.choices = list(panel_set)
     return default_phenotypes
 
 
@@ -82,6 +91,7 @@ def update_institute_settings(store, institute_obj, form):
     sanger_recipients = []
     sharing_institutes = []
     phenotype_groups = []
+    gene_panels = {}
     group_abbreviations = []
     cohorts = []
     loqusdb_id = []
@@ -100,6 +110,12 @@ def update_institute_settings(store, institute_obj, form):
         phenotype_groups.append(form["hpo_term"].split(" |")[0])
         group_abbreviations.append(form["pheno_abbrev"])
 
+    for panel_name in form.getlist("gene_panels"):
+        panel_obj = store.gene_panel(panel_name)
+        if panel_obj is None:
+            continue
+        gene_panels[panel_name] = panel_obj["display_name"]
+
     for cohort in form.getlist("cohorts"):
         cohorts.append(cohort.strip())
 
@@ -113,6 +129,7 @@ def update_institute_settings(store, institute_obj, form):
         frequency_cutoff=float(form.get("frequency_cutoff")),
         display_name=form.get("display_name"),
         phenotype_groups=phenotype_groups,
+        gene_panels=gene_panels,
         group_abbreviations=group_abbreviations,
         add_groups=False,
         sharing_institutes=sharing_institutes,
