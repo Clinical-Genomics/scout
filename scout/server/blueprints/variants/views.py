@@ -384,7 +384,7 @@ def cancer_sv_variants(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
-        
+
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
