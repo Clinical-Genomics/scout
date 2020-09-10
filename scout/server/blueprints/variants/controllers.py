@@ -857,3 +857,32 @@ def activate_case(store, institute_obj, case_obj, current_user):
             case_name=case_obj["display_name"],
         )
         store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
+
+
+def dismiss_variant_list(store, institute_obj, case_obj, variants_list, dismiss_reasons):
+    """Dismiss a list of variants for a case
+
+    Args:
+        store(adapter.MongoAdapter)
+        institute_obj(dict): an institute dictionary
+        case_obj(dict): a case dictionary
+        variants_list(list): list of variant._ids (strings)
+        dismiss_reasons(list): list of dismiss options
+    """
+    user_obj = store.user(current_user.email)
+    for variant_id in variants_list:
+        variant_obj = store.variant(variant_id)
+        if variant_obj is None:
+            continue
+        # create variant link
+        link = link = url_for(
+            "variant.variant",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["_id"],
+            variant_id=variant_id,
+        )
+        # dismiss variant
+        store.update_dismiss_variant(
+            institute_obj, case_obj, user_obj, link, variant_obj, dismiss_reasons
+        )
+    return

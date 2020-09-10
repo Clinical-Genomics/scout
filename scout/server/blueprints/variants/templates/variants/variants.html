@@ -1,8 +1,6 @@
 {% extends "layout_bs4.html" %}
-{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div%}
+{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
-{% from "variant/buttons.html" import dismiss_variant_table_button %}
-
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} variants
@@ -39,7 +37,7 @@
 {% endblock %}
 {% block content_main %}
     <div class="container-float">
-<form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
+      <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
          enctype="multipart/form-data" onsubmit="return validateForm()">
          {{ pagination_hidden_div(page) }}
         <div class="card panel-default" id="accordion">
@@ -57,22 +55,22 @@
           </div>
         </div>
 
-      </form>
+
       <div class="card mt-3">
         <table class="table table-hover table-bordered" style="table-layout: fixed">
           <thead>
             <tr>
-              <th style="width:6%" title="Rank position">Rank </th>
-              <th style="width:15%" title="Dismiss Variant">Dismiss variant</th>
-              <th style="width:5%" title="Rank score">Score</th>
-              <th style="width:4%" title="Chromosome">Chr.</th>
+              <th style="width:3%"></th>
+              <th style="width:12%" title="Rank position">Rank </th>
+              <th style="width:6%" title="Rank score">Score</th>
+              <th style="width:6%" title="Chromosome">Chr.</th>
               <th style="width:8%" title="HGNC symbols">Gene</th>
               <th style="width:6%" title="Poulation frequency">Pop Freq</th>
-              <th style="width:5%" title="CADD score">CADD</th>
+              <th style="width:6%" title="CADD score">CADD</th>
               <th style="width:8%" title="Gene region annotation">Gene annotation</th>
-              <th style="width:12%" title="Functional annotation">Func. annotation</th>
-              <th style="width:12%" title="Inheritance models">Inheritance model</th>
-              <th style="width:7%" title="Overlapping">Overlapping</th>
+              <th style="width:18%" title="Functional annotation">Func. annotation</th>
+              <th style="width:18%" title="Inheritance models">Inheritance model</th>
+              <th style="width:8%" title="Overlapping">Overlapping</th>
             </tr>
           </thead>
           <tbody>
@@ -84,8 +82,8 @@
               {% else %}
                 <tr>
               {% endif %}
+                <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
                 <td class="text-left">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
-                <td>{{ dismiss_variant_table_button(variant, institute, case, dismiss_variant_options) }}</td>
                 <td class="text-right">{{ variant.rank_score|int }}</td>
                 <td>{{ variant.chromosome }}</td>
                 <td>{{ gene_cell(variant) }}</td>
@@ -113,7 +111,9 @@
             {% endfor %}
           </tbody>
         </table>
+        {{ dismiss_variants_block(dismiss_variant_options) }}
       </div><!-- end of <div class="card mt-3">-->
+    </form> <!--end of form containing filters and variants' table elements -->
     </div> <!-- end of class="container-float"> -->
       {{ pagination_footer(more_variants, page) }}
 {% endblock %}
@@ -178,7 +178,36 @@
     var cytoEnd = document.getElementById("cytoband_end");
     initSearchConstraints(cytoEnd, endElem)
 
-
+    function enableDismiss()
+    {
+      // before enabling the variant dismiss button
+      var selectElem = document.getElementById("dismiss_options");
+      // make sure that user selects at least one dismiss reason
+      var selectedOptions = false;
+      for (var i = 0; i < selectElem.length; i++) {
+          if (selectElem.options[i].selected){
+            selectedOptions = true;
+            break;
+          }
+      }
+      // make sure that at least one checkbox corresponding to a variant is checked
+      var variantCheckboxes = document.getElementsByName("dismiss");
+      var checkedVars=false
+      for (var i = 0; i < variantCheckboxes.length; i++) {
+          if (variantCheckboxes[i].checked){
+            checkedVars = true;
+            break;
+          }
+      }
+      console.log(checkedVars)
+      var btnElem = document.getElementById('dismiss_submit');
+      if (selectedOptions & checkedVars){
+        btnElem.disabled = false;
+      }
+      else{
+        btnElem.disabled = true;
+      }
+    }
 
     window.onload=function() {
       populateCytobands({{cytobands|safe}});
