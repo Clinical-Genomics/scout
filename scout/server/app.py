@@ -232,8 +232,6 @@ def configure_coverage(app):
         # register chanjo report blueprint
         app.register_blueprint(report_bp, url_prefix="/reports")
 
-
-
     babel = Babel(app)
 
     @babel.localeselector
