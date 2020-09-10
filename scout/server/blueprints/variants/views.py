@@ -291,6 +291,15 @@ def cancer_variants(institute_id, case_name):
 
     user_obj = store.user(current_user.email)
     if request.method == "POST":
+        if request.form.getlist("dismiss"):  # dismiss a list of variants
+            controllers.dismiss_variant_list(
+                store,
+                institute_obj,
+                case_obj,
+                request.form.getlist("dismiss"),
+                request.form.getlist("dismiss_options"),
+            )
+
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
