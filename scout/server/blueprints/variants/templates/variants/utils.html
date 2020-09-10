@@ -2,7 +2,7 @@
 {% from "utils.html" import comments_table %}
 
 {% macro dismiss_variants_block(dismiss_variant_options) %}
-<div class="row d-flex align-items-center">
+<div class="row d-flex align-items-center mb-3">
   <div class="col-2 ml-3">Dismiss selected variants:</div>
   <div class="col-5 align-items-start">
     <select multiple="multiple" name="dismiss_options" id="dismiss_options" class="selectpicker" data-width="100%" onchange="enableDismiss();">

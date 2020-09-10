@@ -240,6 +240,15 @@ def sv_variants(institute_id, case_name):
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
 
+    if request.form.getlist("dismiss"):  # dismiss a list of variants
+        controllers.dismiss_variant_list(
+            store,
+            institute_obj,
+            case_obj,
+            request.form.getlist("dismiss"),
+            request.form.getlist("dismiss_options"),
+        )
+
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)

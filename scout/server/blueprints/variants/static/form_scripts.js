@@ -46,9 +46,6 @@ function populateCytobands(cytobands){
     cytoEnd.appendChild(el);
   }
 }
-
-
-
 // ValidateForm()
 // Controll user input fields (start, end) in varaint filter.
 //
@@ -72,7 +69,6 @@ function validateForm(){
     return true;
 }
 
-
 // syncSearchConstraints(selectorId:HTML-selector, textId:HTML-textfield)
 //
 // Initialize and synchronize 'startelem' and 'cyto_start', used for setting
@@ -88,7 +84,6 @@ function initSearchConstraints(selectorId, textId){
         textId.value = selectorId.options[selectorId.selectedIndex].value
     });
 }
-
 
 function enableDismiss()
 {
