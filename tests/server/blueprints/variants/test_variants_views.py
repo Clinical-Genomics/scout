@@ -86,6 +86,41 @@ def test_variants(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
+def test_bulk_dismiss_variants(app, institute_obj, case_obj):
+    """Sending a POST request to variants view to test variant dismiss funtionality"""
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # GIVEN a test variant to be dismissed
+        snv_variant = store.variant_collection.find_one({"category": "snv"})
+
+        # When a POST request with filter containing wrongly formatted parameters is sent
+        dismiss_choices = ["2", "5"]
+        form_data = {
+            "dismiss": snv_variant["_id"],
+            "dismiss_choices": dismiss_choices,
+        }
+
+        resp = client.post(
+            url_for(
+                "variants.variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=form_data,
+        )
+        # THEN it should return a redirected page
+        assert resp.status_code == 200
+
+        # and the variant should be updated with the dismissed options
+        updated_variant = store.variant_collection.find_one({"_id": snv_variant["_id"]})
+        for option in dismiss_choices:
+            assert option in updated_variant["dismiss_variant"]
+
+
 def test_variants_research(app, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
