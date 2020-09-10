@@ -79,7 +79,7 @@ def create_app(config_file=None, config=None):
             relevant_endpoint = not (static_endpoint or public_endpoint)
             # if endpoint requires auth, check if user is authenticated
             if relevant_endpoint and not current_user.is_authenticated:
-                LOG.error("HERE")
+                LOG.error(f"HERE----->{request.endpoint}")
                 # combine visited URL (convert byte string query string to unicode!)
                 next_url = "{}?{}".format(request.path, request.query_string.decode())
                 login_url = url_for("public.index", next=next_url)
@@ -231,6 +231,8 @@ def configure_coverage(app):
         configure_template_filters(app)
         # register chanjo report blueprint
         app.register_blueprint(report_bp, url_prefix="/reports")
+
+
 
     babel = Babel(app)
 
