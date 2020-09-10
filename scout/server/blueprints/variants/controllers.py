@@ -886,4 +886,3 @@ def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_lis
         store.update_dismiss_variant(
             institute_obj, case_obj, user_obj, link, variant_obj, dismiss_reasons
         )
-    return
