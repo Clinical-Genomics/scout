@@ -6,7 +6,6 @@ function populateCytobands(cytobands){
     return //only reset cytoband select element
   }
 
-
   var chrom_cytobands = cytobands[chrom]["cytobands"]; // chromosome-specific cytobands
 
   for (elem of [cytoStart, cytoEnd]) {
@@ -91,8 +90,32 @@ function initSearchConstraints(selectorId, textId){
 }
 
 
-
-
-
-
-
+function enableDismiss()
+{
+  // before enabling the variant dismiss button
+  var selectElem = document.getElementById("dismiss_options");
+  // make sure that user selects at least one dismiss reason
+  var selectedOptions = false;
+  for (var i = 0; i < selectElem.length; i++) {
+      if (selectElem.options[i].selected){
+        selectedOptions = true;
+        break;
+      }
+  }
+  // make sure that at least one checkbox corresponding to a variant is checked
+  var variantCheckboxes = document.getElementsByName("dismiss");
+  var checkedVars=false
+  for (var i = 0; i < variantCheckboxes.length; i++) {
+      if (variantCheckboxes[i].checked){
+        checkedVars = true;
+        break;
+      }
+  }
+  var btnElem = document.getElementById('dismiss_submit');
+  if (selectedOptions & checkedVars){
+    btnElem.disabled = false;
+  }
+  else{
+    btnElem.disabled = true;
+  }
+}

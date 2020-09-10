@@ -60,7 +60,6 @@ def variants(institute_id, case_name):
     user_obj = store.user(current_user.email)
 
     if request.method == "POST":
-        flash(request.form)
         if request.form.getlist("dismiss"):  # dismiss a list of variants
             controllers.dismiss_variant_list(
                 store,
