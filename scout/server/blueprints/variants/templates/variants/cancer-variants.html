@@ -55,7 +55,7 @@
       <thead>
             <tr>
               <th style="width:3%"></th>
-              <th style="width:4%" title="Rank position">Rank</th>
+              <th title="Rank position">Rank</th>
               <th style="width:20%">Gene:Transcript:Exon:HGVS</th>
               <th>Tier</th>
               <th>Score</th>
@@ -108,7 +108,9 @@
   </div><!-- end of card-->
 </form><!--end of form containing filters and variants' table elements -->
 </div><!--end of container-float -->
+<div class="container-fluid">
 {{ pagination_footer(more_variants, page) }}
+</div>
 {% endblock %}
 
 {% macro actions_cell(variant) %}

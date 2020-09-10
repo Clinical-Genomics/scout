@@ -5,7 +5,7 @@
 <div class="row d-flex align-items-center mb-3">
   <div class="col-2 ml-3">Dismiss selected variants:</div>
   <div class="col-5 align-items-start">
-    <select multiple="multiple" name="dismiss_options" id="dismiss_options" class="selectpicker" data-width="100%" onchange="enableDismiss();">
+    <select multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-width="100%" onchange="enableDismiss();">
       {% for value, data in dismiss_variant_options.items() %}
         <option value="{{ value }}">{{ data.label }}</option>
       {% endfor %}

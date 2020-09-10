@@ -88,7 +88,7 @@ function initSearchConstraints(selectorId, textId){
 function enableDismiss()
 {
   // before enabling the variant dismiss button
-  var selectElem = document.getElementById("dismiss_options");
+  var selectElem = document.getElementById("dismiss_choices");
   // make sure that user selects at least one dismiss reason
   var selectedOptions = false;
   for (var i = 0; i < selectElem.length; i++) {
