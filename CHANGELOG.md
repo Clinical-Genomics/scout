@@ -7,6 +7,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 ### Fixed
+### Changed
+
+
+## [4.21.1]
+### Added
+### Fixed
 - Small change to Prop Freq column in variants ang gene panels to avoid strange text shrinking on small screens
 - Direct use of HPO list for Clinical HPO SNV (and cancer SNV) filtering
 - PDF coverage report redirecting to login page
