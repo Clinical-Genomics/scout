@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 - Do not pre-filter research variants by (case-default) gene panels
+- Show OMIM disease tooltip reliably
 ### Changed
 
 
