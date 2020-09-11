@@ -85,7 +85,7 @@ function initSearchConstraints(selectorId, textId){
     });
 }
 
-function enableDismiss(){
+export function enableDismiss(){
   // before enabling the variant dismiss button
   var selectElem = document.getElementById("dismiss_choices");
   // make sure that user selects at least one dismiss reason
@@ -105,7 +105,7 @@ function enableDismiss(){
         break;
       }
   }
-  var btnElem = document.getElementById('dismiss_submit');
+  var btnElem = document.getElementById("dismiss_submit");
   if (selectedOptions & checkedVars) {
     btnElem.disabled = false;
   }
