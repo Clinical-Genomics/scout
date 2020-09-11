@@ -701,6 +701,21 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
     return form
 
 
+def case_default_panels(case_obj):
+    """Get a list of case default panels from a case dictionary
+
+    Args:
+        case_obj(dict): a case object
+
+    Returns:
+        case_panels(list): a list of panels (panel_name)
+    """
+    case_panels = [
+        panel["panel_name"] for panel in case_obj.get("panels", []) if panel["is_default"] is True
+    ]
+    return case_panels
+
+
 def populate_sv_filters_form(store, institute_obj, case_obj, category, request_obj):
     """Populate a filters form object of the type SvFiltersForm
 
@@ -720,14 +735,12 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
 
     if request_obj.method == "GET":
         form = SvFiltersForm(request_obj.args)
-        form.variant_type.data = request_obj.args.get("variant_type", "clinical")
+        variant_type = request_obj.args.get("variant_type", "clinical")
+        form.variant_type.data = variant_type
         # set chromosome to all chromosomes
         form.chrom.data = request_obj.args.get("chrom", "")
-        form.gene_panels.data = [
-            panel["panel_name"]
-            for panel in case_obj.get("panels", [])
-            if panel["is_default"] is True
-        ]
+        if variant_type == "clinical":
+            form.gene_panels.data = case_default_panels(case_obj)
 
     else:  # POST
         form = populate_filters_form(

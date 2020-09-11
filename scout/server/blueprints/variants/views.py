@@ -80,12 +80,8 @@ def variants(institute_id, case_name):
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
 
-        if form.gene_panels.data == []:
-            form.gene_panels.data = [
-                panel["panel_name"]
-                for panel in case_obj.get("panels", [])
-                if panel["is_default"] is True
-            ]
+        if form.gene_panels.data == [] and variant_type == "clinical":
+            form.gene_panels.data = controllers.case_default_panels(case_obj)
 
     # populate filters dropdown
     available_filters = store.filters(institute_id, category)
@@ -330,11 +326,7 @@ def cancer_variants(institute_id, case_name):
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
         if form.gene_panels.data == []:
-            form.gene_panels.data = [
-                panel["panel_name"]
-                for panel in case_obj.get("panels", [])
-                if panel["is_default"] is True
-            ]
+            form.gene_panels.data = controllers.case_default_panels(case_obj)
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
