@@ -85,7 +85,7 @@ function initSearchConstraints(selectorId, textId){
     });
 }
 
-export function enableDismiss(){
+function enableDismiss(){
   // before enabling the variant dismiss button
   var selectElem = document.getElementById("dismiss_choices");
   // make sure that user selects at least one dismiss reason
