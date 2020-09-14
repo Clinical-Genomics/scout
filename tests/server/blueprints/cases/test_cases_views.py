@@ -347,16 +347,15 @@ def test_case_synopsis(app, institute_obj, case_obj):
         assert resp.status_code == 302
 
 
-def test_update_case_comment(app, adapter, institute_obj, case_obj, user_obj):
+def test_update_case_comment(app, institute_obj, case_obj, user_obj):
     """Test the functionality that allows updating of case-specific comments"""
-    assert user_obj
 
+    # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
 
-        ## WHEN inserting a events
+        ## GIVEN a case with a comment
         store.create_event(
             institute=institute_obj,
             case=case_obj,
@@ -370,7 +369,7 @@ def test_update_case_comment(app, adapter, institute_obj, case_obj, user_obj):
         comment = store.event_collection.find_one({"verb": "comment"})
         assert comment
 
-        # WHEN the users updated the comment via the modal form
+        # WHEN a user updates the comment via the modal form
         form_data = {"event_id": comment["_id"], "updatedContent": "an updated comment", "edit": ""}
         resp = client.post(
             url_for(
