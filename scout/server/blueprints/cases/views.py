@@ -640,7 +640,9 @@ def events(institute_id, case_name, event_id=None):
             store.delete_event(event_id)
         elif "edit" in request.form:
             # edit comment
-            store.update_comment(comment_id=event_id, new_content=request.form.get('updatedContent'))
+            store.update_comment(
+                comment_id=event_id, new_content=request.form.get("updatedContent")
+            )
     else:
         if variant_id:
             # create a variant comment
