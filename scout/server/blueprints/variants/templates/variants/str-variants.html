@@ -1,8 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 {% from "utils.html" import comments_table %}
-{% from "variants/utils.html" import cell_rank, pagination_footer %}
-{% from "variant/buttons.html" import dismiss_variant_table_button %}
+{% from "variants/utils.html" import cell_rank, dismiss_variants_block%}
 
 
 {% block title %}
@@ -44,17 +43,16 @@
       <thead>
         <tr>
           <th style="width:8%" title="Index">Index</th>
-          <th style="width:18%" title="Dismiss Variant">Dismiss variant</th>
-          <th style="width:8%" title="Repeat ID">Repeat locus</th>
-          <th style="width:8%" title="Repeat unit">Reference repeat unit</th>
-          <th style="width:5%" title="ALT">Estimated size</th>
-          <th style="width:5%" title="ReferenceSize">Reference size</th>
-          <th style="width:8%" title="Status">Status</th>
-          <th style="width:6%" title="Max normal">Max normal</th>
-          <th style="width:6%" title="Min pathologic">Min pathologic</th>
-          <th style="width:12%" title="GT">Genotype</th>
-          <th style="width:6%" title="Chromosome">Chr.</th>
-          <th style="width:10%" title="Position">Position</th>
+          <th title="Repeat ID">Repeat locus</th>
+          <th title="Repeat unit">Reference repeat unit</th>
+          <th title="ALT">Estimated size</th>
+          <th title="ReferenceSize">Reference size</th>
+          <th title="Status">Status</th>
+          <th title="Max normal">Max normal</th>
+          <th title="Min pathologic">Min pathologic</th>
+          <th title="GT">Genotype</th>
+          <th title="Chromosome">Chr.</th>
+          <th title="Position">Position</th>
         </tr>
       </thead>
       <tbody>
@@ -78,7 +76,6 @@
 	            <tr>
 	        {% endif %}
             <td>{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
-            <td>{{ dismiss_variant_table_button(variant, institute, case, dismiss_variant_options) }}</td>
             <td>{{ variant.str_repid }}</td>
 	          <td class="text-right">{{ variant.str_ru }}</td>
             <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>

@@ -7,9 +7,24 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 ### Fixed
-- Small change to Prop Freq column in variants ang gene panels to avoid strange text shrinking on small screens
-- Direct use of HPO list for Clinical HPO SNV (and cancer SNV) filtering
 ### Changed
+
+## [4.21.2]
+### Added
+### Fixed
+- Do not pre-filter research variants by (case-default) gene panels
+- Show OMIM disease tooltip reliably
+### Changed
+
+## [4.21.1]
+### Added
+### Fixed
+- Small change to Pop Freq column in variants ang gene panels to avoid strange text shrinking on small screens
+- Direct use of HPO list for Clinical HPO SNV (and cancer SNV) filtering
+- PDF coverage report redirecting to login page
+### Changed
+- Remove the option to dismiss single variants from all variants pages
+- Bulk dismiss SNVs, SVs and cancer SNVs from variants pages
 
 
 ## [4.21]

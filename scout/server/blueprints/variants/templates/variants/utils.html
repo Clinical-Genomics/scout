@@ -1,6 +1,22 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% from "utils.html" import comments_table %}
 
+{% macro dismiss_variants_block(dismiss_variant_options) %}
+<div class="row d-flex align-items-center mb-3">
+  <div class="col-2 ml-3">Dismiss selected variants:</div>
+  <div class="col-5 align-items-start">
+    <select multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-width="100%" onchange="enableDismiss();">
+      {% for value, data in dismiss_variant_options.items() %}
+        <option value="{{ value }}">{{ data.label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-2">
+    <button type="submit" disabled name="dismiss_submit" id="dismiss_submit" class="btn btn-sm btn-primary form-control">Dismiss variants</button>
+  </div>
+</div>
+{% endmacro %}
+
 {% macro compounds_table(institute, case, compounds) %}
   <table class='table table-condensed table-bordered table-sm'>
     <thead>
