@@ -275,12 +275,14 @@ def parse_variant(
             if not gene_obj["hgnc_id"]:
                 continue
             # Else we collect the gene object and check the id
-            if gene_obj.get("hgnc_symbol") is None:
+            if gene_obj.get("hgnc_symbol") is None or gene_obj.get("phenotypes") is None:
                 hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
                 if not hgnc_gene:
                     continue
                 has_changed = True
                 gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
+                # phenotypes may not exist for the hgnc_gene either, but try
+                gene_obj["phenotypes"] = hgnc_gene.get("phenotypes")
 
     # We update the variant if some information was missing from loading
     # Or if symbold in reference genes have changed
@@ -701,6 +703,21 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
     return form
 
 
+def case_default_panels(case_obj):
+    """Get a list of case default panels from a case dictionary
+
+    Args:
+        case_obj(dict): a case object
+
+    Returns:
+        case_panels(list): a list of panels (panel_name)
+    """
+    case_panels = [
+        panel["panel_name"] for panel in case_obj.get("panels", []) if panel["is_default"] is True
+    ]
+    return case_panels
+
+
 def populate_sv_filters_form(store, institute_obj, case_obj, category, request_obj):
     """Populate a filters form object of the type SvFiltersForm
 
@@ -720,14 +737,12 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
 
     if request_obj.method == "GET":
         form = SvFiltersForm(request_obj.args)
-        form.variant_type.data = request_obj.args.get("variant_type", "clinical")
+        variant_type = request_obj.args.get("variant_type", "clinical")
+        form.variant_type.data = variant_type
         # set chromosome to all chromosomes
         form.chrom.data = request_obj.args.get("chrom", "")
-        form.gene_panels.data = [
-            panel["panel_name"]
-            for panel in case_obj.get("panels", [])
-            if panel["is_default"] is True
-        ]
+        if variant_type == "clinical":
+            form.gene_panels.data = case_default_panels(case_obj)
 
     else:  # POST
         form = populate_filters_form(
@@ -857,3 +872,32 @@ def activate_case(store, institute_obj, case_obj, current_user):
             case_name=case_obj["display_name"],
         )
         store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
+
+
+def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_list, dismiss_reasons):
+    """Dismiss a list of variants for a case
+
+    Args:
+        store(adapter.MongoAdapter)
+        institute_obj(dict): an institute dictionary
+        case_obj(dict): a case dictionary
+        link_page(str): "variant.variant" for snvs, "variant.sv_variant" for SVs and so on
+        variants_list(list): list of variant._ids (strings)
+        dismiss_reasons(list): list of dismiss options
+    """
+    user_obj = store.user(current_user.email)
+    for variant_id in variants_list:
+        variant_obj = store.variant(variant_id)
+        if variant_obj is None:
+            continue
+        # create variant link
+        link = link = url_for(
+            link_page,
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["_id"],
+            variant_id=variant_id,
+        )
+        # dismiss variant
+        store.update_dismiss_variant(
+            institute_obj, case_obj, user_obj, link, variant_obj, dismiss_reasons
+        )

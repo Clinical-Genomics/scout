@@ -13,7 +13,7 @@ def test_update_groups(mock_app, tmpdir):
 
     # Test CLI base, no arguments provided
     result = runner.invoke(cli, ["update", "groups"])
-    assert "Error: Missing argument 'INSTITUTE_ID'" in result.output
+    assert "Error: Missing argument" in result.output
 
     # Test CLI base with istitute id argument
     result = runner.invoke(cli, ["update", "groups", "cust000"])

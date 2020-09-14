@@ -60,6 +60,16 @@ def variants(institute_id, case_name):
     user_obj = store.user(current_user.email)
 
     if request.method == "POST":
+        if request.form.getlist("dismiss"):  # dismiss a list of variants
+            controllers.dismiss_variant_list(
+                store,
+                institute_obj,
+                case_obj,
+                "variant.variant",
+                request.form.getlist("dismiss"),
+                request.form.getlist("dismiss_choices"),
+            )
+
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
@@ -69,11 +79,9 @@ def variants(institute_id, case_name):
         form.variant_type.data = variant_type
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
-        form.gene_panels.data = [
-            panel["panel_name"]
-            for panel in case_obj.get("panels", [])
-            if panel["is_default"] is True
-        ]
+
+        if form.gene_panels.data == [] and variant_type == "clinical":
+            form.gene_panels.data = controllers.case_default_panels(case_obj)
 
     # populate filters dropdown
     available_filters = store.filters(institute_id, category)
@@ -229,6 +237,16 @@ def sv_variants(institute_id, case_name):
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
 
+    if request.form.getlist("dismiss"):  # dismiss a list of variants
+        controllers.dismiss_variant_list(
+            store,
+            institute_obj,
+            case_obj,
+            "variant.sv_variant",
+            request.form.getlist("dismiss"),
+            request.form.getlist("dismiss_choices"),
+        )
+
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
@@ -271,6 +289,16 @@ def cancer_variants(institute_id, case_name):
 
     user_obj = store.user(current_user.email)
     if request.method == "POST":
+        if request.form.getlist("dismiss"):  # dismiss a list of variants
+            controllers.dismiss_variant_list(
+                store,
+                institute_obj,
+                case_obj,
+                "variant.variant",
+                request.form.getlist("dismiss"),
+                request.form.getlist("dismiss_choices"),
+            )
+
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
@@ -297,11 +325,8 @@ def cancer_variants(institute_id, case_name):
         form = CancerFiltersForm(request.args)
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
-        form.gene_panels.data = [
-            panel["panel_name"]
-            for panel in case_obj.get("panels", [])
-            if panel["is_default"] is True
-        ]
+        if form.gene_panels.data == []:
+            form.gene_panels.data = controllers.case_default_panels(case_obj)
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
