@@ -425,6 +425,50 @@ def test_case_diagnosis(app, institute_obj, case_obj):
         assert resp.status_code == 302
 
 
+def update_case_comment(app, institute_obj, case_obj, user_obj):
+    """Test the functionality that allows updating of case-specific comments"""
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+        # Given a case with a comment
+        comment = dict(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link="/cust000/643594",
+            category="case",
+            verb="comment",
+            level="specific",
+            variant=None,
+            subject=case_obj["display_name"],
+            content="a comment",
+        )
+        store.create_event(comment)
+        comment = event_collection.find_one()
+        assert old_comment
+
+        # WHEN the users updated the comment via the modal form
+        form_data = dict(event_id=old_comment("_id"), updatedContent="an updated comment")
+        resp = client.post(
+            url_for(
+                "cases.events",
+                institute_id=institute_obj["_id"],
+                case_name=case_obj["display_name"],
+                event_id=comment["_id"],
+            ),
+            data=form_data,
+        )
+
+        # THEN it should return a valid page
+        assert resp.status_code == 200
+
+        # And the comment should be updated
+        updated_comment = event_collection.find_one()
+        assert updated_comment["content"] == "an updated comment"
+
+
 def test_pdf_case_report(app, institute_obj, case_obj):
     # Test the web page containing the general case report
 
