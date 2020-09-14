@@ -367,13 +367,13 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             )
         return comment
 
-    def update_comment(self, comment_id, new_content, comment_level="specific"):
+    def update_comment(self, comment_id, new_content, level="specific"):
         """Update a case or variant comment
 
         Args:
             comment_id(str): id of comment event
             new_content(str): updated content of the comment
-            comment_level (str): 'specific' (default) or 'global'
+            level (str): 'specific' (default) or 'global'
 
         Returns:
             updated_comment(dict): The comment event that was updated
@@ -383,7 +383,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             {
                 "$set": {
                     "content": new_content,
-                    "level": comment_level,  # This may change while editing variants comments
+                    "level": level,  # This may change while editing variants comments
                     "updated_at": datetime.now(),
                 }
             },

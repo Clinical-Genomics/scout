@@ -641,7 +641,9 @@ def events(institute_id, case_name, event_id=None):
         elif "edit" in request.form:
             # edit comment
             store.update_comment(
-                comment_id=event_id, new_content=request.form.get("updatedContent")
+                comment_id=event_id,
+                new_content=request.form.get("updatedContent"),
+                level=request.form.get("level", "specific"),
             )
     else:
         if variant_id:

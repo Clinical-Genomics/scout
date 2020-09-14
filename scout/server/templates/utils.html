@@ -112,6 +112,18 @@
         <label for="commentContent">Comment content</label>
         <textarea class="form-control" name="updatedContent" id="commentContent" required="required">{{comment.content}}</textarea>
       </div>
+      <div class="row">
+        {% if comment.variant_id %}
+          <div class="col-sm-6">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="level" value="global" {{ "checked" if comment.level == "global"}} >
+                Comment globally
+              </label>
+            </div>
+          </div>
+        {% endif %}
+      </div>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
