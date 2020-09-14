@@ -17,8 +17,8 @@
       	    {% if comment.level == 'global' %}
                     <span class='badge badge-info'>GLOBAL</span>
                   {% endif %}
-      	    {% if comment.created_at < case.updated_at %}
-                    <span class='badge badge-warning'>OLD</span>
+      	    {% if comment.created_at != case.updated_at %}
+                    <span class='badge badge-secondary'>edited</span>
                   {% endif %}
       	  </small>
       	</td>
@@ -51,17 +51,19 @@
                     {% if comment.level == 'global' %}
                       <span class="badge badge-info">GLOBAL</span>
                     {% endif %}
-                    {% if comment.created_at < case.updated_at %}
-                      <span class="badge badge-warning">OLD</span>
+                    {% if comment.created_at != case.updated_at %}
+                      <span class="badge badge-secondary">edited</span>
                     {% endif %}
                     {% if comment.user_id == current_user.email %}
-                      <button class="btn btn-link btn-sm" type="submit"><i class="fa fa-remove"></i></button>
+                      <button class="btn btn-link btn-sm" type="submit" name="remove" value="{{comment._id}}"><i class="fa fa-remove"></i></button>
+                      <button class="btn btn-link btn-sm" type="button" data-toggle="modal" data-target="#editComment"><i class="fa fa-edit"></i></button>
                     {% endif %}
                   </small>
                 </form>
               </div>
             </div>
           </a>
+          {{ edit_comment(institute, case, current_user, comment) }}
         {% else %}
           <a class="list-group-item">No comments yet</a>
         {% endfor %}
@@ -91,6 +93,34 @@
       </form>
     </div>
   </div>
+{% endmacro %}
+
+{% macro edit_comment(institute, case, current_user, comment) %}
+<!-- Edit comment modal -->
+<form method="POST" action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, event_id=comment._id) }}">
+<div class="modal fade" id="editComment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Edit comment</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="commentContent">Comment content</label>
+        <textarea class="form-control" name="updatedContent" id="commentContent" required="required">{{comment.content}}</textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <button type="submit" class="btn btn-primary" name="edit">Save changes</button>
+    </div>
+  </div>
+</div>
+</div>
+</form>
 {% endmacro %}
 
 {% macro activity_panel(events) %}

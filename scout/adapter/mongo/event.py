@@ -367,6 +367,29 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             )
         return comment
 
+    def update_comment(self, comment_id, new_content, comment_level="specific"):
+        """Update a case or variant comment
+
+        Args:
+            comment_id(str): id of comment event
+            new_content(str): updated content of the comment
+            comment_level (str): 'specific' (default) or 'global'
+
+        Returns:
+            updated_comment(dict): The comment event that was updated
+        """
+        updated_comment = self.event_collection.find_one_and_update(
+            {"_id": ObjectId(comment_id)},
+            {
+                "$set": {
+                    "content": new_content,
+                    "level": comment_level,  # This may change while editing variants comments
+                    "updated_at": datetime.now(),
+                }
+            },
+        )
+        return updated_comment
+
     def comments_reupload(self, old_var, new_var, institute_obj, case_obj):
         """Creates comments for a new variant after variant reupload
 
