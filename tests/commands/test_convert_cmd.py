@@ -14,7 +14,7 @@ def test_convert_missing_args(mock_app):
     result = runner.invoke(cli, ["convert"])
 
     # It should return error message
-    assert "Missing argument 'PANEL'" in result.output
+    assert "Missing argument" in result.output
 
 
 def test_convert_wrong_path(mock_app):
