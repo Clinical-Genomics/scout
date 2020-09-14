@@ -136,34 +136,30 @@ def case(store, institute_obj, case_obj):
             hpo_term["phenotype_id"]
         )
 
-    rank_model_link_prefix = current_app.config.get("RANK_MODEL_LINK_PREFIX", "")
     if case_obj.get("rank_model_version"):
-        rank_model_link_postfix = current_app.config.get("RANK_MODEL_LINK_POSTFIX", "")
         rank_model_link = "".join(
             [
-                rank_model_link_prefix,
+                current_app.config.get("RANK_MODEL_LINK_PREFIX", ""),
                 str(case_obj["rank_model_version"]),
-                rank_model_link_postfix,
+                current_app.config.get("RANK_MODEL_LINK_POSTFIX", ""),
             ]
         )
-        print(rank_model_link)
         case_obj["rank_model_link"] = rank_model_link
-    sv_rank_model_link_prefix = current_app.config.get("SV_RANK_MODEL_LINK_PREFIX", "")
+
     if case_obj.get("sv_rank_model_version"):
-        sv_rank_model_link_postfix = current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX", "")
         case_obj["sv_rank_model_link"] = "".join(
             [
-                sv_rank_model_link_prefix,
+                current_app.config.get("SV_RANK_MODEL_LINK_PREFIX", ""),
                 str(case_obj["sv_rank_model_version"]),
-                sv_rank_model_link_postfix,
+                current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX", ""),
             ]
         )
+
     # other collaborators than the owner of the case
     o_collaborators = []
     for collab_id in case_obj.get("collaborators", []):
         if collab_id != case_obj["owner"] and store.institute(collab_id):
             o_collaborators.append(store.institute(collab_id))
-
     case_obj["o_collaborators"] = [
         (collab_obj["_id"], collab_obj["display_name"]) for collab_obj in o_collaborators
     ]
@@ -177,8 +173,7 @@ def case(store, institute_obj, case_obj):
             and collab["_id"] in institute_obj.get("collaborators")
         ]
 
-    events = list(store.events(institute_obj, case=case_obj))
-    for event in events:
+    for event in list(store.events(institute_obj, case=case_obj)):
         event["verb"] = VERBS_MAP[event["verb"]]
 
     case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
@@ -446,9 +441,7 @@ def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
     # create event only if synopsis was actually changed
     if case_obj["synopsis"] != new_synopsis:
         link = url_for(
-            "cases.case",
-            institute_id=institute_obj["_id"],
-            case_name=case_obj["display_name"],
+            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
         )
         store.update_synopsis(institute_obj, case_obj, user_obj, link, content=new_synopsis)
 
@@ -472,9 +465,7 @@ def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissu
 
     # create an associated event
     link = url_for(
-        "cases.case",
-        institute_id=institute_obj["_id"],
-        case_name=case_obj["display_name"],
+        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
     )
     store.create_event(
         institute=institute_obj,
@@ -512,9 +503,7 @@ def update_cancer_samples(
 
     # create an associated event
     link = url_for(
-        "cases.case",
-        institute_id=institute_obj["_id"],
-        case_name=case_obj["display_name"],
+        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
     )
 
     store.create_event(
