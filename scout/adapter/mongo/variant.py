@@ -263,9 +263,7 @@ class VariantHandler(VariantLoader):
 
         if case_obj:
             variant_obj = self.add_gene_info(
-                variant_obj=variant_obj,
-                gene_panels=gene_panels,
-                build=case_obj["genome_build"],
+                variant_obj=variant_obj, gene_panels=gene_panels, build=case_obj["genome_build"],
             )
         else:
             variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels)
@@ -304,10 +302,7 @@ class VariantHandler(VariantLoader):
             cohorts
         """
         mongo_variant_query = self.build_variant_query(
-            query=query,
-            institute_id=institute_id,
-            category=category,
-            variant_type=variant_type,
+            query=query, institute_id=institute_id, category=category, variant_type=variant_type,
         )
 
         sorting = [("rank_score", pymongo.DESCENDING)]
@@ -374,12 +369,7 @@ class VariantHandler(VariantLoader):
 
             query = self.case_collection.aggregate(
                 [
-                    {
-                        "$match": {
-                            "collaborators": institute_id,
-                            "causatives": {"$exists": True},
-                        }
-                    },
+                    {"$match": {"collaborators": institute_id, "causatives": {"$exists": True},}},
                     {"$unwind": "$causatives"},
                     {"$group": {"_id": "$causatives"}},
                 ]
@@ -446,21 +436,21 @@ class VariantHandler(VariantLoader):
         in a case, ensuring that they at least are carriers.
 
         Args:
-            case_obj (dict): A Case object
+            case_obj (dict): A Case object. None if checking whole inst.
             institute_obj (dict): check across the whole institute
             limit_genes (list): list of gene hgnc_ids to limit the search to
 
         Returns:
             causatives(iterable(Variant))
         """
-        affected_ids = self._find_affected(case_obj)
-        if len(affected_ids) == 0:
-            return []
 
-        if len(positional_variant_ids) == 0:
-            return []
-        filters = {"variant_id": {"$in": list(positional_variant_ids)}}
+        if len(positional_variant_ids) > 0:
+            filters = {"variant_id": {"$in": list(positional_variant_ids)}}
         if case_obj:
+            affected_ids = self._find_affected(case_obj)
+            if len(affected_ids) == 0:
+                return []
+
             filters["case_id"] = case_obj["_id"]
             filters["samples"] = {
                 "$elemMatch": {
@@ -472,7 +462,8 @@ class VariantHandler(VariantLoader):
             filters["institute"] = institute_obj["_id"]
         if limit_genes:
             filters["genes.hgnc_id"] = {"$in": limit_genes}
-        LOG.debug("Attempting filtered matching causatives query: {}".format(filters))
+
+        LOG.debug("Attempting filtered matching causatives query: %s", filters)
         return self.variant_collection.find(filters)
 
     def check_causatives(self, case_obj=None, institute_obj=None, limit_genes=None):
