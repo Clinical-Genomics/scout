@@ -173,7 +173,8 @@ def case(store, institute_obj, case_obj):
             and collab["_id"] in institute_obj.get("collaborators")
         ]
 
-    for event in list(store.events(institute_obj, case=case_obj)):
+    events = list(store.events(institute_obj, case=case_obj))
+    for event in events:
         event["verb"] = VERBS_MAP[event["verb"]]
 
     case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
@@ -441,9 +442,7 @@ def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
     # create event only if synopsis was actually changed
     if case_obj["synopsis"] != new_synopsis:
         link = url_for(
-            "cases.case",
-            institute_id=institute_obj["_id"],
-            case_name=case_obj["display_name"],
+            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
         )
         store.update_synopsis(institute_obj, case_obj, user_obj, link, content=new_synopsis)
 
@@ -467,9 +466,7 @@ def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissu
 
     # create an associated event
     link = url_for(
-        "cases.case",
-        institute_id=institute_obj["_id"],
-        case_name=case_obj["display_name"],
+        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
     )
     store.create_event(
         institute=institute_obj,
@@ -507,9 +504,7 @@ def update_cancer_samples(
 
     # create an associated event
     link = url_for(
-        "cases.case",
-        institute_id=institute_obj["_id"],
-        case_name=case_obj["display_name"],
+        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
     )
 
     store.create_event(
