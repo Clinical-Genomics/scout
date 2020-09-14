@@ -42,12 +42,6 @@ This adds a version tag, builds and submits to PyPi.
     git push origin v2.0.0
     ```
 
-1. *Skip if using GitHub Action* Publish to PyPI (Requires correct PyPI owner permissions)
-
-    ```bash
-    python setup.py upload
-    ```
-
 1. build and publish docs (Make sure no unwanted files are added when doing `git add .`, run `git status` first)
 
     ```bash
