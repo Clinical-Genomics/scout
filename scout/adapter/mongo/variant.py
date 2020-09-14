@@ -263,9 +263,7 @@ class VariantHandler(VariantLoader):
 
         if case_obj:
             variant_obj = self.add_gene_info(
-                variant_obj=variant_obj,
-                gene_panels=gene_panels,
-                build=case_obj["genome_build"],
+                variant_obj=variant_obj, gene_panels=gene_panels, build=case_obj["genome_build"],
             )
         else:
             variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels)
@@ -304,10 +302,7 @@ class VariantHandler(VariantLoader):
             cohorts
         """
         mongo_variant_query = self.build_variant_query(
-            query=query,
-            institute_id=institute_id,
-            category=category,
-            variant_type=variant_type,
+            query=query, institute_id=institute_id, category=category, variant_type=variant_type,
         )
 
         sorting = [("rank_score", pymongo.DESCENDING)]
@@ -374,12 +369,7 @@ class VariantHandler(VariantLoader):
 
             query = self.case_collection.aggregate(
                 [
-                    {
-                        "$match": {
-                            "collaborators": institute_id,
-                            "causatives": {"$exists": True},
-                        }
-                    },
+                    {"$match": {"collaborators": institute_id, "causatives": {"$exists": True},}},
                     {"$unwind": "$causatives"},
                     {"$group": {"_id": "$causatives"}},
                 ]
@@ -454,6 +444,7 @@ class VariantHandler(VariantLoader):
             causatives(iterable(Variant))
         """
 
+        filters = {}
         if len(positional_variant_ids) > 0:
             filters = {"variant_id": {"$in": list(positional_variant_ids)}}
         if case_obj:
