@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 ### Changed
+- Updated RELEASE docs.
 
 ## [4.21.2]
 ### Added
