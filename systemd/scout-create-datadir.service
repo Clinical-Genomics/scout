@@ -9,7 +9,6 @@ ConditionPathIsDirectory=!%S/scout-mongo-data/data
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-Restart=on-failure
 
 StateDirectory=scout-mongo-data
 StateDirectoryMode=0700
