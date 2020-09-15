@@ -413,7 +413,7 @@ class VariantLoader(object):
             mt_variant = "MT" in variant.CHROM
             rank_score = parse_rank_score(variant.INFO.get("RankScore"), case_obj["_id"])
             pathogenic = is_pathogenic(variant)
-            managed = self._is_managed(variant)
+            managed = self._is_managed(variant, category)
 
             # Check if the variant should be loaded at all
             # if rank score is None means there are no rank scores annotated, all variants will be loaded
