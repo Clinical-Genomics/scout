@@ -116,7 +116,7 @@ def variant(
         variant_case(store, case_obj, variant_obj)
 
     # Collect all the events for the variant
-    events = store.events(institute_obj, case=case_obj, variant_id=variant_id)
+    events = list(store.events(institute_obj, case=case_obj, variant_id=variant_id))
     for event in events:
         event["verb"] = VERBS_MAP[event["verb"]]
 
