@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
+import datetime
 import logging
-
 import operator
 
 from pymongo.errors import DuplicateKeyError, BulkWriteError
@@ -122,3 +122,33 @@ class HpoHandler(object):
 
         sorted_genes = sorted(genes.items(), key=operator.itemgetter(1), reverse=True)
         return sorted_genes
+
+    def phenomodels(self, institute_id):
+        """Return all phenopanels for a given institute
+        Args:
+            institute_id(str): institute id
+        Returns:
+            phenotype_models(pymongo.cursor.Cursor)
+        """
+        query = {"institute": institute_id}
+        phenotype_models = self.phenomodel_collection.find(query)
+        return phenotype_models
+
+    def create_phenomodel(self, institute_id, name, description):
+        """Create an empty advanced phenotype model with data provided by a user
+        Args:
+            institute_id(str): institute id
+            name(str) a model name
+            description(str) a model description
+        Returns:
+            phenomodel_obj(dict) a newly created model
+        """
+        phenomodel_obj = dict(
+            institute=institute_id,
+            name=name,
+            description=description,
+            created=datetime.datetime.now(),
+            updated=datetime.datetime.now(),
+        )
+        phenomodel_obj = self.phenomodel_collection.insert_one(phenomodel_obj)
+        return phenomodel_obj

@@ -116,3 +116,12 @@ class CaseFilterForm(FlaskForm):
     skip_assigned = BooleanField("Hide assigned")
     is_research = BooleanField("Research only")
     search = SubmitField(label="Search")
+
+
+class PhenoModelForm(FlaskForm):
+    """Base Phenopanel form, not including any subpanel"""
+
+    model_name = TextField("Phenotype panel name", validators=[validators.InputRequired()])
+    model_desc = TextField("Description", validators=[validators.Optional()])
+    # subpanels = FieldList(FormField(PhenoSubPanel()))
+    create_model = SubmitField("create")

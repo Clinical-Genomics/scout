@@ -343,22 +343,22 @@ def clinvar_submissions(store, institute_id):
     return submissions
 
 
-def update_clinvar_submission_status(store, request, institute_id, submission_id):
+def update_clinvar_submission_status(store, request_obj, institute_id, submission_id):
     """Update the status of a clinVar submission
 
     Args:
         store(adapter.MongoAdapter)
-        request(flask.request) POST request sent by form submission
+        request_obj(flask.request) POST request sent by form submission
         institute_id(str) institute id
         submission_id(str) the database id of a clinvar submission
     """
-    update_status = request.form.get("update_submission")
+    update_status = request_obj.form.get("update_submission")
 
     if update_status in ["open", "closed"]:  # open or close a submission
         store.update_clinvar_submission_status(institute_id, submission_id, update_status)
     if update_status == "register_id":  # register an official clinvar submission ID
         result = store.update_clinvar_id(
-            clinvar_id=request.form.get("clinvar_id"),
+            clinvar_id=request_obj.form.get("clinvar_id"),
             submission_id=submission_id,
         )
     if update_status == "delete":  # delete a submission

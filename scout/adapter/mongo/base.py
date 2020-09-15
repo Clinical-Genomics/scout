@@ -48,6 +48,7 @@ from .matchmaker import MMEHandler
 from .filter import FilterHandler
 from .cytoband import CytobandHandler
 
+
 log = logging.getLogger(__name__)
 
 
@@ -104,6 +105,7 @@ class MongoAdapter(
         self.transcript_collection = database.transcript
         self.filter_collection = database.filter
         self.cytoband_collection = database.cytoband
+        self.phenomodel_collection = database.phenomodel
 
     def collections(self):
         """Return all collection names
