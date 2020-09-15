@@ -173,11 +173,12 @@
           {% if variant._id %}
             <div class="row">
               <div class="col">
-                <div class="form-group row justify-content-between align-items-center">
+                <div class="form-group row align-items-center">
                   <div class="ml-3">
                     <i class="fa fa-bookmark"></i>
                       {{ pretty_link_variant(variant, case) }}
                   </div>
+                  <div style="padding: 0 10px 3px 10px">
                   {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
                     <span class="badge badge-default">Verification ordered</span>
                   {% elif variant.sanger_ordered %}
@@ -188,6 +189,7 @@
                   {% if variant.mosaic_tags %}
                     <span class="badge badge-info">mosaic</span>
                   {% endif %}
+                  </div>
                 </div>
               </div>
               {% if variant.tumor %}
@@ -196,7 +198,7 @@
               {% if variant.normal %}
                 {{ allele_div(variant.normal, "Normal") }}
               {% endif %}
-              <div class="col-2">
+              <div class="col-5">
               <form action="{{ url_for('cases.mark_validation',
                                          institute_id=variant.institute,
                                          case_name=case.display_name,
