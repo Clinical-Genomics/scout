@@ -406,7 +406,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             updated_at=datetime.now(),
         )
         self.event_collection.insert_one(event)
-        return event
+        return updated_comment
 
     def comments_reupload(self, old_var, new_var, institute_obj, case_obj):
         """Creates comments for a new variant after variant reupload
