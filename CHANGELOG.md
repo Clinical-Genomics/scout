@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Editable cases comments
 - Editable variants comments
 ### Fixed
+- Empty variant activity panel
 ### Changed
 
 ## [4.21.2]
