@@ -26,7 +26,7 @@ from scout.constants import (
 from scout.constants import CASE_SEARCH_TERMS
 from scout.server.extensions import store
 from scout.server.utils import user_institutes, templated, institute_and_case
-from .forms import InstituteForm, GeneVariantFiltersForm, PhenoModelForm
+from .forms import InstituteForm, GeneVariantFiltersForm, PhenoModelForm, PhenoSubPanelForm
 
 LOG = logging.getLogger(__name__)
 
@@ -398,8 +398,6 @@ def remove_phenomodel():
 @templated("overview/phenomodel.html")
 def phenomodel(institute_id, model_id):
     """View/Edit an advanced phenotype model"""
-
-    """
     institute_obj = institute_and_case(store, institute_id)
 
     pheno_form = PhenoModelForm(request.form)
@@ -407,22 +405,16 @@ def phenomodel(institute_id, model_id):
     hide_subpanel = True
 
     if request.method == "POST":
-        if request.form.get("update_model"):  # update main model
-            controllers.update_phenomodel(store, institute_id, request)
+        # update an existing phenotype model
+        updated_info = controllers.update_phenomodel(model_id, request.form)
 
-        if request.form.get("add_subpanel"):  # new subpanel
-            if subpanel_form.validate_on_submit() is False:
-                hide_subpanel = False
-            else:
-                # create submodel
-                updated_model = controllers.create_submodel(store, model_id, request)
-                if updated_model is None:
-                    flash(
-                        "An error occurred while generating the submodel. Make sure that no other subpanel has the same title",
-                        "warning",
-                    )
+    phenomodel_obj = store.phenomodel(model_id)
+    if phenomodel_obj is None:
+        flash(
+            f"Could not retrieve given phenotype model using the given key '{model_id}'", "warning"
+        )
+        return redirect(request.referrer)
 
-    phenomodel_obj = controllers.phenomodel(store, model_id)
     if pheno_form.model_name.data == "":
         pheno_form.model_name.data = phenomodel_obj["name"]
         pheno_form.model_desc.data = phenomodel_obj["description"]
@@ -432,7 +424,5 @@ def phenomodel(institute_id, model_id):
         pheno_form=pheno_form,
         phenomodel=phenomodel_obj,
         subpanel_form=subpanel_form,
-        hide_subpanel=hide_subpanel,
+        show_subpanel=bool(request.form.get("add_subpanel")) and subpanel_form.validate_on_submit(),
     )
-    """
-    return "meh"

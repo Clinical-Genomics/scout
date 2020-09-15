@@ -12,8 +12,8 @@ from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.utils import predictions
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
+from scout.utils.md5 import generate_md5_key
 from .forms import CaseFilterForm
-
 
 TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
 
@@ -514,3 +514,31 @@ def hgvs_str(gene_symbols, hgvs_p, hgvs_c):
     if hgvs_c[0] != "None":
         return hgvs_c[0]
     return "-"
+
+
+def update_phenomodel(model_id, user_form):
+    """Update a phenotype model accrofing to the user form
+
+    Args:
+        model_id(ObjectId): document ID of the model to be updated
+        user_form(request.form): a POST request form object
+    Returns:
+        updated_model(dict): An updated phenotype model dictionary
+    """
+    model_obj = store.phenomodel(model_id)
+    if model_obj is None:
+        return
+    if user_form.get("update_model"):  # update either model name of description
+        model_obj["name"] = user_form.get("model_name")
+        model_obj["description"] = user_form.get("model_desc")
+    elif user_form.get("add_subpanel"):  # Add a new phenotype subpanel
+        subpanel_key = generate_md5_key([model_id, user_form.get("title")])
+        subpanel_obj = {
+            "title": user_form.get("title"),
+            "subtitle": user_form.get("subtitle"),
+            "created": datetime.datetime.now(),
+            "updated": datetime.datetime.now(),
+        }
+        model_obj["submodels"][subpanel_key] = subpanel_obj
+
+    store.update_phenomodel(model_id=model_id, model_obj=model_obj)

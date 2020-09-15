@@ -2,9 +2,9 @@
 import datetime
 import logging
 import operator
-
+from bson import ObjectId
 from pymongo.errors import DuplicateKeyError, BulkWriteError
-from pymongo import ASCENDING
+import pymongo
 
 from scout.exceptions import IntegrityError
 
@@ -96,7 +96,11 @@ class HpoHandler(object):
             search_term = hpo_term
 
         limit = limit or int(10e10)
-        res = self.hpo_term_collection.find(query_dict).limit(limit).sort("hpo_number", ASCENDING)
+        res = (
+            self.hpo_term_collection.find(query_dict)
+            .limit(limit)
+            .sort("hpo_number", pymongo.ASCENDING)
+        )
 
         return res
 
@@ -147,8 +151,43 @@ class HpoHandler(object):
             institute=institute_id,
             name=name,
             description=description,
+            submodels={},
             created=datetime.datetime.now(),
             updated=datetime.datetime.now(),
         )
         phenomodel_obj = self.phenomodel_collection.insert_one(phenomodel_obj)
         return phenomodel_obj
+
+    def update_phenomodel(self, model_id, model_obj):
+        """Update a phenotype model using its ObjectId
+        Args:
+            model_id(ObjectId): document ObjectId
+            model_obj(dict): a dictionary of key/values to update a phenomodel with
+
+        Returns:
+            updated_model(dict): the phenomodel document after the update
+        """
+        updated_model = self.phenomodel_collection.find_one_and_update(
+            {"_id": ObjectId(model_id)},
+            {
+                "$set": {
+                    "name": model_obj["name"],
+                    "description": model_obj["description"],
+                    "submodels": model_obj.get("submodels", {}),
+                    "updated": datetime.datetime.now(),
+                }
+            },
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
+        return updated_model
+
+    def phenomodel(self, model_id):
+        """Retrieve a phenomodel object using its ObjectId
+        Args:
+            model_id(ObjectId): document ObjectId
+        Returns
+            model_obj(dict)
+        """
+        query = {"_id": ObjectId(model_id)}
+        model_obj = self.phenomodel_collection.find_one(query)
+        return model_obj

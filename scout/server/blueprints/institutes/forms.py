@@ -123,5 +123,12 @@ class PhenoModelForm(FlaskForm):
 
     model_name = TextField("Phenotype panel name", validators=[validators.InputRequired()])
     model_desc = TextField("Description", validators=[validators.Optional()])
-    # subpanels = FieldList(FormField(PhenoSubPanel()))
     create_model = SubmitField("create")
+
+
+class PhenoSubPanelForm(FlaskForm):
+    """A form corresponfing to a phenopanel sub-panel"""
+
+    title = TextField("Subpanel title", validators=[validators.InputRequired()])
+    subtitle = TextField("Subpanel subtitle", validators=[validators.Optional()])
+    add_subpanel = SubmitField("save subpanel")
