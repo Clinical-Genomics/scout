@@ -178,7 +178,7 @@
                     <i class="fa fa-bookmark"></i>
                       {{ pretty_link_variant(variant, case) }}
                   </div>
-                  <div style="padding: 0 10px 3px 10px">
+                  <div style="padding: 0 10px 3px">
                   {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
                     <span class="badge badge-default">Verification ordered</span>
                   {% elif variant.sanger_ordered %}
