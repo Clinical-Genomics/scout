@@ -85,6 +85,56 @@ def test_variant_update_manual_rank(app, case_obj, variant_obj, institute_obj):
         assert resp.status_code == 302
 
 
+def test_edit_variants_comments(app, institute_obj, case_obj, user_obj, variant_obj):
+    """Test the functionality to modify a variants comment"""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        ## GIVEN a variant with a specific comment
+        store.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            variant=variant_obj,
+            link="a link",
+            category="variant",
+            verb="comment",
+            content="a specific comment",
+            subject=variant_obj["display_name"],
+            level="specific",
+        )
+        comment = store.event_collection.find_one({"verb": "comment"})
+        assert comment
+        assert comment["level"] == "specific"
+
+        # WHEN a user updates the comment via the modal form
+        form_data = {
+            "event_id": comment["_id"],
+            "updatedContent": "a global comment",
+            "edit": "",
+            "level": "global",
+        }
+        resp = client.post(
+            url_for(
+                "cases.events",
+                institute_id=institute_obj["_id"],
+                case_name=case_obj["display_name"],
+                event_id=comment["_id"],
+            ),
+            data=form_data,
+        )
+        # THEN it should redirect to case page
+        assert resp.status_code == 302
+
+        # And the comment should be updated
+        updated_comment = store.event_collection.find_one()
+        assert updated_comment["content"] == "a global comment"
+        assert updated_comment["level"] == "global"
+
+
 def test_variant_update_cancer_tier(app, case_obj, variant_obj, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
