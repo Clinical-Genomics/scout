@@ -113,7 +113,7 @@ class GeneHandler(object):
             search(bool): if partial searching should be used
 
         Returns:
-            result()
+            pymongo.cursor
         """
         LOG.debug("Fetching genes with symbol %s" % hgnc_symbol)
         if search:

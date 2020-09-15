@@ -173,8 +173,8 @@ class VariantHandler(VariantLoader):
             skip(int): How many variants to skip
             sort_key: ['variant_rank', 'rank_score', 'position']
 
-        Yields:
-            result(Iterable[Variant])
+        Returns:
+             pymongo.cursor
         """
         LOG.debug("Fetching variants from {0}".format(case_id))
 

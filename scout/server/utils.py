@@ -190,3 +190,12 @@ def find_index(align_file):
         if not os.path.exists(index_file):
             index_file = "{}.bai".format(align_file)
     return index_file
+
+
+def count_cursor(cursor):
+    """Count objects at cursor."""
+    # Replaces depricated call to Pymongo.cursor.count()
+    # Clone cursor to not interfer with other queries
+    new_cursor = cursor.clone() # Clone cursor, otherwise original will move
+    return sum(1 for i in new_cursor)
+

@@ -29,7 +29,7 @@ from scout.constants import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
 )
 from scout.server.extensions import store
-from scout.server.utils import institute_and_case, templated
+from scout.server.utils import institute_and_case, templated, count_cursor
 
 from . import controllers
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
@@ -164,7 +164,7 @@ def variants(institute_id, case_name):
 
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
-    session["filtered_variants"] = variants_query.count()
+    session["filtered_variants"] = count_cursor(variants_query)
 
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
@@ -183,6 +183,7 @@ def variants(institute_id, case_name):
         expand_search=str(request.method == "POST"),
         **data,
     )
+
 
 
 @variants_bp.route("/<institute_id>/<case_name>/str/variants")
@@ -256,7 +257,7 @@ def sv_variants(institute_id, case_name):
 
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
-    session["filtered_variants"] = variants_query.count()
+    session["filtered_variants"] = count_cursor(variants_query)
 
     # if variants should be exported
     if request.form.get("export"):
@@ -379,16 +380,13 @@ def cancer_sv_variants(institute_id, case_name):
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
-
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
-
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
-
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
 
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
-    session["filtered_variants"] = variants_query.count()
+    session["filtered_variants"] = count_cursor(variants_query)
 
     # if variants should be exported
     if request.form.get("export"):

@@ -33,30 +33,24 @@ from scout.server.blueprints.variant.utils import predictions
 from scout.server.links import add_gene_links, add_tx_links, ensembl, cosmic_link
 from scout.server.utils import (
     case_append_alignments,
+    count_cursor,
     institute_and_case,
     user_institutes,
     variant_case,
 )
 from scout.utils.scout_requests import fetch_refseq_version
 
-from .forms import (
-    CancerFiltersForm,
-    FiltersForm,
-    StrFiltersForm,
-    SvFiltersForm,
-    VariantFiltersForm,
-)
+from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
 LOG = logging.getLogger(__name__)
 
 
 def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of variants."""
-    variant_count = variants_query.count()
+    variant_count = count_cursor(variants_query)
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = variants_query.skip(skip_count).limit(per_page)
-
     genome_build = str(case_obj.get("genome_build", "37"))
     if genome_build not in ["37", "38"]:
         genome_build = "37"
@@ -86,21 +80,13 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
             variant_obj["research_assessments"] = get_manual_assessments(variant_obj)
 
             clinical_var_obj = store.variant(
-                case_id=case_obj["_id"],
-                simple_id=variant_obj["simple_id"],
-                variant_type="clinical",
+                case_id=case_obj["_id"], simple_id=variant_obj["simple_id"], variant_type="clinical"
             )
 
         variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
-
         variants.append(
             parse_variant(
-                store,
-                institute_obj,
-                case_obj,
-                variant_obj,
-                update=True,
-                genome_build=genome_build,
+                store, institute_obj, case_obj, variant_obj, update=True, genome_build=genome_build
             )
         )
 
@@ -110,22 +96,19 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
 def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
     """Pre-process list of SV variants."""
     skip_count = per_page * max(page - 1, 0)
-    more_variants = True if variants_query.count() > (skip_count + per_page) else False
-
+    variant_count = count_cursor(variants_query)
+    more_variants = True if variant_count > (skip_count + per_page) else False
+    variants = []
     genome_build = str(case_obj.get("genome_build", "37"))
     if genome_build not in ["37", "38"]:
         genome_build = "37"
-
-    variants = []
 
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
         # show previous classifications for research variants
         clinical_var_obj = variant_obj
         if variant_obj["variant_type"] == "research":
             clinical_var_obj = store.variant(
-                case_id=case_obj["_id"],
-                simple_id=variant_obj["simple_id"],
-                variant_type="clinical",
+                case_id=case_obj["_id"], simple_id=variant_obj["simple_id"], variant_type="clinical"
             )
         if clinical_var_obj is not None:
             variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
@@ -211,8 +194,7 @@ def get_manual_assessments(variant_obj):
                     if not isinstance(reason, int):
                         reason = int(reason)
                     assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                        MOSAICISM_OPTIONS[reason]["label"],
-                        MOSAICISM_OPTIONS[reason]["description"],
+                        MOSAICISM_OPTIONS[reason]["label"], MOSAICISM_OPTIONS[reason]["description"]
                     )
                 assessment["display_class"] = "secondary"
 
@@ -233,13 +215,7 @@ def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_pag
 
 
 def parse_variant(
-    store,
-    institute_obj,
-    case_obj,
-    variant_obj,
-    update=False,
-    genome_build="37",
-    get_compounds=True,
+    store, institute_obj, case_obj, variant_obj, update=False, genome_build="37", get_compounds=True
 ):
     """Parse information about variants.
     - Adds information about compounds
@@ -290,10 +266,7 @@ def parse_variant(
         variant_obj = store.update_variant(variant_obj)
 
     variant_obj["comments"] = store.events(
-        institute_obj,
-        case=case_obj,
-        variant_id=variant_obj["variant_id"],
-        comments=True,
+        institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True
     )
 
     if variant_genes:
@@ -347,9 +320,7 @@ def download_variants(store, case_obj, variant_objs):
     )
     # return a csv with the exported variants
     return Response(
-        generate(",".join(document_header), export_lines),
-        mimetype="text/csv",
-        headers=headers,
+        generate(",".join(document_header), export_lines), mimetype="text/csv", headers=headers
     )
 
 
@@ -496,24 +467,27 @@ def cancer_variants(store, institute_id, case_name, variants_query, form, page=1
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     per_page = 50
     skip_count = per_page * max(page - 1, 0)
-
-    variant_count = variants_query.count()
-
+    variant_count = count_cursor(variants_query)
+    more_variants = True if variant_count > (skip_count + per_page) else False
+    
     # Setup variant count session with variant count by category
     variant_count_session(store, institute_id, case_obj["_id"], "clinical", "cancer")
     session["filtered_variants"] = variant_count
-
-    more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = variants_query.skip(skip_count).limit(per_page)
+
+    variants_list = []
+
+    for variant in variant_res:
+        elem = parse_variant(store, institute_obj, case_obj, variant, update=True)
+        variants_list.append(elem)
+
+    
     data = dict(
         page=page,
         more_variants=more_variants,
         institute=institute_obj,
         case=case_obj,
-        variants=(
-            parse_variant(store, institute_obj, case_obj, variant, update=True)
-            for variant in variant_res
-        ),
+        variants=variants_list,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
         form=form,
@@ -586,7 +560,7 @@ def upload_panel(store, institute_id, case_name, stream):
     # check if supplied gene symbols exist
     hgnc_symbols = []
     for raw_symbol in raw_symbols:
-        if store.hgnc_genes(raw_symbol).count() == 0:
+        if count_cursor(store.hgnc_genes(raw_symbol)) == 0:
             flash("HGNC symbol not found: {}".format(raw_symbol), "warning")
         else:
             hgnc_symbols.append(raw_symbol)
@@ -867,9 +841,7 @@ def activate_case(store, institute_obj, case_obj, current_user):
 
         user_obj = store.user(current_user.email)
         case_link = url_for(
-            "cases.case",
-            institute_id=institute_obj["_id"],
-            case_name=case_obj["display_name"],
+            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
         )
         store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
 

@@ -11,7 +11,7 @@ from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_li
 from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.utils import predictions
 from scout.server.extensions import store
-from scout.server.utils import user_institutes
+from scout.server.utils import user_institutes, count_cursor
 from .forms import CaseFilterForm
 
 
@@ -279,18 +279,16 @@ def get_sanger_unevaluated(store, institute_id, user_id):
     return unevaluated
 
 
-def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
+def gene_variants(store, pymongo_cursor, institute_id, page=1, per_page=50):
     """Pre-process list of variants."""
 
-    # We need to call variants_collection.count_documents here
-    variant_count = variants_query.count()
+    variant_count = count_cursor(pymongo_cursor)
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
-    variant_res = variants_query.skip(skip_count).limit(per_page)
-
+    variant_res = pymongo_cursor.skip(skip_count).limit(per_page)
     my_institutes = set(inst["_id"] for inst in user_institutes(store, current_user))
-
     variants = []
+
     for variant_obj in variant_res:
         # Populate variant case_display_name
         variant_case_obj = store.case(case_id=variant_obj["case_id"])

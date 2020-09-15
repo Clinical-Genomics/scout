@@ -109,9 +109,9 @@ class MongoAdapter(
         """Return all collection names
 
         Returns:
-            collection_names(list(str))
+            list_collection_names(list(str))
         """
-        return self.db.collection_names(include_system_collections=False)
+        return self.db.list_collection_names(include_system_collections=False)
 
     def __str__(self):
         return "MongoAdapter(db={0})".format(self.db)
