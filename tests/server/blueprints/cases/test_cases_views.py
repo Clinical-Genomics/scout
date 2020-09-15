@@ -383,9 +383,14 @@ def test_update_case_comment(app, institute_obj, case_obj, user_obj):
         # THEN it should redirect to case page
         assert resp.status_code == 302
 
-        # And the comment should be updated
-        updated_comment = store.event_collection.find_one()
+        # The comment should be updated
+        updated_comment = store.event_collection.find_one({"_id": comment["_id"]})
         assert updated_comment["content"] == "an updated comment"
+
+        # And a comment updated event should have been created in the event collection
+        updated_var_event = store.event_collection.find_one({"verb": "comment_update"})
+        # With the same subject of the comment
+        assert updated_var_event["subject"] == updated_comment["subject"]
 
 
 def test_download_hpo_genes(app, case_obj, institute_obj):

@@ -388,7 +388,23 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
                 }
             },
         )
-        return updated_comment
+        # create an event to register that user has updated a comment
+        event = dict(
+            institute=updated_comment["institute"],
+            case=updated_comment["case"],
+            user_id=updated_comment["user_id"],
+            user_name=updated_comment["user_name"],
+            link=updated_comment["link"],
+            category=updated_comment["category"],
+            verb="comment_update",
+            subject=updated_comment["subject"],
+            level=updated_comment["level"],
+            variant_id=updated_comment.get("variant_id", None),
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+        )
+        self.event_collection.insert_one(event)
+        return event
 
     def comments_reupload(self, old_var, new_var, institute_obj, case_obj):
         """Creates comments for a new variant after variant reupload
