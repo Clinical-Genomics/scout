@@ -540,5 +540,11 @@ def update_phenomodel(model_id, user_form):
             "updated": datetime.datetime.now(),
         }
         model_obj["submodels"][subpanel_key] = subpanel_obj
+    elif "add_hpo" in user_form:
+        hpo_id = user_form.get("hpo_term").split(" ")[0]
+        hpo_obj = store.hpo_term(hpo_id)
+        if hpo_obj is None:
+            flash("Please specify a valid HPO term", "warning")
+            return
 
     store.update_phenomodel(model_id=model_id, model_obj=model_obj)
