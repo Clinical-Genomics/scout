@@ -400,6 +400,8 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             subject=updated_comment["subject"],
             level=updated_comment["level"],
             variant_id=updated_comment.get("variant_id", None),
+            content=None,
+            panel=None,
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
