@@ -61,7 +61,7 @@
                       <span class='badge badge-secondary'>edited</span>
                     {% endif %}
                     {% if comment.user_id == current_user.email %}
-                      <button class="btn btn-link btn-sm" type="submit" name="remove" value="{{comment._id}}"><i class="fa fa-remove"></i></button>
+                      <button class="btn btn-link btn-sm" type="submit" name="remove"><i class="fa fa-remove"></i></button>
                       <button class="btn btn-link btn-sm" type="button" data-toggle="modal" data-target="#editComment"><i class="fa fa-edit"></i></button>
                     {% endif %}
                   </small>
