@@ -347,6 +347,52 @@ def test_case_synopsis(app, institute_obj, case_obj):
         assert resp.status_code == 302
 
 
+def test_update_case_comment(app, institute_obj, case_obj, user_obj):
+    """Test the functionality that allows updating of case-specific comments"""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        ## GIVEN a case with a comment
+        store.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link="a link",
+            category="case",
+            verb="comment",
+            subject=case_obj["display_name"],
+            level="specific",
+        )
+        comment = store.event_collection.find_one({"verb": "comment"})
+        assert comment
+
+        # WHEN a user updates the comment via the modal form
+        form_data = {"event_id": comment["_id"], "updatedContent": "an updated comment", "edit": ""}
+        resp = client.post(
+            url_for(
+                "cases.events",
+                institute_id=institute_obj["_id"],
+                case_name=case_obj["display_name"],
+                event_id=comment["_id"],
+            ),
+            data=form_data,
+        )
+        # THEN it should redirect to case page
+        assert resp.status_code == 302
+
+        # The comment should be updated
+        updated_comment = store.event_collection.find_one({"_id": comment["_id"]})
+        assert updated_comment["content"] == "an updated comment"
+
+        # And a comment updated event should have been created in the event collection
+        updated_var_event = store.event_collection.find_one({"verb": "comment_update"})
+        # With the same subject of the comment
+        assert updated_var_event["subject"] == updated_comment["subject"]
+
+
 def test_download_hpo_genes(app, case_obj, institute_obj):
     """Test the endpoint that downloads the dynamic gene list for a case"""
 
