@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 ### Fixed
+- Empty variant activity panel
 ### Changed
 - Pinned variants card style on the case page
 
