@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Empty variant activity panel
 ### Changed
+- Pinned variants card style on the case page
 
 ## [4.21.2]
 ### Added
