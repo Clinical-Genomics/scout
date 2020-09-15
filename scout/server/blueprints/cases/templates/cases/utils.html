@@ -154,8 +154,8 @@
 
 {% macro allele_div(allele, type) %}
   {% if 'alt_freq' in allele %}
-    <div class="col-2" data-toggle="tooltip" data-placement="top" title="{{ type }} alternative AF ">
-      {{ allele.alt_freq|round(4) }}
+    <div class="col-1.5" data-toggle="tooltip" data-placement="top" title="{{ type }} alternative AF ">
+      <div style="padding: 0 15px">{{ allele.alt_freq|round(4) }}</div>
     </div>
   {% endif %}
 {% endmacro %}
@@ -198,7 +198,7 @@
               {% if variant.normal %}
                 {{ allele_div(variant.normal, "Normal") }}
               {% endif %}
-              <div class="col-5">
+              <div class="col-3.5">
               <form action="{{ url_for('cases.mark_validation',
                                          institute_id=variant.institute,
                                          case_name=case.display_name,
