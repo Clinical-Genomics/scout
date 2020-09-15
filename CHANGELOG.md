@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Editable cases comments
+- Editable variants comments
 ### Fixed
 - Empty variant activity panel
 ### Changed
