@@ -115,12 +115,15 @@ def parse_coordinates(variant, category, build="37"):
 
     Args:
         variant(cyvcf2.Variant)
-        category(str): snv, sv
+        category(str): snv, sv, str, cancer, cancer_sv
         build(str): "37" or "38"
 
     Returns:
         coordinates(dict): A dictionary on the form:
         {
+            'chrom':<str>,
+            'ref':<str>,
+            'alt':<str>,
             'position':<int>,
             'end':<int>,
             'end_chrom':<str>,
@@ -142,7 +145,8 @@ def parse_coordinates(variant, category, build="37"):
 
     position = int(variant.POS)
 
-    ref_len = len(variant.REF)
+    ref = variant.REF
+    ref_len = len(ref)
     alt_len = len(alt)
 
     if category in {"sv", "cancer_sv"}:
@@ -175,7 +179,10 @@ def parse_coordinates(variant, category, build="37"):
             abs(ref_len - alt_len)
 
     coordinates = {
+        "chrom": chrom,
         "position": position,
+        "ref": ref,
+        "alt": alt,
         "end": end,
         "length": length,
         "sub_category": sub_category,
