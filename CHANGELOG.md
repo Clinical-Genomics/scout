@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Managed variants
 ### Fixed
+- Empty variant activity panel
 ### Changed
 
 ## [4.21.2]
