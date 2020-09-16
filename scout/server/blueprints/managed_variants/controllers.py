@@ -36,14 +36,31 @@ def add_managed_variant(store, add_form, institutes, current_user_id):
         )
     )
 
-    result = store.upsert_managed_variant(managed_variant_obj)
-    return result
+    return store.upsert_managed_variant(managed_variant_obj)
 
 
-def modify_managed_variant(store, managed_variant, edit_form):
+def modify_managed_variant(store, managed_variant_id, edit_form):
     """Modify a managed variant."""
 
-    return
+    managed_variant = store.managed_variant(managed_variant_id)
+
+    if managed_variant is None:
+        return
+
+    managed_variant.update(
+        {
+            "chromosome": edit_form["chromosome"].data,
+            "position": edit_form["position"].data,
+            "end": edit_form["end"].data,
+            "reference": edit_form["reference"].data,
+            "alternative": edit_form["alternative"].data,
+            "category": edit_form["category"].data,
+            "sub_category": edit_form["sub_category"].data,
+            "description": edit_form["description"].data,
+        }
+    )
+
+    return store.upsert_managed_variant(managed_variant)
 
 
 def remove_managed_variant(store, variant_id):
