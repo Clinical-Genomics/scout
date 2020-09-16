@@ -132,6 +132,8 @@ def variant(
             causative for causative in store.other_causatives(case_obj, variant_obj)
         ]
 
+    managed_variant = store.find_managed_variant_id(variant_obj["variant_id"])
+
     # Gather display information for the genes
     variant_obj.update(predictions(variant_obj.get("genes", [])))
 
@@ -210,6 +212,7 @@ def variant(
         "variant": variant_obj,
         variant_category: True,
         "causatives": other_causatives,
+        "managed_variant": managed_variant,
         "events": events,
         "overlapping_vars": overlapping_vars,
         "manual_rank_options": MANUAL_RANK_OPTIONS,

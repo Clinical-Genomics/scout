@@ -108,7 +108,7 @@ class ManagedVariantHandler(object):
         return managed_variant
 
     def find_managed_variant_id(self, variant_id):
-        """Fetch eg search for a managed variant with the encoded variant_id.
+        """Fetch eg search for a managed variant with the encoded positional variant_id.
 
         Arguments:
             display_id(str): chrom_pos_ref_alt_category_build
