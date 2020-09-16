@@ -32,17 +32,17 @@
   </li>
 {% endblock %}
 
-{% macro hpo_search() %}
+{% macro hpo_search(hpo_search) %}
   <div class="row d-flex align-items-center">
     <div class="form-group col-6">
       <input type="text" class="typeahead_hpo form-control" name="hpo_term" id="hpo_term" data-provide="typeahead" autocomplete="off" placeholder="Search HPO phenotype..">
     </div>
     <div class="form-group col-3">
-    <input type="checkbox" class="form-check-input" id="includeChildren" name="includeChildren" checked>
+    <input type="checkbox" class="form-check-input" id="includeChildren" name="includeChildren">
     <label class="form-check-label" for="includeChildren">Include term children</label>
   </div>
     <div class="form-group col-3">
-      <button type="submit" name="add_hpo" class="btn btn-outline-secondary btn">Add HPO term</button>
+      <button type="submit" name="add_hpo" value="{{hpo_search}}" class="btn btn-secondary btn-sm">Add HPO term</button>
     </div>
   </div>
 {% endmacro %}
@@ -96,8 +96,8 @@
 {% endmacro %}
 
 {% macro subpanels_macro()%}
-  {%if phenomodel.submodels %}
-    {% for submodel_id, submodel in phenomodel.submodels.items()%}
+  {%if phenomodel.subpanels %}
+    {% for submodel_id, submodel in phenomodel.subpanels.items()%}
       <div class="card mt-3">
         <div class="card-body">
           <div class="row">
@@ -110,20 +110,26 @@
             <div class="col-9">
               <!-- HPO term search -->
               <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
-                {{ hpo_search() }}
+                {{ hpo_search(submodel_id) }}
               </form>
               <!-- end of HPO term search -->
               <table class="table table-striped">
-              {% if "hpo_groups" in submodel %}
-                {% for term_id, term_obj in submodel.hpo_groups.items() %}
+              {% if "checkboxes" in submodel %}
+                Checkbox groups:
+                {% for term_id, term_obj in submodel.checkboxes.items() %}
                   <tr>
                     <td>
-                      <input type="checkbox" id="{{term_id}}" name="{{term_id}}">
-                      <label for="{{term_tree}}">{{ term_id }}<strong>({{term_obj.description}})</strong></label>
-                      <div style="margin-left: 35px">
+                      <div>
+                        <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+                          <a href="#" onclick="toggleDiv('div_{{term_id}}')">{{term_id}}</a><strong>({{term_obj.description}})</strong>
+                          <!--button to remove a checkbox group-->
+                          <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}"><i class="fa fa-times"></i></button>
+                        </form>
+                      </div>
+                      <div style="margin-left: 35px; display: none;" id="div_{{term_id}}">
                         {% for item in term_obj.children recursive %}
                           <li class="tree">
-                            <label for="{{item.name}}">{{ item.name }}<strong>({{item.description}})</strong></label>
+                            <label for="div_{{term_id}}">{{ item.name }}<strong>({{item.description}})</strong></label>
                             {%- if item.children -%}
                               <ul class="tree">{{ loop(item.children) }}</ul>
                             {%- endif %}
@@ -137,7 +143,7 @@
               </table>
             </div> <!--end of phenotype tree column div-->
           </div> <!--end of div row-->
-          <div class="d-flex flex-row-reverse">
+          <div class="d-flex flex-row ml-3">
             <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
               <button type="submit" class="button btn btn-danger btn-sm" name="subpanel_delete" value="{{submodel_id}}"><i class="fa fa-times"></i> Remove submodel</button>
             </form
@@ -162,18 +168,29 @@
 
 {% block scripts %}
 {{ super() }}
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
-<script>
+<script type="text/javascript">
   function getHpoTerms(query, process) {
     $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
       process(data)
     });
   };
 
+  function toggleDiv(divName){
+    var div = document.getElementById(divName);
+    if (div.style.display === "none") {
+      div.style.display = "block";
+    } else {
+      div.style.display = "none";
+    }
+  }
+
   $(".typeahead_hpo").typeahead({
     name: 'hpo_term',
     source: getHpoTerms,
     minLength: 3,
   });
+
 </script>
 {% endblock %}

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from anytree import RenderTree, Node, search, resolver
+from anytree.exporter import DictExporter
 import datetime
 import logging
 import operator
@@ -151,7 +153,7 @@ class HpoHandler(object):
             institute=institute_id,
             name=name,
             description=description,
-            submodels={},
+            subpanels={},
             created=datetime.datetime.now(),
             updated=datetime.datetime.now(),
         )
@@ -173,7 +175,7 @@ class HpoHandler(object):
                 "$set": {
                     "name": model_obj["name"],
                     "description": model_obj["description"],
-                    "submodels": model_obj.get("submodels", {}),
+                    "subpanels": model_obj.get("subpanels", {}),
                     "updated": datetime.datetime.now(),
                 }
             },
@@ -191,3 +193,48 @@ class HpoHandler(object):
         query = {"_id": ObjectId(model_id)}
         model_obj = self.phenomodel_collection.find_one(query)
         return model_obj
+
+    def build_phenotype_tree(self, hpo_id):
+        """Creates an HPO Tree based on one or more given ancestors
+        Args:
+            hpo_id(str): an HPO term
+        Returns:
+            hpo_tree(treelib.Tree): a tree of all HPO children of the given term
+        """
+        root = Node(id="root", name="root", parent=None)
+        all_terms = {}
+        unique_terms = set()
+
+        def _hpo_terms_list(hpo_ids):
+            for id in hpo_ids:
+                term_obj = self.hpo_term(id)
+                if term_obj is None:
+                    continue
+                all_terms[id] = term_obj
+                if id not in unique_terms:
+                    node = Node(id, parent=root, description=term_obj["description"])
+                    unique_terms.add(id)
+                _hpo_terms_list(term_obj["children"])
+
+        # compile a list of all HPO term objects to include in the submodel
+        _hpo_terms_list([hpo_id])
+        node_resolver = resolver.Resolver("name")
+
+        # Move tree nodes in the right position according to the ontology
+        for key, term in all_terms.items():
+            ancestors = term["ancestors"]
+            if len(ancestors) == 0:
+                continue
+            for ancestor in ancestors:
+                LOG.info(f"Look for ancestor node:{ancestor}")
+                ancestor_node = search.find(root, lambda node: node.name == ancestor)
+                if ancestor_node is None:  # It's probably the term on the top
+                    continue
+                node = search.find(root, lambda node: node.name == key)
+                node.parent = ancestor_node
+
+        term_node = node_resolver.get(root, hpo_id)
+        LOG.info(f"Built ontology for HPO term:{hpo_id}:\n{RenderTree(term_node)}")
+        exporter = DictExporter()
+        tree_dict = exporter.export(term_node)
+        return tree_dict
