@@ -1,8 +1,7 @@
 import logging
 import datetime
 
-from flask import abort, Blueprint, request, redirect, url_for, flash, render_template
-from flask_weasyprint import HTML, render_pdf
+from flask import Blueprint, request, redirect, url_for, flash
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -36,6 +35,33 @@ def managed_variants():
         modify_form=modify_form,
         **data,
     )
+
+
+@managed_variants_bp.route("/upload_csv", methods=["POST"])
+def upload_managed_variants():
+    institutes = list(user_institutes(store, current_user))
+
+    csv_file = request.files["csv_file"]
+    content = csv_file.stream.read()
+    lines = None
+    try:
+        if b"\n" in content:
+            lines = content.decode("utf-8-sig", "ignore").split("\n")
+        else:
+            lines = content.decode("windows-1252").split("\r")
+    except Exception as err:
+        flash(
+            "Something went wrong while parsing the panel CSV file! ({})".format(err),
+            "danger",
+        )
+        return redirect(request.referrer)
+
+    result = controllers.upload_managed_variants(store, lines, institutes, current_user._id)
+    flash(
+        "In total {} new variants out of {} in file added".format(result[0], result[1]), "success"
+    )
+
+    return redirect(request.referrer)
 
 
 @managed_variants_bp.route("/managed_variant/<variant_id>/modify", methods=["POST"])

@@ -37,6 +37,26 @@
   </div>
 </form>
 
+<form method="POST" id="load_form" action="{{url_for('managed_variants.upload_managed_variants')}}" enctype="multipart/form-data">
+  <div class="container-float">
+    <div id="accordion_load" >
+       <div class="card mt-3">
+        <div class="card-header">
+          <h5>
+            <a data-toggle="collapse" data-parent="#accordion_load" href="#collapseLoad">
+                Load variants
+            </a>
+          </h5>
+        </div>
+        <div id="collapseLoad" class="panel-collapse collapse">
+          <div class="card-body">{{ load_variant_form() }}</div>
+        </div>
+       </div>
+    </div>
+  </div>
+</form>
+
+
 <form method="POST" id="filters_form" action="{{url_for('managed_variants.managed_variants')}}" enctype="multipart/form-data">
   <div class="container-float">
     <div id="accordion" >
@@ -130,6 +150,17 @@
       </td>
 
   </form>
+{% endmacro %}
+
+{% macro load_variant_form() %}
+    <div class="row">
+      Upload managed variants CSV file
+      <div class="col-sm-5 text-center">
+        <input type="file" name="csv_file" class="custom-file-input" required>
+        <label class="custom-file-label" for="csv_file">Choose file</label><br>
+        <p class="help-block">How do I format my <a href="https://www.clinicalgenomics.se/scout/user-guide/panels/#uploading-a-new-gene-panel-version">managed variants file</a>?</p>
+      </div>
+    </div>
 {% endmacro %}
 
 {% macro add_variant_form() %}
