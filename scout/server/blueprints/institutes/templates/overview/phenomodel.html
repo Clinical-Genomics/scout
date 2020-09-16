@@ -54,8 +54,13 @@
 </div>
 
 <!--Code for adding a subpanel-->
-<div id="accordion" class="mt-3">
-  <a class="btn btn-primary btn-sm ml-1" data-toggle="collapse" data-parent="#accordion" href="#new_subpanel">Create a new HPO subpanel</a>
+<div id="accordion">
+  <div class="d-flex justify-content-center">
+    <div class="btn-group btn-group-toggle" data-toggle="buttons" >
+      <button class="btn-secondary btn-sm" aria-hidden="true" data-toggle="modal" data-target="#preview">Preview</button>
+      <a class="btn btn-primary btn-sm" data-toggle="collapse" data-parent="#accordion" href="#new_subpanel">Create a new subpanel</a>
+    </div>
+  </div>
   <div class="panel-collapse collapse mt-3" id="new_subpanel">
     <div class="mb-3">
       <form action="#" id="new_subpanel_form" method="POST">
@@ -185,6 +190,7 @@
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
     {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
     <div class="col">
+      {{ model_preview() }}
       {{ phenomodel_page() }}
       <!-- Display all subpanels for this model -->
       {{ subpanels_macro() }}
@@ -193,9 +199,52 @@
 </div><!-- end of container-float-->
 {% endblock %}
 
+{% macro model_preview() %}
+<div class="modal fade" id="preview" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h5 class="card-title">{{phenomodel.name}}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{phenomodel.description}}</h6>
+        <!--display cards of subpanels-->
+        <!--loop over the subpanels of the model-->
+        {% for subpanel_id, subpanel_obj in phenomodel.subpanels.items() %} <!--|batch(3)-->
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">{{subpanel_obj.title}} - {{subpanel_obj.subtitle}}</h5>
+              <!-- loop over the checkbox groups of the model-->
+              {% for term_id, term_obj in subpanel_obj.get("checkboxes",{}).items() %}
+              <div>
+                <input type="checkbox" id="{{term_id}}">
+                <label for="{{term_id}}">{{term_id}} <strong>({{term_obj.description}})</strong></label>
+              </div>
+              <div style="margin-left: 35px;">
+                {% for item in term_obj.children recursive %}
+                  <li class="tree">
+                    <input type="checkbox" id="{{term_id}}"> <label>{{ item.name }}<strong> ({{item.description}})</strong></label>
+                    {%- if item.children -%}
+                      <ul class="tree">{{ loop(item.children) }}</ul>
+                    {%- endif %}
+                  </li>
+                {%- endfor %}
+              </div>
+              {% endfor %}
+              <!-- loop over the checkbox groups of the model-->
+              </div>
+          </div><!--end of card-->
+        {% endfor %}<!-- end of loop over the subpanels of the model-->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+
 {% block scripts %}
 {{ super() }}
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script type="text/javascript">
   function getHpoTerms(query, process) {
