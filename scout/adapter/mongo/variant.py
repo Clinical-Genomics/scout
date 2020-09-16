@@ -418,6 +418,9 @@ class VariantHandler(VariantLoader):
 
         positional_variant_ids = self._get_managed_variants(institute_id)
 
+        if len(positional_variant_ids) == 0:
+            return []
+
         return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
 
     def _find_affected(self, case_obj):
@@ -446,17 +449,19 @@ class VariantHandler(VariantLoader):
         in a case, ensuring that they at least are carriers.
 
         Args:
-            case_obj (dict): A Case object. None if checking whole inst.
-            institute_obj (dict): check across the whole institute
+            case_obj (dict): A Case object.
+            institute_obj (dict): An Institute object.
+            positional_variant_ids (iterable): A set of possible positional variant ids to look for
             limit_genes (list): list of gene hgnc_ids to limit the search to
 
         Returns:
             causatives(iterable(Variant))
         """
 
-        filters = {}
-        if len(positional_variant_ids) > 0:
-            filters = {"variant_id": {"$in": list(positional_variant_ids)}}
+        if len(positional_variant_ids) == 0:
+            return []
+
+        filters = {"variant_id": {"$in": list(positional_variant_ids)}}
         if case_obj:
             affected_ids = self._find_affected(case_obj)
             if len(affected_ids) == 0:
