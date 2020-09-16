@@ -416,9 +416,8 @@ def phenomodel(institute_id, model_id):
         )
         return redirect(request.referrer)
 
-    if pheno_form.model_name.data == "":
-        pheno_form.model_name.data = phenomodel_obj["name"]
-        pheno_form.model_desc.data = phenomodel_obj["description"]
+    pheno_form.model_name.data = phenomodel_obj["name"]
+    pheno_form.model_desc.data = phenomodel_obj["description"]
 
     return dict(
         institute=institute_obj,

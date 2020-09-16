@@ -531,7 +531,7 @@ def update_phenomodel(model_id, user_form):
     if user_form.get("update_model"):  # update either model name of description
         model_obj["name"] = user_form.get("model_name")
         model_obj["description"] = user_form.get("model_desc")
-    elif user_form.get("add_subpanel"):  # Add a new phenotype subpanel
+    elif user_form.get("add_subpanel"):  # Add a new phenotype submodel
         subpanel_key = generate_md5_key([model_id, user_form.get("title")])
         subpanel_obj = {
             "title": user_form.get("title"),
@@ -540,6 +540,12 @@ def update_phenomodel(model_id, user_form):
             "updated": datetime.datetime.now(),
         }
         model_obj["submodels"][subpanel_key] = subpanel_obj
+    elif user_form.get("subpanel_delete"):  # Remove a phenotype submodel from phenomodel
+        subpanels = model_obj["submodels"]
+        # remove panel from subpanels dictionary
+        subpanels.pop(user_form.get("subpanel_delete"), None)
+        model_obj["submodels"] = subpanels
+
     elif "add_hpo" in user_form:
         hpo_id = user_form.get("hpo_term").split(" ")[0]
         hpo_obj = store.hpo_term(hpo_id)

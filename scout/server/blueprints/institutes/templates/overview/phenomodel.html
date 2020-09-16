@@ -33,12 +33,16 @@
 {% endblock %}
 
 {% macro hpo_search() %}
-  <div class="row">
-    <div class="form-group col-8">
+  <div class="row d-flex align-items-center">
+    <div class="form-group col-6">
       <input type="text" class="typeahead_hpo form-control" name="hpo_term" id="hpo_term" data-provide="typeahead" autocomplete="off" placeholder="Search HPO phenotype..">
     </div>
-    <div class="form-group col-2">
-      <button type="submit" name="add_hpo" class="btn btn-outline-secondary btn">Add</button>
+    <div class="form-group col-3">
+    <input type="checkbox" class="form-check-input" id="includeChildren" name="includeChildren" checked>
+    <label class="form-check-label" for="includeChildren">Include term children</label>
+  </div>
+    <div class="form-group col-3">
+      <button type="submit" name="add_hpo" class="btn btn-outline-secondary btn">Add HPO term</button>
     </div>
   </div>
 {% endmacro %}
@@ -94,50 +98,52 @@
 {% macro subpanels_macro()%}
   {%if phenomodel.submodels %}
     {% for submodel_id, submodel in phenomodel.submodels.items()%}
-      <form action="#" method="POST">
-        <div class="card mt-3">
-          <div class="card-body">
-            <div class="row">
-              <div class="col-3">
-                <h5 class="card-title">{{submodel.title}}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{submodel.subtitle}}</h6>
-                <br>
-              </div>
-              <!-- Display HPO models tree -->
-              <div class="col-9">
-                <!-- HPO term search -->
-                {{ hpo_search() }}
-                <!-- end of HPO term search -->
-                <table class="table table-striped">
-                {% if "hpo_groups" in submodel %}
-                  {% for term_id, term_obj in submodel.hpo_groups.items() %}
-                    <tr>
-                      <td>
-                        <input type="checkbox" id="{{term_id}}" name="{{term_id}}">
-                        <label for="{{term_tree}}">{{ term_id }}<strong>({{term_obj.description}})</strong></label>
-                        <div style="margin-left: 35px">
-                          {% for item in term_obj.children recursive %}
-                            <li class="tree">
-                              <label for="{{item.name}}">{{ item.name }}<strong>({{item.description}})</strong></label>
-                              {%- if item.children -%}
-                                <ul class="tree">{{ loop(item.children) }}</ul>
-                              {%- endif %}
-                            </li>
-                          {%- endfor %}
-                        </div>
-                      </td>
-                    </tr>
-                  {% endfor %}
-                {% endif %}
-                </table>
-              </div> <!--end of phenotype tree column div-->
-            </div> <!--end of div row-->
-            <div class="d-flex flex-row-reverse">
-              <button class="btn btn-danger btn-sm" type="submit" name="remove_submodel" aria-hidden="true">Remove submodel <i class="fa fa-times"></i></button>
+      <div class="card mt-3">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-3">
+              <h5 class="card-title">{{submodel.title}}</h5>
+              <h6 class="card-subtitle mb-2 text-muted">{{submodel.subtitle}}</h6>
+              <br>
             </div>
+            <!-- Display HPO models tree -->
+            <div class="col-9">
+              <!-- HPO term search -->
+              <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+                {{ hpo_search() }}
+              </form>
+              <!-- end of HPO term search -->
+              <table class="table table-striped">
+              {% if "hpo_groups" in submodel %}
+                {% for term_id, term_obj in submodel.hpo_groups.items() %}
+                  <tr>
+                    <td>
+                      <input type="checkbox" id="{{term_id}}" name="{{term_id}}">
+                      <label for="{{term_tree}}">{{ term_id }}<strong>({{term_obj.description}})</strong></label>
+                      <div style="margin-left: 35px">
+                        {% for item in term_obj.children recursive %}
+                          <li class="tree">
+                            <label for="{{item.name}}">{{ item.name }}<strong>({{item.description}})</strong></label>
+                            {%- if item.children -%}
+                              <ul class="tree">{{ loop(item.children) }}</ul>
+                            {%- endif %}
+                          </li>
+                        {%- endfor %}
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% endif %}
+              </table>
+            </div> <!--end of phenotype tree column div-->
+          </div> <!--end of div row-->
+          <div class="d-flex flex-row-reverse">
+            <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+              <button type="submit" class="button btn btn-danger btn-sm" name="subpanel_delete" value="{{submodel_id}}"><i class="fa fa-times"></i> Remove submodel</button>
+            </form
           </div>
         </div>
-      </form>
+      </div>
     {% endfor %}
   {% endif %}
 {% endmacro %}
