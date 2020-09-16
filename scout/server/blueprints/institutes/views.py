@@ -405,7 +405,6 @@ def phenomodel(institute_id, model_id):
     hide_subpanel = True
 
     if request.method == "POST":
-        flash(request.form)
         # update an existing phenotype model
         updated_info = controllers.update_phenomodel(model_id, request.form)
 
@@ -424,5 +423,4 @@ def phenomodel(institute_id, model_id):
         pheno_form=pheno_form,
         phenomodel=phenomodel_obj,
         subpanel_form=subpanel_form,
-        show_subpanel=bool(request.form.get("add_subpanel")) and subpanel_form.validate_on_submit(),
     )

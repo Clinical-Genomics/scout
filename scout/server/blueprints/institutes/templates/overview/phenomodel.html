@@ -32,22 +32,7 @@
   </li>
 {% endblock %}
 
-{% macro hpo_search(submodel_id) %}
-  <div class="row d-flex align-items-center">
-    <div class="form-group col-6">
-      <input type="text" class="typeahead_hpo form-control" name="hpo_term" id="hpo_term" data-provide="typeahead" autocomplete="off" placeholder="Search HPO phenotype..">
-    </div>
-    <div class="form-group col-3">
-    <input type="checkbox" class="form-check-input" id="includeChildren" name="includeChildren">
-    <label class="form-check-label" for="includeChildren">Include term children</label>
-  </div>
-    <div class="form-group col-3">
-      <button type="submit" name="add_hpo" value="{{submodel_id}}" class="btn btn-secondary btn-sm">Add HPO term</button>
-    </div>
-  </div>
-{% endmacro %}
-
-{% macro phenomodel_macro() %}
+{% macro phenomodel_page() %}
 <div class="card mt-3">
   <div style="padding: 0;" class="card-body mt-3 ml-3 mr-3">
     <form action="#" method="POST">
@@ -67,15 +52,15 @@
     </form>
   </div>
 </div>
-</div>
 
+<!--Code for adding a subpanel-->
 <div id="accordion" class="mt-3">
-  <a class="btn btn-primary btn-sm" data-toggle="collapse" data-parent="#accordion" href="#new_subpanel">Create a new HPO subpanel</a>
-  <div class="panel-collapse collapse {{'show' if show_subpanel == True}} mt-3 mb-3" id="new_subpanel">
-    <div class="card mt-3">
+  <a class="btn btn-primary btn-sm ml-1" data-toggle="collapse" data-parent="#accordion" href="#new_subpanel">Create a new HPO subpanel</a>
+  <div class="panel-collapse collapse mt-3" id="new_subpanel">
+    <div class="mb-3">
       <form action="#" id="new_subpanel_form" method="POST">
         {{ subpanel_form.csrf_token }}
-        <div class="form-row ml-3 mr-3 mt-3 mb-3">
+        <div class="form-row ml-3 mr-3 mt-3">
           <div class="col-5">
             {{ subpanel_form.title.label }}:
             {{ subpanel_form.title(class="form-control") }}
@@ -92,77 +77,119 @@
     </div>
   </div>
 </div>
-{{ subpanels_macro() }}
+</div>
+<!--End of code for adding a subpanel-->
+{% endmacro %}
+
+{% macro custom_checkbox_macro(submodel_id) %}
+<div class="row d-flex align-items-center">
+  <div class="form-group col-3">
+    <input type="text" class="form-control" name="custom_checkbox_name" placeholder="Checkbox name">
+  </div>
+  <div class="form-group col-6">
+    <input type="text" class="form-control" name="custom_checkbox_desc" placeholder="Checkbox description">
+  </div>
+  <div class="form-group col-3">
+    <button type="submit" name="add_checkbox" value="{{submodel_id}}" class="btn btn-secondary btn-sm">Add checkbox</button>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro hpo_checkbox_macro(submodel_id) %}
+  <div class="row d-flex align-items-center">
+    <div class="form-group col-6">
+      <input type="text" class="typeahead_hpo form-control" name="hpo_term" id="hpo_term" data-provide="typeahead" autocomplete="off" placeholder="Search HPO phenotype..">
+    </div>
+    <div class="form-group col-3">
+    <input type="checkbox" class="form-check-input" id="includeChildren" name="includeChildren">
+    <label class="form-check-label" for="includeChildren">Include term children</label>
+  </div>
+    <div class="form-group col-3">
+      <button type="submit" name="add_hpo" value="{{submodel_id}}" class="btn btn-secondary btn-sm">Add HPO term</button>
+    </div>
+  </div>
 {% endmacro %}
 
 {% macro subpanels_macro()%}
   {%if phenomodel.subpanels %}
     {% for submodel_id, submodel in phenomodel.subpanels.items()%}
-      <div class="card mt-3">
+      <div class="card">
         <div class="card-body">
           <div class="row">
+            <!--col to display subpanel title and subtitle-->
             <div class="col-3">
               <h5 class="card-title">{{submodel.title}}</h5>
               <h6 class="card-subtitle mb-2 text-muted">{{submodel.subtitle}}</h6>
               <br>
             </div>
-            <!-- Display HPO models tree -->
+            <!--col containing form elements to add HPO terms or custom checkbox fields-->
             <div class="col-9">
               <!-- HPO term search -->
               <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
-                {{ hpo_search(submodel_id) }}
+                {{ hpo_checkbox_macro(submodel_id) }}
               </form>
-              <!-- end of HPO term search -->
+              <!-- custom checkbox item-->
+              <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+                {{ custom_checkbox_macro(submodel_id) }}
+              </form>
+            </div>
+          </div>
+          <!-- display subpanels checkbox groups-->
+          <div class="row">
+            {% if "checkboxes" in submodel %}
               <table class="table table-striped">
-              {% if "checkboxes" in submodel %}
-                Checkbox groups:
-                {% for term_id, term_obj in submodel.checkboxes.items() %}
-                  <tr>
-                    <td>
-                      <div>
-                        <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
-                          <a href="#" onclick="toggleDiv('div_{{term_id}}')">{{term_id}}</a><strong>({{term_obj.description}})</strong>
-                          <!--button to remove a checkbox group-->
-                          <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}#{{submodel_id}}"><i class="fa fa-times"></i></button>
-                        </form>
-                      </div>
-                      <div style="margin-left: 35px; display: none;" id="div_{{term_id}}">
-                        {% for item in term_obj.children recursive %}
-                          <li class="tree">
-                            <label for="div_{{term_id}}">{{ item.name }}<strong>({{item.description}})</strong></label>
-                            {%- if item.children -%}
-                              <ul class="tree">{{ loop(item.children) }}</ul>
-                            {%- endif %}
-                          </li>
-                        {%- endfor %}
-                      </div>
-                    </td>
-                  </tr>
-                {% endfor %}
-              {% endif %}
+                {% if "checkboxes" in submodel %}
+                  Checkbox groups:
+                  {% for term_id, term_obj in submodel.checkboxes.items() %}
+                    <tr>
+                      <td>
+                        <div>
+                          <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+                            {% if term_obj.children %}
+                              <a href="#" onclick="toggleDiv('{{submodel_id}}#{{term_id}}')">{{term_id}}</a> <strong>({{term_obj.description}})</strong>
+                            {% else %}
+                              {{term_id}} <strong>({{term_obj.description}})</strong>
+                            {% endif %}
+                            <!--button to remove a checkbox group-->
+                            <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}#{{submodel_id}}"><i class="fa fa-times"></i></button>
+                          </form>
+                        </div>
+                        <div style="margin-left: 35px; display: none;" id="{{submodel_id}}#{{term_id}}">
+                          {% for item in term_obj.children recursive %}
+                            <li class="tree">
+                              <label>{{ item.name }}<strong> ({{item.description}})</strong></label>
+                              {%- if item.children -%}
+                                <ul class="tree">{{ loop(item.children) }}</ul>
+                              {%- endif %}
+                            </li>
+                          {%- endfor %}
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% endif %}
               </table>
-            </div> <!--end of phenotype tree column div-->
-          </div> <!--end of div row-->
-          <div class="d-flex flex-row ml-3">
+            {% endif %}
             <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
               <button type="submit" class="button btn btn-danger btn-sm" name="subpanel_delete" value="{{submodel_id}}"><i class="fa fa-times"></i> Remove submodel</button>
-            </form
-          </div>
-        </div>
+            </form>
+          </div><!-- End of are displaying subpanel checkboxes-->
+        </div><!-- end of card body-->
       </div>
     {% endfor %}
   {% endif %}
 {% endmacro %}
 
-
 {% block content_main %}
 <div class="container-float">
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
     {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
-  <div class="col">
-    {{ phenomodel_macro() }}
-  </div>
-</div><!-- end of body row div -->
+    <div class="col">
+      {{ phenomodel_page() }}
+      <!-- Display all subpanels for this model -->
+      {{ subpanels_macro() }}
+    </div>
+  </div><!-- end of body row div -->
 </div><!-- end of container-float-->
 {% endblock %}
 

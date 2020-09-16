@@ -516,6 +516,30 @@ def hgvs_str(gene_symbols, hgvs_p, hgvs_c):
     return "-"
 
 
+def _subpanel_custom_checkbox_add(model_obj, user_form):
+    """Add a custom checkbox to a phenotype subpanel
+    Args:
+        model_obj(dict): a dictionary coresponding to a phenotype model
+        user_form(request.form): a POST request form object
+
+    Returns:
+        model_obj(dict): an updated phenotype model dictionary to be saved to database
+    """
+    subpanel_id = user_form.get("add_checkbox")
+    checkbox_name = user_form.get("custom_checkbox_name")
+    checkbox_desc = user_form.get("custom_checkbox_desc")
+    checkboxes = model_obj["subpanels"][subpanel_id].get("checkboxes", {})
+
+    if checkbox_name in checkboxes:
+        flash(f"A checkbox with name '{checkbox_name}' alreasy exists for this panel", "warning")
+        return
+
+    checkbox_obj = dict(name=checkbox_name, description=checkbox_desc, checkbox_type="custom")
+    checkboxes[checkbox_name] = checkbox_obj
+    model_obj["subpanels"][subpanel_id]["checkboxes"] = checkboxes
+    return model_obj
+
+
 def _subpanel_hpo_checkgroup_add(model_obj, user_form):
     """Add an HPO term (and eventually his children) to a phenotype subpanel
 
@@ -531,9 +555,9 @@ def _subpanel_hpo_checkgroup_add(model_obj, user_form):
     if hpo_obj is None:  # user didn't provide a valid HPO term
         flash("Please specify a valid HPO term", "warning")
         return
-    submodel_id = user_form.get("add_hpo")
+    subpanel_id = user_form.get("add_hpo")
     tree_dict = {}
-    checkboxes = model_obj["subpanels"][submodel_id].get("checkboxes", {})
+    checkboxes = model_obj["subpanels"][subpanel_id].get("checkboxes", {})
 
     if hpo_id in checkboxes:  # Do not include duplicated HPO terms in checkbox items
         flash(f"Subpanel contains already HPO term '{hpo_id}'", "warning")
@@ -541,13 +565,13 @@ def _subpanel_hpo_checkgroup_add(model_obj, user_form):
     if user_form.get("includeChildren"):  # include HPO terms children in the checkboxes
         tree_dict = store.build_phenotype_tree(hpo_id)
         if tree_dict is None:
-            flash("An error occurred while creating HPO tree from '{hpo_id}'", "danger")
+            flash(f"An error occurred while creating HPO tree from '{hpo_id}'", "danger")
             return
     else:  # include just HPO term as a standalone checkbox:
         tree_dict = dict(name=hpo_obj["_id"], description=hpo_obj["description"])
     tree_dict["checkbox_type"] = "hpo"
     checkboxes[hpo_id] = tree_dict
-    model_obj["subpanels"][submodel_id]["checkboxes"] = checkboxes
+    model_obj["subpanels"][subpanel_id]["checkboxes"] = checkboxes
     return model_obj
 
 
@@ -625,6 +649,10 @@ def update_phenomodel(model_id, user_form):
     elif user_form.get("add_hpo"):
         if _subpanel_hpo_checkgroup_add(model_obj, user_form) is None:
             return
+    elif user_form.get("add_checkbox"):  # add a custom checkbox to subpanel
+        if _subpanel_custom_checkbox_add(model_obj, user_form) is None:
+            return
+
     elif user_form.get("checkgroup_remove"):
         if _subpanel_checkgroup_remove(model_obj, user_form) is None:
             return
