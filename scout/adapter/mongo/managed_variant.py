@@ -56,10 +56,16 @@ class ManagedVariantHandler(object):
             if check_variant_obj:
                 LOG.debug("Variant %s already exists in database", check_variant_obj["display_id"])
 
-            result = self.managed_variant_collection.find_one_and_update(
-                {"variant_id": managed_variant_obj["variant_id"]},
-                {"$set": managed_variant_obj},
-            )
+            if managed_variant_obj["_id"]:
+                result = self.managed_variant_collection.find_one_and_update(
+                    {"_id": managed_variant_obj["_id"]},
+                    {"$set": managed_variant_obj},
+                )
+            else:
+                result = self.managed_variant_collection.find_one_and_update(
+                    {"variant_id": managed_variant_obj["variant_id"]},
+                    {"$set": managed_variant_obj},
+                )
 
         updated_managed_variant = self.variant_collection.find_one(
             {"variant_id": managed_variant_obj["variant_id"]}
@@ -118,6 +124,33 @@ class ManagedVariantHandler(object):
 
         return managed_variants_res
 
+    def delete_managed_variant_id(self, managed_variant_obj_id=None):
+        """Delete a managed variant of known object id.
+
+        Arguments:
+            variant_obj_id(str)     string representation of _id ObjectId
+
+        Returns:
+            ManagedVariant
+        """
+
+        managed_variant_obj = self.managed_variant_collection.find_one(
+            {"_id": ObjectId(managed_variant_obj_id)}
+        )
+
+        if not managed_variant_obj:
+            LOG.info(
+                "FAILED deleting managed variant: variant_id %s not found.", managed_variant_obj_id
+            )
+            return None
+
+        LOG.info("Deleting managed variant %s.", managed_variant_obj.get("display_name"))
+
+        result = self.managed_variant_collection.find_one_and_delete(
+            {"_id": ObjectId(managed_variant_obj_id)}
+        )
+        return result
+
     def delete_managed_variant(self, managed_variant_id):
         """Delete a managed variant of known id.
 
@@ -127,19 +160,19 @@ class ManagedVariantHandler(object):
         Returns:
             ManagedVariant
         """
-
         managed_variant_obj = self.managed_variant_collection.find_one(
             {"managed_variant_id": managed_variant_id}
         )
+
         if not managed_variant_obj:
             LOG.info(
                 "FAILED deleting managed variant: variant_id %s not found.", managed_variant_id
             )
-        else:
-            LOG.info("Deleting managed variant %s.", managed_variant_obj.get("display_name"))
+            return None
+
+        LOG.info("Deleting managed variant %s.", managed_variant_obj.get("display_name"))
 
         result = self.managed_variant_collection.find_one_and_delete(
             {"managed_variant_id": managed_variant_id}
         )
-
         return result

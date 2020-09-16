@@ -60,12 +60,19 @@ def modify_managed_variant(store, managed_variant_id, edit_form):
         }
     )
 
-    return store.upsert_managed_variant(managed_variant)
+    # new ids must be built upon update
+    updated_variant = build_managed_variant(managed_variant)
+    result = store.upsert_managed_variant(updated_variant)
+
+    if result:
+        store.delete_managed_variant(managed_variant)
+
+    return result
 
 
 def remove_managed_variant(store, variant_id):
     """Remove a managed variant."""
 
-    removed_variant = store.delete_managed_variant(variant_id)
+    removed_variant = store.delete_managed_variant_id(variant_id)
 
     return removed_variant
