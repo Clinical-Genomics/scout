@@ -42,10 +42,14 @@ def add_managed_variant(store, add_form, institutes, current_user_id):
 def modify_managed_variant(store, managed_variant_id, edit_form):
     """Modify a managed variant."""
 
-    managed_variant = store.managed_variant(managed_variant_id)
+    managed_variant = store.find_managed_variant(managed_variant_id)
 
     if managed_variant is None:
         return
+
+    LOG.debug("Found managed variant %s", managed_variant)
+
+    original_obj_id = managed_variant["_id"]
 
     managed_variant.update(
         {
@@ -62,17 +66,21 @@ def modify_managed_variant(store, managed_variant_id, edit_form):
 
     # new ids must be built upon update
     updated_variant = build_managed_variant(managed_variant)
-    result = store.upsert_managed_variant(updated_variant)
 
-    if result:
-        store.delete_managed_variant(managed_variant)
+    LOG.debug(
+        "Updated variant has mvid %s and old id is %s.",
+        updated_variant["managed_variant_id"],
+        original_obj_id,
+    )
+
+    result = store.upsert_managed_variant(updated_variant, original_obj_id)
 
     return result
 
 
-def remove_managed_variant(store, variant_id):
+def remove_managed_variant(store, managed_variant_id):
     """Remove a managed variant."""
 
-    removed_variant = store.delete_managed_variant_id(variant_id)
+    removed_variant = store.delete_managed_variant(managed_variant_id)
 
     return removed_variant

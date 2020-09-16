@@ -6,7 +6,7 @@ LOG = logging.getLogger(__name__)
 
 
 def build_managed_variant(managed_variant_info):
-    """ Build a managed_variant object
+    """Build a managed_variant object
     Args:
         managed_variant_info(dict): Compare scout.models.ManagedVariant for details
 
@@ -32,6 +32,6 @@ def build_managed_variant(managed_variant_info):
     except KeyError:
         raise KeyError("Managed variant has to have chr, pos, ref and alt.")
 
-    LOG.debug("Built managed variant %s", managed_variant.get("display_name"))
+    LOG.debug("Built managed variant %s", managed_variant.get("display_id"))
 
     return managed_variant

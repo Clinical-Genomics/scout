@@ -43,7 +43,8 @@ def modify_managed_variant(variant_id):
 
     edit_form = ManagedVariantModifyForm(request.form)
 
-    controllers.modify_managed_variant(store, variant_id, edit_form)
+    if not controllers.modify_managed_variant(store, variant_id, edit_form):
+        flash("Could not modify variant - does the new variant perhaps already exist?", "warning")
 
     return redirect(request.referrer)
 
@@ -59,13 +60,11 @@ def remove_managed_variant(variant_id):
 def add_managed_variant():
 
     add_form = ManagedVariantAddForm(request.form)
-    LOG.debug("Adding managed variant with form {}".format(add_form))
+    LOG.debug("Adding managed variant with form %s", add_form)
 
     institutes = list(user_institutes(store, current_user))
     current_user_id = current_user._id
 
-    LOG.debug("Calling controller..")
     controllers.add_managed_variant(store, add_form, institutes, current_user_id)
 
-    LOG.debug("Refer back..")
     return redirect(request.referrer)

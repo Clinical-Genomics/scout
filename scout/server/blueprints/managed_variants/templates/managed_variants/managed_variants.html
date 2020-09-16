@@ -85,7 +85,7 @@
           <td>
             {{ variant.description }}
             <div class="float-right">
-              <form method="POST" action="{{ url_for('managed_variants.remove_managed_variant', variant_id=variant._id) }}">
+              <form method="POST" action="{{ url_for('managed_variants.remove_managed_variant', variant_id=variant.managed_variant_id) }}">
                   <button id="{{variant._id}}" type="button" data-toggle="collapse" href="#modifydiv_{{variant._id}}" aria-expanded="false" aria-controls="modifydiv_{{variant._id}}" class="btn btn-warning btn-xs">
                     <span class="fa fa-pencil-square-o"></span>
                   </button>
@@ -94,7 +94,7 @@
             </div>
           </td>
         </tr>
-        <tr >
+        <tr>
         {{ modify_variant(variant) }}
         </div>
       {% endfor %}
@@ -111,7 +111,7 @@
 {% endmacro %}
 
 {% macro modify_variant_form(variant) %}
-  <form method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant._id) }}" enctype="multipart/form-data" class="form-horizontal">
+  <form method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant.managed_variant_id) }}" enctype="multipart/form-data" class="form-horizontal">
       {{ modify_form.csrf_token }}
       <input type="hidden" name="variant_id" value="{{ variant._id }}">
       <td>{{ modify_form.chromosome(class_="form-control") }}</td>
