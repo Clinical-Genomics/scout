@@ -134,12 +134,11 @@ def parse_coordinates(variant, category, build="37"):
             'cytoband_end':<str>,
         }
     """
+    alt = None
     if variant.ALT:
         alt = variant.ALT[0]
     elif category == "str" and not variant.ALT:
         alt = "."
-    else:
-        alt = None
     alt_len = len(alt)
 
     chrom_match = CHR_PATTERN.match(variant.CHROM)
