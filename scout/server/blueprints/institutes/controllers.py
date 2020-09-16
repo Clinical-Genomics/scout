@@ -516,12 +516,15 @@ def hgvs_str(gene_symbols, hgvs_p, hgvs_c):
     return "-"
 
 
-def _add_hpo_to_panel(model_obj, user_form):
+def _subpanel_hpo_checkgroup_add(model_obj, user_form):
     """Add an HPO term (and eventually his children) to a phenotype subpanel
 
     Args:
         model_obj(dict): a dictionary coresponding to a phenotype model
         user_form(request.form): a POST request form object
+
+    Returns:
+        model_obj(dict): an updated phenotype model dictionary to be saved to database
     """
     hpo_id = user_form.get("hpo_term").split(" ")[0]
     hpo_obj = store.hpo_term(hpo_id)
@@ -533,7 +536,7 @@ def _add_hpo_to_panel(model_obj, user_form):
     checkboxes = model_obj["subpanels"][submodel_id].get("checkboxes", {})
 
     if hpo_id in checkboxes:  # Do not include duplicated HPO terms in checkbox items
-        flash("Subpanel contains already HPO term '{hpo_id}'", "warning")
+        flash(f"Subpanel contains already HPO term '{hpo_id}'", "warning")
         return
     if user_form.get("includeChildren"):  # include HPO terms children in the checkboxes
         tree_dict = store.build_phenotype_tree(hpo_id)
@@ -545,6 +548,53 @@ def _add_hpo_to_panel(model_obj, user_form):
     tree_dict["checkbox_type"] = "hpo"
     checkboxes[hpo_id] = tree_dict
     model_obj["subpanels"][submodel_id]["checkboxes"] = checkboxes
+    return model_obj
+
+
+def _subpanel_checkgroup_remove(model_obj, user_form):
+    """Remove a checkbox group from a phenotype subpanel
+
+    Args:
+        model_obj(dict): a dictionary coresponding to a phenotype model
+        user_form(request.form): a POST request form object
+
+    Returns:
+        model_obj(dict): an updated phenotype model dictionary to be saved to database
+    """
+    subpanel_id = user_form.get("checkgroup_remove").split("#")[1]
+    remove_field = user_form.get("checkgroup_remove").split("#")[0]
+
+    try:
+        model_obj["subpanels"][subpanel_id]["checkboxes"].pop(remove_field, None)
+    except Exception as ex:
+        flash(ex, "danger")
+
+    return model_obj
+
+
+def _add_subpanel(model_id, model_obj, user_form):
+    """Add an empty subpanel to a phenotype model
+
+    Args:
+        model_id(str): string of the ID of a phenotype model
+        model_obj(dict): a dictionary coresponding to a phenotype model
+        user_form(request.form): a POST request form object
+
+    """
+    subpanel_key = generate_md5_key([model_id, user_form.get("title")])
+    phenomodel_subpanels = model_obj.get("subpanels") or {}
+
+    if subpanel_key in phenomodel_subpanels:
+        flash("A model panel with that title already exists", "warning")
+        return
+    subpanel_obj = {
+        "title": user_form.get("title"),
+        "subtitle": user_form.get("subtitle"),
+        "created": datetime.datetime.now(),
+        "updated": datetime.datetime.now(),
+    }
+    phenomodel_subpanels[subpanel_key] = subpanel_obj
+    model_obj["subpanels"] = phenomodel_subpanels
     return model_obj
 
 
@@ -564,15 +614,8 @@ def update_phenomodel(model_id, user_form):
         model_obj["name"] = user_form.get("model_name")
         model_obj["description"] = user_form.get("model_desc")
     elif user_form.get("add_subpanel"):  # Add a new phenotype submodel
-        subpanel_key = generate_md5_key([model_id, user_form.get("title")])
-        subpanel_obj = {
-            "title": user_form.get("title"),
-            "subtitle": user_form.get("subtitle"),
-            "created": datetime.datetime.now(),
-            "updated": datetime.datetime.now(),
-        }
-        model_obj["subpanels"][subpanel_key] = subpanel_obj
-
+        if _add_subpanel(model_id, model_obj, user_form) is None:
+            return
     elif user_form.get("subpanel_delete"):  # Remove a phenotype submodel from phenomodel
         subpanels = model_obj["subpanels"]
         # remove panel from subpanels dictionary
@@ -580,7 +623,10 @@ def update_phenomodel(model_id, user_form):
         model_obj["subpanels"] = subpanels
 
     elif user_form.get("add_hpo"):
-        if _add_hpo_to_panel(model_obj, user_form) is None:
+        if _subpanel_hpo_checkgroup_add(model_obj, user_form) is None:
+            return
+    elif user_form.get("checkgroup_remove"):
+        if _subpanel_checkgroup_remove(model_obj, user_form) is None:
             return
 
     store.update_phenomodel(model_id=model_id, model_obj=model_obj)

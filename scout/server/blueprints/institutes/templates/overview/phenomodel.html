@@ -32,7 +32,7 @@
   </li>
 {% endblock %}
 
-{% macro hpo_search(hpo_search) %}
+{% macro hpo_search(submodel_id) %}
   <div class="row d-flex align-items-center">
     <div class="form-group col-6">
       <input type="text" class="typeahead_hpo form-control" name="hpo_term" id="hpo_term" data-provide="typeahead" autocomplete="off" placeholder="Search HPO phenotype..">
@@ -42,7 +42,7 @@
     <label class="form-check-label" for="includeChildren">Include term children</label>
   </div>
     <div class="form-group col-3">
-      <button type="submit" name="add_hpo" value="{{hpo_search}}" class="btn btn-secondary btn-sm">Add HPO term</button>
+      <button type="submit" name="add_hpo" value="{{submodel_id}}" class="btn btn-secondary btn-sm">Add HPO term</button>
     </div>
   </div>
 {% endmacro %}
@@ -123,7 +123,7 @@
                         <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
                           <a href="#" onclick="toggleDiv('div_{{term_id}}')">{{term_id}}</a><strong>({{term_obj.description}})</strong>
                           <!--button to remove a checkbox group-->
-                          <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}"><i class="fa fa-times"></i></button>
+                          <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}#{{submodel_id}}"><i class="fa fa-times"></i></button>
                         </form>
                       </div>
                       <div style="margin-left: 35px; display: none;" id="div_{{term_id}}">
