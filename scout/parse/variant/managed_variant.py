@@ -41,7 +41,7 @@ def parse_managed_variant_id(
     )
 
 
-def parse_managed_variant_line(csv_lines):
+def parse_managed_variant_lines(csv_lines):
     """Parse managed variant csv lines into managed variant info dicts.
 
     Args:
