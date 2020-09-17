@@ -206,14 +206,14 @@ class HpoHandler(object):
         unique_terms = set()
 
         def _hpo_terms_list(hpo_ids):
-            for id in hpo_ids:
-                term_obj = self.hpo_term(id)
+            for term_id in hpo_ids:
+                term_obj = self.hpo_term(term_id)
                 if term_obj is None:
                     continue
-                all_terms[id] = term_obj
-                if id not in unique_terms:
-                    node = Node(id, parent=root, description=term_obj["description"])
-                    unique_terms.add(id)
+                all_terms[term_id] = term_obj
+                if term_id not in unique_terms:
+                    node = Node(term_id, parent=root, description=term_obj["description"])
+                    unique_terms.add(term_id)
                 _hpo_terms_list(term_obj["children"])
 
         # compile a list of all HPO term objects to include in the submodel
@@ -222,15 +222,17 @@ class HpoHandler(object):
 
         # Move tree nodes in the right position according to the ontology
         for key, term in all_terms.items():
+            match_key = key
             ancestors = term["ancestors"]
             if len(ancestors) == 0:
                 continue
             for ancestor in ancestors:
-                LOG.info(f"Look for ancestor node:{ancestor}")
-                ancestor_node = search.find(root, lambda node: node.name == ancestor)
+                match_ancestor = ancestor
+                LOG.info(f"Look for ancestor node:{match_ancestor}")
+                ancestor_node = search.find(root, lambda node: node.name == match_ancestor)
                 if ancestor_node is None:  # It's probably the term on the top
                     continue
-                node = search.find(root, lambda node: node.name == key)
+                node = search.find(root, lambda node: node.name == match_key)
                 node.parent = ancestor_node
 
         term_node = node_resolver.get(root, hpo_id)
