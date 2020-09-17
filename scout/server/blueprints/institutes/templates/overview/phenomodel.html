@@ -117,46 +117,46 @@
 
 {% macro subpanels_macro()%}
   {%if phenomodel.subpanels %}
-    {% for submodel_id, submodel in phenomodel.subpanels.items()%}
+    {% for subpanel_id, subpanel in phenomodel.subpanels.items()%}
       <div class="card">
         <div class="card-body">
           <div class="row">
             <!--col to display subpanel title and subtitle-->
             <div class="col-3">
-              <h5 class="card-title">{{submodel.title}}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">{{submodel.subtitle}}</h6>
+              <h5 class="card-title">{{subpanel.title}}</h5>
+              <h6 class="card-subtitle mb-2 text-muted">{{subpanel.subtitle}}</h6>
               <br>
             </div>
             <!--col containing form elements to add HPO terms or custom checkbox fields-->
             <div class="col-9">
               <!-- HPO term search -->
               <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
-                {{ hpo_checkbox_macro(submodel_id) }}
+                {{ hpo_checkbox_macro(subpanel_id) }}
               </form>
               <!-- custom checkbox item-->
               <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
-                {{ custom_checkbox_macro(submodel_id) }}
+                {{ custom_checkbox_macro(subpanel_id) }}
               </form>
             </div>
           </div>
           <!-- display subpanels checkbox groups-->
           <div class="row">
-            {% if "checkboxes" in submodel %}
+            {% if "checkboxes" in subpanel %}
               <table class="table table-striped">
-                {% if "checkboxes" in submodel %}
+                {% if "checkboxes" in subpanel %}
                   Checkbox groups:
-                  {% for term_id, term_obj in submodel.checkboxes.items() %}
+                  {% for term_id, term_obj in subpanel.checkboxes.items() %}
                     <tr>
                       <td>
                         <div>
                           <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
                             {% if term_obj.children %}
-                              <a href="#" onclick="toggleDiv('{{submodel_id}}#{{term_id}}')">{{term_id}}</a> <strong>({{term_obj.description}})</strong>
+                              <a href="#" onclick="toggleDiv('{{subpanel}}#{{term_id}}')">{{term_id}}</a> <strong>({{term_obj.description}})</strong>
                             {% else %}
                               {{term_id}} <strong>({{term_obj.description}})</strong>
                             {% endif %}
                             <!--button to remove a checkbox group-->
-                            <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}#{{submodel_id}}"><i class="fa fa-times"></i></button>
+                            <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}#{{subpanel}}"><i class="fa fa-times"></i></button>
                           </form>
                         </div>
                         <div style="margin-left: 35px; display: none;" id="{{submodel_id}}#{{term_id}}">
@@ -175,10 +175,13 @@
                 {% endif %}
               </table>
             {% endif %}
-            <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
-              <button type="submit" class="button btn btn-danger btn-sm" name="subpanel_delete" value="{{submodel_id}}"><i class="fa fa-times"></i> Remove submodel</button>
-            </form>
           </div><!-- End of are displaying subpanel checkboxes-->
+          <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+            <div class="d-flex justify-content-between">
+              <text class="text-muted mb-1 ml-1" style="font-size:14px;">Updated: {{subpanel.updated.strftime('%Y-%m-%d %H:%M:%S')}}</text>
+              <button type="submit" class="button btn btn-danger btn-sm" name="subpanel_delete" value="{{subpanel_id}}"><i class="fa fa-times"></i> Remove panel</button>
+            </div>
+          </form>
         </div><!-- end of card body-->
       </div>
     {% endfor %}
@@ -211,7 +214,9 @@
         {% for subpanel_id, subpanel_obj in phenomodel.subpanels.items() %} <!--|batch(3)-->
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">{{subpanel_obj.title}} - {{subpanel_obj.subtitle}}</h5>
+              <td class="row">
+                <text style="font-size:20px;"><strong>{{subpanel_obj.title}} - {{subpanel_obj.subtitle}}</strong></text>
+              </td>
               <!-- loop over the checkbox groups of the model-->
               {% for term_id, term_obj in subpanel_obj.get("checkboxes",{}).items() %}
               <div>
@@ -229,8 +234,9 @@
                 {%- endfor %}
               </div>
               {% endfor %}
-              <!-- loop over the checkbox groups of the model-->
+              <!--  end of loop over the checkbox groups of the model-->
               </div>
+            <text class="text-muted mb-1 ml-1" style="font-size:14px;">Updated: {{subpanel_obj.updated.strftime('%Y-%m-%d %H:%M:%S')}}</text>
           </div><!--end of card-->
         {% endfor %}<!-- end of loop over the subpanels of the model-->
       </div>
