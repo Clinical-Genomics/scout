@@ -537,6 +537,7 @@ def _subpanel_custom_checkbox_add(model_obj, user_form):
     checkbox_obj = dict(name=checkbox_name, description=checkbox_desc, checkbox_type="custom")
     checkboxes[checkbox_name] = checkbox_obj
     model_obj["subpanels"][subpanel_id]["checkboxes"] = checkboxes
+    model_obj["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()
     return model_obj
 
 
@@ -572,6 +573,7 @@ def _subpanel_hpo_checkgroup_add(model_obj, user_form):
     tree_dict["checkbox_type"] = "hpo"
     checkboxes[hpo_id] = tree_dict
     model_obj["subpanels"][subpanel_id]["checkboxes"] = checkboxes
+    model_obj["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()
     return model_obj
 
 
@@ -590,6 +592,7 @@ def _subpanel_checkgroup_remove(model_obj, user_form):
 
     try:
         model_obj["subpanels"][subpanel_id]["checkboxes"].pop(remove_field, None)
+        model_obj["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()
     except Exception as ex:
         flash(ex, "danger")
 
