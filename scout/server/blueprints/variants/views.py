@@ -185,7 +185,6 @@ def variants(institute_id, case_name):
     )
 
 
-
 @variants_bp.route("/<institute_id>/<case_name>/str/variants")
 @templated("variants/str-variants.html")
 def str_variants(institute_id, case_name):
