@@ -219,7 +219,6 @@ def gene_variants(institute_id):
     return dict(institute=institute_obj, form=form, page=page, **data)
 
 
-
 @blueprint.route("/overview/<institute_id>/settings", methods=["GET", "POST"])
 def institute_settings(institute_id):
     """Show institute settings page"""

@@ -469,7 +469,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, form, page=1
     skip_count = per_page * max(page - 1, 0)
     variant_count = count_cursor(variants_query)
     more_variants = True if variant_count > (skip_count + per_page) else False
-    
+
     # Setup variant count session with variant count by category
     variant_count_session(store, institute_id, case_obj["_id"], "clinical", "cancer")
     session["filtered_variants"] = variant_count
@@ -481,7 +481,6 @@ def cancer_variants(store, institute_id, case_name, variants_query, form, page=1
         elem = parse_variant(store, institute_obj, case_obj, variant, update=True)
         variants_list.append(elem)
 
-    
     data = dict(
         page=page,
         more_variants=more_variants,
