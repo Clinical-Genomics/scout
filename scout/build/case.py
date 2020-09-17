@@ -244,4 +244,6 @@ def build_case(case_data, adapter):
     # What experiment is used, alternatives are rare (rare disease) or cancer
     case_obj["track"] = case_data.get("track", "rare")
 
+    case_obj["group"] = case_data.get("group", [])
+
     return case_obj

@@ -613,6 +613,14 @@
     {% endfor %}
   {% endif %}
 
+  {% if variant.cohort_assessments %}
+    {% for assessment in (variant.cohort_assessments or []) %}
+      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
+        title="Cohort {{ assessment.title }}">
+        {{ assessment.label }}</span>
+    {% endfor %}
+  {% endif %}
+
   {% if variant._id in case.causatives %}
     <span class="badge badge-success" style="margin-left:1px" data-toggle="tooltip" data-placement="right" title="Causative variant">Causative</span>
   {% endif %}
