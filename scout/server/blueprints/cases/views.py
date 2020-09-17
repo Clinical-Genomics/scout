@@ -52,11 +52,10 @@ def index():
     """Display a list of all user institutes."""
     institute_objs = user_institutes(store, current_user)
     institutes_count = (
-        (institute_obj, count_cursor(store.cases(collaborator=institute_obj["_id"]))
-         for institute_obj in institute_objs
+        (institute_obj, count_cursor(store.cases(collaborator=institute_obj["_id"])))
+        for institute_obj in institute_objs
     )
     return dict(institutes=institutes_count)
-
 
 
 @cases_bp.route("/<institute_id>/<case_name>")
