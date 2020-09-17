@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table, modal_causative %}
-{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button %}
+{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, igv_track_selection %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, severity_list, conservations, mappability %}
@@ -429,17 +429,6 @@
       </ul>
 
       <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
-        <!-- general hidden fields required to submit POST request to IGV viewer -->
-        {% if case.mt_bams or case.bam_files %}
-          <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
-          <input type="hidden" name="build" value="{{case.genome_build}}">
-          <input type="hidden" name="contig" value="{{variant.chromosome}}">
-          <input type="hidden" name="start" value="{{variant.position - 50}}">
-          <input type="hidden" name="stop" value="{{variant.end_position + 50}}">
-          <input type="hidden" name="center_guide" value="T">
-          <!--<input type="hidden" name="now" values="{{now}}"-->
-        {% endif %}
-        <!-- end of general hidden form fields -->
         <div class="panel-heading">Gene coverage</div>
         <table class="table table-bordered table-fixed table-sm">
           <tbody>
@@ -473,6 +462,19 @@
                 {% else %}
                   <span class="text-muted">BAM file(s) missing</span>
                 {% endif %}
+
+                {% if case.mt_bams or case.bam_files %}
+                  {{ igv_track_selection({}) }}
+                  <!-- general hidden fields required to submit POST request to IGV viewer -->
+                  <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
+                  <input type="hidden" name="build" value="{{case.genome_build}}">
+                  <input type="hidden" name="contig" value="{{variant.chromosome}}">
+                  <input type="hidden" name="start" value="{{variant.position - 50}}">
+                  <input type="hidden" name="stop" value="{{variant.end_position + 50}}">
+                  <input type="hidden" name="center_guide" value="T">
+                  <!-- end of general hidden form fields -->
+                {% endif %}
+
               </td>
               {% if config.SQLALCHEMY_DATABASE_URI %}
                 {% for gene in variant.genes %}

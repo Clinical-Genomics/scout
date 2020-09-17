@@ -1,4 +1,19 @@
 
+{% macro igv_track_selection(igv_tracks) %}
+  <div class="row d-flex align-items-center">
+    <div class="col-4">
+      Custom IGV tracks:
+    </div>
+    <div class="col-6">
+      <select multiple="multiple" name="extra_tracks" id="extra_tracks" class="selectpicker" data-width="80%">
+        {% for trackid in igv_tracks.keys() %}
+            <option value={{ trackid }}>{{ trackid }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-2"></div>
+{% endmacro %}
+
 {% macro rankscore_panel(variant) %}
   <div class="card panel-default">
     <div class="panel-heading">Rank score results</div>

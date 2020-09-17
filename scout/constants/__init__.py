@@ -52,6 +52,7 @@ from .variants_export import (
     MT_EXPORT_HEADER,
     VERIFIED_VARIANTS_HEADER,
 )
+from .igv_tracks import TRACKS_BUILD_37, TRACKS_BUILD_38
 
 cytobands_37_handle = get_file_handle(cytoband_files.get("37"))
 cytobands_38_handle = get_file_handle(cytoband_files.get("38"))
