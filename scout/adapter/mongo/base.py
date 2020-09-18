@@ -111,7 +111,7 @@ class MongoAdapter(
         Returns:
             list_collection_names(list(str))
         """
-        return self.db.list_collection_names(include_system_collections=False)
+        return self.db.list_collection_names()
 
     def __str__(self):
         return "MongoAdapter(db={0})".format(self.db)
