@@ -112,7 +112,8 @@ def igv():
         track_build = "38"
     display_obj["reference_track"] = HUMAN_REFERENCE[track_build]
     display_obj["custom_tracks"] = []
-    custom_tracks_names = current_user.igv_tracks or ["Genes", "ClinVar", "ClinVar CNVs"]
+    user_obj = store.user(email=current_user.email)
+    custom_tracks_names = user_obj.get("igv_tracks") or ["Genes", "ClinVar", "ClinVar CNVs"]
     for track in IGV_TRACKS[track_build]:
         if track["name"] in custom_tracks_names:
             LOG.warning(track["name"])
