@@ -29,7 +29,7 @@ variant_bp = Blueprint("variant", __name__, static_folder="static", template_fol
 
 
 @variant_bp.route("/update_tracks", methods=["POST"])
-def update_tracks():
+def update_tracks_settings():
     """Update custom track settings for a user according to form choices"""
     user_obj = store.user(email=current_user.email)
     selected_tracks = request.form.getlist("user_tracks") or []

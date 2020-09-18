@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Editable cases comments
 - Editable variants comments
+- Save custom IGV track settings
 ### Fixed
 - Empty variant activity panel
 ### Changed
