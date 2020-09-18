@@ -11,9 +11,11 @@ from flask import (
     current_app,
     flash,
 )
+from flask_login import current_user
 
 from .partial import send_file_partial
-from . import controllers
+from scout.constants import IGV_TRACKS, HUMAN_REFERENCE
+from scout.server.extensions import store
 
 alignviewers_bp = Blueprint(
     "alignviewers",
@@ -50,6 +52,7 @@ def unindexed_remote_static():
 @alignviewers_bp.route("/igv", methods=["POST"])
 def igv():
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)"""
+
     chrom = request.form.get("contig")
     if chrom == "MT":
         chrom = "M"
@@ -104,10 +107,17 @@ def igv():
 
     display_obj = {}
 
-    display_obj["reference_track"] = controllers.reference_track(chromosome_build, chrom)
-    display_obj["genes_track"] = controllers.genes_track(chromosome_build, chrom)
-    display_obj["clinvar_snvs"] = controllers.clinvar_track(chromosome_build, chrom)
-    display_obj["clinvar_cnvs"] = controllers.clinvar_cnvs_track(chromosome_build, chrom)
+    track_build = "37"
+    if chromosome_build in ["GRCh38", "38"] or chrom == "M":
+        track_build = "38"
+    display_obj["reference_track"] = HUMAN_REFERENCE[track_build]
+    display_obj["custom_tracks"] = []
+    custom_tracks_names = current_user.igv_tracks or ["Genes", "ClinVar", "ClinVar CNVs"]
+    for track in IGV_TRACKS[track_build]:
+        if track["name"] in custom_tracks_names:
+            LOG.warning(track["name"])
+            LOG.error(track)
+            display_obj["custom_tracks"].append(track)
 
     # Init upcoming igv-tracks
     sample_tracks = []

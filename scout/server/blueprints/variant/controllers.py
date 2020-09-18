@@ -16,6 +16,7 @@ from scout.constants import (
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     VERBS_MAP,
+    IGV_TRACKS,
 )
 from scout.parse.variant.ids import parse_document_id
 from scout.server.links import ensembl, get_variant_links
@@ -83,6 +84,7 @@ def variant(
             'cancer_tier_options': CANCER_TIER_OPTIONS,
             'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
             'ACMG_OPTIONS': ACMG_OPTIONS,
+            'igv_tracks': IGV_TRACKS,
             'evaluations': <list(evaluations)>,
         }
 
@@ -217,6 +219,7 @@ def variant(
         "dismiss_variant_options": dismiss_options,
         "mosaic_variant_options": MOSAICISM_OPTIONS,
         "ACMG_OPTIONS": ACMG_OPTIONS,
+        "igv_tracks": IGV_TRACKS[genome_build],
         "evaluations": evaluations,
     }
 

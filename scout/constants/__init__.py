@@ -52,7 +52,7 @@ from .variants_export import (
     MT_EXPORT_HEADER,
     VERIFIED_VARIANTS_HEADER,
 )
-from .igv_tracks import TRACKS_BUILD_37, TRACKS_BUILD_38
+from .igv_tracks import IGV_TRACKS, HUMAN_REFERENCE
 
 cytobands_37_handle = get_file_handle(cytoband_files.get("37"))
 cytobands_38_handle = get_file_handle(cytoband_files.get("38"))
@@ -74,6 +74,7 @@ BUILDS = ["37", "38", "GRCh38"]
 
 CYTOBANDS_37 = parse_cytoband(cytobands_37_handle)
 CYTOBANDS_38 = parse_cytoband(cytobands_38_handle)
+
 
 CHROMOSOMES = (
     "1",

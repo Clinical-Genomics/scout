@@ -28,12 +28,13 @@
      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/igv@2.5.4/dist/igv.min.js"></script>
 </head>
 <body>
-<div class="container-fluid" id="igvDiv" style="padding:5px; border:1px solid lightgray"></div>
-
+  {{custom_tracks}}
+  <div class="container-fluid" id="igvDiv" style="padding:5px; border:1px solid lightgray"></div>
+</body>
 <script type="text/javascript">
-    $(document).ready(function () {
-        var div = $("#igvDiv")[0],
-                options = {
+  $(document).ready(function () {
+      var div = $("#igvDiv")[0],
+              options = {
                     showNavigation: true,
                     showRuler: true,
                     {% if display_center_guide %}
@@ -48,36 +49,20 @@
                     },
                     locus: "{{locus}}",
                     tracks: [
-                      {
-                          name: "{{ clinvar_snvs.name }}",
-                          type: "{{ clinvar_snvs.type }}",
-                          format: "{{ clinvar_snvs.format }}",
-                          sourceType: "{{ clinvar_snvs.sourceType }}",
-                          url: "{{ clinvar_snvs.url|replace('%2F','/') }}",
-                          displayMode: "{{ clinvar_snvs.displayMode }}",
-                          order: Number.MIN_VALUE,
-                      },
-                      {
-                          name: "{{ clinvar_cnvs.name }}",
-                          type: "{{ clinvar_cnvs.type }}",
-                          format: "{{ clinvar_cnvs.format }}",
-                          sourceType: "{{ clinvar_cnvs.sourceType }}",
-                          url: "{{ clinvar_cnvs.url|replace('%2F','/') }}",
-                          displayMode: "{{ clinvar_cnvs.displayMode }}",
-                          height: "{{clinvar_cnvs.height}}",
-                          order: Number.MIN_VALUE,
-                      },
-                      {
-                          name: "{{ genes_track.name }}",
-                          type: "{{ genes_track.type }}",
-                          format: "{{ genes_track.format }}",
-                          sourceType: "{{ genes_track.sourceType }}",
-                          url: "{{ genes_track.url|replace('%2F','/') }}",
-                          indexURL: "{{ genes_track.indexURL|replace('%2F','/') }}",
-                          displayMode: "{{ genes_track.displayMode }}",
-                          order: Number.MIN_VALUE,
-                          visibilityWindow: 300000000,
-                      },
+                      {% for custTrack in custom_tracks %}
+                        {
+                            name: "{{ custTrack.name }}",
+                            type: "{{ custTrack.type }}",
+                            format: "{{ custTrack.format }}",
+                            sourceType: "{{ custTrack.sourceType }}",
+                            url: "{{ custTrack.url|replace('%2F','/') }}",
+                            displayMode: "{{ custTrack.displayMode }}",
+                            order: Number.MIN_VALUE,
+                            {% if custTrack.name == "Genes" %}
+                                visibilityWindow: 300000000,
+                            {% endif %}
+                        },
+                      {% endfor %}
                       {% for wtrack in rhocall_wig_tracks %}
                       {
                         type: "wig",
@@ -140,15 +125,10 @@
                         sourceType: 'file'
                       },
                       {% endfor %}
-                    ]
-                };
-
-        igv.createBrowser(div, options);
-
-    });
-
+                  ]
+              };
+      igv.createBrowser(div, options);
+  });
 </script>
-
-</body>
 
 </html>

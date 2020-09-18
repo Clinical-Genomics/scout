@@ -45,6 +45,7 @@ HUMAN_REFERENCE_38 = {
 # Clinvar SNVs track genome build 37
 CLINVAR_SNV_37 = {
     "name": "ClinVar",
+    "track_name": "clinvar_snvs",
     "type": "annotation",
     "sourceType": "file",
     "displayMode": "EXPANDED",
@@ -56,6 +57,7 @@ CLINVAR_SNV_37 = {
 # Clinvar SNVs track genome build 38
 CLINVAR_SNV_38 = {
     "name": "ClinVar",
+    "track_name": "clinvar_snvs",
     "type": "annotation",
     "sourceType": "file",
     "displayMode": "EXPANDED",
@@ -67,6 +69,7 @@ CLINVAR_SNV_38 = {
 # ClinVar CNVs track genome build 37
 CLINVAR_CNV_37 = {
     "name": "ClinVar CNVs",
+    "track_name": "clinvar_cnvs",
     "type": "annotation",
     "sourceType": "file",
     "displayMode": "SQUISHED",
@@ -78,6 +81,7 @@ CLINVAR_CNV_37 = {
 # ClinVar CNVs track genome build 38
 CLINVAR_CNV_38 = {
     "name": "ClinVar CNVs",
+    "track_name": "clinvar_cnvs",
     "type": "annotation",
     "sourceType": "file",
     "displayMode": "SQUISHED",
@@ -89,6 +93,7 @@ CLINVAR_CNV_38 = {
 # Human genes track, build 37
 HUMAN_GENES_37 = {
     "name": "Genes",
+    "track_name": "genes_track",
     "type": "annotation",
     "sourceType": "file",
     "displayMode": "EXPANDED",
@@ -100,13 +105,19 @@ HUMAN_GENES_37 = {
 # Human genes track, build 38
 HUMAN_GENES_38 = {
     "name": "Genes",
+    "track_name": "genes_track",
     "type": "annotation",
     "sourceType": "file",
     "displayMode": "EXPANDED",
     "format": HG38GENES_FORMAT,
-    "url": HG19GENES_URL,
+    "url": HG38GENES_URL,
     "indexURL": HG38GENES_INDEX_URL,
 }
 
-TRACKS_BUILD_37 = [HUMAN_REFERENCE_37, HUMAN_GENES_37, CLINVAR_SNV_37, CLINVAR_CNV_37]
-TRACKS_BUILD_38 = [HUMAN_REFERENCE_38, HUMAN_GENES_38, CLINVAR_SNV_38, CLINVAR_CNV_38]
+HUMAN_REFERENCE = {"37": HUMAN_REFERENCE_37, "38": HUMAN_REFERENCE_38}
+
+# Export selectable custom tracks into lists
+IGV_TRACKS = {
+    "37": [HUMAN_GENES_37, CLINVAR_SNV_37, CLINVAR_CNV_37],
+    "38": [HUMAN_GENES_38, CLINVAR_SNV_38, CLINVAR_CNV_38],
+}

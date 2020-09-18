@@ -21,12 +21,22 @@ from scout.server.blueprints.variant.verification_controllers import (
 )
 
 from scout.parse.clinvar import set_submission_objects
-
 from scout.constants import ACMG_CRITERIA, ACMG_MAP
 
 LOG = logging.getLogger(__name__)
 
 variant_bp = Blueprint("variant", __name__, static_folder="static", template_folder="templates")
+
+
+@variant_bp.route("/update_tracks", methods=["POST"])
+def update_tracks():
+    """Update custom track settings for a user according to form choices"""
+    user_obj = store.user(email=current_user.email)
+    selected_tracks = request.form.getlist("user_tracks") or []
+    # update user in database with custom tracks info
+    user_obj["igv_tracks"] = selected_tracks
+    store.update_user(user_obj)
+    return redirect(request.referrer)
 
 
 @variant_bp.route("/<institute_id>/<case_name>/<variant_id>")
