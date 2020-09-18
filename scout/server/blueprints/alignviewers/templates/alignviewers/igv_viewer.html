@@ -83,7 +83,7 @@
                         type: "wig",
                         name: '{{ wtrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=wtrack.url) }}',
-                        format: 'wig',
+                        format: 'bigWig',
                         {# indexURL: '{{ url_for("alignviewers.remote_static", file=wtrack.url)  }}', #}
                         color: "rgb(60, 37, 17)",
                         min: '{{ wtrack.min }}',
@@ -96,7 +96,7 @@
                         type: "bed",
                         name: '{{ btrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=btrack.url) }}',
-                        format: 'bed',
+                        format: 'bigBed',
                         color: "rgb(65, 31, 30)",
                         sourceType: 'file'
                       },
@@ -117,14 +117,14 @@
                         type: "wig",
                         name: '{{ ttrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=ttrack.url) }}',
-                        format: 'wig',
+                        format: "bigWig",
                         color: "rgb(40, 0, 13)",
                         sourceType: 'file'
                       },
                       {% endfor %}
                       {% for rtrack in updregion_tracks %}
                       {
-                        type: "bed",
+                        type: "annotation",
                         name: '{{ rtrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=rtrack.url) }}',
                         color: "rgb(0, 204, 102)",
@@ -137,6 +137,7 @@
                         name: '{{ strack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=strack.url) }}',
                         color: "rgb(25, 61, 4)",
+                        format: 'bigBed',
                         sourceType: 'file'
                       },
                       {% endfor %}
