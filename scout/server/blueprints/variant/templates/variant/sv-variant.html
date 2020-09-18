@@ -7,7 +7,6 @@
 {% from "variant/variant_details.html" import gtcall_panel, frequencies, observations_panel %}
 {% from "variant/buttons.html" import variant_tag_button, dismiss_variant_button %}
 
-
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
 {% endblock %}
@@ -220,6 +219,11 @@
             {{ sv_alignments(variant, case, "length") }}
           </div>
         </li>
+        {% if case.mt_bams or case.bam_files %}
+          <li>
+            {{ igv_track_selection(igv_tracks, current_user) }}
+          </li>
+        {% endif %}
       <li class="list-group-item">
         <div class="row d-flex justify-content-between">
           <div>Type</div><div class="float-right">{{ variant.sub_category|upper }}</div>

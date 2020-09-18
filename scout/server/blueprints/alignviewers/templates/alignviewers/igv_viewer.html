@@ -50,7 +50,7 @@
                     },
                     locus: "{{locus}}",
                     tracks: [
-                      {% for custTrack in custom_tracks  if custTrack.name != "Genes" %}
+                      {% for custTrack in custom_tracks %}
                         {
                             name: "{{ custTrack.name }}",
                             type: "{{ custTrack.type }}",
