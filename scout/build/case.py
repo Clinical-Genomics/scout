@@ -229,7 +229,7 @@ def build_case(case_data, adapter):
     if "multiqc" in case_data:
         case_obj["multiqc"] = case_data.get("multiqc")
     case_obj["vcf_files"] = case_data.get("vcf_files", {})
-    case_obj["delivery_report"] = case_data.get("delivery_report")
+    case_obj["cnv_report"] = case_data.get("cnv_report")
 
     case_obj["has_svvariants"] = False
     if case_obj["vcf_files"].get("vcf_sv") or case_obj["vcf_files"].get("vcf_sv_research"):

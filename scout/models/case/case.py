@@ -82,6 +82,7 @@ case = dict(
     chromograph_image_files=str,  # path to dir
     chromograph_prefixes=list,  # path to dir
     delivery_report=str,  # delivery report is a path to html file
+    cnv_Report=str,  # CNV report is a path to html file
     vcf_files=dict,  # A dictionary with vcf files
     smn_tsv=str,  # path to an SMN TSV file
     diagnosis_phenotypes=list,  # List of references to diseases

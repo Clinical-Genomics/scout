@@ -564,9 +564,7 @@ class CaseHandler(object):
 
         if old_case:
             LOG.info(
-                "Update case id for existing case: %s -> %s",
-                old_caseid,
-                case_obj["_id"],
+                "Update case id for existing case: %s -> %s", old_caseid, case_obj["_id"],
             )
             self.update_caseid(old_case, case_obj["_id"])
             update = True
@@ -586,16 +584,8 @@ class CaseHandler(object):
         files = [
             {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
             {"file_name": "vcf_sv", "variant_type": "clinical", "category": "sv"},
-            {
-                "file_name": "vcf_cancer",
-                "variant_type": "clinical",
-                "category": "cancer",
-            },
-            {
-                "file_name": "vcf_cancer_sv",
-                "variant_type": "clinical",
-                "category": "cancer_sv",
-            },
+            {"file_name": "vcf_cancer", "variant_type": "clinical", "category": "cancer",},
+            {"file_name": "vcf_cancer_sv", "variant_type": "clinical", "category": "cancer_sv",},
             {"file_name": "vcf_str", "variant_type": "clinical", "category": "str"},
         ]
 
@@ -610,9 +600,7 @@ class CaseHandler(object):
                 category = vcf_file["category"]
                 if update:
                     self.delete_variants(
-                        case_id=case_obj["_id"],
-                        variant_type=variant_type,
-                        category=category,
+                        case_id=case_obj["_id"], variant_type=variant_type, category=category,
                     )
                 self.load_variants(
                     case_obj=case_obj,
@@ -714,11 +702,13 @@ class CaseHandler(object):
                     "analyses": {
                         "date": old_case["analysis_date"],
                         "delivery_report": old_case.get("delivery_report"),
+                        "cnv_report": old_case.get("cnv_report"),
                     },
                 },
                 "$set": {
                     "analysis_date": case_obj["analysis_date"],
                     "delivery_report": case_obj.get("delivery_report"),
+                    "cnv_report": case_obj.get("cnv_report"),
                     "individuals": case_obj["individuals"],
                     "updated_at": updated_at,
                     "rerun_requested": case_obj.get("rerun_requested", False),
@@ -766,9 +756,7 @@ class CaseHandler(object):
         case_obj["updated_at"] = datetime.datetime.now()
 
         updated_case = self.case_collection.find_one_and_replace(
-            {"_id": case_obj["_id"]},
-            case_obj,
-            return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": case_obj["_id"]}, case_obj, return_document=pymongo.ReturnDocument.AFTER,
         )
 
         return updated_case
@@ -861,8 +849,7 @@ class CaseHandler(object):
             len(case_verif_variants["sanger_verified"]),
         )
         LOG.info(
-            "Nr variants with sanger ordered found: %s",
-            len(case_verif_variants["sanger_ordered"]),
+            "Nr variants with sanger ordered found: %s", len(case_verif_variants["sanger_ordered"]),
         )
 
         return case_verif_variants
@@ -1065,11 +1052,7 @@ class CaseHandler(object):
                 )
 
                 old_event = self.event_collection.find_one(
-                    {
-                        "case": case_obj["_id"],
-                        "verb": verb,
-                        "variant_id": old_var["variant_id"],
-                    }
+                    {"case": case_obj["_id"], "verb": verb, "variant_id": old_var["variant_id"],}
                 )
 
                 if old_event is None:
