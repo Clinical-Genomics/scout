@@ -93,7 +93,6 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
 
         variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
-        LOG.debug("case group: %s ", case_obj.get("group"))
         if case_obj.get("group"):
             variant_obj["cohort_assessments"] = []
             for group_case_id in case_obj.get("group"):
