@@ -697,7 +697,8 @@ def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
 
         # AND the case has a delivery report
         store.case_collection.update_one(
-            {"_id": case_obj["_id"]}, {"$set": {"delivery_report": delivery_report_path}},
+            {"_id": case_obj["_id"]},
+            {"$set": {"delivery_report": delivery_report_path}},
         )
 
         # WHEN accessing the delivery report page
@@ -724,7 +725,8 @@ def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
 
         # AND the case has a delivery report
         store.case_collection.update_one(
-            {"_id": case_obj["_id"]}, {"$set": {"delivery_report": delivery_report_path}},
+            {"_id": case_obj["_id"]},
+            {"$set": {"delivery_report": delivery_report_path}},
         )
 
         # WHEN accessing the delivery report page with the format=pdf param
