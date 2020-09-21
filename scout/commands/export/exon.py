@@ -13,8 +13,8 @@ LOG = logging.getLogger(__name__)
 
 @click.command("exons", short_help="Export exons")
 @click.option("-b", "--build", default="37", type=click.Choice(["37", "38"]))
-@click.option("-hgnc", "--hgnc-id", type=int)
-@click.option("--json", is_flag=True)
+@click.option("-hgnc", "--hgnc-id", help="Limit search to exons of a gene", type=int)
+@click.option("--json", help="Export to json format", is_flag=True)
 @with_appcontext
 def exons(build, hgnc_id, json):
     """Export exons to chanjo compatible .bed like format or to json"""
@@ -22,7 +22,7 @@ def exons(build, hgnc_id, json):
 
     if json:  # export query results to json format
         query = {"build": build}
-        if hgnc_id:
+        if hgnc_id:  # add hgnc ID to the exon query if hgnc ID is provided
             query["hgnc_id"] = hgnc_id
         result = store.exon_collection.find(query)
         click.echo(dumps(result))
@@ -34,10 +34,10 @@ def exons(build, hgnc_id, json):
     for line in header:
         click.echo(line)
 
-    if hgnc_id:
+    if hgnc_id:  # print the exons of a single gene
         for exon_line in export_gene_exons(store, hgnc_id, build):
             click.echo(exon_line)
         return
-
+    # Otherwise print all exons
     for exon_line in export_exons(store, build):
         click.echo(exon_line)
