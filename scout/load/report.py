@@ -75,10 +75,10 @@ def load_cnv_report(adapter: MongoAdapter, report_path: str, case_id: str, updat
         raise DataNotFoundError("no case found")
 
     if not case_obj.get("cnv_report"):
-        _put_report_in_case_root(case_obj, report_path)
+        _put_cnv_report_in_case_root(case_obj, report_path)
     else:
         if update:
-            _put_report_in_case_root(case_obj, report_path)
+            _put_cnv_report_in_case_root(case_obj, report_path)
         else:
             raise IntegrityError("Existing CNV report found, use update = True to " "overwrite")
 
@@ -86,6 +86,6 @@ def load_cnv_report(adapter: MongoAdapter, report_path: str, case_id: str, updat
     return adapter.replace_case(case_obj)
 
 
-def _put_report_in_case_root(case_obj, report_path):
+def _put_cnv_report_in_case_root(case_obj, report_path):
     case_obj["cnv_report"] = report_path
     return True

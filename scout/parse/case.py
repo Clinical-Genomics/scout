@@ -81,7 +81,7 @@ def parse_case_data(
         smn_tsv(str): Path to an SMN tsv file
         peddy_ped(str): Path to a peddy ped
         multiqc(str): Path to dir with multiqc information
-        cnv_report: Path to zip file with CNV report
+        cnv_report: Path to pdf file with CNV report
 
     Returns:
         config_data(dict): Holds all the necessary information for loading

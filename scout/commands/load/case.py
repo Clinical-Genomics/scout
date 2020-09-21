@@ -21,9 +21,7 @@ LOG = logging.getLogger(__name__)
 @click.command("case", short_help="Load a case")
 @click.option("--vcf", type=click.Path(exists=True), help="path to clinical VCF file to be loaded")
 @click.option(
-    "--vcf-sv",
-    type=click.Path(exists=True),
-    help="path to clinical SV VCF file to be loaded",
+    "--vcf-sv", type=click.Path(exists=True), help="path to clinical SV VCF file to be loaded",
 )
 @click.option(
     "--vcf-cancer",
@@ -36,9 +34,7 @@ LOG = logging.getLogger(__name__)
     help="path to clinical cancer SV VCF file to be loaded",
 )
 @click.option(
-    "--vcf-str",
-    type=click.Path(exists=True),
-    help="path to clinical STR VCF file to be loaded",
+    "--vcf-str", type=click.Path(exists=True), help="path to clinical STR VCF file to be loaded",
 )
 @click.option("--owner", help="parent institute for the case", default="test")
 @click.option("--ped", type=click.File("r"))
@@ -69,7 +65,6 @@ def case(
     peddy_sex,
     peddy_check,
     keep_actions,
-    cnv_report,
 ):
     """Load a case into the database.
 
@@ -98,7 +93,6 @@ def case(
             peddy_ped=peddy_ped,
             peddy_sex=peddy_sex,
             peddy_check=peddy_check,
-            cnv_report=cnv_report,
         )
     except SyntaxError as err:
         LOG.warning(err)
