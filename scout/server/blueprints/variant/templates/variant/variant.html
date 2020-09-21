@@ -438,7 +438,6 @@
                   <input type="hidden" name="contig" value="{{variant.chromosome}}">
                   <input type="hidden" name="start" value="{{variant.position - 50}}">
                   <input type="hidden" name="stop" value="{{variant.end_position + 50}}">
-                  <input type="hidden" name="center_guide" value="T">
                   <!-- end of general hidden form fields -->
                 {% if variant.chromosome == "MT" %}
                   {% if case.mt_bams %}

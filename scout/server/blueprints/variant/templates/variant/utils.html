@@ -14,7 +14,7 @@
             </select>
           </div>
           <div class="col-3">
-            <button type="submit" class="btn btn-sm btn-outline-secondary">Remember preferences</button>
+            <button type="submit" class="btn btn-sm btn-outline-secondary">Save preferences</button>
           </div>
       </div>
     </form>
@@ -271,7 +271,6 @@
           <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
           <input type="hidden" name="build" value="{{case.genome_build}}">
           <input type="hidden" name="contig" value="{{variant.chromosome}}">
-          <input type="hidden" name="center_guide" value="T">
           {% if zoom == "start" %}
             <input type="hidden" name="start" value="{{variant.position - 500}}">
             <input type="hidden" name="stop" value="{{variant.position + 500}}">

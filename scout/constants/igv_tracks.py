@@ -114,6 +114,14 @@ HUMAN_GENES_38 = {
     "indexURL": HG38GENES_INDEX_URL,
 }
 
+CASE_SPECIFIC_TRACKS = {
+    "rhocall_bed": "Rhocall Zygosity",
+    "rhocall_wig": "Rhocall Regions",
+    "tiddit_coverage_wig": "TIDDIT Coverage",
+    "upd_regions_bed": "UPD regions",
+    "upd_sites_bed": "UPD sites",
+}
+
 HUMAN_REFERENCE = {"37": HUMAN_REFERENCE_37, "38": HUMAN_REFERENCE_38}
 
 # Export selectable custom tracks into lists
