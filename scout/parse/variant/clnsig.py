@@ -22,7 +22,6 @@ def parse_clnsig(variant, transcripts=None):
     Returns:
         clnsig_accsessions(list(dict)): A list with clnsig accessions
     """
-
     transcripts = transcripts or []
     acc = variant.INFO.get("CLNACC", variant.INFO.get("CLNVID", ""))
     sig = variant.INFO.get("CLNSIG", "").lower()
@@ -54,7 +53,7 @@ def parse_clnsig(variant, transcripts=None):
             revstat_groups = [rev.lstrip("_") for rev in revstat.replace("&", ",").split(",")]
 
         sig_groups = []
-        for significance in sig.split(","):
+        for significance in sig.replace("&", ",").split(","):
             for term in significance.lstrip("_").split("/"):
                 sig_groups.append("_".join(term.split(" ")))
 
