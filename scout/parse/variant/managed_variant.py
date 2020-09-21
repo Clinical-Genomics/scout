@@ -67,7 +67,7 @@ def parse_managed_variant_lines(csv_lines):
 
     delimiter = "\t"
 
-    for line in csv_lines:
+    for i, line in enumerate(csv_lines):
         line = line.rstrip()
 
         if line.startswith("##") or len(line) < 1:
@@ -80,12 +80,17 @@ def parse_managed_variant_lines(csv_lines):
             header = [word.lower() for word in line[1:].split(delimiter)]
             continue
 
-            managed_variant_info = dict(zip(header, line.split(delimiter)))
+        if i == 0:
+            delimiter = get_delimiter(line)
+            header = [word.lower() for word in line[0:].split(delimiter)]
+            continue
 
-            # There are cases when excel exports empty lines
-            if not any(managed_variant_info.values()):
-                continue
+        managed_variant_info = dict(zip(header, line.split(delimiter)))
 
-            managed_variant_info_dicts.append(managed_variant_info)
+        # There are cases when excel exports empty lines
+        if not any(managed_variant_info.values()):
+            continue
+
+        managed_variant_info_dicts.append(managed_variant_info)
 
     return managed_variant_info_dicts

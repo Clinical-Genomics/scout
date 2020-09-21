@@ -48,6 +48,7 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
 
     for managed_variant_info in parse_managed_variant_lines(lines):
         total_variant_lines += 1
+        LOG.debug("Parsed %s", managed_variant_info)
         managed_variant_info.update({"maintainer": [current_user_id], "institutes": institutes})
         managed_variant_obj = build_managed_variant(managed_variant_info)
         if store.upsert_managed_variant(managed_variant_obj):
