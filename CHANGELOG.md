@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Editable variants comments
 ### Fixed
 - Empty variant activity panel
+- STRs variants popover
 ### Changed
 - Updated RELEASE docs.
 - Pinned variants card style on the case page
