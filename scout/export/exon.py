@@ -60,12 +60,9 @@ def export_exons(adapter, build="37"):
     """
     ens_transcripts = adapter.ensembl_transcripts(build=build)
 
-    LOG.error(f"ens_transcripts:{ens_transcripts}")
     hgnc_genes = {}
     for gene_obj in adapter.all_genes(build=build):
         hgnc_genes[gene_obj["hgnc_id"]] = gene_obj
-
-    # LOG.error(f"genes:{hgnc_genes}")
 
     exons = {}
     for exon_obj in adapter.exons(build=build):
