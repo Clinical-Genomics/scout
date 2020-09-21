@@ -611,10 +611,17 @@ def events(institute_id, case_name, event_id=None):
     content = request.form.get("content")
     variant_id = request.args.get("variant_id")
     user_obj = store.user(current_user.email)
-
     if event_id:
-        # delete the event
-        store.delete_event(event_id)
+        if "remove" in request.form:
+            # delete the event
+            store.delete_event(event_id)
+        elif "edit" in request.form:
+            # edit comment
+            store.update_comment(
+                comment_id=event_id,
+                new_content=request.form.get("updatedContent"),
+                level=request.form.get("level", "specific"),
+            )
     else:
         if variant_id:
             # create a variant comment

@@ -22,6 +22,7 @@ VERBS_MAP = {
     "unassign": "was unassigned from",
     "status": "updated the status for",
     "comment": "commented on",
+    "comment_update": "updated a comment for",
     "synopsis": "updated synopsis for",
     "pin": "pinned variant",
     "unpin": "removed pinned variant",
