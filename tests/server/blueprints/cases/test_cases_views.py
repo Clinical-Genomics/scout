@@ -150,6 +150,17 @@ def test_sidebar_macro(app, institute_obj, case_obj):
         assert "Share case" in html
 
 
+def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj):
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WHEN the case sidebar macro is called
+        macro = get_template_attribute("cases/collapsible_actionbar.html", "action_bar")
+        html = macro(institute_obj, cancer_case_obj)
+
+        # It should show the expected items:
+        assert "CNV report" in html
+
+
 def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -686,8 +697,7 @@ def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
 
         # AND the case has a delivery report
         store.case_collection.update_one(
-            {"_id": case_obj["_id"]},
-            {"$set": {"delivery_report": delivery_report_path}},
+            {"_id": case_obj["_id"]}, {"$set": {"delivery_report": delivery_report_path}},
         )
 
         # WHEN accessing the delivery report page
@@ -714,8 +724,7 @@ def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
 
         # AND the case has a delivery report
         store.case_collection.update_one(
-            {"_id": case_obj["_id"]},
-            {"$set": {"delivery_report": delivery_report_path}},
+            {"_id": case_obj["_id"]}, {"$set": {"delivery_report": delivery_report_path}},
         )
 
         # WHEN accessing the delivery report page with the format=pdf param
