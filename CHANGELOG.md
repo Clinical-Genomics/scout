@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Editable cases comments
 - Editable variants comments
+- CNV report link in case side navigation
 ### Fixed
 - Empty variant activity panel
 ### Changed
