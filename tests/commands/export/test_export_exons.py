@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
 from scout.commands import cli
 from scout.server.extensions import store
 
