@@ -48,14 +48,14 @@ class ManagedVariantHandler(object):
 
         managed_variant_obj["date"] = managed_variant_obj.get("date", datetime.now())
 
-        if original_obj_id:
-            collision = self.managed_variant_collection.find_one(
-                {"managed_variant_id": managed_variant_obj["managed_variant_id"]}
-            )
-            if collision:
-                LOG.debug("Collision - new variant already exists! Leaving variant unmodified.")
-                return
+        collision = self.managed_variant_collection.find_one(
+            {"managed_variant_id": managed_variant_obj["managed_variant_id"]}
+        )
+        if collision:
+            LOG.debug("Collision - new variant already exists! Leaving variant unmodified.")
+            return
 
+        if original_obj_id:
             result = self.managed_variant_collection.find_one_and_update(
                 {"_id": ObjectId(original_obj_id)},
                 {"$set": managed_variant_obj},

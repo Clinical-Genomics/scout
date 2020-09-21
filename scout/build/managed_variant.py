@@ -18,8 +18,8 @@ def build_managed_variant(managed_variant_info):
     try:
         managed_variant = ManagedVariant(
             chromosome=str(managed_variant_info["chromosome"]),
-            position=managed_variant_info["position"],
-            end=managed_variant_info.get("end"),
+            position=int(managed_variant_info["position"]),
+            end=int(managed_variant_info.get("end")),
             reference=managed_variant_info["reference"],
             alternative=managed_variant_info["alternative"],
             build=managed_variant_info.get("build", "37"),

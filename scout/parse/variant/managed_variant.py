@@ -44,6 +44,8 @@ def parse_managed_variant_id(
 def parse_managed_variant_lines(csv_lines):
     """Parse managed variant csv lines into managed variant info dicts.
 
+    Shares implementation structure with panel csv parsing. Could be generalised.
+
     Args:
         csv_lines(iterable(str))
 
@@ -74,8 +76,6 @@ def parse_managed_variant_lines(csv_lines):
             continue
 
         if line.startswith("#"):
-            # We need to try delimiters
-            # We prefer ';' or '\t' byt should accept ' '
             delimiter = get_delimiter(line)
             header = [word.lower() for word in line[1:].split(delimiter)]
             continue
