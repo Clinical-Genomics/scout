@@ -115,10 +115,13 @@
                       {% for ttrack in tiddit_wig_tracks %}
                       {
                         type: "wig",
+                        format: "bigwig",
                         name: '{{ ttrack.name }}',
                         url: '{{ url_for("alignviewers.remote_static", file=ttrack.url) }}',
-                        format: "bigwig",
                         color: "rgb(40, 0, 13)",
+                        min: '{{ ttrack.min }}',
+                        max: '{{ ttrack.max }}',
+                        graphType: "bar",
                         sourceType: 'file'
                       },
                       {% endfor %}
