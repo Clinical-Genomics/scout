@@ -829,7 +829,7 @@ def delivery_report(institute_id, case_name):
     return send_from_directory(out_dir, filename)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/delivery-report")
+@cases_bp.route("/<institute_id>/<case_name>/cnv-report")
 def cnv_report(institute_id, case_name):
     """Display CNV report."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
