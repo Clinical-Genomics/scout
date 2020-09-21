@@ -32,7 +32,7 @@ def test_sample_tracks():
     }
 
     display_obj = {}
-    # WHEN the set_sample_tracks function is involked:
+    # WHEN the set_sample_tracks function is invoked:
     controllers.set_sample_tracks(display_obj, form_data)
     # THEN it should return 3 tracks
     assert len(display_obj["sample_tracks"])
@@ -42,13 +42,13 @@ def test_sample_tracks():
         assert track["url"] in sample_bams
 
 
-def set_case_apecific_tracks():
+def set_case_specific_tracks():
     """Test function that creates tracks based on case-specific files:
     (rhocall files, tiddit coverage files, upd regions and sites files)
     """
     # GIVEN a case with a rhocall bed file and a TIDDIT wig file
     form_data = {"rhocall_bed": "rhocall.bed", "tiddit_coverage_wig": "tiddit_coverage.wig"}
-    # THE case_apecific_tracks function should return the expected tracks
+    # THE case_specific_tracks function should return the expected tracks
     display_obj = {}
     controllers.set_case_specific_tracks(display_obj, form_data)
     assert display_obj["rhocall_bed"]["url"] == form_data["rhocall_bed"]
