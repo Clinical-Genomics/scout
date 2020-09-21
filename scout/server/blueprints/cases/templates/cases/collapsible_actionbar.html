@@ -443,12 +443,12 @@
 </div>
 {% endmacro %}
 
-{% macro cnv_report(institute, case, date=None) %}
+{% macro cnv_report(institute, case) %}
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex flex-row flex-fill bd-highlight"></span>
-    <span class="menu-collapsed ml-2">CNV ({{date or case.analysis_date.date() }})
+    <span class="menu-collapsed ml-2">CNV report
       <a href="{{ url_for('cases.cnv_report', institute_id=institute,
-                        case_name=case.display_name, date=date, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
+                        case_name=case.display_name, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
   </div>
 </div>
 {% endmacro %}
