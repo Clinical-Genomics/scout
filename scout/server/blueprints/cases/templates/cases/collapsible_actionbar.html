@@ -98,7 +98,7 @@
           <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-file-excel-o"></i></a>
       </div>
     </div>
-  {% if case.cnv_report %}
+    {% if case.cnv_report %}
       {{ cnv_report(institute._id, case) }}
     {% endif %}
     {% if case.delivery_report %}
