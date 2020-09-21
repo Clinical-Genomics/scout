@@ -16,12 +16,13 @@ import logging
 LOG = logging.getLogger(__name__)
 
 
-def export_exons(adapter, build="37"):
+def export_exons(adapter, build="37", hgnc_id=None):
     """Export all exons of a certain build from the database
 
     Args:
         adapter(scout.adapter.MongoAdapter)
-        build(str)
+        build(str): "37" or "38"
+        hgnc_id(int): to export the exons from a single gene
 
     Yields:
         transcript(scout.models.Transcript)
