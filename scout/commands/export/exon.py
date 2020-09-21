@@ -5,7 +5,7 @@ from bson.json_util import dumps
 from flask.cli import with_appcontext
 
 from scout.commands.utils import builds_option
-from scout.export.exon import export_exons
+from scout.export.exon import export_exons, export_gene_exons
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ LOG = logging.getLogger(__name__)
 
 @click.command("exons", short_help="Export exons")
 @click.option("-b", "--build", default="37", type=click.Choice(["37", "38"]))
-@click.option("-g", "--hgnc-id", type=int)
+@click.option("-hgnc", "--hgnc-id", type=int)
 @click.option("--json", is_flag=True)
 @with_appcontext
 def exons(build, hgnc_id, json):
@@ -28,11 +28,16 @@ def exons(build, hgnc_id, json):
         click.echo(dumps(result))
         return
 
-    # Else return them in a human-readable table
+    # Else return them in a human-readable text table
     header = ["#Chrom\tStart\tEnd\tExonId\tTranscripts\tHgncIDs\tHgncSymbols"]
 
     for line in header:
         click.echo(line)
 
-    for exon_line in export_exons(adapter, build):
+    if hgnc_id:
+        for exon_line in export_gene_exons(store, hgnc_id, build):
+            click.echo(exon_line)
+        return
+
+    for exon_line in export_exons(store, build):
         click.echo(exon_line)
