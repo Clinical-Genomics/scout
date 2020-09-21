@@ -71,7 +71,7 @@ def set_sample_tracks(display_obj, form):
     display_obj["sample_tracks"] = sample_tracks
 
 
-def set_case_apecific_tracks(display_obj, form):
+def set_case_specific_tracks(display_obj, form):
     """Set up tracks from files that might be present or not at the case level
         (rhocall files, tiddit coverage files, upd regions and sites files)
     Args:

@@ -79,7 +79,7 @@ def igv():
 
     # Set up case-specific tracks (might be present according to the pipeline)
     if request.form.get("bam"):
-        controllers.set_case_apecific_tracks(display_obj, request.form)
+        controllers.set_case_specific_tracks(display_obj, request.form)
 
     display_obj["display_center_guide"] = True
 
