@@ -33,13 +33,10 @@ def load_report(
     if case_obj is None:
         raise DataNotFoundError("no case found")
 
-    if not case_obj.get(report_type):
+    if update or case_obj.get("cnv_report") is None:
         _update_report_path(case_obj, report_path, report_type)
     else:
-        if update:
-            _update_report_path(case_obj, report_path, report_type)
-        else:
-            raise IntegrityError("Existing report found, use update = True to " "overwrite")
+        raise IntegrityError("Existing report found, use update = True to " "overwrite")
 
     LOG.info("Saving report for case {} in database".format(case_obj["_id"]))
     return adapter.replace_case(case_obj)
