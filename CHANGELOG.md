@@ -6,16 +6,24 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+### Changed
+
+
+## [4.22]
+### Added
 - Editable cases comments
 - Editable variants comments
 - CNV report link in case side navigation
 ### Fixed
 - Empty variant activity panel
 - STRs variants popover
-- Split correctly ClinVar multiple significance terms for a variant 
+- Split new ClinVar multiple significance terms for a variant
+- Edit the selected comment, not the latest
 ### Changed
 - Updated RELEASE docs.
 - Pinned variants card style on the case page
+- Merged `scout export exons` and `scout view exons` commands
 
 
 ## [4.21.2]
