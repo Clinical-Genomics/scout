@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - CNV report link in case side navigation
 ### Fixed
 - Empty variant activity panel
+- STRs variants popover
+- Split correctly ClinVar multiple significance terms for a variant 
 ### Changed
 - Updated RELEASE docs.
 - Pinned variants card style on the case page
