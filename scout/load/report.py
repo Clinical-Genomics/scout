@@ -4,7 +4,7 @@ import logging
 from scout.adapter import MongoAdapter
 from scout.exceptions import IntegrityError, DataNotFoundError
 
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 def load_delivery_report(
@@ -42,7 +42,7 @@ def load_delivery_report(
                 "Existing delivery report found, use update = True to " "overwrite"
             )
 
-    logger.info("Saving report for case {} in database".format(case_obj["_id"]))
+    LOG.info("Saving report for case {} in database".format(case_obj["_id"]))
     return adapter.replace_case(case_obj)
 
 
@@ -60,8 +60,8 @@ def load_cnv_report(adapter: MongoAdapter, report_path: str, case_id: str, updat
 
     Args:
         adapter     (MongoAdapter): Connection to the database
-        report_path (string):       Path to delivery report
-        case_id     (string):       Optional case identifier
+        report_path (string):       Path to CNV report
+        case_id     (string):       Case identifier
         update      (bool):         If an existing report should be replaced
 
     Returns:
@@ -82,7 +82,7 @@ def load_cnv_report(adapter: MongoAdapter, report_path: str, case_id: str, updat
         else:
             raise IntegrityError("Existing CNV report found, use update = True to " "overwrite")
 
-    logger.info("Saving report for case {} in database".format(case_obj["_id"]))
+    LOG.info("Saving report for case {} in database".format(case_obj["_id"]))
     return adapter.replace_case(case_obj)
 
 
