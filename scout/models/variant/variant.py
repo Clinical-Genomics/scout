@@ -67,6 +67,8 @@ variant = dict(
     cadd_score=float,
     clnsig=list,  # list of <clinsig>
     spidex=float,
+    spliceai_ds_max=float,
+    spliceai=str,
     missing_data=bool,  # default False
     # Callers
     gatk=str,  # choices=VARIANT_CALL, default='Not Used'

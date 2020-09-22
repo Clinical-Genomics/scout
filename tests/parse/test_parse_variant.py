@@ -81,6 +81,30 @@ def test_parse_cadd(variants, case_obj):
             assert parsed_variant["cadd_score"] == cadd_score
 
 
+def test_parse_spliceai(cyvcf2_variant, case_obj):
+    """ Test parse Splice AI
+    Two variant INFO fields are imported:
+        SpliceAI_DS_Max(float)
+        SpliceAI(str):
+            SpliceAIv1.3 variant annotation.
+            These include delta scores (DS) and delta positions (DP) for acceptor gain (AG),
+            acceptor loss (AL), donor gain (DG), and donor loss (DL).
+            Format: ALLELE|SYMBOL|DS_AG|DS_AL|DS_DG|DS_DL|DP_AG|DP_AL|DP_DG|DP_DL
+    """
+    # GIVEN a variant with expected info fields
+    spliceai_ds_max = 0.91
+    cyvcf2_variant.INFO["SpliceAI_DS_Max"] = spliceai_ds_max
+    spliceai = "G|PLK3|0.00|0.00|0.91|0.53|-1|-14|-1|2"
+    cyvcf2_variant.INFO["SpliceAI"] = spliceai
+
+    # WHEN parsing variant
+    parsed_variant = parse_variant(cyvcf2_variant, case_obj)
+
+    # THEN make sure that the spliceai entries have been parsed correctly
+    assert parsed_variant["spliceai_ds_max"] == spliceai_ds_max
+    assert parsed_variant["spliceai"] == spliceai
+
+
 def test_parse_revel(cyvcf2_variant, case_obj):
     ## GIVEN a variant with REVEL score in the CSQ entry
     csq_header = "ALLELE|CONSEQUENCE|REVEL_rankscore"

@@ -104,6 +104,8 @@ def build_variant(
         revel_score = float,
         clnsig = list, # list of <clinsig>
         spidex = float,
+        spliceai_ds_max = float,
+        spliceai = str, # spliceai string, see info key but nominally | separated values
 
         missing_data = bool, # default False
 
@@ -382,6 +384,12 @@ def build_variant(
 
     if variant.get("spidex"):
         variant_obj["spidex"] = variant["spidex"]
+
+    if variant.get("spliceai"):
+        variant_obj["spliceai"] = variant["spliceai"]
+
+    if variant.get("spliceai_ds_max"):
+        variant_obj["spliceai_ds_max"] = variant["spliceai_ds_max"]
 
     # Add the rank score results
     rank_results = []
