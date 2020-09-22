@@ -33,7 +33,7 @@ def delivery_report(case_id, report_path, update):
 
 @click.command("cnv-report")
 @click.argument("-c", "--case-id", help="Case ID", required=True)
-@click.argument("report_path", type=click.Path(exists=True))
+@click.argument("-r", --report-path", help="Path to CNV report file", type=click.Path(exists=True), required=True)
 @click.option("-update", "--update", is_flag=True, help="update CNV report for a sample")
 @with_appcontext
 def cnv_report(case_id, report_path, update):
