@@ -78,7 +78,7 @@ def set_case_specific_tracks(display_obj, form):
         display_obj(dict) dictionary containing all tracks info
         form(dict) flask request form dictionary
     """
-    for track, label in CASE_SPECIFIC_TRACKS:
+    for track, label in CASE_SPECIFIC_TRACKS.items():
         if form.get(track):
             track_info = make_igv_tracks(label, form.get(track))
             display_obj[track] = track_info
