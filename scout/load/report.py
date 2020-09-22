@@ -8,11 +8,7 @@ LOG = logging.getLogger(__name__)
 
 
 def load_report(
-    adapter: MongoAdapter,
-    report_path: str,
-    case_id: str,
-    report_type: str,
-    update: bool = False,
+    adapter: MongoAdapter, report_path: str, case_id: str, report_type: str, update: bool = False,
 ):
     """Load report into a case in the database
 
@@ -37,7 +33,7 @@ def load_report(
     if case_obj is None:
         raise DataNotFoundError("no case found")
 
-    if update or case_obj.get("cnv_report") is None:
+    if update or case_obj.get(report_type) is None:
         _update_report_path(case_obj, report_path, report_type)
     else:
         raise IntegrityError("Existing report found, use update = True to " "overwrite")
@@ -49,10 +45,10 @@ def load_report(
 def _update_report_path(case_obj, report_path, report_type):
     """Updates the report path
 
-    Args:
-        case_obj     (Case):         Case object
-        report_path  (string):       Path to CNV report
-        report_type  (string):       Type of report
+        Args:
+            case_obj     (Case):         Case object
+            report_path  (string):       Path to CNV report
+            report_type  (string):       Type of report
     """
     case_obj[report_type] = report_path
     return True
