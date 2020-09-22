@@ -59,6 +59,8 @@ def igv():
     chrom = request.form.get("contig")
     if chromosome_build in ["GRCh38", "38"] or chrom == "M":
         chromosome_build = "38"
+    else:
+        chromosome_build = "37"
     if chrom == "MT":
         chrom = "M"
     start = request.form.get("start")
