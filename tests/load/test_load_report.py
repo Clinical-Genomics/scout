@@ -33,7 +33,12 @@ def test_load_delivery_report_using_case_id_without_update_fail(adapter, case_ob
 
     ## THEN a report should not have been added to that case
     with pytest.raises(IntegrityError):
-        load_report(adapter=adapter, case_id=case_id, report_path=report_path2)
+        load_report(
+            adapter=adapter,
+            case_id=case_id,
+            report_path=report_path2,
+            report_type="delivery_report",
+        )
 
     updated_case_obj = adapter.case_collection.find_one()
     assert updated_case_obj.get("delivery_report") != report_path2
