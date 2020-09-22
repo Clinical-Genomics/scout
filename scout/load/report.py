@@ -7,10 +7,10 @@ from scout.exceptions import IntegrityError, DataNotFoundError
 LOG = logging.getLogger(__name__)
 
 
-def load_delivery_report(
-    adapter: MongoAdapter, report_path: str, case_id: str, update: bool = False
+def load_report(
+    adapter: MongoAdapter, report_path: str, case_id: str, report_type: str, update: bool = False,
 ):
-    """Load a delivery report into a case in the database
+    """Load report into a case in the database
 
     If the report already exists the function will exit.
     If the user want to load a report that is already in the database
@@ -18,9 +18,10 @@ def load_delivery_report(
 
     Args:
         adapter     (MongoAdapter): Connection to the database
-        report_path (string):       Path to delivery report
+        report_path (string):       Path to report
         case_id     (string):       Optional case identifier
         update      (bool):         If an existing report should be replaced
+        report_type (string):       Report type, can be delivery_report or cnv_report
 
     Returns:
         updated_case(dict)
@@ -32,60 +33,25 @@ def load_delivery_report(
     if case_obj is None:
         raise DataNotFoundError("no case found")
 
-    if not case_obj.get("delivery_report"):
-        _put_report_in_case_root(case_obj, report_path)
+    if not case_obj.get(report_type):
+        _update_report_path(case_obj, report_path, report_type)
     else:
         if update:
-            _put_report_in_case_root(case_obj, report_path)
+            _update_report_path(case_obj, report_path, report_type)
         else:
-            raise IntegrityError(
-                "Existing delivery report found, use update = True to " "overwrite"
-            )
+            raise IntegrityError("Existing report found, use update = True to " "overwrite")
 
     LOG.info("Saving report for case {} in database".format(case_obj["_id"]))
     return adapter.replace_case(case_obj)
 
 
-def _put_report_in_case_root(case_obj, report_path):
-    case_obj["delivery_report"] = report_path
-    return True
+def _update_report_path(case_obj, report_path, report_type):
+    """Updates the report path
 
-
-def load_cnv_report(adapter: MongoAdapter, report_path: str, case_id: str, update: bool = False):
-    """Load a CNV report into a case in the database
-
-    If the report already exists the function will exit.
-    If the user want to load a report that is already in the database
-    'update' has to be 'True'
-
-    Args:
-        adapter     (MongoAdapter): Connection to the database
-        report_path (string):       Path to CNV report
-        case_id     (string):       Case identifier
-        update      (bool):         If an existing report should be replaced
-
-    Returns:
-        updated_case(dict)
-
+        Args:
+            case_obj     (Case):         Case object
+            report_path  (string):       Path to CNV report
+            report_type  (string):       Type of report
     """
-
-    case_obj = adapter.case(case_id=case_id)
-
-    if case_obj is None:
-        raise DataNotFoundError("no case found")
-
-    if not case_obj.get("cnv_report"):
-        _put_cnv_report_in_case_root(case_obj, report_path)
-    else:
-        if update:
-            _put_cnv_report_in_case_root(case_obj, report_path)
-        else:
-            raise IntegrityError("Existing CNV report found, use update = True to " "overwrite")
-
-    LOG.info("Saving report for case {} in database".format(case_obj["_id"]))
-    return adapter.replace_case(case_obj)
-
-
-def _put_cnv_report_in_case_root(case_obj, report_path):
-    case_obj["cnv_report"] = report_path
+    case_obj[report_type] = report_path
     return True

@@ -1,5 +1,5 @@
 import pytest
-from scout.load.report import load_delivery_report
+from scout.load.report import load_report
 from scout.exceptions import DataNotFoundError, IntegrityError
 
 
@@ -14,7 +14,9 @@ def test_load_delivery_report_bad_case_id(adapter):
 
     ## THEN an exception should be raised
     with pytest.raises(DataNotFoundError):
-        load_delivery_report(adapter=adapter, case_id=case_id, report_path=report_path)
+        load_report(
+            adapter=adapter, case_id=case_id, report_path=report_path, report_type="delivery_report"
+        )
 
 
 def test_load_delivery_report_using_case_id_without_update_fail(adapter, case_obj):
@@ -31,7 +33,7 @@ def test_load_delivery_report_using_case_id_without_update_fail(adapter, case_ob
 
     ## THEN a report should not have been added to that case
     with pytest.raises(IntegrityError):
-        load_delivery_report(adapter=adapter, case_id=case_id, report_path=report_path2)
+        load_report(adapter=adapter, case_id=case_id, report_path=report_path2)
 
     updated_case_obj = adapter.case_collection.find_one()
     assert updated_case_obj.get("delivery_report") != report_path2
@@ -49,8 +51,39 @@ def test_load_delivery_report_using_case_id_with_update_success(adapter, case_ob
     report_path = "report_test_path"
     update = True
 
-    load_delivery_report(adapter=adapter, case_id=case_id, report_path=report_path, update=update)
+    load_report(
+        adapter=adapter,
+        case_id=case_id,
+        report_path=report_path,
+        update=update,
+        report_type="delivery_report",
+    )
 
     # THEN a report should have been added to that case
     updated_case_obj = adapter.case_collection.find_one()
     assert updated_case_obj["delivery_report"] == report_path
+
+
+def test_load_cnv_report_using_case_id_with_update_success(adapter, cancer_case_obj):
+
+    adapter.case_collection.insert_one(cancer_case_obj)
+    ## GIVEN a case exist, with a delivery report
+    cancer_case_obj = adapter.case_collection.find_one()
+    assert cancer_case_obj.get("cnv_report")
+
+    ## WHEN trying to load a report for a case_id that does exist in the data base
+    case_id = cancer_case_obj["_id"]
+    report_path = "report_test_path"
+    update = True
+
+    load_report(
+        adapter=adapter,
+        case_id=case_id,
+        report_path=report_path,
+        update=update,
+        report_type="cnv_report",
+    )
+
+    # THEN a report should have been added to that case
+    updated_case_obj = adapter.case_collection.find_one()
+    assert updated_case_obj["cnv_report"] == report_path
