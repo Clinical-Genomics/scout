@@ -15,7 +15,10 @@ def test_load_cnv_report(mock_app, case_obj):
     assert runner
 
     # Test CLI function
-    result = runner.invoke(cli, ["load", "cnv-report", case_obj["_id"], cnv_report_path, "-u"],)
+    result = runner.invoke(
+        cli,
+        ["load", "cnv-report", case_obj["_id"], cnv_report_path, "-u"],
+    )
 
     assert "saved report to case!" in result.output
     assert result.exit_code == 0

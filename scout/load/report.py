@@ -8,7 +8,11 @@ LOG = logging.getLogger(__name__)
 
 
 def load_report(
-    adapter: MongoAdapter, report_path: str, case_id: str, report_type: str, update: bool = False,
+    adapter: MongoAdapter,
+    report_path: str,
+    case_id: str,
+    report_type: str,
+    update: bool = False,
 ):
     """Load report into a case in the database
 
@@ -45,10 +49,10 @@ def load_report(
 def _update_report_path(case_obj, report_path, report_type):
     """Updates the report path
 
-        Args:
-            case_obj     (Case):         Case object
-            report_path  (string):       Path to CNV report
-            report_type  (string):       Type of report
+    Args:
+        case_obj     (Case):         Case object
+        report_path  (string):       Path to CNV report
+        report_type  (string):       Type of report
     """
     case_obj[report_type] = report_path
     return True
