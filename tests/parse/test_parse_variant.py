@@ -82,7 +82,7 @@ def test_parse_cadd(variants, case_obj):
 
 
 def test_parse_spliceai(cyvcf2_variant, case_obj):
-    """ Test parse Splice AI
+    """Test parse Splice AI
     Two variant INFO fields are imported:
         SpliceAI_DS_Max(float)
         SpliceAI(str):
