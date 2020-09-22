@@ -4,11 +4,11 @@ from scout.constants import CLINVAR_HEADER, CASEDATA_HEADER
 def set_submission_objects(form_fields):
     """Creates a list of submission objects (variant and case-data) from the clinvar submission form in blueprints/variants/clinvar.html.
 
-        Args:
-             form_fields(dict): it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
+    Args:
+         form_fields(dict): it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
 
-        Returns:
-             submission_objects(list): a list of variant and case-data submission objects, ready to be included in the clinvar database collection
+    Returns:
+         submission_objects(list): a list of variant and case-data submission objects, ready to be included in the clinvar database collection
     """
     variant_ids = get_submission_variants(
         form_fields
@@ -25,15 +25,15 @@ def set_submission_objects(form_fields):
 
 def get_objects_from_form(variant_ids, form_fields, object_type):
     """Extract the objects to be saved in the clinvar database collection.
-       object_type param specifies if these objects are variant or casedata objects
+    object_type param specifies if these objects are variant or casedata objects
 
-       Args:
-        variant_ids(list): list of database variant ids
-        form_fields(dict): it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
-        object_type(str): either 'variant' or 'case_data'
+    Args:
+     variant_ids(list): list of database variant ids
+     form_fields(dict): it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
+     object_type(str): either 'variant' or 'case_data'
 
-       Returns:
-        submission_objects(list): list of submission objects of either type 'variant' or 'casedata'
+    Returns:
+     submission_objects(list): list of submission objects of either type 'variant' or 'casedata'
     """
     submission_fields = []
     if object_type == "variant":
@@ -72,11 +72,7 @@ def get_objects_from_form(variant_ids, form_fields, object_type):
         # For variants : ID = caseID_variantID
         if object_type == "casedata":
             subm_obj["_id"] = (
-                str(subm_obj["case_id"])
-                + "_"
-                + variant_id
-                + "_"
-                + str(subm_obj["individual_id"])
+                str(subm_obj["case_id"]) + "_" + variant_id + "_" + str(subm_obj["individual_id"])
             )
         else:
             subm_obj["_id"] = str(subm_obj["case_id"]) + "_" + variant_id
@@ -89,11 +85,11 @@ def get_objects_from_form(variant_ids, form_fields, object_type):
 def get_submission_variants(form_fields):
     """Extracts a list of variant ids from the clinvar submission form in blueprints/variants/clinvar.html (creation of a new clinvar submission).
 
-        Args:
-             form_fields(dict): it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
+    Args:
+         form_fields(dict): it's the submission form dictionary. Keys have the same names as CLINVAR_HEADER and CASEDATA_HEADER
 
-        Returns:
-             clinvars: A list of variant IDs
+    Returns:
+         clinvars: A list of variant IDs
     """
 
     clinvars = []
@@ -113,19 +109,17 @@ def get_submission_variants(form_fields):
 def clinvar_submission_header(submission_objs, csv_type):
     """Determine which fields to include in csv header by checking a list of submission objects
 
-        Args:
-            submission_objs(list): a list of objects (variants or casedata) to include in a csv file
-            csv_type(str) : 'variant_data' or 'case_data'
+    Args:
+        submission_objs(list): a list of objects (variants or casedata) to include in a csv file
+        csv_type(str) : 'variant_data' or 'case_data'
 
-        Returns:
-            custom_header(dict): A dictionary with the fields required in the csv header. Keys and values are specified in CLINVAR_HEADER and CASEDATA_HEADER
+    Returns:
+        custom_header(dict): A dictionary with the fields required in the csv header. Keys and values are specified in CLINVAR_HEADER and CASEDATA_HEADER
 
     """
 
     complete_header = {}  # header containing all available fields
-    custom_header = (
-        {}
-    )  # header reflecting the real data included in the submission objects
+    custom_header = {}  # header reflecting the real data included in the submission objects
     if csv_type == "variant_data":
         complete_header = CLINVAR_HEADER
     else:
@@ -134,16 +128,12 @@ def clinvar_submission_header(submission_objs, csv_type):
     for (
         header_key,
         header_value,
-    ) in (
-        complete_header.items()
-    ):  # loop over the info fields provided in each submission object
+    ) in complete_header.items():  # loop over the info fields provided in each submission object
         for clinvar_obj in submission_objs:  # loop over the submission objects
             for (
                 key,
                 value,
-            ) in (
-                clinvar_obj.items()
-            ):  # loop over the keys and values of the clinvar objects
+            ) in clinvar_obj.items():  # loop over the keys and values of the clinvar objects
 
                 if (
                     not header_key in custom_header and header_key == key
@@ -156,12 +146,12 @@ def clinvar_submission_header(submission_objs, csv_type):
 def clinvar_submission_lines(submission_objs, submission_header):
     """Create the lines to include in a Clinvar submission csv file from a list of submission objects and a custom document header
 
-        Args:
-            submission_objs(list): a list of objects (variants or casedata) to include in a csv file
-            submission_header(dict) : as in constants CLINVAR_HEADER and CASEDATA_HEADER, but with required fields only
+    Args:
+        submission_objs(list): a list of objects (variants or casedata) to include in a csv file
+        submission_header(dict) : as in constants CLINVAR_HEADER and CASEDATA_HEADER, but with required fields only
 
-        Returns:
-            submission_lines(list) a list of strings, each string represents a line of the clinvar csv file to be doenloaded
+    Returns:
+        submission_lines(list) a list of strings, each string represents a line of the clinvar csv file to be doenloaded
     """
     submission_lines = []
     for (
@@ -171,9 +161,7 @@ def clinvar_submission_lines(submission_objs, submission_header):
         for (
             header_key,
             header_value,
-        ) in (
-            submission_header.items()
-        ):  # header_keys are the same keys as in submission_objs
+        ) in submission_header.items():  # header_keys are the same keys as in submission_objs
             if (
                 header_key in submission_obj
             ):  # The field is filled in for this variant/casedata object

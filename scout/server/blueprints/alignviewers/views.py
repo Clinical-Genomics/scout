@@ -104,14 +104,10 @@ def igv():
 
     display_obj = {}
 
-    display_obj["reference_track"] = controllers.reference_track(
-        chromosome_build, chrom
-    )
+    display_obj["reference_track"] = controllers.reference_track(chromosome_build, chrom)
     display_obj["genes_track"] = controllers.genes_track(chromosome_build, chrom)
     display_obj["clinvar_snvs"] = controllers.clinvar_track(chromosome_build, chrom)
-    display_obj["clinvar_cnvs"] = controllers.clinvar_cnvs_track(
-        chromosome_build, chrom
-    )
+    display_obj["clinvar_cnvs"] = controllers.clinvar_cnvs_track(chromosome_build, chrom)
 
     # Init upcoming igv-tracks
     sample_tracks = []
@@ -165,8 +161,6 @@ def make_igv_tracks(name, file_list):
     track_list = []
     counter = 0
     for r in file_list:
-        track_list.append(
-            {"name": name, "url": file_list[counter], "min": 0.0, "max": 30.0}
-        )
+        track_list.append({"name": name, "url": file_list[counter], "min": 0.0, "max": 30.0})
         counter += 1
     return track_list

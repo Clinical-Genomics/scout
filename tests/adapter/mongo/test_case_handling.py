@@ -103,9 +103,7 @@ def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
     # BUT WHEN querying for inactive cases
     name_query = "status:inactive"
     # THEN no case should be returned.
-    inactive_cases = adapter.cases(
-        collaborator=case_obj["owner"], name_query=name_query
-    )
+    inactive_cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     assert sum(1 for i in inactive_cases) == 0
 
 
@@ -177,13 +175,13 @@ def test_get_cases_no_HPO(adapter, case_obj):
     adapter.case_collection.insert_one(case_obj)
 
     # WHEN providing an empty value for term HP:
-    name_query = "HP:"
+    name_query = "exact_pheno:"
     # Then case should be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     assert sum(1 for i in cases) == 1
 
     # WHEN providing an empty value for phenotype group:
-    name_query = "PG:"
+    name_query = "pheno_group:"
     # Then case should be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     assert sum(1 for i in cases) == 1
@@ -199,13 +197,13 @@ def test_get_cases_no_HPO(adapter, case_obj):
         },
     )
     # WHEN providing an empty value for term HP:
-    name_query = "HP:"
+    name_query = "exact_pheno:"
     # Then case should NOT be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     assert sum(1 for i in cases) == 0
 
     # WHEN providing an empty value for phenotype group:
-    name_query = "PG:"
+    name_query = "pheno_group:"
     # Then case should NOT be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     assert sum(1 for i in cases) == 0
@@ -217,7 +215,7 @@ def test_get_cases_no_assignees(real_adapter, case_obj):
     assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
     # WHEN retreiving an existing case from the database
-    result = adapter.cases(name_query="john")
+    result = adapter.cases(name_query="user:john")
     # THEN we should get the correct case
     assert sum(1 for i in result) == 0
 
@@ -234,7 +232,7 @@ def test_get_cases_display_name(real_adapter, case_obj):
     adapter.case_collection.insert_one(other_case)
 
     # WHEN retreiving cases by partial display name
-    result = adapter.cases(name_query="643")
+    result = adapter.cases(name_query="case:643")
     # THEN we should get the correct case
     assert sum(1 for i in result) == 1
 
@@ -245,7 +243,7 @@ def test_get_cases_existing_individual(real_adapter, case_obj):
     assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
     # WHEN retreiving cases by partial individual name
-    result = adapter.cases(name_query="NA1288")
+    result = adapter.cases(name_query="case:NA1288")
     # THEN we should get the correct case
     assert sum(1 for i in result) == 1
 
@@ -262,7 +260,7 @@ def test_get_cases_assignees(real_adapter, case_obj, user_obj):
     adapter.case_collection.insert_one(case_obj)
 
     # WHEN retreiving cases by partial individual name
-    result = adapter.cases(name_query="john")
+    result = adapter.cases(name_query="user:john")
     # THEN we should get the correct case
     assert sum(1 for i in result) == 1
 
@@ -279,7 +277,7 @@ def test_get_cases_non_existing_assignee(real_adapter, case_obj, user_obj):
     adapter.case_collection.insert_one(case_obj)
 
     # WHEN retreiving cases by partial individual name
-    result = adapter.cases(name_query="damien")
+    result = adapter.cases(name_query="user:damien")
     # THEN we should get the correct case
     assert sum(1 for i in result) == 0
 
@@ -327,13 +325,13 @@ def test_get_cases_empty_causatives(adapter, case_obj):
     assert sum(1 for i in result) == 0
 
 
-def test_get_cases_non_existing_individual(real_adapter, case_obj):
+def test_get_cases_non_existing_display_name(real_adapter, case_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
     adapter.case_collection.insert_one(case_obj)
     # WHEN retreiving cases by partial display name
-    result = adapter.cases(name_query="hello")
+    result = adapter.cases(name_query="case:hello")
     # THEN we should get the correct case
     assert sum(1 for i in result) == 0
 
@@ -528,7 +526,7 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj):
     assert res["status"] == "inactive"
 
 
-def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
+def test_cases_by_phenotype(hpo_database, test_hpo_terms, case_obj):
     adapter = hpo_database
 
     # Make sure database contains HPO terms
@@ -565,7 +563,8 @@ def test_get_similar_cases(hpo_database, test_hpo_terms, case_obj):
     adapter.case_collection.insert_one(case_3)
     assert sum(1 for i in adapter.case_collection.find()) == 3
 
-    similar_cases = adapter.get_similar_cases(case_obj)
+    hpo_query_terms = [term["phenotype_id"] for term in test_hpo_terms]
+    similar_cases = adapter.cases_by_phenotype(hpo_query_terms, case_obj["owner"], case_obj["_id"])
     # make sure that the function returns a list of tuples
     assert isinstance(similar_cases, list)
     assert isinstance(similar_cases[0], tuple)
@@ -603,8 +602,7 @@ def test_get_similar_cases_by_name_query(hpo_database, test_hpo_terms, case_obj)
     assert sum(1 for i in adapter.case_collection.find()) == 2
 
     # WHEN querying for a similar case
-    name_query = "similar:{}".format(case_obj["display_name"])
-
+    name_query = f"similar_case:{case_obj['display_name']}"
     # THEN one case should be returned
     cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
     assert len(cases) == 1
@@ -626,9 +624,7 @@ def test_get_cases_cohort(real_adapter, case_obj, user_obj):
     assert sum(1 for i in result) == 1
 
 
-def test_get_cases_solved_since(
-    real_adapter, case_obj, user_obj, institute_obj, variant_obj
-):
+def test_get_cases_solved_since(real_adapter, case_obj, user_obj, institute_obj, variant_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
     adapter.case_collection.insert_one(case_obj)
@@ -680,7 +676,9 @@ def test_keep_manual_rank_tag_after_reupload(
 
     # THE update actions function should return the id of the new variant
     updated_new_vars = adapter.update_variant_actions(
-        institute_obj=institute_obj, case_obj=case_obj, old_eval_variants=[updated_old],
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_eval_variants=[updated_old],
     )
     assert updated_new_vars["manual_rank"] == ["new_id"]
 
@@ -724,7 +722,9 @@ def test_keep_dismiss_variant_tag_after_reupload(
 
     # THE update actions function should return the id of the new variant
     updated_new_vars = adapter.update_variant_actions(
-        institute_obj=institute_obj, case_obj=case_obj, old_eval_variants=[updated_old],
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_eval_variants=[updated_old],
     )
     assert updated_new_vars["dismiss_variant"] == ["new_id"]
 
@@ -733,9 +733,7 @@ def test_keep_dismiss_variant_tag_after_reupload(
     assert test_variant["dismiss_variant"] == [2, 11]
 
 
-def test_keep_mosaic_tags_after_reupload(
-    adapter, case_obj, variant_obj, user_obj, institute_obj
-):
+def test_keep_mosaic_tags_after_reupload(adapter, case_obj, variant_obj, user_obj, institute_obj):
     """Test the code that updates custom tags (mosaic tags) of new variants according to the old."""
 
     old_variant = copy.deepcopy(variant_obj)
@@ -768,7 +766,9 @@ def test_keep_mosaic_tags_after_reupload(
 
     # THE update actions function should return the id of the new variant
     updated_new_vars = adapter.update_variant_actions(
-        institute_obj=institute_obj, case_obj=case_obj, old_eval_variants=[updated_old],
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_eval_variants=[updated_old],
     )
     assert updated_new_vars["mosaic_tags"] == ["new_id"]
 
@@ -777,9 +777,7 @@ def test_keep_mosaic_tags_after_reupload(
     assert test_variant["mosaic_tags"] == [1, 3]
 
 
-def test_keep_cancer_tier_after_reupload(
-    adapter, case_obj, variant_obj, user_obj, institute_obj
-):
+def test_keep_cancer_tier_after_reupload(adapter, case_obj, variant_obj, user_obj, institute_obj):
     """Test the code that updates cancer tier of new variants according to the old."""
 
     old_variant = copy.deepcopy(variant_obj)
@@ -812,7 +810,9 @@ def test_keep_cancer_tier_after_reupload(
 
     # THE update actions function should return the id of the new variant
     updated_new_vars = adapter.update_variant_actions(
-        institute_obj=institute_obj, case_obj=case_obj, old_eval_variants=[updated_old],
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_eval_variants=[updated_old],
     )
     assert updated_new_vars["cancer_tier"] == ["new_id"]
 
@@ -821,9 +821,7 @@ def test_keep_cancer_tier_after_reupload(
     assert test_variant["cancer_tier"] == "2C"
 
 
-def test_keep_manual_acmg_after_reupload(
-    adapter, case_obj, variant_obj, user_obj, institute_obj
-):
+def test_keep_manual_acmg_after_reupload(adapter, case_obj, variant_obj, user_obj, institute_obj):
     """Test the code that updates acmg classification of new variants according to the old."""
 
     old_variant = copy.deepcopy(variant_obj)
@@ -856,7 +854,9 @@ def test_keep_manual_acmg_after_reupload(
 
     # THE update actions function should return the id of the new variant
     updated_new_vars = adapter.update_variant_actions(
-        institute_obj=institute_obj, case_obj=case_obj, old_eval_variants=[updated_old],
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_eval_variants=[updated_old],
     )
     assert updated_new_vars["acmg_classification"] == ["new_id"]
 
@@ -912,7 +912,9 @@ def test_keep_variant_comments_after_reupload(
 
     # THE update actions function should return the id of the new variant
     updated_new_vars = adapter.update_variant_actions(
-        institute_obj=institute_obj, case_obj=case_obj, old_eval_variants=[old_variant],
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_eval_variants=[old_variant],
     )
 
     assert updated_new_vars["is_commented"] == [new_variant["_id"]]

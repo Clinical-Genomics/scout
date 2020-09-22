@@ -41,9 +41,7 @@ def users(store):
     for user_obj in user_objs:
         user_institutes = user_obj.get("institutes")
         if user_institutes:
-            user_obj["institutes"] = [
-                store.institute(inst_id) for inst_id in user_institutes
-            ]
+            user_obj["institutes"] = [store.institute(inst_id) for inst_id in user_institutes]
         else:
             user_obj["institutes"] = []
         user_obj["events"] = sum([1 for event in store.user_events(user_obj)])

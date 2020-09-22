@@ -81,12 +81,8 @@ def fetch_resource(url, json=False):
         content = response.text
         if response.url.endswith(".gz"):
             LOG.info("gzipped!")
-            encoded_content = b"".join(
-                chunk for chunk in response.iter_content(chunk_size=128)
-            )
-            content = zlib.decompress(encoded_content, 16 + zlib.MAX_WBITS).decode(
-                "utf-8"
-            )
+            encoded_content = b"".join(chunk for chunk in response.iter_content(chunk_size=128))
+            content = zlib.decompress(encoded_content, 16 + zlib.MAX_WBITS).decode("utf-8")
 
         data = content.split("\n")
 
@@ -106,11 +102,11 @@ def fetch_hpo_terms():
 
 def fetch_genes_to_hpo_to_disease():
     """Fetch the latest version of the map from genes to phenotypes
-    Returns:
+        Returns:
         res(list(str)): A list with the lines formatted this way:
-        #Format: entrez-gene-id<tab>entrez-gene-symbol<tab>HPO-Term-Name<tab>HPO-Term-ID<tab>
-        Frequency-Raw<tab>Frequency-HPO<tab>Additional Info from G-D source<tab>G-D source<tab>
-        disease-ID for link
+        #Format: entrez-gene-id<tab>entrez-gene-symbol<tab>HPO-Term-Name<tab>\
+        HPO-Term-ID<tab>Frequency-Raw<tab>Frequency-HPO<tab>
+        Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
         72	ACTG2	HP:0002027	Abdominal pain			-	mim2gene	OMIM:155310
         72	ACTG2	HP:0000368	Low-set, posteriorly rotated ears		HP:0040283		orphadata
         ORPHA:2604
@@ -125,19 +121,19 @@ def fetch_hpo_to_genes_to_disease():
     Returns:
         res(list(str)): A list with the lines formatted this way:
 
-        #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol<tab>Additional Info
-         from G-D source<tab>G-D source<tab>disease-ID for link
+        #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol\
+        <tab>Additional Info from G-D source<tab>G-D source
+        <tab>disease-ID for link
         HP:0000002	Abnormality of body height	3954	LETM1	-	mim2gene	OMIM:194190
         HP:0000002	Abnormality of body height	197131	UBR1	-	mim2gene	OMIM:243800
         HP:0000002	Abnormality of body height	79633	FAT4		orphadata	ORPHA:314679
+
     """
     url = HPO_URL.format("phenotype_to_genes.txt")
     return fetch_resource(url)
 
 
-def fetch_hpo_files(
-    genes_to_phenotype=False, phenotype_to_genes=False, hpo_terms=False
-):
+def fetch_hpo_files(genes_to_phenotype=False, phenotype_to_genes=False, hpo_terms=False):
     """
     Fetch the necessary HPO files from http://compbio.charite.de
 
@@ -163,9 +159,7 @@ def fetch_hpo_files(
     return hpo_files
 
 
-def fetch_mim_files(
-    api_key, mim2genes=False, mimtitles=False, morbidmap=False, genemap2=False
-):
+def fetch_mim_files(api_key, mim2genes=False, mimtitles=False, morbidmap=False, genemap2=False):
     """Fetch the necessary mim files using a api key
 
     Args:
@@ -330,8 +324,7 @@ def fetch_exac_constraint():
     """
     file_name = "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt"
     url = (
-        "ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3/functional_gene_constraint"
-        "/{0}"
+        "ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3/functional_gene_constraint" "/{0}"
     ).format(file_name)
 
     exac_lines = None

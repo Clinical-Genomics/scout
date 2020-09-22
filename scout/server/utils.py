@@ -40,6 +40,7 @@ def public_endpoint(function):
 
 def institute_and_case(store, institute_id, case_name=None):
     """Fetch insitiute and case objects."""
+
     institute_obj = store.institute(institute_id)
     if institute_obj is None:
         flash("Can't find institute: {}".format(institute_id), "warning")
@@ -51,12 +52,10 @@ def institute_and_case(store, institute_id, case_name=None):
             return abort(404)
 
     # validate that user has access to the institute
-
     if not current_user.is_admin:
         if institute_id not in current_user.institutes:
             if not case_name or not any(
-                inst_id in case_obj["collaborators"]
-                for inst_id in current_user.institutes
+                inst_id in case_obj["collaborators"] for inst_id in current_user.institutes
             ):
                 # you don't have access!!
                 flash("You don't have acccess to: {}".format(institute_id), "danger")
@@ -106,9 +105,7 @@ def variant_case(store, case_obj, variant_obj):
         return
 
     try:
-        vcf_path = store.get_region_vcf(
-            case_obj, chrom=chrom, start=min(starts), end=max(ends)
-        )
+        vcf_path = store.get_region_vcf(case_obj, chrom=chrom, start=min(starts), end=max(ends))
 
         # Create a reduced VCF with variants in the region
         case_obj["region_vcf_file"] = vcf_path

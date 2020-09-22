@@ -161,7 +161,9 @@ def ppaint(hgnc_symbol):
 
 
 def vega(vega_id):
-    link = "http://vega.archive.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=OTTHUMG00000018506{}"
+    link = (
+        "http://vega.archive.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=OTTHUMG00000018506{}"
+    )
 
     if not vega_id:
         return None
@@ -328,14 +330,10 @@ def thousandg_link(variant_obj, build=None):
 
     if build == 37:
         url_template = (
-            "http://grch37.ensembl.org/Homo_sapiens/Variation/Explore"
-            "?v={};vdb=variation"
+            "http://grch37.ensembl.org/Homo_sapiens/Variation/Explore" "?v={};vdb=variation"
         )
     else:
-        url_template = (
-            "http://www.ensembl.org/Homo_sapiens/Variation/Explore"
-            "?v={};vdb=variation"
-        )
+        url_template = "http://www.ensembl.org/Homo_sapiens/Variation/Explore" "?v={};vdb=variation"
 
     return url_template.format(dbsnp_id)
 
@@ -383,7 +381,7 @@ def cosmic_link(variant_obj):
         variant_obj(scout.models.Variant)
 
     Returns:
-        url_template(str): Link to COSMIIC database if cosmic id is present
+        url_template(str): Link to COSMIC database if cosmic id is present
     """
 
     cosmic_ids = variant_obj.get("cosmic_ids")

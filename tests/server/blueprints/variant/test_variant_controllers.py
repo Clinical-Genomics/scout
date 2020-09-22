@@ -12,9 +12,7 @@ from flask_login import current_user
 LOG = logging.getLogger(__name__)
 
 
-def test_observations_controller_non_existing(
-    app, real_variant_database, case_obj, loqusdb
-):
+def test_observations_controller_non_existing(app, real_variant_database, case_obj, loqusdb):
     ## GIVEN a database and a loqusdb mock without the variant
     var_obj = real_variant_database.variant_collection.find_one()
     assert var_obj

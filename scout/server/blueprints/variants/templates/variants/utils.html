@@ -1,6 +1,22 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% from "utils.html" import comments_table %}
 
+{% macro dismiss_variants_block(dismiss_variant_options) %}
+<div class="row d-flex align-items-center mb-3">
+  <div class="col-2 ml-3">Dismiss selected variants:</div>
+  <div class="col-5 align-items-start">
+    <select multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-width="100%" onchange="enableDismiss();">
+      {% for value, data in dismiss_variant_options.items() %}
+        <option value="{{ value }}">{{ data.label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-2">
+    <button type="submit" disabled name="dismiss_submit" id="dismiss_submit" class="btn btn-sm btn-primary form-control">Dismiss variants</button>
+  </div>
+</div>
+{% endmacro %}
+
 {% macro compounds_table(institute, case, compounds) %}
   <table class='table table-condensed table-bordered table-sm'>
     <thead>
@@ -158,7 +174,7 @@
 <div class="form-group">
   <div class="row">
     <div class="col-4">
-      {{ form.gene_panels.label}}
+      {{ form.gene_panels.label(class="control-label", data_toggle="tooltip", data_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
       {{ form.gene_panels(class="selectpicker") }}
     </div>
     <div class="col-2">
@@ -216,7 +232,7 @@
 </div>
 <div class="form-group">
   <div class="row">
-    <div class="col-2">
+    <div class="col-1">
       {{ form.gnomad_frequency.label(class="control-label") }}
       {{ form.gnomad_frequency(class="form-control") }}
     </div>
@@ -224,14 +240,20 @@
       {{ form.local_obs.label(class="control-label") }}
       {{ form.local_obs(class="form-control") }}
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ wtf.form_field(form.chrom) }}
     </div>
-    <div class="col-3">
+    <div class="col-2">
       {{ wtf.form_field(form.start) }}
     </div>
-    <div class="col-3">
+    <div class="col-2">
       {{ wtf.form_field(form.end) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.cytoband_start) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.cytoband_end) }}
     </div>
   </div>
 </div>
@@ -252,7 +274,7 @@
   <div class="row justify-content-between" style="margin-top:20px;">
     <div class="col-6 text-left">
       <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name,
-        variant_type=form.variant_type.data, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
+        variant_type=form.variant_type.data) }}"
         class="btn btn-secondary" style="color: #ffffff !important;">
         Reset&nbsp;filters
       </a>
@@ -269,7 +291,7 @@
 <div class="form-group">
   <div class="row">
     <div class="col-4">
-      {{ form.gene_panels.label(class="control-label") }}
+      {{ form.gene_panels.label(data_toggle="tooltip", data_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
       {{ form.gene_panels(class="selectpicker") }}
     </div>
     <div class="col-2">
@@ -305,11 +327,11 @@
       {{ form.size.label(class="control-label") }}
       {{ form.size(class="form-control", type="number") }}
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ form.size_shorter.label(class="control-label") }}
       <div>{{ form.size_shorter() }}</div>
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ form.decipher.label(class="control-label") }}
       <div>{{ form.decipher() }}</div>
     </div>
@@ -317,23 +339,23 @@
       {{ form.clinsig.label(class="control-label") }}
       {{ form.clinsig(class="selectpicker") }}
     </div>
+    <div class="col-2">
+      {{ form.gnomad_frequency.label(class="control-label") }}
+      {{ form.gnomad_frequency(class="form-control") }}
+    </div>
   </div>
 </div>
 <div class="form-group">
   <div class="row">
     <div class="col-2">
-      {{ form.gnomad_frequency.label(class="control-label") }}
-      {{ form.gnomad_frequency(class="form-control") }}
-    </div>
-    <div class="col-2">
        {{ form.clingen_ngi.label(class="control-label") }}
        {{ form.clingen_ngi(class="form-control") }}
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ form.swegen.label(class="control-label") }}
       {{ form.swegen(class="form-control") }}
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ form.chrom.label(class="control-label") }}
       {{ form.chrom(class="form-control") }}
     </div>
@@ -342,6 +364,12 @@
     </div>
     <div class="col-2">
       {{ wtf.form_field(form.end) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.cytoband_start) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.cytoband_end) }}
     </div>
   </div>
 </div>
@@ -360,8 +388,7 @@
   <div class="row justify-content-between" style="margin-top:20px;">
     <div class="col-1">
       <a href="{{ url_for('variants.sv_variants', institute_id=institute._id,
-        case_name=case.display_name, variant_type=form.variant_type.data,
-        gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
+        case_name=case.display_name, variant_type=form.variant_type.data) }}"
         class="btn btn-secondary" style="color: #ffffff !important;">
         Reset&nbsp;filters
       </a>
@@ -379,7 +406,7 @@
     <div class="form-group">
       <div class="row">
         <div class="col-2">
-          {{ form.gene_panels.label(class="control-label") }}
+          {{ form.gene_panels.label(data_toggle="tooltip", data_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
           {{ form.gene_panels(class="selectpicker") }}
         </div>
         <div class="col-2">
@@ -414,7 +441,7 @@
           {{ form.cadd_score.label(class="control-label") }}
           {{ form.cadd_score(class="form-control") }}
         </div>
-        <div class="col-2">
+        <div class="col-1">
           {{ form.cadd_inclusive.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Include empty CADD") }}
           <div>{{ form.cadd_inclusive() }}</div>
         </div>
@@ -426,9 +453,13 @@
           {{ form.depth.label(class="control-label") }}
           {{ form.depth(class="form-control") }}
         </div>
-        <div class="col-2">
+        <div class="col-1">
           {{ form.alt_count.label(class="control-label") }}
           {{ form.alt_count(class="form-control") }}
+        </div>
+        <div class="col-2">
+          {{ form.tumor_frequency.label(class="control-label") }}
+          {{ form.tumor_frequency(class="form-control") }}
         </div>
         <div class="col-2">
           {{ form.control_frequency.label(class="control-label") }}
@@ -436,26 +467,45 @@
         </div>
       </div>
     </div>
-    <div class="form-group">
-      <div class="row">
+    <div class="form-group" id="chromosome_search">
+      <div class="row" style="margin-top:20px;">
+        <div class="col-1" style="margin-right:3em">
+          {{ wtf.form_field(form.chrom) }}
+        </div>
 
-            </div>
+        <div class="col-md-2 col-lg-2 col-xl-1">
+          {{ wtf.form_field(form.start) }}
+        </div>
+        <div class="col-md-2 col-lg-2 col-xl-1" style="margin-right:3em">
+          {{ wtf.form_field(form.end) }}
+        </div>
+
+        <div class="col-md-3 col-lg-3 col-xl-2">
+          {{ wtf.form_field(form.cytoband_start) }}
+        </div>
+        <div class="col-md-3 col-lg-3 col-xl-2">
+          {{ wtf.form_field(form.cytoband_end) }}
+        </div>
+        <div class="col-md-1 col-lg-1 col-xl-5" id="empty_space"></div>
+      </div>
     </div>
-    <br>
-    <div class="form-group">
-      <div class="row">
-        <div class="col-3">
+
+    <div class="form-group" id="buttons">
+      <div class="row justify-content-center" style="margin-top:20px;">
+        <div class="col-4">
           <button class="btn btn-primary form-control">Filter variants</button>
         </div>
-        <div class="col-1 align-self-start">
+        <div class="col-4">
+          {{ form.export(class="btn btn-warning form-control") }}
+        </div>
+      </div>
+      <div class="row justify-content-between" style="margin-top:20px;">
+        <div class="col-2">
           <a href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
-            case_name=case.display_name, variant_type=form.variant_type.data,
-            gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}"
+            case_name=case.display_name, variant_type=form.variant_type.data) }}"
             class="btn btn-secondary" style="color: #ffffff !important;">
             Reset&nbsp;filters
           </a>
-        </div>
-        <div class="col-2">
         </div>
         <div class="col-6">
           {{ stash_filter_buttons(form, institute, case) }}
@@ -512,37 +562,13 @@
 
 {% macro tier_cell(variant, manual_rank_options, cancer_tier_options) %}
   {% if variant.cancer_tier %}
-    {% if variant.cancer_tier == '1A' %}
-      {% set label_class = 'danger' %}
-    {% elif variant.cancer_tier == '1B' %}
-      {% set label_class = 'danger' %}
-    {% elif variant.cancer_tier == '2A' %}
-      {% set label_class = 'warning' %}
-    {% elif variant.cancer_tier == '2B' %}
-      {% set label_class = 'warning' %}
-    {% elif variant.cancer_tier == '3' %}
-      {% set label_class = 'primary' %}
-    {% elif variant.cancer_tier == '4' %}
-      {% set label_class = 'default' %}
-    {% endif %}
-    <span class="badge badge-{{ label_class }}" data-toggle="tooltip" data-placement="right"
+    <span class="badge badge-{{ cancer_tier_options[variant.cancer_tier].label_class }}" data-toggle="tooltip" data-placement="right"
       title="Tier: {{ cancer_tier_options[variant.cancer_tier].description }}">
       {{ cancer_tier_options[variant.cancer_tier].label }}</span>
   {% endif %}
 
   {% if variant.manual_rank %}
-    {% if variant.manual_rank == 1 %}
-      {% set label_class = 'default' %}
-    {% elif variant.manual_rank == 2 %}
-      {% set label_class = 'info' %}
-    {% elif variant.manual_rank == 3 %}
-      {% set label_class = 'primary' %}
-    {% elif variant.manual_rank == 4 %}
-      {% set label_class = 'warning' %}
-    {% elif variant.manual_rank == 5 %}
-      {% set label_class = 'danger' %}
-    {% endif %}
-    <span class="badge badge-{{ label_class }}" data-toggle="tooltip" data-placement="right"
+    <span class="badge badge-{{ manual_rank_options[variant.manual_rank].label_class }}" data-toggle="tooltip" data-placement="right"
       title="Manual rank: {{ manual_rank_options[variant.manual_rank].description }}">
       {{ manual_rank_options[variant.manual_rank].label }}</span>
   {% endif %}
@@ -562,32 +588,33 @@
 
   {% set comment_count = variant.comments.count() %}
 
-  {% if variant.acmg_classification %}
-    <span class="badge badge-primary" data-toggle="tooltip" data-placement="right" title="ACMG: {{ variant.acmg_classification.label }}">
-      {{ variant.acmg_classification.short }}
-    </span>
-  {% endif %}
-  {% if variant.manual_rank %}
-    <span class="badge badge-primary" data-toggle="tooltip" data-placement="right"
-        title="Manual rank: {{ manual_rank_options[variant.manual_rank].description }}">
-        {{ manual_rank_options[variant.manual_rank].label }}</span>
-  {% endif %}
   {% if variant.evaluations %}
     {% for evaluation in (variant.evaluations or []) %}
       <span class="badge badge-secondary" style="margin-left:1px" data-toggle="tooltip" data-placement="right"
-      title="Previously classified as {{ evaluation.classification.label }}">
-      {{ evaluation.classification.short }}
+        title="Previously classified as {{ evaluation.classification.label }}">
+        {{ evaluation.classification.short }}
       </span>
     {% endfor %}
   {% endif %}
-  {% if form.variant_type.data == 'research' %}
-    {% if variant.clinical_assessments %}
-      {% for assessment in variant.clinical_assessments %}
-        <span class="badge badge-secondary" data-toggle="tooltip" data-placement="right"
-            title="{{ assessment.title }}">
-            {{ assessment.label }}</span>
-      {% endfor %}
-    {% endif %}
+
+  {% if variant.research_assessments %}
+    {% for assessment in (variant.research_assessments or []) %}
+      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
+        title="Research {{ assessment.title }}">
+        {{ assessment.label }}</span>
+    {% endfor %}
+  {% endif %}
+
+  {% if variant.clinical_assessments %}
+    {% for assessment in (variant.clinical_assessments or []) %}
+      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
+          title="Clinical {{ assessment.title }}">
+          {{ assessment.label }}</span>
+    {% endfor %}
+  {% endif %}
+
+  {% if variant._id in case.causatives %}
+    <span class="badge badge-success" style="margin-left:1px" data-toggle="tooltip" data-placement="right" title="Causative variant">Causative</span>
   {% endif %}
 
   {% if comment_count > 0 %}
@@ -614,4 +641,49 @@
     <i class="fa fa-map-pin"></i>
   {% endif %}
 
+{% endmacro %}
+
+{% macro pagination_hidden_div(page) %}
+{# Used inside filters form to introduce submit buttons for footer pagniation #}
+  <div class="hidden">
+    <input type="submit" name="page" id="paginate-first" value=1 hidden="true">
+    <input type="submit" name="page" id="paginate-previous" value={{page-1}} hidden="true">
+    <input type="submit" name="page" id="paginate-next" value={{page+1}} hidden="true">
+  </div>
+{% endmacro %}
+
+{% macro pagination_footer(more_variants, page) %}
+{# Used outside filters form to introduce footer pagniation labels #}
+  <div class="container-fluid">
+    {% if not more_variants %}
+      <div class="row justify-content-center">
+        <i class="text-muted">No more variants to display</i>
+      </div>
+    {% endif %}
+    <div class="row justify-content-center">
+        <div class="btn-group" role="group">
+          {% if page > 1 %}
+             <div>
+               <label for="paginate-first" class="btn btn-outline-secondary" tabindex="0">
+                 First page
+               </label>
+             </div>
+          {% endif %}
+          {% if page > 2 %}
+            <div>
+              <label for="paginate-previous" class="btn btn-outline-secondary" tabindex="0">
+                Previous page
+              </label>
+            </div>
+          {% endif %}
+          {% if more_variants %}
+            <div>
+              <label for="paginate-next" class="btn btn-outline-secondary" tabindex="0">
+                Next page
+              </label>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
 {% endmacro %}

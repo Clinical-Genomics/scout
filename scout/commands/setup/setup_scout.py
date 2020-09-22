@@ -48,9 +48,7 @@ def abort_if_false(ctx, param, value):
     help="Path to directory with resource files",
 )
 @click.option("--hgnc", type=click.Path(exists=True))
-@click.option(
-    "--exac", type=click.Path(exists=True), help="Path to file with EXAC pLi scores"
-)
+@click.option("--exac", type=click.Path(exists=True), help="Path to file with EXAC pLi scores")
 @click.option(
     "--ensgenes37",
     type=click.Path(exists=True),
@@ -121,9 +119,7 @@ def database(
     # Fetch the omim information
     api_key = api_key or current_app.config.get("OMIM_API_KEY")
     if not api_key:
-        LOG.warning(
-            "No omim api key provided. This means information will be lost in scout"
-        )
+        LOG.warning("No omim api key provided. This means information will be lost in scout")
         LOG.info("Please request an OMIM api key and run scout update genes")
 
     institute_name = institute_name or context.obj["institute_name"]
@@ -185,7 +181,7 @@ def database(
 @click.pass_context
 def demo(context):
     """Setup a scout demo instance. This instance will be populated with a
-       case, a gene panel and some variants.
+    case, a gene panel and some variants.
     """
     LOG.info("Running scout setup demo")
     institute_name = context.obj["institute_name"]

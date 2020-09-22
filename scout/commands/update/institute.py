@@ -28,6 +28,7 @@ LOG = logging.getLogger(__name__)
     help="Specify email adress for a existing user that should be added to the institute",
 )
 @click.option("-d", "--display-name", help="Set a new display name for a insitute")
+@click.option("-l", "--loqusdb_id", help="Set a new loqusdb_id for a institute")
 @click.option(
     "-r",
     "--remove-sanger",
@@ -40,6 +41,7 @@ def institute(
     coverage_cutoff,
     frequency_cutoff,
     display_name,
+    loqusdb_id,
     remove_sanger,
 ):
     """
@@ -55,6 +57,7 @@ def institute(
             coverage_cutoff=coverage_cutoff,
             frequency_cutoff=frequency_cutoff,
             display_name=display_name,
+            loqusdb_id=loqusdb_id,
             remove_sanger=remove_sanger,
         )
     except Exception as err:

@@ -154,9 +154,7 @@ def parse_genemap2(lines):
         # the gene symbols
         gene_symbols = []
         if parsed_entry.get("Gene Symbols"):
-            gene_symbols = [
-                symbol.strip() for symbol in parsed_entry["Gene Symbols"].split(",")
-            ]
+            gene_symbols = [symbol.strip() for symbol in parsed_entry["Gene Symbols"].split(",")]
         parsed_entry["hgnc_symbols"] = gene_symbols
 
         if not hgnc_symbol and gene_symbols:
@@ -287,9 +285,7 @@ def parse_mim_titles(lines):
         if not line.startswith("#"):
             parsed_entry = parse_omim_line(line, header)
             parsed_entry["mim_number"] = int(parsed_entry["mim_number"])
-            parsed_entry["preferred_title"] = parsed_entry["preferred_title"].split(
-                ";"
-            )[0]
+            parsed_entry["preferred_title"] = parsed_entry["preferred_title"].split(";")[0]
             yield parsed_entry
 
 
@@ -391,70 +387,3 @@ def get_mim_phenotypes(genemap_lines):
                 phenotypes_found[mim_nr] = phenotype
 
     return phenotypes_found
-
-
-@click.command()
-@click.option("--morbid", type=click.Path(exists=True))
-@click.option("--genemap", type=click.Path(exists=True))
-@click.option("--mim2gene", type=click.Path(exists=True))
-@click.option("--mim_titles", type=click.Path(exists=True))
-@click.option("--phenotypes", is_flag=True)
-@click.pass_context
-def cli(context, morbid, genemap, mim2gene, mim_titles, phenotypes):
-    """Parse the omim files"""
-    # if not (morbid and genemap and mim2gene, mim_titles):
-    #     print("Please provide all files")
-    #     context.abort()
-
-    from scout.utils.handle import get_file_handle
-    from pprint import pprint as pp
-
-    print("Morbid file: %s" % morbid)
-    print("Genemap file: %s" % genemap)
-    print("mim2gene file: %s" % mim2gene)
-    print("MimTitles file: %s" % mim_titles)
-
-    if morbid:
-        morbid_handle = get_file_handle(morbid)
-    if genemap:
-        genemap_handle = get_file_handle(genemap)
-    if mim2gene:
-        mim2gene_handle = get_file_handle(mim2gene)
-    if mim_titles:
-        mimtitles_handle = get_file_handle(mim_titles)
-
-    mim_genes = get_mim_genes(genemap_handle, mim2gene_handle)
-    for entry in mim_genes:
-        if entry == "C10orf11":
-            pp(mim_genes[entry])
-
-    context.abort()
-    if phenotypes:
-        if not genemap:
-            click.echo("Please provide the genemap file")
-            context.abort()
-        phenotypes = get_mim_phenotypes(genemap_handle)
-        for i, mim_term in enumerate(phenotypes):
-            # pp(phenotypes[mim_term])
-            pass
-    try:
-        print("Number of phenotypes found: %s" % i)
-    except NameError:
-        print("Number of phenotypes found is undefined (none).")
-
-    context.abort()
-    # hgnc_genes = get_mim_genes(genemap_handle, mim2gene_handle)
-    # for hgnc_symbol in hgnc_genes:
-    #     pp(hgnc_genes[hgnc_symbol])
-    # phenotypes = get_mim_phenotypes(genemap_handle, mim2gene_handle, mimtitles_handle)
-    # for mim_nr in phenotypes:
-    #     pp(phenotypes[mim_nr])
-
-    genes = get_mim_genes(genemap_handle, mim2gene_handle)
-    for hgnc_symbol in genes:
-        if hgnc_symbol == "OPA1":
-            print(genes[hgnc_symbol])
-
-
-if __name__ == "__main__":
-    cli()

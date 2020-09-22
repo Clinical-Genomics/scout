@@ -16,7 +16,6 @@ def test_add_institute(adapter, institute_obj):
     adapter.add_institute(institute_obj)
 
     ## THEN assert the institute has been inserted in the correct way
-    print(institute_obj)
     res = adapter.institute_collection.find_one({"_id": institute_obj["internal_id"]})
 
     assert res["_id"] == institute_obj["internal_id"]
@@ -96,10 +95,48 @@ def test_update_institute_sanger(adapter, institute_obj, user_obj):
 
     res = adapter.institute(institute_id=institute_obj["internal_id"])
 
-    assert (
-        len(res["sanger_recipients"])
-        == len(institute_obj.get("sanger_recipients", [])) + 1
+    assert len(res["sanger_recipients"]) == len(institute_obj.get("sanger_recipients", [])) + 1
+
+    ## THEN assert updated_at was updated
+
+    assert res["updated_at"] > institute_obj["created_at"]
+
+
+def test_update_institute_sanger_IntegrityError(adapter, institute_obj, user_obj):
+    ## GIVEN an adapter without any institutes
+    assert sum(1 for i in adapter.institutes()) == 0
+
+    ## WHEN adding a institute and updating it without sanger_recipients
+    adapter.add_institute(institute_obj)
+    adapter.add_user(user_obj)
+
+    ## THEN error is raised as integrety is broken
+    with pytest.raises(IntegrityError):
+        adapter.update_institute(
+            internal_id=institute_obj["internal_id"], sanger_recipient="missing_email"
+        )
+
+
+def test_update_institute_sanger_loqusDB(adapter, institute_obj, user_obj):
+    ## GIVEN an adapter without any institutes
+    assert sum(1 for i in adapter.institutes()) == 0
+
+    ## WHEN adding a institute and updating it
+
+    adapter.add_institute(institute_obj)
+    adapter.add_user(user_obj)
+
+    adapter.update_institute(
+        internal_id=institute_obj["internal_id"],
+        sanger_recipient=user_obj["email"],
+        loqusdb_id="mockID",
     )
+
+    ## THEN assert that the institute has been updated
+
+    res = adapter.institute(institute_id=institute_obj["internal_id"])
+
+    assert len(res["sanger_recipients"]) == len(institute_obj.get("sanger_recipients", [])) + 1
 
     ## THEN assert updated_at was updated
 
@@ -137,9 +174,7 @@ def test_update_institute_coverage_cutoff(adapter, institute_obj):
 
     time.sleep(1)
 
-    adapter.update_institute(
-        internal_id=institute_obj["internal_id"], coverage_cutoff=new_cutoff
-    )
+    adapter.update_institute(internal_id=institute_obj["internal_id"], coverage_cutoff=new_cutoff)
 
     res = adapter.institute(institute_id=institute_obj["internal_id"])
 
@@ -175,10 +210,7 @@ def test_update_institute_sanger_and_cutoff(adapter, institute_obj, user_obj):
     assert res["coverage_cutoff"] == new_cutoff
 
     ## THEN assert that the sanger recipients has been updated
-    assert (
-        len(res["sanger_recipients"])
-        == len(institute_obj.get("sanger_recipients", [])) + 1
-    )
+    assert len(res["sanger_recipients"]) == len(institute_obj.get("sanger_recipients", [])) + 1
 
     ## THEN assert updated_at was updated
 
@@ -197,6 +229,4 @@ def test_updating_non_existing_institute(adapter, institute_obj):
     assert sum(1 for i in adapter.institutes()) == 1
 
     with pytest.raises(IntegrityError):
-        adapter.update_institute(
-            internal_id="nom existing", sanger_recipient="john.doe@mail.com"
-        )
+        adapter.update_institute(internal_id="nom existing", sanger_recipient="john.doe@mail.com")

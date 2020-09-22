@@ -151,9 +151,7 @@ def test_parse_case_vcf_files(scout_config):
     # THEN the case should the same vcf files as specified in the
     assert case_data["vcf_files"]["vcf_snv"] == scout_config["vcf_snv"]
     assert case_data["vcf_files"]["vcf_sv"] == scout_config["vcf_sv"]
-    assert (
-        case_data["vcf_files"]["vcf_snv_research"] == scout_config["vcf_snv_research"]
-    )
+    assert case_data["vcf_files"]["vcf_snv_research"] == scout_config["vcf_snv_research"]
     assert case_data["vcf_files"]["vcf_sv_research"] == scout_config["vcf_sv_research"]
 
 
@@ -204,6 +202,24 @@ def test_parse_case_alignment_path(scout_config):
     # THEN assert that bam files are added correct
     for ind in case_data["individuals"]:
         assert ind["bam_file"] == bam_path
+
+
+def test_parse_case_multiple_alignment_files(scout_config):
+    # GIVEN a load config with both cram and bam files
+    bam_path = "a bam"
+    for sample in scout_config["samples"]:
+        sample["bam_file"] = bam_path
+
+    cram_path = "a cram"
+    for sample in scout_config["samples"]:
+        sample["alignment_path"] = cram_path
+
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+
+    # THEN assert that cram files are added correctly, ignoring bam
+    for ind in case_data["individuals"]:
+        assert ind["bam_file"] == cram_path
 
 
 def test_parse_ped_file(ped_file):

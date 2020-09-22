@@ -22,9 +22,7 @@ def test_load_variants(mock_app, case_obj):
     assert result.exit_code == 0
 
     # Test CLI by uploading SNV research variants for a case
-    result = runner.invoke(
-        cli, ["load", "variants", case_obj["_id"], "--snv-research", "--force"]
-    )
+    result = runner.invoke(cli, ["load", "variants", case_obj["_id"], "--snv-research", "--force"])
     assert result.exit_code == 0
 
     # Test CLI by uploading SV variants for a case
@@ -32,9 +30,7 @@ def test_load_variants(mock_app, case_obj):
     assert result.exit_code == 0
 
     # Test CLI by uploading SV research variants for a case
-    result = runner.invoke(
-        cli, ["load", "variants", case_obj["_id"], "--sv-research", "--force"]
-    )
+    result = runner.invoke(cli, ["load", "variants", case_obj["_id"], "--sv-research", "--force"])
     assert result.exit_code == 0
 
     # Test CLI by uploading str clinical variants for a case
@@ -46,9 +42,7 @@ def test_load_variants(mock_app, case_obj):
     assert result.exit_code == 0
 
     # Test CLI by uploading variants for a gene symbol
-    result = runner.invoke(
-        cli, ["load", "variants", case_obj["_id"], "--hgnc-symbol", "ACTR3"]
-    )
+    result = runner.invoke(cli, ["load", "variants", case_obj["_id"], "--hgnc-symbol", "ACTR3"])
     assert result.exit_code == 0
 
     # Test CLI by uploading variants for given coordinates
@@ -99,13 +93,7 @@ def test_reload_variants(mock_app, case_obj, user_obj, institute_obj):
 
     # then one variant should have an associated Sanger event
     assert (
-        sum(
-            1
-            for i in store.event_collection.find(
-                {"verb": "sanger", "category": "variant"}
-            )
-        )
-        == 1
+        sum(1 for i in store.event_collection.find({"verb": "sanger", "category": "variant"})) == 1
     )
 
     store.validate(
@@ -119,19 +107,12 @@ def test_reload_variants(mock_app, case_obj, user_obj, institute_obj):
 
     # then one variant should have an associated Sanger event
     assert (
-        sum(
-            1
-            for i in store.event_collection.find(
-                {"verb": "validate", "category": "variant"}
-            )
-        )
+        sum(1 for i in store.event_collection.find({"verb": "validate", "category": "variant"}))
         == 1
     )
 
     # Check that the variant is validated
-    new_variant = store.variant_collection.find_one(
-        {"display_name": one_variant["display_name"]}
-    )
+    new_variant = store.variant_collection.find_one({"display_name": one_variant["display_name"]})
     assert new_variant["validation"] == "True positive"
 
     # force re-upload the same variants using the command line:
@@ -150,18 +131,10 @@ def test_reload_variants(mock_app, case_obj, user_obj, institute_obj):
     assert result.exit_code == 0
 
     # Then the variant from before should be already validated:
-    new_variant = store.variant_collection.find_one(
-        {"display_name": one_variant["display_name"]}
-    )
+    new_variant = store.variant_collection.find_one({"display_name": one_variant["display_name"]})
     assert new_variant["validation"] == "True positive"
 
     # And 2 Sanger events shouls be found associated with the variants
     assert (
-        sum(
-            1
-            for i in store.event_collection.find(
-                {"verb": "sanger", "category": "variant"}
-            )
-        )
-        == 2
+        sum(1 for i in store.event_collection.find({"verb": "sanger", "category": "variant"})) == 2
     )

@@ -42,17 +42,11 @@ def verified(collaborator, test, outpath=None):
 
     adapter = store
     verified_vars = adapter.verified(institute_id=collaborator)
-    LOG.info(
-        "FOUND {} verified variants for institute {}".format(
-            len(verified_vars), collaborator
-        )
-    )
+    LOG.info("FOUND {} verified variants for institute {}".format(len(verified_vars), collaborator))
 
     if not verified_vars:
         LOG.warning(
-            "There are no verified variants for institute {} in database!".format(
-                collaborator
-            )
+            "There are no verified variants for institute {} in database!".format(collaborator)
         )
         return None
 
@@ -69,11 +63,7 @@ def verified(collaborator, test, outpath=None):
     # If this was a test and lines are created return success
     if test and document_lines:
         written_files += 1
-        LOG.info(
-            "Success. Verified variants file contains {} lines".format(
-                len(document_lines)
-            )
-        )
+        LOG.info("Success. Verified variants file contains {} lines".format(len(document_lines)))
         return written_files
     if test:
         LOG.info(
@@ -96,9 +86,7 @@ def verified(collaborator, test, outpath=None):
         Report_Sheet.write(row, col, field)
 
     # Write variant lines, after header (start at line 1)
-    for row, line in enumerate(
-        document_lines, 1
-    ):  # each line becomes a row in the document
+    for row, line in enumerate(document_lines, 1):  # each line becomes a row in the document
         for col, field in enumerate(line):  # each field in line becomes a cell
             Report_Sheet.write(row, col, field)
     workbook.close()
@@ -130,9 +118,7 @@ def variants(collaborator, document_id, case_id, json):
     adapter = store
     collaborator = collaborator or "cust000"
 
-    variants = export_variants(
-        adapter, collaborator, document_id=document_id, case_id=case_id
-    )
+    variants = export_variants(adapter, collaborator, document_id=document_id, case_id=case_id)
 
     if json:
         click.echo(dumps([var for var in variants]))
@@ -159,12 +145,12 @@ def variants(collaborator, document_id, case_id, json):
 
 def get_vcf_entry(variant_obj, case_id=None):
     """
-        Get vcf entry from variant object
+    Get vcf entry from variant object
 
-        Args:
-            variant_obj(dict)
-        Returns:
-            variant_string(str): string representing variant in vcf format
+    Args:
+        variant_obj(dict)
+    Returns:
+        variant_string(str): string representing variant in vcf format
     """
     if variant_obj["category"] == "snv":
         var_type = "TYPE"

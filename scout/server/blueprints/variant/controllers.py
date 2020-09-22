@@ -22,6 +22,7 @@ from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import institute_and_case, user_institutes, variant_case
 from scout.utils.scout_requests import fetch_refseq_version
 
+
 from .utils import (
     add_gene_info,
     callers,
@@ -109,15 +110,13 @@ def variant(
         genome_build = "37"
 
     panels = default_panels(store, case_obj)
-    variant_obj = add_gene_info(
-        store, variant_obj, gene_panels=panels, genome_build=genome_build
-    )
+    variant_obj = add_gene_info(store, variant_obj, gene_panels=panels, genome_build=genome_build)
     # Add information about bam files and create a region vcf
     if add_case:
         variant_case(store, case_obj, variant_obj)
 
     # Collect all the events for the variant
-    events = store.events(institute_obj, case=case_obj, variant_id=variant_id)
+    events = list(store.events(institute_obj, case=case_obj, variant_id=variant_id))
     for event in events:
         event["verb"] = VERBS_MAP[event["verb"]]
 
@@ -162,9 +161,7 @@ def variant(
         # This is to convert a summary of frequencies to a string
         variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
-    variant_obj["clinsig_human"] = (
-        clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
-    )
+    variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
 
     # Add display information about callers
     variant_obj["callers"] = callers(variant_obj, category=variant_category)
@@ -173,13 +170,9 @@ def variant(
     is_affected(variant_obj, case_obj)
 
     if variant_obj.get("genetic_models"):
-        variant_models = set(
-            model.split("_", 1)[0] for model in variant_obj["genetic_models"]
-        )
+        variant_models = set(model.split("_", 1)[0] for model in variant_obj["genetic_models"])
         all_models = variant_obj.get("all_models", set())
-        variant_obj["is_matching_inheritance"] = set.intersection(
-            variant_models, all_models
-        )
+        variant_obj["is_matching_inheritance"] = set.intersection(variant_models, all_models)
 
     # Prepare classification information for visualisation
     classification = variant_obj.get("acmg_classification")
@@ -268,18 +261,18 @@ def observations(store, loqusdb, case_obj, variant_obj):
         "variant_type": variant_obj.get("sub_category", "").upper(),
         "category": variant_obj["category"],
     }
-    obs_data = loqusdb.get_variant(variant_query) or {}
+
+    institute_id = variant_obj["institute"]
+    institute_obj = store.institute(institute_id)
+    obs_data = loqusdb.get_variant(variant_query, loqusdb_id=institute_obj.get("loqusdb_id")) or {}
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)
         obs_data["total"] = loqusdb.case_count()
         return obs_data
 
-    user_institutes_ids = set(
-        [inst["_id"] for inst in user_institutes(store, current_user)]
-    )
+    user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
 
     obs_data["cases"] = []
-    institute_id = variant_obj["institute"]
     for i, case_id in enumerate(obs_data.get("families", [])):
         if i > 10:
             break
@@ -368,21 +361,20 @@ def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, cr
 def clinvar_export(store, institute_id, case_name, variant_id):
     """Gather the required data for creating the clinvar submission form
 
-        Args:
-            store(scout.adapter.MongoAdapter)
-            institute_id(str): Institute ID
-            case_name(str): case ID
-            variant_id(str): variant._id
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str): Institute ID
+        case_name(str): case ID
+        variant_id(str): variant._id
 
-        Returns:
-            data(dict): all the required data (case and variant level) to pre-fill in fields
-                        in the clinvar submission form
+    Returns:
+        data(dict): all the required data (case and variant level) to pre-fill in fields
+                    in the clinvar submission form
 
     """
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     pinned = [
-        store.variant(variant_id) or variant_id
-        for variant_id in case_obj.get("suspects", [])
+        store.variant(variant_id) or variant_id for variant_id in case_obj.get("suspects", [])
     ]
     variant_obj = store.variant(variant_id)
 

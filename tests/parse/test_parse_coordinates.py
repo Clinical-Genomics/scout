@@ -25,7 +25,30 @@ def test_parse_coordinates_snv(mock_variant):
     assert (
         coordinates["cytoband_start"]
         == coordinates["cytoband_end"]
-        == get_cytoband_coordinates(variant.CHROM, variant.POS)
+        == get_cytoband_coordinates(variant.CHROM, variant.POS, "37")
+    )
+    assert coordinates["end_chrom"] == variant.CHROM
+
+
+def test_parse_coordinate_snv_build_38(mock_variant):
+    """Test to parse the coordinates for a simple snv, genome assembly 38"""
+
+    # GIVEN a cyvcf2 variant
+    variant = mock_variant
+
+    # WHEN parsing the coordinate info
+    coordinates = parse_coordinates(variant, "snv", "38")
+
+    # THEN assert that they are correctly parsed
+    assert coordinates["position"] == variant.POS
+    assert coordinates["end"] == variant.end
+    assert coordinates["length"] == len(variant.ALT)
+    assert coordinates["sub_category"] == "snv"
+    assert coordinates["mate_id"] is None
+    assert (
+        coordinates["cytoband_start"]
+        == coordinates["cytoband_end"]
+        == get_cytoband_coordinates(variant.CHROM, variant.POS, "38")
     )
     assert coordinates["end_chrom"] == variant.CHROM
 

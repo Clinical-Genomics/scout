@@ -98,20 +98,20 @@ def get_hgnc_identifier(gene_info, id_type="hgnc_id"):
 def parse_gene(gene_info):
     """Parse a gene line with information from a panel file
 
-        Args:
-            gene_info(dict): dictionary with gene info
+    Args:
+        gene_info(dict): dictionary with gene info
 
-        Returns:
-            gene(dict): A dictionary with the gene information
-                {
-                'hgnc_id': int,
-                'hgnc_symbol': str,
-                'disease_associated_transcripts': list(str),
-                'inheritance_models': list(str),
-                'mosaicism': bool,
-                'reduced_penetrance': bool,
-                'database_entry_version': str,
-                }
+    Returns:
+        gene(dict): A dictionary with the gene information
+            {
+            'hgnc_id': int,
+            'hgnc_symbol': str,
+            'disease_associated_transcripts': list(str),
+            'inheritance_models': list(str),
+            'mosaicism': bool,
+            'reduced_penetrance': bool,
+            'database_entry_version': str,
+            }
 
     """
     gene = {}
@@ -252,25 +252,20 @@ def parse_genes(gene_lines):
 
 
 def parse_gene_panel(
-    path,
-    institute="cust000",
-    panel_id="test",
-    panel_type="clinical",
-    genes=None,
-    **kwargs
+    path, institute="cust000", panel_id="test", panel_type="clinical", genes=None, **kwargs
 ):
     """Parse the panel info and return a gene panel
 
-        Args:
-            path(str): Path to panel file
-            institute(str): Name of institute that owns the panel
-            panel_id(str): Panel id
-            date(datetime.datetime): Date of creation
-            version(float)
-            full_name(str): Option to have a long name
+    Args:
+        path(str): Path to panel file
+        institute(str): Name of institute that owns the panel
+        panel_id(str): Panel id
+        date(datetime.datetime): Date of creation
+        version(float)
+        full_name(str): Option to have a long name
 
-        Returns:
-            gene_panel(dict)
+    Returns:
+        gene_panel(dict)
     """
     LOG.info("Parsing gene panel %s", panel_id)
     gene_panel = {}
@@ -322,9 +317,7 @@ def parse_panel_app_gene(app_gene, hgnc_map):
     for hgnc_id in hgnc_ids:
         gene_info["hgnc_id"] = hgnc_id
 
-    gene_info["reduced_penetrance"] = INCOMPLETE_PENETRANCE_MAP.get(
-        app_gene["Penetrance"]
-    )
+    gene_info["reduced_penetrance"] = INCOMPLETE_PENETRANCE_MAP.get(app_gene["Penetrance"])
 
     inheritance_models = []
     for model in MODELS_MAP.get(app_gene["ModeOfInheritance"], []):
@@ -335,9 +328,7 @@ def parse_panel_app_gene(app_gene, hgnc_map):
     return gene_info
 
 
-def parse_panel_app_panel(
-    panel_info, hgnc_map, institute="cust000", panel_type="clinical"
-):
+def parse_panel_app_panel(panel_info, hgnc_map, institute="cust000", panel_type="clinical"):
     """Parse a PanelApp panel
 
     Args:

@@ -66,9 +66,7 @@ LOG = logging.getLogger(__name__)
 @click.option("-L", "--live", is_flag=True, help="live run - use with extreme caution")
 @click.version_option(__version__)
 @click.pass_context
-def merge_users(
-    context, mongodb, username, password, authdb, host, port, loglevel, config, live
-):
+def merge_users(context, mongodb, username, password, authdb, host, port, loglevel, config, live):
     """scout: manage interactions with a scout instance."""
     coloredlogs.install(level=loglevel)
 
@@ -88,9 +86,7 @@ def merge_users(
     mongo_config["port"] = port or cli_config.get("port") or 27017
     mongo_config["username"] = username or cli_config.get("username")
     mongo_config["password"] = password or cli_config.get("password")
-    mongo_config["authdb"] = (
-        authdb or cli_config.get("authdb") or mongo_config["mongodb"]
-    )
+    mongo_config["authdb"] = authdb or cli_config.get("authdb") or mongo_config["mongodb"]
     mongo_config["omim_api_key"] = cli_config.get("omim_api_key")
 
     # always dryrun for now
@@ -159,9 +155,7 @@ def merge_users(
             alt_user_obj["institutes"] = list(merged_institutes)
 
             merged_roles = set()
-            merged_roles.update(
-                alt_user_obj.get("roles", []) + oi_user_obj.get("roles", [])
-            )
+            merged_roles.update(alt_user_obj.get("roles", []) + oi_user_obj.get("roles", []))
             LOG.info("merged roles: {}".format(merged_roles))
             alt_user_obj["roles"] = list(merged_roles)
 
@@ -200,9 +194,7 @@ def merge_users(
         ###
 
         LOG.info("searching for events for user id {}".format(oi_user_id))
-        oi_user_events = adapter.event_collection.find(
-            {"user_id": ObjectId(str(oi_user_id))}
-        )
+        oi_user_events = adapter.event_collection.find({"user_id": ObjectId(str(oi_user_id))})
         if oi_user_events.count() > 0:
             LOG.info("===EVENTS===")
         for event in oi_user_events:
@@ -223,9 +215,7 @@ def merge_users(
         ### ACMG classifications
         ###
         LOG.info("searching for acmg for user id {}".format(oi_user_id))
-        oi_user_acmg = adapter.acmg_collection.find(
-            {"user_id": ObjectId(str(oi_user_id))}
-        )
+        oi_user_acmg = adapter.acmg_collection.find({"user_id": ObjectId(str(oi_user_id))})
         if oi_user_acmg.count() > 0:
             LOG.info("===ACMG===")
             for acmg in oi_user_acmg:
@@ -243,9 +233,7 @@ def merge_users(
 
         # Clinvar
         LOG.info("searching for ClinVar for user id {}".format(oi_user_id))
-        oi_user_clinvar = adapter.clinvar_collection.find(
-            {"user": ObjectId(str(oi_user_id))}
-        )
+        oi_user_clinvar = adapter.clinvar_collection.find({"user": ObjectId(str(oi_user_id))})
         if oi_user_clinvar.count() > 0:
             LOG.info("=== ClinVar ===")
             for clinvar in oi_user_clinvar:
@@ -273,9 +261,7 @@ def merge_users(
         ### cases
         ###
         LOG.info("searching for cases assigned to user id {}".format(oi_user_id))
-        oi_user_cases = adapter.case_collection.find(
-            {"assignees": ObjectId(str(oi_user_id))}
-        )
+        oi_user_cases = adapter.case_collection.find({"assignees": ObjectId(str(oi_user_id))})
         if oi_user_cases.count() > 0:
             LOG.info("=== Case assignees ===")
             for case in oi_user_cases:
@@ -305,15 +291,11 @@ def merge_users(
     if clinvar_requests:
         LOG.info("clinvar requests to execute: {}".format(clinvar_requests))
         if not dryrun:
-            result = adapter.clinvar_collection.bulk_write(
-                clinvar_requests, ordered=False
-            )
+            result = adapter.clinvar_collection.bulk_write(clinvar_requests, ordered=False)
             LOG.info("Modified {} ClinVar.".format(result.modified_count))
 
     if clinvar_submission_requests:
-        LOG.info(
-            "clinvar sub requests to execute: {}".format(clinvar_submission_requests)
-        )
+        LOG.info("clinvar sub requests to execute: {}".format(clinvar_submission_requests))
         if not dryrun:
             result = adapter.clinvar_submission_collection.bulk_write(
                 clinvar_submission_requests, ordered=False
@@ -331,9 +313,7 @@ def merge_users(
         LOG.info("user requests to execute: {}".format(user_requests))
         if not dryrun:
             result = adapter.user_collection.bulk_write(user_requests, ordered=False)
-            LOG.info(
-                "Modified users with the following: {}".format(result.bulk_api_result)
-            )
+            LOG.info("Modified users with the following: {}".format(result.bulk_api_result))
 
 
 if __name__ == "__main__":

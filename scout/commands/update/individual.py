@@ -25,9 +25,7 @@ def individual(case_id, ind_id, alignment_path):
     if not case_obj:
         LOG.warning("Could not find case %s", case_id)
         return
-    individuals = {
-        ind_info["individual_id"]: ind_info for ind_info in case_obj["individuals"]
-    }
+    individuals = {ind_info["individual_id"]: ind_info for ind_info in case_obj["individuals"]}
     if ind_id not in individuals:
         LOG.warning("Could not find individual %s in case %s", ind_id, case_id)
         return

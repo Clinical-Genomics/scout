@@ -26,7 +26,7 @@ class LoqusdbMock:
     def case_count(self):
         return self.nr_cases
 
-    def get_variant(self, var_dict):
+    def get_variant(self, var_dict, loqusdb_id=None):
         var = self.variants.get(var_dict["_id"], {})
         var["total"] = self.nr_cases
         return var
@@ -84,6 +84,7 @@ def app(real_database_name, real_variant_database, user_obj):
             MONGO_DBNAME=real_database_name,
             DEBUG_TB_ENABLED=False,
             LOGIN_DISABLED=True,
+            WTF_CSRF_ENABLED=False,
         )
     )
 
@@ -721,9 +722,7 @@ def sv_var_obj():
                         "sift_prediction": "unknown",
                         "region_annotations": ["ncRNA_exonic"],
                         "swiss_prot": "unknown",
-                        "functional_annotations": [
-                            "non_coding_transcript_exon_variant"
-                        ],
+                        "functional_annotations": ["non_coding_transcript_exon_variant"],
                         "is_canonical": false,
                         "biotype": "processed_transcript",
                         "strand": "-",

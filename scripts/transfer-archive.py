@@ -66,9 +66,7 @@ def archive_info(database: Database, archive_case: dict) -> dict:
 def migrate_case(adapter: MongoAdapter, scout_case: dict, archive_data: dict):
     """Migrate case information from archive."""
     # update collaborators
-    collaborators = list(
-        set(scout_case["collaborators"] + archive_data["collaborators"])
-    )
+    collaborators = list(set(scout_case["collaborators"] + archive_data["collaborators"]))
     if collaborators != scout_case["collaborators"]:
         LOG.info(f"set collaborators: {', '.join(collaborators)}")
         scout_case["collaborators"] = collaborators

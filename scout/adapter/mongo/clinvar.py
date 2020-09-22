@@ -2,6 +2,7 @@
 import logging
 from datetime import datetime
 from bson.objectid import ObjectId
+from pymongo import ReturnDocument
 
 import pymongo
 
@@ -13,11 +14,11 @@ class ClinVarHandler(object):
 
     def create_submission(self, institute_id):
         """Create an open clinvar submission for an institute
-           Args:
-                institute_id(str): an institute ID
+        Args:
+             institute_id(str): an institute ID
 
-           returns:
-                submission(obj): an open clinvar submission object
+        returns:
+             submission(obj): an open clinvar submission object
         """
 
         submission_obj = {
@@ -32,12 +33,12 @@ class ClinVarHandler(object):
     def delete_submission(self, submission_id):
         """Deletes a Clinvar submission object, along with all associated clinvar objects (variants and casedata)
 
-            Args:
-                submission_id(str): the ID of the submission to be deleted
+        Args:
+            submission_id(str): the ID of the submission to be deleted
 
-            Returns:
-                deleted_objects(int): the number of associated objects removed (variants and/or casedata)
-                deleted_submissions(int): 1 if it's deleted, 0 if something went wrong
+        Returns:
+            deleted_objects(int): the number of associated objects removed (variants and/or casedata)
+            deleted_submissions(int): 1 if it's deleted, 0 if something went wrong
         """
         LOG.info("Deleting clinvar submission %s", submission_id)
         submission_obj = self.clinvar_submission_collection.find_one(
@@ -57,15 +58,11 @@ class ClinVarHandler(object):
             submission_objects = submission_casedata
 
         # Delete all variants and casedata objects associated with this submission
-        result = self.clinvar_collection.delete_many(
-            {"_id": {"$in": submission_objects}}
-        )
+        result = self.clinvar_collection.delete_many({"_id": {"$in": submission_objects}})
         deleted_objects = result.deleted_count
 
         # Delete the submission itself
-        result = self.clinvar_submission_collection.delete_one(
-            {"_id": ObjectId(submission_id)}
-        )
+        result = self.clinvar_submission_collection.delete_one({"_id": ObjectId(submission_id)})
         deleted_submissions = result.deleted_count
 
         # return deleted_count, deleted_submissions
@@ -73,13 +70,13 @@ class ClinVarHandler(object):
 
     def get_open_clinvar_submission(self, institute_id):
         """Retrieve the database id of an open clinvar submission for an institute,
-           if none is available then create a new submission and return it
+        if none is available then create a new submission and return it
 
-           Args:
-                institute_id(str): an institute ID
+        Args:
+             institute_id(str): an institute ID
 
-           Returns:
-                submission(obj) : an open clinvar submission object
+        Returns:
+             submission(obj) : an open clinvar submission object
         """
 
         LOG.info("Retrieving an open clinvar submission for institute %s", institute_id)
@@ -89,21 +86,19 @@ class ClinVarHandler(object):
         # If there is no open submission for this institute, create one
         if submission is None:
             submission_id = self.create_submission(institute_id)
-            submission = self.clinvar_submission_collection.find_one(
-                {"_id": submission_id}
-            )
+            submission = self.clinvar_submission_collection.find_one({"_id": submission_id})
 
         return submission
 
     def update_clinvar_id(self, clinvar_id, submission_id):
         """saves an official clinvar submission ID in a clinvar submission object
 
-            Args:
-                clinvar_id(str): a string with a format: SUB[0-9]. It is obtained from clinvar portal when starting a new submission
-                submission_id(str): submission_id(str) : id of the submission to be updated
+        Args:
+            clinvar_id(str): a string with a format: SUB[0-9]. It is obtained from clinvar portal when starting a new submission
+            submission_id(str): submission_id(str) : id of the submission to be updated
 
-            Returns:
-                updated_submission(obj): a clinvar submission object, updated
+        Returns:
+            updated_submission(obj): a clinvar submission object, updated
         """
         updated_submission = self.clinvar_submission_collection.find_one_and_update(
             {"_id": ObjectId(submission_id)},
@@ -116,11 +111,11 @@ class ClinVarHandler(object):
     def get_clinvar_id(self, submission_id):
         """Returns the official Clinvar submission ID for a submission object
 
-            Args:
-                submission_id(str): submission_id(str) : id of the submission
+        Args:
+            submission_id(str): submission_id(str) : id of the submission
 
-            Returns:
-                clinvar_subm_id(str): a string with a format: SUB[0-9]. It is obtained from clinvar portal when starting a new submission
+        Returns:
+            clinvar_subm_id(str): a string with a format: SUB[0-9]. It is obtained from clinvar portal when starting a new submission
 
         """
         submission_obj = self.clinvar_submission_collection.find_one(
@@ -134,12 +129,12 @@ class ClinVarHandler(object):
     def add_to_submission(self, submission_id, submission_objects):
         """Adds submission_objects to clinvar collection and update the coresponding submission object with their id
 
-            Args:
-                submission_id(str) : id of the submission to be updated
-                submission_objects(tuple): a tuple of 2 elements coresponding to a list of variants and a list of case data objects to add to submission
+        Args:
+            submission_id(str) : id of the submission to be updated
+            submission_objects(tuple): a tuple of 2 elements coresponding to a list of variants and a list of case data objects to add to submission
 
-            Returns:
-                updated_submission(obj): an open clinvar submission object, updated
+        Returns:
+            updated_submission(obj): an open clinvar submission object, updated
         """
 
         LOG.info(
@@ -158,9 +153,7 @@ class ClinVarHandler(object):
                     upsert=True,
                 )
             except pymongo.errors.DuplicateKeyError:
-                LOG.error(
-                    "Attepted to insert a clinvar variant which is already in DB!"
-                )
+                LOG.error("Attepted to insert a clinvar variant which is already in DB!")
 
         # Insert casedata submission_objects into clinvar collection
         if submission_objects[1]:
@@ -188,11 +181,11 @@ class ClinVarHandler(object):
     def update_clinvar_submission_status(self, institute_id, submission_id, status):
         """Set a clinvar submission ID to 'closed'
 
-            Args:
-                submission_id(str): the ID of the clinvar submission to close
+        Args:
+            submission_id(str): the ID of the clinvar submission to close
 
-            Return
-                updated_submission(obj): the submission object with a 'closed' status
+        Return
+            updated_submission(obj): the submission object with a 'closed' status
 
         """
         LOG.info('closing clinvar submission "%s"', submission_id)
@@ -216,11 +209,11 @@ class ClinVarHandler(object):
     def clinvar_submissions(self, institute_id):
         """Collect all open and closed clinvar submissions for an institute
 
-            Args:
-                institute_id(str): an institute ID
+        Args:
+            institute_id(str): an institute ID
 
-            Returns:
-                submissions(list): a list of clinvar submission objects
+        Returns:
+            submissions(list): a list of clinvar submission objects
         """
         LOG.info("Retrieving all clinvar submissions for institute '%s'", institute_id)
         # get first all submission objects
@@ -263,40 +256,67 @@ class ClinVarHandler(object):
     def clinvar_objs(self, submission_id, key_id):
         """Collects a list of objects from the clinvar collection (variants of case data) as specified by the key_id in the clinvar submission
 
-            Args:
-                submission_id(str): the _id key of a clinvar submission
-                key_id(str) : either 'variant_data' or 'case_data'. It's a key in a clinvar_submission object.
-                              Its value is a list of ids of clinvar objects (either variants of casedata objects)
+        Args:
+            submission_id(str): the _id key of a clinvar submission
+            key_id(str) : either 'variant_data' or 'case_data'. It's a key in a clinvar_submission object.
+                          Its value is a list of ids of clinvar objects (either variants of casedata objects)
 
-            Returns:
-                clinvar_objects(list) : a list of clinvar objects (either variants of casedata)
+        Returns:
+            clinvar_objects(list) : a list of clinvar objects (either variants of casedata)
 
         """
         # Get a submission object
-        submission = self.clinvar_submission_collection.find_one(
-            {"_id": ObjectId(submission_id)}
-        )
+        submission = self.clinvar_submission_collection.find_one({"_id": ObjectId(submission_id)})
 
         # a list of clinvar object ids, they can be of csv_type 'variant' or 'casedata'
         if submission.get(key_id):
             clinvar_obj_ids = list(submission.get(key_id))
-            clinvar_objects = self.clinvar_collection.find(
-                {"_id": {"$in": clinvar_obj_ids}}
-            )
+            clinvar_objects = self.clinvar_collection.find({"_id": {"$in": clinvar_obj_ids}})
             return list(clinvar_objects)
 
         return None
 
+    def rename_casedata_samples(self, submission_id, case_id, old_name, new_name):
+        """Rename all samples associated to a clinVar submission
+
+        Args:
+            submission_id(str): the _id key of a clinvar submission
+            case_id(str): id of case
+            old_name(str): old name of an individual in case data
+            new_name(str): new name of an individual in case data
+
+        Returns:
+            renamed_samples(int)
+        """
+        renamed_samples = 0
+        LOG.info(
+            f"Renaming clinvar submission {submission_id}, case {case_id} individual {old_name} to {new_name}"
+        )
+
+        casedata_objs = self.clinvar_objs(submission_id, "case_data")
+
+        for obj in casedata_objs:
+            if obj.get("individual_id") == old_name and obj.get("case_id") == case_id:
+                result = self.clinvar_collection.find_one_and_update(
+                    {"_id": obj["_id"]},
+                    {"$set": {"individual_id": new_name}},
+                    return_document=ReturnDocument.AFTER,
+                )
+                if result:
+                    renamed_samples += 1
+
+        return renamed_samples
+
     def delete_clinvar_object(self, object_id, object_type, submission_id):
         """Remove a variant object from clinvar database and update the relative submission object
 
-            Args:
-                object_id(str) : the id of an object to remove from clinvar_collection database collection (a variant of a case)
-                object_type(str) : either 'variant_data' or 'case_data'. It's a key in the clinvar_submission object.
-                submission_id(str): the _id key of a clinvar submission
+        Args:
+            object_id(str) : the id of an object to remove from clinvar_collection database collection (a variant of a case)
+            object_type(str) : either 'variant_data' or 'case_data'. It's a key in the clinvar_submission object.
+            submission_id(str): the _id key of a clinvar submission
 
-            Returns:
-                updated_submission(obj): an updated clinvar submission
+        Returns:
+            updated_submission(obj): an updated clinvar submission
         """
 
         LOG.info("Deleting clinvar object %s (%s)", object_id, object_type)

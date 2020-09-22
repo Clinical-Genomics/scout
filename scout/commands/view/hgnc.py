@@ -41,9 +41,7 @@ def hgnc(hgnc_symbol, hgnc_id, build):
     click.echo("#hgnc_id\thgnc_symbol\taliases")
     for i, gene in enumerate(result, 1):
         click.echo(
-            "{0}\t{1}\t{2}".format(
-                gene["hgnc_id"], gene["hgnc_symbol"], ", ".join(gene["aliases"])
-            )
+            "{0}\t{1}\t{2}".format(gene["hgnc_id"], gene["hgnc_symbol"], ", ".join(gene["aliases"]))
         )
 
     if i == 0:

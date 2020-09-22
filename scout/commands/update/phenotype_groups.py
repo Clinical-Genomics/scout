@@ -22,9 +22,7 @@ LOG = logging.getLogger(__name__)
     help="Specify a phenotype group abbreviation",
     multiple=True,
 )
-@click.option(
-    "-f", "--group-file", help="CSV file with phenotype groups", type=click.File("r")
-)
+@click.option("-f", "--group-file", help="CSV file with phenotype groups", type=click.File("r"))
 @click.option(
     "-add",
     "--add",

@@ -53,10 +53,8 @@ def test_with_slice_query(real_adapter, case_obj):
 
     institute_id = case_obj["owner"]
 
-    slice_query = case_display_id
-    data = get_dashboard_info(
-        adapter, institute_id=institute_id, slice_query=slice_query
-    )
+    slice_query = f"case:{case_display_id}"
+    data = get_dashboard_info(adapter, institute_id=institute_id, slice_query=slice_query)
 
     ## THEN assert there is one case in the data
     for group in data["cases"]:
@@ -79,11 +77,9 @@ def test_with_hpo_query(real_adapter, case_obj):
 
     ## WHEN querying for cases with that phenotype id
     institute_id = case_obj["owner"]
-    slice_query = phenotype["phenotype_id"]
+    slice_query = f"exact_pheno:{phenotype['phenotype_id']}"
 
-    data = get_dashboard_info(
-        adapter, institute_id=institute_id, slice_query=slice_query
-    )
+    data = get_dashboard_info(adapter, institute_id=institute_id, slice_query=slice_query)
     ## THEN assert there is one case in the data
     for group in data["cases"]:
         if group["status"] == "all":
@@ -105,11 +101,9 @@ def test_with_phenotype_group_query(real_adapter, case_obj):
 
     ## WHEN querying for cases with that phenotype id
     institute_id = case_obj["owner"]
-    slice_query = "PG:0000001"
+    slice_query = "pheno_group:HP:0000001"
 
-    data = get_dashboard_info(
-        adapter, institute_id=institute_id, slice_query=slice_query
-    )
+    data = get_dashboard_info(adapter, institute_id=institute_id, slice_query=slice_query)
     ## THEN assert there is one case in the data
     for group in data["cases"]:
         if group["status"] == "all":

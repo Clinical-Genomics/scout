@@ -105,9 +105,7 @@ def parse_case_data(
 
     if "gene_panels" in config_data:
         # handle whitespace in gene panel names
-        config_data["gene_panels"] = [
-            panel.strip() for panel in config_data["gene_panels"]
-        ]
+        config_data["gene_panels"] = [panel.strip() for panel in config_data["gene_panels"]]
         config_data["default_gene_panels"] = [
             panel.strip() for panel in config_data["default_gene_panels"]
         ]
@@ -133,9 +131,7 @@ def parse_case_data(
         LOG.info("Adding SMN info from {}.".format(config_data["smn_tsv"]))
         add_smn_info(config_data)
 
-    config_data["vcf_cancer"] = (
-        vcf_cancer if vcf_cancer else config_data.get("vcf_cancer")
-    )
+    config_data["vcf_cancer"] = vcf_cancer if vcf_cancer else config_data.get("vcf_cancer")
     config_data["vcf_cancer_sv"] = (
         vcf_cancer_sv if vcf_cancer_sv else config_data.get("vcf_cancer_sv")
     )
@@ -147,9 +143,7 @@ def parse_case_data(
     config_data["rank_model_version"] = str(config_data.get("rank_model_version", ""))
     config_data["rank_score_threshold"] = config_data.get("rank_score_threshold", 0)
 
-    config_data["sv_rank_model_version"] = str(
-        config_data.get("sv_rank_model_version", "")
-    )
+    config_data["sv_rank_model_version"] = str(config_data.get("sv_rank_model_version", ""))
 
     config_data["track"] = config_data.get("track", "rare")
     if config_data["vcf_cancer"] or config_data["vcf_cancer_sv"]:
@@ -187,9 +181,7 @@ def add_smn_info(config_data):
             ]:
                 ind[key] = smn_info[ind_id][key]
         except KeyError as e:
-            LOG.warning(
-                "Individual {} has no SMN info to update: {}.".format(ind_id, e)
-            )
+            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
 
 
 def add_smn_info_case(case_data):
@@ -221,9 +213,7 @@ def add_smn_info_case(case_data):
             ]:
                 ind[key] = smn_info[ind_id][key]
         except KeyError as e:
-            LOG.warning(
-                "Individual {} has no SMN info to update: {}.".format(ind_id, e)
-            )
+            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
 
 
 def add_peddy_information(config_data):
@@ -264,9 +254,7 @@ def add_peddy_information(config_data):
         ind = analysis_inds[ind_id]
         # Check if peddy has inferred the ancestry
         if ind_id in ped_info:
-            ind["predicted_ancestry"] = ped_info[ind_id].get(
-                "ancestry-prediction", "UNKNOWN"
-            )
+            ind["predicted_ancestry"] = ped_info[ind_id].get("ancestry-prediction", "UNKNOWN")
         # Check if peddy has inferred the sex
         if ind_id in sex_check:
             if sex_check[ind_id]["error"]:
@@ -296,44 +284,44 @@ def add_peddy_information(config_data):
 def parse_individual(sample):
     """Parse individual information
 
-        Args:
-            sample (dict)
+    Args:
+        sample (dict)
 
-        Returns:
-            {
-                'individual_id': str,
-                'father': str,
-                'mother': str,
-                'display_name': str,
-                'sex': str,
-                'phenotype': str,
-                'bam_file': str,
-                'mt_bam': str,
-                'analysis_type': str,
-                'vcf2cytosure': str,
-                'capture_kits': list(str),
+    Returns:
+        {
+            'individual_id': str,
+            'father': str,
+            'mother': str,
+            'display_name': str,
+            'sex': str,
+            'phenotype': str,
+            'bam_file': str,
+            'mt_bam': str,
+            'analysis_type': str,
+            'vcf2cytosure': str,
+            'capture_kits': list(str),
 
-                'upd_sites_bed': str,
-                'upd_regions_bed': str,
-                'rhocall_bed': str,
-                'rhocall_wig': str,
-                'tiddit_coverage_wig': str,
+            'upd_sites_bed': str,
+            'upd_regions_bed': str,
+            'rhocall_bed': str,
+            'rhocall_wig': str,
+            'tiddit_coverage_wig': str,
 
-                'predicted_ancestry' = str,
+            'predicted_ancestry' = str,
 
-                'is_sma': boolean,
-                'is_sma_carrier': boolean,
-                'smn1_cn' = int,
-                'smn2_cn' = int,
-                'smn2delta78_cn' = int,
-                'smn_27134_cn' = int,
+            'is_sma': boolean,
+            'is_sma_carrier': boolean,
+            'smn1_cn' = int,
+            'smn2_cn' = int,
+            'smn2delta78_cn' = int,
+            'smn_27134_cn' = int,
 
-                'tumor_type': str,
-                'tmb': str,
-                'msi': str,
-                'tumor_purity': float,
-                'tissue_type': str,
-            }
+            'tumor_type': str,
+            'tmb': str,
+            'msi': str,
+            'tumor_purity': float,
+            'tissue_type': str,
+        }
 
     """
     ind_info = {}
@@ -378,20 +366,24 @@ def parse_individual(sample):
     ind_info["predicted_ancestry"] = sample.get("predicted_ancestry")
 
     # IGV files these can be bam or cram format
-    bam_path_options = ["bam_path", "bam_file", "alignment_path"]
+    bam_path_options = ["alignment_path", "bam_path", "bam_file"]
     for option in bam_path_options:
         if sample.get(option) and not sample.get(option).strip() == "":
-            ind_info["bam_file"] = sample[option]
-            break
+            if "bam_file" in ind_info:
+                LOG.warning(
+                    "Multiple alignment paths given for individual %s in load config. Using %s",
+                    ind_info["individual_id"],
+                    ind_info["bam_file"],
+                )
+            else:
+                ind_info["bam_file"] = sample[option]
 
     ind_info["rhocall_bed"] = sample.get("rhocall_bed", sample.get("rhocall_bed"))
     ind_info["rhocall_wig"] = sample.get("rhocall_wig", sample.get("rhocall_wig"))
     ind_info["tiddit_coverage_wig"] = sample.get(
         "tiddit_coverage_wig", sample.get("tiddit_coverage_wig")
     )
-    ind_info["upd_regions_bed"] = sample.get(
-        "upd_regions_bed", sample.get("upd_regions_bed")
-    )
+    ind_info["upd_regions_bed"] = sample.get("upd_regions_bed", sample.get("upd_regions_bed"))
     ind_info["upd_sites_bed"] = sample.get("upd_sites_bed", sample.get("upd_sites_bed"))
     ind_info["mt_bam"] = sample.get("mt_bam")
     ind_info["analysis_type"] = sample.get("analysis_type")
@@ -407,9 +399,7 @@ def parse_individual(sample):
     ind_info["smn2delta78_cn"] = sample.get("smn2delta78_cn", None)
     ind_info["smn_27134_cn"] = sample.get("smn_27134_cn", None)
 
-    ind_info["capture_kits"] = (
-        [sample.get("capture_kit")] if "capture_kit" in sample else []
-    )
+    ind_info["capture_kits"] = [sample.get("capture_kit")] if "capture_kit" in sample else []
 
     # Cancer specific values
     ind_info["tumor_type"] = sample.get("tumor_type")
@@ -431,13 +421,13 @@ def parse_individual(sample):
 def parse_individuals(samples):
     """Parse the individual information
 
-        Reformat sample information to proper individuals
+    Reformat sample information to proper individuals
 
-        Args:
-            samples(list(dict))
+    Args:
+        samples(list(dict))
 
-        Returns:
-            individuals(list(dict))
+    Returns:
+        individuals(list(dict))
     """
     individuals = []
     if len(samples) == 0:
@@ -578,7 +568,7 @@ def parse_ped(ped_stream, family_type="ped"):
 
 
 def removeNoneValues(dict):
-    """ If value = None in key/value pair, the pair is removed.
+    """If value = None in key/value pair, the pair is removed.
         Python >3
     Args:
         dict: dictionary

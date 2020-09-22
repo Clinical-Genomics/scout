@@ -65,12 +65,14 @@ CANCER_TIER_OPTIONS = {
         "description": "Strong Clinical Significance. Biomarkers in FDA or guidlines that "
         "predict response, resistance to therapy, diagnosis or prognosis "
         "to specific tumor type.",
+        "label_class": "danger",
     },
     "1B": {
         "label": "Tier IB",
         "description": "Potential Clinical Significance Biomarkers in well-powered, concenus "
         "affirmed studies that predict response, resistance to therapy, "
         "diagnostic or prognostic significance to specific tumor type.",
+        "label_class": "danger",
     },
     "2C": {
         "label": "Tier IIC",
@@ -78,62 +80,90 @@ CANCER_TIER_OPTIONS = {
         "predict response, resistance to therapy,"
         "to a different tumor type; are diagnostic or prognostic for "
         "multiple small studies; or serve as study inclusion criteria.",
+        "label_class": "warning",
     },
     "2D": {
         "label": "Tier IID",
         "description": "Biomarkers that show plausible therapeutic significance based on "
         "preclinical studies, may assist diagnosis or prognosis based on "
         "small reports.",
+        "label_class": "warning",
     },
     "3": {
         "label": "Tier III",
         "description": "Variant of Unknown Clinical Significance-"
         "Not observed in the population, nor in tumor databases."
         "No convincing published evidence of cancer association.",
+        "label_class": "primary",
     },
     "4": {
         "label": "Tier IV",
         "description": "Observed at high frequency in the population. No published evidence.",
+        "label_class": "default",
     },
 }
 
 MANUAL_RANK_OPTIONS = {
     8: {
-        "label": "Known pathogenic",
-        "description": "Previously known pathogenic in Clinvar Hgmd literature etc",
+        "label": "KP",
+        "name": "Known pathogenic",
+        "description": "Known pathogenic, previously known pathogenic in ClinVar, HGMD, literature, etc",
+        "label_class": "danger",
     },
     7: {
-        "label": "Pathogenic",
+        "label": "P",
+        "name": "Pathogenic",
         "description": (
-            "Novel mutation but overlapping phenotype with known pathogenic, "
+            "Pathogenic, novel mutation but overlapping phenotype with known pathogenic, "
             "no further experimental validation needed"
         ),
+        "label_class": "danger",
     },
     6: {
-        "label": "Novel validated pathogenic",
-        "description": "Novel mutation and validated experimentally",
+        "label": "NVP",
+        "name": "Novel validated pathogenic",
+        "description": "Novel validated pathogenic, novel mutation and validated experimentally",
+        "label_class": "danger",
     },
     5: {
-        "label": "Pathogenic partial phenotype",
+        "label": "PPP",
+        "name": "Pathogenic partial phenotype",
         "description": (
-            "Pathogenic variant explains part of patients phenotype, but "
+            "Pathogenic partial phenotype, pathogenic variant explains part of patients phenotype, but "
             "not all symptoms"
         ),
+        "label_class": "danger",
     },
     4: {
-        "label": "Likely pathogenic",
-        "description": "Experimental validation required to prove causality",
+        "label": "LP",
+        "name": "Likely pathogenic",
+        "description": "Likely pathogenic, experimental validation required to prove causality",
+        "label_class": "warning",
     },
     3: {
-        "label": "Possibly pathogenic",
-        "description": "Uncertain significance, but cannot disregard yet",
+        "label": "PP",
+        "name": "Possibly pathogenic",
+        "description": "Possibly pathogenic, uncertain significance, but cannot disregard yet",
+        "label_class": "primary",
     },
     2: {
-        "label": "Likely benign",
-        "description": "Uncertain significance, but can discard",
+        "label": "LB",
+        "name": "Likely benign",
+        "description": "Likely benign, uncertain significance, but can discard",
+        "label_class": "info",
     },
-    1: {"label": "Benign", "description": "Does not cause phenotype"},
-    0: {"label": "Other", "description": "Phenotype not related to disease"},
+    1: {
+        "label": "B",
+        "name": "Benign",
+        "description": "Benign, does not cause phenotype",
+        "label_class": "success",
+    },
+    0: {
+        "label": "O",
+        "name": "Other",
+        "description": "Other, phenotype not related to disease",
+        "label_class": "default",
+    },
 }
 
 DISMISS_VARIANT_OPTIONS = {

@@ -24,7 +24,7 @@ LOG = logging.getLogger(__name__)
 def panel(panel, build, bed, version):
     """Export gene panels to .bed like format.
 
-        Specify any number of panels on the command line
+    Specify any number of panels on the command line
     """
     LOG.info("Running scout export panel")
     adapter = store
@@ -40,9 +40,7 @@ def panel(panel, build, bed, version):
     if bed:
         if version:
             version = [version]
-        lines = export_panels(
-            adapter=adapter, panels=panel, versions=version, build=build
-        )
+        lines = export_panels(adapter=adapter, panels=panel, versions=version, build=build)
     else:
         lines = export_gene_panels(adapter=adapter, panels=panel, version=version)
     for line in lines:

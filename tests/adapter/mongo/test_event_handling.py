@@ -46,9 +46,7 @@ def test_assign(adapter, institute_obj, case_obj, user_obj):
 
     ## WHEN assigning a user to a case
     link = "assignlink"
-    updated_case = adapter.assign(
-        institute=institute_obj, case=case_obj, user=user_obj, link=link
-    )
+    updated_case = adapter.assign(institute=institute_obj, case=case_obj, user=user_obj, link=link)
     # THEN the case should have the user assigned
     assert updated_case["assignees"] == [user_obj["_id"]]
     # THEN an event should have been created
@@ -69,9 +67,7 @@ def test_unassign(adapter, institute_obj, case_obj, user_obj):
 
     # assign case to test user
     link = "assignlink"
-    updated_case = adapter.assign(
-        institute=institute_obj, case=case_obj, user=user_obj, link=link
-    )
+    updated_case = adapter.assign(institute=institute_obj, case=case_obj, user=user_obj, link=link)
 
     # Make sure that case is active
     assert updated_case["status"] == "active"
@@ -189,9 +185,7 @@ def test_add_hpo(adapter, institute_obj, case_obj, user_obj):
     )
     adapter.load_hgnc_gene(gene_obj)
 
-    hpo_obj = dict(
-        _id="HP:0000878", hpo_id="HP:0000878", description="A term", genes=[1]
-    )
+    hpo_obj = dict(_id="HP:0000878", hpo_id="HP:0000878", description="A term", genes=[1])
 
     adapter.load_hpo_term(hpo_obj)
 
@@ -233,9 +227,7 @@ def test_add_phenotype_group(adapter, institute_obj, case_obj, user_obj):
     )
     adapter.load_hgnc_gene(gene_obj)
 
-    hpo_obj = dict(
-        _id="HP:0000878", hpo_id="HP:0000878", description="A term", genes=[1]
-    )
+    hpo_obj = dict(_id="HP:0000878", hpo_id="HP:0000878", description="A term", genes=[1])
 
     adapter.load_hpo_term(hpo_obj)
 
@@ -348,9 +340,7 @@ def test_add_mim(adapter, institute_obj, case_obj, user_obj):
     }
     adapter.disease_term_collection.insert_one(mim_obj)
 
-    hpo_obj = dict(
-        _id="HP:0000878", hpo_id="HP:0000878", description="A term", genes=[1]
-    )
+    hpo_obj = dict(_id="HP:0000878", hpo_id="HP:0000878", description="A term", genes=[1])
 
     adapter.load_hpo_term(hpo_obj)
 
@@ -544,9 +534,7 @@ def test_filter_stash(adapter, institute_obj, case_obj, user_obj, filter_obj):
     assert sum(1 for i in filters) == 0
 
 
-def test_update_default_panels(
-    adapter, institute_obj, case_obj, user_obj, dummypanel_obj
-):
+def test_update_default_panels(adapter, institute_obj, case_obj, user_obj, dummypanel_obj):
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
     adapter.user_collection.insert_one(user_obj)

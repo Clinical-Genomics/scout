@@ -13,7 +13,7 @@ def test_update_compounds(mock_app, case_obj):
     # Test CLI base, no arguments provided
     result = runner.invoke(cli, ["update", "compounds"])
     # it should return error message
-    assert 'Missing argument "case_id"' in result.output
+    assert "Missing argument" in result.output
 
     # Provide case_id of a case not in database
     result = runner.invoke(cli, ["update", "compounds", "unknown_case_id"])

@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm
+from wtforms.widgets import TextInput
 from wtforms import (
+    BooleanField,
     IntegerField,
+    SelectField,
     SelectMultipleField,
     SubmitField,
     DecimalField,
     TextField,
     validators,
+    Field,
 )
-from scout.constants import PHENOTYPE_GROUPS
+from scout.constants import PHENOTYPE_GROUPS, CASE_SEARCH_TERMS
+
+CASE_SEARCH_KEY = [(value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()]
 
 
 class NonValidatingSelectMultipleField(SelectMultipleField):
@@ -57,13 +63,56 @@ class InstituteForm(FlaskForm):
     pheno_group = TextField("New phenotype group", validators=[validators.Optional()])
     pheno_abbrev = TextField("Abbreviation", validators=[validators.Optional()])
 
-    pheno_groups = NonValidatingSelectMultipleField(
-        "Custom phenotype groups", choices=hpo_tuples
+    gene_panels = NonValidatingSelectMultipleField(
+        "Gene panels for variants filtering", validators=[validators.Optional()]
     )
+
+    pheno_groups = NonValidatingSelectMultipleField("Custom phenotype groups", choices=hpo_tuples)
     cohorts = NonValidatingSelectMultipleField(
         "Available patient cohorts", validators=[validators.Optional()]
     )
-    institutes = NonValidatingSelectMultipleField(
-        "Institutes to share cases with", choices=[]
-    )
+    institutes = NonValidatingSelectMultipleField("Institutes to share cases with", choices=[])
+    loqusdb_id = TextField("LoqusDB id", validators=[validators.Optional()])
+
     submit_btn = SubmitField("Save settings")
+
+
+# make a base class or other utility with this instead..
+class TagListField(Field):
+    widget = TextInput()
+
+    def _value(self):
+        if self.data:
+            return ", ".join(self.data)
+
+        return ""
+
+    def process_formdata(self, valuelist):
+        if valuelist:
+            self.data = [x.strip() for x in valuelist[0].split(",") if x.strip()]
+        else:
+            self.data = []
+
+
+class GeneVariantFiltersForm(FlaskForm):
+    """Base FiltersForm for SNVs"""
+
+    variant_type = SelectMultipleField(choices=[("clinical", "clinical"), ("research", "research")])
+    hgnc_symbols = TagListField("HGNC Symbols/Ids (case sensitive)")
+    filter_variants = SubmitField(label="Filter variants")
+    rank_score = IntegerField(default=15)
+    phenotype_terms = TagListField("HPO terms")
+    phenotype_groups = TagListField("Phenotype groups")
+    similar_case = TagListField("Phenotypically similar case")
+    cohorts = TagListField("Cohorts")
+
+
+class CaseFilterForm(FlaskForm):
+    """Takes care of cases filtering in cases page"""
+
+    search_type = SelectField("Search by", [validators.Optional()], choices=CASE_SEARCH_KEY)
+    search_term = TextField("Search cases")
+    search_limit = IntegerField("Limit", [validators.Optional()], default=100)
+    skip_assigned = BooleanField("Hide assigned")
+    is_research = BooleanField("Research only")
+    search = SubmitField(label="Search")

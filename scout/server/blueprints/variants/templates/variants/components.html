@@ -1,5 +1,5 @@
 {% macro gene_cell(variant) %}
-  <div class="d-flex justify-content-between align-items-center">
+  <div class="align-items-center">
     {% for gene in variant.genes %}
       <a data-toggle="tooltip" data-html="true" title="
       <div>
@@ -22,7 +22,7 @@
         {% endif %}
       </div>"
         href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
-      </a>&nbsp;&nbsp;
+      </a>
     {% endfor %}
     {% if variant.panels|count > 0 %}
         <a
@@ -82,8 +82,15 @@
       <div>
         <strong>Local (arch.)</strong>: {{ variant.local_obs_old or 0 }} obs.
       </div>
+      {% if variant.cosmic_ids %}
+      <strong>COSMIC</strong>: {{variant.cosmic_ids|count}} obs
+      {% endif %}
     </div>
   ">
     {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency else '~' }}
   </div>
+  {% if variant.cosmic_ids %}
+  <span  class="badge badge-dark" target="_blank">COSMIC</span>
+  <br>
+  {% endif %}
 {% endmacro %}

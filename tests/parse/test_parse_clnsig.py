@@ -71,9 +71,9 @@ def test_parse_modern_clnsig(cyvcf2_variant):
 
 def test_parse_modern_clnsig_clnvid(cyvcf2_variant):
     ## GIVEN a variant with classic clinvar annotations
-    acc_nr = "265359"
-    clnsig = "Pathogenic/Likely_pathogenic"
-    revstat = "criteria_provided,_multiple_submitters,_no_conflicts"
+    acc_nr = "10"
+    clnsig = "conflicting_interpretations_of_pathogenicity&_other"
+    revstat = "criteria_provided&_conflicting_interpretations"
 
     cyvcf2_variant.INFO["CLNVID"] = acc_nr
     cyvcf2_variant.INFO["CLNSIG"] = clnsig
@@ -83,11 +83,11 @@ def test_parse_modern_clnsig_clnvid(cyvcf2_variant):
     clnsig_annotations = parse_clnsig(cyvcf2_variant)
 
     ## THEN assert that the correct terms are parsed
-    assert set(["pathogenic", "likely_pathogenic"]) == {
+    assert set(["conflicting_interpretations_of_pathogenicity", "other"]) == {
         term["value"] for term in clnsig_annotations
     }
     ## THEN assert that they where parsed correct
-    assert len(clnsig_annotations) == len(clnsig.split("/"))
+    assert len(clnsig_annotations) == 2
 
 
 def test_parse_semi_modern_clnsig(cyvcf2_variant):
@@ -239,9 +239,7 @@ def test_is_pathogenic_VEP97_conflicting(one_vep97_annotated_variant):
     assert pathogenic is True
 
 
-def test_parse_clinsig_vep97(
-    one_vep97_annotated_variant, real_populated_database, case_obj
-):
+def test_parse_clinsig_vep97(one_vep97_annotated_variant, real_populated_database, case_obj):
     """Test Clinsig parsing in a VEP97 formatted VCF"""
 
     # GIVEN a variant annotated using the following CSQ entry fields

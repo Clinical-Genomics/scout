@@ -22,8 +22,8 @@
     <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.cases', institute_id=institute._id) }}">
-      {{ institute.display_name }}
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }} cases
     </a>
   </li>
   <li class="nav-item active">
@@ -45,7 +45,9 @@
 <div class="container_spaced">
   <div class="card">
     <h4 class="card-header">Case: {{case.display_name}}</h4>
-      <p class="card-title {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">status: <strong>{{case.status}}</strong></p>
+    <p class="card-title {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">Status: <strong>{{case.status}}</strong>
+      <br>
+      Internal ID: <strong>{{case._id}}</strong></p>
     <div class="card-body">
 
       <div class="row text-center"> <!-- variants buttons -->
@@ -151,10 +153,10 @@
 {% macro variants_buttons() %}
   <div class="form-group">
     {% if case.vcf_files.vcf_snv %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV and INDELs</a>
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical SNV and INDELs</a>
     {% endif %}
     {% if case.vcf_files.vcf_sv %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical structural variants</a>
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical structural variants</a>
     {% endif %}
     {% if case.vcf_files.vcf_str %}
       <a class="btn btn-outline-dark" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical STR variants</a>
@@ -163,10 +165,10 @@
       <a class="btn btn-outline-dark" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">SMN CN</a>
     {% endif %}
     {% if case.vcf_files.vcf_cancer %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV and INDELs</a>
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical SNV and INDELs</a>
     {% endif %}
     {% if case.vcf_files.vcf_cancer_sv %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical structural variants</a>
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical structural variants</a>
     {% endif %}
 
   </div>
@@ -260,28 +262,22 @@
 <div class="card panel-default">
     <div class="panel-heading">Matching patients</div>
     <div class="card-body">
-      {% if case.mme_submission %} <!-- case was aready submitted to MatchMaker -->
+      {% if case.mme_submission %} <!-- case was already submitted to MatchMaker -->
         <p>This case is in MatchMaker!</p>
         <p>
-          <div class="text-center">
-            <div class="btn-group" role="group" aria-label="...">
-              <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-outline-secondary" role="button">Matches</a>
-              <div class="btn-group">
-                <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Match against&nbsp;<span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</a></li>
-                  {% if mme_nodes|length >1 %}
-                    <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</a></li>
-                  {% endif %}
-                  {% for node in mme_nodes %}
-                    <li><a href="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</a></li>
-                  {% endfor %}
-                </ul>
-              </div>
-              <a class="btn btn-outline-secondary" href="#mme_form" data-toggle="collapse">Modify submission</a>
-            </div>
+          <div class="text-center matchmaker-grid">
+              <select class="custom-select matchmaker-grid-item1" onchange="window.open(this.value,'_self');">
+                   <option selected>Match against</option>
+                    <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</option>
+                    {% if mme_nodes|length >1 %}
+                    <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</option>
+                    {% endif %}
+                    {% for node in mme_nodes %}
+                    <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</option>
+                 {% endfor %}
+              </select>
+              <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-outline-secondary matchmaker-grid-item2" role="button">Matches</a>
+              <a class="btn btn-outline-secondary matchmaker-grid-item3" href="#mme_form" data-toggle="collapse">Modify submission</a>
           </div>
         </p>
       {% else %} <!-- display option to submit case to MatchMaker -->
@@ -415,7 +411,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
 <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
 
 <script>
  $('#panel-table').DataTable({
@@ -427,7 +423,6 @@
     info: false
         });
 </script>
-
 
 <script>
 $(function () {
@@ -468,6 +463,13 @@ $(function () {
 
       $('[data-toggle="tooltip"]').tooltip();
 
+      $('[data-toggle="popover"]').popover({
+        sanitizeFn: function (content) {
+          return DOMPurify.sanitize(content)
+        },
+        container: 'body',
+      });
+
       $('select[multiple]').multiselect({
         buttonWidth: '100%'
       });
@@ -505,6 +507,32 @@ $('[data-toggle=sidebar-collapse]').click(function() {
   SidebarCollapse();
 });
 </script>
+
+<style>
+/*Matchmaker card styling*/
+.matchmaker-grid {
+  display: grid;
+  grid-gap: 15px;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+}
+
+.matchmaker-grid-item1 {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.matchmaker-grid-item2 {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.matchmaker-grid-item3 {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+</style>
 
 {% if case.chromograph_prefixes %}
   {{ case_ideograms(institute, case) }}

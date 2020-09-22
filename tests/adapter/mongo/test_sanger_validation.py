@@ -2,7 +2,7 @@
 import pymongo
 from pprint import pprint as pp
 import pytest
-from scout.server.blueprints.cases.controllers import get_sanger_unevaluated
+from scout.server.blueprints.institutes.controllers import get_sanger_unevaluated
 
 
 def test_case_sanger_variants(adapter, institute_obj, case_obj, user_obj, variant_obj):
@@ -30,9 +30,7 @@ def test_case_sanger_variants(adapter, institute_obj, case_obj, user_obj, varian
     assert case_sanger_vars["sanger_ordered"][0]["_id"] == updated_variant["_id"]
 
 
-def test_case_verified_variants(
-    adapter, institute_obj, case_obj, user_obj, variant_obj
-):
+def test_case_verified_variants(adapter, institute_obj, case_obj, user_obj, variant_obj):
     """Test assigning a verification status to a veriant"""
 
     ## GIVEN a variant db with at least one variant
@@ -58,9 +56,7 @@ def test_case_verified_variants(
     assert case_sanger_vars["sanger_ordered"] == []
 
 
-def test_case_sanger_and_verified_variants(
-    adapter, institute_obj, case_obj, user_obj, variant_obj
-):
+def test_case_sanger_and_verified_variants(adapter, institute_obj, case_obj, user_obj, variant_obj):
     """Test assigning a verification status to a veriant"""
 
     ## GIVEN a variant db with at least one variant
@@ -151,9 +147,7 @@ def test_get_sanger_unevaluated(
 
     # Test that the Sanger ordered but not validated for the institute are 2
     # sanger_unevaluated should look like this: [{ 'case_id': [var1, var2] }]
-    sanger_unevaluated = get_sanger_unevaluated(
-        adapter, institute["_id"], user_obj["email"]
-    )
+    sanger_unevaluated = get_sanger_unevaluated(adapter, institute["_id"], user_obj["email"])
     assert len(sanger_unevaluated[0][case_obj["display_name"]]) == 2
 
     # Set one of the two variants as validated
@@ -163,8 +157,6 @@ def test_get_sanger_unevaluated(
 
     # Test that now the Sanger ordered but not validated is only one
     # sanger_unevaluated should look like this: [{ 'case_id': [var2] }]
-    sanger_unevaluated = get_sanger_unevaluated(
-        adapter, institute["_id"], user_obj["email"]
-    )
+    sanger_unevaluated = get_sanger_unevaluated(adapter, institute["_id"], user_obj["email"])
     pp(sanger_unevaluated)
     assert len(sanger_unevaluated[0][case_obj["display_name"]]) == 1

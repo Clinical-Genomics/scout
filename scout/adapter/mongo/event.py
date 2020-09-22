@@ -20,8 +20,8 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
     def delete_event(self, event_id):
         """Delete a event
 
-            Arguments:
-                event_id (str): The database key for the event
+        Arguments:
+            event_id (str): The database key for the event
         """
         LOG.info("Deleting event{0}".format(event_id))
         if not isinstance(event_id, ObjectId):
@@ -94,16 +94,16 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
     ):
         """Fetch events from the database.
 
-          Args:
-            institute (dict): An institute
-            case (dict): A case
-            variant_id (str, optional): global variant id
-            level (str, optional): restrict comments to 'specific' or 'global'
-            comments (bool, optional): restrict events to include only comments
-            panel (str): A panel name
+        Args:
+          institute (dict): An institute
+          case (dict): A case
+          variant_id (str, optional): global variant id
+          level (str, optional): restrict comments to 'specific' or 'global'
+          comments (bool, optional): restrict events to include only comments
+          panel (str): A panel name
 
-          Returns:
-              pymongo.Cursor: Query result
+        Returns:
+            pymongo.Cursor: Query result
         """
 
         query = {}
@@ -165,16 +165,16 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
     ):
         """Add a new phenotype term to a case
 
-            Create a phenotype term and event with the given information
+        Create a phenotype term and event with the given information
 
-            Args:
-                institute (Institute): A Institute object
-                case (Case): Case object
-                user (User): A User object
-                link (str): The url to be used in the event
-                hpo_term (str): A hpo id
-                omim_term (str): A omim id
-                is_group (bool): is phenotype term a group?
+        Args:
+            institute (Institute): A Institute object
+            case (Case): Case object
+            user (User): A User object
+            link (str): The url to be used in the event
+            hpo_term (str): A hpo id
+            omim_term (str): A omim id
+            is_group (bool): is phenotype term a group?
 
         """
         hpo_results = []
@@ -193,9 +193,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             ## TODO Should ve raise a more proper exception here?
             raise e
 
-        existing_terms = set(
-            term["phenotype_id"] for term in case.get("phenotype_terms", [])
-        )
+        existing_terms = set(term["phenotype_id"] for term in case.get("phenotype_terms", []))
 
         updated_case = case
         phenotype_terms = []
@@ -248,9 +246,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         LOG.debug("Case updated")
         return updated_case
 
-    def remove_phenotype(
-        self, institute, case, user, link, phenotype_id, is_group=False
-    ):
+    def remove_phenotype(self, institute, case, user, link, phenotype_id, is_group=False):
         """Remove an existing phenotype from a case
 
         Args:
@@ -334,9 +330,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             comment(dict): The comment event that was inserted
         """
         if comment_level not in COMMENT_LEVELS:
-            raise SyntaxError(
-                "Comment levels can only be in {}".format(",".join(COMMENT_LEVELS))
-            )
+            raise SyntaxError("Comment levels can only be in {}".format(",".join(COMMENT_LEVELS)))
 
         if variant:
             LOG.info(
@@ -359,9 +353,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             )
 
         else:
-            LOG.info(
-                "Creating event for a comment on case {0}".format(case["display_name"])
-            )
+            LOG.info("Creating event for a comment on case {0}".format(case["display_name"]))
 
             comment = self.create_event(
                 institute=institute,
@@ -374,6 +366,47 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
                 content=content,
             )
         return comment
+
+    def update_comment(self, comment_id, new_content, level="specific"):
+        """Update a case or variant comment
+
+        Args:
+            comment_id(str): id of comment event
+            new_content(str): updated content of the comment
+            level (str): 'specific' (default) or 'global'
+
+        Returns:
+            updated_comment(dict): The comment event that was updated
+        """
+        updated_comment = self.event_collection.find_one_and_update(
+            {"_id": ObjectId(comment_id)},
+            {
+                "$set": {
+                    "content": new_content,
+                    "level": level,  # This may change while editing variants comments
+                    "updated_at": datetime.now(),
+                }
+            },
+        )
+        # create an event to register that user has updated a comment
+        event = dict(
+            institute=updated_comment["institute"],
+            case=updated_comment["case"],
+            user_id=updated_comment["user_id"],
+            user_name=updated_comment["user_name"],
+            link=updated_comment["link"],
+            category=updated_comment["category"],
+            verb="comment_update",
+            subject=updated_comment["subject"],
+            level=updated_comment["level"],
+            variant_id=updated_comment.get("variant_id", None),
+            content=None,
+            panel=None,
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+        )
+        self.event_collection.insert_one(event)
+        return updated_comment
 
     def comments_reupload(self, old_var, new_var, institute_obj, case_obj):
         """Creates comments for a new variant after variant reupload
@@ -392,9 +425,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         if new_var["_id"] == old_var["_id"]:
             return new_comments
 
-        link = "/{0}/{1}/{2}".format(
-            new_var["institute"], case_obj["display_name"], new_var["_id"]
-        )
+        link = "/{0}/{1}/{2}".format(new_var["institute"], case_obj["display_name"], new_var["_id"])
 
         # collect all comments for the old variant
         comments_query = self.events(

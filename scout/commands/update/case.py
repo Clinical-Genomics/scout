@@ -12,13 +12,9 @@ LOG = logging.getLogger(__name__)
 @click.command("case", short_help="Update a case")
 @click.argument("case_id", required=False)
 @click.option("--case-name", "-n", help="Add/update the display name of case")
-@click.option(
-    "--institute", "-i", help="Update what institutes that has access to case"
-)
+@click.option("--institute", "-i", help="Update what institutes that has access to case")
 @click.option("--collaborator", "-c", help="Add a collaborator to the case")
-@click.option(
-    "--vcf", type=click.Path(exists=True), help="path to clinical VCF file to be added"
-)
+@click.option("--vcf", type=click.Path(exists=True), help="path to clinical VCF file to be added")
 @click.option(
     "--vcf-sv",
     type=click.Path(exists=True),
@@ -159,9 +155,7 @@ def case(
             {"$set": updates},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        rankscore_treshold = rankscore_treshold or updated_case.get(
-            "rank_score_threshold", 5
-        )
+        rankscore_treshold = rankscore_treshold or updated_case.get("rank_score_threshold", 5)
         # Delete and reload the clinical SV variants
         if updated_case["vcf_files"].get("vcf_sv"):
             adapter.delete_variants(case_id, variant_type="clinical", category="sv")

@@ -13,7 +13,7 @@ def test_update_groups(mock_app, tmpdir):
 
     # Test CLI base, no arguments provided
     result = runner.invoke(cli, ["update", "groups"])
-    assert 'Error: Missing argument "institute-id"' in result.output
+    assert "Error: Missing argument" in result.output
 
     # Test CLI base with istitute id argument
     result = runner.invoke(cli, ["update", "groups", "cust000"])
@@ -46,9 +46,7 @@ def test_update_groups(mock_app, tmpdir):
     assert updated_institute["phenotype_groups"]["HP:0000003"]["abbr"] is None
 
     # Test CLI with new phenotype group and abbreviation
-    result = runner.invoke(
-        cli, ["update", "groups", "cust000", "-p", "HP:0000003", "-a", "ABBR1"]
-    )
+    result = runner.invoke(cli, ["update", "groups", "cust000", "-p", "HP:0000003", "-a", "ABBR1"])
     assert result.exit_code == 0
     assert "Institute updated" in result.output
     updated_institute = store.institute_collection.find_one()

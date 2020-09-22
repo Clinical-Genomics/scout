@@ -23,9 +23,7 @@ class HpoHandler(object):
         try:
             self.hpo_term_collection.insert_one(hpo_obj)
         except DuplicateKeyError as err:
-            raise IntegrityError(
-                "Hpo term %s already exists in database".format(hpo_obj["_id"])
-            )
+            raise IntegrityError("Hpo term %s already exists in database".format(hpo_obj["_id"]))
         LOG.debug("Hpo term saved")
 
     def load_hpo_bulk(self, hpo_bulk):
@@ -98,21 +96,17 @@ class HpoHandler(object):
             search_term = hpo_term
 
         limit = limit or int(10e10)
-        res = (
-            self.hpo_term_collection.find(query_dict)
-            .limit(limit)
-            .sort("hpo_number", ASCENDING)
-        )
+        res = self.hpo_term_collection.find(query_dict).limit(limit).sort("hpo_number", ASCENDING)
 
         return res
 
     def generate_hpo_gene_list(self, *hpo_terms):
         """Generate a sorted list with namedtuples of hpogenes
-            Each namedtuple of the list looks like (hgnc_id, count)
-            Args:
-                hpo_terms(iterable(str))
-            Returns:
-                hpo_genes(list(HpoGene))
+        Each namedtuple of the list looks like (hgnc_id, count)
+        Args:
+            hpo_terms(iterable(str))
+        Returns:
+            hpo_genes(list(HpoGene))
         """
         genes = {}
         for term in hpo_terms:

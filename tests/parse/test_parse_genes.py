@@ -43,8 +43,7 @@ def test_get_genes(cyvcf2_variant):
 
     ## GIVEN a variant with vep annotation and a vep header
     raw_transcripts = (
-        dict(zip(header, csq_entry.split("|")))
-        for transcript_info in csq_entry.split(",")
+        dict(zip(header, csq_entry.split("|"))) for transcript_info in csq_entry.split(",")
     )
     parsed_transcripts = []
     for parsed_transcript in parse_transcripts(raw_transcripts, allele="C"):

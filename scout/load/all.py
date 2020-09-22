@@ -8,14 +8,14 @@ LOG = logging.getLogger(__name__)
 
 def check_panels(adapter, panels, default_panels=None):
     """Make sure that the gene panels exist in the database
-        Also check if the default panels are defined in gene panels
+    Also check if the default panels are defined in gene panels
 
-        Args:
-            adapter(MongoAdapter)
-            panels(list(str)): A list with panel names
+    Args:
+        adapter(MongoAdapter)
+        panels(list(str)): A list with panel names
 
-        Returns:
-            panels_exists(bool)
+    Returns:
+        panels_exists(bool)
     """
     default_panels = default_panels or []
     panels_exist = True
@@ -102,9 +102,7 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
     vcf_str_file = case_obj["vcf_files"].get("vcf_str")
     if vcf_str_file:
         LOG.info("Load all clinical STR variants for case: {0}.")
-        adapter.load_variants(
-            case_obj=case_obj, variant_type="clinical", category="str"
-        )
+        adapter.load_variants(case_obj=case_obj, variant_type="clinical", category="str")
 
     if case_obj["is_research"]:
         LOG.info(
@@ -139,17 +137,15 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
 def load_scout(adapter, config, ped=None, update=False):
     """Load a new case from a Scout config.
 
-        Args:
-            adapter(MongoAdapter)
-            config(dict): loading info
-            ped(Iterable(str)): Pedigree ingformation
-            update(bool): If existing case should be updated
+    Args:
+        adapter(MongoAdapter)
+        config(dict): loading info
+        ped(Iterable(str)): Pedigree ingformation
+        update(bool): If existing case should be updated
 
     """
     LOG.info("Check that the panels exists")
-    if not check_panels(
-        adapter, config.get("gene_panels", []), config.get("default_gene_panels")
-    ):
+    if not check_panels(adapter, config.get("gene_panels", []), config.get("default_gene_panels")):
         raise ConfigError("Some panel(s) does not exist in the database")
     case_obj = adapter.load_case(config, update=update)
     return case_obj

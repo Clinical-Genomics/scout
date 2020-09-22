@@ -2,6 +2,7 @@ import copy
 import logging
 
 from scout.server.blueprints.variants.controllers import (
+    gene_panel_choices,
     variants_export_header,
     variant_export_lines,
     variants,
@@ -9,6 +10,35 @@ from scout.server.blueprints.variants.controllers import (
 )
 
 LOG = logging.getLogger(__name__)
+
+
+def test_gene_panel_choices(institute_obj, case_obj):
+    """test controller function that populates gene panel filter select"""
+
+    # GIVEN a case with a gene panel
+    case_panel = {
+        "panel_name": "case_panel",
+        "version": 1,
+        "display_name": "Case panel",
+        "nr_genes": 3,
+    }
+    case_obj["panels"] = [case_panel]
+
+    # AND an institute with a custom gene panel:
+    institute_obj["gene_panels"] = {"institute_panel_name": "Institute Panel display name"}
+
+    # WHEN the functions creates the option for the filters select
+    panel_options = gene_panel_choices(institute_obj, case_obj)
+
+    # THEN case-specific panel should be represented
+    case_panel_option = (case_panel["panel_name"], case_panel["display_name"])
+    assert case_panel_option in panel_options
+
+    # HPO panel should also be represented
+    assert ("hpo", "HPO") in panel_options
+
+    # And institute-specific panel should be in the choices as well
+    assert ("institute_panel_name", "Institute Panel display name") in panel_options
 
 
 def test_variants_research_no_shadow_clinical_assessments(
@@ -132,9 +162,7 @@ def test_sv_variants_research_shadow_clinical_assessments(
 
     # WHEN filtering for that variant in research
     variants_query = {"variant_type": "research"}
-    variants_query_res = adapter.variants(
-        case_obj["_id"], query=variants_query, category="sv"
-    )
+    variants_query_res = adapter.variants(case_obj["_id"], query=variants_query, category="sv")
     assert variants_query_res
 
     res = sv_variants(adapter, institute_obj, case_obj, variants_query_res)
@@ -154,9 +182,7 @@ def test_variant_csv_export(real_variant_database, case_obj):
     case_id = case_obj["_id"]
 
     # Given a database with variants from a case
-    snv_variants = adapter.variant_collection.find(
-        {"case_id": case_id, "category": "snv"}
-    )
+    snv_variants = adapter.variant_collection.find({"case_id": case_id, "category": "snv"})
 
     # Given 5 variants to be exported
     variants_to_export = []

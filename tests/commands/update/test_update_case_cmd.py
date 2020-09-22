@@ -74,9 +74,7 @@ def test_update_case_change_vcf_path(mock_app, case_obj, variant_clinical_file):
     ## GIVEN a CLI object
     runner = mock_app.test_cli_runner()
     ## WHEN updating the VCF path
-    result = runner.invoke(
-        cli, ["update", "case", case_obj["_id"], "--vcf", variant_clinical_file]
-    )
+    result = runner.invoke(cli, ["update", "case", case_obj["_id"], "--vcf", variant_clinical_file])
 
     ## THEN assert it exits wothout problems
     assert result.exit_code == 0
@@ -128,9 +126,7 @@ def test_update_case_change_vcf_cancer_path(mock_app, case_obj, variant_clinical
     assert res["vcf_files"]["vcf_cancer"] == variant_clinical_file
 
 
-def test_update_case_change_vcf_research_path(
-    mock_app, case_obj, variant_clinical_file
-):
+def test_update_case_change_vcf_research_path(mock_app, case_obj, variant_clinical_file):
     """Tests the CLI that updates a case"""
 
     ## GIVEN a CLI object
@@ -151,9 +147,7 @@ def test_update_case_change_vcf_research_path(
     assert res["vcf_files"]["vcf_research"] == variant_clinical_file
 
 
-def test_update_case_change_sv_vcf_research_path(
-    mock_app, case_obj, variant_clinical_file
-):
+def test_update_case_change_sv_vcf_research_path(mock_app, case_obj, variant_clinical_file):
     """Tests the CLI that updates a case"""
 
     ## GIVEN a CLI object
@@ -174,9 +168,7 @@ def test_update_case_change_sv_vcf_research_path(
     assert res["vcf_files"]["vcf_sv_research"] == variant_clinical_file
 
 
-def test_update_case_change_sv_vcf_research_path(
-    mock_app, case_obj, variant_clinical_file
-):
+def test_update_case_change_sv_vcf_research_path(mock_app, case_obj, variant_clinical_file):
     """Tests the CLI that updates a case"""
 
     ## GIVEN a CLI object
@@ -212,9 +204,7 @@ def test_update_case_change_sv_vcf_research_path(mock_app, case_obj, sv_clinical
     ## WHEN reuploading SVs with rank threshold
 
     # First save right file to upload SV variants from
-    result = runner.invoke(
-        cli, ["update", "case", case_obj["_id"], "--vcf-sv", sv_clinical_file]
-    )
+    result = runner.invoke(cli, ["update", "case", case_obj["_id"], "--vcf-sv", sv_clinical_file])
     assert result.exit_code == 0
     assert "INFO Case updated" in result.output
 
@@ -234,9 +224,7 @@ def test_update_case_change_sv_vcf_research_path(mock_app, case_obj, sv_clinical
     )
 
     assert result.exit_code == 0
-    assert (
-        "0 variants deleted" in result.output
-    )  # there were no variants in variant collection
+    assert "0 variants deleted" in result.output  # there were no variants in variant collection
 
     assert sum(1 for i in store.variant_collection.find({"category": "sv"})) > 0
     res = store.variant_collection.find({"category": "sv", "variant_rank": {"$gt": 10}})

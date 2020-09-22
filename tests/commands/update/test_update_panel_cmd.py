@@ -15,16 +15,14 @@ def test_update_panel(mock_app):
     # Test CLI base, no arguments provided
     result = runner.invoke(cli, ["update", "panel"])
     # it should return error message
-    assert 'Missing option "--panel"' in result.output
+    assert "Missing option" in result.output
 
     # Test CLI providing unknown panel
     result = runner.invoke(cli, ["update", "panel", "-p", "unknown_panel"])
     assert "could not be found" in result.output
 
     # Test updating date providing a valid panel
-    result = runner.invoke(
-        cli, ["update", "panel", "-p", "panel1", "--update-date", "2019-03-29"]
-    )
+    result = runner.invoke(cli, ["update", "panel", "-p", "panel1", "--update-date", "2019-03-29"])
     assert "panels.$.updated_at" in result.output
 
     # update panel version specifying original panel version
@@ -42,25 +40,17 @@ def test_update_panel_maintainer(mock_app):
     assert runner
 
     # Test adding a non-existing user
-    result = runner.invoke(
-        cli, ["update", "panel", "-p", "panel1", "-a", "noone@nowhere.no"]
-    )
+    result = runner.invoke(cli, ["update", "panel", "-p", "panel1", "-a", "noone@nowhere.no"])
     assert "does not exist" in result.output
 
     # Test adding a real user as maintainer
-    result = runner.invoke(
-        cli, ["update", "panel", "-p", "panel1", "-a", "john@doe.com"]
-    )
+    result = runner.invoke(cli, ["update", "panel", "-p", "panel1", "-a", "john@doe.com"])
     assert "Updating maintainer" in result.output
 
     # Test adding a real user as maintainer AGAIN
-    result = runner.invoke(
-        cli, ["update", "panel", "-p", "panel1", "-a", "john@doe.com"]
-    )
+    result = runner.invoke(cli, ["update", "panel", "-p", "panel1", "-a", "john@doe.com"])
     assert "already in maintainer" in result.output
 
     # Test removing the same only user as panel maintainer
-    result = runner.invoke(
-        cli, ["update", "panel", "-p", "panel1", "-r", "john@doe.com"]
-    )
+    result = runner.invoke(cli, ["update", "panel", "-p", "panel1", "-r", "john@doe.com"])
     assert "Updating maintainer" in result.output

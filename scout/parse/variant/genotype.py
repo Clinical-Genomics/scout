@@ -24,12 +24,12 @@ GENOTYPE_MAP = {0: "0", 1: "1", -1: "."}
 def parse_genotypes(variant, individuals, individual_positions):
     """Parse the genotype calls for a variant
 
-        Args:
-            variant(cyvcf2.Variant)
-            individuals: List[dict]
-            individual_positions(dict)
-        Returns:
-            genotypes(list(dict)): A list of genotypes
+    Args:
+        variant(cyvcf2.Variant)
+        individuals: List[dict]
+        individual_positions(dict)
+    Returns:
+        genotypes(list(dict)): A list of genotypes
     """
     genotypes = []
     for ind in individuals:
@@ -92,9 +92,7 @@ def parse_genotype(variant, ind, pos):
         ref_call = genotype[0]
         alt_call = genotype[1]
 
-        gt_call["genotype_call"] = "/".join(
-            [GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]]
-        )
+        gt_call["genotype_call"] = "/".join([GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]])
 
     paired_end_alt = None
     paired_end_ref = None

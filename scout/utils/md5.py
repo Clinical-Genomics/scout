@@ -16,10 +16,9 @@ def generate_md5_key(list_of_arguments):
     for arg in list_of_arguments:
         if not isinstance(arg, string_types):
             raise SyntaxError(
-                "Error in generate_md5_key: "
-                "Argument: {0} is a {1}".format(arg, type(arg))
+                "Error in generate_md5_key: " "Argument: {0} is a {1}".format(arg, type(arg))
             )
 
-    hash = hashlib.md5()
-    hash.update(" ".join(list_of_arguments).encode("utf-8"))
-    return hash.hexdigest()
+    hash_obj = hashlib.md5()
+    hash_obj.update(" ".join(list_of_arguments).encode("utf-8"))
+    return hash_obj.hexdigest()

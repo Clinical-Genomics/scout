@@ -51,14 +51,14 @@ def export_variants(adapter, collaborator, document_id=None, case_id=None):
 
 def export_verified_variants(aggregate_variants, unique_callers):
     """Create the lines for an excel file with verified variants for
-        an institute
+    an institute
 
-        Args:
-            aggregate_variants(list): a list of variants with aggregates case data
-            unique_callers(set): a unique list of available callers
+    Args:
+        aggregate_variants(list): a list of variants with aggregates case data
+        unique_callers(set): a unique list of available callers
 
-        Returns:
-            document_lines(list): list of lines to include in the document
+    Returns:
+        document_lines(list): list of lines to include in the document
     """
     document_lines = []
     for variant in aggregate_variants:
@@ -94,26 +94,18 @@ def export_verified_variants(aggregate_variants, unique_callers):
                 "".join(["chr", variant["chromosome"], ":", str(variant["position"])])
             )  # position
             line.append(
-                ">".join(
-                    [variant.get("reference")[:10], variant.get("alternative")[:10]]
-                )
+                ">".join([variant.get("reference")[:10], variant.get("alternative")[:10]])
             )  # change
             genes = []
             prot_effect = []
             funct_anno = []
-            for gene in variant.get(
-                "genes"
-            ):  # this will be a unique long field in the document
+            for gene in variant.get("genes"):  # this will be a unique long field in the document
                 genes.append(gene.get("hgnc_symbol", ""))
                 funct_anno.append(gene.get("functional_annotation"))
                 for transcript in gene.get("transcripts"):
-                    if transcript.get("is_canonical") and transcript.get(
-                        "protein_sequence_name"
-                    ):
+                    if transcript.get("is_canonical") and transcript.get("protein_sequence_name"):
                         prot_effect.append(
-                            urllib.parse.unquote(
-                                transcript.get("protein_sequence_name")
-                            )
+                            urllib.parse.unquote(transcript.get("protein_sequence_name"))
                         )
             line.append(",".join(prot_effect))
             line.append(",".join(funct_anno))
@@ -158,9 +150,7 @@ def export_mt_variants(variants, sample_id):
         for gene in variant.get("genes", []):
             genes.append(gene.get("hgnc_symbol", ""))
             for transcript in gene.get("transcripts"):
-                if transcript.get("is_canonical") and transcript.get(
-                    "protein_sequence_name"
-                ):
+                if transcript.get("is_canonical") and transcript.get("protein_sequence_name"):
                     prot_effect.append(
                         urllib.parse.unquote(transcript.get("protein_sequence_name"))
                     )

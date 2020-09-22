@@ -124,9 +124,7 @@ class VariantLoader(object):
             if variant_objs:
                 variant_obj = variant_objs.get(compound["variant"])
             else:
-                variant_obj = self.variant_collection.find_one(
-                    {"_id": compound["variant"]}
-                )
+                variant_obj = self.variant_collection.find_one({"_id": compound["variant"]})
             if variant_obj:
                 # If the variant exosts we try to collect as much info as possible
                 not_loaded = False
@@ -170,8 +168,8 @@ class VariantLoader(object):
     def update_mongo_compound_variants(self, bulk):
         """Update the compound information for a bulk of variants in the database
 
-            Args:
-                bulk(dict): {'_id': scout.models.Variant}
+        Args:
+            bulk(dict): {'_id': scout.models.Variant}
 
         """
         requests = []
@@ -252,9 +250,9 @@ class VariantLoader(object):
                         new_region = None
 
                         # Check if the variant is in a coding region
-                        genomic_regions = coding_intervals.get(
-                            var_chrom, IntervalTree()
-                        ).overlap(var_start, var_end)
+                        genomic_regions = coding_intervals.get(var_chrom, IntervalTree()).overlap(
+                            var_start, var_end
+                        )
 
                         # If the variant is in a coding region
                         if genomic_regions:
@@ -300,9 +298,7 @@ class VariantLoader(object):
         try:
             result = self.variant_collection.insert_one(variant_obj)
         except DuplicateKeyError as err:
-            raise IntegrityError(
-                "Variant %s already exists in database", variant_obj["_id"]
-            )
+            raise IntegrityError("Variant %s already exists in database", variant_obj["_id"])
         return result
 
     def upsert_variant(self, variant_obj):
@@ -394,11 +390,7 @@ class VariantLoader(object):
         hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
         genomic_intervals = self.get_coding_intervals(genes=genes)
 
-        LOG.info(
-            "Start inserting {0} {1} variants into database".format(
-                variant_type, category
-            )
-        )
+        LOG.info("Start inserting {0} {1} variants into database".format(variant_type, category))
         start_insertion = datetime.now()
         start_five_thousand = datetime.now()
         # These are the number of parsed varaints
@@ -417,21 +409,14 @@ class VariantLoader(object):
         for nr_variants, variant in enumerate(variants):
             # All MT variants are loaded
             mt_variant = "MT" in variant.CHROM
-            rank_score = parse_rank_score(
-                variant.INFO.get("RankScore"), case_obj["_id"]
-            )
+            rank_score = parse_rank_score(variant.INFO.get("RankScore"), case_obj["_id"])
             pathogenic = is_pathogenic(variant)
 
             # Check if the variant should be loaded at all
             # if rank score is None means there are no rank scores annotated, all variants will be loaded
             # Otherwise we load all variants above a rank score treshold
             # Except for MT variants where we load all variants
-            if (
-                (rank_score is None)
-                or (rank_score > rank_threshold)
-                or mt_variant
-                or pathogenic
-            ):
+            if (rank_score is None) or (rank_score > rank_threshold) or mt_variant or pathogenic:
                 nr_inserted += 1
                 # Parse the vcf variant
                 parsed_variant = parse_variant(
@@ -507,10 +492,7 @@ class VariantLoader(object):
                     )
                     start_five_thousand = datetime.now()
 
-                if (
-                    nr_inserted != 0
-                    and (nr_inserted * inserted) % (1000 * inserted) == 0
-                ):
+                if nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0:
                     LOG.info("%s variants inserted", nr_inserted)
                     inserted += 1
         # If the variants are in a coding region we update the compounds

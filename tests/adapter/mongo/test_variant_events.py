@@ -78,9 +78,7 @@ def test_unmark_causative(adapter, institute_obj, case_obj, user_obj, variant_ob
     assert sum(1 for i in adapter.event_collection.find()) == 4
 
 
-def test_mark_partial_causative(
-    adapter, institute_obj, case_obj, user_obj, variant_obj
-):
+def test_mark_partial_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
 
     # GIVEN a populated database with variants
     adapter.case_collection.insert_one(case_obj)
@@ -117,9 +115,7 @@ def test_mark_partial_causative(
     assert sum(1 for i in adapter.event_collection.find()) == 2
 
 
-def test_unmark_partial_causative(
-    adapter, institute_obj, case_obj, user_obj, variant_obj
-):
+def test_unmark_partial_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
 
     # GIVEN a populated database with variants
     adapter.case_collection.insert_one(case_obj)

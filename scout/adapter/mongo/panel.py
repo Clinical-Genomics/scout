@@ -112,9 +112,7 @@ class PanelHandler:
                 LOG.info("The new version of omim does not differ from the old one")
                 LOG.info("No update is added")
                 return
-            self.update_mim_version(
-                new_genes, panel_obj, old_version=existing_panel["version"]
-            )
+            self.update_mim_version(new_genes, panel_obj, old_version=existing_panel["version"])
 
         self.add_gene_panel(panel_obj)
 
@@ -162,8 +160,8 @@ class PanelHandler:
     def add_gene_panel(self, panel_obj):
         """Add a gene panel to the database
 
-            Args:
-                panel_obj(dict)
+        Args:
+            panel_obj(dict)
         """
         panel_name = panel_obj["panel_name"]
         panel_version = panel_obj["version"]
@@ -174,9 +172,7 @@ class PanelHandler:
                 "Panel {0} with version {1} already"
                 " exist in database".format(panel_name, panel_version)
             )
-        LOG.info(
-            "loading panel %s, version %s to database", display_name, panel_version
-        )
+        LOG.info("loading panel %s, version %s to database", display_name, panel_version)
         LOG.info("Nr genes in panel: %s", len(panel_obj.get("genes", [])))
         result = self.panel_collection.insert_one(panel_obj)
         LOG.debug("Panel saved")
@@ -207,8 +203,7 @@ class PanelHandler:
         """
         res = self.panel_collection.delete_one({"_id": panel_obj["_id"]})
         LOG.warning(
-            "Deleting panel %s, version %s"
-            % (panel_obj["panel_name"], panel_obj["version"])
+            "Deleting panel %s, version %s" % (panel_obj["panel_name"], panel_obj["version"])
         )
         return res
 
@@ -226,11 +221,7 @@ class PanelHandler:
         """
         query = {"panel_name": panel_id}
         if version:
-            LOG.info(
-                "Fetch gene panel {0}, version {1} from database".format(
-                    panel_id, version
-                )
-            )
+            LOG.info("Fetch gene panel {0}, version {1} from database".format(panel_id, version))
             query["version"] = version
             return self.panel_collection.find_one(query)
 
@@ -268,23 +259,23 @@ class PanelHandler:
     def hgnc_to_panels(self, hgnc_id):
         """Get a list of gene panel objects for a hgnc_id
 
-            Args:
-                hgnc_id(int)
+        Args:
+            hgnc_id(int)
 
-            Returns:
-                hgnc_panels(dict): A dictionary with hgnc as keys and lists of
-                                   gene panel objects as values
+        Returns:
+            hgnc_panels(dict): A dictionary with hgnc as keys and lists of
+                               gene panel objects as values
         """
         return self.panel_collection.find({"genes.hgnc_id": hgnc_id})
 
     def gene_to_panels(self, case_obj):
         """Fetch all gene panels and group them by gene
 
-            Args:
-                case_obj(scout.models.Case)
-            Returns:
-                gene_dict(dict): A dictionary with gene as keys and a set of
-                                 panel names as value
+        Args:
+            case_obj(scout.models.Case)
+        Returns:
+            gene_dict(dict): A dictionary with gene as keys and a set of
+                             panel names as value
         """
         LOG.info("Building gene to panels")
         gene_dict = {}
@@ -314,6 +305,29 @@ class PanelHandler:
 
         return gene_dict
 
+    def panel_to_genes(self, panel_id=None, panel_name=None):
+        """Return all hgnc_ids for a given gene panel
+
+        Args:
+            panel_id(ObjectId): _id of a gene panel (to collect specific version of a panel)
+            panel_name(str): Name of a gene panel (to collect latest version of a panel)
+
+        Returns:
+            gene_list(list): a list of hgnc terms
+
+        """
+        gene_list = []
+        panel_obj = None
+        if panel_id:
+            panel_obj = self.panel(panel_id)
+        elif panel_name:
+            panel_obj = self.gene_panel(panel_name)
+
+        if panel_obj is not None:
+            gene_list = [gene_obj.get("symbol", "") for gene_obj in panel_obj.get("genes", [])]
+
+        return gene_list
+
     def update_panel(self, panel_obj, version=None, date_obj=None, maintainer=None):
         """Replace a existing gene panel with a new one
 
@@ -332,18 +346,14 @@ class PanelHandler:
         # update date of panel to "today"
         date = panel_obj["date"]
         if version:
-            LOG.info(
-                "Updating version from %s to version %s", panel_obj["version"], version
-            )
+            LOG.info("Updating version from %s to version %s", panel_obj["version"], version)
             panel_obj["version"] = version
             # Updating version should not update date
             if date_obj:
                 date = date_obj
         elif maintainer is not None:
             LOG.info(
-                "Updating maintainer from {} to {}".format(
-                    panel_obj.get("maintainer"), maintainer
-                )
+                "Updating maintainer from {} to {}".format(panel_obj.get("maintainer"), maintainer)
             )
             panel_obj["maintainer"] = maintainer
         else:
@@ -457,7 +467,7 @@ class PanelHandler:
                     gene_obj[field] = info[field]
             new_genes.append(gene_obj)
 
-        for gene in panel_obj["genes"]:
+        for gene in panel_obj.get("genes", []):
             hgnc_id = gene["hgnc_id"]
 
             if hgnc_id not in updates:

@@ -7,14 +7,13 @@ import os
 import query_phenomizer
 import requests
 from bs4 import BeautifulSoup
-from flask import current_app, url_for
+from flask import current_app, url_for, flash
 from flask_login import current_user
 from flask_mail import Message
 from xlsxwriter import Workbook
 
 from scout.constants import (
     CANCER_PHENOTYPE_MAP,
-    CASE_STATUSES,
     MT_EXPORT_HEADER,
     PHENOTYPE_GROUPS,
     PHENOTYPE_MAP,
@@ -29,87 +28,19 @@ from scout.constants.variant_tags import (
     MANUAL_RANK_OPTIONS,
 )
 from scout.export.variant import export_mt_variants
-from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.parse.matchmaker import (
     genomic_features,
     hpo_terms,
     omim_terms,
     parse_matches,
 )
-from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
-from scout.server.blueprints.variant.utils import predictions
-from scout.server.utils import institute_and_case, user_institutes
+from scout.server.utils import institute_and_case
 from scout.utils.matchmaker import matchmaker_request
 
 LOG = logging.getLogger(__name__)
 
 STATUS_MAP = {"solved": "bg-success", "archived": "bg-warning"}
-
-TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
-
-
-def cases(store, case_query, prioritized_cases_query=None, limit=100):
-    """Preprocess case objects.
-
-    Add the necessary information to display the 'cases' view
-
-    Args:
-        store(adapter.MongoAdapter)
-        case_query(pymongo.Cursor)
-        prioritized_cases_query(pymongo.Cursor)
-        limit(int): Maximum number of cases to display
-
-    Returns:
-        data(dict): includes the cases, how many there are and the limit.
-    """
-    case_groups = {status: [] for status in CASE_STATUSES}
-    nr_cases = 0
-
-    # local function to add info to case obj
-    def populate_case_obj(case_obj):
-        analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
-        LOG.debug(
-            "Analysis types found in %s: %s", case_obj["_id"], ",".join(analysis_types)
-        )
-        if len(analysis_types) > 1:
-            LOG.debug("Set analysis types to {'mixed'}")
-            analysis_types = set(["mixed"])
-
-        case_obj["analysis_types"] = list(analysis_types)
-        case_obj["assignees"] = [
-            store.user(user_email) for user_email in case_obj.get("assignees", [])
-        ]
-        case_obj["is_rerun"] = len(case_obj.get("analyses", [])) > 0
-        case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
-        case_obj["display_track"] = TRACKS[case_obj.get("track", "rare")]
-        return case_obj
-
-    for nr_cases, case_obj in enumerate(case_query.limit(limit), 1):
-        case_obj = populate_case_obj(case_obj)
-        case_groups[case_obj["status"]].append(case_obj)
-
-    if prioritized_cases_query:
-        extra_prioritized = 0
-        for case_obj in prioritized_cases_query:
-            if any(
-                group_obj.get("display_name") == case_obj.get("display_name")
-                for group_obj in case_groups[case_obj["status"]]
-            ):
-                continue
-            else:
-                extra_prioritized += 1
-                case_obj = populate_case_obj(case_obj)
-                case_groups[case_obj["status"]].append(case_obj)
-        # extra prioritized cases are potentially shown in addition to the case query limit
-        nr_cases += extra_prioritized
-
-    data = {
-        "cases": [(status, case_groups[status]) for status in CASE_STATUSES],
-        "found_cases": nr_cases,
-        "limit": limit,
-    }
-    return data
 
 
 def case(store, institute_obj, case_obj):
@@ -142,18 +73,14 @@ def case(store, institute_obj, case_obj):
         individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
         case_obj["individual_ids"].append(individual["individual_id"])
 
-    case_obj["assignees"] = [
-        store.user(user_email) for user_email in case_obj.get("assignees", [])
-    ]
+    case_obj["assignees"] = [store.user(user_email) for user_email in case_obj.get("assignees", [])]
 
     # Fetch the variant objects for suspects and causatives
     suspects = [
-        store.variant(variant_id) or variant_id
-        for variant_id in case_obj.get("suspects", [])
+        store.variant(variant_id) or variant_id for variant_id in case_obj.get("suspects", [])
     ]
     causatives = [
-        store.variant(variant_id) or variant_id
-        for variant_id in case_obj.get("causatives", [])
+        store.variant(variant_id) or variant_id for variant_id in case_obj.get("causatives", [])
     ]
     # check for partial causatives and associated phenotypes
     partial_causatives = []
@@ -169,25 +96,37 @@ def case(store, institute_obj, case_obj):
     # Set of all unique genes in the default gene panels
     distinct_genes = set()
     case_obj["panel_names"] = []
+    case_obj["outdated_panels"] = {}
     for panel_info in case_obj.get("panels", []):
         if not panel_info.get("is_default"):
             continue
         panel_name = panel_info["panel_name"]
         panel_version = panel_info.get("version")
         panel_obj = store.gene_panel(panel_name, version=panel_version)
+        latest_panel = store.gene_panel(panel_name)
         if not panel_obj:
-            LOG.warning(
-                "Could not fetch gene panel %s, version %s", panel_name, panel_version
-            )
-            LOG.info("Try to fetch latest existing version")
-            panel_obj = store.gene_panel(panel_name)
+            panel_obj = latest_panel
             if not panel_obj:
-                LOG.warning("Could not find any version of gene panel %s", panel_name)
+                flash(f"Case default panel '{panel_name}' could not be found.", "warning")
                 continue
-            LOG.info("Using panel %s, version %s", panel_name, panel_obj["version"])
+            flash(
+                f"Case default panel '{panel_name}' version {panel_version} could not be found, using latest existing version",
+                "warning",
+            )
+
+        # Check if case-specific panel is up-to-date with latest version of the panel
+        if panel_obj["version"] < latest_panel["version"]:
+            extra_genes, missing_genes = _check_outdated_gene_panel(panel_obj, latest_panel)
+            if extra_genes or missing_genes:
+                case_obj["outdated_panels"][panel_name] = {
+                    "missing_genes": missing_genes,
+                    "extra_genes": extra_genes,
+                }
+
         distinct_genes.update([gene["hgnc_id"] for gene in panel_obj.get("genes", [])])
         full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
         case_obj["panel_names"].append(full_name)
+
     case_obj["default_genes"] = list(distinct_genes)
 
     for hpo_term in itertools.chain(
@@ -211,9 +150,7 @@ def case(store, institute_obj, case_obj):
         case_obj["rank_model_link"] = rank_model_link
     sv_rank_model_link_prefix = current_app.config.get("SV_RANK_MODEL_LINK_PREFIX", "")
     if case_obj.get("sv_rank_model_version"):
-        sv_rank_model_link_postfix = current_app.config.get(
-            "SV_RANK_MODEL_LINK_POSTFIX", ""
-        )
+        sv_rank_model_link_postfix = current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX", "")
         case_obj["sv_rank_model_link"] = "".join(
             [
                 sv_rank_model_link_prefix,
@@ -228,8 +165,7 @@ def case(store, institute_obj, case_obj):
             o_collaborators.append(store.institute(collab_id))
 
     case_obj["o_collaborators"] = [
-        (collab_obj["_id"], collab_obj["display_name"])
-        for collab_obj in o_collaborators
+        (collab_obj["_id"], collab_obj["display_name"]) for collab_obj in o_collaborators
     ]
 
     collab_ids = None
@@ -255,9 +191,7 @@ def case(store, institute_obj, case_obj):
     pheno_groups = institute_obj.get("phenotype_groups") or PHENOTYPE_GROUPS
 
     # complete OMIM diagnoses specific for this case
-    omim_terms = {
-        term["disease_nr"]: term for term in store.case_omim_diagnoses(case_obj)
-    }
+    omim_terms = {term["disease_nr"]: term for term in store.case_omim_diagnoses(case_obj)}
 
     data = {
         "status_class": STATUS_MAP.get(case_obj["status"]),
@@ -276,6 +210,33 @@ def case(store, institute_obj, case_obj):
     }
 
     return data
+
+
+def _check_outdated_gene_panel(panel_obj, latest_panel):
+    """Compare genes of a case gene panel with the latest panel version and return differences
+
+    Args:
+        panel_obj(dict): the gene panel of a case
+        latest_panel(dict): the latest version of that gene panel
+
+    returns:
+        missing_genes, extra_genes
+    """
+    # Create a list of minified gene object for the case panel {hgnc_id, gene_symbol}
+    case_panel_genes = [
+        {"hgnc_id": gene["hgnc_id"], "symbol": gene.get("symbol", gene["hgnc_id"])}
+        for gene in panel_obj["genes"]
+    ]
+    # And for the latest panel
+    latest_panel_genes = [
+        {"hgnc_id": gene["hgnc_id"], "symbol": gene.get("symbol", gene["hgnc_id"])}
+        for gene in latest_panel["genes"]
+    ]
+    # Extract the genes unique to case panel
+    extra_genes = [gene["symbol"] for gene in case_panel_genes if gene not in latest_panel_genes]
+    # Extract the genes unique to latest panel
+    missing_genes = [gene["symbol"] for gene in latest_panel_genes if gene not in case_panel_genes]
+    return extra_genes, missing_genes
 
 
 def case_report_content(store, institute_obj, case_obj):
@@ -338,9 +299,7 @@ def case_report_content(store, institute_obj, case_obj):
                 continue
             if var_type == "partial_causatives":  # Collect associated phenotypes
                 variant_obj["phenotypes"] = [
-                    value
-                    for key, value in case_obj["partial_causatives"].items()
-                    if key == var_id
+                    value for key, value in case_obj["partial_causatives"].items() if key == var_id
                 ][0]
             evaluated_variants[vt].append(variant_obj)
 
@@ -395,9 +354,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
 
     request_data = {}
     # extract sample ids from case_obj and add them to the post request object:
-    request_data["sample_id"] = [
-        ind["individual_id"] for ind in case_obj["individuals"]
-    ]
+    request_data["sample_id"] = [ind["individual_id"] for ind in case_obj["individuals"]]
 
     # extract default panel names and default genes from case_obj and add them to the post request object
     distinct_genes = set()
@@ -405,16 +362,12 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     for panel_info in case_obj.get("panels", []):
         if panel_info.get("is_default") is False:
             continue
-        panel_obj = store.gene_panel(
-            panel_info["panel_name"], version=panel_info.get("version")
-        )
+        panel_obj = store.gene_panel(panel_info["panel_name"], version=panel_info.get("version"))
         distinct_genes.update([gene["hgnc_id"] for gene in panel_obj.get("genes", [])])
         full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
         panel_names.append(full_name)
     panel_names = " ,".join(panel_names)
-    request_data["gene_ids"] = ",".join(
-        [str(gene_id) for gene_id in list(distinct_genes)]
-    )
+    request_data["gene_ids"] = ",".join([str(gene_id) for gene_id in list(distinct_genes)])
     request_data["panel_name"] = panel_names
     request_data["request_sent"] = datetime.datetime.now()
 
@@ -423,7 +376,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
 
     # send get request to chanjo report
     # disable default certificate verification
-    resp = requests.post(base_url + "reports/report", data=request_data, verify=False)
+    resp = requests.post(base_url + "reports/report", data=request_data)
 
     # read response content
     soup = BeautifulSoup(resp.text)
@@ -436,26 +389,6 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     coverage_data = "".join(["%s" % x for x in soup.body.contents])
 
     return coverage_data
-
-
-def clinvar_submissions(store, institute_id):
-    """Get all Clinvar submissions for a user and an institute"""
-    submissions = list(store.clinvar_submissions(institute_id))
-    return submissions
-
-
-def clinvar_header(submission_objs, csv_type):
-    """ Call clinvar parser to extract required fields to include in csv header from clinvar submission objects"""
-
-    clinvar_header_obj = clinvar_submission_header(submission_objs, csv_type)
-    return clinvar_header_obj
-
-
-def clinvar_lines(clinvar_objects, clinvar_header):
-    """ Call clinvar parser to extract required lines to include in csv file from clinvar submission objects and header"""
-
-    clinvar_lines = clinvar_submission_lines(clinvar_objects, clinvar_header)
-    return clinvar_lines
 
 
 def mt_excel_files(store, case_obj, temp_excel_dir):
@@ -476,9 +409,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
 
     query = {"chrom": "MT"}
     mt_variants = list(
-        store.variants(
-            case_id=case_obj["_id"], query=query, nr_of_variants=-1, sort_key="position"
-        )
+        store.variants(case_id=case_obj["_id"], query=query, nr_of_variants=-1, sort_key="position")
     )
 
     written_files = 0
@@ -488,9 +419,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
         sample_lines = export_mt_variants(variants=mt_variants, sample_id=sample_id)
 
         # set up document name
-        document_name = (
-            ".".join([case_obj["display_name"], display_name, today]) + ".xlsx"
-        )
+        document_name = ".".join([case_obj["display_name"], display_name, today]) + ".xlsx"
         workbook = Workbook(os.path.join(temp_excel_dir, document_name))
         Report_Sheet = workbook.add_worksheet()
 
@@ -500,9 +429,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
             Report_Sheet.write(row, col, field)
 
         # Write variant lines, after header (start at line 1)
-        for row, line in enumerate(
-            sample_lines, 1
-        ):  # each line becomes a row in the document
+        for row, line in enumerate(sample_lines, 1):  # each line becomes a row in the document
             for col, field in enumerate(line):  # each field in line becomes a cell
                 Report_Sheet.write(row, col, field)
         workbook.close()
@@ -522,9 +449,7 @@ def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
             institute_id=institute_obj["_id"],
             case_name=case_obj["display_name"],
         )
-        store.update_synopsis(
-            institute_obj, case_obj, user_obj, link, content=new_synopsis
-        )
+        store.update_synopsis(institute_obj, case_obj, user_obj, link, content=new_synopsis)
 
 
 def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissue):
@@ -623,9 +548,7 @@ def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
     # skip querying Phenomizer unless at least one HPO terms exists
     try:
         results = query_phenomizer.query(username, password, *hpo_ids)
-        diseases = [
-            result for result in results if result["p_value"] <= p_value_treshold
-        ]
+        diseases = [result for result in results if result["p_value"] <= p_value_treshold]
         return diseases
     except SystemExit:
         return None
@@ -633,9 +556,15 @@ def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
 
 def rerun(store, mail, current_user, institute_id, case_name, sender, recipient):
     """Request a rerun by email."""
+
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
+
+    if case_obj.get("rerun_requested") and case_obj["rerun_requested"] is True:
+        flash("Rerun already pending", "info")
+        return
+
     store.request_rerun(institute_obj, case_obj, user_obj, link)
 
     # this should send a JSON document to the SuSy API in the future
@@ -673,16 +602,12 @@ def update_default_panels(store, current_user, institute_id, case_name, panel_id
     store.update_default_panels(institute_obj, case_obj, user_obj, link, panel_objs)
 
 
-def update_clinical_filter_hpo(
-    store, current_user, institute_id, case_name, hpo_clinical_filter
-):
+def update_clinical_filter_hpo(store, current_user, institute_id, case_name, hpo_clinical_filter):
     """Update HPO clinical filter use for a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
-    store.update_clinical_filter_hpo(
-        institute_obj, case_obj, user_obj, link, hpo_clinical_filter
-    )
+    store.update_clinical_filter_hpo(institute_obj, case_obj, user_obj, link, hpo_clinical_filter)
 
 
 def vcf2cytosure(store, institute_id, case_name, individual_id):
@@ -696,170 +621,10 @@ def vcf2cytosure(store, institute_id, case_name, individual_id):
     return (individual_obj["display_name"], individual_obj["vcf2cytosure"])
 
 
-def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
-    """Pre-process list of variants."""
-    # We need to call variants_collection.count_documents here
-    variant_count = variants_query.count()
-    skip_count = per_page * max(page - 1, 0)
-    more_variants = True if variant_count > (skip_count + per_page) else False
-    variant_res = variants_query.skip(skip_count).limit(per_page)
-
-    my_institutes = set(inst["_id"] for inst in user_institutes(store, current_user))
-
-    variants = []
-    for variant_obj in variant_res:
-        # Populate variant case_display_name
-        variant_case_obj = store.case(case_id=variant_obj["case_id"])
-        if not variant_case_obj:
-            # A variant with missing case was encountered
-            continue
-        case_display_name = variant_case_obj.get("display_name")
-        variant_obj["case_display_name"] = case_display_name
-
-        # hide other institutes for now
-        other_institutes = set([variant_case_obj.get("owner")])
-        other_institutes.update(set(variant_case_obj.get("collaborators", [])))
-        if my_institutes.isdisjoint(other_institutes):
-            # If the user does not have access to the information we skip it
-            continue
-
-        genome_build = variant_case_obj.get("genome_build", "37")
-        if genome_build not in ["37", "38"]:
-            genome_build = "37"
-
-        # Update the HGNC symbols if they are not set
-        variant_genes = variant_obj.get("genes")
-        if variant_genes is not None:
-            for gene_obj in variant_genes:
-                # If there is no hgnc id there is nothin we can do
-                if not gene_obj["hgnc_id"]:
-                    continue
-                # Else we collect the gene object and check the id
-                if (
-                    gene_obj.get("hgnc_symbol") is None
-                    or gene_obj.get("description") is None
-                ):
-                    hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
-                    if not hgnc_gene:
-                        continue
-                    gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
-                    gene_obj["description"] = hgnc_gene["description"]
-
-        # Populate variant HGVS and predictions
-        gene_ids = []
-        gene_symbols = []
-        hgvs_c = []
-        hgvs_p = []
-        variant_genes = variant_obj.get("genes")
-
-        if variant_genes is not None:
-            functional_annotation = ""
-
-            for gene_obj in variant_genes:
-                hgnc_id = gene_obj["hgnc_id"]
-                gene_symbol = gene(store, hgnc_id)["symbol"]
-                gene_ids.append(hgnc_id)
-                gene_symbols.append(gene_symbol)
-
-                hgvs_nucleotide = "-"
-                hgvs_protein = ""
-                # gather HGVS info from gene transcripts
-                transcripts_list = gene_obj.get("transcripts")
-                for transcript_obj in transcripts_list:
-                    if (
-                        transcript_obj.get("is_canonical")
-                        and transcript_obj.get("is_canonical") is True
-                    ):
-                        hgvs_nucleotide = str(
-                            transcript_obj.get("coding_sequence_name")
-                        )
-                        hgvs_protein = str(transcript_obj.get("protein_sequence_name"))
-                hgvs_c.append(hgvs_nucleotide)
-                hgvs_p.append(hgvs_protein)
-
-            if len(gene_symbols) == 1:
-                if hgvs_p[0] != "None":
-                    hgvs = hgvs_p[0]
-                elif hgvs_c[0] != "None":
-                    hgvs = hgvs_c[0]
-                else:
-                    hgvs = "-"
-                variant_obj["hgvs"] = hgvs
-
-            # populate variant predictions for display
-            variant_obj.update(predictions(variant_genes))
-
-        variants.append(variant_obj)
-
-    return {"variants": variants, "more_variants": more_variants}
-
-
 def multiqc(store, institute_id, case_name):
     """Find MultiQC report for the case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     return dict(institute=institute_obj, case=case_obj)
-
-
-def get_sanger_unevaluated(store, institute_id, user_id):
-    """Get all variants for an institute having Sanger validations ordered but still not evaluated
-
-        Args:
-            store(scout.adapter.MongoAdapter)
-            institute_id(str)
-
-        Returns:
-            unevaluated: a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, {'case2' : [varID_1, varID_2, .., varID_n]} ],
-                         where the keys are case_ids and the values are lists of variants with Sanger ordered but not yet validated
-
-    """
-
-    # Retrieve a list of ids for variants with Sanger ordered grouped by case from the 'event' collection
-    # This way is much faster than querying over all variants in all cases of an institute
-    sanger_ordered_by_case = store.sanger_ordered(institute_id, user_id)
-    unevaluated = []
-
-    # for each object where key==case and value==[variant_id with Sanger ordered]
-    for item in sanger_ordered_by_case:
-        case_id = item["_id"]
-        # Get the case to collect display name
-        case_obj = store.case(case_id=case_id)
-
-        if not case_obj:  # the case might have been removed
-            continue
-
-        case_display_name = case_obj.get("display_name")
-
-        # List of variant document ids
-        varid_list = item["vars"]
-
-        unevaluated_by_case = {}
-        unevaluated_by_case[case_display_name] = []
-
-        for var_id in varid_list:
-            # For each variant with sanger validation ordered
-            variant_obj = store.variant(document_id=var_id, case_id=case_id)
-
-            # Double check that Sanger was ordered (and not canceled) for the variant
-            if (
-                variant_obj is None
-                or variant_obj.get("sanger_ordered") is None
-                or variant_obj.get("sanger_ordered") is False
-            ):
-                continue
-
-            validation = variant_obj.get("validation", "not_evaluated")
-
-            # Check that the variant is not evaluated
-            if validation in ["True positive", "False positive"]:
-                continue
-
-            unevaluated_by_case[case_display_name].append(variant_obj["_id"])
-
-        # If for a case there is at least one Sanger validation to evaluate add the object to the unevaluated objects list
-        if len(unevaluated_by_case[case_display_name]) > 0:
-            unevaluated.append(unevaluated_by_case)
-
-    return unevaluated
 
 
 def mme_add(
@@ -934,9 +699,7 @@ def mme_add(
             "id": ".".join(
                 [case_obj["_id"], individual.get("individual_id")]
             ),  # This is a required field form MME
-            "label": ".".join(
-                [case_obj["display_name"], individual.get("display_name")]
-            ),
+            "label": ".".join([case_obj["display_name"], individual.get("display_name")]),
             "features": features,
             "disorders": disorders,
         }
@@ -1043,9 +806,7 @@ def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
                 pat_matches = parse_matches(patient_id, server_resp["matches"])
             matches[patient_id] = pat_matches
         else:
-            LOG.warning(
-                "Server returned error message: {}".format(server_resp["message"])
-            )
+            LOG.warning("Server returned error message: {}".format(server_resp["message"]))
             data["server_errors"].append(server_resp["message"])
 
     data["matches"] = matches
@@ -1053,9 +814,7 @@ def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
     return data
 
 
-def mme_match(
-    case_obj, match_type, mme_base_url, mme_token, nodes=None, mme_accepts=None
-):
+def mme_match(case_obj, match_type, mme_base_url, mme_token, nodes=None, mme_accepts=None):
     """Initiate a MatchMaker match against either other Scout patients or external nodes
 
     Args:
@@ -1103,18 +862,14 @@ def mme_match(
         for patient in query_patients:
             # Against every node
             for node in node_ids:
-                url = "".join(
-                    [mme_base_url, "/match/external/", patient, "?node=", node]
-                )
+                url = "".join([mme_base_url, "/match/external/", patient, "?node=", node])
                 json_resp = matchmaker_request(url=url, token=mme_token, method="POST")
                 resp_obj = {
                     "server": node,
                     "patient_id": patient,
                     "results": json_resp.get("results"),
                     "status_code": json_resp.get("status_code"),
-                    "message": json_resp.get(
-                        "message"
-                    ),  # None if request was successful
+                    "message": json_resp.get("message"),  # None if request was successful
                 }
                 server_responses.append(resp_obj)
     return server_responses

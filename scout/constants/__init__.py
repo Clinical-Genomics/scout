@@ -5,7 +5,7 @@ from collections import OrderedDict
 from intervaltree import IntervalTree, Interval
 
 from scout.parse.cytoband import parse_cytoband
-from scout.resources import cytobands_path
+from scout.resources import cytoband_files
 from scout.utils.handle import get_file_handle
 
 from .indexes import INDEXES
@@ -39,6 +39,7 @@ from .case_tags import (
     VERBS_MAP,
     VERBS,
     SAMPLE_SOURCE,
+    CASE_SEARCH_TERMS,
 )
 from .clnsig import CLINSIG_MAP, REV_CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 from .phenotype import PHENOTYPE_GROUPS, COHORT_TAGS
@@ -52,7 +53,8 @@ from .variants_export import (
     VERIFIED_VARIANTS_HEADER,
 )
 
-cytobands_handle = get_file_handle(cytobands_path)
+cytobands_37_handle = get_file_handle(cytoband_files.get("37"))
+cytobands_38_handle = get_file_handle(cytoband_files.get("38"))
 
 COLLECTIONS = [
     "hgnc_gene",
@@ -69,7 +71,8 @@ COLLECTIONS = [
 
 BUILDS = ["37", "38", "GRCh38"]
 
-CYTOBANDS = parse_cytoband(cytobands_handle)
+CYTOBANDS_37 = parse_cytoband(cytobands_37_handle)
+CYTOBANDS_38 = parse_cytoband(cytobands_38_handle)
 
 CHROMOSOMES = (
     "1",
@@ -108,17 +111,13 @@ PAR_COORDINATES = {
         "X": IntervalTree(
             [Interval(60001, 2699521, "par1"), Interval(154931044, 155260561, "par2")]
         ),
-        "Y": IntervalTree(
-            [Interval(10001, 2649521, "par1"), Interval(59034050, 59363567, "par2")]
-        ),
+        "Y": IntervalTree([Interval(10001, 2649521, "par1"), Interval(59034050, 59363567, "par2")]),
     },
     "38": {
         "X": IntervalTree(
             [Interval(10001, 2781480, "par1"), Interval(155701383, 156030896, "par2")]
         ),
-        "Y": IntervalTree(
-            [Interval(10001, 2781480, "par1"), Interval(56887903, 57217416, "par2")]
-        ),
+        "Y": IntervalTree([Interval(10001, 2781480, "par1"), Interval(56887903, 57217416, "par2")]),
     },
 }
 

@@ -32,17 +32,17 @@ def variant_verification(
 ):
     """Sand a verification email and register the verification in the database
 
-        Args:
-            store(scout.adapter.MongoAdapter)
-            institute_obj(dict): an institute object
-            case_obj(dict): a case object
-            user_obj(dict): a user object
-            variant_obj(dict): a variant object (snv or sv)
-            sender(str): current_app.config['MAIL_USERNAME']
-            variant_url(str): the complete url to the variant (snv or sv), a link that works from outside scout domain.
-            order(str): False == cancel order, True==order verification
-            comment(str): sender's entered comment from form
-            url_builder(flask.url_for): for testing purposes, otherwise test verification email fails because out of context
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_obj(dict): an institute object
+        case_obj(dict): a case object
+        user_obj(dict): a user object
+        variant_obj(dict): a variant object (snv or sv)
+        sender(str): current_app.config['MAIL_USERNAME']
+        variant_url(str): the complete url to the variant (snv or sv), a link that works from outside scout domain.
+        order(str): False == cancel order, True==order verification
+        comment(str): sender's entered comment from form
+        url_builder(flask.url_for): for testing purposes, otherwise test verification email fails because out of context
     """
     url_builder = url_builder or url_for
     mail = mail or ex_mail
@@ -72,13 +72,20 @@ def variant_verification(
     display_name = variant_obj.get("display_name")
     chromosome = variant_obj["chromosome"]
     end_chrom = variant_obj.get("end_chrom", chromosome)
-    breakpoint_1 = ":".join([chromosome, str(variant_obj["position"])])
-    breakpoint_2 = ":".join([end_chrom, str(variant_obj.get("end"))])
+    breakpoint_1 = (
+        ":".join([chromosome, str(variant_obj["position"])])
+        if category in ["sv", "cancer_sv"]
+        else "-"
+    )
+    breakpoint_2 = (
+        ":".join([end_chrom, str(variant_obj.get("end"))])
+        if category in ["sv", "cancer_sv"]
+        else "-"
+    )
     variant_size = variant_obj.get("length")
     panels = ", ".join(variant_obj.get("panels", []))
     gene_identifiers = [
-        str(ident)
-        for ident in variant_obj.get("hgnc_symbols", variant_obj.get("hgnc_ids", []))
+        str(ident) for ident in variant_obj.get("hgnc_symbols", variant_obj.get("hgnc_ids", []))
     ]
     hgnc_symbol = ", ".join(gene_identifiers)
     email_subj_gene_symbol = None
@@ -88,9 +95,7 @@ def variant_verification(
         email_subj_gene_symbol = hgnc_symbol
 
     gtcalls = [
-        "<li>{}: {}</li>".format(
-            sample_obj["display_name"], sample_obj["genotype_call"]
-        )
+        "<li>{}: {}</li>".format(sample_obj["display_name"], sample_obj["genotype_call"])
         for sample_obj in variant_obj["samples"]
     ]
     tx_changes = []
@@ -107,13 +112,9 @@ def variant_verification(
 
                 for refseq_id in tx_obj.get("refseq_identifiers"):
                     transcript_line = []
-                    transcript_line.append(
-                        gene_obj.get("hgnc_symbol", gene_obj["hgnc_id"])
-                    )
+                    transcript_line.append(gene_obj.get("hgnc_symbol", gene_obj["hgnc_id"]))
 
-                    transcript_line.append(
-                        "-".join([refseq_id, tx_obj["transcript_id"]])
-                    )
+                    transcript_line.append("-".join([refseq_id, tx_obj["transcript_id"]]))
                     if "exon" in tx_obj:
                         transcript_line.append("".join(["exon", tx_obj["exon"]]))
                     elif "intron" in tx_obj:
@@ -121,9 +122,7 @@ def variant_verification(
                     else:
                         transcript_line.append("intergenic")
                     if "coding_sequence_name" in tx_obj:
-                        transcript_line.append(
-                            urllib.parse.unquote(tx_obj["coding_sequence_name"])
-                        )
+                        transcript_line.append(urllib.parse.unquote(tx_obj["coding_sequence_name"]))
                     else:
                         transcript_line.append("")
                     if "protein_sequence_name" in tx_obj:
@@ -166,13 +165,8 @@ def variant_verification(
 
     if order == "True":  # variant verification should be ordered
         # pin variant if it's not already pinned
-        if (
-            case_obj.get("suspects") is None
-            or variant_obj["_id"] not in case_obj["suspects"]
-        ):
-            store.pin_variant(
-                institute_obj, case_obj, user_obj, local_link, variant_obj
-            )
+        if case_obj.get("suspects") is None or variant_obj["_id"] not in case_obj["suspects"]:
+            store.pin_variant(institute_obj, case_obj, user_obj, local_link, variant_obj)
 
         email_subject = "SCOUT: validation of {} variant {}, ({})".format(
             category.upper(), display_name, email_subj_gene_symbol

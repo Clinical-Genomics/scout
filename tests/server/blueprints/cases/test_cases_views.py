@@ -7,14 +7,56 @@ from pymongo import ReturnDocument
 from scout.demo import delivery_report_path
 from scout.server.blueprints.cases import controllers
 from scout.server.extensions import store
+from scout.server.extensions import mail
 from scout.server.blueprints.cases.views import (
     parse_raw_gene_symbols,
     parse_raw_gene_ids,
 )
 
+TEST_TOKEN = "test_token"
+
+
+def test_rerun(app, institute_obj, case_obj, monkeypatch):
+    """test case rerun function"""
+
+    # GIVEN an initialized app
+    # GIVEN a valid user
+
+    def send_email(*args, **kwargs):
+        return True
+
+    monkeypatch.setattr(mail, "send", send_email)
+
+    # GIVEN a test case without rerun pending
+    test_case = store.case_collection.find_one()
+    assert test_case.get("rerun_requested") is False
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN rerun request is sent
+        resp = client.post(
+            url_for(
+                "cases.rerun",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+        assert resp.status_code == 302
+        updated_case = store.case_collection.find_one()
+
+        # THEN the case should be updated
+        assert updated_case["rerun_requested"] is True
+        rerun_event = store.event_collection.find_one()
+
+        # AND a rerun event should be created
+        assert rerun_event.get("verb") == "rerun"
+
 
 def test_parse_raw_gene_symbols(app):
-    """ Test parse gene symbols"""
+    """Test parse gene symbols"""
 
     # GIVEN a list of autocompleted gene symbols
     gene_symbols = ["MUTYH |POT1", "POT1 0.1|APC|PMS2"]
@@ -159,103 +201,6 @@ def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj
         assert updated_sample["tissue_type"] != old_tissue_type
 
 
-def test_cases(app, institute_obj):
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
-
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        # WHEN accessing the cases page
-        resp = client.get(
-            url_for("cases.cases", institute_id=institute_obj["internal_id"])
-        )
-
-        # THEN it should return a page
-        assert resp.status_code == 200
-
-        # test query passing parameters in seach form
-        request_data = {
-            "limit": "100",
-            "skip_assigned": "on",
-            "is_research": "on",
-            "query": "case_id",
-        }
-        resp = client.get(
-            url_for(
-                "cases.cases",
-                institute_id=institute_obj["internal_id"],
-                params=request_data,
-            )
-        )
-        # response should return a page
-        assert resp.status_code == 200
-
-        sorting_options = ["analysis_date", "track", "status"]
-        for option in sorting_options:
-            # test query passing the sorting option to the cases view
-            request_data = {"sort": option}
-            resp = client.get(
-                url_for(
-                    "cases.cases",
-                    institute_id=institute_obj["internal_id"],
-                    params=request_data,
-                )
-            )
-            # response should return a page
-            assert resp.status_code == 200
-
-
-def test_cases_query(app, case_obj, institute_obj):
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
-
-    slice_query = case_obj["display_name"]
-
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        # WHEN accessing the cases page with a query
-        resp = client.get(
-            url_for(
-                "cases.cases",
-                query=slice_query,
-                institute_id=institute_obj["internal_id"],
-            )
-        )
-
-        # THEN it should return a page
-        assert resp.status_code == 200
-
-
-def test_cases_panel_query(app, case_obj, parsed_panel, institute_obj):
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
-
-    slice_query = parsed_panel["panel_id"]
-
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        # WHEN accessing the cases page with a query
-        resp = client.get(
-            url_for(
-                "cases.cases",
-                query=slice_query,
-                institute_id=institute_obj["internal_id"],
-            )
-        )
-
-        # THEN it should return a page
-        assert resp.status_code == 200
-
-
 def test_institutes(app):
     # GIVEN an initialized app
     # GIVEN a valid user
@@ -272,16 +217,28 @@ def test_institutes(app):
         assert resp.status_code == 200
 
 
-def test_case(app, case_obj, institute_obj):
-    # GIVEN an initialized app
-    # GIVEN a valid user, case and institute
+def test_case_outdated_panel(app, institute_obj, case_obj, dummy_case):
+    """Test case displaying an outdated panel warning badge"""
 
+    # GIVEN an adapter with a case with a gene panel of version 1
+    case_panel = case_obj["panels"][0]
+    assert case_panel["version"] == 1
+
+    # AND an updated version of the same panel in the database
+    updated_panel = {
+        "panel_name": case_panel["panel_name"],
+        "display_name": case_panel["display_name"],
+        "version": 2,
+        "genes": [{"symbol": "POT1", "hgnc_id": 17284}],
+    }
+    store.panel_collection.insert_one(updated_panel)
+
+    # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
 
-        # WHEN accessing the case page
+        # WHEN case page is loaded
         resp = client.get(
             url_for(
                 "cases.case",
@@ -289,9 +246,11 @@ def test_case(app, case_obj, institute_obj):
                 case_name=case_obj["display_name"],
             )
         )
-
-        # THEN it should return a page
+        # THEN it should return a valid page
         assert resp.status_code == 200
+
+        # WITH a tooltip explaining that the gene panel is outdated
+        assert "Panel version used in the analysis (1.0) is outdated." in str(resp.data)
 
 
 def test_case_sma(app, case_obj, institute_obj):
@@ -388,63 +347,83 @@ def test_case_synopsis(app, institute_obj, case_obj):
         assert resp.status_code == 302
 
 
-def test_causatives(app, user_obj, institute_obj, case_obj):
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
-    # There should be no causative variants for test case:
-    assert "causatives" not in case_obj
-    var1_id = "4c7d5c70d955875504db72ef8e1abe77"  # in POT1 gene
-    var2_id = "e24b65bf27feacec6a81c8e9e19bd5f1"  # in TBX1 gene
-    var_ids = [var1_id, var2_id]
+def test_update_case_comment(app, institute_obj, case_obj, user_obj):
+    """Test the functionality that allows updating of case-specific comments"""
 
-    # for each variant
-    for var_id in var_ids:
-        # update case by marking variant as causative:
-        variant_obj = store.variant(document_id=var_id)
-        store.mark_causative(
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        ## GIVEN a case with a comment
+        store.create_event(
             institute=institute_obj,
             case=case_obj,
             user=user_obj,
-            link="causative_var_link/{}".format(variant_obj["_id"]),
-            variant=variant_obj,
+            link="a link",
+            category="case",
+            verb="comment",
+            subject=case_obj["display_name"],
+            level="specific",
         )
-    updated_case = store.case_collection.find_one({"_id": case_obj["_id"]})
-    # The above variants should be registered as causatives in case object
-    assert updated_case["causatives"] == var_ids
+        comment = store.event_collection.find_one({"verb": "comment"})
+        assert comment
 
-    # Call scout causatives view and check if the above causatives are displayed
+        # WHEN a user updates the comment via the modal form
+        form_data = {"event_id": comment["_id"], "updatedContent": "an updated comment", "edit": ""}
+        resp = client.post(
+            url_for(
+                "cases.events",
+                institute_id=institute_obj["_id"],
+                case_name=case_obj["display_name"],
+                event_id=comment["_id"],
+            ),
+            data=form_data,
+        )
+        # THEN it should redirect to case page
+        assert resp.status_code == 302
+
+        # The comment should be updated
+        updated_comment = store.event_collection.find_one({"_id": comment["_id"]})
+        assert updated_comment["content"] == "an updated comment"
+
+        # And a comment updated event should have been created in the event collection
+        updated_var_event = store.event_collection.find_one({"verb": "comment_update"})
+        # With the same subject of the comment
+        assert updated_var_event["subject"] == updated_comment["subject"]
+
+
+def test_download_hpo_genes(app, case_obj, institute_obj):
+    """Test the endpoint that downloads the dynamic gene list for a case"""
+
+    # GIVEN a case containing a dynamic gene list
+    dynamic_gene_list = [
+        {"hgnc_symbol": "ACTA2", "hgnc_id": 130, "description": "actin alpha 2, smooth muscle"},
+        {"hgnc_symbol": "LMNB2", "hgnc_id": 6638, "description": "lamin B2"},
+    ]
+
+    store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]}, {"$set": {"dynamic_gene_list": dynamic_gene_list}}
+    )
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
     with app.test_client() as client:
-
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
 
-        # WHEN accessing the case page
-        resp = client.get(
-            url_for("cases.causatives", institute_id=institute_obj["internal_id"])
-        )
-
-        # THEN it should return a page
-        assert resp.status_code == 200
-        # with variant 1
-        assert var1_id in str(resp.data)
-        # and variant 2
-        assert var2_id in str(resp.data)
-
-        # Filter causatives by gene (POT1)
+        # WHEN the endpoint for downloading the case dynamic gene list is invoked
         resp = client.get(
             url_for(
-                "cases.causatives",
-                institute_id=institute_obj["internal_id"],
-                query="17284 | POT1 (DKFZp586D211, hPot1, POT1)",
+                "cases.download_hpo_genes",
+                institute_id=institute_obj["_id"],
+                case_name=case_obj["display_name"],
             )
         )
-        # THEN it should return a page
+        # THEN the response should be successful
         assert resp.status_code == 200
-        # with variant 1
-        assert var1_id in str(resp.data)
-        # but NOT variant 2
-        assert var2_id not in str(resp.data)
+        # And should download a txt file
+        assert resp.mimetype == "text/csv"
 
 
 def test_case_report(app, institute_obj, case_obj):
@@ -513,26 +492,6 @@ def test_pdf_case_report(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_clinvar_submissions(app, institute_obj):
-    # Test the web page containing the clinvar submissions for an institute
-
-    # GIVEN an initialized app and a valid user and institute
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        # When visiting the clinvar submissiin page (get request)
-        resp = client.get(
-            url_for(
-                "cases.clinvar_submissions", institute_id=institute_obj["internal_id"]
-            )
-        )
-
-        # a successful response should be returned
-        assert resp.status_code == 200
-
-
 def test_mt_report(app, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -577,9 +536,7 @@ def test_matchmaker_add(app, institute_obj, case_obj):
         assert resp.status_code == 302
 
 
-def test_matchmaker_matches(
-    app, institute_obj, case_obj, mme_submission, user_obj, monkeypatch
-):
+def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission, user_obj, monkeypatch):
 
     # Given a case object with a MME submission
     case_obj["mme_submission"] = mme_submission
@@ -607,7 +564,7 @@ def test_matchmaker_matches(
 
         # Given mock MME connection parameters
         current_app.config["MME_URL"] = "http://fakey_mme_url:fakey_port"
-        current_app.config["MME_TOKEN"] = "test_token"
+        current_app.config["MME_TOKEN"] = TEST_TOKEN
 
         # WHEN accessing the case page
         resp = client.get(
@@ -622,9 +579,7 @@ def test_matchmaker_matches(
         assert resp.status_code == 200
 
 
-def test_matchmaker_match(
-    app, institute_obj, case_obj, mme_submission, user_obj, monkeypatch
-):
+def test_matchmaker_match(app, institute_obj, case_obj, mme_submission, user_obj, monkeypatch):
 
     # Given a case object with a MME submission
     case_obj["mme_submission"] = mme_submission
@@ -651,7 +606,7 @@ def test_matchmaker_match(
 
         # Given mock MME connection parameters
         current_app.config["MME_URL"] = "http://fakey_mme_url:fakey_port"
-        current_app.config["MME_TOKEN"] = "test_token"
+        current_app.config["MME_TOKEN"] = TEST_TOKEN
 
         # WHEN sending a POST request to match a patient
         resp = client.post(

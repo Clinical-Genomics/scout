@@ -1,8 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-# Note: To use the 'upload' functionality of this file, you must:
-#   $ pip install twine
+"""Build instructions for packaging and installing"""
 
 import io
 import os
@@ -26,9 +22,7 @@ def parse_reqs(req_path="./requirements.txt"):
     install_requires = []
     with io.open(os.path.join(here, "requirements.txt"), encoding="utf-8") as handle:
         # remove comments and empty lines
-        lines = (
-            line.strip() for line in handle if line.strip() and not line.startswith("#")
-        )
+        lines = (line.strip() for line in handle if line.strip() and not line.startswith("#"))
 
         for line in lines:
             # check for nested requirements files
@@ -62,39 +56,6 @@ with open(os.path.join(here, "scout", "__version__.py")) as f:
     exec(f.read(), about)
 
 
-class UploadCommand(Command):
-    """Support setup.py upload."""
-
-    description = "Build and publish the package."
-    user_options = []
-
-    @staticmethod
-    def status(s):
-        """Prints things in bold."""
-        print("\033[1m{0}\033[0m".format(s))
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        try:
-            self.status("Removing previous builds…")
-            rmtree(os.path.join(here, "dist"))
-        except OSError:
-            pass
-
-        self.status("Building Source and Wheel (universal) distribution…")
-        os.system("{0} setup.py sdist bdist_wheel --universal".format(sys.executable))
-
-        self.status("Uploading the package to PyPi via Twine…")
-        os.system("twine upload dist/*")
-
-        sys.exit()
-
-
 setup(
     name=NAME,
     version=about["__version__"],
@@ -121,6 +82,4 @@ setup(
         "Topic :: Software Development :: Libraries",
         "Programming Language :: Python :: 3.6",
     ],
-    # $ setup.py publish support.
-    cmdclass={"upload": UploadCommand},
 )

@@ -7,9 +7,7 @@ from scout.utils.acmg import get_acmg
 from scout.server.utils import templated, public_endpoint, institute_and_case
 from scout.server.extensions import store, loqusdb
 from scout.server.blueprints.variant.controllers import variant as variant_controller
-from scout.server.blueprints.variant.controllers import (
-    evaluation as evaluation_controller,
-)
+from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
 from scout.server.blueprints.variant.controllers import variant_acmg as acmg_controller
 from scout.server.blueprints.variant.controllers import (
     observations,
@@ -28,9 +26,7 @@ from scout.constants import ACMG_CRITERIA, ACMG_MAP
 
 LOG = logging.getLogger(__name__)
 
-variant_bp = Blueprint(
-    "variant", __name__, static_folder="static", template_folder="templates"
-)
+variant_bp = Blueprint("variant", __name__, static_folder="static", template_folder="templates")
 
 
 @variant_bp.route("/<institute_id>/<case_name>/<variant_id>")
@@ -42,18 +38,14 @@ def variant(institute_id, case_name, variant_id):
     data = variant_controller(store, institute_id, case_name, variant_id=variant_id)
     if data is None:
         LOG.warning(
-            "An error occurred: variants view requesting data for variant {}".format(
-                variant_id
-            )
+            "An error occurred: variants view requesting data for variant {}".format(variant_id)
         )
         flash("An error occurred while retrieving variant object", "danger")
         return redirect(request.referrer)
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
-        data["observations"] = observations(
-            store, loqusdb, data["case"], data["variant"]
-        )
+        data["observations"] = observations(store, loqusdb, data["case"], data["variant"])
 
     return data
 
@@ -62,15 +54,11 @@ def variant(institute_id, case_name, variant_id):
 @templated("variant/sv-variant.html")
 def sv_variant(institute_id, case_name, variant_id):
     """Display a specific structural variant."""
-    data = variant_controller(
-        store, institute_id, case_name, variant_id, add_other=False
-    )
+    data = variant_controller(store, institute_id, case_name, variant_id, add_other=False)
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
-        data["observations"] = observations(
-            store, loqusdb, data["case"], data["variant"]
-        )
+        data["observations"] = observations(store, loqusdb, data["case"], data["variant"])
 
     return data
 
@@ -91,9 +79,7 @@ def str_variant(institute_id, case_name, variant_id):
     return data
 
 
-@variant_bp.route(
-    "/<institute_id>/<case_name>/<variant_id>/acmg", methods=["GET", "POST"]
-)
+@variant_bp.route("/<institute_id>/<case_name>/<variant_id>/acmg", methods=["GET", "POST"])
 @templated("variant/acmg.html")
 def variant_acmg(institute_id, case_name, variant_id):
     """ACMG classification form."""
@@ -139,11 +125,7 @@ def variant_update(institute_id, case_name, variant_id):
         try:
             new_manual_rank = int(manual_rank) if manual_rank != "-1" else None
         except ValueError:
-            LOG.warning(
-                "Attempt to update manual rank with invalid value {}".format(
-                    manual_rank
-                )
-            )
+            LOG.warning("Attempt to update manual rank with invalid value {}".format(manual_rank))
             manual_rank = "-1"
             new_manual_rank = -1
 
@@ -161,11 +143,7 @@ def variant_update(institute_id, case_name, variant_id):
         try:
             new_cancer_tier = cancer_tier if cancer_tier != "-1" else None
         except ValueError:
-            LOG.warning(
-                "Attempt to update cancer tier with invalid value {}".format(
-                    cancer_tier
-                )
-            )
+            LOG.warning("Attempt to update cancer tier with invalid value {}".format(cancer_tier))
             cancer_tier = "-1"
             new_cancer_tier = "-1"
 
@@ -184,9 +162,7 @@ def variant_update(institute_id, case_name, variant_id):
         acmg_classification = variant_obj.get("acmg_classification")
         # If there already is a classification and the same one is sent again this means that
         # We want to remove the classification
-        if isinstance(acmg_classification, int) and (
-            new_acmg == ACMG_MAP[acmg_classification]
-        ):
+        if isinstance(acmg_classification, int) and (new_acmg == ACMG_MAP[acmg_classification]):
             new_acmg = None
 
         store.submit_evaluation(
@@ -213,23 +189,17 @@ def variant_update(institute_id, case_name, variant_id):
                 institute_obj, case_obj, user_obj, link, variant_obj, new_dismiss
             )
             flash(
-                "Reset variant dismissal: {}".format(
-                    variant_obj.get("dismiss_variant")
-                ),
+                "Reset variant dismissal: {}".format(variant_obj.get("dismiss_variant")),
                 "info",
             )
         else:
             LOG.debug(
-                "DO NOT reset variant dismissal: {}".format(
-                    ",".join(variant_dismiss), "info"
-                )
+                "DO NOT reset variant dismissal: {}".format(",".join(variant_dismiss), "info")
             )
 
     mosaic_tags = request.form.getlist("mosaic_tags")
     if mosaic_tags:
-        store.update_mosaic_tags(
-            institute_obj, case_obj, user_obj, link, variant_obj, mosaic_tags
-        )
+        store.update_mosaic_tags(institute_obj, case_obj, user_obj, link, variant_obj, mosaic_tags)
         flash("Added mosaic tags: {}".format(mosaic_tags), "info")
 
     variant_mosaic = variant_obj.get("mosaic_tags")
@@ -276,9 +246,7 @@ def acmg():
     return jsonify(dict(classification=classification))
 
 
-@variant_bp.route(
-    "/<institute_id>/<case_name>/<variant_id>/clinvar", methods=["POST", "GET"]
-)
+@variant_bp.route("/<institute_id>/<case_name>/<variant_id>/clinvar", methods=["POST", "GET"])
 @templated("variant/clinvar.html")
 def clinvar(institute_id, case_name, variant_id):
     """Build a clinVar submission form for a variant."""
@@ -309,9 +277,7 @@ def clinvar(institute_id, case_name, variant_id):
                     form_dict["@".join(["condition_id_value", variant_id])] = ";".join(
                         cond_values
                     )  # Flattened list
-                elif key.startswith(
-                    "clin_features@"
-                ):  # Filling in 'clin_features' in casedata
+                elif key.startswith("clin_features@"):  # Filling in 'clin_features' in casedata
                     form_dict["@".join(["clin_features", variant_id])] = ";".join(
                         cond_values
                     )  # Flattened list
@@ -325,12 +291,10 @@ def clinvar(institute_id, case_name, variant_id):
     # Add submission data to an open clinvar submission object,
     # or create a new if no open submission is found in database
     open_submission = store.get_open_clinvar_submission(institute_id)
-    updated_submission = store.add_to_submission(
-        open_submission["_id"], submission_objects
-    )
+    updated_submission = store.add_to_submission(open_submission["_id"], submission_objects)
 
     # Redirect to clinvar submissions handling page, and pass it the updated_submission_object
-    return redirect(url_for("cases.clinvar_submissions", institute_id=institute_id))
+    return redirect(url_for("overview.clinvar_submissions", institute_id=institute_id))
 
 
 @variant_bp.route(

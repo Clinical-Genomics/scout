@@ -13,9 +13,7 @@ LOG = logging.getLogger(__name__)
 @click.option("-i", "--institute", help="institute id of related cases")
 @click.option("--cancer", is_flag=True, help="Upload clinical cancer variants")
 @click.option("--cancer-research", is_flag=True, help="Upload research cancer variants")
-@click.option(
-    "--cancer-sv", is_flag=True, help="Upload clinical cancer structural variants"
-)
+@click.option("--cancer-sv", is_flag=True, help="Upload clinical cancer structural variants")
 @click.option(
     "--cancer-sv-research",
     is_flag=True,
@@ -29,12 +27,8 @@ LOG = logging.getLogger(__name__)
 @click.option("--chrom", help="If region, specify the chromosome")
 @click.option("--start", type=int, help="If region, specify the start")
 @click.option("--end", type=int, help="If region, specify the end")
-@click.option(
-    "--hgnc-id", type=int, help="If all variants from a gene, specify the gene id"
-)
-@click.option(
-    "--hgnc-symbol", help="If all variants from a gene, specify the gene symbol"
-)
+@click.option("--hgnc-id", type=int, help="If all variants from a gene, specify the gene id")
+@click.option("--hgnc-symbol", help="If all variants from a gene, specify the gene symbol")
 @click.option(
     "--rank-treshold",
     default=5,
@@ -71,8 +65,8 @@ def variants(
 ):
     """Upload variants to a case
 
-        Note that the files has to be linked with the case,
-        if they are not use 'scout update case'.
+    Note that the files has to be linked with the case,
+    if they are not use 'scout update case'.
     """
     LOG.info("Running scout load variants")
     adapter = store
@@ -119,9 +113,7 @@ def variants(
             raise click.Abort()
 
     old_sanger_variants = adapter.case_sanger_variants(case_obj["_id"])
-    old_evaluated_variants = (
-        None  # acmg, manual rank, cancer tier, dismissed, mosaic, commented
-    )
+    old_evaluated_variants = None  # acmg, manual rank, cancer tier, dismissed, mosaic, commented
 
     if keep_actions:  # collect all variants with user actions for this case
         old_evaluated_variants = list(adapter.evaluated_variants(case_id))
@@ -140,19 +132,13 @@ def variants(
                 LOG.warning("research not requested, use '--force'")
                 raise click.Abort()
 
-        LOG.info(
-            "Delete {0} {1} variants for case {2}".format(
-                variant_type, category, case_id
-            )
-        )
+        LOG.info("Delete {0} {1} variants for case {2}".format(variant_type, category, case_id))
 
         adapter.delete_variants(
             case_id=case_obj["_id"], variant_type=variant_type, category=category
         )
 
-        LOG.info(
-            "Load {0} {1} variants for case {2}".format(variant_type, category, case_id)
-        )
+        LOG.info("Load {0} {1} variants for case {2}".format(variant_type, category, case_id))
 
         try:
             adapter.load_variants(

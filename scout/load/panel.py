@@ -137,9 +137,7 @@ def load_panel_app(adapter, panel_id=None, institute="cust000"):
         parsed_panel["panel_id"] = _panel_id
 
         if len(parsed_panel["genes"]) == 0:
-            LOG.warning(
-                "Panel %s is missing genes. Skipping.", parsed_panel["display_name"]
-            )
+            LOG.warning("Panel %s is missing genes. Skipping.", parsed_panel["display_name"])
             continue
 
         try:
