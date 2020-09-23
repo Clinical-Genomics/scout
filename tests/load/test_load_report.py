@@ -1,5 +1,5 @@
 import pytest
-from scout.load.report import load_report
+from scout.load.report import load_delivery_report, load_cnv_report
 from scout.exceptions import DataNotFoundError, IntegrityError
 
 
@@ -14,9 +14,7 @@ def test_load_delivery_report_bad_case_id(adapter):
 
     ## THEN an exception should be raised
     with pytest.raises(DataNotFoundError):
-        load_report(
-            adapter=adapter, case_id=case_id, report_path=report_path, report_type="delivery_report"
-        )
+        load_delivery_report(adapter=adapter, case_id=case_id, report_path=report_path)
 
 
 def test_load_delivery_report_using_case_id_without_update_fail(adapter, case_obj):
@@ -33,11 +31,8 @@ def test_load_delivery_report_using_case_id_without_update_fail(adapter, case_ob
 
     ## THEN a report should not have been added to that case
     with pytest.raises(IntegrityError):
-        load_report(
-            adapter=adapter,
-            case_id=case_id,
-            report_path=report_path2,
-            report_type="delivery_report",
+        load_delivery_report(
+            adapter=adapter, case_id=case_id, report_path=report_path2,
         )
 
     updated_case_obj = adapter.case_collection.find_one()
@@ -56,12 +51,8 @@ def test_load_delivery_report_using_case_id_with_update_success(adapter, case_ob
     report_path = "report_test_path"
     update = True
 
-    load_report(
-        adapter=adapter,
-        case_id=case_id,
-        report_path=report_path,
-        update=update,
-        report_type="delivery_report",
+    load_delivery_report(
+        adapter=adapter, case_id=case_id, report_path=report_path, update=update,
     )
 
     # THEN a report should have been added to that case
@@ -81,12 +72,8 @@ def test_load_cnv_report_using_case_id_with_update_success(adapter, cancer_case_
     report_path = "report_test_path"
     update = True
 
-    load_report(
-        adapter=adapter,
-        case_id=case_id,
-        report_path=report_path,
-        update=update,
-        report_type="cnv_report",
+    load_cnv_report(
+        adapter=adapter, case_id=case_id, report_path=report_path, update=update,
     )
 
     # THEN a report should have been added to that case
