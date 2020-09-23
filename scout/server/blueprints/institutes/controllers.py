@@ -516,14 +516,16 @@ def hgvs_str(gene_symbols, hgvs_p, hgvs_c):
     return "-"
 
 
-def _subpanel_custom_checkbox_add(model_obj, user_form):
-    """Add a custom checkbox to a phenotype subpanel
+def _subpanel_omim_checkbox_add(model_obj, user_form):
+    """Add an OMIM checkbox to a phenotype subpanel
     Args:
         model_obj(dict): a dictionary coresponding to a phenotype model
         user_form(request.form): a POST request form object
 
     Returns:
         model_obj(dict): an updated phenotype model dictionary to be saved to database
+    """
+    flash(user_form)
     """
     subpanel_id = user_form.get("add_checkbox")
     checkbox_name = user_form.get("custom_checkbox_name")
@@ -539,6 +541,8 @@ def _subpanel_custom_checkbox_add(model_obj, user_form):
     model_obj["subpanels"][subpanel_id]["checkboxes"] = checkboxes
     model_obj["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()
     return model_obj
+    """
+    return
 
 
 def _subpanel_hpo_checkgroup_add(model_obj, user_form):
@@ -652,8 +656,8 @@ def update_phenomodel(model_id, user_form):
     elif user_form.get("add_hpo"):
         if _subpanel_hpo_checkgroup_add(model_obj, user_form) is None:
             return
-    elif user_form.get("add_checkbox"):  # add a custom checkbox to subpanel
-        if _subpanel_custom_checkbox_add(model_obj, user_form) is None:
+    elif user_form.get("add_omim"):  # add a custom checkbox to subpanel
+        if _subpanel_omim_checkbox_add(model_obj, user_form) is None:
             return
 
     elif user_form.get("checkgroup_remove"):

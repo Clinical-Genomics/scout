@@ -9,6 +9,7 @@
 {{ super() }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
 <style>
 .tree {
   list-style-type: none;
@@ -86,29 +87,29 @@
 <!--End of code for adding a subpanel-->
 {% endmacro %}
 
-{% macro custom_checkbox_macro(subpanel_id) %}
-<div class="row d-flex align-items-center">
+{% macro omim_checkbox_macro(subpanel_id) %}
+<div class="row d-flex align-items-center" id="omim_div">
   <div class="form-group col-3">
-    <input type="text" class="form-control" name="custom_checkbox_name" placeholder="Checkbox name">
+    <input type="text" class="form-control" name="omim_checkbox_name" placeholder="Search OMIM term..">
   </div>
   <div class="form-group col-6">
-    <input type="text" class="form-control" name="custom_checkbox_desc" placeholder="Checkbox description">
+    <input type="text" class="form-control" name="omim_checkbox_desc" placeholder="Term description">
   </div>
   <div class="form-group col-3">
-    <button type="submit" name="add_checkbox" value="{{subpanel_id}}" class="btn btn-secondary btn-sm">Add checkbox</button>
+    <button type="submit" name="add_omim" value="{{subpanel_id}}" class="btn btn-secondary btn-sm">Add OMIM term</button>
   </div>
 </div>
 {% endmacro %}
 
 {% macro hpo_checkbox_macro(subpanel_id) %}
-  <div class="row d-flex align-items-center">
+  <div class="row d-flex align-items-center" id="hpo_div">
     <div class="form-group col-6">
       <input type="text" class="typeahead_hpo form-control" name="hpo_term" id="hpo_term" data-provide="typeahead" autocomplete="off" placeholder="Search HPO phenotype..">
     </div>
     <div class="form-group col-3">
-    <input type="checkbox" class="form-check-input" id="includeChildren" name="includeChildren">
-    <label class="form-check-label" for="includeChildren">Include term children</label>
-  </div>
+      <input type="checkbox" class="form-check-input" id="includeChildren" name="includeChildren">
+      <label class="form-check-label" for="includeChildren">Include term children</label>
+    </div>
     <div class="form-group col-3">
       <button type="submit" name="add_hpo" value="{{subpanel_id}}" class="btn btn-secondary btn-sm">Add HPO term</button>
     </div>
@@ -129,13 +130,18 @@
             </div>
             <!--col containing form elements to add HPO terms or custom checkbox fields-->
             <div class="col-9">
+              <div class="form-check form-check-inline">
+                <label for="checkType" class="form-check-label mr-3">Add checkbox</label>
+                <input class="mr-3" id="checkType" type="checkbox" checked data-toggle="toggle" data-size="sm" data-on="HPO" data-off="OMIM" data-onstyle="secondary" data-offstyle="secondary">
+              </div>
+
               <!-- HPO term search -->
               <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
                 {{ hpo_checkbox_macro(subpanel_id) }}
               </form>
               <!-- custom checkbox item-->
               <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
-                {{ custom_checkbox_macro(subpanel_id) }}
+                {{ omim_checkbox_macro(subpanel_id) }}
               </form>
             </div>
           </div>
@@ -252,7 +258,20 @@
 {% block scripts %}
 {{ super() }}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
 <script type="text/javascript">
+  $(function() {
+    $('#checkType').change(function() {
+      if($(this).prop("checked")){
+
+        alert("here");
+      }
+      else{
+          alert("there");
+      }
+    })
+  });
+
   function getHpoTerms(query, process) {
     $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
       process(data)
