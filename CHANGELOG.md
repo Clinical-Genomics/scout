@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 ### Fixed
+- missing `vcf_cancer_sv` and `vcf_cancer_sv_research` to manual.
+
 ### Changed
 - Do not freeze mkdocs-material to version 4.6.1
 - Remove pre-commit dependency
@@ -16,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Editable cases comments
 - Editable variants comments
+- CNV report link in cancer case side navigation
 ### Fixed
 - Empty variant activity panel
 - STRs variants popover
