@@ -173,9 +173,9 @@
                         <div>
                           <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
                             {% if term_obj.children %}
-                              <a href="#" onclick="toggleDiv('{{subpanel_id}}#{{term_id}}')">{{term_id}}</a> <strong>({{term_obj.description}})</strong>
+                              <a href="#" onclick="toggleDiv('{{subpanel_id}}#{{term_id}}')">{{term_obj.custom_name or term_obj.description}}</a> ({{term_id}})
                             {% else %}
-                              {{term_id}} <strong>({{term_obj.description}})</strong>
+                              {{term_obj.custom_name or term_obj.description}} ({{term_id}})
                             {% endif %}
                             <!--button to remove a checkbox group-->
                             <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}#{{subpanel_id}}"><i class="fa fa-times"></i></button>
@@ -184,7 +184,7 @@
                         <div style="margin-left: 35px; display: none;" id="{{subpanel_id}}#{{term_id}}">
                           {% for item in term_obj.children recursive %}
                             <li class="tree">
-                              <label>{{ item.name }}<strong> ({{item.description}})</strong></label>
+                              <label>{{item.description}} ({{item.name}})</label>
                               {%- if item.children -%}
                                 <ul class="tree">{{ loop(item.children) }}</ul>
                               {%- endif %}
@@ -242,19 +242,23 @@
               <!-- loop over the checkbox groups of the model-->
               {% for term_id, term_obj in subpanel_obj.get("checkboxes",{}).items() %}
               <div>
+                {% if term_obj.custom_name %}
+                  <strong>{{term_obj.custom_name}}</strong><br>
+                {% endif %}
                 <input type="checkbox" id="{{term_id}}">
-                <label for="{{term_id}}">{{term_id}} <strong>({{term_obj.description}})</strong></label>
+                <label for="{{term_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label>
               </div>
               <div style="margin-left: 35px;">
                 {% for item in term_obj.children recursive %}
                   <li class="tree">
-                    <input type="checkbox" id="{{term_id}}"> <label>{{ item.name }}<strong> ({{item.description}})</strong></label>
+                    <input type="checkbox" id="{{term_id}}"> <label>{{ item.description }} ({{item.name}})</label>
                     {%- if item.children -%}
                       <ul class="tree">{{ loop(item.children) }}</ul>
                     {%- endif %}
                   </li>
                 {%- endfor %}
               </div>
+              <br>
               {% endfor %}
               <!--  end of loop over the checkbox groups of the model-->
               </div>

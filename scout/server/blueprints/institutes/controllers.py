@@ -537,15 +537,14 @@ def _subpanel_omim_checkbox_add(model_obj, user_form):
         return
 
     checkbox_obj = dict(name=omim_id, description=omim_obj.get("description"), checkbox_type="omim")
-    if user_form.get("omimTermTitle").strip() != "":
+    if user_form.get("omimTermTitle"):
         checkbox_obj["term_title"] = user_form.get("omimTermTitle")
-    if user_form.get("omim_custom_name").strip() != "":
+    if user_form.get("omim_custom_name"):
         checkbox_obj["custom_name"] = user_form.get("omim_custom_name")
     checkboxes[omim_id] = checkbox_obj
     model_obj["subpanels"][subpanel_id]["checkboxes"] = checkboxes
     model_obj["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()
     return model_obj
-    return
 
 
 def _subpanel_hpo_checkgroup_add(model_obj, user_form):
@@ -578,9 +577,9 @@ def _subpanel_hpo_checkgroup_add(model_obj, user_form):
     else:  # include just HPO term as a standalone checkbox:
         tree_dict = dict(name=hpo_obj["_id"], description=hpo_obj["description"])
     tree_dict["checkbox_type"] = "hpo"
-    if user_form.get("hpoTermTitle").strip() != "":
+    if user_form.get("hpoTermTitle"):
         tree_dict["term_title"] = user_form.get("hpoTermTitle")
-    if user_form.get("hpo_custom_name").strip() != "":
+    if user_form.get("hpo_custom_name"):
         tree_dict["custom_name"] = user_form.get("hpo_custom_name")
     checkboxes[hpo_id] = tree_dict
     model_obj["subpanels"][subpanel_id]["checkboxes"] = checkboxes
