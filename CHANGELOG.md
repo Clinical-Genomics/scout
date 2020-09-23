@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 ### Changed
+- Do not freeze mkdocs-material to version 4.6.1
+- Remove pre-commit dependency
 
 
 ## [4.22]
