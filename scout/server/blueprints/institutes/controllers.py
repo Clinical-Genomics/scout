@@ -658,16 +658,16 @@ def update_phenomodel(model_id, user_form):
         # remove panel from subpanels dictionary
         subpanels.pop(user_form.get("subpanel_delete"), None)
         model_obj["subpanels"] = subpanels
-
-    elif user_form.get("add_hpo"):
+    elif user_form.get("add_hpo"):  # add an HPO checkbox to subpanel
         if _subpanel_hpo_checkgroup_add(model_obj, user_form) is None:
             return
-    elif user_form.get("add_omim"):  # add a custom checkbox to subpanel
+    elif user_form.get("add_omim"):  # add an OMIM checkbox to subpanel
         if _subpanel_omim_checkbox_add(model_obj, user_form) is None:
             return
-
-    elif user_form.get("checkgroup_remove"):
+    elif user_form.get("checkgroup_remove"):  # remove a checkbox of any type from subpanel
         if _subpanel_checkgroup_remove(model_obj, user_form) is None:
             return
+    elif user_form.get("model_save"):  # Save model according user preferences in the preview
+        flash("SAVE MODEL!")
 
     store.update_phenomodel(model_id=model_id, model_obj=model_obj)

@@ -225,6 +225,7 @@
 {% endblock %}
 
 {% macro model_preview() %}
+<form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="saveModel">
 <div class="modal fade" id="preview" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -267,11 +268,13 @@
         {% endfor %}<!-- end of loop over the subpanels of the model-->
       </div>
       <div class="modal-footer">
+        <button type="submit" name="model_save" value="{{phenomodel._id}}" class="btn btn-primary">Save</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
+</form>
 {% endmacro %}
 
 

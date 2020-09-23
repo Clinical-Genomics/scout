@@ -406,6 +406,7 @@ def phenomodel(institute_id, model_id):
 
     if request.method == "POST":
         # update an existing phenotype model
+        flash(request.form)
         updated_info = controllers.update_phenomodel(model_id, request.form)
 
     phenomodel_obj = store.phenomodel(model_id)
