@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 ### Fixed
+- missing `vcf_cancer_cv` to manual.
+
 ### Changed
 
 
