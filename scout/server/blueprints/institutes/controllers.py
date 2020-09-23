@@ -525,23 +525,26 @@ def _subpanel_omim_checkbox_add(model_obj, user_form):
     Returns:
         model_obj(dict): an updated phenotype model dictionary to be saved to database
     """
-    flash(user_form)
-    """
-    subpanel_id = user_form.get("add_checkbox")
-    checkbox_name = user_form.get("custom_checkbox_name")
-    checkbox_desc = user_form.get("custom_checkbox_desc")
+    subpanel_id = user_form.get("add_omim")
+    omim_id = user_form.get("omim_term").split(" | ")[0]
+    omim_obj = store.disease_term(omim_id)
+    if omim_obj is None:
+        flash("Please specify a valid OMIM term", "warning")
+        return
     checkboxes = model_obj["subpanels"][subpanel_id].get("checkboxes", {})
-
-    if checkbox_name in checkboxes:
-        flash(f"A checkbox with name '{checkbox_name}' alreasy exists for this panel", "warning")
+    if omim_id in checkboxes:
+        flash(f"Omim term '{omim_id}' already exists in this panel", "warning")
         return
 
-    checkbox_obj = dict(name=checkbox_name, description=checkbox_desc, checkbox_type="custom")
-    checkboxes[checkbox_name] = checkbox_obj
+    checkbox_obj = dict(name=omim_id, description=omim_obj.get("description"), checkbox_type="omim")
+    if user_form.get("omimTermTitle").strip() != "":
+        checkbox_obj["term_title"] = user_form.get("omimTermTitle")
+    if user_form.get("omim_custom_name").strip() != "":
+        checkbox_obj["custom_name"] = user_form.get("omim_custom_name")
+    checkboxes[omim_id] = checkbox_obj
     model_obj["subpanels"][subpanel_id]["checkboxes"] = checkboxes
     model_obj["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()
     return model_obj
-    """
     return
 
 
@@ -575,6 +578,10 @@ def _subpanel_hpo_checkgroup_add(model_obj, user_form):
     else:  # include just HPO term as a standalone checkbox:
         tree_dict = dict(name=hpo_obj["_id"], description=hpo_obj["description"])
     tree_dict["checkbox_type"] = "hpo"
+    if user_form.get("hpoTermTitle").strip() != "":
+        tree_dict["term_title"] = user_form.get("hpoTermTitle")
+    if user_form.get("hpo_custom_name").strip() != "":
+        tree_dict["custom_name"] = user_form.get("hpo_custom_name")
     checkboxes[hpo_id] = tree_dict
     model_obj["subpanels"][subpanel_id]["checkboxes"] = checkboxes
     model_obj["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()

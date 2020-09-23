@@ -88,13 +88,12 @@
 {% endmacro %}
 
 {% macro omim_checkbox_macro(subpanel_id) %}
-  {{ term_title() }}
   <div class="row d-flex align-items-center">
-    <div class="form-group col-3">
-      <input type="text" class="form-control" name="omim_checkbox_name" placeholder="Search OMIM term..">
+    <div class="form-group col-4">
+      <input type="text" class="typeahead_omim form-control" name="omim_term" id="omim_term" data-provide="typeahead" autocomplete="off" placeholder="Search OMIM term..">
     </div>
-    <div class="form-group col-6">
-      <input type="text" class="form-control" name="omim_checkbox_desc" placeholder="Term description">
+    <div class="form-group col-5">
+      <input type="text" class="form-control" name="omim_custom_name" placeholder="Custom name (optional)">
     </div>
     <div class="form-group col-3">
       <button type="submit" name="add_omim" value="{{subpanel_id}}" class="btn btn-secondary btn-sm">Add OMIM term</button>
@@ -103,29 +102,31 @@
 {% endmacro %}
 
 {% macro hpo_checkbox_macro(subpanel_id) %}
-  {{ term_title() }}
   <div class="row d-flex align-items-center">
-    <div class="form-group col-6">
+    <div class="form-group col-4">
       <input type="text" class="typeahead_hpo form-control" name="hpo_term" id="hpo_term" data-provide="typeahead" autocomplete="off" placeholder="Search HPO phenotype..">
     </div>
-    <div class="form-group col-3">
+    <div class="form-group col-4">
+      <input type="text" class="form-control" name="hpo_custom_name" placeholder="Custom name (optional)">
+    </div>
+    <div class="form-group col-2">
       <input type="checkbox" class="form-check-input" id="includeChildren" name="includeChildren">
       <label class="form-check-label" for="includeChildren">Include term children</label>
     </div>
-    <div class="form-group col-3">
+    <div class="form-group col-2">
       <button type="submit" name="add_hpo" value="{{subpanel_id}}" class="btn btn-secondary btn-sm">Add HPO term</button>
     </div>
   </div>
 {% endmacro %}
 
-{% macro term_title() %}
+{% macro term_title(term_type) %}
   <div class="row d-flex align-items-center">
     <div class="form-group col-3">
-      <input type="checkbox" id="hasTitle" name="hasTitle">
-      <label class="form-check-label" for="hasTitle">Has a title</label>
+      <input type="checkbox" id="{{term_type}}HasTitle" name="{{term_type}}HasTitle">
+      <label class="form-check-label" for="{{term_type}}HasTitle">has a title</label>
     </div>
     <div class="form-group col-9">
-      <input type="text" class="form-control" name="termTitle" id="termTitle" placeholder="Term title">
+      <input type="text" class="form-control" name="{{term_type}}TermTitle" id="{{term_type}}TermTitle" placeholder="Term title" disabled>
     </div>
   </div>
 {% endmacro %}
@@ -148,13 +149,14 @@
                 <label for="checkType" class="form-check-label mr-3">Add checkbox:</label>
                 <input class="mr-3" id="checkType" type="checkbox" checked data-toggle="toggle" data-size="sm" data-on="HPO" data-off="OMIM" data-onstyle="secondary" data-offstyle="secondary">
               </div>
-
               <!-- HPO term search -->
               <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="hpoForm">
+                {{ term_title("hpo") }}
                 {{ hpo_checkbox_macro(subpanel_id) }}
               </form>
               <!-- custom checkbox item-->
               <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="omimForm">
+                {{ term_title("omim") }}
                 {{ omim_checkbox_macro(subpanel_id) }}
               </form>
             </div>
@@ -290,15 +292,22 @@
         $('#hpoForm').toggle(500);
       }
     })
-  });
 
-  $(function() {
-    $('#hasTitle').change(function() {
+    $('#hpoHasTitle').change(function() {
       if($(this).prop("checked")){
-        $("#hpoTermTitle").input("disabled", false);
+        $("#hpoTermTitle").removeAttr('disabled');
       }
       else{
-        $("#hpoTermTitle").input("disabled", true);
+        $("#hpoTermTitle").prop("disabled", true);
+      }
+    })
+
+    $('#omimHasTitle').change(function() {
+      if($(this).prop("checked")){
+        $("#omimTermTitle").removeAttr('disabled');
+      }
+      else{
+        $("#omimTermTitle").prop("disabled", true);
       }
     })
   });
@@ -308,6 +317,12 @@
       process(data)
     });
   };
+
+  function getOmimTerms(query, process) {
+    $.get("{{ url_for('cases.omimterms') }}", {query: query}, function(data) {
+      process(data)
+    });
+  }
 
   function toggleDiv(divName){
     var div = document.getElementById(divName);
@@ -321,6 +336,12 @@
   $(".typeahead_hpo").typeahead({
     name: 'hpo_term',
     source: getHpoTerms,
+    minLength: 3,
+  });
+
+  $(".typeahead_omim").typeahead({
+    name: 'omim_term',
+    source: getOmimTerms,
     minLength: 3,
   });
 
