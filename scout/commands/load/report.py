@@ -22,7 +22,10 @@ def delivery_report(case_id, report_path, update):
 
     try:
         load_delivery_report(
-            adapter=adapter, case_id=case_id, report_path=report_path, update=update,
+            adapter=adapter,
+            case_id=case_id,
+            report_path=report_path,
+            update=update,
         )
         LOG.info("saved report to case!")
     except Exception as err:
@@ -42,7 +45,10 @@ def cnv_report(case_id, report_path, update):
 
     try:
         load_cnv_report(
-            adapter=adapter, case_id=case_id, report_path=report_path, update=update,
+            adapter=adapter,
+            case_id=case_id,
+            report_path=report_path,
+            update=update,
         )
         LOG.info("saved report to case!")
     except Exception as err:
