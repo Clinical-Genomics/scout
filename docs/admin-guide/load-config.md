@@ -50,6 +50,7 @@ peddy_check: str(optional)
 peddy_sex: str(optional)
 
 multiqc: str(optional)
+cnv_report: str(optional)
 
 default_gene_panels: list[str](optional)
 gene_panels: list[str](optional)
@@ -102,6 +103,7 @@ Let's go through each field:
 - **peddy_check** path to a [peddy][peddy] ped check file
 - **peddy_sex** path to a [peddy][peddy] ped sex check file
 - **multiqc** path to a [multiqc][multiqc] report with arbitrary information
+- **cnv_report** path to the CNV report file
 - **default_gene_panels** list of default gene panels. Variants from the genes in the gene panels specified will be shown when opening the case in scout
 - **gene_panels** list of gene panels. This will specify what panels the case has been run with
 - **rank model version** which rank model that was used when scoring the variants
