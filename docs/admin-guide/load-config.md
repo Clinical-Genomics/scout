@@ -37,6 +37,8 @@ samples:
 vcf_snv: str(optional)
 vcf_sv: str(optional)
 vcf_cancer: str(optional)
+vcf_cancer_sv: str(optional)
+vcf_cancer_sv_research: str(optional)
 vcf_snv_research: str(optional)
 vcf_sv_research: str(optional)
 vcf_cancer_research: str(optional)
