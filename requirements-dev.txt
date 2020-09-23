@@ -10,7 +10,6 @@ responses
 # utils
 invoke
 black
-pre-commit
 
 # docs
 mkdocs
