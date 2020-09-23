@@ -32,7 +32,9 @@ def test_load_delivery_report_using_case_id_without_update_fail(adapter, case_ob
     ## THEN a report should not have been added to that case
     with pytest.raises(IntegrityError):
         load_delivery_report(
-            adapter=adapter, case_id=case_id, report_path=report_path2,
+            adapter=adapter,
+            case_id=case_id,
+            report_path=report_path2,
         )
 
     updated_case_obj = adapter.case_collection.find_one()
@@ -52,7 +54,10 @@ def test_load_delivery_report_using_case_id_with_update_success(adapter, case_ob
     update = True
 
     load_delivery_report(
-        adapter=adapter, case_id=case_id, report_path=report_path, update=update,
+        adapter=adapter,
+        case_id=case_id,
+        report_path=report_path,
+        update=update,
     )
 
     # THEN a report should have been added to that case
@@ -73,7 +78,10 @@ def test_load_cnv_report_using_case_id_with_update_success(adapter, cancer_case_
     update = True
 
     load_cnv_report(
-        adapter=adapter, case_id=case_id, report_path=report_path, update=update,
+        adapter=adapter,
+        case_id=case_id,
+        report_path=report_path,
+        update=update,
     )
 
     # THEN a report should have been added to that case
