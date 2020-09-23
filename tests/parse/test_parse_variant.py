@@ -84,7 +84,7 @@ def test_parse_cadd(variants, case_obj):
 def test_parse_spliceai(cyvcf2_variant, case_obj):
     """Test parse Splice AI
     Two variant INFO fields are imported:
-        SpliceAI_DS_Max(float)
+        SpliceAI_DS_max(float)
         SpliceAI(str):
             SpliceAIv1.3 variant annotation.
             These include delta scores (DS) and delta positions (DP) for acceptor gain (AG),
@@ -93,7 +93,7 @@ def test_parse_spliceai(cyvcf2_variant, case_obj):
     """
     # GIVEN a variant with expected info fields
     spliceai_ds_max = 0.91
-    cyvcf2_variant.INFO["SpliceAI_DS_Max"] = spliceai_ds_max
+    cyvcf2_variant.INFO["SpliceAI_DS_max"] = spliceai_ds_max
     spliceai = "G|PLK3|0.00|0.00|0.91|0.53|-1|-14|-1|2"
     cyvcf2_variant.INFO["SpliceAI"] = spliceai
 

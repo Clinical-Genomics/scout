@@ -152,9 +152,7 @@ def parse_variant(
 
     ################# Add compound information #################
     compounds = parse_compounds(
-        compound_info=variant.INFO.get("Compounds"),
-        case_id=genmod_key,
-        variant_type=variant_type,
+        compound_info=variant.INFO.get("Compounds"), case_id=genmod_key, variant_type=variant_type,
     )
     if compounds:
         parsed_variant["compounds"] = compounds
@@ -300,7 +298,7 @@ def parse_variant(
     if spidex:
         parsed_variant["spidex"] = float(spidex)
 
-    spliceai_ds_max = variant.INFO.get("SpliceAI_DS_Max")
+    spliceai_ds_max = variant.INFO.get("SpliceAI_DS_max")
     if spliceai_ds_max:
         parsed_variant["spliceai_ds_max"] = float(spliceai_ds_max)
 
