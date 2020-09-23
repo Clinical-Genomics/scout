@@ -184,7 +184,10 @@
         </li>
         <li class="list-group-item">
           SpliceAI DS Max
-          <span class="float-right">{{ variant.spliceai_ds_max }}</span>
+          <span class="float-right control-label" data-toggle="tooltip" data-placement="bottom"
+            title="{{ variant.spliceai or 'No SpliceAI data annotated for this variant.'}}">
+            {{ variant.spliceai_ds_max or "-"}}
+          </span>
         </li>
       </ul>
     </div>
