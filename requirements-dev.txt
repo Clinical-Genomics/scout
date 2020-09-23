@@ -10,8 +10,7 @@ responses
 # utils
 invoke
 black
-pre-commit
 
 # docs
 mkdocs
-mkdocs-material==4.6.1
+mkdocs-material
