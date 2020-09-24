@@ -243,16 +243,16 @@
               <!-- loop over the checkbox groups of the model-->
               {% for term_id, term_obj in subpanel_obj.get("checkboxes",{}).items() %}
               <div>
-                {% if term_obj.custom_name %}
-                  <strong>{{term_obj.custom_name}}</strong><br>
+                {% if term_obj.term_title %}
+                  <strong>{{term_obj.term_title}}</strong><br>
                 {% endif %}
-                <input type="checkbox" id="{{term_id}}">
+                <input type="checkbox" name="cheked_terms" value="{{subpanel_id}}.{{term_id}}.{{term_id}}">
                 <label for="{{term_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label>
               </div>
               <div style="margin-left: 35px;">
                 {% for item in term_obj.children recursive %}
                   <li class="tree">
-                    <input type="checkbox" id="{{term_id}}"> <label>{{ item.description }} ({{item.name}})</label>
+                    <input type="checkbox" name="cheked_terms" value="{{subpanel_id}}.{{term_id}}.{{item.name}}"> <label>{{ item.description }} ({{item.name}})</label>
                     {%- if item.children -%}
                       <ul class="tree">{{ loop(item.children) }}</ul>
                     {%- endif %}
@@ -268,7 +268,7 @@
         {% endfor %}<!-- end of loop over the subpanels of the model-->
       </div>
       <div class="modal-footer">
-        <button type="submit" name="model_save" value="{{phenomodel._id}}" class="btn btn-primary">Save</button>
+        <button type="submit" name="model_save" value="{{phenomodel._id}}" class="btn btn-primary">Save selected terms</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>

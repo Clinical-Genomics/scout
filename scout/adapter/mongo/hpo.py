@@ -194,6 +194,31 @@ class HpoHandler(object):
         model_obj = self.phenomodel_collection.find_one(query)
         return model_obj
 
+    def organize_tree(self, all_terms, root):
+        """Organizes a set of Tree node objects into a tree, according to their ancestors and children
+
+        Args:
+            all_terms(dict): a dictionary with "term_name" as keys and term_dict as values
+            root(anytree.Node)
+        Returns
+            root(anytree.Node): the updated root node of the tree
+        """
+        # Move tree nodes in the right position according to the ontology
+        for key, term in all_terms.items():
+            match_key = key
+            ancestors = term["ancestors"]
+            if len(ancestors) == 0:
+                continue
+            for ancestor in ancestors:
+                match_ancestor = ancestor
+                LOG.info(f"Look for ancestor node:{match_ancestor}")
+                ancestor_node = search.find(root, lambda node: node.name == match_ancestor)
+                if ancestor_node is None:  # It's probably the term on the top
+                    continue
+                node = search.find(root, lambda node: node.name == match_key)
+                node.parent = ancestor_node
+        return root
+
     def build_phenotype_tree(self, hpo_id):
         """Creates an HPO Tree based on one or more given ancestors
         Args:
@@ -218,23 +243,8 @@ class HpoHandler(object):
 
         # compile a list of all HPO term objects to include in the submodel
         _hpo_terms_list([hpo_id])
+        root = self.organize_tree(all_terms, root)
         node_resolver = resolver.Resolver("name")
-
-        # Move tree nodes in the right position according to the ontology
-        for key, term in all_terms.items():
-            match_key = key
-            ancestors = term["ancestors"]
-            if len(ancestors) == 0:
-                continue
-            for ancestor in ancestors:
-                match_ancestor = ancestor
-                LOG.info(f"Look for ancestor node:{match_ancestor}")
-                ancestor_node = search.find(root, lambda node: node.name == match_ancestor)
-                if ancestor_node is None:  # It's probably the term on the top
-                    continue
-                node = search.find(root, lambda node: node.name == match_key)
-                node.parent = ancestor_node
-
         term_node = node_resolver.get(root, hpo_id)
         LOG.info(f"Built ontology for HPO term:{hpo_id}:\n{RenderTree(term_node)}")
         exporter = DictExporter()

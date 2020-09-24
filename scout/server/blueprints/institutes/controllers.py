@@ -14,6 +14,9 @@ from scout.server.extensions import store
 from scout.server.utils import user_institutes
 from scout.utils.md5 import generate_md5_key
 from .forms import CaseFilterForm
+from anytree.importer import DictImporter
+from anytree import RenderTree, Node
+from anytree.exporter import DictExporter
 
 TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
 
@@ -587,7 +590,7 @@ def _subpanel_hpo_checkgroup_add(model_obj, user_form):
     return model_obj
 
 
-def _subpanel_checkgroup_remove(model_obj, user_form):
+def _subpanel_checkgroup_remove_one(model_obj, user_form):
     """Remove a checkbox group from a phenotype subpanel
 
     Args:
@@ -605,6 +608,89 @@ def _subpanel_checkgroup_remove(model_obj, user_form):
         model_obj["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()
     except Exception as ex:
         flash(ex, "danger")
+
+    return model_obj
+
+
+def _update_subpanel(subpanel_obj, supb_changes):
+    """Update the checkboxes of a subpanel according to checkboxes checked in the model preview.
+
+    Args:
+        subpanel_obj(dict): a subpanel object
+        supb_changes(dict): {"parent_term": [list of term ids to keep in the checkboxes nested under parent term]}
+    """
+    checkboxes = subpanel_obj.get("checkboxes", {})
+    new_checkboxes = {}
+    for parent, children_list in supb_changes.items():
+        # create mini tree obj from terms in changes dict
+        root = Node(id="root", name="root", parent=None)
+        all_terms = {}
+        # loop over the terms to keep into the checboxes dict
+        for child in children_list:
+            if (
+                child.startswith("OMIM") and child in checkboxes
+            ):  # OMIM term, has not children, just add it to new checboxes obj
+                new_checkboxes[child] = checkboxes[child]
+                continue
+            term_obj = store.hpo_term(child)  # else it's an HPO term, and might be nested term:
+            if term_obj is None:
+                flash(f"Term {child} could not be find in database")
+                continue
+            all_terms[child] = term_obj
+            node = Node(child, parent=root, description=term_obj["description"])
+            if child in checkboxes:
+                if checkboxes[child].get("custom_name"):  # checkbox has a custom name, save it
+                    node.custom_name = checkboxes[child].get("custom_name")
+                if checkboxes[child].get("term_title"):  # checkbox has a title, save it
+                    node.term_title = checkboxes[child].get("term_title")
+        # Rearrange tree terms according the HPO ontology
+        root = store.organize_tree(all_terms, root)
+        LOG.info(f"Updated HPO tree:{root}:\n{RenderTree(root)}")
+        exporter = DictExporter()
+        for child_node in root.children:
+            # export node to dict
+            node_dict = exporter.export(child_node)
+            new_checkboxes[child_node.name] = node_dict
+
+    subpanel_obj["checkboxes"] = new_checkboxes
+    subpanel_obj["updated"] = datetime.datetime.now()
+    return subpanel_obj
+
+
+def _phenomodel_checkgroups_filter(model_obj, user_form):
+    """Filter the checboxes of one or more subpanels according to preferences specified in the model preview
+
+    Args:
+        model_obj(dict): a dictionary coresponding to a phenotype model
+        user_form(request.form): a POST request form object
+
+    Returns:
+        model_obj(dict): an updated phenotype model dictionary to be saved to database
+    """
+    subpanels = model_obj.get("subpanels") or {}
+    check_list = (
+        user_form.getlist("cheked_terms") or []
+    )  # a list like this: ["subpanelID.rootTerm_checkedTerm", .. ]
+
+    updates_dict = {}
+    # From form values, create a dictionary like this: { "subpanel_id1":{"parent_term1":[children_terms], parent_term2:[children_terms2]}, .. }
+    for checked_value in check_list:
+        splitted_value = checked_value.split(".")
+        panel_key = splitted_value[0]
+        parent_term = splitted_value[1]
+        child_term = splitted_value[2]
+        if panel_key in updates_dict:
+            if parent_term in updates_dict[panel_key]:
+                updates_dict[panel_key][parent_term].append(child_term)
+            else:
+                updates_dict[panel_key][parent_term] = [child_term]
+        else:
+            updates_dict[panel_key] = {parent_term: [child_term]}
+
+    # loop over the subpanels of the model, and check they need to be updated
+    for key, subp in subpanels.items():
+        if key in updates_dict:  # if subpanel requires changes
+            model_obj["subpanels"][key] = _update_subpanel(subp, updates_dict[key])
 
     return model_obj
 
@@ -665,9 +751,10 @@ def update_phenomodel(model_id, user_form):
         if _subpanel_omim_checkbox_add(model_obj, user_form) is None:
             return
     elif user_form.get("checkgroup_remove"):  # remove a checkbox of any type from subpanel
-        if _subpanel_checkgroup_remove(model_obj, user_form) is None:
+        if _subpanel_checkgroup_remove_one(model_obj, user_form) is None:
             return
     elif user_form.get("model_save"):  # Save model according user preferences in the preview
-        flash("SAVE MODEL!")
+        if _phenomodel_checkgroups_filter(model_obj, user_form) is None:
+            return
 
     store.update_phenomodel(model_id=model_id, model_obj=model_obj)
