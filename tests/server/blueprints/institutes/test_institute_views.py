@@ -27,7 +27,7 @@ def test_advanced_phenotypes_POST(app, user_obj, institute_obj):
 def test_remove_phenomodel(app, user_obj, institute_obj):
     """Testing the endpoint to remove an existing phenotype model for an institute"""
 
-    # GIVEN an instutute with a phenotype model
+    # GIVEN an institute with a phenotype model
     store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
     model_obj = store.phenomodel_collection.find_one()
     assert model_obj
@@ -47,6 +47,59 @@ def test_remove_phenomodel(app, user_obj, institute_obj):
         )
         # THEN the phenotype model should be deleted from the database
         assert store.phenomodel_collection.find_one() is None
+
+
+def test_phenomodel_page_GET(app, user_obj, institute_obj):
+    """test the phenomodel page endpoint, GET request"""
+
+    # GIVEN an institute with a phenotype model
+    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
+    model_obj = store.phenomodel_collection.find_one()
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        # THEN the phenomodel endpoint should shown phenotype model info
+        resp = client.get(
+            url_for(
+                "overview.phenomodel",
+                institute_id=institute_obj["internal_id"],
+                model_id=model_obj["_id"],
+            )
+        )
+        assert "Test model" in str(resp.data)
+
+
+def test_phenomodel_page_POST_rename_model(app, user_obj, institute_obj):
+    """Test the phenomodel endpoing, POST request for updating model info"""
+
+    # GIVEN an institute with a phenotype model
+    store.create_phenomodel(institute_obj["internal_id"], "Old model", "Old description")
+    model_obj = store.phenomodel_collection.find_one()
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN the user updates model info using a POST request
+        form_data = dict(
+            update_model="update", model_name="New model", model_desc="New description"
+        )
+        resp = client.post(
+            url_for(
+                "overview.phenomodel",
+                institute_id=institute_obj["internal_id"],
+                model_id=model_obj["_id"],
+            ),
+            data=form_data,
+        )
+    # THEN the model in the database should be updated
+    updated_model = store.phenomodel_collection.find_one()
+    assert updated_model["name"] == "New model"
 
 
 def test_overview(app, user_obj, institute_obj):
