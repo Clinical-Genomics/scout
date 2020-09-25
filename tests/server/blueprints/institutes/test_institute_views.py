@@ -3,6 +3,52 @@ from flask import url_for
 from scout.server.extensions import store
 
 
+def test_advanced_phenotypes_POST(app, user_obj, institute_obj):
+    """Test the view showing the available phenotype models for an institute, after sending POST request with new phenotype model data"""
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        form_data = dict(model_name="A test model", model_desc="Test model description")
+
+        # WHEN user creates a new phenotype model using the phenomodel page
+        resp = client.post(
+            url_for("overview.advanced_phenotypes", institute_id=institute_obj["internal_id"]),
+            data=form_data,
+        )
+        assert resp.status_code == 200
+        # THEN the new model should be visible in the page
+        assert form_data["model_name"] in str(resp.data)
+
+
+def test_remove_phenomodel(app, user_obj, institute_obj):
+    """Testing the endpoint to remove an existing phenotype model for an institute"""
+
+    # GIVEN an instutute with a phenotype model
+    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
+    model_obj = store.phenomodel_collection.find_one()
+    assert model_obj
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        form_data = {"model_id": model_obj["_id"]}
+
+        # WHEN the user removes the model via the remove_phenomodel endpoint
+        resp = client.post(
+            url_for("overview.remove_phenomodel", institute_id=institute_obj["internal_id"]),
+            data=form_data,
+        )
+        # THEN the phenotype model should be deleted from the database
+        assert store.phenomodel_collection.find_one() is None
+
+
 def test_overview(app, user_obj, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
