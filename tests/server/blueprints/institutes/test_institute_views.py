@@ -20,6 +20,12 @@ HPO_TERMS = [
     },
 ]
 
+OMIM_TERM = {
+    "_id": "OMIM:121210",
+    "disease_id": "OMIM:121210",
+    "description": "Febrile seizures familial 1",
+}
+
 TEST_SUBPANEL = dict(
     title="Subp title",
     subtitle="Subp subtitle",
@@ -191,13 +197,8 @@ def test_phenomodel_POST_add_omim_checkbox_to_subpanel(app, user_obj, institute_
     assert model_obj["subpanels"]["subpanel_x"]
 
     # GIVEN that database contains the HPO term to add to the subopanel
-    store.disease_term_collection.insert_one(
-        {
-            "_id": "OMIM:121210",
-            "disease_id": "disease_id",
-            "description": "Febrile seizures familial 1",
-        }
-    )
+    store.disease_term_collection.insert_one(OMIM_TERM)
+
     # GIVEN an initialized app
     # GIVEN a valid user and institute
     with app.test_client() as client:
