@@ -162,6 +162,7 @@ def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
         subpanel_id = list(updated_model["subpanels"].keys())[0]
         assert updated_model["subpanels"][subpanel_id]["title"] == "Subpanel title"
         assert updated_model["subpanels"][subpanel_id]["subtitle"] == "Subpanel subtitle"
+
         # WHEN the user sends a POST request to remove the subpanel
         form_data = dict(subpanel_delete=subpanel_id)
         resp = client.post(
