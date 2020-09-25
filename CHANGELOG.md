@@ -6,9 +6,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Institute-level phenotype models with sub-panels containing HPO and OMIM terms
 ### Fixed
 - missing `vcf_cancer_sv` and `vcf_cancer_sv_research` to manual.
-
 ### Changed
 - Do not freeze mkdocs-material to version 4.6.1
 - Remove pre-commit dependency
