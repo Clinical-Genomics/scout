@@ -19,7 +19,6 @@ HPO_TERMS = [
         "ancestors": ["HP:0025190"],
     },
 ]
-
 OMIM_TERM = {
     "_id": "OMIM:121210",
     "disease_id": "OMIM:121210",

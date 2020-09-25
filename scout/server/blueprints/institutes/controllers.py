@@ -633,6 +633,7 @@ def _update_subpanel(subpanel_obj, supb_changes):
                 new_checkboxes[child] = checkboxes[child]
                 continue
             term_obj = store.hpo_term(child)  # else it's an HPO term, and might have nested term:
+            LOG.error(term_obj)
             if term_obj is None:
                 flash(f"Term {child} could not be find in database")
                 continue
@@ -657,7 +658,7 @@ def _update_subpanel(subpanel_obj, supb_changes):
     return subpanel_obj
 
 
-def _phenomodel_checkgroups_filter(model_obj, user_form):
+def phenomodel_checkgroups_filter(model_obj, user_form):
     """Filter the checboxes of one or more subpanels according to preferences specified in the model preview
 
     Args:
@@ -671,7 +672,6 @@ def _phenomodel_checkgroups_filter(model_obj, user_form):
     check_list = (
         user_form.getlist("cheked_terms") or []
     )  # a list like this: ["subpanelID.rootTerm_checkedTerm", .. ]
-
     updates_dict = {}
     # From form values, create a dictionary like this: { "subpanel_id1":{"parent_term1":[children_terms], parent_term2:[children_terms2]}, .. }
     for checked_value in check_list:
@@ -754,7 +754,7 @@ def update_phenomodel(model_id, user_form):
         if _subpanel_checkgroup_remove_one(model_obj, user_form) is None:
             return
     elif user_form.get("model_save"):  # Save model according user preferences in the preview
-        if _phenomodel_checkgroups_filter(model_obj, user_form) is None:
+        if phenomodel_checkgroups_filter(model_obj, user_form) is None:
             return
 
     store.update_phenomodel(model_id=model_id, model_obj=model_obj)
