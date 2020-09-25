@@ -279,6 +279,37 @@ def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(app, user_obj, institute_o
         assert checkbox["children"] == [nested_hpo_term]
 
 
+def test_phenomodel_POST_remove_subpanel_checkbox(app, user_obj, institute_obj):
+    """Test removing a single checkbox from a phenotype model subpanel"""
+
+    # GIVEN an institute with a phenotype model
+    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
+    model_obj = store.phenomodel_collection.find_one()
+    # containing a subpanel with a checkbox
+    TEST_SUBPANEL["checkboxes"] = {"HP:000001": {"name": "HP:000001"}}
+    model_obj["subpanels"] = {"subpanel_x": TEST_SUBPANEL}
+    store.update_phenomodel(model_obj["_id"], model_obj)
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN the user removes the checkbox using the endpoint, POST request
+        form_data = dict(checkgroup_remove="#".join(["HP:000001", "subpanel_x"]))
+        resp = client.post(
+            url_for(
+                "overview.phenomodel",
+                institute_id=institute_obj["internal_id"],
+                model_id=model_obj["_id"],
+            ),
+            data=form_data,
+        )
+    # THEN the checkbox should be removed from the subpanel
+    updated_model = store.phenomodel_collection.find_one()
+    assert updated_model["subpanels"]["subpanel_x"]["checkboxes"] == {}
+
+
 def test_overview(app, user_obj, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
