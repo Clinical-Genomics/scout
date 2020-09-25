@@ -205,17 +205,14 @@ class HpoHandler(object):
         """
         # Move tree nodes in the right position according to the ontology
         for key, term in all_terms.items():
-            match_key = key
             ancestors = term["ancestors"]
             if len(ancestors) == 0:
                 continue
             for ancestor in ancestors:
-                match_ancestor = ancestor
-                LOG.info(f"Look for ancestor node:{match_ancestor}")
-                ancestor_node = search.find(root, lambda node: node.name == match_ancestor)
+                ancestor_node = search.find(root, lambda node: node.name == ancestor)
                 if ancestor_node is None:  # It's probably the term on the top
                     continue
-                node = search.find(root, lambda node: node.name == match_key)
+                node = search.find(root, lambda node: node.name == key)
                 node.parent = ancestor_node
         return root
 
@@ -224,7 +221,7 @@ class HpoHandler(object):
         Args:
             hpo_id(str): an HPO term
         Returns:
-            hpo_tree(treelib.Tree): a tree of all HPO children of the given term
+            tree_dict(dict): a tree of all HPO children of the given term, as a dictionary
         """
         root = Node(id="root", name="root", parent=None)
         all_terms = {}
@@ -239,12 +236,15 @@ class HpoHandler(object):
                 if term_id not in unique_terms:
                     node = Node(term_id, parent=root, description=term_obj["description"])
                     unique_terms.add(term_id)
+                # recursive loop to collect children, children of children and so on
                 _hpo_terms_list(term_obj["children"])
 
         # compile a list of all HPO term objects to include in the submodel
-        _hpo_terms_list([hpo_id])
+        _hpo_terms_list([hpo_id])  # trigger the recursive loop to collect nested HPO terms
+        # rearrange tree according to the HPO ontology
         root = self.organize_tree(all_terms, root)
         node_resolver = resolver.Resolver("name")
+        # extract the node of interest (hpo_id) fro root, convert it to dict and return it
         term_node = node_resolver.get(root, hpo_id)
         LOG.info(f"Built ontology for HPO term:{hpo_id}:\n{RenderTree(term_node)}")
         exporter = DictExporter()

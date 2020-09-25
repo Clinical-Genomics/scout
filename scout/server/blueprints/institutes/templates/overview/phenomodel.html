@@ -55,11 +55,12 @@
 </div>
 
 <!--Code for adding a subpanel-->
-<div id="accordion">
+<div class="mb-3">
   <div class="d-flex justify-content-center">
     <div class="btn-group btn-group-toggle" data-toggle="buttons" >
       <button class="btn-secondary btn-sm" aria-hidden="true" data-toggle="modal" data-target="#preview">Preview</button>
-      <a class="btn btn-primary btn-sm" data-toggle="collapse" data-parent="#accordion" href="#new_subpanel">Create a new subpanel</a>
+      <button class="btn btn-primary btn-sm" onclick="showDiv('new_subpanel','add_terms')">Create a new subpanel</button>
+      <button class="btn btn-primary btn-sm" onclick="showDiv('add_terms','new_subpanel')" {{ "disabled" if not phenomodel.subpanels }}>Add terms to an existing subpanel</button>
     </div>
   </div>
   <div class="panel-collapse collapse mt-3" id="new_subpanel">
@@ -82,50 +83,76 @@
       </form>
     </div>
   </div>
-</div>
+  <!--div containing form elements to add HPO terms or custom checkbox fields-->
+  <div class="mt-3 ml-3" id="add_terms" style="display:none;">
+    <div class="form-check form-check-inline mb-3">
+      <label for="checkType" class="form-check-label mr-3">Type of term:</label>
+      <input class="mr-3" id="checkType" type="checkbox" checked data-toggle="toggle" data-size="sm" data-on="HPO checkbox" data-off="OMIM checkbox" data-onstyle="secondary" data-offstyle="secondary">
+    </div>
+    <!-- HPO term search -->
+    <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="hpoForm">
+      {{ term_title("hpo") }}
+      {{ hpo_checkbox_macro() }}
+    </form>
+    <!-- custom checkbox item-->
+    <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="omimForm">
+      {{ term_title("omim") }}
+      {{ omim_checkbox_macro() }}
+    </form>
+  </div>
 </div>
 <!--End of code for adding a subpanel-->
 {% endmacro %}
 
-{% macro omim_checkbox_macro(subpanel_id) %}
+{% macro omim_checkbox_macro() %}
   <div class="row d-flex align-items-center">
     <div class="form-group col-4">
       <input type="text" class="typeahead_omim form-control" name="omim_term" id="omim_term" data-provide="typeahead" autocomplete="off" placeholder="Search OMIM term..">
     </div>
     <div class="form-group col-5">
-      <input type="text" class="form-control" name="omim_custom_name" placeholder="Custom name (optional)">
+      <input type="text" class="form-control" name="omim_custom_name" placeholder="Custom checkbox name (optional)">
     </div>
     <div class="form-group col-3">
-      <button type="submit" name="add_omim" value="{{subpanel_id}}" class="btn btn-secondary btn-sm">Add OMIM term</button>
+      <button type="submit" name="add_omim" class="btn btn-secondary btn-sm">Add OMIM term</button>
     </div>
   </div>
 {% endmacro %}
 
-{% macro hpo_checkbox_macro(subpanel_id) %}
+{% macro hpo_checkbox_macro() %}
   <div class="row d-flex align-items-center">
     <div class="form-group col-4">
       <input type="text" class="typeahead_hpo form-control" name="hpo_term" id="hpo_term" data-provide="typeahead" autocomplete="off" placeholder="Search HPO phenotype..">
     </div>
     <div class="form-group col-4">
-      <input type="text" class="form-control" name="hpo_custom_name" placeholder="Custom name (optional)">
+      <input type="text" class="form-control" name="hpo_custom_name" placeholder="Custom name checkbox name (optional)">
     </div>
     <div class="form-group col-2">
       <input type="checkbox" class="form-check-input" id="includeChildren" name="includeChildren">
       <label class="form-check-label" for="includeChildren">Include term children</label>
     </div>
     <div class="form-group col-2">
-      <button type="submit" name="add_hpo" value="{{subpanel_id}}" class="btn btn-secondary btn-sm">Add HPO term</button>
+      <button type="submit" name="add_hpo" class="btn btn-secondary btn-sm">Add HPO term</button>
     </div>
   </div>
 {% endmacro %}
 
 {% macro term_title(term_type) %}
   <div class="row d-flex align-items-center">
-    <div class="form-group col-3">
-      <input type="checkbox" id="{{term_type}}HasTitle" name="{{term_type}}HasTitle">
-      <label class="form-check-label" for="{{term_type}}HasTitle">has a title</label>
+    <div class="form-group col-4">
+    {% if phenomodel.subpanels %}
+      <select name="{{term_type}}_subpanel_id" class="form-control" required>
+        <option value="" disabled selected>Select panel</option>
+        {% for subpanel_id, subpanel in phenomodel.subpanels.items() %}
+        <option value="{{subpanel_id}}">{{subpanel.title}}</option>
+        {% endfor %}
+      <select>
+    {% endif %}
     </div>
-    <div class="form-group col-9">
+    <div class="form-group col-2">
+      <input type="checkbox" id="{{term_type}}HasTitle" name="{{term_type}}HasTitle">
+      <label class="form-check-label" for="{{term_type}}HasTitle">term has a title</label>
+    </div>
+    <div class="form-group col-5">
       <input type="text" class="form-control" name="{{term_type}}TermTitle" id="{{term_type}}TermTitle" placeholder="Term title" disabled>
     </div>
   </div>
@@ -135,33 +162,11 @@
   {%if phenomodel.subpanels %}
     {% for subpanel_id, subpanel in phenomodel.subpanels.items()%}
       <div class="card">
+        <div class="card-header">
+          <strong>{{subpanel.title}}</strong>&nbsp;&nbsp;<text class="text-muted">{{subpanel.subtitle}}</text>
+        </div>
         <div class="card-body">
-          <div class="row">
-            <!--col to display subpanel title and subtitle-->
-            <div class="col-3">
-              <h5 class="card-title">{{subpanel.title}}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">{{subpanel.subtitle}}</h6>
-              <br>
-            </div>
-            <!--col containing form elements to add HPO terms or custom checkbox fields-->
-            <div class="col-9">
-              <div class="form-check form-check-inline mb-3">
-                <label for="checkType" class="form-check-label mr-3">Add checkbox:</label>
-                <input class="mr-3" id="checkType" type="checkbox" checked data-toggle="toggle" data-size="sm" data-on="HPO" data-off="OMIM" data-onstyle="secondary" data-offstyle="secondary">
-              </div>
-              <!-- HPO term search -->
-              <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="hpoForm">
-                {{ term_title("hpo") }}
-                {{ hpo_checkbox_macro(subpanel_id) }}
-              </form>
-              <!-- custom checkbox item-->
-              <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="omimForm">
-                {{ term_title("omim") }}
-                {{ omim_checkbox_macro(subpanel_id) }}
-              </form>
-            </div>
-          </div>
-          <!-- display subpanels checkbox groups-->
+
           <div class="row">
             {% if "checkboxes" in subpanel %}
               <table class="table table-striped">
@@ -227,7 +232,7 @@
 {% macro model_preview() %}
 <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="saveModel">
 <div class="modal fade" id="preview" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-body">
         <h5 class="card-title">{{phenomodel.name}}</h5>
@@ -283,6 +288,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
 <script type="text/javascript">
+
+  function showDiv(showElem, hideElem) {
+    // show div of interest
+    var divElem = document.getElementById(showElem);
+    divElem.style.display = "block";
+    // hide the other div
+    divElem = document.getElementById(hideElem);
+    divElem.style.display = "none";
+  }
 
   $(document).ready(function(){
     $('#omimForm').toggle();

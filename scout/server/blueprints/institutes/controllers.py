@@ -528,7 +528,7 @@ def _subpanel_omim_checkbox_add(model_obj, user_form):
     Returns:
         model_obj(dict): an updated phenotype model dictionary to be saved to database
     """
-    subpanel_id = user_form.get("add_omim")
+    subpanel_id = user_form.get("omim_subpanel_id")
     omim_id = user_form.get("omim_term").split(" | ")[0]
     omim_obj = store.disease_term(omim_id)
     if omim_obj is None:
@@ -565,7 +565,7 @@ def _subpanel_hpo_checkgroup_add(model_obj, user_form):
     if hpo_obj is None:  # user didn't provide a valid HPO term
         flash("Please specify a valid HPO term", "warning")
         return
-    subpanel_id = user_form.get("add_hpo")
+    subpanel_id = user_form.get("hpo_subpanel_id")
     tree_dict = {}
     checkboxes = model_obj["subpanels"][subpanel_id].get("checkboxes", {})
 
@@ -617,12 +617,12 @@ def _update_subpanel(subpanel_obj, supb_changes):
 
     Args:
         subpanel_obj(dict): a subpanel object
-        supb_changes(dict): {"parent_term": [list of term ids to keep in the checkboxes nested under parent term]}
+        supb_changes(dict): terms to keep under a parent term. example: {"HP:0001250": [(HP:0020207, HP:0020215, HP:0001327]}
     """
     checkboxes = subpanel_obj.get("checkboxes", {})
     new_checkboxes = {}
     for parent, children_list in supb_changes.items():
-        # create mini tree obj from terms in changes dict
+        # create mini tree obj from terms in changes dict. Add all nodes at the top level initially
         root = Node(id="root", name="root", parent=None)
         all_terms = {}
         # loop over the terms to keep into the checboxes dict
@@ -632,7 +632,7 @@ def _update_subpanel(subpanel_obj, supb_changes):
             ):  # OMIM term, has not children, just add it to new checboxes obj
                 new_checkboxes[child] = checkboxes[child]
                 continue
-            term_obj = store.hpo_term(child)  # else it's an HPO term, and might be nested term:
+            term_obj = store.hpo_term(child)  # else it's an HPO term, and might have nested term:
             if term_obj is None:
                 flash(f"Term {child} could not be find in database")
                 continue
@@ -643,7 +643,7 @@ def _update_subpanel(subpanel_obj, supb_changes):
                     node.custom_name = checkboxes[child].get("custom_name")
                 if checkboxes[child].get("term_title"):  # checkbox has a title, save it
                     node.term_title = checkboxes[child].get("term_title")
-        # Rearrange tree terms according the HPO ontology
+        # Rearrange tree nodes according the HPO ontology
         root = store.organize_tree(all_terms, root)
         LOG.info(f"Updated HPO tree:{root}:\n{RenderTree(root)}")
         exporter = DictExporter()
@@ -690,7 +690,7 @@ def _phenomodel_checkgroups_filter(model_obj, user_form):
     # loop over the subpanels of the model, and check they need to be updated
     for key, subp in subpanels.items():
         if key in updates_dict:  # if subpanel requires changes
-            model_obj["subpanels"][key] = _update_subpanel(subp, updates_dict[key])
+            model_obj["subpanels"][key] = _update_subpanel(subp, updates_dict[key])  # update it
 
     return model_obj
 
@@ -744,10 +744,10 @@ def update_phenomodel(model_id, user_form):
         # remove panel from subpanels dictionary
         subpanels.pop(user_form.get("subpanel_delete"), None)
         model_obj["subpanels"] = subpanels
-    elif user_form.get("add_hpo"):  # add an HPO checkbox to subpanel
+    elif "add_hpo" in user_form:  # add an HPO checkbox to subpanel
         if _subpanel_hpo_checkgroup_add(model_obj, user_form) is None:
             return
-    elif user_form.get("add_omim"):  # add an OMIM checkbox to subpanel
+    elif "add_omim" in user_form:  # add an OMIM checkbox to subpanel
         if _subpanel_omim_checkbox_add(model_obj, user_form) is None:
             return
     elif user_form.get("checkgroup_remove"):  # remove a checkbox of any type from subpanel
