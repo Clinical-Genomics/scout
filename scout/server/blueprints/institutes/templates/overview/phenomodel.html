@@ -315,7 +315,7 @@
     else{
       $("#hpoTermTitle").prop("disabled", true);
     }
-  })
+  });
 
   $('#omimHasTitle').change(function() {
     if($(this).prop("checked")){
@@ -324,13 +324,13 @@
     else{
       $("#omimTermTitle").prop("disabled", true);
     }
-  })
+  });
 
   function getHpoTerms(query, process) {
     $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
       process(data)
     });
-  };
+  }
 
   function getOmimTerms(query, process) {
     $.get("{{ url_for('cases.omimterms') }}", {query: query}, function(data) {
