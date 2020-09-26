@@ -394,6 +394,14 @@ def remove_phenomodel():
     return redirect(request.referrer)
 
 
+@blueprint.route("/<institute_id>/phenomodel/<model_id>/edit_subpanel", methods=["POST"])
+def checkbox_edit():
+    """Add or delete a single checkbox in a phenotyoe subpanel"""
+
+    controllers.edit_subpanel_checkbox(model_id, request.form)
+    return redirect(url_for(".phenomodel", institute_id=institute_id, model_id=model_id))
+
+
 @blueprint.route("/<institute_id>/phenomodel/<model_id>", methods=["GET", "POST"])
 @templated("overview/phenomodel.html")
 def phenomodel(institute_id, model_id):
@@ -406,7 +414,7 @@ def phenomodel(institute_id, model_id):
 
     if request.method == "POST":
         # update an existing phenotype model
-        updated_info = controllers.update_phenomodel(model_id, request.form)
+        controllers.update_phenomodel(model_id, request.form)
 
     phenomodel_obj = store.phenomodel(model_id)
     if phenomodel_obj is None:

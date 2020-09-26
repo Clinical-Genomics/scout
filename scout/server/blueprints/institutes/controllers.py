@@ -618,6 +618,9 @@ def _update_subpanel(subpanel_obj, supb_changes):
     Args:
         subpanel_obj(dict): a subpanel object
         supb_changes(dict): terms to keep under a parent term. example: {"HP:0001250": [(HP:0020207, HP:0020215, HP:0001327]}
+
+    Returns:
+        subpanel_obj(dict): an updated subpanel object
     """
     checkboxes = subpanel_obj.get("checkboxes", {})
     new_checkboxes = {}
@@ -627,23 +630,27 @@ def _update_subpanel(subpanel_obj, supb_changes):
         all_terms = {}
         # loop over the terms to keep into the checboxes dict
         for child in children_list:
-            if (
-                child.startswith("OMIM") and child in checkboxes
-            ):  # OMIM term, has not children, just add it to new checboxes obj
+            if child.startswith("OMIM"):
                 new_checkboxes[child] = checkboxes[child]
                 continue
+            custom_name = None
+            term_title = None
+            if child in checkboxes:
+                custom_name = checkboxes[child].get("custom_name")
+                term_title = checkboxes[child].get("term_title")
             term_obj = store.hpo_term(child)  # else it's an HPO term, and might have nested term:
-            LOG.error(term_obj)
-            if term_obj is None:
+            node = None
+            try:
+                node = Node(child, parent=root, description=term_obj["description"])
+            except Exception as ex:
                 flash(f"Term {child} could not be find in database")
                 continue
             all_terms[child] = term_obj
-            node = Node(child, parent=root, description=term_obj["description"])
-            if child in checkboxes:
-                if checkboxes[child].get("custom_name"):  # checkbox has a custom name, save it
-                    node.custom_name = checkboxes[child].get("custom_name")
-                if checkboxes[child].get("term_title"):  # checkbox has a title, save it
-                    node.term_title = checkboxes[child].get("term_title")
+            if custom_name:
+                node.custom_name = custom_name
+            if term_title:
+                node.term_title = term_title
+
         # Rearrange tree nodes according the HPO ontology
         root = store.organize_tree(all_terms, root)
         LOG.info(f"Updated HPO tree:{root}:\n{RenderTree(root)}")
@@ -721,14 +728,33 @@ def _add_subpanel(model_id, model_obj, user_form):
     return model_obj
 
 
+def edit_subpanel_checkbox(model_id, user_form):
+    """Update checkboxes from one or more panels according to the user form
+    Args:
+        model_id(ObjectId): document ID of the model to be updated
+        user_form(request.form): a POST request form object
+    """
+    model_obj = store.phenomodel(model_id)
+    if model_obj is None:
+        return
+    if "add_hpo" in user_form:  # add an HPO checkbox to subpanel
+        if _subpanel_hpo_checkgroup_add(model_obj, user_form) is None:
+            return
+    if "add_omim" in user_form:  # add an OMIM checkbox to subpanel
+        if _subpanel_omim_checkbox_add(model_obj, user_form) is None:
+            return
+    if user_form.get("checkgroup_remove"):  # remove a checkbox of any type from subpanel
+        if _subpanel_checkgroup_remove_one(model_obj, user_form) is None:
+            return
+    store.update_phenomodel(model_id=model_id, model_obj=model_obj)
+
+
 def update_phenomodel(model_id, user_form):
-    """Update a phenotype model accrofing to the user form
+    """Update a phenotype model according to the user form
 
     Args:
         model_id(ObjectId): document ID of the model to be updated
         user_form(request.form): a POST request form object
-    Returns:
-        updated_model(dict): An updated phenotype model dictionary
     """
     model_obj = store.phenomodel(model_id)
     if model_obj is None:
@@ -736,25 +762,15 @@ def update_phenomodel(model_id, user_form):
     if user_form.get("update_model"):  # update either model name of description
         model_obj["name"] = user_form.get("model_name")
         model_obj["description"] = user_form.get("model_desc")
-    elif user_form.get("add_subpanel"):  # Add a new phenotype submodel
+    if user_form.get("add_subpanel"):  # Add a new phenotype submodel
         if _add_subpanel(model_id, model_obj, user_form) is None:
             return
-    elif user_form.get("subpanel_delete"):  # Remove a phenotype submodel from phenomodel
+    if user_form.get("subpanel_delete"):  # Remove a phenotype submodel from phenomodel
         subpanels = model_obj["subpanels"]
         # remove panel from subpanels dictionary
         subpanels.pop(user_form.get("subpanel_delete"), None)
         model_obj["subpanels"] = subpanels
-    elif "add_hpo" in user_form:  # add an HPO checkbox to subpanel
-        if _subpanel_hpo_checkgroup_add(model_obj, user_form) is None:
-            return
-    elif "add_omim" in user_form:  # add an OMIM checkbox to subpanel
-        if _subpanel_omim_checkbox_add(model_obj, user_form) is None:
-            return
-    elif user_form.get("checkgroup_remove"):  # remove a checkbox of any type from subpanel
-        if _subpanel_checkgroup_remove_one(model_obj, user_form) is None:
-            return
-    elif user_form.get("model_save"):  # Save model according user preferences in the preview
+    if user_form.get("model_save"):  # Save model according user preferences in the preview
         if phenomodel_checkgroups_filter(model_obj, user_form) is None:
             return
-
     store.update_phenomodel(model_id=model_id, model_obj=model_obj)
