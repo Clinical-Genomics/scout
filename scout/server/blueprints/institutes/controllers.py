@@ -738,15 +738,14 @@ def edit_subpanel_checkbox(model_id, user_form):
     if model_obj is None:
         return
     if "add_hpo" in user_form:  # add an HPO checkbox to subpanel
-        if _subpanel_hpo_checkgroup_add(model_obj, user_form) is None:
-            return
+        model_obj = _subpanel_hpo_checkgroup_add(model_obj, user_form)
     if "add_omim" in user_form:  # add an OMIM checkbox to subpanel
-        if _subpanel_omim_checkbox_add(model_obj, user_form) is None:
-            return
+        model_obj = _subpanel_omim_checkbox_add(model_obj, user_form)
     if user_form.get("checkgroup_remove"):  # remove a checkbox of any type from subpanel
-        if _subpanel_checkgroup_remove_one(model_obj, user_form) is None:
-            return
-    store.update_phenomodel(model_id=model_id, model_obj=model_obj)
+        model_obj = _subpanel_checkgroup_remove_one(model_obj, user_form)
+
+    if model_obj:
+        store.update_phenomodel(model_id=model_id, model_obj=model_obj)
 
 
 def update_phenomodel(model_id, user_form):
@@ -762,15 +761,15 @@ def update_phenomodel(model_id, user_form):
     if user_form.get("update_model"):  # update either model name of description
         model_obj["name"] = user_form.get("model_name")
         model_obj["description"] = user_form.get("model_desc")
-    if user_form.get("add_subpanel"):  # Add a new phenotype submodel
-        if _add_subpanel(model_id, model_obj, user_form) is None:
-            return
     if user_form.get("subpanel_delete"):  # Remove a phenotype submodel from phenomodel
         subpanels = model_obj["subpanels"]
         # remove panel from subpanels dictionary
         subpanels.pop(user_form.get("subpanel_delete"), None)
         model_obj["subpanels"] = subpanels
+    if user_form.get("add_subpanel"):  # Add a new phenotype submodel
+        model_obj = _add_subpanel(model_id, model_obj, user_form)
     if user_form.get("model_save"):  # Save model according user preferences in the preview
-        if phenomodel_checkgroups_filter(model_obj, user_form) is None:
-            return
-    store.update_phenomodel(model_id=model_id, model_obj=model_obj)
+        model_obj = phenomodel_checkgroups_filter(model_obj, user_form)
+
+    if model_obj:
+        store.update_phenomodel(model_id=model_id, model_obj=model_obj)
