@@ -395,9 +395,8 @@ def remove_phenomodel():
 
 
 @blueprint.route("/<institute_id>/phenomodel/<model_id>/edit_subpanel", methods=["POST"])
-def checkbox_edit():
+def checkbox_edit(institute_id, model_id):
     """Add or delete a single checkbox in a phenotyoe subpanel"""
-
     controllers.edit_subpanel_checkbox(model_id, request.form)
     return redirect(url_for(".phenomodel", institute_id=institute_id, model_id=model_id))
 

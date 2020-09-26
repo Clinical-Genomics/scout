@@ -214,7 +214,7 @@ def test_phenomodel_POST_add_omim_checkbox_to_subpanel(app, user_obj, institute_
         )
         resp = client.post(
             url_for(
-                "overview.phenomodel",
+                "overview.checkbox_edit",
                 institute_id=institute_obj["internal_id"],
                 model_id=model_obj["_id"],
             ),
@@ -260,7 +260,7 @@ def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(app, user_obj, institute_o
         )
         resp = client.post(
             url_for(
-                "overview.phenomodel",
+                "overview.checkbox_edit",
                 institute_id=institute_obj["internal_id"],
                 model_id=model_obj["_id"],
             ),
@@ -299,7 +299,7 @@ def test_phenomodel_POST_remove_subpanel_checkbox(app, user_obj, institute_obj):
         form_data = dict(checkgroup_remove="#".join(["HP:000001", "subpanel_x"]))
         resp = client.post(
             url_for(
-                "overview.phenomodel",
+                "overview.checkbox_edit",
                 institute_id=institute_obj["internal_id"],
                 model_id=model_obj["_id"],
             ),
