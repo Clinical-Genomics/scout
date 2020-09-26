@@ -209,10 +209,10 @@ class HpoHandler(object):
             if len(ancestors) == 0:
                 continue
             for ancestor in ancestors:
-                ancestor_node = search.find(root, lambda node: node.name == ancestor)
+                ancestor_node = search.find_by_attr(root, ancestor)
                 if ancestor_node is None:  # It's probably the term on the top
                     continue
-                node = search.find(root, lambda node: node.name == key)
+                node = search.find_by_attr(root, key)
                 node.parent = ancestor_node
         return root
 
