@@ -61,6 +61,7 @@ def parse_case_data(
     peddy_check=None,
     delivery_report=None,
     multiqc=None,
+    cnv_report=None,
 ):
     """Parse all data necessary for loading a case into scout
 
@@ -80,6 +81,7 @@ def parse_case_data(
         smn_tsv(str): Path to an SMN tsv file
         peddy_ped(str): Path to a peddy ped
         multiqc(str): Path to dir with multiqc information
+        cnv_report: Path to pdf file with CNV report
 
     Returns:
         config_data(dict): Holds all the necessary information for loading
@@ -139,6 +141,8 @@ def parse_case_data(
     config_data["delivery_report"] = (
         delivery_report if delivery_report else config_data.get("delivery_report")
     )
+
+    config_data["cnv_report"] = cnv_report if cnv_report else config_data.get("cnv_report")
 
     config_data["rank_model_version"] = str(config_data.get("rank_model_version", ""))
     config_data["rank_score_threshold"] = config_data.get("rank_score_threshold", 0)
@@ -501,6 +505,7 @@ def parse_case(config):
         "peddy_sex": config.get("peddy_sex"),
         "peddy_check": config.get("peddy_check"),
         "delivery_report": config.get("delivery_report"),
+        "cnv_report": config.get("cnv_report"),
         "multiqc": config.get("multiqc"),
         "track": config.get("track", "rare"),
         "chromograph_image_files": config.get("chromograph_image_files"),

@@ -170,7 +170,7 @@ def new_panel(
         panel_id = store.add_gene_panel(panel_data)
 
     except Exception as err:
-        log.error("An error occurred while adding the gene panel {}".format(err))
+        flash(str(err), "danger")
 
     return panel_id
 
