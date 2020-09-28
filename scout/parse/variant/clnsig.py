@@ -34,7 +34,8 @@ def parse_clnsig(variant, transcripts=None):
             clnsig = set()
             for transcript in transcripts:
                 for annotation in transcript.get("clnsig", []):
-                    clnsig.add(annotation)
+                    for anno in annotation.split("/"):
+                        clnsig.add(anno.lstrip("_"))
             for annotation in clnsig:
                 clnsig_accessions.append({"value": annotation})
 
