@@ -197,5 +197,5 @@ def count_cursor(cursor):
     # Replaces depricated call to Pymongo.cursor.count()
     # Clone cursor to not interfer with other queries
     new_cursor = cursor.clone()  # Clone cursor, otherwise original will move
-    new_cursor.limit(0) # no limit
+    new_cursor.limit(0)  # no limit
     return sum(1 for i in new_cursor)
