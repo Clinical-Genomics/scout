@@ -154,7 +154,6 @@ def build_panel(panel_info, adapter):
     panel_obj["description"] = panel_info.get("description")
 
     gene_objs = []
-    fail = False
     errors = []
     for gene_info in panel_info.get("genes", []):
         try:
