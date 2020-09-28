@@ -174,6 +174,7 @@ def gene_variants(institute_id):
     # populate form, conditional on request method
     if request.method == "POST":
         form = GeneVariantFiltersForm(request.form)
+        flash(request.form)
     else:
         form = GeneVariantFiltersForm(request.args)
 
@@ -217,6 +218,12 @@ def gene_variants(institute_id):
                 "Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)),
                 "warning",
             )
+
+        if hgnc_symbols == []:
+            # If there are not genes to search, return to previous page with a warning
+            flash("No valid gene provided for variant search.", "warning")
+            return redirect(request.referrer)
+
         form.hgnc_symbols.data = hgnc_symbols
 
         LOG.debug("query {}".format(form.data))
