@@ -162,7 +162,7 @@ def build_panel(panel_info, adapter):
             gene_objs.append(gene_obj)
         except IntegrityError as err:
             LOG.warning(err)
-            errors.append(f"{gene_info.get('hgnc_symbol')} ({gene_info.get('hgnc_symbol')})")
+            errors.append(f"{gene_info.get('hgnc_symbol')} ({gene_info.get('hgnc_id')})")
     if errors:
         raise IntegrityError(
             f"The following genes: {', '.join(errors)} were not found in Scout database."
