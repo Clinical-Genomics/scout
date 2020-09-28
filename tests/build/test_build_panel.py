@@ -121,7 +121,7 @@ def test_build_panel_non_existing_insitute(institute_database, test_gene):
         panel_obj = build_panel(panel_info, adapter)
 
 
-def test_build_panel_gene_not_found(institute_database, institute_obj):
+def test_build_panel_non_existing_gene(institute_database, institute_obj):
     """Test creating a panel by proving one gene that is not in database"""
 
     ### GIVEN a adapter with a gene an institute and no genes
