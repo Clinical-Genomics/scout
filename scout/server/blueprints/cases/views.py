@@ -826,6 +826,17 @@ def delivery_report(institute_id, case_name):
     return send_from_directory(out_dir, filename)
 
 
+@cases_bp.route("/<institute_id>/<case_name>/cnv-report")
+def cnv_report(institute_id, case_name):
+    """Display CNV report."""
+    data = controllers.multiqc(store, institute_id, case_name)
+    if data["case"].get("cnv_report") is None:
+        return abort(404)
+    out_dir = os.path.abspath(os.path.dirname(data["case"]["cnv_report"]))
+    filename = os.path.basename(data["case"]["cnv_report"])
+    return send_from_directory(out_dir, filename)
+
+
 @cases_bp.route("/<institute_id>/<case_name>/share", methods=["POST"])
 def share(institute_id, case_name):
     """Share a case with a different institute."""
