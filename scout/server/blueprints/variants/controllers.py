@@ -95,7 +95,12 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
 
         variants.append(
             parse_variant(
-                store, institute_obj, case_obj, variant_obj, update=True, genome_build=genome_build,
+                store,
+                institute_obj,
+                case_obj,
+                variant_obj,
+                update=True,
+                genome_build=genome_build,
             )
         )
 
@@ -270,12 +275,14 @@ def parse_variant(
             if not gene_obj["hgnc_id"]:
                 continue
             # Else we collect the gene object and check the id
-            if gene_obj.get("hgnc_symbol") is None:
+            if gene_obj.get("hgnc_symbol") is None or gene_obj.get("phenotypes") is None:
                 hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
                 if not hgnc_gene:
                     continue
                 has_changed = True
                 gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
+                # phenotypes may not exist for the hgnc_gene either, but try
+                gene_obj["phenotypes"] = hgnc_gene.get("phenotypes")
 
     # We update the variant if some information was missing from loading
     # Or if symbold in reference genes have changed
@@ -283,7 +290,10 @@ def parse_variant(
         variant_obj = store.update_variant(variant_obj)
 
     variant_obj["comments"] = store.events(
-        institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True,
+        institute_obj,
+        case=case_obj,
+        variant_id=variant_obj["variant_id"],
+        comments=True,
     )
 
     if variant_genes:
@@ -309,15 +319,15 @@ def parse_variant(
 
 
 def download_variants(store, case_obj, variant_objs):
-    """ Download filtered variants for a case to an excel file
+    """Download filtered variants for a case to an excel file
 
-        Args:
-            store(adapter.MongoAdapter)
-            case_obj(dict)
-            variant_objs(PyMongo cursor)
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(dict)
+        variant_objs(PyMongo cursor)
 
-        Returns:
-            an HTTP response containing a csv file
+    Returns:
+        an HTTP response containing a csv file
     """
     document_header = variants_export_header(case_obj)
     export_lines = []
@@ -337,19 +347,21 @@ def download_variants(store, case_obj, variant_objs):
     )
     # return a csv with the exported variants
     return Response(
-        generate(",".join(document_header), export_lines), mimetype="text/csv", headers=headers,
+        generate(",".join(document_header), export_lines),
+        mimetype="text/csv",
+        headers=headers,
     )
 
 
 def variant_export_lines(store, case_obj, variants_query):
     """Get variants info to be exported to file, one list (line) per variant.
-        Args:
-            store(scout.adapter.MongoAdapter)
-            case_obj(scout.models.Case)
-            variants_query: a list of variant objects, each one is a dictionary
-        Returns:
-            export_variants: a list of strings. Each string  of the list corresponding to the fields
-                             of a variant to be exported to file, separated by comma
+    Args:
+        store(scout.adapter.MongoAdapter)
+        case_obj(scout.models.Case)
+        variants_query: a list of variant objects, each one is a dictionary
+    Returns:
+        export_variants: a list of strings. Each string  of the list corresponding to the fields
+                         of a variant to be exported to file, separated by comma
     """
 
     export_variants = []
@@ -398,11 +410,11 @@ def variant_export_lines(store, case_obj, variants_query):
 def variant_export_genes_info(store, gene_list):
     """Adds gene info to a list of fields corresponding to a variant to be exported.
 
-        Args:
-            gene_list(list) A list of gene objects contained in the variant
+    Args:
+        gene_list(list) A list of gene objects contained in the variant
 
-        Returns:
-            gene_info(list) A list of gene-relates string info
+    Returns:
+        gene_info(list) A list of gene-relates string info
     """
     gene_ids = []
     gene_names = []
@@ -437,11 +449,11 @@ def variant_export_genes_info(store, gene_list):
 
 def variants_export_header(case_obj):
     """Returns a header for the CSV file with the filtered variants to be exported.
-        Args:
-            case_obj(scout.models.Case)
-        Returns:
-            header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
-                    + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
+    Args:
+        case_obj(scout.models.Case)
+    Returns:
+        header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
+                + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
     """
     header = []
     header = header + EXPORT_HEADER
@@ -539,14 +551,14 @@ def variant_count_session(store, institute_id, case_id, var_type, var_category):
 
 def get_clinvar_submission(store, institute_id, case_name, variant_id, submission_id):
     """Collects all variants from the clinvar submission collection with a specific submission_id
-        Args:
-            store(scout.adapter.MongoAdapter)
-            institute_id(str): Institute ID
-            case_name(str): case ID
-            variant_id(str): variant._id
-            submission_id(str): clinvar submission id, i.e. SUB76578
-        Returns:
-            A dictionary with all the data to display the clinvar_update.html template page
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str): Institute ID
+        case_name(str): case ID
+        variant_id(str): variant._id
+        submission_id(str): clinvar submission id, i.e. SUB76578
+    Returns:
+        A dictionary with all the data to display the clinvar_update.html template page
     """
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -581,12 +593,40 @@ def upload_panel(store, institute_id, case_name, stream):
     return hgnc_symbols
 
 
+def gene_panel_choices(institute_obj, case_obj):
+    """Populates the multiselect containing all the gene panels to be used in variants filtering
+    Args:
+        institute_obj(dict): an institute dictionary
+        case_obj(dict): a case dictionary
+
+    Returns:
+        panel_list(list): a list of tuples containing the multiselect panel values/display name
+    """
+    panel_list = []
+    # Add case default panels and the institute-specific panels to the panel select options
+    for panel in case_obj.get("panels", []):
+        panel_option = (panel["panel_name"], panel["display_name"])
+        panel_list.append(panel_option)
+
+    institute_choices = institute_obj.get("gene_panels", {})
+
+    for panel_name, display_name in institute_choices.items():
+        panel_option = (panel_name, display_name)
+        if panel_option not in panel_list:
+            panel_list.append(panel_option)
+
+    # Add HPO panel
+    panel_list.append(("hpo", "HPO"))
+    return panel_list
+
+
 def populate_filters_form(store, institute_obj, case_obj, user_obj, category, request_form):
     # Update filter settings if Clinical Filter was requested
+    form = None
     clinical_filter_panels = []
 
     default_panels = []
-    for panel in case_obj["panels"]:
+    for panel in case_obj.get("panels", []):
         if panel.get("is_default"):
             default_panels.append(panel["panel_name"])
 
@@ -636,8 +676,6 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)
-    # no longer needed?
-    #            form.csrf_token = request.args.get('csrf_token')
     elif bool(request_form.get("save_filter")):
         # The form should be applied and remain set the page after saving
         form = FiltersFormClass(request_form)
@@ -647,20 +685,41 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
     elif bool(request_form.get("load_filter")):
         filter_id = request_form.get("filters")
         filter_obj = store.retrieve_filter(filter_id)
-        form = FiltersFormClass(MultiDict(filter_obj))
+        if filter_obj is not None:
+            form = FiltersFormClass(MultiDict(filter_obj))
+        else:
+            flash("Requested filter was not found", "warning")
     elif bool(request_form.get("delete_filter")):
         filter_id = request_form.get("filters")
         institute_id = institute_obj.get("_id")
         filter_obj = store.delete_filter(filter_id, institute_id, current_user.email)
-        form = FiltersFormClass(request_form)
-    else:
+        if filter_obj is not None:
+            form = FiltersFormClass(request_form)
+        else:
+            flash("Requested filter was not found", "warning")
+    if form is None:
         form = FiltersFormClass(request_form)
 
     return form
 
 
+def case_default_panels(case_obj):
+    """Get a list of case default panels from a case dictionary
+
+    Args:
+        case_obj(dict): a case object
+
+    Returns:
+        case_panels(list): a list of panels (panel_name)
+    """
+    case_panels = [
+        panel["panel_name"] for panel in case_obj.get("panels", []) if panel["is_default"] is True
+    ]
+    return case_panels
+
+
 def populate_sv_filters_form(store, institute_obj, case_obj, category, request_obj):
-    """ Populate a filters form object of the type SvFiltersForm
+    """Populate a filters form object of the type SvFiltersForm
 
     Accepts:
         store(adapter.MongoAdapter)
@@ -678,8 +737,12 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
 
     if request_obj.method == "GET":
         form = SvFiltersForm(request_obj.args)
-        form.variant_type.data = request_obj.args.get("variant_type", "clinical")
-        form.chrom.data = request_obj.args.get("chrom", None)
+        variant_type = request_obj.args.get("variant_type", "clinical")
+        form.variant_type.data = variant_type
+        # set chromosome to all chromosomes
+        form.chrom.data = request_obj.args.get("chrom", "")
+        if variant_type == "clinical":
+            form.gene_panels.data = case_default_panels(case_obj)
 
     else:  # POST
         form = populate_filters_form(
@@ -693,11 +756,7 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     ]
 
     # populate available panel choices
-    available_panels = case_obj.get("panels", []) + [{"panel_name": "hpo", "display_name": "HPO"}]
-
-    panel_choices = [(panel["panel_name"], panel["display_name"]) for panel in available_panels]
-
-    form.gene_panels.choices = panel_choices
+    form.gene_panels.choices = gene_panel_choices(institute_obj, case_obj)
 
     # check if supplied gene symbols exist
     hgnc_symbols = []
@@ -793,13 +852,13 @@ def verified_excel_file(store, institute_list, temp_excel_dir):
 
 
 def activate_case(store, institute_obj, case_obj, current_user):
-    """ Activate case when visited for the first time.
+    """Activate case when visited for the first time.
 
-        Args:
-            store(adapter.MongoAdapter)
-            institute_obj(dict) a scout institutet object
-            case_obj(dict) a scout case object
-            current_user(UserMixin): a scout user
+    Args:
+        store(adapter.MongoAdapter)
+        institute_obj(dict) a scout institutet object
+        case_obj(dict) a scout case object
+        current_user(UserMixin): a scout user
     """
 
     # update status of case if visited for the first time
@@ -808,6 +867,37 @@ def activate_case(store, institute_obj, case_obj, current_user):
 
         user_obj = store.user(current_user.email)
         case_link = url_for(
-            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
+            "cases.case",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
         )
         store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
+
+
+def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_list, dismiss_reasons):
+    """Dismiss a list of variants for a case
+
+    Args:
+        store(adapter.MongoAdapter)
+        institute_obj(dict): an institute dictionary
+        case_obj(dict): a case dictionary
+        link_page(str): "variant.variant" for snvs, "variant.sv_variant" for SVs and so on
+        variants_list(list): list of variant._ids (strings)
+        dismiss_reasons(list): list of dismiss options
+    """
+    user_obj = store.user(current_user.email)
+    for variant_id in variants_list:
+        variant_obj = store.variant(variant_id)
+        if variant_obj is None:
+            continue
+        # create variant link
+        link = link = url_for(
+            link_page,
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["_id"],
+            variant_id=variant_id,
+        )
+        # dismiss variant
+        store.update_dismiss_variant(
+            institute_obj, case_obj, user_obj, link, variant_obj, dismiss_reasons
+        )

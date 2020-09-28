@@ -96,7 +96,9 @@ class PanelHandler:
         alias_genes = self.genes_by_alias()
 
         genes = get_omim_panel_genes(
-            genemap2_lines=genemap2_lines, mim2gene_lines=mim2gene_lines, alias_genes=alias_genes,
+            genemap2_lines=genemap2_lines,
+            mim2gene_lines=mim2gene_lines,
+            alias_genes=alias_genes,
         )
 
         for gene in genes:
@@ -158,8 +160,8 @@ class PanelHandler:
     def add_gene_panel(self, panel_obj):
         """Add a gene panel to the database
 
-            Args:
-                panel_obj(dict)
+        Args:
+            panel_obj(dict)
         """
         panel_name = panel_obj["panel_name"]
         panel_version = panel_obj["version"]
@@ -257,23 +259,23 @@ class PanelHandler:
     def hgnc_to_panels(self, hgnc_id):
         """Get a list of gene panel objects for a hgnc_id
 
-            Args:
-                hgnc_id(int)
+        Args:
+            hgnc_id(int)
 
-            Returns:
-                hgnc_panels(dict): A dictionary with hgnc as keys and lists of
-                                   gene panel objects as values
+        Returns:
+            hgnc_panels(dict): A dictionary with hgnc as keys and lists of
+                               gene panel objects as values
         """
         return self.panel_collection.find({"genes.hgnc_id": hgnc_id})
 
     def gene_to_panels(self, case_obj):
         """Fetch all gene panels and group them by gene
 
-            Args:
-                case_obj(scout.models.Case)
-            Returns:
-                gene_dict(dict): A dictionary with gene as keys and a set of
-                                 panel names as value
+        Args:
+            case_obj(scout.models.Case)
+        Returns:
+            gene_dict(dict): A dictionary with gene as keys and a set of
+                             panel names as value
         """
         LOG.info("Building gene to panels")
         gene_dict = {}
@@ -302,6 +304,29 @@ class PanelHandler:
         LOG.info("Gene to panels done")
 
         return gene_dict
+
+    def panel_to_genes(self, panel_id=None, panel_name=None):
+        """Return all hgnc_ids for a given gene panel
+
+        Args:
+            panel_id(ObjectId): _id of a gene panel (to collect specific version of a panel)
+            panel_name(str): Name of a gene panel (to collect latest version of a panel)
+
+        Returns:
+            gene_list(list): a list of hgnc terms
+
+        """
+        gene_list = []
+        panel_obj = None
+        if panel_id:
+            panel_obj = self.panel(panel_id)
+        elif panel_name:
+            panel_obj = self.gene_panel(panel_name)
+
+        if panel_obj is not None:
+            gene_list = [gene_obj.get("symbol", "") for gene_obj in panel_obj.get("genes", [])]
+
+        return gene_list
 
     def update_panel(self, panel_obj, version=None, date_obj=None, maintainer=None):
         """Replace a existing gene panel with a new one
@@ -336,7 +361,9 @@ class PanelHandler:
         panel_obj["date"] = date
 
         updated_panel = self.panel_collection.find_one_and_replace(
-            {"_id": panel_obj["_id"]}, panel_obj, return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": panel_obj["_id"]},
+            panel_obj,
+            return_document=pymongo.ReturnDocument.AFTER,
         )
 
         return updated_panel
@@ -393,7 +420,9 @@ class PanelHandler:
             del panel_obj["pending"]
 
         updated_panel = self.panel_collection.find_one_and_replace(
-            {"_id": panel_obj["_id"]}, panel_obj, return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": panel_obj["_id"]},
+            panel_obj,
+            return_document=pymongo.ReturnDocument.AFTER,
         )
         return updated_panel
 
@@ -438,7 +467,7 @@ class PanelHandler:
                     gene_obj[field] = info[field]
             new_genes.append(gene_obj)
 
-        for gene in panel_obj["genes"]:
+        for gene in panel_obj.get("genes", []):
             hgnc_id = gene["hgnc_id"]
 
             if hgnc_id not in updates:
@@ -467,7 +496,9 @@ class PanelHandler:
         if new_panel["version"] == panel_obj["version"]:
             # replace panel_obj with new_panel
             result = self.panel_collection.find_one_and_replace(
-                {"_id": panel_obj["_id"]}, new_panel, return_document=pymongo.ReturnDocument.AFTER,
+                {"_id": panel_obj["_id"]},
+                new_panel,
+                return_document=pymongo.ReturnDocument.AFTER,
             )
             inserted_id = result["_id"]
         else:  # create a new version of the same panel

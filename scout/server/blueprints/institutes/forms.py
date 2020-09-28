@@ -2,7 +2,9 @@
 from flask_wtf import FlaskForm
 from wtforms.widgets import TextInput
 from wtforms import (
+    BooleanField,
     IntegerField,
+    SelectField,
     SelectMultipleField,
     SubmitField,
     DecimalField,
@@ -10,7 +12,9 @@ from wtforms import (
     validators,
     Field,
 )
-from scout.constants import PHENOTYPE_GROUPS
+from scout.constants import PHENOTYPE_GROUPS, CASE_SEARCH_TERMS
+
+CASE_SEARCH_KEY = [(value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()]
 
 
 class NonValidatingSelectMultipleField(SelectMultipleField):
@@ -26,7 +30,14 @@ class InstituteForm(FlaskForm):
     hpo_tuples = []
     for key in PHENOTYPE_GROUPS.keys():
         option_name = " ".join(
-            [key, ",", PHENOTYPE_GROUPS[key]["name"], "(", PHENOTYPE_GROUPS[key]["abbr"], ")",]
+            [
+                key,
+                ",",
+                PHENOTYPE_GROUPS[key]["name"],
+                "(",
+                PHENOTYPE_GROUPS[key]["abbr"],
+                ")",
+            ]
         )
         hpo_tuples.append((option_name, option_name))
 
@@ -38,7 +49,8 @@ class InstituteForm(FlaskForm):
         "Sanger recipients", validators=[validators.Optional()]
     )
     coverage_cutoff = IntegerField(
-        "Coverage cutoff", validators=[validators.Optional(), validators.NumberRange(min=1)],
+        "Coverage cutoff",
+        validators=[validators.Optional(), validators.NumberRange(min=1)],
     )
     frequency_cutoff = DecimalField(
         "Frequency cutoff",
@@ -51,11 +63,17 @@ class InstituteForm(FlaskForm):
     pheno_group = TextField("New phenotype group", validators=[validators.Optional()])
     pheno_abbrev = TextField("Abbreviation", validators=[validators.Optional()])
 
+    gene_panels = NonValidatingSelectMultipleField(
+        "Gene panels for variants filtering", validators=[validators.Optional()]
+    )
+
     pheno_groups = NonValidatingSelectMultipleField("Custom phenotype groups", choices=hpo_tuples)
     cohorts = NonValidatingSelectMultipleField(
         "Available patient cohorts", validators=[validators.Optional()]
     )
     institutes = NonValidatingSelectMultipleField("Institutes to share cases with", choices=[])
+    loqusdb_id = TextField("LoqusDB id", validators=[validators.Optional()])
+
     submit_btn = SubmitField("Save settings")
 
 
@@ -87,3 +105,14 @@ class GeneVariantFiltersForm(FlaskForm):
     phenotype_groups = TagListField("Phenotype groups")
     similar_case = TagListField("Phenotypically similar case")
     cohorts = TagListField("Cohorts")
+
+
+class CaseFilterForm(FlaskForm):
+    """Takes care of cases filtering in cases page"""
+
+    search_type = SelectField("Search by", [validators.Optional()], choices=CASE_SEARCH_KEY)
+    search_term = TextField("Search cases")
+    search_limit = IntegerField("Limit", [validators.Optional()], default=100)
+    skip_assigned = BooleanField("Hide assigned")
+    is_research = BooleanField("Research only")
+    search = SubmitField(label="Search")

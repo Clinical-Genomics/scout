@@ -136,7 +136,6 @@ class QueryHandler(object):
         """
         query = query or {}
         mongo_query = {}
-        gene_query = None
         coordinate_query = None
 
         ##### Base query params
@@ -162,12 +161,14 @@ class QueryHandler(object):
 
             # Requests to filter based on gene panels, hgnc_symbols or
             # coordinate ranges must always be honored. They are always added to
-            # query as top level, implicit '$and'. When both hgnc_symbols and a
-            # panel is used, addition of this is delayed until after the rest of
-            # the query content is clear.
+            # query as top level, implicit '$and'. When hgnc_symbols or gene panels
+            # are used, addition of relative gene symbols is delayed until after
+            # the rest of the query content is clear.
 
-            elif criterion in ["hgnc_symbols", "gene_panels"] and gene_query is None:
+            elif criterion in ["hgnc_symbols", "gene_panels"]:
                 gene_query = self.gene_filter(query, mongo_query)
+                if len(gene_query) > 0 or "hpo" in query.get("gene_panels", []):
+                    mongo_query["hgnc_symbols"] = {"$in": gene_query}
 
             elif criterion == "chrom" and query.get("chrom"):  # filter by coordinates
                 coordinate_query = None
@@ -213,13 +214,7 @@ class QueryHandler(object):
             # If there are no primary criteria given, all secondary criteria are added as a
             # top level '$and' to the query.
             if primary_terms is False:
-                if gene_query:
-                    mongo_query["$and"] = [
-                        {"$or": gene_query},
-                        {"$and": secondary_filter},
-                    ]
-                else:
-                    mongo_query["$and"] = secondary_filter
+                mongo_query["$and"] = secondary_filter
 
             # If there is only one primary criterion given without any secondary, it will also be
             # added as a top level '$and'.
@@ -230,34 +225,17 @@ class QueryHandler(object):
                 # add the clnsig query as a major criteria, but only
                 # trust clnsig entries with trusted revstat levels.
                 if query.get("clinsig_confident_always_returned") is True:
-                    if gene_query:
-                        mongo_query["$and"] = [
-                            {"$or": gene_query},
-                            {"$or": [{"$and": secondary_filter}, clinsign_filter]},
-                        ]
-                    else:
-                        mongo_query["$or"] = [
-                            {"$and": secondary_filter},
-                            clinsign_filter,
-                        ]
+                    mongo_query["$or"] = [
+                        {"$and": secondary_filter},
+                        clinsign_filter,
+                    ]
                 else:  # clisig terms are provided but no need for trusted revstat levels
                     secondary_filter.append(clinsign_filter)
-                    if gene_query:
-                        mongo_query["$and"] = [
-                            {"$or": gene_query},
-                            {"$and": secondary_filter},
-                        ]
-                    else:
-                        mongo_query["$and"] = secondary_filter
+                    mongo_query["$and"] = secondary_filter
 
         elif primary_terms is True:  # clisig is provided without secondary terms query
             # use implicit and
             mongo_query["clnsig"] = clinsign_filter["clnsig"]
-            if gene_query:
-                mongo_query["$and"] = [{"$or": gene_query}]
-
-        elif gene_query:  # no primary or secondary filters provided
-            mongo_query["$and"] = [{"$or": gene_query}]
 
         # if chromosome coordinates exist in query, add them as first element of the mongo_query['$and']
         if coordinate_query:
@@ -270,14 +248,14 @@ class QueryHandler(object):
         return mongo_query
 
     def clinsig_query(self, query, mongo_query):
-        """ Add clinsig filter values to the mongo query object
+        """Add clinsig filter values to the mongo query object
 
-            Args:
-                query(dict): a dictionary of query filters specified by the users
-                mongo_query(dict): the query that is going to be submitted to the database
+        Args:
+            query(dict): a dictionary of query filters specified by the users
+            mongo_query(dict): the query that is going to be submitted to the database
 
-            Returns:
-                clinsig_query(dict): a dictionary with clinsig key-values
+        Returns:
+            clinsig_query(dict): a dictionary with clinsig key-values
 
         """
         LOG.debug("clinsig is a query parameter")
@@ -326,7 +304,7 @@ class QueryHandler(object):
         return clnsig_query
 
     def coordinate_filter(self, query, mongo_query):
-        """ Adds genomic coordinated-related filters to the query object
+        """Adds genomic coordinated-related filters to the query object
             This method is called to buid coordinate query for non-sv variants
 
         Args:
@@ -343,7 +321,7 @@ class QueryHandler(object):
         return mongo_query
 
     def sv_coordinate_query(self, query):
-        """ Adds genomic coordinated-related filters to the query object
+        """Adds genomic coordinated-related filters to the query object
             This method is called to buid coordinate query for sv variants
 
         Args:
@@ -376,7 +354,12 @@ class QueryHandler(object):
             position_query = {
                 "$or": [
                     {"end": {"$gte": int(query["start"]), "$lte": int(query["end"])}},  # 1
-                    {"position": {"$lte": int(query["end"]), "$gte": int(query["start"]),}},  # 2
+                    {
+                        "position": {
+                            "$lte": int(query["end"]),
+                            "$gte": int(query["start"]),
+                        }
+                    },  # 2
                     {
                         "$and": [
                             {"position": {"$gte": int(query["start"])}},
@@ -397,41 +380,35 @@ class QueryHandler(object):
         return coordinate_query
 
     def gene_filter(self, query, mongo_query):
-        """ Adds gene-related filters to the query object
+        """Adds gene symbols to the query. Gene symbols query is a list of combined hgnc_symbols and genes included in the given panels
 
         Args:
             query(dict): a dictionary of query filters specified by the users
             mongo_query(dict): the query that is going to be submitted to the database
 
         Returns:
-            mongo_query(dict): returned object contains gene and panel-related filters
+            hgnc_symbols: The genes to filter by
 
         """
         LOG.debug("Adding panel and genes-related parameters to the query")
-        gene_query = []
-        hgnc_symbols = query.get("hgnc_symbols")
-        gene_panels = query.get("gene_panels")
+        hgnc_symbols = set(query.get("hgnc_symbols", []))
 
-        if hgnc_symbols and gene_panels:
-            gene_query.append({"hgnc_symbols": {"$in": hgnc_symbols}})
-            gene_query.append({"panels": {"$in": gene_panels}})
-        elif hgnc_symbols:
-            mongo_query["hgnc_symbols"] = {"$in": hgnc_symbols}
-            LOG.debug("Adding hgnc_symbols: %s to query" % ", ".join(hgnc_symbols))
-        elif gene_panels:  # gene_panels
-            mongo_query["panels"] = {"$in": gene_panels}
+        for panel in query.get("gene_panels", []):
+            if panel == "hpo":
+                continue  # HPO genes are already provided in the eventual hgnc_symbols fields
+            hgnc_symbols.update(self.panel_to_genes(panel_name=panel))
 
-        return gene_query
+        return list(hgnc_symbols)
 
     def secondary_query(self, query, mongo_query, secondary_filter=None):
         """Creates a secondary query object based on secondary parameters specified by user
 
-            Args:
-                query(dict): a dictionary of query filters specified by the users
-                mongo_query(dict): the query that is going to be submitted to the database
+        Args:
+            query(dict): a dictionary of query filters specified by the users
+            mongo_query(dict): the query that is going to be submitted to the database
 
-            Returns:
-                mongo_secondary_query(list): a dictionary with secondary query parameters
+        Returns:
+            mongo_secondary_query(list): a dictionary with secondary query parameters
 
         """
         LOG.debug("Creating a query object with secondary parameters")
@@ -463,7 +440,12 @@ class QueryHandler(object):
             if criterion == "local_obs":
                 local_obs = query.get("local_obs")
                 mongo_secondary_query.append(
-                    {"$or": [{"local_obs_old": None}, {"local_obs_old": {"$lt": local_obs + 1}},]}
+                    {
+                        "$or": [
+                            {"local_obs_old": None},
+                            {"local_obs_old": {"$lt": local_obs + 1}},
+                        ]
+                    }
                 )
 
             if criterion in ["clingen_ngi", "swegen"]:
@@ -557,7 +539,10 @@ class QueryHandler(object):
 
                 if query.get("size_shorter"):
                     size_query = {
-                        "$or": [{"length": {"$lt": int(size)}}, {"length": {"$exists": False}},]
+                        "$or": [
+                            {"length": {"$lt": int(size)}},
+                            {"length": {"$exists": False}},
+                        ]
                     }
                     LOG.debug("Adding size less than, undef inclusive to query.")
 

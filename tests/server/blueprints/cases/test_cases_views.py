@@ -150,6 +150,17 @@ def test_sidebar_macro(app, institute_obj, case_obj):
         assert "Share case" in html
 
 
+def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj):
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WHEN the case sidebar macro is called
+        macro = get_template_attribute("cases/collapsible_actionbar.html", "action_bar")
+        html = macro(institute_obj, cancer_case_obj)
+
+        # It should show the expected items:
+        assert "CNV report" in html
+
+
 def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -217,16 +228,28 @@ def test_institutes(app):
         assert resp.status_code == 200
 
 
-def test_case(app, case_obj, institute_obj):
-    # GIVEN an initialized app
-    # GIVEN a valid user, case and institute
+def test_case_outdated_panel(app, institute_obj, case_obj, dummy_case):
+    """Test case displaying an outdated panel warning badge"""
 
+    # GIVEN an adapter with a case with a gene panel of version 1
+    case_panel = case_obj["panels"][0]
+    assert case_panel["version"] == 1
+
+    # AND an updated version of the same panel in the database
+    updated_panel = {
+        "panel_name": case_panel["panel_name"],
+        "display_name": case_panel["display_name"],
+        "version": 2,
+        "genes": [{"symbol": "POT1", "hgnc_id": 17284}],
+    }
+    store.panel_collection.insert_one(updated_panel)
+
+    # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
 
-        # WHEN accessing the case page
+        # WHEN case page is loaded
         resp = client.get(
             url_for(
                 "cases.case",
@@ -234,9 +257,11 @@ def test_case(app, case_obj, institute_obj):
                 case_name=case_obj["display_name"],
             )
         )
-
-        # THEN it should return a page
+        # THEN it should return a valid page
         assert resp.status_code == 200
+
+        # WITH a tooltip explaining that the gene panel is outdated
+        assert "Panel version used in the analysis (1.0) is outdated." in str(resp.data)
 
 
 def test_case_sma(app, case_obj, institute_obj):
@@ -331,6 +356,52 @@ def test_case_synopsis(app, institute_obj, case_obj):
         )
         # then it should return a redirected page
         assert resp.status_code == 302
+
+
+def test_update_case_comment(app, institute_obj, case_obj, user_obj):
+    """Test the functionality that allows updating of case-specific comments"""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        ## GIVEN a case with a comment
+        store.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link="a link",
+            category="case",
+            verb="comment",
+            subject=case_obj["display_name"],
+            level="specific",
+        )
+        comment = store.event_collection.find_one({"verb": "comment"})
+        assert comment
+
+        # WHEN a user updates the comment via the modal form
+        form_data = {"event_id": comment["_id"], "updatedContent": "an updated comment", "edit": ""}
+        resp = client.post(
+            url_for(
+                "cases.events",
+                institute_id=institute_obj["_id"],
+                case_name=case_obj["display_name"],
+                event_id=comment["_id"],
+            ),
+            data=form_data,
+        )
+        # THEN it should redirect to case page
+        assert resp.status_code == 302
+
+        # The comment should be updated
+        updated_comment = store.event_collection.find_one({"_id": comment["_id"]})
+        assert updated_comment["content"] == "an updated comment"
+
+        # And a comment updated event should have been created in the event collection
+        updated_var_event = store.event_collection.find_one({"verb": "comment_update"})
+        # With the same subject of the comment
+        assert updated_var_event["subject"] == updated_comment["subject"]
 
 
 def test_download_hpo_genes(app, case_obj, institute_obj):
@@ -626,7 +697,8 @@ def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
 
         # AND the case has a delivery report
         store.case_collection.update_one(
-            {"_id": case_obj["_id"]}, {"$set": {"delivery_report": delivery_report_path}},
+            {"_id": case_obj["_id"]},
+            {"$set": {"delivery_report": delivery_report_path}},
         )
 
         # WHEN accessing the delivery report page
@@ -653,7 +725,8 @@ def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
 
         # AND the case has a delivery report
         store.case_collection.update_one(
-            {"_id": case_obj["_id"]}, {"$set": {"delivery_report": delivery_report_path}},
+            {"_id": case_obj["_id"]},
+            {"$set": {"delivery_report": delivery_report_path}},
         )
 
         # WHEN accessing the delivery report page with the format=pdf param

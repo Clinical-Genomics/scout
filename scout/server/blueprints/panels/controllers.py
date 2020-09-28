@@ -32,7 +32,7 @@ def panel(store, panel_obj):
 
 def existing_gene(store, panel_obj, hgnc_id):
     """Check if gene is already added to a panel."""
-    existing_genes = {gene["hgnc_id"]: gene for gene in panel_obj["genes"]}
+    existing_genes = {gene["hgnc_id"]: gene for gene in panel_obj.get("genes", {})}
     return existing_genes.get(hgnc_id)
 
 
@@ -105,7 +105,13 @@ def update_panel(store, panel_name, csv_lines, option):
 
 
 def new_panel(
-    store, institute_id, panel_name, display_name, csv_lines, maintainer=None, description=None,
+    store,
+    institute_id,
+    panel_name,
+    display_name,
+    csv_lines,
+    maintainer=None,
+    description=None,
 ):
     """Create a new gene panel.
 
@@ -164,7 +170,7 @@ def new_panel(
         panel_id = store.add_gene_panel(panel_data)
 
     except Exception as err:
-        log.error("An error occurred while adding the gene panel {}".format(err))
+        flash(str(err), "danger")
 
     return panel_id
 

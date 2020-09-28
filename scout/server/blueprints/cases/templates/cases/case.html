@@ -153,10 +153,10 @@
 {% macro variants_buttons() %}
   <div class="form-group">
     {% if case.vcf_files.vcf_snv %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV and INDELs</a>
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical SNV and INDELs</a>
     {% endif %}
     {% if case.vcf_files.vcf_sv %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical structural variants</a>
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical structural variants</a>
     {% endif %}
     {% if case.vcf_files.vcf_str %}
       <a class="btn btn-outline-dark" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical STR variants</a>
@@ -165,10 +165,10 @@
       <a class="btn btn-outline-dark" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">SMN CN</a>
     {% endif %}
     {% if case.vcf_files.vcf_cancer %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical SNV and INDELs</a>
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical SNV and INDELs</a>
     {% endif %}
     {% if case.vcf_files.vcf_cancer_sv %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">Clinical structural variants</a>
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical structural variants</a>
     {% endif %}
 
   </div>
@@ -411,7 +411,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
 <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
 
 <script>
  $('#panel-table').DataTable({
@@ -462,6 +462,13 @@ $(function () {
       });
 
       $('[data-toggle="tooltip"]').tooltip();
+
+      $('[data-toggle="popover"]').popover({
+        sanitizeFn: function (content) {
+          return DOMPurify.sanitize(content)
+        },
+        container: 'body',
+      });
 
       $('select[multiple]').multiselect({
         buttonWidth: '100%'

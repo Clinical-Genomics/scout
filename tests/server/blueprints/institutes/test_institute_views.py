@@ -19,10 +19,14 @@ def test_overview(app, user_obj, institute_obj):
         assert resp.status_code == 200
 
 
-def test_institute(app, user_obj, institute_obj):
+def test_institute_settings(app, user_obj, institute_obj):
     """Test function that creates institute update form and updates an institute"""
 
-    # insert 2 mock HPO terms in database, for later use
+    # GIVEN a gene panel
+    test_panel = store.panel_collection.find_one()
+    assert test_panel
+
+    # AND 2 mock HPO terms in database
     mock_disease_terms = [
         {"_id": "HP:0001298", "description": "Encephalopathy", "hpo_id": "HP:0001298"},
         {"_id": "HP:0001250", "description": "Seizures", "hpo_id": "HP:0001250"},
@@ -57,6 +61,7 @@ def test_institute(app, user_obj, institute_obj):
                 "HP:0001298 , Encephalopathy ( ENC )",
                 "HP:0001250 , Seizures ( EP )",
             ],
+            "gene_panels": [test_panel["panel_name"]],
         }
 
         # via POST request
@@ -75,6 +80,9 @@ def test_institute(app, user_obj, institute_obj):
         assert updated_institute["cohorts"] == form_data["cohorts"]
         assert updated_institute["collaborators"] == form_data["institutes"]
         assert len(updated_institute["phenotype_groups"]) == 2  # one for each HPO term
+        assert updated_institute["gene_panels"] == {
+            test_panel["panel_name"]: test_panel["display_name"]
+        }
 
 
 def test_cases(app, institute_obj):
@@ -101,7 +109,9 @@ def test_cases(app, institute_obj):
         }
         resp = client.get(
             url_for(
-                "overview.cases", institute_id=institute_obj["internal_id"], params=request_data,
+                "overview.cases",
+                institute_id=institute_obj["internal_id"],
+                params=request_data,
             )
         )
         # response should return a page
@@ -122,11 +132,10 @@ def test_cases(app, institute_obj):
             assert resp.status_code == 200
 
 
-def test_cases_query(app, case_obj, institute_obj):
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
+def test_cases_query_case_name(app, case_obj, institute_obj):
+    """Test cases filtering by case display name"""
 
-    slice_query = case_obj["display_name"]
+    slice_query = f"case:{case_obj['display_name']}"
 
     with app.test_client() as client:
         # GIVEN that the user could be logged in
@@ -135,18 +144,22 @@ def test_cases_query(app, case_obj, institute_obj):
 
         # WHEN accessing the cases page with a query
         resp = client.get(
-            url_for("overview.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
+            url_for(
+                "overview.cases",
+                query=slice_query,
+                institute_id=institute_obj["internal_id"],
+            )
         )
 
-        # THEN it should return a page
+        # THEN it should return a page with the case
         assert resp.status_code == 200
+        assert case_obj["display_name"] in str(resp.data)
 
 
 def test_cases_panel_query(app, case_obj, parsed_panel, institute_obj):
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
+    """Test cases filtering by gene panel"""
 
-    slice_query = parsed_panel["panel_id"]
+    slice_query = f"panel:{parsed_panel['panel_id']}"
 
     with app.test_client() as client:
         # GIVEN that the user could be logged in
@@ -155,11 +168,124 @@ def test_cases_panel_query(app, case_obj, parsed_panel, institute_obj):
 
         # WHEN accessing the cases page with a query
         resp = client.get(
-            url_for("overview.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
+            url_for(
+                "overview.cases",
+                query=slice_query,
+                institute_id=institute_obj["internal_id"],
+            )
         )
 
-        # THEN it should return a page
+        # THEN it should return a page with the case
         assert resp.status_code == 200
+        assert case_obj["display_name"] in str(resp.data)
+
+
+def test_cases_by_pinned_gene_query(app, case_obj, institute_obj):
+    """Test cases filtering by providing the gene of one of its pinned variants"""
+
+    # GIVEN a test variant hitting POT1 gene (hgnc_id:17284)
+    suspects = []
+    test_variant = store.variant_collection.find_one({"genes.hgnc_id": {"$in": [17284]}})
+    assert test_variant
+
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # GIVEN a case with this variant pinned
+        form = {
+            "action": "ADD",
+        }
+        client.post(
+            url_for(
+                "cases.pin_variant",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+                variant_id=test_variant["_id"],
+            ),
+            data=form,
+        )
+        updated_case = store.case_collection.find_one({"suspects": {"$in": [test_variant["_id"]]}})
+        assert updated_case
+
+        # WHEN the case search is performed using the POT1 gene
+        slice_query = f"pinned:POT1"
+
+        resp = client.get(
+            url_for(
+                "overview.cases",
+                query=slice_query,
+                institute_id=institute_obj["internal_id"],
+            )
+        )
+
+        # THEN it should return a page with the case
+        assert resp.status_code == 200
+        assert case_obj["display_name"] in str(resp.data)
+
+
+def test_cases_exact_phenotype_query(app, case_obj, institute_obj, test_hpo_terms):
+    """Test cases filtering by providing one HPO term"""
+
+    # GIVEN a case with some HPO terms
+    store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]},
+        {"$set": {"phenotype_terms": test_hpo_terms}},
+    )
+    one_hpo_term = test_hpo_terms[0]["phenotype_id"]
+    slice_query = f"exact_pheno:{one_hpo_term}"
+
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN accessing the cases page with the query
+        resp = client.get(
+            url_for(
+                "overview.cases",
+                query=slice_query,
+                institute_id=institute_obj["internal_id"],
+            )
+        )
+
+        # THEN it should return a page with the case
+        assert resp.status_code == 200
+        assert case_obj["display_name"] in str(resp.data)
+
+
+def test_cases_similar_phenotype_query(app, case_obj, institute_obj, test_hpo_terms):
+    """Test cases filtering by providing HPO terms that are related to case phenotype"""
+
+    # GIVEN a case with some HPO terms
+    store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]},
+        {"$set": {"phenotype_terms": test_hpo_terms}},
+    )
+
+    # WHEN similar but distinct HPO terms are used in the query
+    similar_hpo_terms = ["HP:0012047", "HP:0000618"]
+    for term in test_hpo_terms:
+        assert term["phenotype_id"] not in similar_hpo_terms
+
+    similar_hpo_terms = ",".join(similar_hpo_terms)
+    slice_query = f"similar_pheno:{similar_hpo_terms}"
+
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN accessing the cases page with the query
+        resp = client.get(
+            url_for(
+                "overview.cases",
+                query=slice_query,
+                institute_id=institute_obj["internal_id"],
+            )
+        )
+
+        # THEN it should return a page with the case
+        assert resp.status_code == 200
+        assert case_obj["display_name"] in str(resp.data)
 
 
 def test_causatives(app, user_obj, institute_obj, case_obj):
@@ -286,7 +412,10 @@ def test_clinvar_submissions(app, institute_obj, clinvar_variant, clinvar_caseda
 
         # When visiting the clinvar submission page (get request)
         resp = client.get(
-            url_for("overview.clinvar_submissions", institute_id=institute_obj["internal_id"],)
+            url_for(
+                "overview.clinvar_submissions",
+                institute_id=institute_obj["internal_id"],
+            )
         )
 
         # a successful response should be returned
@@ -313,7 +442,9 @@ def test_rename_clinvar_samples(app, institute_obj, clinvar_variant, clinvar_cas
         case_id = clinvar_casedata["case_id"]
         old_name = clinvar_casedata["individual_id"]
 
-        form_data = dict(new_name="new_sample_name",)
+        form_data = dict(
+            new_name="new_sample_name",
+        )
 
         # WHEN the sample name is edited from the submission page (POST request)
         resp = client.post(

@@ -10,12 +10,12 @@ LOG = logging.getLogger(__name__)
 def parse_conservations(variant, parsed_transcripts=None):
     """Parse the conservation predictors
 
-        Args:
-            variant(dict): A variant dictionary
-            parsed_transcripts(list): if provided, use transcript annotations
+    Args:
+        variant(dict): A variant dictionary
+        parsed_transcripts(list): if provided, use transcript annotations
 
-        Returns:
-            conservations(dict): A dictionary with the conservations
+    Returns:
+        conservations(dict): A dictionary with the conservations
     """
     parsed_transcripts = parsed_transcripts or []
     conservations = {}
@@ -45,14 +45,14 @@ def parse_conservations(variant, parsed_transcripts=None):
 def parse_conservation_info(variant, info_key, field_key):
     """Get the conservation prediction from the INFO field
 
-        Args:
-            variant(dict): A variant dictionary
-            info_key(str): 'dbNSFP_GERP___RS', 'dbNSFP_phastCons100way_vertebrate' or
-                'phyloP100way_vertebrate'
-            field_key(str): 'gerp', 'phast' or 'phylop'
+    Args:
+        variant(dict): A variant dictionary
+        info_key(str): 'dbNSFP_GERP___RS', 'dbNSFP_phastCons100way_vertebrate' or
+            'phyloP100way_vertebrate'
+        field_key(str): 'gerp', 'phast' or 'phylop'
 
-        Returns:
-            conservations(list): List of censervation terms
+    Returns:
+        conservations(list): List of censervation terms
     """
     raw_score = variant.INFO.get(info_key)
     conservations = []
@@ -73,12 +73,12 @@ def parse_conservation_info(variant, info_key, field_key):
 def parse_conservation_csq(transcript, field_key):
     """Get the conservation prediction from a transcript
 
-        Args:
-            transcript(dict): One parsed transcripts
-            field_key(str): 'gerp', 'phast' or 'phylop'
+    Args:
+        transcript(dict): One parsed transcripts
+        field_key(str): 'gerp', 'phast' or 'phylop'
 
-        Returns:
-            conservations(list): List of censervation terms
+    Returns:
+        conservations(list): List of censervation terms
     """
     conservations = []
 

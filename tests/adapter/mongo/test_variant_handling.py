@@ -56,7 +56,9 @@ def test_query_all_gene_variants(real_variant_database):
     )
     nr_high_ranked_variants_in_gene = sum(1 for i in res)
     LOG.info(
-        "Number of high ranked variants in %s: %s", gene_symbol, nr_high_ranked_variants_in_gene,
+        "Number of high ranked variants in %s: %s",
+        gene_symbol,
+        nr_high_ranked_variants_in_gene,
     )
 
     assert nr_high_ranked_variants_in_gene > 0

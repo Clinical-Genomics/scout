@@ -71,9 +71,9 @@ def test_parse_modern_clnsig(cyvcf2_variant):
 
 def test_parse_modern_clnsig_clnvid(cyvcf2_variant):
     ## GIVEN a variant with classic clinvar annotations
-    acc_nr = "265359"
-    clnsig = "Pathogenic/Likely_pathogenic"
-    revstat = "criteria_provided,_multiple_submitters,_no_conflicts"
+    acc_nr = "10"
+    clnsig = "conflicting_interpretations_of_pathogenicity&_other"
+    revstat = "criteria_provided&_conflicting_interpretations"
 
     cyvcf2_variant.INFO["CLNVID"] = acc_nr
     cyvcf2_variant.INFO["CLNSIG"] = clnsig
@@ -83,11 +83,11 @@ def test_parse_modern_clnsig_clnvid(cyvcf2_variant):
     clnsig_annotations = parse_clnsig(cyvcf2_variant)
 
     ## THEN assert that the correct terms are parsed
-    assert set(["pathogenic", "likely_pathogenic"]) == {
+    assert set(["conflicting_interpretations_of_pathogenicity", "other"]) == {
         term["value"] for term in clnsig_annotations
     }
     ## THEN assert that they where parsed correct
-    assert len(clnsig_annotations) == len(clnsig.split("/"))
+    assert len(clnsig_annotations) == 2
 
 
 def test_parse_semi_modern_clnsig(cyvcf2_variant):
@@ -158,15 +158,19 @@ def test_parse_complex_clnsig(cyvcf2_variant):
 
 
 def test_parse_clnsig_transcripts(cyvcf2_variant):
-    ## GIVEN a variant with classic clinvar annotations
-    transcripts = [{"clnsig": ["likely_benign"]}]
+    ## GIVEN a variant with slash-separated values or values that start with underscore
+    transcripts = [
+        {"clnsig": ["pathogenic/likely_pathogenic", "likely_pathogenic", "pathogenic", "_other"]}
+    ]
 
     ## WHEN parsing the annotations
     clnsig_annotations = parse_clnsig(cyvcf2_variant, transcripts=transcripts)
 
     ## THEN assert that they where parsed correct
-    assert len(clnsig_annotations) == 1
-    assert clnsig_annotations[0]["value"] == "likely_benign"
+    assert len(clnsig_annotations) == 3
+    for clnsig in ["pathogenic", "likely_pathogenic", "other"]:
+        clnsig_dict = {"value": clnsig}
+        assert clnsig_dict in clnsig_annotations
 
 
 def test_is_pathogenic_pathogenic(cyvcf2_variant):

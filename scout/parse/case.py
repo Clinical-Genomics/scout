@@ -61,6 +61,7 @@ def parse_case_data(
     peddy_check=None,
     delivery_report=None,
     multiqc=None,
+    cnv_report=None,
 ):
     """Parse all data necessary for loading a case into scout
 
@@ -80,6 +81,7 @@ def parse_case_data(
         smn_tsv(str): Path to an SMN tsv file
         peddy_ped(str): Path to a peddy ped
         multiqc(str): Path to dir with multiqc information
+        cnv_report: Path to pdf file with CNV report
 
     Returns:
         config_data(dict): Holds all the necessary information for loading
@@ -139,6 +141,8 @@ def parse_case_data(
     config_data["delivery_report"] = (
         delivery_report if delivery_report else config_data.get("delivery_report")
     )
+
+    config_data["cnv_report"] = cnv_report if cnv_report else config_data.get("cnv_report")
 
     config_data["rank_model_version"] = str(config_data.get("rank_model_version", ""))
     config_data["rank_score_threshold"] = config_data.get("rank_score_threshold", 0)
@@ -284,44 +288,44 @@ def add_peddy_information(config_data):
 def parse_individual(sample):
     """Parse individual information
 
-        Args:
-            sample (dict)
+    Args:
+        sample (dict)
 
-        Returns:
-            {
-                'individual_id': str,
-                'father': str,
-                'mother': str,
-                'display_name': str,
-                'sex': str,
-                'phenotype': str,
-                'bam_file': str,
-                'mt_bam': str,
-                'analysis_type': str,
-                'vcf2cytosure': str,
-                'capture_kits': list(str),
+    Returns:
+        {
+            'individual_id': str,
+            'father': str,
+            'mother': str,
+            'display_name': str,
+            'sex': str,
+            'phenotype': str,
+            'bam_file': str,
+            'mt_bam': str,
+            'analysis_type': str,
+            'vcf2cytosure': str,
+            'capture_kits': list(str),
 
-                'upd_sites_bed': str,
-                'upd_regions_bed': str,
-                'rhocall_bed': str,
-                'rhocall_wig': str,
-                'tiddit_coverage_wig': str,
+            'upd_sites_bed': str,
+            'upd_regions_bed': str,
+            'rhocall_bed': str,
+            'rhocall_wig': str,
+            'tiddit_coverage_wig': str,
 
-                'predicted_ancestry' = str,
+            'predicted_ancestry' = str,
 
-                'is_sma': boolean,
-                'is_sma_carrier': boolean,
-                'smn1_cn' = int,
-                'smn2_cn' = int,
-                'smn2delta78_cn' = int,
-                'smn_27134_cn' = int,
+            'is_sma': boolean,
+            'is_sma_carrier': boolean,
+            'smn1_cn' = int,
+            'smn2_cn' = int,
+            'smn2delta78_cn' = int,
+            'smn_27134_cn' = int,
 
-                'tumor_type': str,
-                'tmb': str,
-                'msi': str,
-                'tumor_purity': float,
-                'tissue_type': str,
-            }
+            'tumor_type': str,
+            'tmb': str,
+            'msi': str,
+            'tumor_purity': float,
+            'tissue_type': str,
+        }
 
     """
     ind_info = {}
@@ -366,11 +370,17 @@ def parse_individual(sample):
     ind_info["predicted_ancestry"] = sample.get("predicted_ancestry")
 
     # IGV files these can be bam or cram format
-    bam_path_options = ["bam_path", "bam_file", "alignment_path"]
+    bam_path_options = ["alignment_path", "bam_path", "bam_file"]
     for option in bam_path_options:
         if sample.get(option) and not sample.get(option).strip() == "":
-            ind_info["bam_file"] = sample[option]
-            break
+            if "bam_file" in ind_info:
+                LOG.warning(
+                    "Multiple alignment paths given for individual %s in load config. Using %s",
+                    ind_info["individual_id"],
+                    ind_info["bam_file"],
+                )
+            else:
+                ind_info["bam_file"] = sample[option]
 
     ind_info["rhocall_bed"] = sample.get("rhocall_bed", sample.get("rhocall_bed"))
     ind_info["rhocall_wig"] = sample.get("rhocall_wig", sample.get("rhocall_wig"))
@@ -415,13 +425,13 @@ def parse_individual(sample):
 def parse_individuals(samples):
     """Parse the individual information
 
-        Reformat sample information to proper individuals
+    Reformat sample information to proper individuals
 
-        Args:
-            samples(list(dict))
+    Args:
+        samples(list(dict))
 
-        Returns:
-            individuals(list(dict))
+    Returns:
+        individuals(list(dict))
     """
     individuals = []
     if len(samples) == 0:
@@ -495,6 +505,7 @@ def parse_case(config):
         "peddy_sex": config.get("peddy_sex"),
         "peddy_check": config.get("peddy_check"),
         "delivery_report": config.get("delivery_report"),
+        "cnv_report": config.get("cnv_report"),
         "multiqc": config.get("multiqc"),
         "track": config.get("track", "rare"),
         "chromograph_image_files": config.get("chromograph_image_files"),
@@ -562,7 +573,7 @@ def parse_ped(ped_stream, family_type="ped"):
 
 
 def removeNoneValues(dict):
-    """ If value = None in key/value pair, the pair is removed.
+    """If value = None in key/value pair, the pair is removed.
         Python >3
     Args:
         dict: dictionary

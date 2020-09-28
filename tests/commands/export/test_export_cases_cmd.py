@@ -101,7 +101,8 @@ def test_export_cases(mock_app, case_obj):
 
     # Set case in database to is_research and research_requested:
     store.case_collection.find_one_and_update(
-        {"_id": case_obj["_id"]}, {"$set": {"is_research": True, "research_requested": True}},
+        {"_id": case_obj["_id"]},
+        {"$set": {"is_research": True, "research_requested": True}},
     )
 
     # Case should be found now using both params

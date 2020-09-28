@@ -12,7 +12,7 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
     Args:
         adapter(adapter.MongoAdapter)
         institute_id(str): an institute _id
-        slice_query(str):  query to filter cases to obtain statistics for.
+        slice_query(str): query to filter cases to obtain statistics for.
 
     Returns:
         data(dict): Dictionary with relevant information
@@ -172,8 +172,7 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
     Args:
         adapter(adapter.MongoAdapter)
         institute_id(str)
-        slice_query(str):   Query to filter cases to obtain statistics for.
-
+        slice_query(str): Query to filter cases to obtain statistics for.
 
     Returns:
         general(dict)
@@ -276,7 +275,7 @@ def get_case_groups(adapter, total_cases, institute_id=None, slice_query=None):
 
 
 def get_analysis_types(adapter, total_cases, institute_id=None, slice_query=None):
-    """ Return information about analysis types.
+    """Return information about analysis types.
         Group cases based on analysis type for the individuals.
     Args:
         adapter(adapter.MongoAdapter)

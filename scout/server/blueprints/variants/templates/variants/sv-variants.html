@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_table %}
-{% from "variants/utils.html" import sv_filters, cell_rank %}
+{% from "variants/utils.html" import sv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block %}
 {% from "variants/components.html" import frequency_cell_general %}
 
 {% block title %}
@@ -38,64 +38,70 @@
 {% endblock %}
 
 {% block content_main %}
-<form method="POST" id="filters_form" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name)}}"
-  onsubmit="return validateForm()">
   <div class="container-float">
-    <div class="card panel-default" id="accordion">
-      <div class="card-header">
-        <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">SvFilters</a></strong>
+    <form method="POST" id="filters_form" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name)}}"
+  onsubmit="return validateForm()">
+    {{ pagination_hidden_div(page) }}
+      <div class="card panel-default" id="accordion">
+        <div class="card-header">
+          <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">SvFilters</a></strong>
+        </div>
+        <!--Expand filters form if filters were used in a previous POST request-->
+        <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}">
+          <div class="card-body">{{ sv_filters(form, institute, case) }}</div>
+        </div>
+        <div class="card-footer text-center py-3">
+          {% if "all_variants" in session %}
+            Showing {{session['filtered_variants']}} / {{session["all_variants"]}} variants
+          {% endif %}
+        </div>
       </div>
-      <!--Expand filters form if filters were used in a previous POST request-->
-      <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}">
-        <div class="card-body">{{ sv_filters(form, institute, case) }}</div>
+      <div class="card mt-3">
+        <table id="variantsTable" class="table table-hover table-bordered" style="table-layout: fixed">
+          <thead>
+            <tr>
+              <th style="width:3%"></th>
+              <th>Rank</th>
+              <th>Score</th>
+              <th>Type</th>
+              <th>Chr</th>
+              <th>Start loc</th>
+              <th>Stop loc</th>
+              <th>Length</th>
+              <th>Region</th>
+              <th>Function</th>
+              <th>Frequency</th>
+              <th>Gene(s)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for variant in variants %}
+              {{ variant_row(variant) }}
+            {% else %}
+              <tr>
+                  <td colspan="11">No matching variants</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {{ dismiss_variants_block(dismiss_variant_options) }}
       </div>
-      <div class="card-footer text-center py-3">
-        {% if "all_variants" in session %}
-          Showing {{session['filtered_variants']}} / {{session["all_variants"]}} variants
-        {% endif %}
-      </div>
-    </div>
-  </div>
-  <div class="card mt-3">
-    <table id="variantsTable" class="table table-hover table-bordered">
-      <thead>
-        <tr>
-          <th>Rank</th>
-          <th>Score</th>
-          <th>Type</th>
-          <th>Chr</th>
-          <th>Start loc</th>
-          <th>Stop loc</th>
-          <th>Length</th>
-          <th>Region</th>
-          <th>Function</th>
-          <th>Frequency</th>
-          <th>Gene(s)</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for variant in variants %}
-          {{ variant_row(variant) }}
-        {% else %}
-          <tr>
-              <td colspan="11">No matching variants</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    </form>
   </div>
   <div class="container-fluid">
-    {{ pagination() }}
+  {{ pagination_footer(more_variants, page) }}
   </div>
-</form>
 {% endblock %}
 
 {% macro variant_row(variant) %}
   {% if variant.dismiss_variant %}
-  <tr class="dismiss">
+   <tr class="dismiss">
+  {% elif variant._id in case.causatives %}
+   <tr class="causative">
   {% else %}
   <tr>
   {% endif %}
+    <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
     <td class="text-left">
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
@@ -141,24 +147,6 @@
   </tr>
 {% endmacro %}
 
-{% macro pagination() %}
-  <div class="container-fluid">
-    {% if more_variants %}
-    <div class="d-flex justify-content-around">
-        <div>
-            <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
-        </div>
-       <div>
-          <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value={{ page + 1 }}>Next page</button>
-       </div>
-    </div>
-    {% else %}
-      <i class="text-muted">No more variants to display</i>
-      <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
-    {% endif %}
-  </div>
-{% endmacro %}
-
 
 {% block scripts %}
   {{ super() }}
@@ -181,7 +169,6 @@
 
     var cytoEnd = document.getElementById("cytoband_end");
     initSearchConstraints(cytoEnd, endElem)
-
 
     $('select[multiple]').selectpicker({
         width: '100%'

@@ -22,6 +22,7 @@ from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
 )
+from scout.constants import CASE_SEARCH_TERMS
 from scout.server.extensions import store
 from scout.server.utils import user_institutes, templated, institute_and_case
 from .forms import InstituteForm, GeneVariantFiltersForm
@@ -71,20 +72,24 @@ def cases(institute_id):
     """Display a list of cases for an institute."""
 
     institute_obj = institute_and_case(store, institute_id)
-    query = request.args.get("query")
+
+    name_query = None
+    if request.args.get("search_term"):
+        name_query = "".join([request.args.get("search_type"), request.args.get("search_term")])
 
     limit = 100
-    if request.args.get("limit"):
-        limit = int(request.args.get("limit"))
+    if request.args.get("search_limit"):
+        limit = int(request.args.get("search_limit"))
 
     skip_assigned = request.args.get("skip_assigned")
     is_research = request.args.get("is_research")
     all_cases = store.cases(
         collaborator=institute_id,
-        name_query=query,
+        name_query=name_query,
         skip_assigned=skip_assigned,
         is_research=is_research,
     )
+    form = controllers.populate_case_filter_form(request.args)
 
     sort_by = request.args.get("sort")
     sort_order = request.args.get("order") or "asc"
@@ -116,7 +121,9 @@ def cases(institute_id):
         institute=institute_obj,
         skip_assigned=skip_assigned,
         is_research=is_research,
-        query=query,
+        query=name_query,
+        search_terms=CASE_SEARCH_TERMS,
+        form=form,
         **data,
     )
 
@@ -202,7 +209,8 @@ def gene_variants(institute_id):
             flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
         if not_found_symbols:
             flash(
-                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning",
+                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)),
+                "warning",
             )
         if non_clinical_symbols:
             flash(
@@ -214,7 +222,10 @@ def gene_variants(institute_id):
         LOG.debug("query {}".format(form.data))
 
         variants_query = store.gene_variants(
-            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type,
+            query=form.data,
+            institute_id=institute_id,
+            category="snv",
+            variant_type=variant_type,
         )
 
         data = controllers.gene_variants(store, variants_query, institute_id, page)
@@ -228,7 +239,8 @@ def institute_settings(institute_id):
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
         flash(
-            "Current user doesn't have the permission to modify this institute", "warning",
+            "Current user doesn't have the permission to modify this institute",
+            "warning",
         )
         return redirect(request.referrer)
 
@@ -262,7 +274,8 @@ def institute_users(institute_id):
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
         flash(
-            "Current user doesn't have the permission to modify this institute", "warning",
+            "Current user doesn't have the permission to modify this institute",
+            "warning",
         )
         return redirect(request.referrer)
     data = controllers.institute(store, institute_id)
@@ -275,7 +288,11 @@ def clinvar_rename_casedata(submission, case, old_name):
 
     new_name = request.form.get("new_name")
     controllers.update_clinvar_sample_names(
-        store, submission, case, old_name, new_name,
+        store,
+        submission,
+        case,
+        old_name,
+        new_name,
     )
     return redirect(request.referrer)
 
@@ -317,7 +334,9 @@ def clinvar_download_csv(submission, csv_type, clinvar_id):
 
     headers = Headers()
     headers.add(
-        "Content-Disposition", "attachment", filename=clinvar_file_data[0],
+        "Content-Disposition",
+        "attachment",
+        filename=clinvar_file_data[0],
     )
     return Response(
         generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),

@@ -32,17 +32,17 @@ def variant_verification(
 ):
     """Sand a verification email and register the verification in the database
 
-        Args:
-            store(scout.adapter.MongoAdapter)
-            institute_obj(dict): an institute object
-            case_obj(dict): a case object
-            user_obj(dict): a user object
-            variant_obj(dict): a variant object (snv or sv)
-            sender(str): current_app.config['MAIL_USERNAME']
-            variant_url(str): the complete url to the variant (snv or sv), a link that works from outside scout domain.
-            order(str): False == cancel order, True==order verification
-            comment(str): sender's entered comment from form
-            url_builder(flask.url_for): for testing purposes, otherwise test verification email fails because out of context
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_obj(dict): an institute object
+        case_obj(dict): a case object
+        user_obj(dict): a user object
+        variant_obj(dict): a variant object (snv or sv)
+        sender(str): current_app.config['MAIL_USERNAME']
+        variant_url(str): the complete url to the variant (snv or sv), a link that works from outside scout domain.
+        order(str): False == cancel order, True==order verification
+        comment(str): sender's entered comment from form
+        url_builder(flask.url_for): for testing purposes, otherwise test verification email fails because out of context
     """
     url_builder = url_builder or url_for
     mail = mail or ex_mail
@@ -72,8 +72,16 @@ def variant_verification(
     display_name = variant_obj.get("display_name")
     chromosome = variant_obj["chromosome"]
     end_chrom = variant_obj.get("end_chrom", chromosome)
-    breakpoint_1 = ":".join([chromosome, str(variant_obj["position"])])
-    breakpoint_2 = ":".join([end_chrom, str(variant_obj.get("end"))])
+    breakpoint_1 = (
+        ":".join([chromosome, str(variant_obj["position"])])
+        if category in ["sv", "cancer_sv"]
+        else "-"
+    )
+    breakpoint_2 = (
+        ":".join([end_chrom, str(variant_obj.get("end"))])
+        if category in ["sv", "cancer_sv"]
+        else "-"
+    )
     variant_size = variant_obj.get("length")
     panels = ", ".join(variant_obj.get("panels", []))
     gene_identifiers = [

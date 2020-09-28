@@ -10,7 +10,12 @@ def test_variants_clinical_filter(app, institute_obj, case_obj):
 
     # GIVEN a variant without clinVar annotations
     test_var = store.variant_collection.find_one(
-        {"clnsig": {"$exists": False}, "variant_type": "clinical", "category": "snv"}
+        {
+            "clnsig": {"$exists": False},
+            "variant_type": "clinical",
+            "category": "snv",
+            "panels": {"$in": ["panel1"]},
+        }
     )
     assert test_var
 
@@ -79,6 +84,41 @@ def test_variants(app, institute_obj, case_obj):
         )
         # THEN it should return a page
         assert resp.status_code == 200
+
+
+def test_bulk_dismiss_variants(app, institute_obj, case_obj):
+    """Sending a POST request to variants view to test variant dismiss funtionality"""
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # GIVEN a test variant to be dismissed
+        snv_variant = store.variant_collection.find_one({"category": "snv"})
+
+        # When a POST request with filter containing wrongly formatted parameters is sent
+        dismiss_choices = ["2", "5"]
+        form_data = {
+            "dismiss": snv_variant["_id"],
+            "dismiss_choices": dismiss_choices,
+        }
+
+        resp = client.post(
+            url_for(
+                "variants.variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=form_data,
+        )
+        # THEN it should return a redirected page
+        assert resp.status_code == 200
+
+        # and the variant should be updated with the dismissed options
+        updated_variant = store.variant_collection.find_one({"_id": snv_variant["_id"]})
+        for option in dismiss_choices:
+            assert option in updated_variant["dismiss_variant"]
 
 
 def test_variants_research(app, institute_obj, case_obj):
@@ -240,15 +280,24 @@ def test_filter_cancer_variants_wrong_params(app, institute_obj, case_obj):
         assert resp.status_code == 302
 
 
-def test_filter_cancer_variants_by_vaf(app, institute_obj, case_obj):
+def test_filter_cancer_variants_by_vaf(app, institute_obj, cancer_case_obj, variant_obj):
     """Tests the cancer form filter by VAF"""
 
-    # Given a test variant in database
-    test_var = store.variant_collection.find_one({"variant_type": "clinical", "category": "snv"})
+    # GIVEN a database containing a cancer case
+    cancer_case_obj["status"] = "inactive"
+    assert store.case_collection.insert_one(cancer_case_obj)
 
-    # with control and cancer frequencies, and category = cancer
-    store.variant_collection.find_one_and_update(
-        {"_id": test_var["_id"]}, {"$set": {"tumor": {"alt_freq": 0.49}, "category": "cancer"}}
+    variant_obj["tumor"] = {"alt_freq": 0.49}
+    # GIVEN a variant belonging to the case that has tumor alternate frequency
+    assert store.variant_collection.find_one_and_update(
+        {"_id": variant_obj["_id"]},
+        {
+            "$set": {
+                "case_id": cancer_case_obj["_id"],
+                "category": "cancer",
+                "tumor": {"alt_freq": 0.49},
+            }
+        },
     )
 
     # GIVEN an initialized app
@@ -256,19 +305,19 @@ def test_filter_cancer_variants_by_vaf(app, institute_obj, case_obj):
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
 
-        # When the cancer SNV variants page is loaded by GET request
-        # WHEN accessing the sv-variants page
+        # When the cancer SNV variants page is loaded by GET request (no filter)
         resp = client.get(
             url_for(
                 "variants.cancer_variants",
                 institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
+                case_name=cancer_case_obj["display_name"],
             )
         )
+
         # THEN it should return a page
         assert resp.status_code == 200
         # With the above variant
-        assert test_var["_id"] in str(resp.data)
+        assert variant_obj["_id"] in str(resp.data)
 
         # When a POST request filter with VAF > than the VAF in test_var is sent to the page
         form_data = {
@@ -278,14 +327,14 @@ def test_filter_cancer_variants_by_vaf(app, institute_obj, case_obj):
             url_for(
                 "variants.cancer_variants",
                 institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
+                case_name=cancer_case_obj["display_name"],
             ),
             data=form_data,
         )
         # THEN it should return a page
         assert resp.status_code == 200
         # Without the variant
-        assert test_var["_id"] not in str(resp.data)
+        assert variant_obj["_id"] not in str(resp.data)
 
 
 def test_sv_cancer_variants(app, institute_obj, case_obj):

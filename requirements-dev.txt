@@ -7,14 +7,10 @@ pytest-flask
 mongomock<=3.12
 responses
 
-# packaging
-wheel>=0.23
-twine
-
 # utils
 invoke
+black
 
 # docs
 mkdocs
-mkdocs-material==4.6.1
-
+mkdocs-material

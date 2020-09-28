@@ -13,7 +13,7 @@ def test_update_user(mock_app, user_obj):
     # Test CLI base, no arguments provided
     result = runner.invoke(cli, ["update", "user"])
     # it should return error message
-    assert 'Missing option "--user-id"' in result.output
+    assert "Missing option" in result.output
 
     # Test CLI with wrong user
     result = runner.invoke(cli, ["update", "user", "-u", "unknown_user_id"])

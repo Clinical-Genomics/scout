@@ -21,7 +21,13 @@ from flask import (
 )
 from flask_login import current_user
 
-from scout.constants import CANCER_TIER_OPTIONS, MANUAL_RANK_OPTIONS, SEVERE_SO_TERMS
+from scout.constants import (
+    CANCER_TIER_OPTIONS,
+    MANUAL_RANK_OPTIONS,
+    SEVERE_SO_TERMS,
+    DISMISS_VARIANT_OPTIONS,
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+)
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated
 
@@ -54,6 +60,16 @@ def variants(institute_id, case_name):
     user_obj = store.user(current_user.email)
 
     if request.method == "POST":
+        if request.form.getlist("dismiss"):  # dismiss a list of variants
+            controllers.dismiss_variant_list(
+                store,
+                institute_obj,
+                case_obj,
+                "variant.variant",
+                request.form.getlist("dismiss"),
+                request.form.getlist("dismiss_choices"),
+            )
+
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
@@ -61,7 +77,11 @@ def variants(institute_id, case_name):
         form = FiltersForm(request.args)
         # set form variant data type the first time around
         form.variant_type.data = variant_type
-        form.chrom.data = request.args.get("chrom", None)
+        # set chromosome to all chromosomes
+        form.chrom.data = request.args.get("chrom", "")
+
+        if form.gene_panels.data == [] and variant_type == "clinical":
+            form.gene_panels.data = controllers.case_default_panels(case_obj)
 
     # populate filters dropdown
     available_filters = store.filters(institute_id, category)
@@ -70,11 +90,7 @@ def variants(institute_id, case_name):
     ]
 
     # populate available panel choices
-    available_panels = case_obj.get("panels", []) + [{"panel_name": "hpo", "display_name": "HPO"}]
-
-    panel_choices = [(panel["panel_name"], panel["display_name"]) for panel in available_panels]
-
-    form.gene_panels.choices = panel_choices
+    form.gene_panels.choices = controllers.gene_panel_choices(institute_obj, case_obj)
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
@@ -159,6 +175,7 @@ def variants(institute_id, case_name):
         case=case_obj,
         form=form,
         manual_rank_options=MANUAL_RANK_OPTIONS,
+        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
         severe_so_terms=SEVERE_SO_TERMS,
         cytobands=cytobands,
@@ -192,10 +209,12 @@ def str_variants(institute_id, case_name):
             ("position", pymongo.ASCENDING),
         ]
     )
+
     data = controllers.str_variants(store, institute_obj, case_obj, variants_query, page)
     return dict(
         institute=institute_obj,
         case=case_obj,
+        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         variant_type=variant_type,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         form=form,
@@ -218,6 +237,16 @@ def sv_variants(institute_id, case_name):
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
 
+    if request.form.getlist("dismiss"):  # dismiss a list of variants
+        controllers.dismiss_variant_list(
+            store,
+            institute_obj,
+            case_obj,
+            "variant.sv_variant",
+            request.form.getlist("dismiss"),
+            request.form.getlist("dismiss_choices"),
+        )
+
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
@@ -238,6 +267,7 @@ def sv_variants(institute_id, case_name):
     return dict(
         institute=institute_obj,
         case=case_obj,
+        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         variant_type=variant_type,
         form=form,
         cytobands=cytobands,
@@ -259,11 +289,22 @@ def cancer_variants(institute_id, case_name):
 
     user_obj = store.user(current_user.email)
     if request.method == "POST":
+        if request.form.getlist("dismiss"):  # dismiss a list of variants
+            controllers.dismiss_variant_list(
+                store,
+                institute_obj,
+                case_obj,
+                "variant.variant",
+                request.form.getlist("dismiss"),
+                request.form.getlist("dismiss_choices"),
+            )
+
         form = controllers.populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request.form
         )
 
-        if form.validate_on_submit() is False:
+        # if user is not loading an existing filter, check filter form
+        if request.form.get("load_filter") is None and form.validate_on_submit() is False:
             # Flash a message with errors
             for field, err_list in form.errors.items():
                 for err in err_list:
@@ -282,7 +323,10 @@ def cancer_variants(institute_id, case_name):
     else:
         page = int(request.args.get("page", 1))
         form = CancerFiltersForm(request.args)
-        form.chrom.data = request.args.get("chrom", None)
+        # set chromosome to all chromosomes
+        form.chrom.data = request.args.get("chrom", "")
+        if form.gene_panels.data == []:
+            form.gene_panels.data = controllers.case_default_panels(case_obj)
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
@@ -293,10 +337,7 @@ def cancer_variants(institute_id, case_name):
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
 
-    available_panels = case_obj.get("panels", []) + [{"panel_name": "hpo", "display_name": "HPO"}]
-
-    panel_choices = [(panel["panel_name"], panel["display_name"]) for panel in available_panels]
-    form.gene_panels.choices = panel_choices
+    form.gene_panels.choices = controllers.gene_panel_choices(institute_obj, case_obj)
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
@@ -313,6 +354,10 @@ def cancer_variants(institute_id, case_name):
     return dict(
         variant_type=variant_type,
         cytobands=cytobands,
+        dismiss_variant_options={
+            **DISMISS_VARIANT_OPTIONS,
+            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+        },
         expand_search=str(request.method == "POST"),
         **data,
     )
@@ -354,6 +399,10 @@ def cancer_sv_variants(institute_id, case_name):
     return dict(
         institute=institute_obj,
         case=case_obj,
+        dismiss_variant_options={
+            **DISMISS_VARIANT_OPTIONS,
+            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+        },
         variant_type=variant_type,
         form=form,
         severe_so_terms=SEVERE_SO_TERMS,
@@ -397,11 +446,17 @@ def upload_panel(institute_id, case_name):
     # HTTP redirect code 307 asks that the browser preserves the method of request (POST).
     if category == "sv":
         return redirect(
-            url_for(".sv_variants", institute_id=institute_id, case_name=case_name, **form.data,),
+            url_for(
+                ".sv_variants",
+                institute_id=institute_id,
+                case_name=case_name,
+                **form.data,
+            ),
             code=307,
         )
     return redirect(
-        url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data), code=307,
+        url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data),
+        code=307,
     )
 
 

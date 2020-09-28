@@ -52,6 +52,11 @@ table.dataTable {margin-bottom: 0rem}
    background-color: #C9C9C9;
 }
 
+/* causative table row */
+.causative {
+   background-color: #dff0d8;
+}
+
 /* Custom navbar theme */
 .navbar{
   background-color:#1181B2;
@@ -131,7 +136,7 @@ table.dataTable {margin-bottom: 0rem}
 }
 
 .popover {
-    max-width: none;
+    max-width: 60%;
     pointer-events: none;
 }
 
