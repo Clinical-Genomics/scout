@@ -155,16 +155,18 @@ def build_panel(panel_info, adapter):
 
     gene_objs = []
     fail = False
+    errors = []
     for gene_info in panel_info.get("genes", []):
         try:
             gene_obj = build_gene(gene_info, adapter)
             gene_objs.append(gene_obj)
         except IntegrityError as err:
             LOG.warning(err)
-            fail = True
-
-    if fail:
-        raise IntegrityError("Some genes did not exist in database. Please see log messages.")
+            errors.append(f"{gene_info.get('hgnc_symbol')} ({gene_info.get('hgnc_symbol')})")
+    if errors:
+        raise IntegrityError(
+            f"The following genes: {', '.join(errors)} were not found in Scout database."
+        )
 
     panel_obj["genes"] = gene_objs
 

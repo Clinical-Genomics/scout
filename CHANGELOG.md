@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Show a flash message with clear info about non-valid genes when gene panel creation fails
 ### Fixed
 - missing `vcf_cancer_sv` and `vcf_cancer_sv_research` to manual.
 
