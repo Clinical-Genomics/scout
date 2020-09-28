@@ -174,7 +174,6 @@ def gene_variants(institute_id):
     # populate form, conditional on request method
     if request.method == "POST":
         form = GeneVariantFiltersForm(request.form)
-        flash(request.form)
     else:
         form = GeneVariantFiltersForm(request.args)
 
