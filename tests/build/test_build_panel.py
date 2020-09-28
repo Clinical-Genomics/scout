@@ -119,3 +119,25 @@ def test_build_panel_non_existing_insitute(institute_database, test_gene):
     ## THEN assert that an IntegrityError is raised
     with pytest.raises(IntegrityError):
         panel_obj = build_panel(panel_info, adapter)
+
+
+def test_build_panel_gene_not_found(institute_database, institute_obj):
+    """Test creating a panel by proving one gene that is not in database"""
+
+    ### GIVEN a adapter with a gene an institute and no genes
+    adapter = institute_database
+    assert adapter.hgnc_collection.find_one() is None
+
+    ## WHEN building a gene panel with wrong institute
+    panel_info = {
+        "panel_name": "panel1",
+        "institute": institute_obj["_id"],
+        "date": datetime.now(),
+        "display_name": "first panel",
+        "genes": [{"hgnc_id": 1}],
+        "version": 1.0,
+    }
+
+    ## THEN assert that an IntegrityError is raised
+    with pytest.raises(IntegrityError):
+        panel_obj = build_panel(panel_info, adapter)
