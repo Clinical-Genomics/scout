@@ -9,7 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - CNV report link in cancer case side navigation
 ### Fixed
 - missing `vcf_cancer_sv` and `vcf_cancer_sv_research` to manual.
-- Split ClinVar multiple clnsig values (slash-separated) for annotations without accession number
+- Split ClinVar multiple clnsig values (slash-separated) and strip them of underscore for annotations without accession number
 ### Changed
 - Do not freeze mkdocs-material to version 4.6.1
 - Remove pre-commit dependency
