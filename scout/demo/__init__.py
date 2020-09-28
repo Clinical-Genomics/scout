@@ -44,3 +44,6 @@ empty_sv_clinical_path = pkg_resources.resource_filename("scout", empty_sv_file)
 
 delivery_report_file = "demo/delivery_report.html"
 delivery_report_path = pkg_resources.resource_filename("scout", delivery_report_file)
+
+cnv_report_file = "demo/cancer_cnv_report.pdf"
+cnv_report_path = pkg_resources.resource_filename("scout", cnv_report_file)

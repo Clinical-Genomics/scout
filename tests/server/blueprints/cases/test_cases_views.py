@@ -150,6 +150,17 @@ def test_sidebar_macro(app, institute_obj, case_obj):
         assert "Share case" in html
 
 
+def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj):
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WHEN the case sidebar macro is called
+        macro = get_template_attribute("cases/collapsible_actionbar.html", "action_bar")
+        html = macro(institute_obj, cancer_case_obj)
+
+        # It should show the expected items:
+        assert "CNV report" in html
+
+
 def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
