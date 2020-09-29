@@ -4,6 +4,7 @@ from scout.server.extensions import store
 
 
 def test_managed_variants(app, user_obj, institute_obj):
+    """ Test managed variants view """
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -20,6 +21,10 @@ def test_managed_variants(app, user_obj, institute_obj):
 
 
 def test_add_and_remove_managed_variants(app, user_obj, institute_obj):
+    """Test first managed variants views:
+    adding a managed variant,
+    trying to add it again in duplicate and finally removing it.
+    """
     # GIVEN an initialized app
     # GIVEN a user and institute
 
@@ -32,6 +37,7 @@ def test_add_and_remove_managed_variants(app, user_obj, institute_obj):
         add_form_data = {
             "chromosome": "14",
             "position": 76548781,
+            "end": 76548781,
             "category": "snv",
             "sub_category": "indel",
             "reference": "CTGGACC",
