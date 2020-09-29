@@ -103,7 +103,7 @@
 
 {% macro edit_comment(institute, case, current_user, comment, index) %}
 <!-- Edit comment modal -->
-<form method="POST" action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, event_id=comment._id, _anchor='comment') }}">
+<form method="POST" action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, event_id=comment._id, _anchor='comments') }}">
 <div class="modal fade" id="editComment_{{index}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 <div class="modal-dialog" role="document">
   <div class="modal-content">
