@@ -680,6 +680,31 @@ def test_gene_variants_filter(app, institute_obj, case_obj):
         assert "POT1" in str(resp.data)
 
 
+def test_gene_variants_no_valid_gene(app, institute_obj, case_obj):
+    """Test the gene_variant endpoint with a gene symbol not in database"""
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # When user submits a query for a variants in a gene that is not in database
+        filter_query = {
+            "hgnc_symbols": "UNKNOWN-GENE",
+            "variant_type": ["clinical"],
+            "rank_score": 11,
+        }
+
+        resp = client.post(
+            url_for("overview.gene_variants", institute_id=institute_obj["internal_id"]),
+            data=filter_query,
+        )
+        # THEN the page should redirect
+        assert resp.status_code == 302
+
+
 def test_institute_users(app, institute_obj, user_obj):
     """Test the link to all institute users"""
     # GIVEN an initialized app

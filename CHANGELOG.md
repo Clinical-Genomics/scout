@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - missing `vcf_cancer_sv` and `vcf_cancer_sv_research` to manual.
 - Split ClinVar multiple clnsig values (slash-separated) and strip them of underscore for annotations without accession number
+- Timeout of `All SNVs and INDELs` page when no valid gene is provided in the search
 ### Changed
 - Do not freeze mkdocs-material to version 4.6.1
 - Remove pre-commit dependency
