@@ -152,7 +152,7 @@ def test_load_variants_includes_managed(real_populated_database, case_obj, varia
     # but which has a rank score less than loading threshold (-2)
     managed_variant_info = {
         "chromosome": "1",
-        "position": 36031420,
+        "position": "36031420",
         "reference": "C",
         "alternative": "T",
         "build": "37",

@@ -8,9 +8,7 @@ from scout.parse.panel import get_delimiter
 def parse_managed_variant_id(
     chromosome, position, reference, alternative, category, sub_category, build="37"
 ):
-    """Check if a variant is on the managed_variant list and should be loaded
-
-    All variants on the list will be loaded regardless of the kind of relevance.
+    """Construct Managed Variant id for searching.
 
     Args:
         chromosome,
