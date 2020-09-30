@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
-from scout.utils.md5 import generate_md5_key
-
 """ Managed variant
 
     For potentially causative variants that are not yet in ClinVar
     and have yet not been marked causative in any existing case.
 
 """
+
+from datetime import datetime
+from scout.utils.md5 import generate_md5_key
 
 
 class ManagedVariant(dict):
