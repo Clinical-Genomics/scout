@@ -17,6 +17,7 @@ managed_variants_bp = Blueprint("managed_variants", __name__, template_folder="t
 @managed_variants_bp.route("/managed_variant", methods=["GET", "POST"])
 @templated("managed_variants/managed_variants.html")
 def managed_variants():
+    page = int(request.form.get("page", 1))
 
     institutes = list(user_institutes(store, current_user))
 
@@ -26,8 +27,13 @@ def managed_variants():
 
     category = request.form.get("category", "snv")
 
-    managed_variants_query = store.managed_variants(category=category)
-    data = controllers.managed_variants(store, managed_variants_query)
+    query_options = {}
+    for option in ["chromosome", "sub_category", "position", "end", "description"]:
+        if request.form.get(option, None):
+            query_options[option] = request.form.get(option)
+
+    managed_variants_query = store.managed_variants(category=category, query_options=query_options)
+    data = controllers.managed_variants(store, managed_variants_query, page)
 
     return dict(
         filters_form=filters_form,

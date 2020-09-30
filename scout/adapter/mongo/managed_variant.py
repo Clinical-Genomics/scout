@@ -122,7 +122,7 @@ class ManagedVariantHandler(object):
 
         return managed_variant
 
-    def managed_variants(self, category="snv", build="37"):
+    def managed_variants(self, category="snv", build="37", query_options=None):
         """Return a cursor to all managed variants of a particular category and build.
 
         Arguments:
@@ -134,9 +134,25 @@ class ManagedVariantHandler(object):
             managed_variants(pymongo.Cursor)
 
         """
-        managed_variants_res = self.managed_variant_collection.find(
-            {"category": category, "build": build}
-        )
+
+        query = {"category": category, "build": build}
+
+        if query_options:
+            if "description" in query_options:
+                query["description"] = {"$regex": ".*" + query_options["description"] + ".*"}
+                query_options.pop("description")
+
+            if "position" in query_options:
+                query["end"] = {"$gte": int(query_options["position"])}
+                query_options.pop("position")
+
+            if "end" in query_options:
+                query["position"] = {"$lte": int(query_options["end"])}
+                query_options.pop("end")
+
+            query.update(query_options)
+
+        managed_variants_res = self.managed_variant_collection.find(query)
 
         return managed_variants_res
 
