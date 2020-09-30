@@ -218,38 +218,44 @@
   {% if causatives %}
     <div class="card panel-default">
       <div class="panel-heading">Matching causatives from other cases</div>
-        <div class="card-body">
-          <ul class="list-group list-group-flush">
-            {% for other_variant in causatives %}
-              <li class="list-group-item">
-                <a href="{{ url_for('variant.variant',
-                                    institute_id=institute._id,
-                                    case_name=other_variant.case_display_name,
-                                    variant_id=other_variant._id) }}">
-                  {{ other_variant.case_display_name }}
-                </a>
-              </li>
-            {% endfor %}
-          </ul>
-  {% elif managed_variant %}
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          {% for other_variant in causatives %}
+            <li class="list-group-item">
+              <a href="{{ url_for('variant.variant',
+                                  institute_id=institute._id,
+                                  case_name=other_variant.case_display_name,
+                                  variant_id=other_variant._id) }}">
+                {{ other_variant.case_display_name }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div> <!--end of card body-->
+    </div><!--end of card-->
+  {% endif %}
+  {% if managed_variant %}
     <div class="card panel-default">
       <div class="panel-heading">Matching managed variant</div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-2">
-              {{ managed_variant.display_id }}
-            </div>
-            <div class="col-10">
-              {{ managed_variant.description }}
-            </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-2">
+            {{ managed_variant.display_id }}
           </div>
-  {% else %}
+          <div class="col-10">
+            {{ managed_variant.description }}
+          </div>
+        </div>
+      </div> <!--end of card body-->
+    </div><!--end of card-->
+  {% endif %}
+  {% if not managed_variant and not causatives %}
     <div class="card mt-3">
       <div class="card-body mt-1 ml-1" style="padding: 0;">
         <h6>No matching causative or managed variants</h6>
-  {% endif%}
       </div> <!--end of card body-->
     </div><!--end of card-->
+  {% endif%}
 {% endmacro %}
 
 {% macro panel_basics() %}
