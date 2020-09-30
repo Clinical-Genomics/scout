@@ -39,6 +39,7 @@ def managed_variants():
         filters_form=filters_form,
         add_form=add_form,
         modify_form=modify_form,
+        page=page,
         **data,
     )
 

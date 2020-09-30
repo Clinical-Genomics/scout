@@ -2,6 +2,8 @@
 
 {% import "bootstrap/wtf.html" as wtf %}
 
+{% from "variants/utils.html" import pagination_footer, pagination_hidden_div %}
+
 {% block title %}
   {{ super() }} - Managed variants
 {% endblock %}
@@ -59,6 +61,7 @@
 
 <form method="POST" id="filters_form" action="{{url_for('managed_variants.managed_variants')}}" enctype="multipart/form-data">
   <div class="container-float">
+    {{ pagination_hidden_div(page) }}
     <div id="accordion" >
        <div class="card mt-3">
         <div class="card-header">
@@ -120,6 +123,10 @@
       {% endfor %}
     </tbody>
   </table>
+</div>
+
+<div class="container-fluid">
+  {{ pagination_footer(more_variants, page) }}
 </div>
 
 {% endblock %}
