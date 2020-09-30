@@ -24,26 +24,30 @@ HPO_URL = (
 HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
 
 
-def get_request(url):
-    """Return a requests response from url
+def send_request(url, method="GET", data=None):
+    """Submit a GET or POST request to a URL and return response object
 
     Args:
-        url(str)
+        url(str): URL to submit request to
+        method(str); "GET" or "POST"
+        data(dict): dictionary containing request data (payload) if method is POST
 
     Returns:
-        decoded_data(str): Decoded response
+        response(requests.Response): request response
     """
+    LOG.info(f"Sending a {method} request to {url}")
     try:
-        LOG.info("Requesting %s", url)
-        response = requests.get(url, timeout=20)
+        if method == "GET":
+            response = requests.get(url, timeout=20)
+        elif method == "POST":
+            response = requests.post(url, json=data)
         if response.status_code != 200:
             response.raise_for_status()
-        LOG.info("Encoded to %s", response.encoding)
     except requests.exceptions.HTTPError as err:
-        LOG.warning("Something went wrong, perhaps the api key is not valid?")
+        LOG.error("Something went wrong, perhaps the api key is not valid?")
         raise err
     except requests.exceptions.MissingSchema as err:
-        LOG.warning("Something went wrong, perhaps url is invalid?")
+        LOG.error("Something went wrong, perhaps url is invalid?")
         raise err
     except requests.exceptions.Timeout as err:
         LOG.error("socket timed out - URL %s", url)
@@ -72,7 +76,7 @@ def fetch_resource(url, json=False):
         data = response.read().decode("utf-8")
         return data.split("\n")
 
-    response = get_request(url)
+    response = send_request(url)
 
     if json:
         LOG.info("Return in json")
@@ -363,7 +367,7 @@ def fetch_refseq_version(refseq_acc):
     )
 
     try:
-        resp = get_request(base_url.format(refseq_acc))
+        resp = send_request(base_url.format(refseq_acc))
         tree = ElementTree.fromstring(resp.content)
         version = tree.find("IdList").find("Id").text or version
 

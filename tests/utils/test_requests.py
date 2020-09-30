@@ -10,18 +10,18 @@ import responses
 from scout.utils import scout_requests
 
 
-def test_get_request_bad_url():
+def test_send_request_bad_url():
     """Test functions that accepts an url and returns decoded data from it"""
 
     # test function with a url that is not valid
     url = "fakeyurl"
     with pytest.raises(requests.exceptions.MissingSchema):
         # function should raise error
-        assert scout_requests.get_request(url)
+        assert scout_requests.send_request(url)
 
 
 @responses.activate
-def test_get_request_bad_request():
+def test_send_request_bad_request():
     """Test functions that accepts an url and returns decoded data from it"""
 
     # GIVEN an URL
@@ -33,7 +33,7 @@ def test_get_request_bad_request():
     )
     # WHEN requesting
     with pytest.raises(requests.exceptions.HTTPError):
-        response = scout_requests.get_request(url)
+        response = scout_requests.send_request(url)
         # THEN assert that the a httperror is raised
         assert response.status_code == 404
 
@@ -51,11 +51,11 @@ def test_send_request_timout():
     # WHEN requesting
     with pytest.raises(requests.exceptions.Timeout):
         # THEN assert that the a Timeout is raised
-        scout_requests.get_request(url)
+        scout_requests.send_request(url)
 
 
 @responses.activate
-def test_get_request():
+def test_send_request():
     """Test functions that accepts an url and returns decoded data from it"""
 
     # GIVEN an URL
@@ -67,7 +67,7 @@ def test_get_request():
     )
 
     # WHEN requesting
-    response = scout_requests.get_request(url)
+    response = scout_requests.send_request(url)
     # THEN assert that the reponse is correct
     assert response.status_code == 200
 

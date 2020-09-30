@@ -37,6 +37,7 @@ from scout.parse.matchmaker import (
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.utils import institute_and_case
 from scout.utils.matchmaker import matchmaker_request
+from scout.utils.scout_requests import send_request
 
 LOG = logging.getLogger(__name__)
 
@@ -391,6 +392,41 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     return coverage_data
 
 
+def mt_coverage_stats(individuals):
+    """Send a request to chanjo report endpoint to retrieve MT vs autosome coverage stats
+
+    Args:
+        individuals(dict): case_obj["individuals"] object
+
+    Returns:
+        coverage_stats(dict): a dictionary with mean MT and autosome transcript coverage stats
+    """
+    coverage_stats = {}
+    ind_ids = []
+    for ind in individuals.items():
+        ind_ids.append(ind["individual_id"])
+
+    data = dict(sample_ids=ind_ids, chrom="MT")  # or perhaps use another chrom?
+    # get mean transcript MT coverage for each individual
+    mt_stats = send_request(url_for("report.json_chrom_coverage"), "POST", data)
+    flash(mt_stats)
+
+    # get mean transcript coverage for each individual over the autosome reference chrom
+    data[chrom] = "21"
+    autosome_stats = send_request(url_for("report.json_chrom_coverage"), "POST", data)
+    flash(autosome_stats)
+
+    for ind in ind_ids:
+        coverage_info = dict(
+            mt_coverage=round(mt_stats[ind], 2),
+            autosome_cov=round(autosome_stats[ind], 2),
+            mt_autosome_ratio=round(mt_stats[ind] / autosome_stats[ind], 2),
+        )
+        coverage_stats[ind] = coverage_info
+
+    return coverage_stats
+
+
 def mt_excel_files(store, case_obj, temp_excel_dir):
     """Collect MT variants and format line of a MT variant report
     to be exported in excel format
@@ -406,6 +442,10 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     """
     today = datetime.datetime.now().strftime("%Y-%m-%d")
     samples = case_obj.get("individuals")
+    coverage_stats = None
+    # if chanjo connection is established, include MT vs AUTOSOME coverage stats
+    if current_app.config.get("SQLALCHEMY_DATABASE_URI"):
+        coverage_stats = mt_coverage_stats(samples)
 
     query = {"chrom": "MT"}
     mt_variants = list(

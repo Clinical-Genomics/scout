@@ -424,7 +424,7 @@ def mt_report(institute_id, case_name):
     os.makedirs(temp_excel_dir, exist_ok=True)
 
     # create mt excel files, one for each sample
-    n_files = controllers.mt_excel_files(store, case_obj, temp_excel_dir)
+    n_files = controllers.mt_excel_files(store, case_obj, temp_excel_dir, coverage_check)
 
     if n_files:
         today = datetime.datetime.now().strftime("%Y-%m-%d")
