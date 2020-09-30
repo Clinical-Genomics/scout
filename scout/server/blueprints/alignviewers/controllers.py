@@ -9,10 +9,8 @@ CUSTOM_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
 def make_igv_tracks(name, file_list):
     """ Return a dict according to IGV track format. """
     track_list = []
-    counter = 0
-    for r in file_list:
-        track_list.append({"name": name, "url": file_list[counter], "min": 0.0, "max": 30.0})
-        counter += 1
+    for track in file_list:
+        track_list.append({"name": name, "url": track, "min": 0.0, "max": 30.0})
     return track_list
 
 
@@ -25,9 +23,8 @@ def set_common_tracks(display_obj, build, form):
         form(dict) flask request form dictionary
     """
     user_obj = store.user(email=current_user.email)
-    custom_tracks_names = CUSTOM_TRACK_NAMES
-    if "igv_tracks" in user_obj:  # user settings for igv tracks exist -> use these settings
-        custom_tracks_names = user_obj.get("igv_tracks")
+    # if user settings for igv tracks exist -> use these settings, otherwise display all tracks
+    custom_tracks_names = user_obj.get("igv_tracks") or CUSTOM_TRACK_NAMES
 
     display_obj["custom_tracks"] = []
     for track in IGV_TRACKS[build]:
@@ -80,5 +77,7 @@ def set_case_specific_tracks(display_obj, form):
     """
     for track, label in CASE_SPECIFIC_TRACKS.items():
         if form.get(track):
-            track_info = make_igv_tracks(label, form.get(track))
+            track_info = make_igv_tracks(
+                label, form.get(track)
+            )  # This might be wrong because if the variable contains a list, the it should be collected with form.getlist !
             display_obj[track] = track_info

@@ -35,7 +35,7 @@ def test_sample_tracks():
     # WHEN the set_sample_tracks function is invoked:
     controllers.set_sample_tracks(display_obj, form_data)
     # THEN it should return 3 tracks
-    assert len(display_obj["sample_tracks"])
+    assert len(display_obj["sample_tracks"]) == 3
     # Containing the expected fields
     for track in display_obj["sample_tracks"]:
         assert track["name"] in sample_names

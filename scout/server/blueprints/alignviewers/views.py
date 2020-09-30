@@ -57,19 +57,20 @@ def igv():
     # Genome build is 38 if request.form.get("build") is 38 or if chrom == MT
     chromosome_build = request.form.get("build")
     chrom = request.form.get("contig")
+    if chrom == "MT":
+        chrom = "M"
     if chromosome_build in ["GRCh38", "38"] or chrom == "M":
         chromosome_build = "38"
     else:
         chromosome_build = "37"
-    if chrom == "MT":
-        chrom = "M"
+
     start = request.form.get("start")
     stop = request.form.get("stop")
     locus = "chr{0}:{1}-{2}".format(chrom, start, stop)
 
     display_obj = {}  # Initialize the dictionary containing all tracks info
 
-    # Set up IGV tracks that common for all cases:
+    # Set up IGV tracks that are common for all cases:
     display_obj["reference_track"] = HUMAN_REFERENCE[
         chromosome_build
     ]  # Human reference is always present
