@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """ Managed variant
 
     For potentially causative variants that are not yet in ClinVar
