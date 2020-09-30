@@ -140,6 +140,18 @@ class ManagedVariantHandler(object):
 
         return managed_variants_res
 
+    def get_managed_variants(self, institute_id=None, category="snv", build="37"):
+        """Return managed variant_ids. Limit by institute, category and build.
+
+        Returns:
+            managed_variant_ids(iterable(variant_id: String))
+        """
+
+        return [
+            managed_variant["variant_id"]
+            for managed_variant in self.managed_variants(category, build)
+        ]
+
     def delete_managed_variant(self, managed_variant_id):
         """Delete a managed variant of known id.
 

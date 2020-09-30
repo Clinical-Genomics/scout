@@ -388,18 +388,6 @@ class VariantHandler(VariantLoader):
 
         return causatives
 
-    def _get_managed_variants(self, institute_id=None, category="snv", build="37"):
-        """Return managed variant_ids. Limit by institute, category and build.
-
-        Returns:
-            managed_variant_ids(iterable(variant_id: String))
-        """
-
-        return [
-            managed_variant["variant_id"]
-            for managed_variant in self.managed_variants(category, build)
-        ]
-
     def check_managed(self, case_obj=None, institute_obj=None, limit_genes=None):
         """Check if there are any variants in case that match a managed variant.
 
@@ -416,7 +404,7 @@ class VariantHandler(VariantLoader):
 
         institute_id = case_obj["owner"] if case_obj else institute_obj["_id"]
 
-        positional_variant_ids = self._get_managed_variants(institute_id)
+        positional_variant_ids = self.get_managed_variants(institute_id)
 
         if len(positional_variant_ids) == 0:
             return []
