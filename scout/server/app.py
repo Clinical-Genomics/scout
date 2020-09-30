@@ -76,7 +76,6 @@ def create_app(config_file=None, config=None):
             # check if the endpoint requires authentication
             static_endpoint = "static" in request.endpoint or request.endpoint in [
                 "report.report",
-                "report.json_gene_coverage",
                 "report.json_chrom_coverage",
             ]
             public_endpoint = getattr(app.view_functions[request.endpoint], "is_public", False)
