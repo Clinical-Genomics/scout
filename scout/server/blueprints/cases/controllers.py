@@ -410,9 +410,10 @@ def mt_coverage_stats(individuals):
     data = dict(sample_ids=ind_ids, chrom="MT")  # or perhaps use another chrom?
     # get mean transcript MT coverage for each individual
     mt_stats = url_for("report.json_chrom_coverage", json=json.dumps(data))
-    flash(mt_stats)
+    return mt_stats
 
     # get mean transcript coverage for each individual over the autosome reference chrom
+    """
     data["chrom"] = "21"
     autosome_stats = url_for("report.json_chrom_coverage", json=json.dumps(data))
     flash(autosome_stats)
@@ -428,6 +429,7 @@ def mt_coverage_stats(individuals):
     flash(coverage_stats)
 
     return coverage_stats
+    """
 
 
 def mt_excel_files(store, case_obj, temp_excel_dir):
