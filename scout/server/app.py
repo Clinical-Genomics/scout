@@ -24,6 +24,7 @@ from .blueprints import (
     public,
     variant,
     variants,
+    managed_variants,
 )
 
 try:
@@ -132,6 +133,7 @@ def register_blueprints(app):
     app.register_blueprint(phenotypes.hpo_bp)
     app.register_blueprint(diagnoses.omim_bp)
     app.register_blueprint(institutes.overview)
+    app.register_blueprint(managed_variants.managed_variants_bp)
 
 
 def register_filters(app):
