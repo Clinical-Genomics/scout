@@ -483,7 +483,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
             for col, field in enumerate(MT_COV_STATS_HEADER):
                 Report_Sheet.write(row + 3, col, field)
 
-            # Write sample stats to excel sheet
+            # Write sample MT vs autosome coverage stats to excel sheet
             for col, item in enumerate(["mt_coverage", "autosome_cov", "mt_autosome_ratio"]):
                 Report_Sheet.write(row + 4, col, coverage_stats[sample_id].get(item))
 

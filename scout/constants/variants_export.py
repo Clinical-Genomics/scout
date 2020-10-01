@@ -19,7 +19,7 @@ MT_EXPORT_HEADER = [
     "AD Alternative",
 ]
 
-# Gets added to MT_EXPORT_HEADER if app is connected to chanjo report
+# Used only if app is connected to chanjo report
 MT_COV_STATS_HEADER = ["Mean MT coverage", "Mean autosome coverage", "MT/autosome ratio"]
 
 VCF_HEADER = [
