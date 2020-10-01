@@ -8,7 +8,7 @@ from scout.server.blueprints.cases.controllers import case, case_report_content,
 def test_coverage_stats(app, monkeypatch):
     """Test the function that sends requests to Chanjo to get MT vs autosomal coverage stats"""
 
-    # GIVEN a mock connection to a chanjo and a json_chrom_coverage endpoint
+    # GIVEN a mock connection to chanjo and an available json_chrom_coverage endpoint
     bp = Blueprint("report", __name__)
 
     @bp.route("/chanjo_endpoint", methods=["POST"])
