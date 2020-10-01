@@ -408,7 +408,7 @@ def mt_coverage_stats(individuals, ref_chrom="21"):
     # Prepare complete url to Chanjo report chromosome mean coverage calculation endpoint
     cov_calc_url = url_for("report.json_chrom_coverage", _external=True)
     # Prepare request data to calculate mean MT coverage
-    data = dict(sample_ids=",".join(ind_ids), chrom="MT")  # or perhaps use another chrom?
+    data = dict(sample_ids=",".join(ind_ids), chrom="MT")
     # Send POST request with data to chanjo endpoint
     resp = requests.post(cov_calc_url, json=data)
     mt_cov_data = json.loads(resp.text)
