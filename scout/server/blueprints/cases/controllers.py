@@ -411,7 +411,7 @@ def mt_coverage_stats(individuals):
     coverage_calc_url = url_for("report.json_chrom_coverage", _external=True)
     mt_stats = requests.post(coverage_calc_url, json=data)
     # mt_stats = send_request(url_for("report.json_chrom_coverage"), "POST", data)
-    return str(mt_stats.json)
+    return str(mt_stats.status_code)
     """
     flash(mt_stats)
 
