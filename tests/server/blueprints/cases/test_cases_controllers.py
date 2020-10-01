@@ -1,8 +1,47 @@
 """Tests for the cases controllers"""
-from flask import Flask, url_for
+from flask import Flask, url_for, jsonify, Blueprint
 from scout.server.extensions import store
+import requests  # import requests for the purposes of monkeypatching
+from scout.server.blueprints.cases.controllers import case, case_report_content, mt_coverage_stats
 
-from scout.server.blueprints.cases.controllers import case, case_report_content
+
+def test_coverage_stats(app, monkeypatch):
+    """Test the function that sends requests to Chanjo to get MT vs autosomal coverage stats"""
+
+    # GIVEN a mock connection to a chanjo and a json_chrom_coverage endpoint
+    bp = Blueprint("report", __name__)
+
+    @bp.route("/chanjo_endpoint", methods=["POST"])
+    def json_chrom_coverage():
+        pass
+
+    app.register_blueprint(bp)
+
+    def mock_post(*args, **kwargs):
+        return MockResponse()
+
+    # AND a mock response from chanjo API with coverage stats for some samples
+    class MockResponse:
+        def __init__(self):
+            self.text = '{"sample1":36, "sample2": 32, "sample3": 34}'
+
+    monkeypatch.setattr(requests, "post", mock_post)
+
+    # Given a case with the same samples
+    individuals = []
+    samples = ["sample1", "sample2", "sample3"]
+    for sample in samples:
+        individuals.append({"individual_id": sample})
+
+    with app.app_context():
+        # WHEN the function to get the MT vs autosome coverage stats is invoked
+        coverage_stats = mt_coverage_stats(individuals, "21")
+        expected_keys = ["mt_coverage", "autosome_cov", "mt_autosome_ratio"]
+        # THEN it should return stats for each sample, and all expected key/values for each sample
+        for sample in samples:
+            assert sample in coverage_stats
+            for key in expected_keys:
+                assert key in coverage_stats[sample]
 
 
 def test_case_report_content(adapter, institute_obj, case_obj, variant_obj):
