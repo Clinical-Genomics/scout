@@ -35,8 +35,6 @@ from scout.server.utils import institute_and_case, templated, user_institutes
 
 from . import controllers
 
-import os, sys
-
 LOG = logging.getLogger(__name__)
 
 cases_bp = Blueprint(
@@ -426,15 +424,14 @@ def mt_report(institute_id, case_name):
     os.makedirs(temp_excel_dir, exist_ok=True)
 
     samples = case_obj.get("individuals")
-    try:
-        coverage_stats = controllers.mt_coverage_stats(samples)
-        return str(coverage_stats)
-    except Exception as ex:
-        exception_message = str(exception)
+    #try:
+    coverage_stats = controllers.mt_coverage_stats(samples)
+    return str(coverage_stats)
 
-        exception_type, exception_object, exception_traceback = sys.exc_info()
-        filename = os.path.split(exception_traceback.tb_frame.f_code.co_filename)[1]
-        return f"{exception_message} {exception_type} {filename}, Line {exception_traceback.tb_lineno}"
+    #except Exception as ex:
+    #    exception_message = str(exception)
+
+
 
     """
     # create mt excel files, one for each sample
