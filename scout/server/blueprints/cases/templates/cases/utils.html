@@ -253,6 +253,28 @@
   </div>
 {% endmacro %}
 
+{% macro matching_managed_variants(managed_variants, institute, case) %}
+  <div class="card panel-default">
+    <div data-toggle='tooltip' class="panel-heading" title="Any variants in this case
+      that have been marked as managed">
+      Managed variants
+    </div>
+    <ul class="list-group">
+      {% for variant in managed_variants %}
+        <li class="list-group-item">
+          <a href="{{ url_for('variant.variant', institute_id=institute._id,
+                              case_name=case.display_name, variant_id=variant._id) }}">
+            {{ variant.hgnc_symbols|join(', ') }}
+          </a>
+        </li>
+      {% else %}
+        <li class="list-group-item">No managed variants.</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endmacro %}
+
+
 {% macro remove_form(url, hidden_input=None, button_name=None, button_value=None) %}
   <form action="{{ url }}" method="POST">
     {% if hidden_input %}

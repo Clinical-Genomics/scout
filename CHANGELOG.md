@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show a flash message with clear info about non-valid genes when gene panel creation fails
 - CNV report link in cancer case side navigation
 - Return to comment section after editing, deleting or submitting a comment
+- Managed variants
 ### Fixed
 - missing `vcf_cancer_sv` and `vcf_cancer_sv_research` to manual.
 - Split ClinVar multiple clnsig values (slash-separated) and strip them of underscore for annotations without accession number
