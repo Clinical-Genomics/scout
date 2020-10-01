@@ -479,19 +479,13 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
                 Report_Sheet.write(row, col, field)
 
         if coverage_stats:
-            for col, field in enumerate(MT_COV_STATS_HEADER, 1):
+            # Write coverage stats header after introducing 2 empty lines
+            for col, field in enumerate(MT_COV_STATS_HEADER):
                 Report_Sheet.write(row + 3, col, field)
 
-        """
-        if co   verage_stats:
-            for row, line in enumerate(MT_COV_STATS_HEADER, 1):
-                Report_Sheet.write(row, col, field)
-
-
-
-            for item in ["mt_coverage", "autosome_cov", "mt_autosome_ratio"]:
-                line.append(coverage_stats.get("sample_id", {}).get(item, ""))
-        """
+            # Write sample stats to excel sheet
+            for col, item in enumerate(["mt_coverage", "autosome_cov", "mt_autosome_ratio"]):
+                Report_Sheet.write(row + 4, col, coverage_stats[sample_id].get(item))
 
         workbook.close()
 
