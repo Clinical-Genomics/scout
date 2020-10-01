@@ -425,7 +425,7 @@ def mt_report(institute_id, case_name):
 
     samples = case_obj.get("individuals")
     try:
-        coverage_stats = mt_coverage_stats(samples)
+        coverage_stats = controllers.mt_coverage_stats(samples)
         return str(coverage_stats)
     except Exception as ex:
         return str(ex)
