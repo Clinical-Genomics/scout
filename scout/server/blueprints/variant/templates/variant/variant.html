@@ -384,7 +384,13 @@
             </td>
             <td>
               CADD score
-              <span><strong>{{ variant.cadd_score or '-' }}</strong></span>
+              <span><strong>
+                {% if variant.cadd_score %}
+                  {{ variant.cadd_score|round(1) }}
+                {% else %}
+                  -
+                {% endif %}
+              </strong></span>
             </td>
           </tr>
         </tbody>

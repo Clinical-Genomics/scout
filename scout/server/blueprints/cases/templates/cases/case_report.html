@@ -612,7 +612,15 @@
             {% endif %}
             </td>
             <td>
-              <span class="float-left">{{ variant.cadd_score or '-' }}</strong>
+              <span class="float-left">
+                <strong>
+                  {% if variant.cadd_score %}
+                    {{ variant.cadd_score|round(1) }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </strong>
+              </span>
             </td>
             <td>
               <span class="float-left">
