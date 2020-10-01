@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 import itertools
 import logging
 import os
@@ -408,12 +409,12 @@ def mt_coverage_stats(individuals):
 
     data = dict(sample_ids=ind_ids, chrom="MT")  # or perhaps use another chrom?
     # get mean transcript MT coverage for each individual
-    mt_stats = send_request(url_for("report.json_chrom_coverage"), "POST", data)
+    mt_stats = url_for("report.json_chrom_coverage", json=json.dumps(data))
     flash(mt_stats)
 
     # get mean transcript coverage for each individual over the autosome reference chrom
     data["chrom"] = "21"
-    autosome_stats = send_request(url_for("report.json_chrom_coverage"), "POST", data)
+    autosome_stats = url_for("report.json_chrom_coverage", json=json.dumps(data))
     flash(autosome_stats)
 
     for ind in ind_ids:
