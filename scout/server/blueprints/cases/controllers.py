@@ -407,34 +407,29 @@ def mt_coverage_stats(individuals):
     for ind in individuals:
         ind_ids.append(ind["individual_id"])
 
+    # Prepare complete url to Chanjo report chromosome mean coverage calculation endpoint
+    cov_calc_url = url_for("report.json_chrom_coverage", _external=True)
+    # Prepare request data to calculate mean MT coverage
     data = dict(sample_ids=",".join(ind_ids), chrom="MT")  # or perhaps use another chrom?
-    # get mean transcript MT coverage for each individual
-    coverage_calc_url = url_for("report.json_chrom_coverage", _external=True)
+    # Send POST request with data to chanjo endpoint
     resp = requests.post(coverage_calc_url, json=data)
-    # mt_stats = send_request(url_for("report.json_chrom_coverage"), "POST", data)
-    resp_dict = json.loads(resp.text)
-    return resp_dict
-    """
-    flash(mt_stats)
+    mt_cov_data = json.loads(resp.text)
 
-    # get mean transcript coverage for each individual over the autosome reference chrom
+    # Change request data to calculate mean chr 21 coverage
     data["chrom"] = "21"
-    autosome_stats = send_request(url_for("report.json_chrom_coverage"), "POST", data)
-
-
-
-    flash(autosome_stats)
+    # Send POST request with data to chanjo endpoint
+    resp = requests.post(coverage_calc_url, json=data)
+    ref_cov_data = json.loads(resp.text)  # mean coverage over the transcripts of ref chrom
 
     for ind in ind_ids:
         coverage_info = dict(
-            mt_coverage=round(mt_stats[ind], 2),
-            autosome_cov=round(autosome_stats[ind], 2),
-            mt_autosome_ratio=round(mt_stats[ind] / autosome_stats[ind], 2),
+            mt_coverage=round(mt_cov_data[ind], 2),
+            autosome_cov=round(ref_cov_data[ind], 2),
+            mt_autosome_ratio=round(mt_cov_data[ind] / ref_cov_data[ind], 2),
         )
         coverage_stats[ind] = coverage_info
 
     return coverage_stats
-    """
 
 
 def mt_excel_files(store, case_obj, temp_excel_dir):
