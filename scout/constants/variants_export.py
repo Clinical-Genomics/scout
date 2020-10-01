@@ -19,6 +19,9 @@ MT_EXPORT_HEADER = [
     "AD Alternative",
 ]
 
+# Gets added to MT_EXPORT_HEADER if app is connected to chanjio report
+MT_COV_STATS_HEADER = ["Mean MT coverage", "Mean autosome coverage", "MT/autosome ratio"]
+
 VCF_HEADER = [
     "##fileformat=VCFv4.2",
     '##INFO=<ID=END,Number=1,Type=Integer,Description="End position of the variant described in this record">',

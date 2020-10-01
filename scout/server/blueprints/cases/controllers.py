@@ -16,6 +16,7 @@ from xlsxwriter import Workbook
 from scout.constants import (
     CANCER_PHENOTYPE_MAP,
     MT_EXPORT_HEADER,
+    MT_COV_STATS_HEADER,
     PHENOTYPE_GROUPS,
     PHENOTYPE_MAP,
     SEX_MAP,
@@ -447,10 +448,12 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     """
     today = datetime.datetime.now().strftime("%Y-%m-%d")
     samples = case_obj.get("individuals")
+    file_header = MT_EXPORT_HEADER
     coverage_stats = None
     # if chanjo connection is established, include MT vs AUTOSOME coverage stats
     if current_app.config.get("SQLALCHEMY_DATABASE_URI"):
         coverage_stats = mt_coverage_stats(samples)
+        file_header + MT_COV_STATS_HEADER
 
     query = {"chrom": "MT"}
     mt_variants = list(
@@ -470,11 +473,16 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
 
         # Write the column header
         row = 0
-        for col, field in enumerate(MT_EXPORT_HEADER):
+
+        for col, field in enumerate(file_header):
             Report_Sheet.write(row, col, field)
 
         # Write variant lines, after header (start at line 1)
         for row, line in enumerate(sample_lines, 1):  # each line becomes a row in the document
+            if coverage_stats:
+                for item in ["mt_coverage", "autosome_cov", "mt_autosome_ratio"]:
+                    line.append(coverage_stats.get("sample_id", {}).get(item), "")
+
             for col, field in enumerate(line):  # each field in line becomes a cell
                 Report_Sheet.write(row, col, field)
         workbook.close()
