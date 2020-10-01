@@ -420,6 +420,8 @@ def mt_coverage_stats(individuals, ref_chrom="21"):
     ref_cov_data = json.loads(resp.text)  # mean coverage over the transcripts of ref chrom
 
     for ind in ind_ids:
+        if not (mt_cov_data.get(ind) and ref_cov_data.get(ind)):
+            continue
         coverage_info = dict(
             mt_coverage=round(mt_cov_data[ind], 2),
             autosome_cov=round(ref_cov_data[ind], 2),
@@ -478,7 +480,9 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
             for col, field in enumerate(line):  # each field in line becomes a cell
                 Report_Sheet.write(row, col, field)
 
-        if coverage_stats:
+        if bool(
+            coverage_stats
+        ):  # it's None if app is not connected to Chanjo or {} if samples are not in Chanjo db
             # Write coverage stats header after introducing 2 empty lines
             for col, field in enumerate(MT_COV_STATS_HEADER):
                 Report_Sheet.write(row + 3, col, field)
