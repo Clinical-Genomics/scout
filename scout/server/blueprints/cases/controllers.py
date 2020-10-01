@@ -412,13 +412,13 @@ def mt_coverage_stats(individuals):
     # Prepare request data to calculate mean MT coverage
     data = dict(sample_ids=",".join(ind_ids), chrom="MT")  # or perhaps use another chrom?
     # Send POST request with data to chanjo endpoint
-    resp = requests.post(coverage_calc_url, json=data)
+    resp = requests.post(cov_calc_url, json=data)
     mt_cov_data = json.loads(resp.text)
 
     # Change request data to calculate mean chr 21 coverage
     data["chrom"] = "21"
     # Send POST request with data to chanjo endpoint
-    resp = requests.post(coverage_calc_url, json=data)
+    resp = requests.post(cov_calc_url, json=data)
     ref_cov_data = json.loads(resp.text)  # mean coverage over the transcripts of ref chrom
 
     for ind in ind_ids:
