@@ -434,7 +434,9 @@ def mt_report(institute_id, case_name):
 
         exception_type, exception_object, exception_traceback = sys.exc_info()
         filename = os.path.split(exception_traceback.tb_frame.f_code.co_filename)[1]
-        return f"{exception_message} {exception_type} {filename}, Line {exception_traceback.tb_lineno}"
+        return (
+            f"{exception_message} {exception_type} {filename}, Line {exception_traceback.tb_lineno}"
+        )
 
     """
     # create mt excel files, one for each sample
