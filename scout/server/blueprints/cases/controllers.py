@@ -38,7 +38,6 @@ from scout.parse.matchmaker import (
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.utils import institute_and_case
 from scout.utils.matchmaker import matchmaker_request
-from scout.utils.scout_requests import send_request
 
 LOG = logging.getLogger(__name__)
 
@@ -393,11 +392,12 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     return coverage_data
 
 
-def mt_coverage_stats(individuals):
+def mt_coverage_stats(individuals, ref_chrom="21"):
     """Send a request to chanjo report endpoint to retrieve MT vs autosome coverage stats
 
     Args:
         individuals(dict): case_obj["individuals"] object
+        ref_chrom(str): reference chromosome (1-22)
 
     Returns:
         coverage_stats(dict): a dictionary with mean MT and autosome transcript coverage stats
@@ -416,7 +416,7 @@ def mt_coverage_stats(individuals):
     mt_cov_data = json.loads(resp.text)
 
     # Change request data to calculate mean chr 21 coverage
-    data["chrom"] = "21"
+    data["chrom"] = str(ref_chrom)  # convert to string if an int is provided
     # Send POST request with data to chanjo endpoint
     resp = requests.post(cov_calc_url, json=data)
     ref_cov_data = json.loads(resp.text)  # mean coverage over the transcripts of ref chrom

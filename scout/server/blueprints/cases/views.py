@@ -423,13 +423,6 @@ def mt_report(institute_id, case_name):
     temp_excel_dir = os.path.join(cases_bp.static_folder, "_".join([case_name, "mt_reports"]))
     os.makedirs(temp_excel_dir, exist_ok=True)
 
-    samples = case_obj.get("individuals")
-    try:
-        coverage_stats = controllers.mt_coverage_stats(samples)
-        return str(coverage_stats)
-    except Exception as ex:
-        return str(ex)
-
     """
     # create mt excel files, one for each sample
     n_files = controllers.mt_excel_files(store, case_obj, temp_excel_dir)
