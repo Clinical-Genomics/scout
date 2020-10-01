@@ -450,7 +450,6 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     # if chanjo connection is established, include MT vs AUTOSOME coverage stats
     if current_app.config.get("SQLALCHEMY_DATABASE_URI"):
         coverage_stats = mt_coverage_stats(samples)
-        file_header += MT_COV_STATS_HEADER
 
     query = {"chrom": "MT"}
     mt_variants = list(
@@ -471,17 +470,27 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
         # Write the column header
         row = 0
 
-        for col, field in enumerate(file_header):
+        for col, field in enumerate(MT_EXPORT_HEADER):
             Report_Sheet.write(row, col, field)
 
         # Write variant lines, after header (start at line 1)
         for row, line in enumerate(sample_lines, 1):  # each line becomes a row in the document
-            if coverage_stats:
-                for item in ["mt_coverage", "autosome_cov", "mt_autosome_ratio"]:
-                    line.append(coverage_stats.get("sample_id", {}).get(item, ""))
-
             for col, field in enumerate(line):  # each field in line becomes a cell
                 Report_Sheet.write(row, col, field)
+
+        for row, line in ([], len(sample_lines) + 1):
+            Report_Sheet.write(row, col, "MEH")
+        """
+        if co   verage_stats:
+            for row, line in enumerate(MT_COV_STATS_HEADER, 1):
+                Report_Sheet.write(row, col, field)
+
+
+
+            for item in ["mt_coverage", "autosome_cov", "mt_autosome_ratio"]:
+                line.append(coverage_stats.get("sample_id", {}).get(item, ""))
+        """
+
         workbook.close()
 
         if os.path.exists(os.path.join(temp_excel_dir, document_name)):
