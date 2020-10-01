@@ -403,7 +403,7 @@ def mt_coverage_stats(individuals):
     """
     coverage_stats = {}
     ind_ids = []
-    for ind in individuals.items():
+    for ind in individuals:
         ind_ids.append(ind["individual_id"])
 
     data = dict(sample_ids=ind_ids, chrom="MT")  # or perhaps use another chrom?
@@ -423,6 +423,8 @@ def mt_coverage_stats(individuals):
             mt_autosome_ratio=round(mt_stats[ind] / autosome_stats[ind], 2),
         )
         coverage_stats[ind] = coverage_info
+
+    flash(coverage_stats)
 
     return coverage_stats
 
