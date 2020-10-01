@@ -478,8 +478,12 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
             for col, field in enumerate(line):  # each field in line becomes a cell
                 Report_Sheet.write(row, col, field)
 
-        for row, line in ([], len(sample_lines) + 1):
-            Report_Sheet.write(row, col, "MEH")
+        if coverage_stats:
+            # Add an empty line
+            for row, line in (coverage_stats, len(sample_lines) + 1):
+                for col, field in enumerate(line):
+                    Report_Sheet.write(row, col, "-")
+
         """
         if co   verage_stats:
             for row, line in enumerate(MT_COV_STATS_HEADER, 1):
