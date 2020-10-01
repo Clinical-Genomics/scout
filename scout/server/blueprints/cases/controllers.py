@@ -406,12 +406,12 @@ def mt_coverage_stats(individuals):
     for ind in individuals:
         ind_ids.append(ind["individual_id"])
 
-    data = dict(sample_ids=ind_ids, chrom="MT")  # or perhaps use another chrom?
+    data = dict(sample_ids=",".join(ind_ids), chrom="MT")  # or perhaps use another chrom?
     # get mean transcript MT coverage for each individual
     coverage_calc_url = url_for("report.json_chrom_coverage", _external=True)
     mt_stats = requests.post(coverage_calc_url, json=data)
     # mt_stats = send_request(url_for("report.json_chrom_coverage"), "POST", data)
-    return mt_stats.json
+    return mt_stats
     """
     flash(mt_stats)
 
