@@ -138,34 +138,30 @@ def case(store, institute_obj, case_obj):
             hpo_term["phenotype_id"]
         )
 
-    rank_model_link_prefix = current_app.config.get("RANK_MODEL_LINK_PREFIX", "")
     if case_obj.get("rank_model_version"):
-        rank_model_link_postfix = current_app.config.get("RANK_MODEL_LINK_POSTFIX", "")
         rank_model_link = "".join(
             [
-                rank_model_link_prefix,
+                current_app.config.get("RANK_MODEL_LINK_PREFIX", ""),
                 str(case_obj["rank_model_version"]),
-                rank_model_link_postfix,
+                current_app.config.get("RANK_MODEL_LINK_POSTFIX", ""),
             ]
         )
-        print(rank_model_link)
         case_obj["rank_model_link"] = rank_model_link
-    sv_rank_model_link_prefix = current_app.config.get("SV_RANK_MODEL_LINK_PREFIX", "")
+
     if case_obj.get("sv_rank_model_version"):
-        sv_rank_model_link_postfix = current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX", "")
         case_obj["sv_rank_model_link"] = "".join(
             [
-                sv_rank_model_link_prefix,
+                current_app.config.get("SV_RANK_MODEL_LINK_PREFIX", ""),
                 str(case_obj["sv_rank_model_version"]),
-                sv_rank_model_link_postfix,
+                current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX", ""),
             ]
         )
+
     # other collaborators than the owner of the case
     o_collaborators = []
     for collab_id in case_obj.get("collaborators", []):
         if collab_id != case_obj["owner"] and store.institute(collab_id):
             o_collaborators.append(store.institute(collab_id))
-
     case_obj["o_collaborators"] = [
         (collab_obj["_id"], collab_obj["display_name"]) for collab_obj in o_collaborators
     ]
@@ -198,6 +194,7 @@ def case(store, institute_obj, case_obj):
     data = {
         "status_class": STATUS_MAP.get(case_obj["status"]),
         "other_causatives": [var for var in store.check_causatives(case_obj=case_obj)],
+        "managed_variants": [var for var in store.check_managed(case_obj=case_obj)],
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "hpo_groups": pheno_groups,
         "events": events,
