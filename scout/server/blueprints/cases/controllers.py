@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import itertools
+import json
 import logging
 import os
 
@@ -409,9 +410,10 @@ def mt_coverage_stats(individuals):
     data = dict(sample_ids=",".join(ind_ids), chrom="MT")  # or perhaps use another chrom?
     # get mean transcript MT coverage for each individual
     coverage_calc_url = url_for("report.json_chrom_coverage", _external=True)
-    mt_stats = requests.post(coverage_calc_url, json=data)
+    resp = requests.post(coverage_calc_url, json=data)
     # mt_stats = send_request(url_for("report.json_chrom_coverage"), "POST", data)
-    return str(mt_stats.text)
+    resp_dict = json.loads(resp.text)
+    return resp_dict
     """
     flash(mt_stats)
 
