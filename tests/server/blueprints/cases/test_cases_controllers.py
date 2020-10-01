@@ -1,5 +1,5 @@
 """Tests for the cases controllers"""
-from flask import Flask, url_for, jsonify, Blueprint
+from flask import Flask, url_for, Blueprint
 from scout.server.extensions import store
 import requests  # import requests for the purposes of monkeypatching
 from scout.server.blueprints.cases.controllers import case, case_report_content, mt_coverage_stats
