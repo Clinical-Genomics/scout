@@ -412,7 +412,7 @@ def mt_coverage_stats(individuals):
     flash(mt_stats)
 
     # get mean transcript coverage for each individual over the autosome reference chrom
-    data[chrom] = "21"
+    data["chrom"] = "21"
     autosome_stats = send_request(url_for("report.json_chrom_coverage"), "POST", data)
     flash(autosome_stats)
 
