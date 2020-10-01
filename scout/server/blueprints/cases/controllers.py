@@ -481,7 +481,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
         for row, line in enumerate(sample_lines, 1):  # each line becomes a row in the document
             if coverage_stats:
                 for item in ["mt_coverage", "autosome_cov", "mt_autosome_ratio"]:
-                    line.append(coverage_stats.get("sample_id", {}).get(item), "")
+                    line.append(coverage_stats.get("sample_id", {}).get(item, ""))
 
             for col, field in enumerate(line):  # each field in line becomes a cell
                 Report_Sheet.write(row, col, field)
