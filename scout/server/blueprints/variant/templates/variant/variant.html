@@ -384,7 +384,7 @@
             </td>
             <td>
               CADD score
-              <span><strong>{{ variant.cadd_score or '-' }}</strong></span>
+              <span><strong>{{ variant.cadd_score|round(1) or '-' }}</strong></span>
             </td>
           </tr>
         </tbody>
