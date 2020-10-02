@@ -390,7 +390,7 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     return coverage_data
 
 
-def mt_coverage_stats(individuals, ref_chrom="21"):
+def mt_coverage_stats(individuals, ref_chrom="14"):
     """Send a request to chanjo report endpoint to retrieve MT vs autosome coverage stats
 
     Args:
@@ -425,7 +425,7 @@ def mt_coverage_stats(individuals, ref_chrom="21"):
         coverage_info = dict(
             mt_coverage=round(mt_cov_data[ind], 2),
             autosome_cov=round(ref_cov_data[ind], 2),
-            mt_autosome_ratio=round(mt_cov_data[ind] / ref_cov_data[ind], 2),
+            mt_copy_number=round((mt_cov_data[ind] / ref_cov_data[ind]) * 2, 2),
         )
         coverage_stats[ind] = coverage_info
 
@@ -488,7 +488,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
                 Report_Sheet.write(row + 3, col, field)
 
             # Write sample MT vs autosome coverage stats to excel sheet
-            for col, item in enumerate(["mt_coverage", "autosome_cov", "mt_autosome_ratio"]):
+            for col, item in enumerate(["mt_coverage", "autosome_cov", "mt_copy_number"]):
                 Report_Sheet.write(row + 4, col, coverage_stats[sample_id].get(item))
 
         workbook.close()

@@ -20,7 +20,7 @@ MT_EXPORT_HEADER = [
 ]
 
 # Used only if app is connected to chanjo report
-MT_COV_STATS_HEADER = ["Mean MT coverage", "Mean autosome coverage", "MT/autosome ratio"]
+MT_COV_STATS_HEADER = ["Mean MT coverage", "Mean chrom 14 scoverage", "Estimated mtDNA copy number"]
 
 VCF_HEADER = [
     "##fileformat=VCFv4.2",
