@@ -713,7 +713,9 @@ def case_default_panels(case_obj):
         case_panels(list): a list of panels (panel_name)
     """
     case_panels = [
-        panel["panel_name"] for panel in case_obj.get("panels", []) if panel["is_default"] is True
+        panel["panel_name"]
+        for panel in case_obj.get("panels", [])
+        if panel.get("is_default", None) is True
     ]
     return case_panels
 

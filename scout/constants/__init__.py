@@ -50,6 +50,7 @@ from .variants_export import (
     EXPORT_HEADER,
     VCF_HEADER,
     MT_EXPORT_HEADER,
+    MT_COV_STATS_HEADER,
     VERIFIED_VARIANTS_HEADER,
 )
 from .igv_tracks import IGV_TRACKS, HUMAN_REFERENCE, CASE_SPECIFIC_TRACKS
