@@ -413,7 +413,7 @@ def mt_coverage_stats(individuals, ref_chrom="14"):
     resp = requests.post(cov_calc_url, json=data)
     mt_cov_data = json.loads(resp.text)
 
-    # Change request data to calculate mean chr 21 coverage
+    # Change request data to calculate mean autosomal coverage
     data["chrom"] = str(ref_chrom)  # convert to string if an int is provided
     # Send POST request with data to chanjo endpoint
     resp = requests.post(cov_calc_url, json=data)
