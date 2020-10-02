@@ -243,7 +243,7 @@
         <li class="list-group-item">
           <a href="{{ url_for('variant.variant', institute_id=institute._id,
                               case_name=case.display_name, variant_id=variant._id) }}">
-            {{ variant.hgnc_symbols|join(', ') }}
+            {{ variant.hgnc_symbols|join(', ') or variant.hgnc_ids|join(', ')}}
           </a>
         </li>
       {% else %}
