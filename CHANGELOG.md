@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Timeout of `All SNVs and INDELs` page when no valid gene is provided in the search
 - Round CADD (MIPv9)
 - Missing default panel value
+- Invisible other causatives lines when other causatives lack gene symbols
 ### Changed
 - Do not freeze mkdocs-material to version 4.6.1
 - Remove pre-commit dependency
