@@ -35,8 +35,8 @@ def test_coverage_stats(app, monkeypatch):
 
     with app.app_context():
         # WHEN the function to get the MT vs autosome coverage stats is invoked
-        coverage_stats = mt_coverage_stats(individuals, "21")
-        expected_keys = ["mt_coverage", "autosome_cov", "mt_autosome_ratio"]
+        coverage_stats = mt_coverage_stats(individuals, "14")
+        expected_keys = ["mt_coverage", "autosome_cov", "mt_copy_number"]
         # THEN it should return stats for each sample, and all expected key/values for each sample
         for sample in samples:
             assert sample in coverage_stats
