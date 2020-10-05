@@ -29,6 +29,12 @@
 </head>
 
 <body>
+  DEBUGGING CODE:<br>
+  rhocall_bed:{{rhocall_bed}}<br>
+  rhocall_wig:{{rhocall_wig}}<br>
+  tiddit_coverage_wig:{{tiddit_coverage_wig}}<br>
+  upd_regions_bed:{{upd_regions_bed}}<br>
+  upd_sites_bed:{{upd_sites_bed}}<br>
   <div class="container-fluid" id="igvDiv" style="padding:5px; border:1px solid lightgray"></div>
 </body>
 
@@ -65,7 +71,7 @@
                             {% endif %}
                         },
                       {% endfor %}
-                      {% for wtrack in rhocall_wig_tracks %}
+                      {% for wtrack in rhocall_wig %}
                       {
                         type: "wig",
                         name: '{{ wtrack.name }}',
@@ -78,7 +84,7 @@
                         sourceType: 'file'
                       },
                       {% endfor %}
-                      {% for btrack in rhocall_bed_tracks %}
+                      {% for btrack in rhocall_bed %}
                       {
                         type: "bed",
                         name: '{{ btrack.name }}',
@@ -99,7 +105,7 @@
                         height: "{{track.height}}"
                       },
                       {% endfor %}
-                      {% for ttrack in tiddit_wig_tracks %}
+                      {% for ttrack in tiddit_coverage_wig %}
                       {
                         type: "wig",
                         name: '{{ ttrack.name }}',
@@ -109,7 +115,7 @@
                         sourceType: 'file'
                       },
                       {% endfor %}
-                      {% for rtrack in updregion_tracks %}
+                      {% for rtrack in upd_regions_bed %}
                       {
                         type: "bed",
                         name: '{{ rtrack.name }}',
@@ -118,7 +124,7 @@
                         sourceType: 'file'
                       },
                       {% endfor %}
-                      {% for strack in updsites_tracks %}
+                      {% for strack in upd_sites_bed %}
                       {
                         type: "bed",
                         name: '{{ strack.name }}',
