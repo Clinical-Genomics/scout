@@ -1,6 +1,6 @@
 {% macro igv_track_selection(igv_tracks, current_user) %}
 <div id="accordion">
-  <a data-toggle="collapse" data-parent="#accordion" href="#track_settings">settings</a>
+  <a data-toggle="collapse" data-parent="#accordion" href="#track_settings">Settings</a>
   <div id="track_settings" class="collapse">
     <form action="{{url_for('variant.update_tracks_settings')}}" method="POST">
       <div class="row d-flex align-items-center">
