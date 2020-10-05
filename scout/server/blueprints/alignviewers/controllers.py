@@ -77,7 +77,5 @@ def set_case_specific_tracks(display_obj, form):
     """
     for track, label in CASE_SPECIFIC_TRACKS.items():
         if form.get(track):
-            track_info = make_igv_tracks(
-                label, form.get(track)
-            )  # This might be wrong because if the variable contains a list, the it should be collected with form.getlist !
+            track_info = make_igv_tracks(label, form.get(track).split(","))
             display_obj[track] = track_info
