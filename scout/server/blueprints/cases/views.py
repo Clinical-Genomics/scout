@@ -31,7 +31,7 @@ from werkzeug.datastructures import Headers
 
 from scout.constants import SAMPLE_SOURCE
 from scout.server.extensions import mail, store
-from scout.server.utils import institute_and_case, templated, user_institutes, count_cursor
+from scout.server.utils import institute_and_case, templated, user_institutes
 
 from . import controllers
 
@@ -51,10 +51,8 @@ cases_bp = Blueprint(
 def index():
     """Display a list of all user institutes."""
     institute_objs = user_institutes(store, current_user)
-    institutes_count = (
-        (institute_obj, count_cursor(store.cases(collaborator=institute_obj["_id"])))
-        for institute_obj in institute_objs
-    )
+    institutes_count = ((institute_obj, sum(1 for i in store.cases(collaborator=institute_obj['_id'])))
+                        for institute_obj in institute_objs if institute_obj)
     return dict(institutes=institutes_count)
 
 

@@ -33,7 +33,6 @@ from scout.server.blueprints.variant.utils import predictions
 from scout.server.links import add_gene_links, add_tx_links, ensembl, cosmic_link
 from scout.server.utils import (
     case_append_alignments,
-    count_cursor,
     institute_and_case,
     user_institutes,
     variant_case,
@@ -45,12 +44,14 @@ from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
 LOG = logging.getLogger(__name__)
 
 
-def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
+def variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
     """Pre-process list of variants."""
-    variant_count = count_cursor(variants_query)
+    
+    
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = variants_query.skip(skip_count).limit(per_page)
+
     genome_build = str(case_obj.get("genome_build", "37"))
     if genome_build not in ["37", "38"]:
         genome_build = "37"
@@ -93,10 +94,10 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
     return {"variants": variants, "more_variants": more_variants}
 
 
-def sv_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
+def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
     """Pre-process list of SV variants."""
     skip_count = per_page * max(page - 1, 0)
-    variant_count = count_cursor(variants_query)
+
     more_variants = True if variant_count > (skip_count + per_page) else False
     variants = []
     genome_build = str(case_obj.get("genome_build", "37"))
@@ -461,13 +462,12 @@ def get_variant_info(genes):
     return data
 
 
-def cancer_variants(store, institute_id, case_name, variants_query, form, page=1):
+def cancer_variants(store, institute_id, case_name, variants_query, variant_count, form, page=1):
     """Fetch data related to cancer variants for a case."""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     per_page = 50
     skip_count = per_page * max(page - 1, 0)
-    variant_count = count_cursor(variants_query)
     more_variants = True if variant_count > (skip_count + per_page) else False
 
     # Setup variant count session with variant count by category
@@ -559,10 +559,11 @@ def upload_panel(store, institute_id, case_name, stream):
     # check if supplied gene symbols exist
     hgnc_symbols = []
     for raw_symbol in raw_symbols:
-        if count_cursor(store.hgnc_genes(raw_symbol)) == 0:
-            flash("HGNC symbol not found: {}".format(raw_symbol), "warning")
-        else:
+        if store.hgnc_genes(raw_symbol).alive:
             hgnc_symbols.append(raw_symbol)
+        else:
+            flash("HGNC symbol not found: {}".format(raw_symbol), "warning")
+
     return hgnc_symbols
 
 

@@ -16,7 +16,7 @@ from scout.constants import (
 )
 from scout.constants import CASE_SEARCH_TERMS
 from scout.server.extensions import store
-from scout.server.utils import user_institutes, templated, institute_and_case, count_cursor
+from scout.server.utils import user_institutes, templated, institute_and_case
 from .forms import InstituteForm, GeneVariantFiltersForm
 
 LOG = logging.getLogger(__name__)
@@ -190,7 +190,7 @@ def gene_variants(institute_id):
                     not_found_ids.append(hgnc_symbol)
                 else:
                     hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
-            elif count_cursor(store.hgnc_genes(hgnc_symbol)) == 0:
+            elif store.hgnc_genes(hgnc_symbol).alive == False:    # nothing to read
                 not_found_symbols.append(hgnc_symbol)
             # elif is_clinical and (hgnc_symbol not in clinical_symbols):
             #     non_clinical_symbols.append(hgnc_symbol)
@@ -208,13 +208,17 @@ def gene_variants(institute_id):
             )
         form.hgnc_symbols.data = hgnc_symbols
 
-        LOG.debug("query {}".format(form.data))
+        LOG.debug("form.data: {}".format(form.data))
+        LOG.debug("institute_id: {}".format(institute_id))
 
         variants_query = store.gene_variants(
             query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type
         )
-
-        data = controllers.gene_variants(store, variants_query, institute_id, page)
+        # TODO: does this work? dont known id `institute_id` is right arg here!
+        query = store.get_query(institute_id, form.data, None, "snv")
+        LOG.debug("got query: {}".format(query))
+        result_size = variants_query.collection.count_documents(query)
+        data = controllers.gene_variants(store, variants_query, result_size, institute_id, page)
 
     return dict(institute=institute_obj, form=form, page=page, **data)
 

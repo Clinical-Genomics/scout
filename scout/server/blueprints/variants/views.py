@@ -58,7 +58,7 @@ def variants(institute_id, case_name):
         case_obj["hpo_clinical_filter"] = True
 
     user_obj = store.user(current_user.email)
-
+    LOG.debug("HEJ")
     if request.method == "POST":
         if request.form.getlist("dismiss"):  # dismiss a list of variants
             controllers.dismiss_variant_list(
@@ -161,18 +161,21 @@ def variants(institute_id, case_name):
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
     variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
-    q = store.get_query(case_obj["_id"], form.data, None, category)    
+    query = store.get_query(case_obj["_id"], form.data, None, category)    
     LOG.debug("formdata: {}".format(form.data))
-    LOG.debug("querrry: {}".format(q))
-    count_documents(variants_query, store.get_query(case_obj["_id"], form.data, None, category))
+    LOG.debug("querrry: {}".format(query))
+    LOG.debug("next: {}".format(variants_query.next ))
+    result_size = variants_query.collection.count_documents(query)
+
+    count_cursor(variants_query)  #mainly for debugging
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
-    session["filtered_variants"] = count_cursor(variants_query)
+    session["filtered_variants"] = result_size
     LOG.debug("sadf {} {} {} {}".format(institute_id, case_obj["_id"], variant_type, category))
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
+    data = controllers.variants(store, institute_obj, case_obj, variants_query, result_size, page)
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -259,14 +262,16 @@ def sv_variants(institute_id, case_name):
 
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
-    count_documents(variants_query, store.get_query(case_obj["_id"], form.data, None, category))
-    session["filtered_variants"] = count_cursor(variants_query)
+    query = store.get_query(case_obj["_id"], form.data, None, category)
+    result_size = variants_query.collection.count_documents(query)
+
+    session["filtered_variants"] = result_size
     LOG.debug("sadf2")
     # if variants should be exported
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    data = controllers.sv_variants(store, institute_obj, case_obj, variants_query, page)
+    data = controllers.sv_variants(store, institute_obj, case_obj, variants_query, result_size, page)
 
     return dict(
         institute=institute_obj,
@@ -347,12 +352,17 @@ def cancer_variants(institute_id, case_name):
 
     variant_type = request.args.get("variant_type", "clinical")
     variants_query = store.variants(case_obj["_id"], category="cancer", query=form.data)
+    query = store.get_query(case_obj["_id"], form.data, None, category)
+    LOG.debug("cancerq: {}".format(query))
+    result_size = variants_query.collection.count_documents(query)
 
+
+    
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.cancer_variants(
-        store, institute_id, case_name, variants_query, form, page=page
+        store, institute_id, case_name, variants_query, result_size, form, page=page
     )
 
     return dict(
@@ -389,14 +399,16 @@ def cancer_sv_variants(institute_id, case_name):
 
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
-    count_documents(variants_query, store.get_query(case_obj["_id"], form.data, None, category))
-    session["filtered_variants"] = count_cursor(variants_query)
+    query = store.get_query(case_obj["_id"], form.data, None, category)
+    result_size = variants_query.collection.count_documents(query)
+    
+    session["filtered_variants"] = result_size
     LOG.debug("sadfdsa")
     # if variants should be exported
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    data = controllers.sv_variants(store, institute_obj, case_obj, variants_query, page)
+    data = controllers.sv_variants(store, institute_obj, case_obj, variants_query, result_size, page)
 
     return dict(
         institute=institute_obj,
