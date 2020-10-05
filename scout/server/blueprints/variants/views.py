@@ -29,7 +29,7 @@ from scout.constants import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
 )
 from scout.server.extensions import store
-from scout.server.utils import institute_and_case, templated, count_cursor
+from scout.server.utils import institute_and_case, templated, count_cursor, count_documents
 
 from . import controllers
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
@@ -161,11 +161,14 @@ def variants(institute_id, case_name):
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
     variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
-
+    q = store.get_query(case_obj["_id"], form.data, None, category)    
+    LOG.debug("formdata: {}".format(form.data))
+    LOG.debug("querrry: {}".format(q))
+    count_documents(variants_query, store.get_query(case_obj["_id"], form.data, None, category))
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
     session["filtered_variants"] = count_cursor(variants_query)
-
+    LOG.debug("sadf {} {} {} {}".format(institute_id, case_obj["_id"], variant_type, category))
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
@@ -256,8 +259,9 @@ def sv_variants(institute_id, case_name):
 
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
+    count_documents(variants_query, store.get_query(case_obj["_id"], form.data, None, category))
     session["filtered_variants"] = count_cursor(variants_query)
-
+    LOG.debug("sadf2")
     # if variants should be exported
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
@@ -316,7 +320,7 @@ def cancer_variants(institute_id, case_name):
                     institute_id=institute_id,
                     case_name=case_name,
                     expand_search="True",
-                ),
+                )
             )
         page = int(request.form.get("page", 1))
 
@@ -385,8 +389,9 @@ def cancer_sv_variants(institute_id, case_name):
 
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
+    count_documents(variants_query, store.get_query(case_obj["_id"], form.data, None, category))
     session["filtered_variants"] = count_cursor(variants_query)
-
+    LOG.debug("sadfdsa")
     # if variants should be exported
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
@@ -443,17 +448,11 @@ def upload_panel(institute_id, case_name):
     # HTTP redirect code 307 asks that the browser preserves the method of request (POST).
     if category == "sv":
         return redirect(
-            url_for(
-                ".sv_variants",
-                institute_id=institute_id,
-                case_name=case_name,
-                **form.data,
-            ),
+            url_for(".sv_variants", institute_id=institute_id, case_name=case_name, **form.data),
             code=307,
         )
     return redirect(
-        url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data),
-        code=307,
+        url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data), code=307
     )
 
 
