@@ -80,8 +80,8 @@ def igv():
     # Set up bam/cram alignments for case samples:
     controllers.set_sample_tracks(display_obj, request.form)
 
-    # Set up case-specific tracks (might be present according to the pipeline)
-    if request.form.get("bam"):
+    # When chrom != MT, set up case-specific tracks (might be present according to the pipeline)
+    if chrom != "M":
         controllers.set_case_specific_tracks(display_obj, request.form)
 
     display_obj["display_center_guide"] = True
