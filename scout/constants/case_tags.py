@@ -1,3 +1,5 @@
+import click
+
 ANALYSIS_TYPES = ("wgs", "wes", "mixed", "unknown", "panel", "external")
 
 SEX_MAP = {
@@ -16,6 +18,21 @@ CANCER_PHENOTYPE_MAP = {1: "normal", 2: "tumor", 0: "unknown", -9: "unknown"}
 REV_PHENOTYPE_MAP = {value: key for key, value in PHENOTYPE_MAP.items()}
 
 CASE_STATUSES = ("prioritized", "inactive", "active", "solved", "archived")
+
+INDIVIDUAL_UPDATE_OPTIONS = dict(
+    phenotype={
+        "short": "phenotype",
+        "key_name": "phenotype",
+        "type": int,
+        "help": "2=affected/cancer, 1=control",
+    },
+    align_file={
+        "short": "align",
+        "key_name": "bam_file",
+        "type": click.Path(exists=True),
+        "help": "2=affected/cancer, 1=control",
+    },
+)
 
 VERBS_MAP = {
     "assign": "was assigned to",
