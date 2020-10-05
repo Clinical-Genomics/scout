@@ -124,6 +124,8 @@ CASE_SPECIFIC_TRACKS = {
 
 HUMAN_REFERENCE = {"37": HUMAN_REFERENCE_37, "38": HUMAN_REFERENCE_38}
 
+USER_DEFAULT_TRACKS = ["Genes", "ClinVar", "ClinVar CNVs"]
+
 # Export selectable custom tracks into lists
 IGV_TRACKS = {
     "37": [HUMAN_GENES_37, CLINVAR_SNV_37, CLINVAR_CNV_37],
