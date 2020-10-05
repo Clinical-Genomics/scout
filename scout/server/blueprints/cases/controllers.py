@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import itertools
+import json
 import logging
 import os
 
@@ -15,6 +16,7 @@ from xlsxwriter import Workbook
 from scout.constants import (
     CANCER_PHENOTYPE_MAP,
     MT_EXPORT_HEADER,
+    MT_COV_STATS_HEADER,
     PHENOTYPE_GROUPS,
     PHENOTYPE_MAP,
     SEX_MAP,
@@ -136,34 +138,30 @@ def case(store, institute_obj, case_obj):
             hpo_term["phenotype_id"]
         )
 
-    rank_model_link_prefix = current_app.config.get("RANK_MODEL_LINK_PREFIX", "")
     if case_obj.get("rank_model_version"):
-        rank_model_link_postfix = current_app.config.get("RANK_MODEL_LINK_POSTFIX", "")
         rank_model_link = "".join(
             [
-                rank_model_link_prefix,
+                current_app.config.get("RANK_MODEL_LINK_PREFIX", ""),
                 str(case_obj["rank_model_version"]),
-                rank_model_link_postfix,
+                current_app.config.get("RANK_MODEL_LINK_POSTFIX", ""),
             ]
         )
-        print(rank_model_link)
         case_obj["rank_model_link"] = rank_model_link
-    sv_rank_model_link_prefix = current_app.config.get("SV_RANK_MODEL_LINK_PREFIX", "")
+
     if case_obj.get("sv_rank_model_version"):
-        sv_rank_model_link_postfix = current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX", "")
         case_obj["sv_rank_model_link"] = "".join(
             [
-                sv_rank_model_link_prefix,
+                current_app.config.get("SV_RANK_MODEL_LINK_PREFIX", ""),
                 str(case_obj["sv_rank_model_version"]),
-                sv_rank_model_link_postfix,
+                current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX", ""),
             ]
         )
+
     # other collaborators than the owner of the case
     o_collaborators = []
     for collab_id in case_obj.get("collaborators", []):
         if collab_id != case_obj["owner"] and store.institute(collab_id):
             o_collaborators.append(store.institute(collab_id))
-
     case_obj["o_collaborators"] = [
         (collab_obj["_id"], collab_obj["display_name"]) for collab_obj in o_collaborators
     ]
@@ -196,6 +194,7 @@ def case(store, institute_obj, case_obj):
     data = {
         "status_class": STATUS_MAP.get(case_obj["status"]),
         "other_causatives": [var for var in store.check_causatives(case_obj=case_obj)],
+        "managed_variants": [var for var in store.check_managed(case_obj=case_obj)],
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "hpo_groups": pheno_groups,
         "events": events,
@@ -391,6 +390,48 @@ def coverage_report_contents(store, institute_obj, case_obj, base_url):
     return coverage_data
 
 
+def mt_coverage_stats(individuals, ref_chrom="14"):
+    """Send a request to chanjo report endpoint to retrieve MT vs autosome coverage stats
+
+    Args:
+        individuals(dict): case_obj["individuals"] object
+        ref_chrom(str): reference chromosome (1-22)
+
+    Returns:
+        coverage_stats(dict): a dictionary with mean MT and autosome transcript coverage stats
+    """
+    coverage_stats = {}
+    ind_ids = []
+    for ind in individuals:
+        ind_ids.append(ind["individual_id"])
+
+    # Prepare complete url to Chanjo report chromosome mean coverage calculation endpoint
+    cov_calc_url = url_for("report.json_chrom_coverage", _external=True)
+    # Prepare request data to calculate mean MT coverage
+    data = dict(sample_ids=",".join(ind_ids), chrom="MT")
+    # Send POST request with data to chanjo endpoint
+    resp = requests.post(cov_calc_url, json=data)
+    mt_cov_data = json.loads(resp.text)
+
+    # Change request data to calculate mean autosomal coverage
+    data["chrom"] = str(ref_chrom)  # convert to string if an int is provided
+    # Send POST request with data to chanjo endpoint
+    resp = requests.post(cov_calc_url, json=data)
+    ref_cov_data = json.loads(resp.text)  # mean coverage over the transcripts of ref chrom
+
+    for ind in ind_ids:
+        if not (mt_cov_data.get(ind) and ref_cov_data.get(ind)):
+            continue
+        coverage_info = dict(
+            mt_coverage=round(mt_cov_data[ind], 2),
+            autosome_cov=round(ref_cov_data[ind], 2),
+            mt_copy_number=round((mt_cov_data[ind] / ref_cov_data[ind]) * 2, 2),
+        )
+        coverage_stats[ind] = coverage_info
+
+    return coverage_stats
+
+
 def mt_excel_files(store, case_obj, temp_excel_dir):
     """Collect MT variants and format line of a MT variant report
     to be exported in excel format
@@ -406,6 +447,11 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
     """
     today = datetime.datetime.now().strftime("%Y-%m-%d")
     samples = case_obj.get("individuals")
+    file_header = MT_EXPORT_HEADER
+    coverage_stats = None
+    # if chanjo connection is established, include MT vs AUTOSOME coverage stats
+    if current_app.config.get("SQLALCHEMY_DATABASE_URI"):
+        coverage_stats = mt_coverage_stats(samples)
 
     query = {"chrom": "MT"}
     mt_variants = list(
@@ -425,6 +471,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
 
         # Write the column header
         row = 0
+
         for col, field in enumerate(MT_EXPORT_HEADER):
             Report_Sheet.write(row, col, field)
 
@@ -432,6 +479,18 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
         for row, line in enumerate(sample_lines, 1):  # each line becomes a row in the document
             for col, field in enumerate(line):  # each field in line becomes a cell
                 Report_Sheet.write(row, col, field)
+
+        if bool(
+            coverage_stats
+        ):  # it's None if app is not connected to Chanjo or {} if samples are not in Chanjo db
+            # Write coverage stats header after introducing 2 empty lines
+            for col, field in enumerate(MT_COV_STATS_HEADER):
+                Report_Sheet.write(row + 3, col, field)
+
+            # Write sample MT vs autosome coverage stats to excel sheet
+            for col, item in enumerate(["mt_coverage", "autosome_cov", "mt_copy_number"]):
+                Report_Sheet.write(row + 4, col, coverage_stats[sample_id].get(item))
+
         workbook.close()
 
         if os.path.exists(os.path.join(temp_excel_dir, document_name)):
