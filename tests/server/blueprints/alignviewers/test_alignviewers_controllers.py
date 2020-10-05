@@ -1,112 +1,55 @@
+# -*- coding: utf-8 -*-
 from scout.server.blueprints.alignviewers import controllers
 
-BUILD37 = "37"
-BUILD38 = "38"
 
-CHROM = "22"
+def test_make_igv_tracks():
+    """ Test function that creates custom track dictionaries """
 
+    # GIVEN a test track with 2 files
+    file_list = ["sample_1_file", "sample_2_file"]
+    track_list = controllers.make_igv_tracks("test_track", file_list)
 
-def test_clinvar_track_build37():
-    """Test function that returns clinVar track as a dictionary when build is 37"""
-
-    # WHEN clinVar track controller is invoked with genome build 37
-    track = controllers.clinvar_track(BUILD37, CHROM)
-
-    # THEN it should return a dictionary with the right keys/values
-    assert track["name"] == "ClinVar"
-    assert track["type"] == "annotation"
-    assert track["sourceType"] == "file"
-    assert "hg19" in track["url"]
+    # The function should return a track list with 2 dictionaries
+    assert len(track_list) == 2
+    # Containing the expected info
+    for track in track_list:
+        assert track["name"] == "test_track"
+        assert track["url"] in file_list
 
 
-def test_clinvar_track_build38():
-    """Test function that returns clinVar track as a dictionary when build is 38"""
+def test_sample_tracks():
+    """ Test the function that creates case individual tracks """
 
-    # WHEN clinVar track controller is invoked with genome build 38
-    track = controllers.clinvar_track(BUILD38, CHROM)
+    # GIVEN a case with 3 samples alignments
+    sample_names = ["sample1", "sample2", "sample3"]
+    sample_bams = ["bam1", "bam2", "bam3"]
 
-    # THEN it should return a dictionary with the right keys/values
-    assert track["name"] == "ClinVar"
-    assert track["type"] == "annotation"
-    assert track["sourceType"] == "file"
-    assert "hg38" in track["url"]
+    form_data = {
+        "sample": ",".join(sample_names),
+        "align": "bam",
+        "bam": ",".join(sample_bams),
+        "bai": "bai1,bai2,bai3",
+    }
 
-
-def test_clinvar_cnvs_track_build_37():
-    """Test function that returns clinVar CNVs track as a dictionary when build is 37"""
-
-    # WHEN clinVar CNVs track controller is invoked with genome build 37
-    track = controllers.clinvar_cnvs_track(BUILD37, CHROM)
-
-    # THEN it should return a dictionary with the right keys/values
-    assert track["name"] == "ClinVar CNVs"
-    assert track["type"] == "annotation"
-    assert track["displayMode"] == "SQUISHED"
-    assert track["sourceType"] == "file"
-    assert "hg19" in track["url"]
+    display_obj = {}
+    # WHEN the set_sample_tracks function is invoked:
+    controllers.set_sample_tracks(display_obj, form_data)
+    # THEN it should return 3 tracks
+    assert len(display_obj["sample_tracks"]) == 3
+    # Containing the expected fields
+    for track in display_obj["sample_tracks"]:
+        assert track["name"] in sample_names
+        assert track["url"] in sample_bams
 
 
-def test_clinvar_cnvs_track_build_38():
-    """Test function that returns clinVar CNVs track as a dictionary when build is 38"""
-
-    # WHEN clinVar CNVs track controller is invoked with genome build 38
-    track = controllers.clinvar_cnvs_track(BUILD38, CHROM)
-
-    # THEN it should return a dictionary with the right keys/values
-    assert track["name"] == "ClinVar CNVs"
-    assert track["type"] == "annotation"
-    assert track["displayMode"] == "SQUISHED"
-    assert track["sourceType"] == "file"
-    assert "hg38" in track["url"]
-
-
-def test_reference_track_build_37():
-    """Test function that returns the reference track as a dictionary when build is 37"""
-
-    # WHEN genome reference track controller is invoked with genome build 37
-    track = controllers.reference_track(BUILD37, CHROM)
-
-    # THEN it should return a dictionary with the right keys/values
-    assert "hg19" in track["fastaURL"]
-    assert "hg19" in track["indexURL"]
-    assert "hg19" in track["cytobandURL"]
-
-
-def test_reference_track_build_38():
-    """Test function that returns the reference track as a dictionary when build is 38"""
-
-    # WHEN genome reference track controller is invoked with genome build 38
-    track = controllers.reference_track(BUILD38, CHROM)
-
-    # THEN it should return a dictionary with the right keys/values
-    assert "hg38" in track["fastaURL"]
-    assert "hg38" in track["indexURL"]
-    assert "hg38" in track["cytobandURL"]
-
-
-def test_genes_track_build_37():
-    """Test function that returns the genes track as a dictionary when build is 37"""
-
-    # WHEN genes track controller is invoked with genome build 37
-    track = controllers.genes_track(BUILD37, CHROM)
-
-    # THEN it should return a dictionary with the right keys/values
-    assert track["name"] == "Genes"
-    assert track["type"] == "annotation"
-    assert track["sourceType"] == "file"
-    assert "hg19" in track["url"]
-    assert "hg19" in track["indexURL"]
-
-
-def test_genes_track_build_38():
-    """Test function that returns the genes track as a dictionary when build is 38"""
-
-    # WHEN genes track controller is invoked with genome build 38
-    track = controllers.genes_track(BUILD38, CHROM)
-
-    # THEN it should return a dictionary with the right keys/values
-    assert track["name"] == "Genes"
-    assert track["type"] == "annotation"
-    assert track["sourceType"] == "file"
-    assert "hg38" in track["url"]
-    assert "hg38" in track["indexURL"]
+def set_case_specific_tracks():
+    """Test function that creates tracks based on case-specific files:
+    (rhocall files, tiddit coverage files, upd regions and sites files)
+    """
+    # GIVEN a case with a rhocall bed file and a TIDDIT wig file
+    form_data = {"rhocall_bed": "rhocall.bed", "tiddit_coverage_wig": "tiddit_coverage.wig"}
+    # THE case_specific_tracks function should return the expected tracks
+    display_obj = {}
+    controllers.set_case_specific_tracks(display_obj, form_data)
+    assert display_obj["rhocall_bed"]["url"] == form_data["rhocall_bed"]
+    assert display_obj["tiddit_coverage_wig"] == form_data["tiddit_coverage_wig"]

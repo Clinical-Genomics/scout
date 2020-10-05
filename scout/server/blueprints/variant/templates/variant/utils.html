@@ -1,3 +1,26 @@
+{% macro igv_track_selection(igv_tracks, current_user) %}
+<div id="accordion">
+  <a data-toggle="collapse" data-parent="#accordion" href="#track_settings">Settings</a>
+  <div id="track_settings" class="collapse">
+    <form action="{{url_for('variant.update_tracks_settings')}}" method="POST">
+      <div class="row d-flex align-items-center">
+          <div class="col-3">Show tracks:</div>
+          <div class="col-6">
+            <select name="user_tracks" class="selectpicker" data-width="80%" multiple>
+              {% for track in igv_tracks %}
+                <!--pre-select option if user has saved it in preferences or select all options if user has no preferences yet-->
+                <option value="{{ track.name }}" {{ "selected" if track.name in current_user.igv_tracks or current_user.igv_tracks is not defined }}>{{ track.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-3">
+            <button type="submit" class="btn btn-sm btn-outline-secondary">Save</button>
+          </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endmacro %}
 
 {% macro rankscore_panel(variant) %}
   <div class="card panel-default">
@@ -248,7 +271,6 @@
           <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
           <input type="hidden" name="build" value="{{case.genome_build}}">
           <input type="hidden" name="contig" value="{{variant.chromosome}}">
-          <input type="hidden" name="center_guide" value="T">
           {% if zoom == "start" %}
             <input type="hidden" name="start" value="{{variant.position - 500}}">
             <input type="hidden" name="stop" value="{{variant.position + 500}}">
@@ -307,6 +329,7 @@
           - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.chromosome }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
         {% endif %}
       </form>
+
     </div>
 {% endmacro %}
 
