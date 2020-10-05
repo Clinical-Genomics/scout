@@ -11,6 +11,7 @@ from .individual import build_individual
 from .panel import build_panel
 from .case import build_case
 
+from .managed_variant import build_managed_variant
 
 from .genes.hgnc_gene import build_hgnc_gene
 from .genes.transcript import build_transcript

@@ -5,6 +5,7 @@ from scout.exceptions.database import IntegrityError
 from scout.parse.variant import parse_variant
 from scout.server.blueprints.variants.controllers import variants
 from scout.constants import REV_CLINSIG_MAP
+from scout.build.managed_variant import build_managed_variant
 
 from cyvcf2 import VCF
 
@@ -114,9 +115,6 @@ def test_load_variants(real_populated_database, case_obj, variant_clinical_file)
         variant_type="clinical",
         category="snv",
         rank_threshold=rank_threshold,
-        chrom=None,
-        start=None,
-        end=None,
     )
     # THEN assert the variant is loaded
 
@@ -142,6 +140,55 @@ def test_load_variants(real_populated_database, case_obj, variant_clinical_file)
         assert variant["rank_score"] >= rank_threshold
         assert variant["category"] == "snv"
         assert variant["variant_rank"]
+
+
+def test_load_variants_includes_managed(real_populated_database, case_obj, variant_clinical_file):
+    """Test that loading variants will include variants on the managed variants list"""
+    adapter = real_populated_database
+    # GIVEN a database without any variants
+    assert sum(1 for i in adapter.variant_collection.find()) == 0
+
+    # GIVEN a managed variant info dict for a variant in the file,
+    # but which has a rank score less than loading threshold (-2)
+    managed_variant_info = {
+        "chromosome": "1",
+        "position": "36031420",
+        "reference": "C",
+        "alternative": "T",
+        "build": "37",
+    }
+
+    # WHEN building a managed variant object
+    managed_variant_obj = build_managed_variant(managed_variant_info)
+
+    # WHEN loading a managed variant into the managed variant table
+    adapter.load_managed_variant(managed_variant_obj)
+
+    # WHEN loading variants into the database
+    rank_threshold = 100
+    adapter.load_variants(
+        case_obj=case_obj,
+        variant_type="clinical",
+        category="snv",
+        rank_threshold=rank_threshold,
+    )
+
+    # THEN assert any variant is loaded
+    assert sum(1 for i in adapter.variant_collection.find()) > 0
+
+    ## THEN assert that the variant has been loaded
+    query = adapter.build_query(
+        case_id=case_obj["_id"],
+        query={
+            "variant_type": "clinical",
+            "chrom": managed_variant_info["chromosome"],
+            "start": managed_variant_info["position"],
+            "end": managed_variant_info["position"],
+        },
+        category="snv",
+    )
+    print("Query: {}".format(query))
+    assert sum(1 for i in adapter.variant_collection.find(query)) == 1
 
 
 def test_load_sv_variants(real_populated_database, case_obj, sv_clinical_file):

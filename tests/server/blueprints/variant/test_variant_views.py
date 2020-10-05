@@ -209,3 +209,31 @@ def test_clinvar(app, case_obj, variant_obj, institute_obj):
         )
         # THEN the request status should be a redirect
         assert resp.status_code == 302
+
+
+def test_update_tracks_settings(app, user_obj):
+    """Test the endpoint that updates the IGV track preferences for a user"""
+
+    preferred_tracks = ["Genes", "ClinVar"]
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # GIVEN that the user wants to see only Genes and ClinVar SNVs tracks
+        form_data = {
+            "user_tracks": preferred_tracks,
+        }
+
+        # WHEN sending a POST request to the update
+        resp = client.post(
+            url_for(
+                "variant.update_tracks_settings",
+            ),
+            data=form_data,
+        )
+
+        # THEN the user object in the database should be updated with the right track info
+        user_obj = store.user(email=user_obj["email"])
+        for track in preferred_tracks:
+            assert track in preferred_tracks

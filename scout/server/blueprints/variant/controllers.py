@@ -16,6 +16,7 @@ from scout.constants import (
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     VERBS_MAP,
+    IGV_TRACKS,
 )
 from scout.parse.variant.ids import parse_document_id
 from scout.server.links import ensembl, get_variant_links
@@ -83,6 +84,7 @@ def variant(
             'cancer_tier_options': CANCER_TIER_OPTIONS,
             'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
             'ACMG_OPTIONS': ACMG_OPTIONS,
+            'igv_tracks': IGV_TRACKS,
             'evaluations': <list(evaluations)>,
         }
 
@@ -131,6 +133,8 @@ def variant(
         other_causatives = [
             causative for causative in store.other_causatives(case_obj, variant_obj)
         ]
+
+    managed_variant = store.find_managed_variant_id(variant_obj["variant_id"])
 
     # Gather display information for the genes
     variant_obj.update(predictions(variant_obj.get("genes", [])))
@@ -210,6 +214,7 @@ def variant(
         "variant": variant_obj,
         variant_category: True,
         "causatives": other_causatives,
+        "managed_variant": managed_variant,
         "events": events,
         "overlapping_vars": overlapping_vars,
         "manual_rank_options": MANUAL_RANK_OPTIONS,
@@ -217,6 +222,7 @@ def variant(
         "dismiss_variant_options": dismiss_options,
         "mosaic_variant_options": MOSAICISM_OPTIONS,
         "ACMG_OPTIONS": ACMG_OPTIONS,
+        "igv_tracks": IGV_TRACKS[genome_build],
         "evaluations": evaluations,
     }
 
