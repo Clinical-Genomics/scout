@@ -193,8 +193,6 @@ def find_index(align_file):
     return index_file
 
 
-
-
 def count_documents(cursor, args):
     """ """
     r = cursor.collection.count_documents(args)
