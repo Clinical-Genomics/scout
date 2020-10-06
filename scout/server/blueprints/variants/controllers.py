@@ -559,7 +559,7 @@ def upload_panel(store, institute_id, case_name, stream):
     # check if supplied gene symbols exist
     hgnc_symbols = []
     for raw_symbol in raw_symbols:
-        if store.hgnc_genes(raw_symbol).alive:
+        if store.hgnc_genes_count(raw_symbol) == 0:
             hgnc_symbols.append(raw_symbol)
         else:
             flash("HGNC symbol not found: {}".format(raw_symbol), "warning")
