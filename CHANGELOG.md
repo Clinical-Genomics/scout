@@ -7,8 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 ### Fixed
+- Update dismissed variant status when variant dismissed key is missing
 ### Changed
-
 
 ## [4.23]
 ### Added
