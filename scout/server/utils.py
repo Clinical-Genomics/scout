@@ -215,51 +215,52 @@ def count_cursor(cursor):
     new_cursor3.limit(0)  # no limit
 
 
-    start = time.time()
-    r = new_cursor.retrieved
-    end = time.time()
-    LOG.debug("retreived(): {}/{}".format(r, end-start))  #
+    # start = time.time()
+    # r = new_cursor.retrieved
+    # end = time.time()
+    # LOG.debug("retreived(): {}/{}".format(r, end-start))  #
 
 
 
-    new_cursor3.rewind
-    LOG.debug("alive3 (): {}".format(new_cursor3.alive))  #
+    # new_cursor3.rewind
+    # LOG.debug("alive3 (): {}".format(new_cursor3.alive))  #
 
-    start = time.time()
-    e = new_cursor.collection.estimated_document_count()
-    end = time.time()
-    LOG.debug("estimated2(): {}/{}".format(e, end-start))  #
-    LOG.debug("alive(): {}".format(new_cursor.alive))  #
+    # start = time.time()
+    # e = new_cursor.collection.estimated_document_count()
+    # end = time.time()
+    # LOG.debug("estimated2(): {}/{}".format(e, end-start))  #
+    # LOG.debug("alive(): {}".format(new_cursor.alive))  #
 
-    LOG.debug("alive(): {}".format(new_cursor.alive))  #
-    start = time.time()
-    l = len(list(new_cursor))
-    end = time.time()
-    LOG.debug("list(): {}/{}".format(l, end-start))  #
-    LOG.debug("alive(): {}".format(new_cursor.alive))  #
-    LOG.debug("alive(): {}".format(new_cursor.alive))  #
-    start = time.time()
-    d = new_cursor.collection.count_documents( new_cursor.__dict__['_Cursor__spec'] )
-    end = time.time()
-    LOG.debug("hack(): {}/{}".format(d, end-start))  #
+    # LOG.debug("alive(): {}".format(new_cursor.alive))  #
+    # start = time.time()
+    # l = len(list(new_cursor))
+    # end = time.time()
+    # LOG.debug("list(): {}/{}".format(l, end-start))  #
+    # LOG.debug("alive(): {}".format(new_cursor.alive))  #
+    # LOG.debug("alive(): {}".format(new_cursor.alive))  #
+    # start = time.time()
+    # d = new_cursor.collection.count_documents( new_cursor.__dict__['_Cursor__spec'] )
+    # end = time.time()
+    # LOG.debug("hack(): {}/{}".format(d, end-start))  #
 
-    start = time.time()
-    d2 = new_cursor.collection.count_documents( {} )
-    end = time.time()
-    LOG.debug("count_documents(): {}/{}".format(d2, end-start))  #
+    # start = time.time()
+    # d2 = new_cursor.collection.count_documents( {} )
+    # end = time.time()
+    # LOG.debug("count_documents(): {}/{}".format(d2, end-start))  #
 
-    start = time.time()
-    o = new_cursor.count()
-    end = time.time()
-    LOG.debug("depricated(): {}/{}".format(o, end-start))  #
+    # start = time.time()
+    # o = new_cursor.count()
+    # end = time.time()
+    # LOG.debug("depricated(): {}/{}".format(o, end-start))  #
 
-    start = time.time()
-    s =  sum(1 for i in new_cursor2)
-    end = time.time()
-    LOG.debug("sum(): {}/{}".format(s, end-start))  #
+    # start = time.time()
+    # s =  sum(1 for i in new_cursor2)
+    # end = time.time()
+    # LOG.debug("sum(): {}/{}".format(s, end-start))  #
 
-    # LOG.debug("size(): {}".format(new_cursor.collection.document_count( new_cursor.__dict__['_Cursor__spec'] )))
+    # # LOG.debug("size(): {}".format(new_cursor.collection.document_count( new_cursor.__dict__['_Cursor__spec'] )))
 
+    s = 1
 
     return s
 
