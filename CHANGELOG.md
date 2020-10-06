@@ -22,7 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Do not freeze mkdocs-material to version 4.6.1
 - Remove pre-commit dependency
-
+- Update PyMongo to 3.11 (from 3.7)
 
 ## [4.22]
 ### Added
