@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update dismissed variant status when variant dismissed key is missing
 ### Changed
 
-## [x.x.x]
+## [4.23]
 ### Added
 - Save custom IGV track settings
 - Show a flash message with clear info about non-valid genes when gene panel creation fails
