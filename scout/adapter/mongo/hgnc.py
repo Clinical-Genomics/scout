@@ -138,7 +138,6 @@ class GeneHandler(object):
 
         return self.hgnc_collection.find({"build": build, "aliases": hgnc_symbol})
 
-
     def hgnc_genes_count(self, hgnc_symbol, build="37", search=False):
         """Count all hgnc genes that match a hgnc symbol. Replaces depricated
         pymongo.cursor.count()
@@ -175,7 +174,6 @@ class GeneHandler(object):
             )
 
         return self.hgnc_collection.count_documents({"build": build, "aliases": hgnc_symbol})
-
 
     def all_genes(self, build=None, add_transcripts=False, limit=100000):
         """Fetch all hgnc genes

@@ -204,24 +204,15 @@ class VariantHandler(VariantLoader):
 
         return result
 
-
-
-    def variants_count(
-        self,
-        case_id,
-        query=None,
-        variant_ids=None,
-        category="snv"
-    ):
-        """ Count number of variants
-        Replace deprecated pymongo.cursor.count()   """
+    def variants_count(self, case_id, query=None, variant_ids=None, category="snv"):
+        """Count number of variants
+        Replace deprecated pymongo.cursor.count()"""
         mongo_query = self.build_query(
             case_id, query=query, variant_ids=variant_ids, category=category
         )
         result = self.variant_collection.count_documents(mongo_query)
 
         return result
-
 
     def get_query(self, case_id, query, variant_ids, category):
         LOG.debug(
@@ -230,7 +221,6 @@ class VariantHandler(VariantLoader):
             )
         )
         return self.build_query(case_id, query=query, variant_ids=variant_ids, category=category)
-
 
     def sanger_variants(self, institute_id=None, case_id=None):
         """Return all variants with sanger information
@@ -785,7 +775,6 @@ class VariantHandler(VariantLoader):
                 raise FileNotFoundError("Could not find index for {}".format(variant_file))
 
         return file_name
-
 
     def case_variants_count(self, case_id, institute_id):
         """Returns the sum of all variants for a case by type

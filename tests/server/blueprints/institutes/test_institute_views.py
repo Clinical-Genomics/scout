@@ -2,6 +2,7 @@
 from flask import url_for
 from scout.server.extensions import store
 import logging
+
 LOG = logging.getLogger(__name__)
 
 

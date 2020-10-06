@@ -197,5 +197,3 @@ def count_documents(cursor, args):
     """ """
     r = cursor.collection.count_documents(args)
     return r
-
-
