@@ -193,8 +193,6 @@ def find_index(align_file):
     return index_file
 
 
-
-
 def count_documents(cursor, args):
     """"""
     LOG.debug("count args: {}".format(args))
@@ -214,13 +212,10 @@ def count_cursor(cursor):
     new_cursor2.limit(0)  # no limit
     new_cursor3.limit(0)  # no limit
 
-
     # start = time.time()
     # r = new_cursor.retrieved
     # end = time.time()
     # LOG.debug("retreived(): {}/{}".format(r, end-start))  #
-
-
 
     # new_cursor3.rewind
     # LOG.debug("alive3 (): {}".format(new_cursor3.alive))  #
@@ -263,29 +258,6 @@ def count_cursor(cursor):
     s = 1
 
     return s
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     # Not working
     # LOG.debug("size(): {}".format(new_cursor.collection.estimated_document_count( new_cursor['_Cursor__spec'] )))
