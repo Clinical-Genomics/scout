@@ -3,13 +3,30 @@ import logging
 
 from pprint import pprint as pp
 
-from scout.server.blueprints.variant.controllers import variant, observations
-from scout.server.extensions import store, loqusdb
+from scout.constants import IGV_TRACKS
+from scout.server.blueprints.variant.controllers import variant, observations, get_igv_tracks
+from scout.server.extensions import store, loqusdb, cloud_tracks
 
 from flask import url_for, current_app
 from flask_login import current_user
 
 LOG = logging.getLogger(__name__)
+
+
+def test_get_igv_tracks():
+    """Test function that collects IGV tracks to be used for customising user tracks"""
+
+    # GIVEN an app with public cloud tracks initialized
+    patched_track = {"37": [{"name": "test track"}]}
+    cloud_tracks.public_tracks = patched_track
+
+    # THEN the get_igv_tracks controller should return the default tracks
+    igv_tracks = get_igv_tracks()
+    for track in IGV_TRACKS["37"]:
+        assert track["name"] in igv_tracks
+
+    # and the name of the public cloud track
+    assert "test track" in igv_tracks
 
 
 def test_observations_controller_non_existing(app, real_variant_database, case_obj, loqusdb):
