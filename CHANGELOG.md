@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Support for custom public igv tracks stored on the cloud
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
 ### Changed
