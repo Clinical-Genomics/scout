@@ -7,6 +7,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 - Institute-level phenotype models with sub-panels containing HPO and OMIM terms
+### Fixed
+- Update dismissed variant status when variant dismissed key is missing
+### Changed
+
+## [4.23]
+### Added
 - Save custom IGV track settings
 - Show a flash message with clear info about non-valid genes when gene panel creation fails
 - CNV report link in cancer case side navigation
