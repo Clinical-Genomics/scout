@@ -339,13 +339,8 @@ class VariantHandler(VariantLoader):
 
         return result
 
-
     def count_gene_variants(
-        self,
-        query=None,
-        category="snv",
-        variant_type=["clinical"],
-        institute_id=None
+        self, query=None, category="snv", variant_type=["clinical"], institute_id=None
     ):
         """Count all variants seen in a given gene.
 
@@ -369,7 +364,6 @@ class VariantHandler(VariantLoader):
         )
 
         return self.variant_collection.count_documents(mongo_variant_query)
-
 
     def verified(self, institute_id):
         """Return all verified variants for a given institute
