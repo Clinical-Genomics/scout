@@ -91,13 +91,13 @@ def set_cloud_public_tracks(display_obj, build):
         build(string) "37" or "38"
     """
     user_obj = store.user(email=current_user.email)
-    # if user settings for igv tracks exist -> use these settings, otherwise display all tracks
     custom_tracks_names = user_obj.get("igv_tracks")
 
     cloud_public_tracks = []
-    if cloud_tracks.public_tracks:
+    if hasattr(cloud_tracks, "public_tracks"):
         build_tracks = cloud_tracks.public_tracks.get(build, [])
         for track in build_tracks:
+            # Do not display track if user doesn't want to see it
             if custom_tracks_names and track["name"] not in custom_tracks_names:
                 continue
             cloud_public_tracks.append(track)

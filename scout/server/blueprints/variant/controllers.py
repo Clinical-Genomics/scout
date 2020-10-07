@@ -54,7 +54,7 @@ def get_igv_tracks(build="37"):
     for track in IGV_TRACKS.get(build, []):
         igv_tracks.add(track.get("name"))
     # Collect instance-specif cloud public tracks, if available
-    if cloud_tracks.public_tracks:
+    if hasattr(cloud_tracks, "public_tracks"):
         for track in cloud_tracks.public_tracks.get(build, []):
             igv_tracks.add(track.get("name"))
     return igv_tracks
