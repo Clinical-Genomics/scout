@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
 from flask_login import current_user
-from scout.server.extensions import store
+from scout.server.extensions import store, cloud_tracks
 from scout.constants import IGV_TRACKS, CASE_SPECIFIC_TRACKS
 
+LOG = logging.getLogger(__name__)
 CUSTOM_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
 
 
@@ -79,3 +81,25 @@ def set_case_specific_tracks(display_obj, form):
         if form.get(track):
             track_info = make_igv_tracks(label, form.get(track).split(","))
             display_obj[track] = track_info
+
+
+def set_cloud_public_tracks(display_obj, build):
+    """Set up custom public tracks stored in a cloud bucket, according to the user preferences
+
+    Args:
+        display_obj(dict) dictionary containing all tracks info
+        build(string) "37" or "38"
+    """
+    user_obj = store.user(email=current_user.email)
+    # if user settings for igv tracks exist -> use these settings, otherwise display all tracks
+    custom_tracks_names = user_obj.get("igv_tracks")
+
+    cloud_public_tracks = []
+    if cloud_tracks.public_tracks:
+        build_tracks = cloud_tracks.public_tracks.get(build, [])
+        for track in build_tracks:
+            if custom_tracks_names and track["name"] not in custom_tracks_names:
+                continue
+            cloud_public_tracks.append(track)
+    if cloud_public_tracks:
+        display_obj["cloud_public_tracks"] = cloud_public_tracks

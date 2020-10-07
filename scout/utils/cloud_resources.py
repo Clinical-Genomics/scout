@@ -25,10 +25,6 @@ class AlignTrackHandler:
         if all(track.get(key) for key in REQUIRED_FIELDS):
             return track
 
-    def public_tracks(self):
-        """Return all available public tracks by genome build"""
-        return self.public_tracks
-
     def set_public_tracks(self, bucket_list):
         """Return a list of public IGV tracks stored on the cloud
 

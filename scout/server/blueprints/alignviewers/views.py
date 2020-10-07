@@ -84,6 +84,9 @@ def igv():
     if chrom != "M":
         controllers.set_case_specific_tracks(display_obj, request.form)
 
+    # Set up custom cloud public tracks, if available
+    controllers.set_cloud_public_tracks(display_obj, chromosome_build)
+
     display_obj["display_center_guide"] = True
 
     return render_template("alignviewers/igv_viewer.html", locus=locus, **display_obj)
