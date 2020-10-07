@@ -120,6 +120,10 @@ def configure_extensions(app):
         # setup connection to google oauth2
         configure_oauth_login(app)
 
+    if app.config.get("CLOUD_IGV_TRACKS"):
+        LOG.info("Collecting IGV tracks from cloud resources")
+        extensions.cloud_tracks.init_app(app)
+
 
 def register_blueprints(app):
     """Register Flask blueprints."""

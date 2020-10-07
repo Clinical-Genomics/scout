@@ -8,6 +8,7 @@ from authlib.integrations.flask_client import OAuth
 from flask_mail import Mail
 
 from scout.adapter import MongoAdapter
+from scout.utils.cloud_resources import AlignTrackHandler
 
 from .loqus_extension import LoqusDB
 from .mongo_extension import MongoDB
@@ -20,6 +21,6 @@ login_manager = LoginManager()
 ldap_manager = LDAP3LoginManager()
 oauth_client = OAuth()
 mail = Mail()
-
 loqusdb = LoqusDB()
 mongo = MongoDB()
+cloud_tracks = AlignTrackHandler()
