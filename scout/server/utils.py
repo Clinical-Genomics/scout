@@ -194,6 +194,10 @@ def find_index(align_file):
 
 
 def count_documents(cursor, args):
-    """ """
-    r = cursor.collection.count_documents(args)
-    return r
+    """From the collection the cursor is pointing to, return number of
+    documents from the query
+
+    Info: replaces deprecated `cursor.count()` (>3.7)"""
+
+    return cursor.collection.count_documents(args)
+    
