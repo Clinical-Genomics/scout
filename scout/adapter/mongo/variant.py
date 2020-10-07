@@ -339,7 +339,6 @@ class VariantHandler(VariantLoader):
 
         return result
 
-    
     def count_gene_variants(
         self, query=None, category="snv", variant_type=["clinical"], institute_id=None
     ):
