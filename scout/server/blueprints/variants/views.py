@@ -351,11 +351,6 @@ def cancer_variants(institute_id, case_name):
     query = store.get_query(case_obj["_id"], form.data, None, category)
     result_size = variants_query.collection.count_documents(query)
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> f350945b7a5b18b37612d3027c2dd990dd2363de
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
