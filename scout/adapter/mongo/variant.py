@@ -215,11 +215,6 @@ class VariantHandler(VariantLoader):
         return result
 
     def get_query(self, case_id, query, variant_ids, category):
-        LOG.debug(
-            "get_query CASE_ID: {} QUERY: {} VARIANT_IDS: {} CATEGORY: {}".format(
-                case_id, query, variant_ids, category
-            )
-        )
         return self.build_query(case_id, query=query, variant_ids=variant_ids, category=category)
 
     def sanger_variants(self, institute_id=None, case_id=None):
@@ -343,6 +338,38 @@ class VariantHandler(VariantLoader):
         )
 
         return result
+
+
+    def count_gene_variants(
+        self,
+        query=None,
+        category="snv",
+        variant_type=["clinical"],
+        institute_id=None
+    ):
+        """Count all variants seen in a given gene.
+
+        Arguments:
+            query(dict): A dictionary with querys for the database, including
+            variant_type: 'clinical', 'research'
+            category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
+            institute_id: institute ID (required for similarity query)
+
+        Query can contain:
+            phenotype_terms,
+            phenotype_groups,
+            similar_case,
+            cohorts
+        """
+        mongo_variant_query = self.build_variant_query(
+            query=query,
+            institute_id=institute_id,
+            category=category,
+            variant_type=variant_type,
+        )
+
+        return self.variant_collection.count_documents(mongo_variant_query)
+
 
     def verified(self, institute_id):
         """Return all verified variants for a given institute

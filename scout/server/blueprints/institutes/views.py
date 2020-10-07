@@ -216,7 +216,10 @@ def gene_variants(institute_id):
         variants_query = store.gene_variants(
             query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type
         )
-        result_size = variants_query.collection.count_documents(query)
+
+        result_size = store.count_gene_variants(
+            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type
+        )
         data = controllers.gene_variants(store, variants_query, result_size, institute_id, page)
     return dict(institute=institute_obj, form=form, page=page, **data)
 
