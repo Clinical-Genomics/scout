@@ -200,4 +200,3 @@ def count_documents(cursor, args):
     Info: replaces deprecated `cursor.count()` (>3.7)"""
 
     return cursor.collection.count_documents(args)
-    
