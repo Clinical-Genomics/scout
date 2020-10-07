@@ -1,7 +1,7 @@
 import logging
 from datetime import date
 
-from flask import url_for, flash
+from flask import url_for
 from flask_login import current_user
 
 from scout.constants import (
