@@ -41,13 +41,13 @@ LOG = logging.getLogger(__name__)
 
 
 def get_igv_tracks(build="37"):
-    """Return all available IGV tracks for the given genome build, as a dictionary
+    """Return all available IGV tracks for the given genome build, as a set
 
     Args:
         build(str): "37" or "38"
 
     Returns:
-        igv_tracks(set): A list of track names for a given genome build
+        igv_tracks(set): A set of track names for a given genome build
     """
     igv_tracks = set()
     # Collect hardcoded tracks, common for all Scout instances
