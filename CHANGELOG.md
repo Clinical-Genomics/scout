@@ -6,6 +6,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+- Update dismissed variant status when variant dismissed key is missing
+### Changed
+
+## [4.23]
+### Added
+- Save custom IGV track settings
 - Show a flash message with clear info about non-valid genes when gene panel creation fails
 - CNV report link in cancer case side navigation
 - Return to comment section after editing, deleting or submitting a comment
