@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Improved `scout update individual` command
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
 ### Changed
