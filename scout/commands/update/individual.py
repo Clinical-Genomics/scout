@@ -2,19 +2,18 @@
 from pathlib import Path
 
 import click
-from scout.constants import INDIVIDUAL_UPDATE_OPTIONS
 from scout.server.extensions import store
 
-UPDATE_KEYS = {
-    "bam_file": {"help": "Path to BAM/CRAM alignment file", "type": Path},
-    "mt_bam": {"help": "Path to reduced MT BAM/CRAM alignment file", "type": Path},
-    "vcf2cytosure": {"help": "Path to vcf2cytosure .cgh file", "type": Path},
-    "rhocall_bed": {"help": "Path to Rhocall bed file", "type": Path},
-    "rhocall_wig": {"help": "Path to Rhocall wig file", "type": Path},
-    "tiddit_coverage_wig": {"help": "Path to Tiddit coverage wig file", "type": Path},
-    "upd_regions_bed": {"help": "Path to UPD regions bed file", "type": Path},
-    "upd_sites_bed": {"help": "Path to UPD sites bed file", "type": Path},
-}
+UPDATE_KEYS = [
+    "bam_file",
+    "mt_bam",
+    "vcf2cytosure",
+    "rhocall_bed",
+    "rhocall_wig",
+    "tiddit_coverage_wig",
+    "upd_regions_bed",
+    "upd_sites_bed",
+]
 
 
 @click.command()
@@ -38,12 +37,12 @@ def individual(case_id, ind, key, value):
         return
     if ind not in individuals:
         click.echo(
-            f"Could not find individual '{ind_name}' in case individuals. Available individuals for this case: {list(individuals.keys)}"
+            f"Could not find individual '{ind}' in case individuals. Available individuals for this case: {list(individuals.keys)}"
         )
         return
     # If key is null or non-valid, print a list of all the keys that can be updated using this function
     if key is None or not key in UPDATE_KEYS:
-        click.echo(f"Please specify a valid key to update. Valid keys:{ list(UPDATE_KEYS.keys()) }")
+        click.echo(f"Please specify a valid key to update. Valid keys:{ UPDATE_KEYS }")
         return
     if value is None:
         click.echo(f"Please specify a file path for key {key}")
@@ -53,7 +52,6 @@ def individual(case_id, ind, key, value):
         click.confirm(
             "The provided path was not found on the server, update key anyway?", abort=True
         )
-
     # perform the update
     for ind_obj in case_obj["individuals"]:
         if ind_obj["display_name"] == ind:
