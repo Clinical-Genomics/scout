@@ -46,6 +46,7 @@ def individual(case_id, ind, key, value):
         return
     if value is None:
         click.echo(f"Please specify a file path for key {key}")
+        return
     file_path = Path(value)
     # If file is not found on the server, ask if user wants to update the key anyway
     if file_path.exists() is False:
