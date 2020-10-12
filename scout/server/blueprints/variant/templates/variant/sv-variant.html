@@ -2,11 +2,10 @@
 {% from "utils.html" import comments_panel, pedigree_panel %}
 {% from "variants/utils.html" import modal_causative %}
 {% from "variant/variant_details.html" import old_observations %}
-{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, sv_alignments, pin_button, causative_button %}
+{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, sv_alignments, pin_button, causative_button, igv_track_selection %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, genemodels_panel %}
 {% from "variant/variant_details.html" import gtcall_panel, frequencies, observations_panel %}
 {% from "variant/buttons.html" import variant_tag_button, dismiss_variant_button %}
-
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -220,6 +219,11 @@
             {{ sv_alignments(variant, case, "length") }}
           </div>
         </li>
+        {% if case.mt_bams or case.bam_files %}
+          <li class="list-group-item">
+            {{ igv_track_selection(igv_tracks, current_user) }}
+          </li>
+        {% endif %}
       <li class="list-group-item">
         <div class="row d-flex justify-content-between">
           <div>Type</div><div class="float-right">{{ variant.sub_category|upper }}</div>
