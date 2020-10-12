@@ -204,7 +204,6 @@ class VariantHandler(VariantLoader):
 
         return result
 
-
     def get_query(self, case_id, query, variant_ids, category):
         return self.build_query(case_id, query=query, variant_ids=variant_ids, category=category)
 
