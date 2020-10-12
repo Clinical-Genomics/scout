@@ -193,10 +193,3 @@ def find_index(align_file):
     return index_file
 
 
-def count_documents(cursor, args):
-    """From the collection the cursor is pointing to, return number of
-    documents from the query
-
-    Info: replaces deprecated `cursor.count()` (>3.7)"""
-
-    return cursor.collection.count_documents(args)

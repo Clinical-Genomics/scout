@@ -67,7 +67,7 @@ def test_variants_research_no_shadow_clinical_assessments(
 
     # NOTE in tests list length will be used, in live code count_documents{query} is
     # called.
-    number_variants = len(list(variants_query_res))
+    number_variants = len(list(variants_query_res.clone()))
 
     res = variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
     res_variants = res["variants"]
@@ -118,7 +118,7 @@ def test_variants_research_shadow_clinical_assessments(
     )
     # NOTE in tests list length will be used, in live code count_documents{query} is
     # called.
-    number_variants = len(list(variants_query_res))
+    number_variants = len(list(variants_query_res.clone()))
     res = variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
     res_variants = res["variants"]
 
@@ -172,7 +172,7 @@ def test_sv_variants_research_shadow_clinical_assessments(
     assert variants_query_res
     # NOTE in tests list length will be used, in live code count_documents{query} is
     # called.
-    number_variants = len(list(variants_query_res))
+    number_variants = len(list(variants_query_res.clone()))
     res = sv_variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
     res_variants = res["variants"]
 
