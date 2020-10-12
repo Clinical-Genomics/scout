@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
 ### Changed
+- Make matching causative and managed variants foldable on case page
 - Improved `scout update individual` command
 
 ## [4.23]
