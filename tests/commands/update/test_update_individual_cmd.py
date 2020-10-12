@@ -73,6 +73,28 @@ def test_update_individual_no_update_key(empty_mock_app, real_adapter, case_obj)
     assert "Please specify a valid key" in result.output
 
 
+def test_update_key_non_existent_path(mock_app, real_populated_database, case_obj):
+    """Tests the CLI that updates a individual with an alignment path that is nit found on the server"""
+
+    # GIVEN a CLI object
+    runner = mock_app.test_cli_runner()
+    # GIVEN a database with a case_obj
+    existing_case = real_populated_database.case_collection.find_one()
+    case_id = existing_case["_id"]
+    ind_info = existing_case["individuals"][0]
+    ind_name = ind_info["display_name"]
+
+    # WHEN updating a individual without a valid alignment path
+    result = runner.invoke(
+        ind_cmd,
+        ["--case-id", case_id, "--ind", ind_name, "bam_file", "not_a_valid_path"],
+    )
+
+    # THEN the command should ask user to confirm save action
+    assert result.exit_code == 1
+    assert "The provided path was not found on the server, update key anyway?" in result.output
+
+
 def test_update_alignment_path(mock_app, real_populated_database, bam_path):
     """Tests the CLI that updates a individual with an alignment path"""
 
@@ -84,13 +106,13 @@ def test_update_alignment_path(mock_app, real_populated_database, bam_path):
     ind_info = existing_case["individuals"][0]
     ind_name = ind_info["display_name"]
 
-    # WHEN updating a individual without case and ind
+    # WHEN updating a individual with a valid alignment path
     result = runner.invoke(
         ind_cmd,
         ["--case-id", case_id, "--ind", ind_name, "bam_file", str(bam_path)],
     )
 
-    # THEN assert it exits without problems
+    # THEN the command should run with no errors
     assert result.exit_code == 0
     # THEN assert that the new alignment path was added
     fetched_case = real_populated_database.case_collection.find_one()
