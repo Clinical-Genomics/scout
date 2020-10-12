@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import url_for
 from scout.server.extensions import store
-import logging
-
-LOG = logging.getLogger(__name__)
 
 
 def test_overview(app, user_obj, institute_obj):
@@ -398,7 +395,6 @@ def test_gene_variants_no_valid_gene(app, institute_obj, case_obj):
             data=filter_query,
         )
         # THEN the page should redirect
-        LOG.debug("RESP: {}".format(resp))
         assert resp.status_code == 302
 
 
