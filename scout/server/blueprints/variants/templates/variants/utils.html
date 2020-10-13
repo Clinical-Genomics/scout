@@ -613,8 +613,8 @@
     {% endfor %}
   {% endif %}
 
-  {% if variant.cohort_assessments %}
-    {% for assessment in (variant.cohort_assessments or []) %}
+  {% if variant.group_assessments %}
+    {% for assessment in (variant.group_assessments or []) %}
       <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
         title="Cohort {{ assessment.title }}">
         {{ assessment.label }}</span>

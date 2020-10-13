@@ -94,7 +94,7 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
         variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
         if case_obj.get("group"):
-            variant_obj["cohort_assessments"] = []
+            variant_obj["group_assessments"] = []
             for group_case_id in case_obj.get("group"):
                 cohort_var_obj = store.variant(
                     case_id=group_case_id,
@@ -102,7 +102,7 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
                     variant_type=variant_obj["variant_type"],
                 )
                 group_manual_assessments = get_manual_assessments(cohort_var_obj)
-                variant_obj["cohort_assessments"].extend(group_manual_assessments)
+                variant_obj["group_assessments"].extend(group_manual_assessments)
 
         variants.append(
             parse_variant(
