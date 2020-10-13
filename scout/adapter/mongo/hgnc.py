@@ -118,13 +118,7 @@ class GeneHandler(object):
         LOG.debug("Fetching genes with symbol %s" % hgnc_symbol)
         if search:
             # first search for a full match
-            query = {
-                "$or": [
-                    {"aliases": hgnc_symbol},
-                    {"hgnc_id": int(hgnc_symbol) if hgnc_symbol.isdigit() else None},
-                ],
-                "build": str(build),
-            }
+            query = self.get_query_alias_or_id(hgnc_symbol, build)
             nr_genes = self.nr_genes(query=query)
             if nr_genes != 0:
                 return self.hgnc_collection.find(query)
@@ -135,7 +129,6 @@ class GeneHandler(object):
                     "build": str(build),
                 }
             )
-
         return self.hgnc_collection.find({"build": build, "aliases": hgnc_symbol})
 
     def hgnc_genes_count(self, hgnc_symbol, build="37", search=False):
@@ -155,25 +148,34 @@ class GeneHandler(object):
 
         LOG.debug("Counting genes with symbol %s" % hgnc_symbol)
         if search:
-            query = {
-                "$or": [
-                    {"aliases": hgnc_symbol},
-                    {"hgnc_id": int(hgnc_symbol) if hgnc_symbol.isdigit() else None},
-                ],
-                "build": str(build),
-            }
+            query = self.get_query_alias_or_id(hgnc_symbol, build)
             nr_genes = self.nr_genes(query=query)
             if nr_genes != 0:
-                return self.hgnc_collection.count_documents(query)
+                return self.hgnc_collection.find_one(query)
 
-            return self.hgnc_collection.count_documents(
+            return self.hgnc_collection.find_one(
                 {
                     "aliases": {"$regex": hgnc_symbol, "$options": "i"},
                     "build": str(build),
                 }
             )
+        r = self.hgnc_collection.find_one(filter={"build": build, "aliases": hgnc_symbol})
+        LOG.debug("================= %s" % r)
+        return r
 
-        return self.hgnc_collection.count_documents({"build": build, "aliases": hgnc_symbol})
+    def get_query_alias_or_id(self, hgnc_symbol, build):
+        """ Return query to search for hgnc-symbol or aliases """
+        query = {
+            "$or": [
+                {"aliases": hgnc_symbol},
+                {"hgnc_id": int(hgnc_symbol) if hgnc_symbol.isdigit() else None},
+            ],
+            "build": str(build),
+        }
+        LOG.debug("QUERY: {}".format(query))
+        print("****************")
+        print(query)
+        return query
 
     def all_genes(self, build=None, add_transcripts=False, limit=100000):
         """Fetch all hgnc genes
