@@ -26,7 +26,7 @@ subpanel = dict(
         title=str,  # Subpanel title
         subtitle=str,  # Subpanel subtitle
         created=datetime,
-        updated=updated,
+        updated=datetime,
         checkboxes=list,  # a list of checkboxes dictionaries
     )
 )
