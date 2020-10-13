@@ -519,14 +519,14 @@ def hgvs_str(gene_symbols, hgvs_p, hgvs_c):
     return "-"
 
 
-def _subpanel_omim_checkbox_add(model_obj, user_form):
+def _subpanel_omim_checkbox_add(model_dict, user_form):
     """Add an OMIM checkbox to a phenotype subpanel
     Args:
-        model_obj(dict): a dictionary coresponding to a phenotype model
+        model_dict(dict): a dictionary coresponding to a phenotype model
         user_form(request.form): a POST request form object
 
     Returns:
-        model_obj(dict): an updated phenotype model dictionary to be saved to database
+        model_dict(dict): an updated phenotype model dictionary to be saved to database
     """
     subpanel_id = user_form.get("omim_subpanel_id")
     omim_id = user_form.get("omim_term").split(" | ")[0]
@@ -534,7 +534,7 @@ def _subpanel_omim_checkbox_add(model_obj, user_form):
     if omim_obj is None:
         flash("Please specify a valid OMIM term", "warning")
         return
-    checkboxes = model_obj["subpanels"][subpanel_id].get("checkboxes", {})
+    checkboxes = model_dict["subpanels"][subpanel_id].get("checkboxes", {})
     if omim_id in checkboxes:
         flash(f"Omim term '{omim_id}' already exists in this panel", "warning")
         return
@@ -545,20 +545,20 @@ def _subpanel_omim_checkbox_add(model_obj, user_form):
     if user_form.get("omim_custom_name"):
         checkbox_obj["custom_name"] = user_form.get("omim_custom_name")
     checkboxes[omim_id] = checkbox_obj
-    model_obj["subpanels"][subpanel_id]["checkboxes"] = checkboxes
-    model_obj["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()
-    return model_obj
+    model_dict["subpanels"][subpanel_id]["checkboxes"] = checkboxes
+    model_dict["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()
+    return model_dict
 
 
-def _subpanel_hpo_checkgroup_add(model_obj, user_form):
+def _subpanel_hpo_checkgroup_add(model_dict, user_form):
     """Add an HPO term (and eventually his children) to a phenotype subpanel
 
     Args:
-        model_obj(dict): a dictionary coresponding to a phenotype model
+        model_dict(dict): a dictionary coresponding to a phenotype model
         user_form(request.form): a POST request form object
 
     Returns:
-        model_obj(dict): an updated phenotype model dictionary to be saved to database
+        model_dict(dict): an updated phenotype model dictionary to be saved to database
     """
     hpo_id = user_form.get("hpo_term").split(" ")[0]
     hpo_obj = store.hpo_term(hpo_id)
@@ -567,7 +567,7 @@ def _subpanel_hpo_checkgroup_add(model_obj, user_form):
         return
     subpanel_id = user_form.get("hpo_subpanel_id")
     tree_dict = {}
-    checkboxes = model_obj["subpanels"][subpanel_id].get("checkboxes", {})
+    checkboxes = model_dict["subpanels"][subpanel_id].get("checkboxes", {})
 
     if hpo_id in checkboxes:  # Do not include duplicated HPO terms in checkbox items
         flash(f"Subpanel contains already HPO term '{hpo_id}'", "warning")
@@ -585,31 +585,31 @@ def _subpanel_hpo_checkgroup_add(model_obj, user_form):
     if user_form.get("hpo_custom_name"):
         tree_dict["custom_name"] = user_form.get("hpo_custom_name")
     checkboxes[hpo_id] = tree_dict
-    model_obj["subpanels"][subpanel_id]["checkboxes"] = checkboxes
-    model_obj["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()
-    return model_obj
+    model_dict["subpanels"][subpanel_id]["checkboxes"] = checkboxes
+    model_dict["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()
+    return model_dict
 
 
-def _subpanel_checkgroup_remove_one(model_obj, user_form):
+def _subpanel_checkgroup_remove_one(model_dict, user_form):
     """Remove a checkbox group from a phenotype subpanel
 
     Args:
-        model_obj(dict): a dictionary coresponding to a phenotype model
+        model_dict(dict): a dictionary coresponding to a phenotype model
         user_form(request.form): a POST request form object
 
     Returns:
-        model_obj(dict): an updated phenotype model dictionary to be saved to database
+        model_dict(dict): an updated phenotype model dictionary to be saved to database
     """
     subpanel_id = user_form.get("checkgroup_remove").split("#")[1]
     remove_field = user_form.get("checkgroup_remove").split("#")[0]
 
     try:
-        model_obj["subpanels"][subpanel_id]["checkboxes"].pop(remove_field, None)
-        model_obj["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()
+        model_dict["subpanels"][subpanel_id]["checkboxes"].pop(remove_field, None)
+        model_dict["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()
     except Exception as ex:
         flash(ex, "danger")
 
-    return model_obj
+    return model_dict
 
 
 def _update_subpanel(subpanel_obj, supb_changes):
@@ -665,17 +665,17 @@ def _update_subpanel(subpanel_obj, supb_changes):
     return subpanel_obj
 
 
-def phenomodel_checkgroups_filter(model_obj, user_form):
+def phenomodel_checkgroups_filter(model_dict, user_form):
     """Filter the checboxes of one or more subpanels according to preferences specified in the model preview
 
     Args:
-        model_obj(dict): a dictionary coresponding to a phenotype model
+        model_dict(dict): a dictionary coresponding to a phenotype model
         user_form(request.form): a POST request form object
 
     Returns:
-        model_obj(dict): an updated phenotype model dictionary to be saved to database
+        model_dict(dict): an updated phenotype model dictionary to be saved to database
     """
-    subpanels = model_obj.get("subpanels") or {}
+    subpanels = model_dict.get("subpanels") or {}
     check_list = (
         user_form.getlist("cheked_terms") or []
     )  # a list like this: ["subpanelID.rootTerm_checkedTerm", .. ]
@@ -696,22 +696,22 @@ def phenomodel_checkgroups_filter(model_obj, user_form):
     # loop over the subpanels of the model, and check they need to be updated
     for key, subp in subpanels.items():
         if key in updates_dict:  # if subpanel requires changes
-            model_obj["subpanels"][key] = _update_subpanel(subp, updates_dict[key])  # update it
+            model_dict["subpanels"][key] = _update_subpanel(subp, updates_dict[key])  # update it
 
-    return model_obj
+    return model_dict
 
 
-def _add_subpanel(model_id, model_obj, user_form):
+def _add_subpanel(model_id, model_dict, user_form):
     """Add an empty subpanel to a phenotype model
 
     Args:
         model_id(str): string of the ID of a phenotype model
-        model_obj(dict): a dictionary coresponding to a phenotype model
+        model_dict(dict): a dictionary coresponding to a phenotype model
         user_form(request.form): a POST request form object
 
     """
     subpanel_key = generate_md5_key([model_id, user_form.get("title")])
-    phenomodel_subpanels = model_obj.get("subpanels") or {}
+    phenomodel_subpanels = model_dict.get("subpanels") or {}
 
     if subpanel_key in phenomodel_subpanels:
         flash("A model panel with that title already exists", "warning")
@@ -723,8 +723,8 @@ def _add_subpanel(model_id, model_obj, user_form):
         "updated": datetime.datetime.now(),
     }
     phenomodel_subpanels[subpanel_key] = subpanel_obj
-    model_obj["subpanels"] = phenomodel_subpanels
-    return model_obj
+    model_dict["subpanels"] = phenomodel_subpanels
+    return model_dict
 
 
 def edit_subpanel_checkbox(model_id, user_form):
@@ -733,18 +733,18 @@ def edit_subpanel_checkbox(model_id, user_form):
         model_id(ObjectId): document ID of the model to be updated
         user_form(request.form): a POST request form object
     """
-    model_obj = store.phenomodel(model_id)
-    if model_obj is None:
+    model_dict = store.phenomodel(model_id)
+    if model_dict is None:
         return
     if "add_hpo" in user_form:  # add an HPO checkbox to subpanel
-        model_obj = _subpanel_hpo_checkgroup_add(model_obj, user_form)
+        model_dict = _subpanel_hpo_checkgroup_add(model_dict, user_form)
     if "add_omim" in user_form:  # add an OMIM checkbox to subpanel
-        model_obj = _subpanel_omim_checkbox_add(model_obj, user_form)
+        model_dict = _subpanel_omim_checkbox_add(model_dict, user_form)
     if user_form.get("checkgroup_remove"):  # remove a checkbox of any type from subpanel
-        model_obj = _subpanel_checkgroup_remove_one(model_obj, user_form)
+        model_dict = _subpanel_checkgroup_remove_one(model_dict, user_form)
 
-    if model_obj:
-        store.update_phenomodel(model_id=model_id, model_obj=model_obj)
+    if model_dict:
+        store.update_phenomodel(model_id=model_id, model_dict=model_dict)
 
 
 def update_phenomodel(model_id, user_form):
@@ -754,21 +754,21 @@ def update_phenomodel(model_id, user_form):
         model_id(ObjectId): document ID of the model to be updated
         user_form(request.form): a POST request form object
     """
-    model_obj = store.phenomodel(model_id)
-    if model_obj is None:
+    model_dict = store.phenomodel(model_id)
+    if model_dict is None:
         return
     if user_form.get("update_model"):  # update either model name of description
-        model_obj["name"] = user_form.get("model_name")
-        model_obj["description"] = user_form.get("model_desc")
+        model_dict["name"] = user_form.get("model_name")
+        model_dict["description"] = user_form.get("model_desc")
     if user_form.get("subpanel_delete"):  # Remove a phenotype submodel from phenomodel
-        subpanels = model_obj["subpanels"]
+        subpanels = model_dict["subpanels"]
         # remove panel from subpanels dictionary
         subpanels.pop(user_form.get("subpanel_delete"), None)
-        model_obj["subpanels"] = subpanels
+        model_dict["subpanels"] = subpanels
     if user_form.get("add_subpanel"):  # Add a new phenotype submodel
-        model_obj = _add_subpanel(model_id, model_obj, user_form)
+        model_dict = _add_subpanel(model_id, model_dict, user_form)
     if user_form.get("model_save"):  # Save model according user preferences in the preview
-        model_obj = phenomodel_checkgroups_filter(model_obj, user_form)
+        model_dict = phenomodel_checkgroups_filter(model_dict, user_form)
 
-    if model_obj:
-        store.update_phenomodel(model_id=model_id, model_obj=model_obj)
+    if model_dict:
+        store.update_phenomodel(model_id=model_id, model_dict=model_dict)
