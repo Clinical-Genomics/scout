@@ -377,6 +377,21 @@ class CaseHandler(object):
 
         return self.case_collection.find(query).sort("updated_at", -1)
 
+    def case_group_ids(self, group_id):
+        """Fetches any cases with given group_id from backend.
+
+        Args:
+            group_id(str): A tag for related cases. A case can belong to several groups.
+
+        Returns:
+            case_ids(list): A list of case _ids
+        """
+
+        return [
+            case._id
+            for case in store.find({"group": {"$elemMatch": {"$eq": group_id}}}, {"_id": 1})
+        ]
+
     def nr_cases(self, institute_id=None):
         """Return the number of cases
 

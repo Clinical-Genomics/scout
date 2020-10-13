@@ -95,7 +95,12 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
 
         if case_obj.get("group"):
             variant_obj["group_assessments"] = []
-            for group_case_id in case_obj.get("group"):
+
+            group_case_ids = set()
+            for group_id in case_obj.get("group"):
+                group_case_ids.update(store.case_group_ids(group_id))
+
+            for group_case_id in group_case_ids:
                 cohort_var_obj = store.variant(
                     case_id=group_case_id,
                     simple_id=variant_obj["simple_id"],
