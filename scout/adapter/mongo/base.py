@@ -48,6 +48,7 @@ from .matchmaker import MMEHandler
 from .filter import FilterHandler
 from .cytoband import CytobandHandler
 from .managed_variant import ManagedVariantHandler
+from .phenomodel import PhenoModelHandler
 
 
 log = logging.getLogger(__name__)
@@ -72,6 +73,7 @@ class MongoAdapter(
     FilterHandler,
     ManagedVariantHandler,
     CytobandHandler,
+    PhenoModelHandler,
 ):
 
     """Adapter for cummunication with a mongo database."""
