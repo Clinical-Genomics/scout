@@ -177,9 +177,10 @@ class HpoHandler(object):
         # rearrange tree according to the HPO ontology
         root = self.organize_tree(all_terms, root)
         node_resolver = resolver.Resolver("name")
-        # extract the node of interest (hpo_id) fro root, convert it to dict and return it
+        # Extract a tree structure having the chosen HPO term (hpo_id) as ancestor of all the children terms
         term_node = node_resolver.get(root, hpo_id)
         LOG.info(f"Built ontology for HPO term:{hpo_id}:\n{RenderTree(term_node)}")
         exporter = DictExporter()
+        # Export this tree structure as dictionary, so that can be saved in database
         tree_dict = exporter.export(term_node)
         return tree_dict

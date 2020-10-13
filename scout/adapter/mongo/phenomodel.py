@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
-import logging
 import pymongo
 from bson import ObjectId
-from anytree import RenderTree, Node, search, resolver
-from anytree.exporter import DictExporter
-
-LOG = logging.getLogger(__name__)
 
 
 class PhenoModelHandler(object):
@@ -46,7 +41,7 @@ class PhenoModelHandler(object):
     def update_phenomodel(self, model_id, model_obj):
         """Update a phenotype model using its ObjectId
         Args:
-            model_id(ObjectId): document ObjectId
+            model_id(str): document ObjectId string id
             model_obj(dict): a dictionary of key/values to update a phenomodel with
 
         Returns:
