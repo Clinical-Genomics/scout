@@ -205,8 +205,21 @@ class VariantHandler(VariantLoader):
         return result
 
 
-    def get_query(self, case_id, query, variant_ids, category):
-        return self.build_query(case_id, query=query, variant_ids=variant_ids, category=category)
+    def count_query(self, case_id, query, variant_ids, category):
+        """Returns number of variants
+
+        Arguments:
+            case_id(str): A string that represents the case
+            query(dict): A dictionary with querys for the database
+            variant_ids(List[str])
+            category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
+
+        Returns:
+             integer
+        """
+
+        query = self.build_query(case_id, query=query, variant_ids=variant_ids, category=category)
+        self.variant_collection.count_documents(query)
 
     def sanger_variants(self, institute_id=None, case_id=None):
         """Return all variants with sanger information
@@ -293,7 +306,7 @@ class VariantHandler(VariantLoader):
 
         If skip not equal to 0 skip the first n variants.
 
-        Arguments:
+        Args:
             query(dict): A dictionary with querys for the database, including
             variant_type: 'clinical', 'research'
             category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
@@ -335,7 +348,7 @@ class VariantHandler(VariantLoader):
     ):
         """Count all variants seen in a given gene.
 
-        Arguments:
+        Args:
             query(dict): A dictionary with querys for the database, including
             variant_type: 'clinical', 'research'
             category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
@@ -346,6 +359,9 @@ class VariantHandler(VariantLoader):
             phenotype_groups,
             similar_case,
             cohorts
+
+        Returns:
+            Number of variants for gene
         """
         mongo_variant_query = self.build_variant_query(
             query=query,
