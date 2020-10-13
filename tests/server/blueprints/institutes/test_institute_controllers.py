@@ -4,47 +4,26 @@ from scout.server.extensions import store
 
 from scout.server.blueprints.institutes.controllers import cases, phenomodel_checkgroups_filter
 
-HPO_TERMS = [
-    {
-        "_id": "HP:0025190",
-        "hpo_id": "HP:0025190",
-        "description": "Bilateral tonic-clonic seizure with generalized onset",
-        "children": ["HP:0032661"],
-        "ancestors": [],
-    },
-    {
-        "_id": "HP:0032661",
-        "hpo_id": "HP:0032661",
-        "description": "Generalized convulsive status epilepticus",
-        "children": [],
-        "ancestors": ["HP:0025190"],
-    },
-]
-OMIM_TERM = {
-    "_id": "OMIM:121210",
-    "description": "Febrile seizures familial 1",
-}
 
-
-def test_phenomodel_checkgroups_filter(app, institute_obj):
+def test_phenomodel_checkgroups_filter(app, institute_obj, hpo_checkboxes, omim_checkbox):
     """Test the controllers function that updates the phenotype model based on the model preview checkbox preferences"""
     # GIVEN a database with the required HPO terms (one parent term and one child term)
-    store.hpo_term_collection.insert_many(HPO_TERMS)
+    store.hpo_term_collection.insert_many(hpo_checkboxes)
 
     # GIVEN a phenotype model with one panel and 3 checkboxes (checkbox2 nested inside checkbox1)
-    hpo_id1 = HPO_TERMS[0]["_id"]
-    hpo_id2 = HPO_TERMS[1]["_id"]
-    omim_id = OMIM_TERM["_id"]
+    hpo_id1 = hpo_checkboxes[0]["_id"]
+    hpo_id2 = hpo_checkboxes[1]["_id"]
+    omim_id = omim_checkbox["_id"]
     checkbox2 = dict(
         name=hpo_id2,
-        description=HPO_TERMS[1]["description"],
+        description=hpo_checkboxes[1]["description"],
     )
     checkbox1 = dict(
         name=hpo_id1,
-        description=HPO_TERMS[1]["description"],
+        description=hpo_checkboxes[1]["description"],
         children=[checkbox2],  # nested checkbox with HPO term 2
     )
-    checkbox3 = {"name": omim_id, "description": OMIM_TERM["description"]}
+    checkbox3 = {"name": omim_id, "description": omim_checkbox["description"]}
     test_model = dict(
         institute=institute_obj["_id"],
         name="Test model",
