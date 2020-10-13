@@ -29,7 +29,7 @@ from scout.constants import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
 )
 from scout.server.extensions import store
-from scout.server.utils import institute_and_case, templated, count_documents
+from scout.server.utils import institute_and_case, templated
 
 from . import controllers
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
