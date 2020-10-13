@@ -682,10 +682,9 @@ def phenomodel_checkgroups_filter(model_obj, user_form):
     updates_dict = {}
     # From form values, create a dictionary like this: { "subpanel_id1":{"parent_term1":[children_terms], parent_term2:[children_terms2]}, .. }
     for checked_value in check_list:
-        splitted_value = checked_value.split(".")
-        panel_key = splitted_value[0]
-        parent_term = splitted_value[1]
-        child_term = splitted_value[2]
+        panel_key = checked_value.split(".")[0]
+        parent_term = checked_value.split(".")[1]
+        child_term = checked_value.split(".")[2]
         if panel_key in updates_dict:
             if parent_term in updates_dict[panel_key]:
                 updates_dict[panel_key][parent_term].append(child_term)
