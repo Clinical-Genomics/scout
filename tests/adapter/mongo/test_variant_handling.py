@@ -76,7 +76,7 @@ def test_query_all_gene_variants(real_variant_database):
     # THEN the same number of variants should be returned by 'count_documents'
     assert result == adapter.count_gene_variants(query=gene_variants_query)
 
-    
+
 def test_load_variants(real_populated_database, variant_objs, case_obj):
     """Test to load variants into a mongo database"""
     adapter = real_populated_database

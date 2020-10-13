@@ -191,5 +191,3 @@ def find_index(align_file):
         if not os.path.exists(index_file):
             index_file = "{}.bai".format(align_file)
     return index_file
-
-
