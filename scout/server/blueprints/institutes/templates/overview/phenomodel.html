@@ -177,36 +177,34 @@
           <div class="row">
             {% if "checkboxes" in subpanel %}
               <table class="table table-striped">
-                {% if "checkboxes" in subpanel %}
-                  Checkbox groups:
-                  {% for term_id, term_obj in subpanel.checkboxes.items() %}
-                    <tr>
-                      <td>
-                        <div>
-                          <form action="{{ url_for('overview.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
-                            {% if term_obj.children %}
-                              <a href="#" onclick="toggleDiv('{{subpanel_id}}#{{term_id}}')">{{term_obj.custom_name or term_obj.description}}</a> ({{term_id}})
-                            {% else %}
-                              {{term_obj.custom_name or term_obj.description}} ({{term_id}})
-                            {% endif %}
-                            <!--button to remove a checkbox group-->
-                            <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}#{{subpanel_id}}"><i class="fa fa-times"></i></button>
-                          </form>
-                        </div>
-                        <div style="margin-left: 35px; display: none;" id="{{subpanel_id}}#{{term_id}}">
-                          {% for item in term_obj.children recursive %}
-                            <li class="tree">
-                              <label>{{item.description}} ({{item.name}})</label>
-                              {%- if item.children -%}
-                                <ul class="tree">{{ loop(item.children) }}</ul>
-                              {%- endif %}
-                            </li>
-                          {%- endfor %}
-                        </div>
-                      </td>
-                    </tr>
-                  {% endfor %}
-                {% endif %}
+                Checkbox groups:
+                {% for term_id, term_obj in subpanel.checkboxes.items() %}
+                  <tr>
+                    <td>
+                      <div>
+                        <form action="{{ url_for('overview.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+                          {% if term_obj.children %}
+                            <a href="#" onclick="toggleDiv('{{subpanel_id}}#{{term_id}}')">{{term_obj.custom_name or term_obj.description}}</a> ({{term_id}})
+                          {% else %}
+                            {{term_obj.custom_name or term_obj.description}} ({{term_id}})
+                          {% endif %}
+                          <!--button to remove a checkbox group-->
+                          <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}#{{subpanel_id}}"><i class="fa fa-times"></i></button>
+                        </form>
+                      </div>
+                      <div style="margin-left: 35px; display: none;" id="{{subpanel_id}}#{{term_id}}">
+                        {% for item in term_obj.children recursive %}
+                          <li class="tree">
+                            <label>{{item.description}} ({{item.name}})</label>
+                            {%- if item.children -%}
+                              <ul class="tree">{{ loop(item.children) }}</ul>
+                            {%- endif %}
+                          </li>
+                        {%- endfor %}
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
               </table>
             {% endif %}
           </div><!-- End of are displaying subpanel checkboxes-->
