@@ -734,17 +734,17 @@ def edit_subpanel_checkbox(model_id, user_form):
         user_form(request.form): a POST request form object
     """
     model_dict = store.phenomodel(model_id)
-    update_dict = False
+    update_model = False
     if model_dict is None:
         return
     if "add_hpo" in user_form:  # add an HPO checkbox to subpanel
-        update_dict = _subpanel_hpo_checkgroup_add(model_dict, user_form)
+        update_model = _subpanel_hpo_checkgroup_add(model_dict, user_form)
     if "add_omim" in user_form:  # add an OMIM checkbox to subpanel
-        update_dict = _subpanel_omim_checkbox_add(model_dict, user_form)
+        update_model = _subpanel_omim_checkbox_add(model_dict, user_form)
     if user_form.get("checkgroup_remove"):  # remove a checkbox of any type from subpanel
-        update_dict = _subpanel_checkgroup_remove_one(model_dict, user_form)
+        update_model = _subpanel_checkgroup_remove_one(model_dict, user_form)
 
-    if update_dict:
+    if update_model:
         store.update_phenomodel(model_id=model_id, model_obj=model_dict)
 
 
@@ -756,11 +756,11 @@ def update_phenomodel(model_id, user_form):
         user_form(request.form): a POST request form object
     """
     model_dict = store.phenomodel(model_id)
-    update_dict = False
+    update_model = False
     if model_dict is None:
         return
     if user_form.get("update_model"):  # update either model name of description
-        update_dict = True
+        update_model = True
         model_dict["name"] = user_form.get("model_name")
         model_dict["description"] = user_form.get("model_desc")
     if user_form.get("subpanel_delete"):  # Remove a phenotype submodel from phenomodel
@@ -768,11 +768,11 @@ def update_phenomodel(model_id, user_form):
         # remove panel from subpanels dictionary
         subpanels.pop(user_form.get("subpanel_delete"), None)
         model_dict["subpanels"] = subpanels
-        update_dict = True
+        update_model = True
     if user_form.get("add_subpanel"):  # Add a new phenotype submodel
-        update_dict = _add_subpanel(model_id, model_dict, user_form)
+        update_model = _add_subpanel(model_id, model_dict, user_form)
     if user_form.get("model_save"):  # Save model according user preferences in the preview
-        update_dict = phenomodel_checkgroups_filter(model_dict, user_form)
+        update_model = phenomodel_checkgroups_filter(model_dict, user_form)
 
-    if update_dict:
+    if update_model:
         store.update_phenomodel(model_id=model_id, model_obj=model_dict)
