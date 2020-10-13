@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table, modal_causative %}
-{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button %}
+{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, igv_track_selection %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, severity_list, conservations, mappability %}
@@ -215,10 +215,10 @@
 {% endmacro %}
 
 {% macro matching_variants() %}
-  <div class="card mt-3">
-    <div class="card-body mt-1 ml-1" style="padding: 0;">
-    {% if causatives %}
-      <h6>Matching causatives from other cases</h6>
+  {% if causatives %}
+    <div class="card panel-default">
+      <div class="panel-heading">Matching causatives from other cases</div>
+      <div class="card-body">
         <ul class="list-group list-group-flush">
           {% for other_variant in causatives %}
             <li class="list-group-item">
@@ -231,11 +231,31 @@
             </li>
           {% endfor %}
         </ul>
-    {% else %}
-      <h6>No matching causative variants</h6>
-    {% endif%}
-    </div> <!--end of card body-->
-  </div><!--end of card-->
+      </div> <!--end of card body-->
+    </div><!--end of card-->
+  {% endif %}
+  {% if managed_variant %}
+    <div class="card panel-default">
+      <div class="panel-heading">Matching managed variant</div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-2">
+            {{ managed_variant.display_id }}
+          </div>
+          <div class="col-10">
+            {{ managed_variant.description }}
+          </div>
+        </div>
+      </div> <!--end of card body-->
+    </div><!--end of card-->
+  {% endif %}
+  {% if not managed_variant and not causatives %}
+    <div class="card mt-3">
+      <div class="card-body mt-1 ml-1" style="padding: 0;">
+        <h6>No matching causative or managed variants</h6>
+      </div> <!--end of card body-->
+    </div><!--end of card-->
+  {% endif%}
 {% endmacro %}
 
 {% macro panel_basics() %}
@@ -364,7 +384,13 @@
             </td>
             <td>
               CADD score
-              <span><strong>{{ variant.cadd_score or '-' }}</strong></span>
+              <span><strong>
+                {% if variant.cadd_score %}
+                  {{ variant.cadd_score|round(1) }}
+                {% else %}
+                  -
+                {% endif %}
+              </strong></span>
             </td>
           </tr>
         </tbody>
@@ -427,24 +453,18 @@
           </li>
         {% endif %}
       </ul>
-
-      <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
-        <!-- general hidden fields required to submit POST request to IGV viewer -->
-        {% if case.mt_bams or case.bam_files %}
-          <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
-          <input type="hidden" name="build" value="{{case.genome_build}}">
-          <input type="hidden" name="contig" value="{{variant.chromosome}}">
-          <input type="hidden" name="start" value="{{variant.position - 50}}">
-          <input type="hidden" name="stop" value="{{variant.end_position + 50}}">
-          <input type="hidden" name="center_guide" value="T">
-          <!--<input type="hidden" name="now" values="{{now}}"-->
-        {% endif %}
-        <!-- end of general hidden form fields -->
-        <div class="panel-heading">Gene coverage</div>
         <table class="table table-bordered table-fixed table-sm">
           <tbody>
             <tr>
-              <td>
+              <td style="width:20%;">
+                <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
+                  <!-- general hidden fields required to submit POST request to IGV viewer -->
+                  <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
+                  <input type="hidden" name="build" value="{{case.genome_build}}">
+                  <input type="hidden" name="contig" value="{{variant.chromosome}}">
+                  <input type="hidden" name="start" value="{{variant.position - 50}}">
+                  <input type="hidden" name="stop" value="{{variant.end_position + 50}}">
+                  <!-- end of general hidden form fields -->
                 {% if variant.chromosome == "MT" %}
                   {% if case.mt_bams %}
                     <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
@@ -473,7 +493,13 @@
                 {% else %}
                   <span class="text-muted">BAM file(s) missing</span>
                 {% endif %}
+              </form>
               </td>
+              {% if case.mt_bams or case.bam_files %}
+              <td style="width:50%;">
+                {{ igv_track_selection(igv_tracks, current_user) }}
+              </td>
+              {% endif %}
               {% if config.SQLALCHEMY_DATABASE_URI %}
                 {% for gene in variant.genes %}
                   <td>
@@ -486,8 +512,6 @@
             </tr>
           </tbody>
         </table>
-      </form>
-
       {% if variant.custom %}
       <table class="table table-bordered table-sm">
 	<thead>

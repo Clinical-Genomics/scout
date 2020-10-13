@@ -233,17 +233,17 @@
 {% endmacro %}
 
 {% macro matching_causatives(other_causatives, institute, case) %}
-  <div class="card panel-default">
+  <div class="card panel-default" >
     <div data-toggle='tooltip' class="panel-heading" title="If there are any variants in this case
       that have been marked as causative in another case for this insitute">
-      Matching causatives from other cases
+      <strong><a data-toggle="collapse" href="#matchingCausatives" class="text-white">Matching causatives from other cases ({{other_causatives|length}})</a></strong>
     </div>
-    <ul class="list-group">
+    <ul class="list-group collapse" id="matchingCausatives">
       {% for variant in other_causatives %}
         <li class="list-group-item">
           <a href="{{ url_for('variant.variant', institute_id=institute._id,
                               case_name=case.display_name, variant_id=variant._id) }}">
-            {{ variant.hgnc_symbols|join(', ') }}
+            {{ variant.hgnc_symbols|join(', ') or variant.hgnc_ids|join(', ')}}
           </a>
         </li>
       {% else %}
@@ -252,6 +252,28 @@
     </ul>
   </div>
 {% endmacro %}
+
+{% macro matching_managed_variants(managed_variants, institute, case) %}
+  <div class="card panel-default">
+    <div data-toggle='tooltip' class="panel-heading" title="Any variants in this case
+      that have been marked as managed">
+      <strong><a data-toggle="collapse" href="#matchingManaged" class="text-white">Managed variants ({{managed_variants|length}})</a></strong>
+    </div>
+    <ul class="list-group">
+      {% for variant in managed_variants %}
+        <li class="list-group-item collapse" id="matchingManaged">
+          <a href="{{ url_for('variant.variant', institute_id=institute._id,
+                              case_name=case.display_name, variant_id=variant._id) }}">
+            {{ variant.hgnc_symbols|join(', ') }}
+          </a>
+        </li>
+      {% else %}
+        <li class="list-group-item">No managed variants.</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endmacro %}
+
 
 {% macro remove_form(url, hidden_input=None, button_name=None, button_value=None) %}
   <form action="{{ url }}" method="POST">

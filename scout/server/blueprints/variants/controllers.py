@@ -106,7 +106,12 @@ def variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50
 
         variants.append(
             parse_variant(
-                store, institute_obj, case_obj, variant_obj, update=True, genome_build=genome_build,
+                store,
+                institute_obj,
+                case_obj,
+                variant_obj,
+                update=True,
+                genome_build=genome_build,
             )
         )
 
@@ -296,7 +301,10 @@ def parse_variant(
         variant_obj = store.update_variant(variant_obj)
 
     variant_obj["comments"] = store.events(
-        institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True,
+        institute_obj,
+        case=case_obj,
+        variant_id=variant_obj["variant_id"],
+        comments=True,
     )
 
     if variant_genes:
@@ -350,7 +358,9 @@ def download_variants(store, case_obj, variant_objs):
     )
     # return a csv with the exported variants
     return Response(
-        generate(",".join(document_header), export_lines), mimetype="text/csv", headers=headers,
+        generate(",".join(document_header), export_lines),
+        mimetype="text/csv",
+        headers=headers,
     )
 
 
@@ -714,7 +724,9 @@ def case_default_panels(case_obj):
         case_panels(list): a list of panels (panel_name)
     """
     case_panels = [
-        panel["panel_name"] for panel in case_obj.get("panels", []) if panel["is_default"] is True
+        panel["panel_name"]
+        for panel in case_obj.get("panels", [])
+        if panel.get("is_default", None) is True
     ]
     return case_panels
 
@@ -868,7 +880,9 @@ def activate_case(store, institute_obj, case_obj, current_user):
 
         user_obj = store.user(current_user.email)
         case_link = url_for(
-            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
+            "cases.case",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
         )
         store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
 

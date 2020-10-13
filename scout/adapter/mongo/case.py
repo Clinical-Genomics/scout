@@ -672,6 +672,7 @@ class CaseHandler(object):
             - sv_rank_model_version: If there is a new sv rank model
             - madeline_info: If there is a new pedigree
             - vcf_files: paths to the new files
+            - cnv_report: path to the CNV report file
             - has_svvariants: If there are new svvariants
             - has_strvariants: If there are new strvariants
             - multiqc: If there's an updated multiqc report location
@@ -719,6 +720,7 @@ class CaseHandler(object):
                 "$set": {
                     "analysis_date": case_obj["analysis_date"],
                     "delivery_report": case_obj.get("delivery_report"),
+                    "cnv_report": case_obj.get("cnv_report"),
                     "individuals": case_obj["individuals"],
                     "updated_at": updated_at,
                     "rerun_requested": case_obj.get("rerun_requested", False),

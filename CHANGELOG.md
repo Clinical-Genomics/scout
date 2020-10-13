@@ -6,13 +6,44 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+- Update dismissed variant status when variant dismissed key is missing
+### Changed
+- Make matching causative and managed variants foldable on case page
+
+## [4.23]
+### Added
+- Save custom IGV track settings
+- Show a flash message with clear info about non-valid genes when gene panel creation fails
+- CNV report link in cancer case side navigation
+- Return to comment section after editing, deleting or submitting a comment
+- Managed variants
+- MT vs 14 chromosome mean coverage stats if Scout is connected to Chanjo
+### Fixed
+- missing `vcf_cancer_sv` and `vcf_cancer_sv_research` to manual.
+- Split ClinVar multiple clnsig values (slash-separated) and strip them of underscore for annotations without accession number
+- Timeout of `All SNVs and INDELs` page when no valid gene is provided in the search
+- Round CADD (MIPv9)
+- Missing default panel value
+- Invisible other causatives lines when other causatives lack gene symbols
+### Changed
+- Do not freeze mkdocs-material to version 4.6.1
+- Remove pre-commit dependency
+
+
+## [4.22]
+### Added
 - Editable cases comments
 - Editable variants comments
 ### Fixed
 - Empty variant activity panel
+- STRs variants popover
+- Split new ClinVar multiple significance terms for a variant
+- Edit the selected comment, not the latest
 ### Changed
 - Updated RELEASE docs.
 - Pinned variants card style on the case page
+- Merged `scout export exons` and `scout view exons` commands
 
 
 ## [4.21.2]

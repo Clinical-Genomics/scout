@@ -24,6 +24,7 @@ from .blueprints import (
     public,
     variant,
     variants,
+    managed_variants,
 )
 
 try:
@@ -74,7 +75,10 @@ def create_app(config_file=None, config=None):
     def check_user():
         if not app.config.get("LOGIN_DISABLED") and request.endpoint:
             # check if the endpoint requires authentication
-            static_endpoint = "static" in request.endpoint or request.endpoint == "report.report"
+            static_endpoint = "static" in request.endpoint or request.endpoint in [
+                "report.report",
+                "report.json_chrom_coverage",
+            ]
             public_endpoint = getattr(app.view_functions[request.endpoint], "is_public", False)
             relevant_endpoint = not (static_endpoint or public_endpoint)
             # if endpoint requires auth, check if user is authenticated
@@ -132,6 +136,7 @@ def register_blueprints(app):
     app.register_blueprint(phenotypes.hpo_bp)
     app.register_blueprint(diagnoses.omim_bp)
     app.register_blueprint(institutes.overview)
+    app.register_blueprint(managed_variants.managed_variants_bp)
 
 
 def register_filters(app):
