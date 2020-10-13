@@ -160,7 +160,7 @@ def variants(institute_id, case_name):
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
     variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
-    result_size = store.count_query(case_obj["_id"], form.data, None, category)
+    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
@@ -255,7 +255,7 @@ def sv_variants(institute_id, case_name):
 
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
-    result_size = store.count_query(case_obj["_id"], form.data, None, category)
+    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     session["filtered_variants"] = result_size
     # if variants should be exported
@@ -345,7 +345,7 @@ def cancer_variants(institute_id, case_name):
 
     variant_type = request.args.get("variant_type", "clinical")
     variants_query = store.variants(case_obj["_id"], category="cancer", query=form.data)
-    result_size = store.count_query(case_obj["_id"], form.data, None, category)
+    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
@@ -388,7 +388,7 @@ def cancer_sv_variants(institute_id, case_name):
 
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
-    result_size = store.count_query(case_obj["_id"], form.data, None, category)
+    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     session["filtered_variants"] = result_size
     # if variants should be exported

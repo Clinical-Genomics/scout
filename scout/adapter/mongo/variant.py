@@ -205,7 +205,7 @@ class VariantHandler(VariantLoader):
         return result
 
 
-    def count_query(self, case_id, query, variant_ids, category):
+    def count_variants(self, case_id, query, variant_ids, category):
         """Returns number of variants
 
         Arguments:
@@ -219,7 +219,7 @@ class VariantHandler(VariantLoader):
         """
 
         query = self.build_query(case_id, query=query, variant_ids=variant_ids, category=category)
-        self.variant_collection.count_documents(query)
+        return self.variant_collection.count_documents(query)
 
     def sanger_variants(self, institute_id=None, case_id=None):
         """Return all variants with sanger information
