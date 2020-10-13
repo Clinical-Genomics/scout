@@ -3,28 +3,6 @@ import datetime
 from flask import url_for
 from scout.server.extensions import store
 
-HPO_TERMS = [
-    {
-        "_id": "HP:0025190",
-        "hpo_id": "HP:0025190",
-        "description": "Bilateral tonic-clonic seizure with generalized onset",
-        "children": ["HP:0032661"],
-        "ancestors": [],
-    },
-    {
-        "_id": "HP:0032661",
-        "hpo_id": "HP:0032661",
-        "description": "Generalized convulsive status epilepticus",
-        "children": [],
-        "ancestors": ["HP:0025190"],
-    },
-]
-OMIM_TERM = {
-    "_id": "OMIM:121210",
-    "disease_id": "OMIM:121210",
-    "description": "Febrile seizures familial 1",
-}
-
 TEST_SUBPANEL = dict(
     title="Subp title",
     subtitle="Subp subtitle",
@@ -183,7 +161,7 @@ def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
         assert updated_model["subpanels"] == {}
 
 
-def test_phenomodel_POST_add_omim_checkbox_to_subpanel(app, user_obj, institute_obj):
+def test_phenomodel_POST_add_omim_checkbox_to_subpanel(app, user_obj, institute_obj, omim_checkbox):
     """Test adding an OMIM checkbox to a subpanel of a phenotype model via POST request"""
 
     # GIVEN an institute with a phenotype model
@@ -196,7 +174,7 @@ def test_phenomodel_POST_add_omim_checkbox_to_subpanel(app, user_obj, institute_
     assert model_obj["subpanels"]["subpanel_x"]
 
     # GIVEN that database contains the HPO term to add to the subopanel
-    store.disease_term_collection.insert_one(OMIM_TERM)
+    store.disease_term_collection.insert_one(omim_checkbox)
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -208,7 +186,7 @@ def test_phenomodel_POST_add_omim_checkbox_to_subpanel(app, user_obj, institute_
             omim_subpanel_id="subpanel_x",
             omimHasTitle="on",
             omimTermTitle="Title for term",
-            omim_term="OMIM:121210 | Febrile seizures familial 1",
+            omim_term=" | ".join([omim_checkbox["_id"], omim_checkbox["description"]]),
             omim_custom_name="Alternative OMIM name",
             add_omim="",
         )
@@ -230,7 +208,7 @@ def test_phenomodel_POST_add_omim_checkbox_to_subpanel(app, user_obj, institute_
         assert checkbox["custom_name"] == form_data["omim_custom_name"]
 
 
-def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(app, user_obj, institute_obj):
+def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(app, user_obj, institute_obj, hpo_checkboxes):
     """Test adding an HPO checkbox with its children to a subpanel of a phenotype model via POST request"""
 
     # GIVEN an institute with a phenotype model
@@ -241,7 +219,7 @@ def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(app, user_obj, institute_o
     store.update_phenomodel(model_obj["_id"], model_obj)
 
     # GIVEN a database with the required HPO terms (one parent term and one child term)
-    store.hpo_term_collection.insert_many(HPO_TERMS)
+    store.hpo_term_collection.insert_many(hpo_checkboxes)
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -253,7 +231,7 @@ def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(app, user_obj, institute_o
             hpo_subpanel_id="subpanel_x",
             hpoHasTitle="on",
             hpoTermTitle="Title for term",
-            hpo_term="HP:0025190 | Bilateral tonic-clonic seizure with generalized onset",
+            hpo_term=" | ".join([hpo_checkboxes[0]["_id"], hpo_checkboxes[0]["description"]]),
             hpo_custom_name="Alternative HPO name",
             add_hpo="",
             includeChildren="on",
@@ -275,7 +253,10 @@ def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(app, user_obj, institute_o
         assert checkbox["term_title"] == form_data["hpoTermTitle"]
         assert checkbox["custom_name"] == form_data["hpo_custom_name"]
         # Additionally, the HPO term checkbox should contain a nested HPO term:
-        nested_hpo_term = {"name": HPO_TERMS[1]["_id"], "description": HPO_TERMS[1]["description"]}
+        nested_hpo_term = {
+            "name": hpo_checkboxes[1]["_id"],
+            "description": hpo_checkboxes[1]["description"],
+        }
         assert checkbox["children"] == [nested_hpo_term]
 
 
