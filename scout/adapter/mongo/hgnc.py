@@ -161,7 +161,6 @@ class GeneHandler(object):
             )
         return self.hgnc_collection.find_one(filter={"build": build, "aliases": hgnc_symbol})
 
-
     def get_query_alias_or_id(self, hgnc_symbol, build):
         """ Return query to search for hgnc-symbol or aliases """
         query = {
