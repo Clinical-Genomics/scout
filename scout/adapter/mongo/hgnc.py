@@ -159,9 +159,8 @@ class GeneHandler(object):
                     "build": str(build),
                 }
             )
-        r = self.hgnc_collection.find_one(filter={"build": build, "aliases": hgnc_symbol})
-        LOG.debug("================= %s" % r)
-        return r
+        return self.hgnc_collection.find_one(filter={"build": build, "aliases": hgnc_symbol})
+
 
     def get_query_alias_or_id(self, hgnc_symbol, build):
         """ Return query to search for hgnc-symbol or aliases """
@@ -172,9 +171,6 @@ class GeneHandler(object):
             ],
             "build": str(build),
         }
-        LOG.debug("QUERY: {}".format(query))
-        print("****************")
-        print(query)
         return query
 
     def all_genes(self, build=None, add_transcripts=False, limit=100000):
