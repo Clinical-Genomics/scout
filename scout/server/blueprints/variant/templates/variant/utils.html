@@ -263,7 +263,7 @@
       {% elif zoom == "end" %}
         {{ variant.end_chrom }}:{{ variant.end }}
       {% elif zoom == "length" %}
-        {{ variant.length }}
+        {{ '-' if variant.length == 100000000000 else variant.length }}
       {% endif %}
       <form role="form" name="bp1_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
         {% if case.mt_bams or case.bam_files %}
