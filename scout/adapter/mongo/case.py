@@ -392,6 +392,20 @@ class CaseHandler(object):
             for case in store.find({"group": {"$elemMatch": {"$eq": group_id}}}, {"_id": 1})
         ]
 
+    def update_case_group_ids(self, case_id, group_ids):
+        """Sets case group_ids, used to group a small number of cases for similar analysis.
+
+        Args:
+            case_id(str): case_id
+            group_ids(list(str)): A list of group defining tags for related cases. A case can belong to several groups.
+        Returns:
+            updated_case(case_obj)
+        """
+
+        updated_case = find_one_and_update({"_id": case_id}, {"$set": {"group": group_ids}})
+
+        return updated_case
+
     def nr_cases(self, institute_id=None):
         """Return the number of cases
 
