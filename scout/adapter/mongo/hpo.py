@@ -165,6 +165,11 @@ class HpoHandler(object):
                 term_obj = self.hpo_term(term_id)
                 if term_obj is None:
                     continue
+                # sort term children by ascending HPO number
+                children = sorted(
+                    term_obj["children"], key=lambda x: int("".join([i for i in x if i.isdigit()]))
+                )
+                term_obj["children"] = children
                 all_terms[term_id] = term_obj
                 if term_id not in unique_terms:
                     node = Node(term_id, parent=root, description=term_obj["description"])
