@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for custom public igv tracks stored on the cloud
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
+- Breakpoint two IGV button now shows correct chromosome when different from bp1
 ### Changed
 - Make matching causative and managed variants foldable on case page
 

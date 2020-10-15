@@ -261,16 +261,17 @@
       {% if zoom == "start" %}
         {{ variant.chromosome }}:{{ variant.position }}
       {% elif zoom == "end" %}
-        {{ variant.chromosome }}:{{ variant.end }}
+        {{ variant.end_chrom }}:{{ variant.end }}
       {% elif zoom == "length" %}
-        {{ variant.length }}
+        {{ '-' if variant.length == 100000000000 else variant.length }}
       {% endif %}
       <form role="form" name="bp1_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
         {% if case.mt_bams or case.bam_files %}
         <!-- general hidden fields required to submit POST request to IGV viewer -->
           <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
           <input type="hidden" name="build" value="{{case.genome_build}}">
-          <input type="hidden" name="contig" value="{{variant.chromosome}}">
+
+          <input type="hidden" name="contig" value="{% if zoom == "start" %}{{ variant.chromosome }}{% elif zoom == "end" %}{{ variant.end_chrom }}{% endif %}">
           {% if zoom == "start" %}
             <input type="hidden" name="start" value="{{variant.position - 500}}">
             <input type="hidden" name="stop" value="{{variant.position + 500}}">

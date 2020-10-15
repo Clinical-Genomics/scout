@@ -197,7 +197,7 @@
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
     <td>{{ variant.position }}</td>
     <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
-    <td>{{ variant.length }}</td>
+    <td>{{ '-' if variant.length == 100000000000 else variant.length }}</td>
     <td>
       {% if 'region_annotations' in variant %}
         {% for annotation in variant.region_annotations[:3] %}
