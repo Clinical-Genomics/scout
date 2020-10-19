@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Institute-level phenotype models with sub-panels containing HPO and OMIM terms
 - Support for custom public igv tracks stored on the cloud
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
