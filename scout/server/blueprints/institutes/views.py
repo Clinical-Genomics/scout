@@ -191,7 +191,7 @@ def gene_variants(institute_id):
                 else:
                     hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
 
-            elif store.hgnc_genes_count(hgnc_symbol) is None:
+            elif store.hgnc_genes_find_one(hgnc_symbol) is None:
                 not_found_symbols.append(hgnc_symbol)
             else:
                 hgnc_symbols.append(hgnc_symbol)

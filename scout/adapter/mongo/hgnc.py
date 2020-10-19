@@ -131,34 +131,19 @@ class GeneHandler(object):
             )
         return self.hgnc_collection.find({"build": build, "aliases": hgnc_symbol})
 
-    def hgnc_genes_count(self, hgnc_symbol, build="37", search=False):
-        """Count all hgnc genes that match a hgnc symbol. Replaces depricated
+    def hgnc_genes_find_one(self, hgnc_symbol):
+        """Find one hgnc genes that match a hgnc symbol. Replaces depricated
         pymongo.cursor.count()
 
         Check both hgnc_symbol and aliases
 
         Args:
             hgnc_symbol(str)
-            build(str): The build in which to search
-            search(bool): if partial searching should be used
-
         Returns:
-           Number of documents in result of query
+           One single hgnc document
         """
 
-        LOG.debug("Counting genes with symbol %s" % hgnc_symbol)
-        if search:
-            query = self.get_query_alias_or_id(hgnc_symbol, build)
-            nr_genes = self.nr_genes(query=query)
-            if nr_genes != 0:
-                return self.hgnc_collection.find_one(query)
-
-            return self.hgnc_collection.find_one(
-                {
-                    "aliases": {"$regex": hgnc_symbol, "$options": "i"},
-                    "build": str(build),
-                }
-            )
+        LOG.debug("Find one genes with symbol %s" % hgnc_symbol)
         return self.hgnc_collection.find_one(filter={"build": build, "aliases": hgnc_symbol})
 
     def get_query_alias_or_id(self, hgnc_symbol, build):
