@@ -1,0 +1,361 @@
+{% extends "layout_bs4.html" %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - Advanced phenotype models
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+.tree {
+  list-style-type: none;
+}
+</style>
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }} cases </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.advanced_phenotypes', institute_id=institute._id) }}">Advanced phenotype models </a>
+  </li>
+  <li class="nav-item active">
+    <a class="nav-link" href="#">{{phenomodel.name}}</a>
+  </li>
+{% endblock %}
+
+{% macro phenomodel_page() %}
+<div class="card mt-3">
+  <div style="padding: 0;" class="card-body mt-3 ml-3 mr-3">
+    <form action="#" method="POST">
+        <input type="hidden" name="model_id" value="{{phenomodel._id}}">
+      <div class="form-row">
+        <div class="col-4">
+          {{ pheno_form.model_name(class="form-control", placeholder="Name") }}
+        </div>
+        <div class="col-7">
+          {{ pheno_form.model_desc(class="form-control", placeholder="Description (optional)") }}
+        </div>
+        <div class="col-1">
+          <button type="submit" value="update" name="update_model" class="btn btn-primary">update</button
+        </div>
+      </div>
+      <h6 class="text-muted ml-3 mt-3">created: {{phenomodel.created.strftime('%Y-%m-%d')}} - updated: {{phenomodel.updated.strftime('%Y-%m-%d')}}</h6>
+    </form>
+  </div>
+</div>
+
+<!--Code for adding a subpanel-->
+<div class="mb-3">
+  <div class="d-flex justify-content-center">
+    <div class="btn-group btn-group-toggle" data-toggle="buttons" >
+      <button class="btn-secondary btn-sm" aria-hidden="true" data-toggle="modal" data-target="#preview">Preview</button>
+      <button class="btn btn-primary btn-sm" onclick="showDiv('new_subpanel','add_terms')">Create a new subpanel</button>
+      <button class="btn btn-primary btn-sm" onclick="showDiv('add_terms','new_subpanel')" {{ "disabled" if not phenomodel.subpanels }}>Add terms to an existing subpanel</button>
+    </div>
+  </div>
+  <div class="panel-collapse collapse mt-3" id="new_subpanel">
+    <div class="mb-3">
+      <form action="#" id="new_subpanel_form" method="POST">
+        {{ subpanel_form.csrf_token }}
+        <div class="form-row ml-3 mr-3 mt-3">
+          <div class="col-5">
+            {{ subpanel_form.title.label }}:
+            {{ subpanel_form.title(class="form-control") }}
+          </div>
+          <div class="col-5">
+            {{ subpanel_form.subtitle.label }}:
+            {{ subpanel_form.subtitle(class="form-control") }}
+          </div>
+          <div class="col-md-2 mt-3">
+            {{ subpanel_form.add_subpanel( class="control-label btn btn-primary mt-3") }}
+          </div>
+        </div><!-- end of form-row -->
+      </form>
+    </div>
+  </div>
+  <!--div containing form elements to add HPO terms or custom checkbox fields-->
+  <div class="mt-3 ml-3" id="add_terms" style="display:none;">
+    <div class="form-check form-check-inline mb-3">
+      <input class="form-check-input" type="radio" name="checkType" id="checkTypeHpo" value="hpo" checked onchange="showDiv('hpoForm','omimForm')">
+      <label class="form-check-label" for="hpo">
+        HPO checkbox
+      </label>
+    </div>
+    <div class="form-check form-check-inline mb-3">
+      <input class="form-check-input" type="radio" name="checkType" id="checkTypeOmim" value="omim" onchange="showDiv('omimForm','hpoForm')">
+      <label class="form-check-label" for="omim">
+        OMIM checkbox
+      </label>
+    </div>
+    <!-- HPO checkbox add -->
+    <form action="{{ url_for('overview.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="hpoForm">
+      {{ term_title("hpo") }}
+      {{ hpo_checkbox_macro() }}
+    </form>
+    <!-- OMIM checkbox add-->
+    <form action="{{ url_for('overview.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="omimForm">
+      {{ term_title("omim") }}
+      {{ omim_checkbox_macro() }}
+    </form>
+  </div>
+</div>
+<!--End of code for adding a subpanel-->
+{% endmacro %}
+
+{% macro omim_checkbox_macro() %}
+  <div class="row d-flex align-items-center">
+    <div class="form-group col-4">
+      <input type="text" class="typeahead_omim form-control" name="omim_term" id="omim_term" data-provide="typeahead" autocomplete="off" placeholder="Search OMIM term..">
+    </div>
+    <div class="form-group col-5">
+      <input type="text" class="form-control" name="omim_custom_name" placeholder="Custom checkbox name (optional)">
+    </div>
+    <div class="form-group col-3">
+      <button type="submit" name="add_omim" class="btn btn-secondary btn-sm">Add OMIM term</button>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro hpo_checkbox_macro() %}
+  <div class="row d-flex align-items-center">
+    <div class="form-group col-4">
+      <input type="text" class="typeahead_hpo form-control" name="hpo_term" id="hpo_term" data-provide="typeahead" autocomplete="off" placeholder="Search HPO phenotype..">
+    </div>
+    <div class="form-group col-4">
+      <input type="text" class="form-control" name="hpo_custom_name" placeholder="Custom name checkbox name (optional)">
+    </div>
+    <div class="form-group col-2">
+      <input type="checkbox" class="form-check-input" id="includeChildren" name="includeChildren">
+      <label class="form-check-label" for="includeChildren">Include term children</label>
+    </div>
+    <div class="form-group col-2">
+      <button type="submit" name="add_hpo" class="btn btn-secondary btn-sm">Add HPO term</button>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro term_title(term_type) %}
+  <div class="row d-flex align-items-center">
+    <div class="form-group col-4">
+    {% if phenomodel.subpanels %}
+      <select name="{{term_type}}_subpanel_id" class="form-control" required>
+        <option value="" disabled selected>Select panel</option>
+        {% for subpanel_id, subpanel in phenomodel.subpanels.items() %}
+        <option value="{{subpanel_id}}">{{subpanel.title}}</option>
+        {% endfor %}
+      <select>
+    {% endif %}
+    </div>
+    <div class="form-group col-2">
+      <input type="checkbox" id="{{term_type}}HasTitle" name="{{term_type}}HasTitle">
+      <label class="form-check-label" for="{{term_type}}HasTitle">term has a title</label>
+    </div>
+    <div class="form-group col-5">
+      <input type="text" class="form-control" name="{{term_type}}TermTitle" id="{{term_type}}TermTitle" placeholder="Term title" disabled>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro subpanels_macro()%}
+  {%if phenomodel.subpanels %}
+    {% for subpanel_id, subpanel in phenomodel.subpanels.items()%}
+      <div class="card">
+        <div class="card-header">
+          <strong>{{subpanel.title}}</strong>&nbsp;&nbsp;<text class="text-muted">{{subpanel.subtitle}}</text>
+        </div>
+        <div class="card-body">
+
+          <div class="row">
+            {% if "checkboxes" in subpanel %}
+              <table class="table table-striped">
+                Checkbox groups:
+                {% for term_id, term_obj in subpanel.checkboxes.items() %}
+                  <tr>
+                    <td>
+                      <div>
+                        <form action="{{ url_for('overview.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+                          {% if term_obj.children %}
+                            <a href="#" onclick="toggleDiv('{{subpanel_id}}#{{term_id}}')">{{term_obj.custom_name or term_obj.description}}</a> ({{term_id}})
+                          {% else %}
+                            {{term_obj.custom_name or term_obj.description}} ({{term_id}})
+                          {% endif %}
+                          <!--button to remove a checkbox group-->
+                          <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}#{{subpanel_id}}"><i class="fa fa-times"></i></button>
+                        </form>
+                      </div>
+                      <div style="margin-left: 35px; display: none;" id="{{subpanel_id}}#{{term_id}}">
+                        {% for item in term_obj.children recursive %}
+                          <li class="tree">
+                            <label>{{item.description}} ({{item.name}})</label>
+                            {%- if item.children -%}
+                              <ul class="tree">{{ loop(item.children) }}</ul>
+                            {%- endif %}
+                          </li>
+                        {%- endfor %}
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            {% endif %}
+          </div><!-- End of are displaying subpanel checkboxes-->
+          <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+            <div class="d-flex justify-content-between">
+              <text class="text-muted mb-1 ml-1" style="font-size:14px;">Updated: {{subpanel.updated.strftime('%Y-%m-%d %H:%M:%S')}}</text>
+              <button type="submit" class="button btn btn-danger btn-sm" name="subpanel_delete" value="{{subpanel_id}}"><i class="fa fa-times"></i> Remove panel</button>
+            </div>
+          </form>
+        </div><!-- end of card body-->
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
+    <div class="col">
+      {{ model_preview() }}
+      {{ phenomodel_page() }}
+      <!-- Display all subpanels for this model -->
+      {{ subpanels_macro() }}
+    </div>
+  </div><!-- end of body row div -->
+</div><!-- end of container-float-->
+{% endblock %}
+
+{% macro model_preview() %}
+<form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="saveModel">
+<div class="modal fade" id="preview" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h5 class="card-title">{{phenomodel.name}}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{phenomodel.description}}</h6>
+        <!--display cards of subpanels-->
+        <!--loop over the subpanels of the model-->
+        {% for subpanel_id, subpanel_obj in phenomodel.subpanels.items() %} <!--|batch(3)-->
+          <div class="card">
+            <div class="card-body">
+              <td class="row">
+                <text style="font-size:20px;"><strong>{{subpanel_obj.title}} - {{subpanel_obj.subtitle}}</strong></text>
+              </td>
+              <!-- loop over the checkbox groups of the model-->
+              {% for term_id, term_obj in subpanel_obj.get("checkboxes",{}).items() %}
+              <div>
+                {% if term_obj.term_title %}
+                  <strong>{{term_obj.term_title}}</strong><br>
+                {% endif %}
+                <input type="checkbox" name="cheked_terms" value="{{subpanel_id}}.{{term_id}}.{{term_id}}">
+                <label for="{{term_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label>
+              </div>
+              <div style="margin-left: 35px;">
+                {% for item in term_obj.children recursive %}
+                  <li class="tree">
+                    <input type="checkbox" name="cheked_terms" value="{{subpanel_id}}.{{term_id}}.{{item.name}}"> <label>{{ item.description }} ({{item.name}})</label>
+                    {%- if item.children -%}
+                      <ul class="tree">{{ loop(item.children) }}</ul>
+                    {%- endif %}
+                  </li>
+                {%- endfor %}
+              </div>
+              <br>
+              {% endfor %}
+              <!--  end of loop over the checkbox groups of the model-->
+              </div>
+            <text class="text-muted mb-1 ml-1" style="font-size:14px;">Updated: {{subpanel_obj.updated.strftime('%Y-%m-%d %H:%M:%S')}}</text>
+          </div><!--end of card-->
+        {% endfor %}<!-- end of loop over the subpanels of the model-->
+      </div>
+      <div class="modal-footer">
+        <button type="submit" name="model_save" value="{{phenomodel._id}}" class="btn btn-primary">Save selected terms</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+{% endmacro %}
+
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+<script type="text/javascript">
+
+  function showDiv(showElem, hideElem) {
+    // show div of interest
+    var divElem = document.getElementById(showElem);
+    divElem.style.display = "block";
+    // hide the other div
+    divElem = document.getElementById(hideElem);
+    divElem.style.display = "none";
+  }
+
+  $(document).ready(function(){
+    $('#omimForm').toggle();
+  });
+
+  $('#hpoHasTitle').change(function() {
+    if($(this).prop("checked")){
+      $("#hpoTermTitle").removeAttr('disabled');
+    }
+    else{
+      $("#hpoTermTitle").prop("disabled", true);
+    }
+  });
+
+  $('#omimHasTitle').change(function() {
+    if($(this).prop("checked")){
+      $("#omimTermTitle").removeAttr('disabled');
+    }
+    else{
+      $("#omimTermTitle").prop("disabled", true);
+    }
+  });
+
+  function getHpoTerms(query, process) {
+    $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
+      process(data)
+    });
+  }
+
+  function getOmimTerms(query, process) {
+    $.get("{{ url_for('cases.omimterms') }}", {query: query}, function(data) {
+      process(data)
+    });
+  }
+
+  function toggleDiv(divName){
+    var div = document.getElementById(divName);
+    if (div.style.display === "none") {
+      div.style.display = "block";
+    } else {
+      div.style.display = "none";
+    }
+  }
+
+  $(".typeahead_hpo").typeahead({
+    name: 'hpo_term',
+    source: getHpoTerms,
+    minLength: 3,
+  });
+
+  $(".typeahead_omim").typeahead({
+    name: 'omim_term',
+    source: getOmimTerms,
+    minLength: 3,
+  });
+
+</script>
+{% endblock %}

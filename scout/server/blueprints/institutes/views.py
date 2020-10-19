@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import pymongo
+from bson import ObjectId
 
 from flask import (
     Blueprint,
@@ -25,7 +26,7 @@ from scout.constants import (
 from scout.constants import CASE_SEARCH_TERMS
 from scout.server.extensions import store
 from scout.server.utils import user_institutes, templated, institute_and_case
-from .forms import InstituteForm, GeneVariantFiltersForm
+from .forms import InstituteForm, GeneVariantFiltersForm, PhenoModelForm, PhenoSubPanelForm
 
 LOG = logging.getLogger(__name__)
 
@@ -365,3 +366,74 @@ def clinvar_submissions(institute_id):
         "casedata_header_fields": CASEDATA_HEADER,
     }
     return data
+
+
+@blueprint.route("/<institute_id>/advanced_phenotypes", methods=["GET", "POST"])
+@templated("overview/phenomodels.html")
+def advanced_phenotypes(institute_id):
+    """Show institute-level advanced phenotypes"""
+    institute_obj = institute_and_case(store, institute_id)
+
+    if request.form.get("create_model"):  # creating a new phenomodel
+        store.create_phenomodel(
+            institute_id, request.form.get("model_name"), request.form.get("model_desc")
+        )
+
+    pheno_form = PhenoModelForm(request.form or None)
+    phenomodels = store.phenomodels(institute_id=institute_id)
+
+    data = {
+        "institute": institute_obj,
+        "pheno_form": pheno_form,
+        "phenomodels": phenomodels,
+    }
+    return data
+
+
+@blueprint.route("/advanced_phenotypes/remove", methods=["POST"])
+def remove_phenomodel():
+    """Remove an entire phenomodel using its id"""
+    model_id = request.form.get("model_id")
+    model_obj = store.phenomodel_collection.find_one_and_delete({"_id": ObjectId(model_id)})
+    if model_obj is None:
+        flash(f"An error occurred while deleting phenotype model", "warning")
+    return redirect(request.referrer)
+
+
+@blueprint.route("/<institute_id>/phenomodel/<model_id>/edit_subpanel", methods=["POST"])
+def checkbox_edit(institute_id, model_id):
+    """Add or delete a single checkbox in a phenotyoe subpanel"""
+    controllers.edit_subpanel_checkbox(model_id, request.form)
+    return redirect(url_for(".phenomodel", institute_id=institute_id, model_id=model_id))
+
+
+@blueprint.route("/<institute_id>/phenomodel/<model_id>", methods=["GET", "POST"])
+@templated("overview/phenomodel.html")
+def phenomodel(institute_id, model_id):
+    """View/Edit an advanced phenotype model"""
+    institute_obj = institute_and_case(store, institute_id)
+
+    pheno_form = PhenoModelForm(request.form)
+    subpanel_form = PhenoSubPanelForm(request.form)
+    hide_subpanel = True
+
+    if request.method == "POST":
+        # update an existing phenotype model
+        controllers.update_phenomodel(model_id, request.form)
+
+    phenomodel_obj = store.phenomodel(model_id)
+    if phenomodel_obj is None:
+        flash(
+            f"Could not retrieve given phenotype model using the given key '{model_id}'", "warning"
+        )
+        return redirect(request.referrer)
+
+    pheno_form.model_name.data = phenomodel_obj["name"]
+    pheno_form.model_desc.data = phenomodel_obj["description"]
+
+    return dict(
+        institute=institute_obj,
+        pheno_form=pheno_form,
+        phenomodel=phenomodel_obj,
+        subpanel_form=subpanel_form,
+    )
