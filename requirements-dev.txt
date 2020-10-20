@@ -4,7 +4,7 @@
 pytest-mock
 pytest>=5.2
 pytest-flask
-mongomock<=3.12
+mongomock==3.20
 responses
 
 # utils

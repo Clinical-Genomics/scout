@@ -282,18 +282,15 @@ def get_sanger_unevaluated(store, institute_id, user_id):
     return unevaluated
 
 
-def gene_variants(store, variants_query, institute_id, page=1, per_page=50):
+def gene_variants(store, pymongo_cursor, variant_count, institute_id, page=1, per_page=50):
     """Pre-process list of variants."""
 
-    # We need to call variants_collection.count_documents here
-    variant_count = variants_query.count()
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
-    variant_res = variants_query.skip(skip_count).limit(per_page)
-
+    variant_res = pymongo_cursor.skip(skip_count).limit(per_page)
     my_institutes = set(inst["_id"] for inst in user_institutes(store, current_user))
-
     variants = []
+
     for variant_obj in variant_res:
         # Populate variant case_display_name
         variant_case_obj = store.case(case_id=variant_obj["case_id"])
