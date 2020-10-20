@@ -186,9 +186,9 @@ def register_filters(app):
         return re.sub(r"(?<=[.,:;?!])(?=[^\s])", r" ", text)
 
     @app.template_filter()
-    def count_cursor(cursor):
+    def count_cursor(pymongo_cursor):
         """Count numer of returned documents (deprecated pymongo.cursor.count())"""
-        return len(list(cursor))
+        return len(list(pymongo_cursor))
 
 
 def configure_oauth_login(app):
