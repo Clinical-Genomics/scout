@@ -33,11 +33,11 @@ ped_parser
 
 # extras
 intervaltree==3.0.2
+anytree
 
 # chanjo-report
 python-dateutil
 
-# Requesting resources
 
 # Required by scripts
 tabulate

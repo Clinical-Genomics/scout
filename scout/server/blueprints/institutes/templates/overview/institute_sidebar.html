@@ -43,6 +43,15 @@
               </div>
           </a>
         {{ shared_submenu(institute, highlight) }}
+
+          <!-- Advanced phenotypes -->
+          <a href="{{ url_for('overview.advanced_phenotypes', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-stethoscope mr-3"></span>
+                  <span class="menu-collapsed">Phenomodels</span>
+              </div>
+          </a>
+
           <!-- general settings menu item -->
           <a href="{{ url_for('overview.institute_settings', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
               <div class="d-flex w-100 justify-content-start align-items-center">
