@@ -34,7 +34,7 @@ def managed_variants():
 
     managed_variants_query = store.managed_variants(category=category, query_options=query_options)
     variant_count = store.count_managed_variants(category=category, query_options=query_options)
-    data = controllers.managed_variants(store, managed_variants_query, variant_count,  page)
+    data = controllers.managed_variants(store, managed_variants_query, variant_count, page)
 
     return dict(
         filters_form=filters_form,
