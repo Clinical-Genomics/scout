@@ -131,7 +131,7 @@ class GeneHandler(object):
             )
         return self.hgnc_collection.find({"build": build, "aliases": hgnc_symbol})
 
-    def hgnc_genes_find_one(self, hgnc_symbol):
+    def hgnc_genes_find_one(self, hgnc_symbol, build="37"):
         """Find one hgnc genes that match a hgnc symbol. Replaces depricated
         pymongo.cursor.count()
 
@@ -139,6 +139,7 @@ class GeneHandler(object):
 
         Args:
             hgnc_symbol(str)
+            build(str): The build in which to search
         Returns:
            One single hgnc document
         """
