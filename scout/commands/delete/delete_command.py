@@ -33,7 +33,7 @@ def index():
     LOG.info("Running scout delete index")
     adapter = store
 
-    for collection in adapter.db.collection_names():
+    for collection in adapter.db.list_collection_names():
         adapter.db[collection].drop_indexes()
     LOG.info("All indexes deleted")
 

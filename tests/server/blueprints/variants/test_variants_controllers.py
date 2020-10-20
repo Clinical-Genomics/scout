@@ -65,7 +65,11 @@ def test_variants_research_no_shadow_clinical_assessments(
         case_obj["_id"], query=variants_query, category=variant_clinical["category"]
     )
 
-    res = variants(adapter, institute_obj, case_obj, variants_query_res)
+    # NOTE in tests list length will be used, in live code count_documents{query} is
+    # called.
+    number_variants = len(list(variants_query_res.clone()))
+
+    res = variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
     res_variants = res["variants"]
 
     LOG.debug("Variants: {}".format(res_variants))
@@ -112,8 +116,10 @@ def test_variants_research_shadow_clinical_assessments(
     variants_query_res = adapter.variants(
         case_obj["_id"], query=variants_query, category=variant_clinical["category"]
     )
-
-    res = variants(adapter, institute_obj, case_obj, variants_query_res)
+    # NOTE in tests list length will be used, in live code count_documents{query} is
+    # called.
+    number_variants = len(list(variants_query_res.clone()))
+    res = variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
     res_variants = res["variants"]
 
     # THEN it is returned
@@ -164,8 +170,10 @@ def test_sv_variants_research_shadow_clinical_assessments(
     variants_query = {"variant_type": "research"}
     variants_query_res = adapter.variants(case_obj["_id"], query=variants_query, category="sv")
     assert variants_query_res
-
-    res = sv_variants(adapter, institute_obj, case_obj, variants_query_res)
+    # NOTE in tests list length will be used, in live code count_documents{query} is
+    # called.
+    number_variants = len(list(variants_query_res.clone()))
+    res = sv_variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
     res_variants = res["variants"]
 
     LOG.debug("Variants: {}".format(res_variants))

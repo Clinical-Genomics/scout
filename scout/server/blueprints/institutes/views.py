@@ -3,15 +3,7 @@ import logging
 import pymongo
 from bson import ObjectId
 
-from flask import (
-    Blueprint,
-    render_template,
-    flash,
-    redirect,
-    request,
-    Response,
-    url_for,
-)
+from flask import Blueprint, render_template, flash, redirect, request, Response, url_for
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
@@ -199,20 +191,16 @@ def gene_variants(institute_id):
                     not_found_ids.append(hgnc_symbol)
                 else:
                     hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
-            elif store.hgnc_genes(hgnc_symbol).count() == 0:
+
+            elif store.hgnc_genes_find_one(hgnc_symbol) is None:
                 not_found_symbols.append(hgnc_symbol)
-            # elif is_clinical and (hgnc_symbol not in clinical_symbols):
-            #     non_clinical_symbols.append(hgnc_symbol)
             else:
                 hgnc_symbols.append(hgnc_symbol)
 
         if not_found_ids:
             flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
         if not_found_symbols:
-            flash(
-                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)),
-                "warning",
-            )
+            flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning")
         if non_clinical_symbols:
             flash(
                 "Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)),
@@ -226,17 +214,14 @@ def gene_variants(institute_id):
 
         form.hgnc_symbols.data = hgnc_symbols
 
-        LOG.debug("query {}".format(form.data))
-
         variants_query = store.gene_variants(
-            query=form.data,
-            institute_id=institute_id,
-            category="snv",
-            variant_type=variant_type,
+            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type
         )
 
-        data = controllers.gene_variants(store, variants_query, institute_id, page)
-
+        result_size = store.count_gene_variants(
+            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type
+        )
+        data = controllers.gene_variants(store, variants_query, result_size, institute_id, page)
     return dict(institute=institute_obj, form=form, page=page, **data)
 
 
@@ -245,10 +230,7 @@ def institute_settings(institute_id):
     """Show institute settings page"""
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
-        flash(
-            "Current user doesn't have the permission to modify this institute",
-            "warning",
-        )
+        flash("Current user doesn't have the permission to modify this institute", "warning")
         return redirect(request.referrer)
 
     institute_obj = store.institute(institute_id)
@@ -280,10 +262,7 @@ def institute_users(institute_id):
     """Should institute users list"""
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
-        flash(
-            "Current user doesn't have the permission to modify this institute",
-            "warning",
-        )
+        flash("Current user doesn't have the permission to modify this institute", "warning")
         return redirect(request.referrer)
     data = controllers.institute(store, institute_id)
     return render_template("/overview/users.html", panel=2, **data)
@@ -294,13 +273,7 @@ def clinvar_rename_casedata(submission, case, old_name):
     """Rename one or more casedata individuals belonging to the same clinvar submission, same case"""
 
     new_name = request.form.get("new_name")
-    controllers.update_clinvar_sample_names(
-        store,
-        submission,
-        case,
-        old_name,
-        new_name,
-    )
+    controllers.update_clinvar_sample_names(store, submission, case, old_name, new_name)
     return redirect(request.referrer)
 
 
@@ -340,11 +313,7 @@ def clinvar_download_csv(submission, csv_type, clinvar_id):
         return redirect(request.referrer)
 
     headers = Headers()
-    headers.add(
-        "Content-Disposition",
-        "attachment",
-        filename=clinvar_file_data[0],
-    )
+    headers.add("Content-Disposition", "attachment", filename=clinvar_file_data[0])
     return Response(
         generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),
         mimetype="text/csv",
