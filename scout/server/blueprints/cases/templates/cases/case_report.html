@@ -179,7 +179,7 @@
 	          {% endif %}
 	        </td>
 	      </tr>
-	      {% if comments.count() %}
+              {% if comments | count_cursor > 0 %}
 	        <tr>
 	          <td colspan=2>
 	            <table id="panel-table" class="table table-sm" style="background-color: transparent">
@@ -703,7 +703,7 @@
           {% endfor %}
         </tbody>
       </table>
-      {% if variant.comments.count() %}
+      {% if variant.comments | count_cursor > 0  %}
         <table id="panel-table" class="table table-sm" style="background-color: transparent">
           <thead>
             <tr>
@@ -1104,7 +1104,8 @@
       </tbody>
     </table>
 
-    {% if variant.comments.count() %}
+
+    {% if variant.comments | count_cursor > 0  %}    
       <br>
       <table id="panel-table" class="table table-sm" style="background-color: transparent">
         <thead>
