@@ -27,6 +27,7 @@ def test_one_case(real_adapter, case_obj):
 
 
 def test_one_causative(real_adapter, case_obj):
+    """Test dashboard view with one case containing a causative variant"""
     ## GIVEN an database with two cases where one has a causative
     adapter = real_adapter
     adapter._add_case(case_obj)
@@ -36,12 +37,17 @@ def test_one_causative(real_adapter, case_obj):
     ## WHEN asking for data
     institute_id = case_obj["owner"]
     data = get_dashboard_info(adapter, institute_id=institute_id)
-    ## THEN assert there is one case in the causative information
-    for info in data["overview"]:
-        if info["title"] == "Causative variants":
-            assert info["count"] == 1
-        else:
-            assert info["count"] == 0
+
+    for group in data["overview"]:
+        ## THEN assert there is one case in the causative information
+        if group["title"] == "Causative variants":
+            assert group["count"] == 1
+        ## There is two cases with phenotype information
+        elif group["title"] == "Phenotype terms":
+            assert group["count"] == 2
+        ## And two cases with assigned cohort
+        elif group["title"] == "Cohort tag":
+            assert group["count"] == 2
 
 
 def test_with_slice_query(real_adapter, case_obj):
