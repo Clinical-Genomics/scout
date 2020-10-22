@@ -5,7 +5,9 @@ owner: cust000
 family: 'internal_id'
 family_name: '643594'
 lims_id: 'LID1234'
-synopsis : 'Test case consisting of an affected male individual'
+synopsis:
+  - 'Test case consisting of an affected male individual'
+  - 'Both parents are unaffected'
 phenotype_terms:
   - HP:0001298
   - HP:0001250

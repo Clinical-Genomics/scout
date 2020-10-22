@@ -474,13 +474,16 @@ def parse_case(config):
         raise ConfigError("A case has to have a 'family'")
 
     individuals = parse_individuals(config["samples"])
+    synopsis = None
+    if config.get("synopsis"):
+        synopsis = ". ".join(config["synopsis"])
 
     case_data = {
         "owner": config["owner"],
         "collaborators": [config["owner"]],
         "case_id": config["family"],
         "display_name": config.get("family_name", config["family"]),
-        "synopsis": config.get("synopsis"),
+        "synopsis": synopsis,
         "phenotype_terms": config.get("phenotype_terms"),
         "cohorts": config.get("cohorts"),
         "genome_build": config.get("human_genome_build"),
