@@ -202,8 +202,8 @@ def test_add_hpo(adapter, institute_obj, case_obj, user_obj):
         hpo_term=hpo_term,
     )
     ## THEN the case should have a hpo term
-    for term in updated_case["phenotype_terms"]:
-        assert term["phenotype_id"] == hpo_term
+    added_term = {"phenotype_id": hpo_obj["_id"], "feature": hpo_obj["description"]}
+    assert added_term in updated_case["phenotype_terms"]
 
     ## THEN a event should have been created
     event = adapter.event_collection.find_one({"link": link})
@@ -304,8 +304,8 @@ def test_add_non_existing_mim(adapter, institute_obj, case_obj, user_obj):
         link="mimlink",
         omim_term=mim_term,
     )
-    # THEN the case should not have any phenotypes
-    assert len(updated_case.get("phenotype_terms", [])) == 0
+    # THEN the case should not have any additional phenotypes
+    assert len(updated_case.get("phenotype_terms", [])) == len(case_obj["phenotype_terms"])
 
     # THEN there should not exist any events
     assert sum(1 for i in adapter.event_collection.find()) == 0
@@ -376,6 +376,7 @@ def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
     assert sum(1 for i in adapter.event_collection.find()) == 0
 
     hpo_term = "HP:0000878"
+    n_case_phenotypes = len(case_obj["phenotype_terms"])
 
     updated_case = adapter.add_phenotype(
         institute=institute_obj,
@@ -386,7 +387,7 @@ def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
     )
 
     # Assert that the term was added to the case
-    assert len(updated_case["phenotype_terms"]) == 1
+    assert len(updated_case["phenotype_terms"]) == n_case_phenotypes + 1
 
     # Check that the event exists
     assert sum(1 for i in adapter.event_collection.find()) == 1
@@ -400,7 +401,7 @@ def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
         phenotype_id=hpo_term,
     )
     # THEN the case should not have phenotype terms
-    assert len(updated_case["phenotype_terms"]) == 0
+    assert len(updated_case["phenotype_terms"]) == n_case_phenotypes
 
     # THEN an event should have been created
     assert sum(1 for i in adapter.event_collection.find()) == 2
@@ -425,7 +426,7 @@ def test_add_cohort(adapter, institute_obj, case_obj, user_obj):
         tag=cohort_name,
     )
     # THEN the case should have the cohort saved
-    assert set(updated_case["cohorts"]) == set([cohort_name])
+    assert cohort_name in updated_case["cohorts"]
     # THEN an event should have been created
     assert sum(1 for i in adapter.event_collection.find()) == 1
 
@@ -463,7 +464,7 @@ def test_remove_cohort(adapter, institute_obj, case_obj, user_obj):
         tag=cohort_name,
     )
     # THEN the case should have the cohort saved
-    assert updated_case["cohorts"] == []
+    assert updated_case["cohorts"] == case_obj["cohorts"]
     # THEN an event should have been created
     assert sum(1 for i in adapter.event_collection.find()) == 2
 

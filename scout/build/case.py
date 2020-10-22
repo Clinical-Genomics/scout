@@ -208,6 +208,15 @@ def build_case(case_data, adapter):
     # Cohort information
     if case_data.get("cohorts"):
         case_obj["cohorts"] = case_data["cohorts"]
+        # Check if all case cohorts are registered under the institute
+        institute_cohorts = set(institute_obj.get("cohorts", []))
+        all_cohorts = institute_cohorts.union(set(case_obj["cohorts"]))
+        if len(all_cohorts) > len(institute_cohorts):
+            # if not, update institute with new cohorts
+            LOG.warning("Updating institute object with new cohort terms")
+            adapter.institute_collection.find_one_and_update(
+                {"_id": institute_obj["_id"]}, {"$set": {"cohorts": list(all_cohorts)}}
+            )
 
     # phenotype information
     phenotypes = []

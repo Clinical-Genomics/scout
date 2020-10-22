@@ -32,6 +32,11 @@ def test_build_case(parsed_case, adapter, institute_obj, dummypanel_obj):
     assert case_obj["phenotype_terms"]
     assert case_obj["cohorts"]
 
+    # Since case object contains cohorts, also its institute should be updated with the same cohorts
+    assert "cohorts" not in institute_obj
+    updated_institute = adapter.institute_collection.find_one()
+    assert "cohorts" in updated_institute
+
     assert case_obj["status"] == "inactive"
     assert case_obj["is_research"] is False
     assert case_obj["research_requested"] is False
