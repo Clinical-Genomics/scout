@@ -88,6 +88,7 @@ def parse_case_data(
                            Scout
     """
     config_data = copy.deepcopy(config) or {}
+
     # Default the analysis date to now if not specified in load config
     config_data["analysis_date"] = get_correct_date(config_data.get("analysis_date"))
 
@@ -479,6 +480,9 @@ def parse_case(config):
         "collaborators": [config["owner"]],
         "case_id": config["family"],
         "display_name": config.get("family_name", config["family"]),
+        "synopsis": config.get("synopsis"),
+        "phenotype_terms": config.get("phenotype_terms"),
+        "cohorts": config.get("cohorts"),
         "genome_build": config.get("human_genome_build"),
         "lims_id": config.get("lims_id"),
         "rank_model_version": str(config.get("rank_model_version", "")),

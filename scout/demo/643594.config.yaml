@@ -5,6 +5,13 @@ owner: cust000
 family: 'internal_id'
 family_name: '643594'
 lims_id: 'LID1234'
+synopsis : 'Test case consisting of an affected male individual'
+phenotype_terms:
+  - HP:0001298
+  - HP:0001250
+cohorts:
+  - pedhep
+  - mito
 samples:
   - analysis_type: wes
     sample_id: ADM1059A2
