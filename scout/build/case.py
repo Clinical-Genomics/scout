@@ -206,14 +206,7 @@ def build_case(case_data, adapter):
         case_obj["rank_score_threshold"] = float(case_data["rank_score_threshold"])
 
     # Cohort information
-    cohorts = []
-    for cohort in case_data.get("cohorts", []):
-        if cohort not in institute_obj.get("cohorts", []):
-            LOG.warning(
-                f"Cohort '{cohort}' was not found among the available cohorts for institute {institute_obj['_id']}"
-            )
-            cohorts.append(cohort)
-    if cohorts:
+    if case_data.get("cohorts"):
         case_obj["cohorts"] = cohorts
 
     # phenotype information
@@ -222,7 +215,7 @@ def build_case(case_data, adapter):
         phenotype_obj = adapter.hpo_term(phenotype)
         if phenotype_obj is None:
             LOG.warning(
-                f"Could not find term with ID '{phenotype}' in HPO collection, skipping phenotyper term."
+                f"Could not find term with ID '{phenotype}' in HPO collection, skipping phenotype term."
             )
             continue
         phenotypes.append({"phenotype_id": phenotype, "feature": phenotype_obj.get("description")})
