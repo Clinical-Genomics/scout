@@ -207,7 +207,7 @@ def build_case(case_data, adapter):
 
     # Cohort information
     if case_data.get("cohorts"):
-        case_obj["cohorts"] = cohorts
+        case_obj["cohorts"] = case_data["cohorts"]
 
     # phenotype information
     phenotypes = []
