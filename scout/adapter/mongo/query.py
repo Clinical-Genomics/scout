@@ -117,6 +117,7 @@ class QueryHandler(object):
                 'chrom': str,
                 'start': int,
                 'end': int,
+                'chrom_pos': str,
                 'svtype': list,
                 'size': int,
                 'size_shorter': boolean,
@@ -171,6 +172,34 @@ class QueryHandler(object):
                     mongo_query["hgnc_symbols"] = {"$in": gene_query}
 
             elif criterion == "chrom" and query.get("chrom"):  # filter by coordinates
+                coordinate_query = None
+                if category == "snv":
+                    mongo_query["chromosome"] = query["chrom"]
+                    if query.get("start") and query.get("end"):
+                        self.coordinate_filter(query, mongo_query)
+                else:  # sv
+                    coordinate_query = [self.sv_coordinate_query(query)]
+
+            elif criterion == "chrom_pos" and query.get("chrom_pos"):  # filter by coordinates
+                pattern = re.compile(r"^([0-9a-z]+):(\d+)-(\d+)(?:([+-]{1})(\d+))?$", re.I)
+                chrom, start, end, sign, padding = re.search(
+                    pattern, query.get("chrom_pos")
+                ).groups()
+                if padding:  # increase or decrease search window
+                    LOG.debug(f"Applying padding")
+                    start, end, padding = map(int, [start, end, padding])
+                    if sign == "+":
+                        start = 0 if start - padding < 1 else start - padding
+                        end = end + padding
+                    else:
+                        start = start + padding
+                        end = 0 if end - padding < 0 else end - padding
+                        start, end = (end, start) if end < start else (start, end)
+                # modify query dict
+                query["chrom"] = chrom
+                query["start"] = start
+                query["end"] = end
+                # query database
                 coordinate_query = None
                 if category == "snv":
                     mongo_query["chromosome"] = query["chrom"]

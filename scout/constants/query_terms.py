@@ -14,6 +14,7 @@ FUNDAMENTAL_CRITERIA = [
     "chrom",
     "start",
     "end",
+    "chrom_pos",
     "variant_ids",
 ]
 
