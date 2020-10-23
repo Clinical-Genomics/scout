@@ -48,7 +48,8 @@ function populateCytobands(cytobands){
 }
 // ValidateForm()
 // Controll user input fields (start, end) in varaint filter.
-//
+// Verify the format of Chromosome position
+// 
 function validateForm(){
     var start = document.forms["filters_form"].elements["start"].value
     var end = document.forms["filters_form"].elements["end"].value
@@ -64,6 +65,29 @@ function validateForm(){
         else if( (isNaN(start) || isNaN(end)) || Number(end)<Number(start) ){
             alert("Coordinate field not valid");
             return false;
+        }
+    }
+    // Validate Chromosome position form
+    //Expected format: <chr number>:<start>-<end>[+-]?<padding>
+    var chrom_pos = document.forms["filters_form"].elements["chrom_pos"].value
+    if(chrom_pos) {
+        pattern = new RegExp("^([0-9]{1,2}|[X|T|MT]{1,2}):([0-9]+)-([0-9]+)([+-]{1}[0-9]+)?$");
+        if (!pattern.test(chrom_pos)) {
+            alert("Invalid format of chromosome position, expected format <chr number>:<start>-<end>[+-]?<padding>");
+            return false;
+        }
+        var _, chr, start, end, sign, padding;
+        [_, chr, start, end, padding] = pattern.exec(chrom_pos);
+        sign = padding[0];
+        padding = padding.slice(1, padding.length);
+        if (Number(start) < 0 || Number(end) < 0) {
+            alert("Invalid coordinates, coordinates must be greater than zero");
+            return false;
+        } else if (Number(start) > Number(end)) {
+            alert("Invalid coordinates, end coordinate must be greater than start");
+            return false;
+        } else if (Number(padding) < 1) {
+            alert("Padding must be greater than zero!")
         }
     }
     return true;
