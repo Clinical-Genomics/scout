@@ -185,6 +185,13 @@ def register_filters(app):
         """Adds a white space after puntuation"""
         return re.sub(r"(?<=[.,:;?!])(?=[^\s])", r" ", text)
 
+    @app.template_filter()
+    def count_cursor(pymongo_cursor):
+        """Count numer of returned documents (deprecated pymongo.cursor.count())"""
+        # Perform operations on a copy of the cursor so original does not move
+        cursor_copy = pymongo_cursor.clone()
+        return len(list(cursor_copy))
+
 
 def configure_oauth_login(app):
     """Register the Google Oauth login client using config settings"""
