@@ -105,7 +105,7 @@
       </form>
       <div> <!--variant data div -->
         <h4>Variant data:</h4>
-        {% if subm_obj.variant_data and subm_obj.variant_data.count() > 0 %}
+        {% if subm_obj.variant_data and subm_obj.variant_data | count_cursor > 0 %}
         <table class="table table-striped">
           <thead>
             <tr>
@@ -179,7 +179,7 @@
       </div> <!--variant data div end -->
       <div> <!--case data div -->
         <h4>Case data:</h4>
-        {% if subm_obj.case_data and subm_obj.case_data.count() > 0 %}
+        {% if subm_obj.case_data and subm_obj.case_data | count_cursor > 0 %}
         <input type="hidden" name="oldSampleName" id="oldSampleName" value="">
         <input type="hidden" name="newSampleName" id="newSampleName" value="">
         <table class="table table-striped">
