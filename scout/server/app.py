@@ -188,7 +188,9 @@ def register_filters(app):
     @app.template_filter()
     def count_cursor(pymongo_cursor):
         """Count numer of returned documents (deprecated pymongo.cursor.count())"""
-        return len(list(pymongo_cursor))
+        # Perform operations on a copy of the cursor so original does not move
+        cursor_copy = pymongo_cursor.clone()
+        return len(list(cursor_copy))
 
 
 def configure_oauth_login(app):
