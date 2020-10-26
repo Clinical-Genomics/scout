@@ -136,7 +136,30 @@ class ManagedVariantHandler(object):
         """
 
         query = {"category": category, "build": build}
+        query_with_options = self.add_options(query, query_options)
 
+        return self.managed_variant_collection.find(query_with_options)
+
+    def count_managed_variants(self, category="snv", build="37", query_options=None):
+        """Return count of documents to all managed variants of a particular category and build.
+
+        Arguments:
+            category(str):
+            sub_category(str):
+            build(str):
+
+        Returns:
+            integer
+
+        """
+        query = {"category": category, "build": build}
+        query_with_options = self.add_options(query, query_options)
+
+        return self.managed_variant_collection.count_documents(query_with_options)
+
+    def add_options(self, query, query_options):
+        """Update query with `query_options`"""
+        # TODO: why is `query_options` both popped and then updated?
         if query_options:
             if "description" in query_options:
                 query["description"] = {"$regex": ".*" + query_options["description"] + ".*"}
@@ -149,12 +172,8 @@ class ManagedVariantHandler(object):
             if "end" in query_options:
                 query["position"] = {"$lte": int(query_options["end"])}
                 query_options.pop("end")
-
-            query.update(query_options)
-
-        managed_variants_res = self.managed_variant_collection.find(query)
-
-        return managed_variants_res
+            return query.update(query_options)
+        return query
 
     def get_managed_variants(self, institute_id=None, category="snv", build="37"):
         """Return managed variant_ids. Limit by institute, category and build.
