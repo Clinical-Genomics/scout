@@ -13,7 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Breakpoint two IGV button now shows correct chromosome when different from bp1
 ### Changed
 - Make matching causative and managed variants foldable on case page
-- Remove calls to PyMongo functions marked as deprecated (as of version 3.7).
+- Remove calls to PyMongo functions marked as deprecated in backend and frontend(as of version 3.7).
 
 ## [4.23]
 ### Added
