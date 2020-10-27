@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Make matching causative and managed variants foldable on case page
 - Remove calls to PyMongo functions marked as deprecated in backend and frontend(as of version 3.7).
+- Improved `scout update individual` command
 
 ## [4.23]
 ### Added
