@@ -236,9 +236,13 @@ def str_variants(institute_id, case_name):
     )
 
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
-    session["filtered_variants"] = variants_query.count()
+    result_size = store.count_variants(case_obj["_id"], query, None, category)
 
-    data = controllers.str_variants(store, institute_obj, case_obj, variants_query, page)
+    session["filtered_variants"] = result_size
+
+    data = controllers.str_variants(
+        store, institute_obj, case_obj, variants_query, result_size, page
+    )
     return dict(
         institute=institute_obj,
         case=case_obj,

@@ -203,7 +203,9 @@ def get_manual_assessments(variant_obj):
     return assessments
 
 
-def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_page=50):
+def str_variants(
+    store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
+):
     """Pre-process list of STR variants."""
 
     # Nothing unique to STRs on this level. Inheritance? yep, you will want it.
@@ -211,7 +213,7 @@ def str_variants(store, institute_obj, case_obj, variants_query, page=1, per_pag
     # case bam_files for quick access to alignment view.
     case_append_alignments(case_obj)
 
-    return variants(store, institute_obj, case_obj, variants_query, page, per_page)
+    return variants(store, institute_obj, case_obj, variants_query, variant_count, page, per_page)
 
 
 def parse_variant(
