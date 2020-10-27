@@ -125,6 +125,7 @@ class FiltersForm(VariantFiltersForm):
     clinsig_confident_always_returned = BooleanField("CLINSIG Confident")
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
     local_obs = IntegerField("Local obs. (archive)")
+
     clinical_filter = SubmitField(label="Clinical filter")
 
 
@@ -146,9 +147,27 @@ class StrFiltersForm(FlaskForm):
     """docstring for StrFiltersForm"""
 
     variant_type = HiddenField(default="clinical")
-    chrom = TextField("Chromosome")
+
     gene_panels = SelectMultipleField(choices=[])
-    repids = TagListField()
+    repids = TagListField("Repeat IDs")
+
+    chrom = SelectField(
+        "Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS, default=""
+    )
+
+    start = IntegerField("Start position", [validators.Optional()])
+    end = IntegerField("End position", [validators.Optional()])
+    cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
+    cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
+
+    filters = NonValidatingSelectField(choices=[], validators=[validators.Optional()])
+    filter_display_name = StringField(default="")
+    save_filter = SubmitField(label="Save filter")
+    load_filter = SubmitField(label="Load filter")
+    delete_filter = SubmitField(label="Delete filter")
+
+    filter_variants = SubmitField(label="Filter variants")
+    export = SubmitField(label="Filter and export")
 
 
 class SvFiltersForm(VariantFiltersForm):

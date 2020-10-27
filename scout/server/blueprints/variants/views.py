@@ -185,7 +185,7 @@ def variants(institute_id, case_name):
     )
 
 
-@variants_bp.route("/<institute_id>/<case_name>/str/variants")
+@variants_bp.route("/<institute_id>/<case_name>/str/variants", methods=["GET", "POST"])
 @templated("variants/str-variants.html")
 def str_variants(institute_id, case_name):
     """Display a list of STR variants."""
@@ -199,6 +199,7 @@ def str_variants(institute_id, case_name):
 
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
+    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
     query = form.data
     query["variant_type"] = variant_type
 
@@ -217,8 +218,10 @@ def str_variants(institute_id, case_name):
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         variant_type=variant_type,
         manual_rank_options=MANUAL_RANK_OPTIONS,
+        cytobands=cytobands,
         form=form,
         page=page,
+        expand_search=str(request.method == "POST"),
         **data,
     )
 
