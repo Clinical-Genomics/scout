@@ -673,6 +673,8 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
                 "functional_annotations": SEVERE_SO_TERMS,
             }
         )
+    elif category == "str":
+        FiltersFormClass = StrFiltersForm
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)

@@ -193,13 +193,38 @@ def str_variants(institute_id, case_name):
     variant_type = request.args.get("variant_type", "clinical")
     category = "str"
 
-    form = StrFiltersForm(request.args)
-
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    user_obj = store.user(current_user.email)
+
+    if request.method == "POST":
+        form = controllers.populate_filters_form(
+            store, institute_obj, case_obj, user_obj, category, request.form
+        )
+    else:
+        form = StrFiltersForm(request.args)
+
+        if form.gene_panels.data == [] and variant_type == "clinical":
+            form.gene_panels.data = controllers.case_default_panels(case_obj)
+
+        # set form variant data type the first time around
+        form.variant_type.data = variant_type
+        # set chromosome to all chromosomes
+        form.chrom.data = request.args.get("chrom", "")
+
+    # populate filters dropdown
+    available_filters = store.filters(institute_id, category)
+    form.filters.choices = [
+        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
+    ]
+
+    # populate available panel choices
+    form.gene_panels.choices = controllers.gene_panel_choices(institute_obj, case_obj)
 
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
+
     query = form.data
     query["variant_type"] = variant_type
 
@@ -210,6 +235,9 @@ def str_variants(institute_id, case_name):
             ("position", pymongo.ASCENDING),
         ]
     )
+
+    controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
+    session["filtered_variants"] = variants_query.count()
 
     data = controllers.str_variants(store, institute_obj, case_obj, variants_query, page)
     return dict(
