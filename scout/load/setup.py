@@ -65,7 +65,7 @@ def setup_scout(
 
     LOG.info("Check if there was a database, delete if existing")
     existing_database = False
-    for collection_name in adapter.db.collection_names():
+    for collection_name in adapter.db.list_collection_names():
         if collection_name.startswith("system"):
             continue
         LOG.info("Deleting collection %s", collection_name)

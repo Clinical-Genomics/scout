@@ -15,7 +15,7 @@ query_phenomizer
 Flask-Babel
 livereload
 python-dateutil
-pymongo<3.7
+pymongo>=3.7
 pathlib
 WeasyPrint==0.42.3
 xlsxwriter
@@ -33,11 +33,11 @@ ped_parser
 
 # extras
 intervaltree==3.0.2
+anytree
 
 # chanjo-report
 python-dateutil
 
-# Requesting resources
 
 # Required by scripts
 tabulate

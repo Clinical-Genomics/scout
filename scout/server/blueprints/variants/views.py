@@ -58,7 +58,6 @@ def variants(institute_id, case_name):
         case_obj["hpo_clinical_filter"] = True
 
     user_obj = store.user(current_user.email)
-
     if request.method == "POST":
         if request.form.getlist("dismiss"):  # dismiss a list of variants
             controllers.dismiss_variant_list(
@@ -161,15 +160,15 @@ def variants(institute_id, case_name):
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
     variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
+    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
-    session["filtered_variants"] = variants_query.count()
-
+    session["filtered_variants"] = result_size
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    data = controllers.variants(store, institute_obj, case_obj, variants_query, page)
+    data = controllers.variants(store, institute_obj, case_obj, variants_query, result_size, page)
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -287,13 +286,16 @@ def sv_variants(institute_id, case_name):
 
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
-    session["filtered_variants"] = variants_query.count()
+    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
+    session["filtered_variants"] = result_size
     # if variants should be exported
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    data = controllers.sv_variants(store, institute_obj, case_obj, variants_query, page)
+    data = controllers.sv_variants(
+        store, institute_obj, case_obj, variants_query, result_size, page
+    )
 
     return dict(
         institute=institute_obj,
@@ -347,7 +349,7 @@ def cancer_variants(institute_id, case_name):
                     institute_id=institute_id,
                     case_name=case_name,
                     expand_search="True",
-                ),
+                )
             )
         page = int(request.form.get("page", 1))
 
@@ -374,12 +376,13 @@ def cancer_variants(institute_id, case_name):
 
     variant_type = request.args.get("variant_type", "clinical")
     variants_query = store.variants(case_obj["_id"], category="cancer", query=form.data)
+    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.cancer_variants(
-        store, institute_id, case_name, variants_query, form, page=page
+        store, institute_id, case_name, variants_query, result_size, form, page=page
     )
 
     return dict(
@@ -410,22 +413,22 @@ def cancer_sv_variants(institute_id, case_name):
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
-
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
-
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
-
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
 
     # Setup variant count session with variant count by category
     controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
-    session["filtered_variants"] = variants_query.count()
+    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
+    session["filtered_variants"] = result_size
     # if variants should be exported
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    data = controllers.sv_variants(store, institute_obj, case_obj, variants_query, page)
+    data = controllers.sv_variants(
+        store, institute_obj, case_obj, variants_query, result_size, page
+    )
 
     return dict(
         institute=institute_obj,
@@ -477,17 +480,11 @@ def upload_panel(institute_id, case_name):
     # HTTP redirect code 307 asks that the browser preserves the method of request (POST).
     if category == "sv":
         return redirect(
-            url_for(
-                ".sv_variants",
-                institute_id=institute_id,
-                case_name=case_name,
-                **form.data,
-            ),
+            url_for(".sv_variants", institute_id=institute_id, case_name=case_name, **form.data),
             code=307,
         )
     return redirect(
-        url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data),
-        code=307,
+        url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data), code=307
     )
 
 

@@ -6,10 +6,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Institute-level phenotype models with sub-panels containing HPO and OMIM terms
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
+- Breakpoint two IGV button now shows correct chromosome when different from bp1
 ### Changed
 - Make matching causative and managed variants foldable on case page
+- Remove calls to PyMongo functions marked as deprecated in backend and frontend(as of version 3.7).
+- Improved `scout update individual` command
 
 ## [4.23]
 ### Added
@@ -29,7 +33,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Do not freeze mkdocs-material to version 4.6.1
 - Remove pre-commit dependency
-
 
 ## [4.22]
 ### Added

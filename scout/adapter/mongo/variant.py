@@ -173,8 +173,8 @@ class VariantHandler(VariantLoader):
             skip(int): How many variants to skip
             sort_key: ['variant_rank', 'rank_score', 'position']
 
-        Yields:
-            result(Iterable[Variant])
+        Returns:
+             pymongo.cursor
         """
         LOG.debug("Fetching variants from {0}".format(case_id))
 
@@ -203,6 +203,22 @@ class VariantHandler(VariantLoader):
         )
 
         return result
+
+    def count_variants(self, case_id, query, variant_ids, category):
+        """Returns number of variants
+
+        Arguments:
+            case_id(str): A string that represents the case
+            query(dict): A dictionary with querys for the database
+            variant_ids(List[str])
+            category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
+
+        Returns:
+             integer
+        """
+
+        query = self.build_query(case_id, query=query, variant_ids=variant_ids, category=category)
+        return self.variant_collection.count_documents(query)
 
     def sanger_variants(self, institute_id=None, case_id=None):
         """Return all variants with sanger information
@@ -289,7 +305,7 @@ class VariantHandler(VariantLoader):
 
         If skip not equal to 0 skip the first n variants.
 
-        Arguments:
+        Args:
             query(dict): A dictionary with querys for the database, including
             variant_type: 'clinical', 'research'
             category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
@@ -325,6 +341,35 @@ class VariantHandler(VariantLoader):
         )
 
         return result
+
+    def count_gene_variants(
+        self, query=None, category="snv", variant_type=["clinical"], institute_id=None
+    ):
+        """Count all variants seen in a given gene.
+
+        Args:
+            query(dict): A dictionary with querys for the database, including
+            variant_type: 'clinical', 'research'
+            category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
+            institute_id: institute ID (required for similarity query)
+
+        Query can contain:
+            phenotype_terms,
+            phenotype_groups,
+            similar_case,
+            cohorts
+
+        Returns:
+            Number of variants for gene
+        """
+        mongo_variant_query = self.build_variant_query(
+            query=query,
+            institute_id=institute_id,
+            category=category,
+            variant_type=variant_type,
+        )
+
+        return self.variant_collection.count_documents(mongo_variant_query)
 
     def verified(self, institute_id):
         """Return all verified variants for a given institute

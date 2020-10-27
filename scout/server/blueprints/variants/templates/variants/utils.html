@@ -652,7 +652,7 @@
 {% endif %}
   {{ variant.variant_rank }}&nbsp;</a>
 
-  {% set comment_count = variant.comments.count() %}
+  {% set comment_count = variant.comments | count_cursor %}
 
   {% if variant.evaluations %}
     {% for evaluation in (variant.evaluations or []) %}

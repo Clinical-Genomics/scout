@@ -1,16 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 import pymongo
+from bson import ObjectId
 
-from flask import (
-    Blueprint,
-    render_template,
-    flash,
-    redirect,
-    request,
-    Response,
-    url_for,
-)
+from flask import Blueprint, render_template, flash, redirect, request, Response, url_for
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
@@ -25,7 +18,7 @@ from scout.constants import (
 from scout.constants import CASE_SEARCH_TERMS
 from scout.server.extensions import store
 from scout.server.utils import user_institutes, templated, institute_and_case
-from .forms import InstituteForm, GeneVariantFiltersForm
+from .forms import InstituteForm, GeneVariantFiltersForm, PhenoModelForm, PhenoSubPanelForm
 
 LOG = logging.getLogger(__name__)
 
@@ -198,20 +191,16 @@ def gene_variants(institute_id):
                     not_found_ids.append(hgnc_symbol)
                 else:
                     hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
-            elif store.hgnc_genes(hgnc_symbol).count() == 0:
+
+            elif store.hgnc_genes_find_one(hgnc_symbol) is None:
                 not_found_symbols.append(hgnc_symbol)
-            # elif is_clinical and (hgnc_symbol not in clinical_symbols):
-            #     non_clinical_symbols.append(hgnc_symbol)
             else:
                 hgnc_symbols.append(hgnc_symbol)
 
         if not_found_ids:
             flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
         if not_found_symbols:
-            flash(
-                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)),
-                "warning",
-            )
+            flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning")
         if non_clinical_symbols:
             flash(
                 "Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)),
@@ -225,17 +214,14 @@ def gene_variants(institute_id):
 
         form.hgnc_symbols.data = hgnc_symbols
 
-        LOG.debug("query {}".format(form.data))
-
         variants_query = store.gene_variants(
-            query=form.data,
-            institute_id=institute_id,
-            category="snv",
-            variant_type=variant_type,
+            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type
         )
 
-        data = controllers.gene_variants(store, variants_query, institute_id, page)
-
+        result_size = store.count_gene_variants(
+            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type
+        )
+        data = controllers.gene_variants(store, variants_query, result_size, institute_id, page)
     return dict(institute=institute_obj, form=form, page=page, **data)
 
 
@@ -244,10 +230,7 @@ def institute_settings(institute_id):
     """Show institute settings page"""
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
-        flash(
-            "Current user doesn't have the permission to modify this institute",
-            "warning",
-        )
+        flash("Current user doesn't have the permission to modify this institute", "warning")
         return redirect(request.referrer)
 
     institute_obj = store.institute(institute_id)
@@ -279,10 +262,7 @@ def institute_users(institute_id):
     """Should institute users list"""
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
-        flash(
-            "Current user doesn't have the permission to modify this institute",
-            "warning",
-        )
+        flash("Current user doesn't have the permission to modify this institute", "warning")
         return redirect(request.referrer)
     data = controllers.institute(store, institute_id)
     return render_template("/overview/users.html", panel=2, **data)
@@ -293,13 +273,7 @@ def clinvar_rename_casedata(submission, case, old_name):
     """Rename one or more casedata individuals belonging to the same clinvar submission, same case"""
 
     new_name = request.form.get("new_name")
-    controllers.update_clinvar_sample_names(
-        store,
-        submission,
-        case,
-        old_name,
-        new_name,
-    )
+    controllers.update_clinvar_sample_names(store, submission, case, old_name, new_name)
     return redirect(request.referrer)
 
 
@@ -339,11 +313,7 @@ def clinvar_download_csv(submission, csv_type, clinvar_id):
         return redirect(request.referrer)
 
     headers = Headers()
-    headers.add(
-        "Content-Disposition",
-        "attachment",
-        filename=clinvar_file_data[0],
-    )
+    headers.add("Content-Disposition", "attachment", filename=clinvar_file_data[0])
     return Response(
         generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),
         mimetype="text/csv",
@@ -365,3 +335,74 @@ def clinvar_submissions(institute_id):
         "casedata_header_fields": CASEDATA_HEADER,
     }
     return data
+
+
+@blueprint.route("/<institute_id>/advanced_phenotypes", methods=["GET", "POST"])
+@templated("overview/phenomodels.html")
+def advanced_phenotypes(institute_id):
+    """Show institute-level advanced phenotypes"""
+    institute_obj = institute_and_case(store, institute_id)
+
+    if request.form.get("create_model"):  # creating a new phenomodel
+        store.create_phenomodel(
+            institute_id, request.form.get("model_name"), request.form.get("model_desc")
+        )
+
+    pheno_form = PhenoModelForm(request.form or None)
+    phenomodels = store.phenomodels(institute_id=institute_id)
+
+    data = {
+        "institute": institute_obj,
+        "pheno_form": pheno_form,
+        "phenomodels": phenomodels,
+    }
+    return data
+
+
+@blueprint.route("/advanced_phenotypes/remove", methods=["POST"])
+def remove_phenomodel():
+    """Remove an entire phenomodel using its id"""
+    model_id = request.form.get("model_id")
+    model_obj = store.phenomodel_collection.find_one_and_delete({"_id": ObjectId(model_id)})
+    if model_obj is None:
+        flash(f"An error occurred while deleting phenotype model", "warning")
+    return redirect(request.referrer)
+
+
+@blueprint.route("/<institute_id>/phenomodel/<model_id>/edit_subpanel", methods=["POST"])
+def checkbox_edit(institute_id, model_id):
+    """Add or delete a single checkbox in a phenotyoe subpanel"""
+    controllers.edit_subpanel_checkbox(model_id, request.form)
+    return redirect(url_for(".phenomodel", institute_id=institute_id, model_id=model_id))
+
+
+@blueprint.route("/<institute_id>/phenomodel/<model_id>", methods=["GET", "POST"])
+@templated("overview/phenomodel.html")
+def phenomodel(institute_id, model_id):
+    """View/Edit an advanced phenotype model"""
+    institute_obj = institute_and_case(store, institute_id)
+
+    pheno_form = PhenoModelForm(request.form)
+    subpanel_form = PhenoSubPanelForm(request.form)
+    hide_subpanel = True
+
+    if request.method == "POST":
+        # update an existing phenotype model
+        controllers.update_phenomodel(model_id, request.form)
+
+    phenomodel_obj = store.phenomodel(model_id)
+    if phenomodel_obj is None:
+        flash(
+            f"Could not retrieve given phenotype model using the given key '{model_id}'", "warning"
+        )
+        return redirect(request.referrer)
+
+    pheno_form.model_name.data = phenomodel_obj["name"]
+    pheno_form.model_desc.data = phenomodel_obj["description"]
+
+    return dict(
+        institute=institute_obj,
+        pheno_form=pheno_form,
+        phenomodel=phenomodel_obj,
+        subpanel_form=subpanel_form,
+    )
