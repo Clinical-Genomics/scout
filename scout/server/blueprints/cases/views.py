@@ -923,8 +923,6 @@ def download_hpo_genes(institute_id, case_name):
     html_content = ""
     for term_id, term in phenotype_genes.items():
         html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br>{', '.join(term.get('genes',[]))}<br>"
-    flash(html_content)
-
     return render_pdf(
         HTML(string=html_content),
         download_filename=case_obj["display_name"]
@@ -932,7 +930,6 @@ def download_hpo_genes(institute_id, case_name):
         + datetime.datetime.now().strftime("%Y-%m-%d")
         + "_dynamic_phenotypes.pdf",
     )
-    return redirect(request.referrer)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/<individual_id>/cgh")
