@@ -988,10 +988,3 @@ def host_image_aux(institute_id, case_name, image, imgstr):
     img_path = abs_path + "/" + imgstr
     LOG.debug("Attempting to send {}/{}".format(img_path, image))
     return send_from_directory(img_path, image)
-
-
-def _generate_csv(header, lines):
-    """Download a text file composed of any header and lines"""
-    yield header + "\n"
-    for line in lines:  # lines have already quoted fields
-        yield line + "\n"
