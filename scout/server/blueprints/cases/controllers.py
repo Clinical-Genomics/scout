@@ -586,6 +586,37 @@ def update_cancer_samples(
     )
 
 
+def phenotypes_genes(store, hpo_ids, build="37"):
+    """Generate a dictionary consisting of phenotype term with associated genes from a list of HPO IDs
+
+    Args:
+        hpo_ids(list): a list of HPO terms
+        build(str): genome build
+
+    Returns:
+        phenotype_genes(dict): a dictionary with HPO term IDs as keys and HPO terms and genes as values
+    """
+    phenotype_genes = {}
+    for hpo_id in hpo_ids:
+        hpo_term = store.hpo_term(hpo_id)
+        if hpo_term is None:
+            flash(f"Could not find HPO term with ID '{hpo_id}' in database")
+            continue
+        gene_list = []
+        # Create a list with all gene symbols (or IDs) associated with the phenotype
+        for gene_id in hpo_term.get("genes", []):
+            gene_obj = store.hgnc_gene(gene_id, build)
+            if gene_obj is None:
+                flash(f"Could not find gene with HGNC ID '{gene_id}' in database")
+                continue
+            gene_list.append(gene_obj.get("hgnc_symbol", gene_id))
+        phenotype_genes[hpo_id] = {
+            "description": hpo_term.get("description"),
+            "genes": sorted(gene_list),
+        }
+    return phenotype_genes
+
+
 def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
     """Return the list of HGNC symbols that match annotated HPO terms.
 

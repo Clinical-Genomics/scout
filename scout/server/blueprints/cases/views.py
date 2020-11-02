@@ -915,31 +915,24 @@ def download_hpo_genes(institute_id, case_name):
     """Download the genes contained in a case dynamic gene list"""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    dynamic_gene_objs = case_obj.get("dynamic_gene_list")
-    csv_header = ["HGNC symbol", "HGNC ID", "Description"]
-    csv_lines = [
-        ",".join(
-            [
-                str(gene_obj.get("hgnc_symbol")),
-                str(gene_obj.get("hgnc_id")),
-                '"' + gene_obj.get("description") + '"',
-            ]
-        )
-        for gene_obj in dynamic_gene_objs
-    ]
-
-    download_day = str(datetime.datetime.now().strftime("%Y-%m-%d"))
-    # prepare headers:
-    headers = Headers()
-
-    headers.add(
-        "Content-Disposition",
-        "attachment",
-        filename=f"HPO_gene_list.{institute_id}.{case_name}.{download_day}.csv",
+    # Create export object consisting of dynamic phenotypes with associated genes as a dictionary
+    dynamic_phenotypes = case_obj.get("dynamic_panel_phenotypes", [])
+    phenotype_genes = controllers.phenotypes_genes(
+        store, dynamic_phenotypes, case_obj["genome_build"]
     )
-    return Response(
-        _generate_csv(",".join(csv_header), csv_lines), mimetype="text/csv", headers=headers
+    html_content = ""
+    for term_id, term in phenotype_genes.items():
+        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br>{', '.join(term.get('genes',[]))}<br>"
+    flash(html_content)
+
+    return render_pdf(
+        HTML(string=html_content),
+        download_filename=case_obj["display_name"]
+        + "_"
+        + datetime.datetime.now().strftime("%Y-%m-%d")
+        + "_dynamic_phenotypes.pdf",
     )
+    return redirect(request.referrer)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/<individual_id>/cgh")
