@@ -2,7 +2,39 @@
 from flask import Flask, url_for, Blueprint
 from scout.server.extensions import store
 import requests  # import requests for the purposes of monkeypatching
-from scout.server.blueprints.cases.controllers import case, case_report_content, mt_coverage_stats
+from scout.server.blueprints.cases.controllers import (
+    case,
+    case_report_content,
+    mt_coverage_stats,
+    phenotypes_genes,
+)
+
+
+def test_phenotypes_genes(app):
+    """Test function that creates phenotype terms dictionaries with gene symbol info"""
+
+    # GIVEN a database containing genes
+    assert store.hgnc_collection.find_one()
+
+    # And one phenotype term containing genes
+    hpo_term = {
+        "_id": "HP:0001250",
+        "hpo_id": "HP:0001250",
+        "description": "Seizure",
+        "genes": [26113, 9479, 10889, 18040, 10258],
+    }
+    assert store.hpo_term_collection.insert_one(hpo_term)
+
+    # WHEN the phenotypes_genes is invoked providing a list of HPO terms:
+    pheno_dict = phenotypes_genes(store, ["HP:0001250"], "37")
+
+    # THEN it should return a dictionary
+    # Containing the expected term
+    assert pheno_dict["HP:0001250"]["description"] == hpo_term["description"]
+    # And a list of gene symbols
+    assert isinstance(pheno_dict["HP:0001250"]["genes"], list)
+    # Coresponding of all HPO term genes
+    assert len(pheno_dict["HP:0001250"]["genes"]) == len(hpo_term["genes"])
 
 
 def test_coverage_stats(app, monkeypatch):
