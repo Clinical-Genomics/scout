@@ -434,7 +434,7 @@ def test_download_hpo_genes(app, case_obj, institute_obj):
         # THEN the response should be successful
         assert resp.status_code == 200
         # And should download a txt file
-        assert resp.mimetype == "text/csv"
+        assert resp.mimetype == "application/pdf"
 
 
 def test_case_report(app, institute_obj, case_obj):
