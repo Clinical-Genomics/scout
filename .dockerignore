@@ -1,0 +1,13 @@
+.configs
+.coveragerc
+.editorconfig
+.git
+.github
+.gitignore
+.pre-commit-config.yaml
+mkdocs.yml
+docs
+tests
+scripts
+Dockerfile
+docker-compose.yml
