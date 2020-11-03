@@ -25,6 +25,22 @@
 
 This README only gives a brief overview of Scout, for a more complete reference, please check out our docs: [www.clinicalgenomics.se/scout](http://www.clinicalgenomics.se/scout/).
 
+## Runnable demo image - does not require installing of software and database
+
+A simple demo instance of Scout requires the installation of Docker and can be launched using the command:
+`docker-compose run -d`
+
+This demo is consisting of 3 containers:
+- a lightweight mongodb instance
+- scout-cli --> the Scout command line, connected to the database. Populates the database with demo data
+- scout-web --> the Scout web app, that serves the app on localhost, port 5000.
+
+Once the server is started you could open the app in the browser at the following address: http://localhost:5000/
+
+The command to stop the demo is the following:
+`docker-compose down`
+
+
 ## Installation
 
 <!-- You can install the latest release of Scout using `pip`:
@@ -54,7 +70,7 @@ docker run --name mongo -p 27017:27017 mongo
 
 ## Usage
 
-### Demo
+### Demo - requires pip-installing the app in a container and a running instance of mongodb
 
 Once installed, you can setup Scout by running a few commands using the included command line interface. Given you have a MongoDB server listening on the default port (27017), this is how you would setup a fully working Scout demo:
 
