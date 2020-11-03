@@ -187,6 +187,11 @@ def parse_variant(
     if repeat_unit:
         parsed_variant["str_ru"] = str(repeat_unit)
 
+    # repeat unit - used e g in PanelApp naming of STRs
+    repeat_unit = variant.INFO.get("DisplayRU")
+    if repeat_unit:
+        parsed_variant["str_display_ru"] = str(repeat_unit)
+
     # repeat ref - reference copy number
     repeat_ref = variant.INFO.get("REF")
     if repeat_ref:
@@ -211,6 +216,32 @@ def parse_variant(
     str_pathologic_min = variant.INFO.get("STR_PATHOLOGIC_MIN")
     if str_pathologic_min:
         parsed_variant["str_pathologic_min"] = int(str_pathologic_min)
+
+    # str disease - disease name annotation
+    str_disease = variant.INFO.get("Disease")
+    if str_inheritance_mode:
+        parsed_variant["str_disease"] = str(str_disease)
+
+    # str disease inheritance mode string annotation
+    str_inheritance_mode = variant.INFO.get("InheritanceMode")
+    if str_inheritance_mode:
+        parsed_variant["str_inheritance_mode"] = str(str_inheritance_mode)
+
+    # str source dict with display string, source type and entry id
+    str_source_display = variant.INFO.get("SourceDisplay")
+    str_source_type = variant.INFO.get("Source")
+    str_source_id = variant.INFO.get("SourceId")
+    if str_source_display or str_source_type or str_source_id:
+        source = {"display": str_source_display, "type": str_source_type, "id": str_source_id}
+        parsed_variant["source"] = source
+
+    str_swegen_mean = variant.INFO.get("SweGenMean")
+    if str_swegen_mean:
+        parsed_variant["str_swegen_mean"] = float(str_swegen_mean)
+
+    str_swegen_std = variant.INFO.get("SweGenStd")
+    if str_swegen_std:
+        parsed_variant["str_swegen_std"] = float(str_swegen_std)
 
     ################# Add somatic info ##################
     somatic = variant.INFO.get("SOMATIC")
@@ -264,6 +295,11 @@ def parse_variant(
 
     for gene in parsed_variant["genes"]:
         hgnc_ids.add(gene["hgnc_id"])
+
+    # STR HGNCIds are annotated by Stranger
+    str_hgnc_id = variant.INFO.get("HGNCId")
+    if str_hgnc_id:
+        hgnc_ids.add(str_hgnc_id)
 
     parsed_variant["hgnc_ids"] = list(hgnc_ids)
 

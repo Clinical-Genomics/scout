@@ -46,8 +46,16 @@ variant = dict(
     dbsnp_id=str,
     # str variant
     str_ru=str,
+    str_display_ru=str,
     str_repid=str,
     str_ref=str,
+    str_disease=str,
+    str_inheritance_mode=str,  # STR disease mode of inheritance "AD", "XR", "AR", "-"
+    str_source=dict,  # STR source dict with keys {"display": str, "type": str ("PubMed", "GeneReviews"), "id": str}
+    str_normal_max=int,
+    str_pathologic_min=int,
+    str_swegen_mean=float,
+    str_swegen_std=float,
     # Gene ids:
     hgnc_ids=list,  # list of hgnc ids (int)
     hgnc_symbols=list,  # list of hgnc symbols (str)
