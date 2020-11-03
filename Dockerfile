@@ -9,7 +9,7 @@ LABEL about.license="MIT License (MIT)"
 # Install required libs
 RUN apk update
 RUN apk --no-cache add make automake gcc g++ linux-headers libffi-dev zlib-dev \
-   jpeg-dev libressl-dev
+   jpeg-dev libressl-dev cairo-dev pango-dev gdk-pixbuf bash
 RUN pip install numpy Cython
 
 WORKDIR /home/worker/app

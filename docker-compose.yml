@@ -1,0 +1,31 @@
+version: '3'
+# usage:
+# (sudo) docker-compose up -d
+# (sudo) docker-compose down
+services:
+
+  mongodb:
+    image: mvertes/alpine-mongo
+    container_name: mongodb
+    ports:
+      - '27017:27017'
+    expose:
+      - '27017'
+
+  scout-cli:
+    image: clinicalgenomics/scout
+    container_name: scout-cli
+    links:
+      - mongodb
+    command: scout --host mongodb setup demo
+
+  scout-web:
+    image: northwestwitch/scout
+    container_name: scout-web
+    links:
+      - mongodb
+    expose:
+      - '5000'
+    ports:
+      - '5000:5000'
+    command: scout --host mongodb --demo serve --host 0.0.0.0
