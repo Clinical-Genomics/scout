@@ -20,7 +20,7 @@ services:
     command: scout --host mongodb setup demo
 
   scout-web:
-    image: northwestwitch/scout
+    image: clinicalgenomics/scout
     container_name: scout-web
     links:
       - mongodb
