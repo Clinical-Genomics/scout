@@ -43,13 +43,15 @@ jobs:
    name: Docker Image CI
    runs-on: ubuntu-latest
    steps:
-    - name: Get release version
-      id: get_version
-      run: echo ::set-output name=release_version::$(echo ${GITHUB_REF:10})
-    - name: Publish to Registry
+
+    - name: Check out git repository
+      uses: actions/checkout@v2
+
+    - name: Build and publish to Docker Hub
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
         name: clinicalgenomics/scout
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        tags: "latest,${{ steps.vars.outputs.release_version }}"
+        tags: "latest,${{ github.event.release.tag_name }}"
+
