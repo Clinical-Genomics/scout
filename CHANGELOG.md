@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Institute-level phenotype models with sub-panels containing HPO and OMIM terms
 - Runnable Docker demo
+- Docker image build and push github action
 - Support for custom public igv tracks stored on the cloud
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
