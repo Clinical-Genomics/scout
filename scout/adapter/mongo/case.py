@@ -564,7 +564,9 @@ class CaseHandler(object):
 
         if old_case:
             LOG.info(
-                "Update case id for existing case: %s -> %s", old_caseid, case_obj["_id"],
+                "Update case id for existing case: %s -> %s",
+                old_caseid,
+                case_obj["_id"],
             )
             self.update_caseid(old_case, case_obj["_id"])
             update = True
@@ -584,8 +586,16 @@ class CaseHandler(object):
         files = [
             {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
             {"file_name": "vcf_sv", "variant_type": "clinical", "category": "sv"},
-            {"file_name": "vcf_cancer", "variant_type": "clinical", "category": "cancer",},
-            {"file_name": "vcf_cancer_sv", "variant_type": "clinical", "category": "cancer_sv",},
+            {
+                "file_name": "vcf_cancer",
+                "variant_type": "clinical",
+                "category": "cancer",
+            },
+            {
+                "file_name": "vcf_cancer_sv",
+                "variant_type": "clinical",
+                "category": "cancer_sv",
+            },
             {"file_name": "vcf_str", "variant_type": "clinical", "category": "str"},
         ]
 
@@ -600,7 +610,9 @@ class CaseHandler(object):
                 category = vcf_file["category"]
                 if update:
                     self.delete_variants(
-                        case_id=case_obj["_id"], variant_type=variant_type, category=category,
+                        case_id=case_obj["_id"],
+                        variant_type=variant_type,
+                        category=category,
                     )
                 self.load_variants(
                     case_obj=case_obj,
@@ -633,10 +645,10 @@ class CaseHandler(object):
 
     def _add_case(self, case_obj):
         """Add a case to the database
-           If the case already exists exception is raised
+        If the case already exists exception is raised
 
-            Args:
-                case_obj(Case)
+         Args:
+             case_obj(Case)
         """
         if self.case(case_obj["_id"]):
             raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
@@ -754,7 +766,9 @@ class CaseHandler(object):
         case_obj["updated_at"] = datetime.datetime.now()
 
         updated_case = self.case_collection.find_one_and_replace(
-            {"_id": case_obj["_id"]}, case_obj, return_document=pymongo.ReturnDocument.AFTER,
+            {"_id": case_obj["_id"]},
+            case_obj,
+            return_document=pymongo.ReturnDocument.AFTER,
         )
 
         return updated_case
@@ -847,7 +861,8 @@ class CaseHandler(object):
             len(case_verif_variants["sanger_verified"]),
         )
         LOG.info(
-            "Nr variants with sanger ordered found: %s", len(case_verif_variants["sanger_ordered"]),
+            "Nr variants with sanger ordered found: %s",
+            len(case_verif_variants["sanger_ordered"]),
         )
 
         return case_verif_variants
@@ -1010,17 +1025,17 @@ class CaseHandler(object):
 
     def update_case_sanger_variants(self, institute_obj, case_obj, case_verif_variants):
         """Update existing variants for a case according to a previous
-            verification status.
+        verification status.
 
-            Accepts:
-                institute_obj(dict): an institute object
-                case_obj(dict): a case object
+        Accepts:
+            institute_obj(dict): an institute object
+            case_obj(dict): a case object
 
-            Returns:
-                updated_variants(dict): a dictionary like this: {
-                    'updated_verified' : [list of variant ids],
-                    'updated_ordered' : [list of variant ids]
-                }
+        Returns:
+            updated_variants(dict): a dictionary like this: {
+                'updated_verified' : [list of variant ids],
+                'updated_ordered' : [list of variant ids]
+            }
 
         """
         LOG.debug("Updating verification status for variants in case:{}".format(case_obj["_id"]))
@@ -1050,7 +1065,11 @@ class CaseHandler(object):
                 )
 
                 old_event = self.event_collection.find_one(
-                    {"case": case_obj["_id"], "verb": verb, "variant_id": old_var["variant_id"],}
+                    {
+                        "case": case_obj["_id"],
+                        "verb": verb,
+                        "variant_id": old_var["variant_id"],
+                    }
                 )
 
                 if old_event is None:

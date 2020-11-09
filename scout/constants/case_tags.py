@@ -88,14 +88,29 @@ SAMPLE_SOURCE = dict((i, el) for i, el in enumerate(SOURCES))
 
 CASE_SEARCH_TERMS = {
     "case": {"label": "Case or individual name", "prefix": "case:"},
-    "exact_pheno": {"label": "HPO term", "prefix": "exact_pheno:",},
-    "synopsis": {"label": "Search synopsis", "prefix": "synopsis:",},
+    "exact_pheno": {
+        "label": "HPO term",
+        "prefix": "exact_pheno:",
+    },
+    "synopsis": {
+        "label": "Search synopsis",
+        "prefix": "synopsis:",
+    },
     "panel": {"label": "Gene panel", "prefix": "panel:"},
     "status": {"label": "Case status", "prefix": "status:"},
-    "pheno_group": {"label": "Phenotype group", "prefix": "pheno_group:",},
+    "pheno_group": {
+        "label": "Phenotype group",
+        "prefix": "pheno_group:",
+    },
     "cohort": {"label": "Patient cohort", "prefix": "cohort:"},
-    "Similar case": {"label": "Similar case", "prefix": "similar_case:",},
-    "similar_pheno": {"label": "Similar phenotype", "prefix": "similar_pheno:",},
+    "Similar case": {
+        "label": "Similar case",
+        "prefix": "similar_case:",
+    },
+    "similar_pheno": {
+        "label": "Similar phenotype",
+        "prefix": "similar_pheno:",
+    },
     "pinned": {"label": "Pinned gene", "prefix": "pinned:"},
     "causative": {"label": "Causative gene", "prefix": "causative:"},
     "user": {"label": "Assigned user", "prefix": "user:"},

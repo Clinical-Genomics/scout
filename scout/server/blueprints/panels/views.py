@@ -31,7 +31,8 @@ def panels():
                 lines = content.decode("windows-1252").split("\r")
         except Exception as err:
             flash(
-                "Something went wrong while parsing the panel CSV file! ({})".format(err), "danger",
+                "Something went wrong while parsing the panel CSV file! ({})".format(err),
+                "danger",
             )
             return redirect(request.referrer)
 
@@ -48,7 +49,8 @@ def panels():
             )
             if new_panel_id is None:
                 flash(
-                    "Something went wrong and the panel list was not updated!", "warning",
+                    "Something went wrong and the panel list was not updated!",
+                    "warning",
                 )
                 return redirect(request.referrer)
 
@@ -71,7 +73,8 @@ def panels():
             )
         else:
             flash(
-                "Permission denied: please ask a panel maintainer or admin for help.", "danger",
+                "Permission denied: please ask a panel maintainer or admin for help.",
+                "danger",
             )
 
         return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
@@ -120,7 +123,8 @@ def panel(panel_id):
                 store.update_panel(panel_obj=panel_obj)
             else:
                 flash(
-                    "Permission denied: please ask a panel maintainer or admin for help.", "danger",
+                    "Permission denied: please ask a panel maintainer or admin for help.",
+                    "danger",
                 )
             return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
 
@@ -176,7 +180,8 @@ def panel_update(panel_id):
         panel_id = new_panel_id
     else:
         flash(
-            "Permission denied: please ask a panel maintainer or admin for help.", "danger",
+            "Permission denied: please ask a panel maintainer or admin for help.",
+            "danger",
         )
 
     return redirect(url_for("panels.panel", panel_id=panel_id))

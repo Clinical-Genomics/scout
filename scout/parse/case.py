@@ -284,45 +284,45 @@ def add_peddy_information(config_data):
 def parse_individual(sample):
     """Parse individual information
 
-        Args:
-            sample (dict)
+    Args:
+        sample (dict)
 
-        Returns:
-            {
-                'individual_id': str,
-                'father': str,
-                'mother': str,
-                'display_name': str,
-                'sex': str,
-                'phenotype': str,
-                'bam_file': str,
-                'mt_bam': str,
-                'analysis_type': str,
-                'vcf2cytosure': str,
-                'capture_kits': list(str),
+    Returns:
+        {
+            'individual_id': str,
+            'father': str,
+            'mother': str,
+            'display_name': str,
+            'sex': str,
+            'phenotype': str,
+            'bam_file': str,
+            'mt_bam': str,
+            'analysis_type': str,
+            'vcf2cytosure': str,
+            'capture_kits': list(str),
 
-                'upd_sites_bed': str,
-                'upd_regions_bed': str,
-                'rhocall_bed': str,
-                'rhocall_wig': str,
-                'tiddit_coverage_wig': str,
+            'upd_sites_bed': str,
+            'upd_regions_bed': str,
+            'rhocall_bed': str,
+            'rhocall_wig': str,
+            'tiddit_coverage_wig': str,
 
-                'predicted_ancestry' = str,
+            'predicted_ancestry' = str,
 
-                'is_sma': boolean,
-                'is_sma_carrier': boolean,
-                'smn1_cn' = int,
-                'smn2_cn' = int,
-                'smn2delta78_cn' = int,
-                'smn_27134_cn' = int,
+            'is_sma': boolean,
+            'is_sma_carrier': boolean,
+            'smn1_cn' = int,
+            'smn2_cn' = int,
+            'smn2delta78_cn' = int,
+            'smn_27134_cn' = int,
 
-                'tumor_type': str,
-                'tmb': str,
-                'msi': str,
-                'tumor_purity': float,
-                'tissue_type': str,
-                'chromograph_images': str
-            }
+            'tumor_type': str,
+            'tmb': str,
+            'msi': str,
+            'tumor_purity': float,
+            'tissue_type': str,
+            'chromograph_images': str
+        }
 
     """
     ind_info = {}
@@ -414,6 +414,7 @@ def parse_individual(sample):
         ind_info["tumor_purity"] = float(Fraction(ind_info["tumor_purity"]))
 
     ind_info["tissue_type"] = sample.get("tissue_type")
+
     ind_info["chromograph_images"] = sample.get("chromograph_images", {'rho': "rho_chr",
                                                                        'upd': "upd_chr",
                                                                        'chr': ""})
@@ -425,13 +426,13 @@ def parse_individual(sample):
 def parse_individuals(samples):
     """Parse the individual information
 
-        Reformat sample information to proper individuals
+    Reformat sample information to proper individuals
 
-        Args:
-            samples(list(dict))
+    Args:
+        samples(list(dict))
 
-        Returns:
-            individuals(list(dict))
+    Returns:
+        individuals(list(dict))
     """
     individuals = []
     if len(samples) == 0:
@@ -507,9 +508,15 @@ def parse_case(config):
         "delivery_report": config.get("delivery_report"),
         "multiqc": config.get("multiqc"),
         "track": config.get("track", "rare"),
+<<<<<<< HEAD
         "chromograph_prefixes": config.get("chromograph_prefixes", {'rho': "rho_chr",
                                                                     'upd': "upd_chr",
                                                                     'chr': ""}),
+=======
+        "chromograph_prefixes": config.get(
+            "chromograph_prefixes", {"roh": "roh_chr", "upd": "upd_chr", "chr": "cytoband.txt.chr"}
+        ),
+>>>>>>> b8a920e9363b4b75ff62a3e5d845b4cc5d2b6531
     }
 
     # add SMN info
@@ -573,7 +580,7 @@ def parse_ped(ped_stream, family_type="ped"):
 
 
 def removeNoneValues(dict):
-    """ If value = None in key/value pair, the pair is removed.
+    """If value = None in key/value pair, the pair is removed.
         Python >3
     Args:
         dict: dictionary
