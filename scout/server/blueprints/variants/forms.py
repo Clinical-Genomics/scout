@@ -105,7 +105,8 @@ class VariantFiltersForm(FlaskForm):
     load_filter = SubmitField(label="Load filter")
     delete_filter = SubmitField(label="Delete filter")
 
-    chrom_pos = StringField("Chromosome position", [validators.Optional()])
+    chrom_pos = StringField("Chromosome position", [validators.Optional()],
+                            render_kw={"placeholder": "<chr>:<start pos>-<end pos>(+<span>)"})
 
     chrom = SelectField(
         "Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS, default=""
