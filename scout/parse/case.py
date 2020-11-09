@@ -390,7 +390,7 @@ def parse_individual(sample):
     ind_info["analysis_type"] = sample.get("analysis_type")
 
     # Path to downloadable vcf2cytosure file
-    ind_info["vcf2cytosure"] = sample.get("vcf2cytosure")
+    ind_info["vcf2cytoure"] = sample.get("vcf2cytosure")
 
     # load sma file if it is not done at this point!
     ind_info["is_sma"] = sample.get("is_sma", None)
@@ -414,9 +414,9 @@ def parse_individual(sample):
         ind_info["tumor_purity"] = float(Fraction(ind_info["tumor_purity"]))
 
     ind_info["tissue_type"] = sample.get("tissue_type")
-    ind_info["chromograph_images"] = sample.get("chromograph_images", {'roh': "roh_chr",
+    ind_info["chromograph_images"] = sample.get("chromograph_images", {'rho': "rho_chr",
                                                                        'upd': "upd_chr",
-                                                                       'chr': "cytoband.txt.chr"})
+                                                                       'chr': ""})
 
     # Remove key-value pairs from ind_info where key==None and return
     return removeNoneValues(ind_info)
@@ -507,9 +507,9 @@ def parse_case(config):
         "delivery_report": config.get("delivery_report"),
         "multiqc": config.get("multiqc"),
         "track": config.get("track", "rare"),
-        "chromograph_prefixes": config.get("chromograph_prefixes", {'roh': "roh_chr",
+        "chromograph_prefixes": config.get("chromograph_prefixes", {'rho': "rho_chr",
                                                                     'upd': "upd_chr",
-                                                                    'chr': "cytoband.txt.chr"}),
+                                                                    'chr': ""}),
     }
 
     # add SMN info

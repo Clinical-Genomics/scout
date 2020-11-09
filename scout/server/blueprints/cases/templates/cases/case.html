@@ -73,10 +73,7 @@
         {% endif %}
       </div>
 
-
-      {{ multi_roh_panel() }}
-
-
+      {{ insert_multi_image_panel() }}
 
       <div class="row">
         {% if case.track != 'cancer' %}
@@ -204,7 +201,7 @@
 
 
 <!-- Iterate through Individuals, if chromograph_files is presenet add a panel for images -->
-{% macro multi_roh_panel() %}
+{% macro insert_multi_image_panel() %}
   {% for i in case.individuals %}
   {% if i.chromograph_images %}
   {{ add_collapsable_panel(i.individual_id) }}

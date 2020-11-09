@@ -956,10 +956,10 @@ def multiqc(institute_id, case_name):
     return send_from_directory(out_dir, filename)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/<individual>/roh_images/<image>", methods=['GET', 'POST'])
-def host_roh_image(institute_id, case_name, individual, image):
-    """Generate ROH image file paths"""
-    return host_image_aux(institute_id, case_name, individual, image, 'roh')
+@cases_bp.route("/<institute_id>/<case_name>/<individual>/rho_images/<image>", methods=['GET', 'POST'])
+def host_rho_image(institute_id, case_name, individual, image):
+    """Generate RHO image file paths"""
+    return host_image_aux(institute_id, case_name, individual, image, 'rho')
 
 
 @cases_bp.route("/<institute_id>/<case_name>/<individual>/upd_images/<image>", methods=['GET', 'POST'])

@@ -54,36 +54,48 @@ function add_image_to_individual_panel(individuals, prefixes, institute, case_na
 
 
 /**
- * Draw ROH call pictures -coverage- and UPD pictures -color coded
+ * Draw RHO call pictures -coverage- and UPD pictures -color coded
  * genome regions- onto the dashboard.
  */
 function draw_tracks(individual, prefixes, institute, case_name){
     const CYT_HEIGHT = 50 ;
     const CYT_WIDTH = 500 ;
     var svg_element = document.getElementById("svg_" + individual["individual_id"])
+    console.log("DRAW TRACKS");
+    console.log(individual)
+    console.log(individual.chromograph_images)
+    console.log(individual.chromograph_images.upd)
+    console.log("* * *");
+    console.log(prefixes)
 
-    if (individual.chromograph_images.roh){
-        var roh_imgPath = create_path(institute, case_name, individual, 'roh_images')
-        var roh_images = make_names("roh-");
+    if (individual.chromograph_images.rho){
+        console.log("printRHO ", );
+        var rho_imgPath = create_path(institute, case_name, individual, 'rho_images')
+        var rho_images = make_names("rho-");
     }
     if (individual.chromograph_images.upd){
+        console.log("printUPD ", );
         var upd_imgPath = create_path(institute, case_name, individual, 'upd_images')
         var upd_images = make_names("upd-");
     }
-
+    console.log(upd_imgPath)
+    console.log(upd_images)
     // ideograms always exist
     var ideo_imgPath = static_path_ideograms(institute, case_name, individual, 'ideaograms')
     var ideo_images = make_names(prefixes.chr)
 
-    var roh_imgObj = new Image()
+    console.log("ideogram")
+    console.log(ideo_imgPath)
+    console.log(ideo_images)
+    var rho_imgObj = new Image()
     var upd_imgObj = new Image()
 
     var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
     var chromspecs_list = get_chromosomes(individual.sex)
 
     for(i = 0; i< chromspecs_list.length; i++){
-        roh_imgObj.src = roh_imgPath + roh_images[i]
-        upd_imgObj.src = upd_imgPath + upd_images[i]
+        // rho_imgObj.src = rho_imgPath + rho_images[i]
+        // upd_imgObj.src = upd_imgPath + upd_images[i]
         x_pos = i % number_of_columns == 0? 0 : CYT_WIDTH * (i% number_of_columns) + OFFSET_X
         y_pos =  Math.floor( i/number_of_columns ) * 100;
 
@@ -101,15 +113,17 @@ function draw_tracks(individual, prefixes, institute, case_name){
             g.appendChild(upd_image);
         }
 
-        if(individual.chromograph_images.roh){
-            var roh_image = make_svgimage(roh_imgPath + roh_images[i],
+        if(individual.chromograph_images.rho){
+            var rho_image = make_svgimage(rho_imgPath + rho_images[i],
                                           x_pos + 17,  // compensate for image pixel start
                                           y_pos + 55 , // place below UPD
                                           "25px", "500px", );
-            g.appendChild(roh_image);
+            g.appendChild(rho_image);
         }
 
         var t = chromosome_text(CHROMOSOMES[i], x_pos, y_pos+17);
+        console.log("ideogram____")
+        console.log(t)
         var clipPath = make_clipPath(CHROMSPECS_LIST[i], x_pos, y_pos)
         ideo_image.setAttributeNS(null, 'clip-path', "url(#clip-chr"+CHROMSPECS_LIST[i].name +")")
 
@@ -143,7 +157,7 @@ function static_path_ideograms(institute, case_name, individual, dir_name){
 
 
 /**
- * Draw ROH call pictures -coverage- and UPD pictures -color coded
+ * Draw RHO call pictures -coverage- and UPD pictures -color coded
  * genome regions- onto the dashboard. Return a list of names.
  */
 function make_names(prefix){
@@ -170,7 +184,8 @@ function replace_escape_char(str, escape_char, substitution){
  *
  */
 function chromosome_text(text, x, y){
-    var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    // var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    var t = document.createElementNS('http://www.w3.org/2000/svg', 'png');
     t.setAttributeNS(null, 'x', x+5);
     t.setAttributeNS(null, 'y', y);
     t.appendChild( document.createTextNode(text) );

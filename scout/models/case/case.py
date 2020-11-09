@@ -43,7 +43,7 @@ individual = dict(
     msi=str,
     tumor_purity=float,
     tissue_type=str,
-    chromograph_images=str # path to image files
+    chromograph_images=list # paths to image files
 )
 
 case = dict(
