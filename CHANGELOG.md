@@ -7,9 +7,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 - Institute-level phenotype models with sub-panels containing HPO and OMIM terms
+- Runnable Docker demo
+- Docker image build and push github action
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
 - Breakpoint two IGV button now shows correct chromosome when different from bp1
+- Missing font lib in Docker image causing the PDF report download page to crash
 - Sentieon Manta calls lack Somaticscore - load anyway
 ### Changed
 - Make matching causative and managed variants foldable on case page
