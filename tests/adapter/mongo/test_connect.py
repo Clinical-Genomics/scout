@@ -1,6 +1,5 @@
 import pytest
 import unittest
-import mock
 import mongomock
 from pymongo.errors import ConnectionFailure
 from scout.adapter.client import get_connection

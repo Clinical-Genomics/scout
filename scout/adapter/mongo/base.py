@@ -47,6 +47,9 @@ from .clinvar import ClinVarHandler
 from .matchmaker import MMEHandler
 from .filter import FilterHandler
 from .cytoband import CytobandHandler
+from .managed_variant import ManagedVariantHandler
+from .phenomodel import PhenoModelHandler
+
 
 log = logging.getLogger(__name__)
 
@@ -68,7 +71,9 @@ class MongoAdapter(
     MMEHandler,
     TranscriptHandler,
     FilterHandler,
+    ManagedVariantHandler,
     CytobandHandler,
+    PhenoModelHandler,
 ):
 
     """Adapter for cummunication with a mongo database."""
@@ -104,14 +109,16 @@ class MongoAdapter(
         self.transcript_collection = database.transcript
         self.filter_collection = database.filter
         self.cytoband_collection = database.cytoband
+        self.managed_variant_collection = database.managed_variant
+        self.phenomodel_collection = database.phenomodel
 
     def collections(self):
         """Return all collection names
 
         Returns:
-            collection_names(list(str))
+            list_collection_names(list(str))
         """
-        return self.db.collection_names(include_system_collections=False)
+        return self.db.list_collection_names()
 
     def __str__(self):
         return "MongoAdapter(db={0})".format(self.db)

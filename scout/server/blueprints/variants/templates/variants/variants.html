@@ -129,7 +129,11 @@
       {{ (variant.polyphen_predictions or ['-'])|join(',') }}
     </div>
   ">
-    {{ variant.cadd_score }}
+    {% if variant.cadd_score %}
+      {{ variant.cadd_score|round(1) }} 
+    {% else %}
+      -
+    {% endif %}
   </div>
 {% endmacro %}
 

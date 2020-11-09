@@ -173,8 +173,8 @@ class VariantHandler(VariantLoader):
             skip(int): How many variants to skip
             sort_key: ['variant_rank', 'rank_score', 'position']
 
-        Yields:
-            result(Iterable[Variant])
+        Returns:
+             pymongo.cursor
         """
         LOG.debug("Fetching variants from {0}".format(case_id))
 
@@ -203,6 +203,22 @@ class VariantHandler(VariantLoader):
         )
 
         return result
+
+    def count_variants(self, case_id, query, variant_ids, category):
+        """Returns number of variants
+
+        Arguments:
+            case_id(str): A string that represents the case
+            query(dict): A dictionary with querys for the database
+            variant_ids(List[str])
+            category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
+
+        Returns:
+             integer
+        """
+
+        query = self.build_query(case_id, query=query, variant_ids=variant_ids, category=category)
+        return self.variant_collection.count_documents(query)
 
     def sanger_variants(self, institute_id=None, case_id=None):
         """Return all variants with sanger information
@@ -289,7 +305,7 @@ class VariantHandler(VariantLoader):
 
         If skip not equal to 0 skip the first n variants.
 
-        Arguments:
+        Args:
             query(dict): A dictionary with querys for the database, including
             variant_type: 'clinical', 'research'
             category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
@@ -325,6 +341,35 @@ class VariantHandler(VariantLoader):
         )
 
         return result
+
+    def count_gene_variants(
+        self, query=None, category="snv", variant_type=["clinical"], institute_id=None
+    ):
+        """Count all variants seen in a given gene.
+
+        Args:
+            query(dict): A dictionary with querys for the database, including
+            variant_type: 'clinical', 'research'
+            category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
+            institute_id: institute ID (required for similarity query)
+
+        Query can contain:
+            phenotype_terms,
+            phenotype_groups,
+            similar_case,
+            cohorts
+
+        Returns:
+            Number of variants for gene
+        """
+        mongo_variant_query = self.build_variant_query(
+            query=query,
+            institute_id=institute_id,
+            category=category,
+            variant_type=variant_type,
+        )
+
+        return self.variant_collection.count_documents(mongo_variant_query)
 
     def verified(self, institute_id):
         """Return all verified variants for a given institute
@@ -388,6 +433,88 @@ class VariantHandler(VariantLoader):
 
         return causatives
 
+    def check_managed(self, case_obj=None, institute_obj=None, limit_genes=None):
+        """Check if there are any variants in case that match a managed variant.
+
+            Given a case, limit search to affected individuals.
+
+        Args:
+            case_obj (dict): A Case object
+            institute_obj (dict): check across the whole institute
+            limit_genes (list): list of gene hgnc_ids to limit the search to
+
+        Returns:
+            managed_variants(iterable(Variant))
+        """
+
+        institute_id = case_obj["owner"] if case_obj else institute_obj["_id"]
+
+        positional_variant_ids = self.get_managed_variants(institute_id)
+
+        if len(positional_variant_ids) == 0:
+            return []
+
+        return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
+
+    def _find_affected(self, case_obj):
+        """Internal method to find affected individuals.
+
+        Assumes an affected individual has phenotype == 2
+
+        Args:
+            case_obj (dict): A Case object
+
+        Returns:
+            affected (list): a list of affected IDs.
+        """
+
+        # affected is phenotype == 2; assume
+        affected_ids = []
+        if case_obj:
+            for subject in case_obj.get("individuals"):
+                if subject.get("phenotype") == 2:
+                    affected_ids.append(subject.get("individual_id"))
+
+        return affected_ids
+
+    def match_affected_gt(self, case_obj, institute_obj, positional_variant_ids, limit_genes):
+        """Match positional_variant_ids against variants from affected individuals
+        in a case, ensuring that they at least are carriers.
+
+        Args:
+            case_obj (dict): A Case object.
+            institute_obj (dict): An Institute object.
+            positional_variant_ids (iterable): A set of possible positional variant ids to look for
+            limit_genes (list): list of gene hgnc_ids to limit the search to
+
+        Returns:
+            causatives(iterable(Variant))
+        """
+
+        if len(positional_variant_ids) == 0:
+            return []
+
+        filters = {"variant_id": {"$in": list(positional_variant_ids)}}
+        if case_obj:
+            affected_ids = self._find_affected(case_obj)
+            if len(affected_ids) == 0:
+                return []
+
+            filters["case_id"] = case_obj["_id"]
+            filters["samples"] = {
+                "$elemMatch": {
+                    "sample_id": {"$in": affected_ids},
+                    "genotype_call": {"$regex": "1"},
+                }
+            }
+        else:
+            filters["institute"] = institute_obj["_id"]
+        if limit_genes:
+            filters["genes.hgnc_id"] = {"$in": limit_genes}
+
+        LOG.debug("Attempting filtered matching causatives query: %s", filters)
+        return self.variant_collection.find(filters)
+
     def check_causatives(self, case_obj=None, institute_obj=None, limit_genes=None):
         """Check if there are any variants that are previously marked causative
 
@@ -423,32 +550,7 @@ class VariantHandler(VariantLoader):
             if other_causative_id in other_case.get("causatives", []):
                 positional_variant_ids.add(var_event["variant_id"])
 
-        # affected is phenotype == 2; assume
-        affected_ids = []
-        if case_obj:
-            for subject in case_obj.get("individuals"):
-                if subject.get("phenotype") == 2:
-                    affected_ids.append(subject.get("individual_id"))
-            if len(affected_ids) == 0:
-                return []
-
-        if len(positional_variant_ids) == 0:
-            return []
-        filters = {"variant_id": {"$in": list(positional_variant_ids)}}
-        if case_obj:
-            filters["case_id"] = case_obj["_id"]
-            filters["samples"] = {
-                "$elemMatch": {
-                    "sample_id": {"$in": affected_ids},
-                    "genotype_call": {"$regex": "1"},
-                }
-            }
-        else:
-            filters["institute"] = institute_obj["_id"]
-        if limit_genes:
-            filters["genes.hgnc_id"] = {"$in": limit_genes}
-        LOG.debug("Attempting filtered matching causatives query: {}".format(filters))
-        return self.variant_collection.find(filters)
+        return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
 
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant marked causative in other cases.
