@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update dismissed variant status when variant dismissed key is missing
 - Breakpoint two IGV button now shows correct chromosome when different from bp1
 - Missing font lib in Docker image causing the PDF report download page to crash
+- Sentieon Manta calls lack Somaticscore - load anyway
 ### Changed
 - Make matching causative and managed variants foldable on case page
 - Remove calls to PyMongo functions marked as deprecated in backend and frontend(as of version 3.7).
