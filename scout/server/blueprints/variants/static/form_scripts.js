@@ -1,12 +1,23 @@
 function populateCytobands(cytobands){
+  var chromPosPattern = new RegExp("^([0-9]{1,2}|[X|T|MT]{1,2})");
   var chrom = document.forms["filters_form"].elements["chrom"].value;
-  if(chrom===""){
+  var chromPos = document.forms["filters_form"].elements["chrom_pos"].value;
+  var chromosome = "";
+  console.log("Populate cytobands")
+  if(chrom==="" && chromPos===""){
     startElem.value = "";
     endElem.value = "";
     return //only reset cytoband select element
+  // Set the selected chromosome name
+  } else if (chrom!=="" && chromPos!==""){
+    chromosome = chromPos.match(chromPosPattern)[0];
+  } else if (chrom==="" && chromPos!==""){
+    chromosome = chromPos.match(chromPosPattern)[0];
+  } else {
+    chromosome = chrom;
   }
-
-  var chrom_cytobands = cytobands[chrom]["cytobands"]; // chromosome-specific cytobands
+  
+  var chrom_cytobands = cytobands[chromosome]["cytobands"]; // chromosome-specific cytobands
 
   for (elem of [cytoStart, cytoEnd]) {
     if (elem.options.length > 0){
@@ -70,9 +81,9 @@ function validateForm(){
     // Validate Chromosome position form
     //Expected format: <chr number>:<start>-<end>[+-]?<padding>
     var chrom_pos = document.forms["filters_form"].elements["chrom_pos"].value
+    chromPosPattern = new RegExp("^([0-9]{1,2}|[X|T|MT]{1,2}):([0-9]+)-([0-9]+)([+-]{1}[0-9]+)?$");
     if(chrom_pos) {
-        pattern = new RegExp("^([0-9]{1,2}|[X|T|MT]{1,2}):([0-9]+)-([0-9]+)([+-]{1}[0-9]+)?$");
-        if (!pattern.test(chrom_pos)) {
+        if (!chromPosPattern.test(chrom_pos)) {
             alert("Invalid format of chromosome position, expected format <chr number>:<start>-<end>[+-]?<padding>");
             return false;
         }

@@ -164,6 +164,11 @@
       populateCytobands({{cytobands|safe}});
     });
 
+    var chromPosInpt = document.getElementById("chrom_pos");
+    chromPosInpt.addEventListener("change", function() {
+      populateCytobands({{cytobands|safe}});
+    })
+
     var cytoStart = document.getElementById("cytoband_start");
     initSearchConstraints(cytoStart, startElem)
 
