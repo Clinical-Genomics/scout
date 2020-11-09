@@ -994,10 +994,12 @@ def multiqc(institute_id, case_name):
     return send_from_directory(out_dir, filename)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/<individual>/rho_images/<image>", methods=['GET', 'POST'])
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/rho_images/<image>", methods=["GET", "POST"]
+)
 def host_rho_image(institute_id, case_name, individual, image):
     """Generate RHO image file paths"""
-    return host_image_aux(institute_id, case_name, individual, image, 'rho')
+    return host_image_aux(institute_id, case_name, individual, image, "rho")
 
 
 @cases_bp.route(
@@ -1005,11 +1007,12 @@ def host_rho_image(institute_id, case_name, individual, image):
 )
 def host_upd_image(institute_id, case_name, individual, image):
     """Generate UPD image file paths"""
-    return host_image_aux(institute_id, case_name, individual, image, 'upd')
+    return host_image_aux(institute_id, case_name, individual, image, "upd")
 
 
-
-@cases_bp.route("/<institute_id>/<case_name>/<individual>/ideograms/<image>", methods=['GET', 'POST'])
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/ideograms/<image>", methods=["GET", "POST"]
+)
 def host_chr_image(institute_id, case_name, individual, image):
     """Generate CHR image file paths. Points to servers 'public/static'"""
     public_folder = "/public/static/ideograms/"
@@ -1024,14 +1027,14 @@ def host_image_aux(institute_id, case_name, individual, image, key):
 
     # Find path
 
-    for ind in case_obj['individuals']:
-        if ind['individual_id'] == individual:
+    for ind in case_obj["individuals"]:
+        if ind["individual_id"] == individual:
             LOG.debug("ind host_image_aux: {}".format(ind))
             try:
                 # path contains both dir structure and a file prefix
-                path = ind['chromograph_images'][key]
+                path = ind["chromograph_images"][key]
                 abs_path = os.path.abspath(path)
-                img_path = abs_path + image.split("-")[-1] # get suffix
+                img_path = abs_path + image.split("-")[-1]  # get suffix
                 return send_file(img_path)
             except Exception as err:
                 LOG.debug("Error : {}".format(err))
@@ -1042,5 +1045,3 @@ def _generate_csv(header, lines):
     yield header + "\n"
     for line in lines:  # lines have already quoted fields
         yield line + "\n"
-
-
