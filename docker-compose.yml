@@ -18,6 +18,10 @@ services:
     image: clinicalgenomics/scout
     container_name: scout-cli
     command: scout --host mongodb setup demo
+    volumes:
+      - ./scout:/home/worker/app/scout
+      - ./scripts:/home/worker/app/scripts
+      - ./volumes/scout/data:/home/worker/data
     networks:
       - scout-net
     depends_on:
