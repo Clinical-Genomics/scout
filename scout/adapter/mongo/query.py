@@ -182,11 +182,9 @@ class QueryHandler(object):
 
             elif criterion == "chrom_pos" and query.get("chrom_pos"):  # filter by coordinates
                 pattern = re.compile(r"^([0-9a-z]+):(\d+)-(\d+)(?:([+-]{1})(\d+))?$", re.I)
-                chrom_pos = query.get("chrom_pos").replace(',', '')
+                chrom_pos = query.get("chrom_pos").replace(",", "")
                 if bool(re.match(pattern, chrom_pos)):
-                    chrom, start, end, sign, padding = re.search(
-                        pattern, chrom_pos
-                    ).groups()
+                    chrom, start, end, sign, padding = re.search(pattern, chrom_pos).groups()
                     if padding:  # increase or decrease search window
                         LOG.debug(f"Applying padding")
                         start, end, padding = map(int, [start, end, padding])
