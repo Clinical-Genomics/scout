@@ -994,6 +994,7 @@ def multiqc(institute_id, case_name):
     return send_from_directory(out_dir, filename)
 
 
+
 @cases_bp.route("/<institute_id>/<case_name>/<individual>/upd_regions_images/<image>", methods=['GET', 'POST'])
 def host_upd_regions_image(institute_id, case_name, individual, image):
     """Generate UPD REGIONS image file paths"""
@@ -1006,6 +1007,7 @@ def host_upd_regions_image(institute_id, case_name, individual, image):
 )
 def host_upd_sites_image(institute_id, case_name, individual, image):
     """Generate UPD image file paths"""
+
     LOG.debug("SITES")
     return host_image_aux(institute_id, case_name, individual, image, 'upd_sites')
 
@@ -1018,8 +1020,9 @@ def host_coverage_image(institute_id, case_name, individual, image):
     return host_image_aux(institute_id, case_name, individual, image, 'coverage')
 
 
-
-@cases_bp.route("/<institute_id>/<case_name>/<individual>/ideograms/<image>", methods=['GET', 'POST'])
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/ideograms/<image>", methods=["GET", "POST"]
+)
 def host_chr_image(institute_id, case_name, individual, image):
     """Generate CHR image file paths. Points to servers 'public/static'"""
     LOG.debug("CHR")
@@ -1033,16 +1036,14 @@ def host_image_aux(institute_id, case_name, individual, image, key):
     """Auxilary function for generate absolute file paths"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     # Find path
-
     for ind in case_obj['individuals']:
         if ind['individual_id'] == individual:
             # LOG.debug("ind host_image_aux: {}".format(ind))
             try:
                 # path contains both dir structure and a file prefix
-                path = ind['chromograph_images'][key]
+                path = ind["chromograph_images"][key]
                 abs_path = os.path.abspath(path)
                 img_path = abs_path + image.split("-")[-1] # get suffix
-                LOG.debug("RETURN: {}".format(img_path))
                 return send_file(img_path)
             except Exception as err:
                 LOG.debug("Error : {}".format(err))
@@ -1053,5 +1054,3 @@ def _generate_csv(header, lines):
     yield header + "\n"
     for line in lines:  # lines have already quoted fields
         yield line + "\n"
-
-
