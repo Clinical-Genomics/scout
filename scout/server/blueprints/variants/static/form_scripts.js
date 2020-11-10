@@ -81,16 +81,14 @@ function validateForm(){
     // Validate Chromosome position form
     //Expected format: <chr number>:<start>-<end>[+-]?<padding>
     var chrom_pos = document.forms["filters_form"].elements["chrom_pos"].value
-    chromPosPattern = new RegExp("^([0-9]{1,2}|[X|T|MT]{1,2}):([0-9]+)-([0-9]+)([+-]{1}[0-9]+)?$");
+    const chromPosPattern = new RegExp("^([0-9]{1,2}|[X|T|MT]{1,2}):([0-9]+)-([0-9]+)([+-]{1}[0-9]+)?$");
     if(chrom_pos) {
         if (!chromPosPattern.test(chrom_pos)) {
             alert("Invalid format of chromosome position, expected format <chr number>:<start>-<end>[+-]?<padding>");
             return false;
         }
         var _, chr, start, end, sign, padding;
-        [_, chr, start, end, padding] = pattern.exec(chrom_pos);
-        sign = padding[0];
-        padding = padding.slice(1, padding.length);
+        [_, chr, start, end, padding] = chromPosPattern.exec(chrom_pos);
         if (Number(start) < 0 || Number(end) < 0) {
             alert("Invalid coordinates, coordinates must be greater than zero");
             return false;
