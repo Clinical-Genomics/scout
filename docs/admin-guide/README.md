@@ -4,7 +4,7 @@ This includes instructions for bioinformaticians to install, manage and update a
 
 * [Admin Guide](./README.md)
   * [Deploy Scout in containers](./container-deploy.md)
-  * [Setups](./setup-scout.md)
+  * [Setup](./setup-scout.md)
   * [Loading](./loading.md)
   * [Load config](./load-config.md)
   * [Genes, transcripts and exons](./genes.md)
