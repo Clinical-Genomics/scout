@@ -115,6 +115,7 @@ function initSearchConstraints(selectorId, textId){
         }
         // populate textfield
         textId.value = selectorId.options[selectorId.selectedIndex].value
+        updateCoordinateFields(event.target)
     });
 }
 
@@ -145,4 +146,54 @@ function enableDismiss(){
   else{
     btnElem.disabled = true;
   }
+}
+
+
+// Update chromosome position
+function updateCoordinateFields(element) {
+  const chrom = document.forms["filters_form"].elements["chrom"];
+  const chromPos = document.forms["filters_form"].elements["chrom_pos"];
+  const cytoStart = document.forms["filters_form"].elements["cytoband_start"];
+  const cytoEnd = document.forms["filters_form"].elements["cytoband_end"];
+  const chromPosPattern = "^([0-9]{1,2}|[X|T|MT]{1,2})(?::([0-9]+)?(?:-([0-9]+)?)?)?";
+  // parse chromosome position info
+  let chrName, startPos, endPos;
+  try {
+    [_, chrName, startPos, endPos] = chromPos.value.match(chromPosPattern);
+    console.log(`Parsing ChrPos: ${chrName}, start: ${startPos}-${endPos}`)
+  } catch (err) {
+    console.log('ChrPos empty')
+  }
+  // update elements
+  if (element === chrom) {
+    // if alterations in chromosome input field triggered the event
+    chromPos.value = element.selectedOptions[0].value;
+  } else if (element === cytoStart) {
+    // If the cytoband changed
+    chromPos.value = updateChromPos(chrName, cytoStart.value, endPos);
+  } else if (element === cytoEnd) {
+    // If the cytoband changed
+    chromPos.value = updateChromPos(chrName, startPos, cytoEnd.value);
+  } else {
+    // update start, end input fields
+    chrom.querySelector(`[value="${chrName}"]`).toggleAttribute('selected');
+    if (startPos != null) {
+      document.forms["filters_form"].elements["start"].value = startPos;
+    }
+    if (endPos != null) {
+      document.forms["filters_form"].elements["end"].value = endPos;
+    }
+  }
+}
+
+
+// Update chromosome position field
+function updateChromPos(chrName="", start, end) {
+  let results = chrName == null ? "" : chrName;
+  if ([start, end].some(pos => pos !== null)){
+    start = start == null ? "" : start
+    end = end == null ? "" : end
+    results = `${results}:${start}-${end}`
+  }
+  return results
 }
