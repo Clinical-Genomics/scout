@@ -82,9 +82,9 @@
               </span>
             </li>
             <li class="list-group-item">
-              pLi Score(ExAC)
+              pLi Score(ExAC) - (compare to <a href={{ record.gnomad_link }} target="_blank">GnomAD here</a>)
               <span class="float-right">
-                <a target="_blank" href={{ record.exac_link }} target="_blank"> {{ pli_score }}</a>
+                <a target="_blank" href={{ record.exac_link }} target="_blank"> {{ pli_score|round(2) }}</a>
               </span>
             </li>
             <li class="list-group-item">
