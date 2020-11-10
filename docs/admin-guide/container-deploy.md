@@ -10,7 +10,7 @@ The container with the docker image contains only the app installation files and
 
 
 ## Example deploying Scout using Kubernetes
-Kubernetes is an open-source platform for managing managing containerized applications. This tutorial will show how to setup a virtual box containing a master and a work node on a local virtual machine using [minikube](https://github.com/kubernetes/minikube) and how to setup the necessary containers to run a MongoDB instance, a pod with the Scout command line and a pod with the Scout server.
+Kubernetes is an open-source platform for managing containerized applications. This tutorial will show how to setup a virtual box containing a master and a work node on a local virtual machine using [minikube](https://github.com/kubernetes/minikube) and how to setup the necessary containers to run a MongoDB instance, a pod with the Scout command line and a pod with the Scout server.
 
 ### Requirements
 1. Install hyperkit and minikube on your local machine (OS X 10.10.3 Yosemite or later):
