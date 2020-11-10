@@ -80,7 +80,7 @@ function validateForm(){
     }
     // Validate Chromosome position form
     //Expected format: <chr number>:<start>-<end>[+-]?<padding>
-    var chrom_pos = document.forms["filters_form"].elements["chrom_pos"].value
+    var chrom_pos = document.forms["filters_form"].elements["chrom_pos"].value.replaceAll(',', '')
     const chromPosPattern = new RegExp("^([0-9]{1,2}|[X|T|MT]{1,2}):([0-9]+)-([0-9]+)([+-]{1}[0-9]+)?$");
     if(chrom_pos) {
         if (!chromPosPattern.test(chrom_pos)) {
@@ -159,7 +159,7 @@ function updateCoordinateFields(element) {
   // parse chromosome position info
   let chrName, startPos, endPos;
   try {
-    [_, chrName, startPos, endPos] = chromPos.value.match(chromPosPattern);
+    [_, chrName, startPos, endPos] = chromPos.value.replaceAll(',', '').match(chromPosPattern);
     console.log(`Parsing ChrPos: ${chrName}, start: ${startPos}-${endPos}`)
   } catch (err) {
     console.log('ChrPos empty')
