@@ -1,5 +1,5 @@
 # Install Scout
-This guide will walk you through how to setup a working instance of scout.
+This guide will walk you through how to setup a working instance of scout by cloning the repository from github and installing it with the "pip install command". For instructions on how to deploy Scout command line and server using containers check the [Deploy Scout in containers](containers) page
 The instructions are divided into multiple sections.
 One section describes how to set up a demo version with some cases just to see how it could look like.
 
@@ -124,3 +124,4 @@ scout --demo serve
 [vagrant]: https://www.vagrantup.com/
 [mongodb]: https://docs.mongodb.com/manual/installation/
 [admin-guide]: admin-guide/README.md
+[containers]: admin-guide/container-deploy.md
