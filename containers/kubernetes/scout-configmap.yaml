@@ -7,5 +7,5 @@ data:
     MONGO_HOST="mongodb-service"
     MONGO_PORT= 27017
     MONGO_DBNAME= "scout-demo"
-#   MONGO_USERNAME= scout_user
-#   MONGO_PASSWORD= scout_password
+    MONGO_USERNAME= "scoutUser"
+    MONGO_PASSWORD= "scoutPassword"

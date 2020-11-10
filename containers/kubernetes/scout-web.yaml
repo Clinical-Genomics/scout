@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: scout-web
+  name: scout-web-deployment
   labels:
     app: scout-web
 spec:

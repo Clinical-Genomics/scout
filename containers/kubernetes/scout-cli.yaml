@@ -1,4 +1,4 @@
-# Deployment document for Scout web server
+# Scout pod for running cli commands
 apiVersion: v1
 kind: Pod
 metadata:
@@ -11,6 +11,7 @@ spec:
       volumeMounts:
       - name: config-vol
         mountPath: /config
+
   volumes:
   - name: config-vol
     configMap:
