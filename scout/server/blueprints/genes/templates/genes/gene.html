@@ -81,12 +81,14 @@
                 <a target="_blank" href={{ record.entrez_link }} target="_blank"> {{ entrez_id }}</a>
               </span>
             </li>
+            {% if pli_score %}
             <li class="list-group-item">
               pLi Score(ExAC) - (compare to <a href={{ record.gnomad_link }} target="_blank">GnomAD here</a>)
               <span class="float-right">
                 <a target="_blank" href={{ record.exac_link }} target="_blank"> {{ pli_score|round(2) }}</a>
               </span>
             </li>
+            {% endif %}
             <li class="list-group-item">
               Protein Paint
               <span class="float-right">
