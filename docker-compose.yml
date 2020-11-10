@@ -11,21 +11,35 @@ services:
       - '27017:27017'
     expose:
       - '27017'
+    networks:
+      - scout-net
 
   scout-cli:
     image: clinicalgenomics/scout
     container_name: scout-cli
-    links:
-      - mongodb
     command: scout --host mongodb setup demo
+    networks:
+      - scout-net
+    depends_on:
+      - mongodb
 
   scout-web:
     image: clinicalgenomics/scout
     container_name: scout-web
-    links:
-      - mongodb
     expose:
       - '5000'
     ports:
       - '5000:5000'
     command: scout --host mongodb --demo serve --host 0.0.0.0
+    networks:
+      - scout-net
+    depends_on:
+      - mongodb
+
+networks:
+  scout-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/24
