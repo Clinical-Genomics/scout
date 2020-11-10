@@ -15,16 +15,20 @@ spec:
       labels:
         app: scout-web
     spec:
+      volumes:
+      - name: config-vol
+        configMap:
+          name: scoutconfig
       containers:
-      - name: scout-web
+      - name: scout-web # serve scout pages using scout-web service
         image: clinicalgenomics/scout
+        volumeMounts:
+        - name: config-vol
+          mountPath: /config
         ports:
         - containerPort: 5000
-        env:
-        - name: flask-config
-          value: /Users/chiararasi/Documents/work/GITs/scout/container/k8s-configuration/scout-config.yaml
-        command: ["scout", "--host", "mongodb-service", "serve", "--host", "0.0.0.0"]
-
+        command: ["scout"]
+        args: ["--flask-config", "/config/config.py", "serve", "--host", "0.0.0.0"]
 ---
 # External service document
 apiVersion: v1

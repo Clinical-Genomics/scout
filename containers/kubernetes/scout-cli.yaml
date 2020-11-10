@@ -1,0 +1,17 @@
+# Deployment document for Scout web server
+apiVersion: v1
+kind: Pod
+metadata:
+  name: scout-cli
+spec:
+  containers:
+    - name: scout-cli
+      image: clinicalgenomics/scout
+      tty: true
+      volumeMounts:
+      - name: config-vol
+        mountPath: /config
+  volumes:
+  - name: config-vol
+    configMap:
+      name: scoutconfig
