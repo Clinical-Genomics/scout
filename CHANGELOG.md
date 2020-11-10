@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Institute-level phenotype models with sub-panels containing HPO and OMIM terms
 - Runnable Docker demo
 - Docker image build and push github action
+- SV variant filter compatible with genome browser location strings
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
 - Breakpoint two IGV button now shows correct chromosome when different from bp1
