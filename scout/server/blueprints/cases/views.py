@@ -994,12 +994,13 @@ def multiqc(institute_id, case_name):
     return send_from_directory(out_dir, filename)
 
 
-
-@cases_bp.route("/<institute_id>/<case_name>/<individual>/upd_regions_images/<image>", methods=['GET', 'POST'])
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/upd_regions_images/<image>", methods=["GET", "POST"]
+)
 def host_upd_regions_image(institute_id, case_name, individual, image):
     """Generate UPD REGIONS image file paths"""
     LOG.debug("REGIONS")
-    return host_image_aux(institute_id, case_name, individual, image, 'upd_regions')
+    return host_image_aux(institute_id, case_name, individual, image, "upd_regions")
 
 
 @cases_bp.route(
@@ -1009,7 +1010,8 @@ def host_upd_sites_image(institute_id, case_name, individual, image):
     """Generate UPD image file paths"""
 
     LOG.debug("SITES")
-    return host_image_aux(institute_id, case_name, individual, image, 'upd_sites')
+    return host_image_aux(institute_id, case_name, individual, image, "upd_sites")
+
 
 @cases_bp.route(
     "/<institute_id>/<case_name>/<individual>/coverage_images/<image>", methods=["GET", "POST"]
@@ -1017,7 +1019,7 @@ def host_upd_sites_image(institute_id, case_name, individual, image):
 def host_coverage_image(institute_id, case_name, individual, image):
     """Generate Coverage image file paths"""
     LOG.debug("COVERAGE")
-    return host_image_aux(institute_id, case_name, individual, image, 'coverage')
+    return host_image_aux(institute_id, case_name, individual, image, "coverage")
 
 
 @cases_bp.route(
@@ -1036,14 +1038,14 @@ def host_image_aux(institute_id, case_name, individual, image, key):
     """Auxilary function for generate absolute file paths"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     # Find path
-    for ind in case_obj['individuals']:
-        if ind['individual_id'] == individual:
+    for ind in case_obj["individuals"]:
+        if ind["individual_id"] == individual:
             # LOG.debug("ind host_image_aux: {}".format(ind))
             try:
                 # path contains both dir structure and a file prefix
                 path = ind["chromograph_images"][key]
                 abs_path = os.path.abspath(path)
-                img_path = abs_path + image.split("-")[-1] # get suffix
+                img_path = abs_path + image.split("-")[-1]  # get suffix
                 return send_file(img_path)
             except Exception as err:
                 LOG.debug("Error : {}".format(err))
