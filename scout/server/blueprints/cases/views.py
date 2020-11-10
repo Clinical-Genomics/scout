@@ -994,24 +994,35 @@ def multiqc(institute_id, case_name):
     return send_from_directory(out_dir, filename)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/<individual>/rho_images/<image>", methods=['GET', 'POST'])
-def host_rho_image(institute_id, case_name, individual, image):
-    """Generate RHO image file paths"""
-    return host_image_aux(institute_id, case_name, individual, image, 'rho')
+@cases_bp.route("/<institute_id>/<case_name>/<individual>/upd_regions_images/<image>", methods=['GET', 'POST'])
+def host_upd_regions_image(institute_id, case_name, individual, image):
+    """Generate UPD REGIONS image file paths"""
+    LOG.debug("REGIONS")
+    return host_image_aux(institute_id, case_name, individual, image, 'upd_regions')
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<individual>/upd_images/<image>", methods=["GET", "POST"]
+    "/<institute_id>/<case_name>/<individual>/upd_sites_images/<image>", methods=["GET", "POST"]
 )
-def host_upd_image(institute_id, case_name, individual, image):
+def host_upd_sites_image(institute_id, case_name, individual, image):
     """Generate UPD image file paths"""
-    return host_image_aux(institute_id, case_name, individual, image, 'upd')
+    LOG.debug("SITES")
+    return host_image_aux(institute_id, case_name, individual, image, 'upd_sites')
+
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/coverage_images/<image>", methods=["GET", "POST"]
+)
+def host_coverage_image(institute_id, case_name, individual, image):
+    """Generate Coverage image file paths"""
+    LOG.debug("COVERAGE")
+    return host_image_aux(institute_id, case_name, individual, image, 'coverage')
 
 
 
 @cases_bp.route("/<institute_id>/<case_name>/<individual>/ideograms/<image>", methods=['GET', 'POST'])
 def host_chr_image(institute_id, case_name, individual, image):
     """Generate CHR image file paths. Points to servers 'public/static'"""
+    LOG.debug("CHR")
     public_folder = "/public/static/ideograms/"
     img_path = public_folder + image
     LOG.debug("ideaogram: {}".format(img_path))
@@ -1021,17 +1032,17 @@ def host_chr_image(institute_id, case_name, individual, image):
 def host_image_aux(institute_id, case_name, individual, image, key):
     """Auxilary function for generate absolute file paths"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-
     # Find path
 
     for ind in case_obj['individuals']:
         if ind['individual_id'] == individual:
-            LOG.debug("ind host_image_aux: {}".format(ind))
+            # LOG.debug("ind host_image_aux: {}".format(ind))
             try:
                 # path contains both dir structure and a file prefix
                 path = ind['chromograph_images'][key]
                 abs_path = os.path.abspath(path)
                 img_path = abs_path + image.split("-")[-1] # get suffix
+                LOG.debug("RETURN: {}".format(img_path))
                 return send_file(img_path)
             except Exception as err:
                 LOG.debug("Error : {}".format(err))

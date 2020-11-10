@@ -62,42 +62,48 @@ function draw_tracks(individual, prefixes, institute, case_name){
     const CYT_WIDTH = 500 ;
     var svg_element = document.getElementById("svg_" + individual["individual_id"])
     console.log("DRAW TRACKS");
-    console.log(individual)
     console.log(individual.chromograph_images)
-    console.log(individual.chromograph_images.upd)
-    console.log("* * *");
-    console.log(prefixes)
 
-    if (individual.chromograph_images.rho){
+    if (individual.chromograph_images.upd_sites){
         console.log("printRHO ", );
-        var rho_imgPath = create_path(institute, case_name, individual, 'rho_images')
-        var rho_images = make_names("rho-");
+        var upd_sites_imgPath = create_path(institute, case_name, individual, 'upd_sites_images')
+        var upd_sites_images = make_names("upd_sites-");
     }
-    if (individual.chromograph_images.upd){
-        console.log("printUPD ", );
-        var upd_imgPath = create_path(institute, case_name, individual, 'upd_images')
-        var upd_images = make_names("upd-");
+    if (individual.chromograph_images.upd_regions){
+        console.log("print UPD_REGIONS ", );
+        var upd_regions_imgPath = create_path(institute, case_name, individual, 'upd_regions_images')
+        var upd_regions_images = make_names("upd_regions-");
     }
-    console.log(upd_imgPath)
-    console.log(upd_images)
+    if (individual.chromograph_images.coverage){
+        console.log("printCOVERAGE ", );
+        var coverage_imgPath = create_path(institute, case_name, individual, 'coverage_images')
+        var coverage_images = make_names("coverage-");
+    }
+    
+
     // ideograms always exist
     var ideo_imgPath = static_path_ideograms(institute, case_name, individual, 'ideaograms')
     var ideo_images = make_names(prefixes.chr)
 
-    console.log("ideogram")
-    console.log(ideo_imgPath)
-    console.log(ideo_images)
-    var rho_imgObj = new Image()
-    var upd_imgObj = new Image()
+    console.log("PATHS")
+    console.log("ideo: " + ideo_imgPath)
+    console.log("sites: " + upd_sites_imgPath)
+    console.log("regions: " + upd_regions_imgPath)
+    console.log("coverage" + coverage_imgPath)
+
+    
+    var upd_sites_imgObj = new Image()
+    var upd_regions_imgObj = new Image()
+    var coverage_imgObj = new Image()
 
     var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
     var chromspecs_list = get_chromosomes(individual.sex)
 
     for(i = 0; i< chromspecs_list.length; i++){
-        // rho_imgObj.src = rho_imgPath + rho_images[i]
-        // upd_imgObj.src = upd_imgPath + upd_images[i]
+        // upd_sites_imgObj.src = upd_sites_imgPath + upd_sites_images[i]
+        // upd_regions_imgObj.src = upd_regions_imgPath + upd_regions_images[i]
         x_pos = i % number_of_columns == 0? 0 : CYT_WIDTH * (i% number_of_columns) + OFFSET_X
-        y_pos =  Math.floor( i/number_of_columns ) * 100;
+        y_pos =  Math.floor( i/number_of_columns ) * 135;
 
         var g = document.createElementNS('http://www.w3.org/2000/svg','g');
         var ideo_image = make_svgimage(ideo_imgPath + ideo_images[i],
@@ -105,25 +111,32 @@ function draw_tracks(individual, prefixes, institute, case_name){
                                        y_pos,
                                        "25px", "500px", );
 
-        if(individual.chromograph_images.upd){
-            var upd_image = make_svgimage(upd_imgPath + upd_images[i],
+        if(individual.chromograph_images.upd_regions){
+            var upd_regions_image = make_svgimage(upd_regions_imgPath + upd_regions_images[i],
                                           x_pos,
-                                          y_pos + 30,
+                                          y_pos + 27,
                                           "25px", "500px", );
-            g.appendChild(upd_image);
+            g.appendChild(upd_regions_image);
         }
 
-        if(individual.chromograph_images.rho){
-            var rho_image = make_svgimage(rho_imgPath + rho_images[i],
-                                          x_pos + 17,  // compensate for image pixel start
+        if(individual.chromograph_images.upd_sites){
+            var upd_sites_image = make_svgimage(upd_sites_imgPath + upd_sites_images[i],
+                                          x_pos + 0,  // compensate for image pixel start
                                           y_pos + 55 , // place below UPD
                                           "25px", "500px", );
-            g.appendChild(rho_image);
+            g.appendChild(upd_sites_image);
         }
 
-        var t = chromosome_text(CHROMOSOMES[i], x_pos, y_pos+17);
-        console.log("ideogram____")
-        console.log(t)
+        if(individual.chromograph_images.coverage){
+            var coverage_image = make_svgimage(coverage_imgPath + coverage_images[i],
+                                          x_pos + 0,  // compensate for image pixel start
+                                          y_pos + 85 , // place below UPD
+                                          "25px", "500px", );
+            g.appendChild(coverage_image);
+        }
+
+        var t = chromosome_text(CHROMOSOMES[i], x_pos, y_pos);
+	console.log(t)
         var clipPath = make_clipPath(CHROMSPECS_LIST[i], x_pos, y_pos)
         ideo_image.setAttributeNS(null, 'clip-path', "url(#clip-chr"+CHROMSPECS_LIST[i].name +")")
 
@@ -184,10 +197,9 @@ function replace_escape_char(str, escape_char, substitution){
  *
  */
 function chromosome_text(text, x, y){
-    // var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    var t = document.createElementNS('http://www.w3.org/2000/svg', 'png');
-    t.setAttributeNS(null, 'x', x+5);
-    t.setAttributeNS(null, 'y', y);
+    var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    t.setAttributeNS(null, 'x', x-3);
+    t.setAttributeNS(null, 'y', y+10);
     t.appendChild( document.createTextNode(text) );
     return t;
 }
