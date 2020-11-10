@@ -74,6 +74,23 @@ def parse_transcripts(raw_transcripts, allele=None):
 
         transcript["swiss_prot"] = entry.get("SWISSPROT") or "unknown"
 
+        # SpliceAI scores, positions and associated symbol
+        spliceai_keys = [
+            "SpliceAI_pred_DS_AG",
+            "SpliceAI_pred_DS_AL",
+            "SpliceAI_pred_DS_DG",
+            "SpliceAI_pred_DS_DL",
+            "SpliceAI_pred_DP_AG",
+            "SpliceAI_pred_DP_AL",
+            "SpliceAI_pred_DP_DG",
+            "SpliceAI_pred_DP_DL",
+            "SpliceAI_pred_SYMBOL",
+        ]
+
+        for splieai_key in spliceai_keys:
+            if entry.get(spliceai_key):
+                transcript[spliceai_key] = entry.get(spliceai_key)
+
         # Check for conservation annotations
         transcript["gerp"] = entry.get("GERP++_RS")
         transcript["phast"] = entry.get("PHASTCONS100WAY_VERTEBRATE")
