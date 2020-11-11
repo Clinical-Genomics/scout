@@ -590,12 +590,18 @@ def phenotypes_genes(store, hpo_ids, build="37"):
     """Generate a dictionary consisting of phenotype term with associated genes from a list of HPO IDs
 
     Args:
+        store(adapter.MongoAdapter)
         hpo_ids(list): a list of HPO terms
         build(str): genome build
 
     Returns:
         phenotype_genes(dict): a dictionary with HPO term IDs as keys and HPO terms and genes as values
     """
+    # Make sure build is either "37" or "38"
+    if "38" in build:
+        build = "38"
+    else:
+        build = "37"
     phenotype_genes = {}
     for hpo_id in hpo_ids:
         hpo_term = store.hpo_term(hpo_id)
