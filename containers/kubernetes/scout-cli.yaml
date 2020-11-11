@@ -18,8 +18,8 @@ spec:
   - name: config-vol
     configMap:
       name: scoutconfig
-  - name: data-volume
-    hostPath:
+  #- name: data-volume
+  #  hostPath:
      # directory location on host
      #path: /path/to/NGS/data
      #type: Directory
