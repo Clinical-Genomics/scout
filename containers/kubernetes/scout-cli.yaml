@@ -11,8 +11,15 @@ spec:
       volumeMounts:
       - name: config-vol
         mountPath: /config
+      #- name: data-volume
+      #  mountPath: /data
 
   volumes:
   - name: config-vol
     configMap:
       name: scoutconfig
+  - name: data-volume
+    hostPath:
+     # directory location on host
+     #path: /path/to/NGS/data
+     #type: Directory
