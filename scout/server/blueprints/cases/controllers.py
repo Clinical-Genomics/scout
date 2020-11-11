@@ -598,7 +598,7 @@ def phenotypes_genes(store, hpo_ids, build="37"):
         phenotype_genes(dict): a dictionary with HPO term IDs as keys and HPO terms and genes as values
     """
     # Make sure build is either "37" or "38"
-    if "38" in build:
+    if "38" in str(build):
         build = "38"
     else:
         build = "37"
