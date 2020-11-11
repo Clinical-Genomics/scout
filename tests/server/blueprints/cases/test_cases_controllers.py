@@ -26,7 +26,9 @@ def test_phenotypes_genes(app):
     assert store.hpo_term_collection.insert_one(hpo_term)
 
     # WHEN the phenotypes_genes is invoked providing a list of HPO terms:
-    pheno_dict = phenotypes_genes(store, ["HP:0001250"], "37")
+    pheno_dict = phenotypes_genes(
+        store, ["HP:0001250"], "GRCh37"
+    )  # build will be converted to "37"
 
     # THEN it should return a dictionary
     # Containing the expected term
