@@ -9,8 +9,8 @@
 
 build:    ## Build new images
 	docker-compose build
-init:    ## Initialize scout database
-	echo "Setup scout demo database"
+init:    ## Initialize scout database and load demo data
+	echo "Setup a complete scout database with demo institute, panel and case"
 	docker-compose run scout-cli scout --host mongodb setup database --yes
 	docker-compose run scout-cli scout --host mongodb load panel scout/demo/panel_1.txt
 	docker-compose run scout-cli scout --host mongodb load case scout/demo/643594.config.yaml
