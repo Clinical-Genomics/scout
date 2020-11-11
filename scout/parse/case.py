@@ -476,7 +476,11 @@ def parse_case(config):
     individuals = parse_individuals(config["samples"])
     synopsis = None
     if config.get("synopsis"):
-        synopsis = ". ".join(config["synopsis"])
+        synopsis = (
+            ". ".join(config["synopsis"])
+            if isinstance(config["synopsis"], list)
+            else config["synopsis"]
+        )
 
     case_data = {
         "owner": config["owner"],

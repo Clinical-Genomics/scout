@@ -357,7 +357,7 @@ def cancer_case_obj(request, cancer_parsed_case):
 
 
 @pytest.fixture(scope="function")
-def case_obj(request, parsed_case, test_hpo_terms):
+def case_obj(request, parsed_case):
 
     case = parsed_case
     case["_id"] = parsed_case["case_id"]
@@ -392,7 +392,6 @@ def case_obj(request, parsed_case, test_hpo_terms):
     case["updated_at"] = parsed_case["analysis_date"]
     case["delivery_report"] = parsed_case["delivery_report"]
     case["assignees"] = []
-    case["phenotype_terms"] = test_hpo_terms
 
     return case
 
