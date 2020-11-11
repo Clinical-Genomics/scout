@@ -20,7 +20,6 @@ services:
     command: scout --host mongodb setup demo
     volumes:
       - ./scout:/home/worker/app/scout
-      - ./scripts:/home/worker/app/scripts
       - ./volumes/scout/data:/home/worker/data
     networks:
       - scout-net
@@ -35,6 +34,9 @@ services:
     ports:
       - '5000:5000'
     command: scout --host mongodb --demo serve --host 0.0.0.0
+    volumes:
+      - ./scout:/home/worker/app/scout
+      - ./volumes/scout/data:/home/worker/data
     networks:
       - scout-net
     depends_on:
