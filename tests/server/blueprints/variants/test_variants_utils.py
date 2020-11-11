@@ -8,8 +8,6 @@ def test_modal_causative(app, case_obj, institute_obj, variant_obj):
     # GIVEN an initialized app
     with app.test_client() as client:
 
-        # GIVEN a case with no associated HPO terms
-        case_obj.pop("phenotype_terms")
         # WHILE collection a specific jinja macro
         macro = get_template_attribute("variants/utils.html", "modal_causative")
         # and passing to it the required parameters

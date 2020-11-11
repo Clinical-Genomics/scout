@@ -59,11 +59,21 @@ class TestMockMatchMakerServer(object):
         session = requests.Session()
         adapter = populated_database
 
-        # Given a case with  HPO terms
-        assert case_obj.get("phenotype_terms")
+        # Add an HPO term to this scout case
+        assert case_obj.get("phenotype_terms") is None
+        phenotype_term = {
+            "phenotype_id": "HP:0011031",
+            "feature": "Abnormality of iron homeostasis",
+        }
+        updated_case = adapter.case_collection.find_one_and_update(
+            {"_id": case_obj["_id"]},
+            {"$set": {"phenotype_terms": [phenotype_term]}},
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
+        assert updated_case["phenotype_terms"][0] == phenotype_term
 
         # Check that features (HPO) terms are obtained by MME parser
-        features = hpo_terms(case_obj)
+        features = hpo_terms(updated_case)
         assert features
 
         # Add a couple of OMIM diagnoses to this case
