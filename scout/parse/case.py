@@ -88,7 +88,6 @@ def parse_case_data(
                            Scout
     """
     config_data = copy.deepcopy(config) or {}
-
     # Default the analysis date to now if not specified in load config
     config_data["analysis_date"] = get_correct_date(config_data.get("analysis_date"))
 
