@@ -916,13 +916,12 @@ def download_hpo_genes(institute_id, case_name):
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     # Create export object consisting of dynamic phenotypes with associated genes as a dictionary
-    dynamic_phenotypes = case_obj.get("dynamic_panel_phenotypes", [])
     phenotype_genes = controllers.phenotypes_genes(
-        store, dynamic_phenotypes, case_obj["genome_build"]
+        store, case_obj
     )
     html_content = ""
     for term_id, term in phenotype_genes.items():
-        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br>{', '.join(term.get('genes',[]))}<br>"
+        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br>{term.get('genes')}<br>"
     return render_pdf(
         HTML(string=html_content),
         download_filename=case_obj["display_name"]

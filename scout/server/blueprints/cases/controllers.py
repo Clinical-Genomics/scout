@@ -586,24 +586,26 @@ def update_cancer_samples(
     )
 
 
-def phenotypes_genes(store, hpo_ids, build="37"):
-    """Generate a dictionary consisting of phenotype term with associated genes from a list of HPO IDs
+def phenotypes_genes(store, case_obj):
+    """Generate a dictionary consisting of phenotype term with associated genes from the case HPO panel
 
     Args:
         store(adapter.MongoAdapter)
-        hpo_ids(list): a list of HPO terms
-        build(str): genome build
+        case_obj(dict): models.Case
 
     Returns:
         phenotype_genes(dict): a dictionary with HPO term IDs as keys and HPO terms and genes as values
     """
+    build = case_obj["genome_build"]
     # Make sure build is either "37" or "38"
     if "38" in str(build):
         build = "38"
     else:
         build = "37"
+    dynamic_gene_list = [ gene["hgnc_id"] for gene in case_obj.get("dynamic_gene_list", []) ]
+    dynamic_gene_symbols = []
     phenotype_genes = {}
-    for hpo_id in hpo_ids:
+    for hpo_id in case_obj.get("dynamic_panel_phenotypes", []):
         hpo_term = store.hpo_term(hpo_id)
         if hpo_term is None:
             flash(f"Could not find HPO term with ID '{hpo_id}' in database")
@@ -613,12 +615,16 @@ def phenotypes_genes(store, hpo_ids, build="37"):
         for gene_id in hpo_term.get("genes", []):
             gene_obj = store.hgnc_gene(gene_id, build)
             if gene_obj is None:
-                flash(f"Could not find gene with HGNC ID '{gene_id}' in database")
                 continue
+            if gene_id in dynamic_gene_list:
+                dynamic_gene_symbols.append(gene_obj.get("hgnc_symbol", gene_id))
             gene_list.append(gene_obj.get("hgnc_symbol", gene_id))
+        sorted_genes = sorted(gene_list)
+        # highlight genes in the dynamic HPO list by making them blue, while the rest will be printed in gray color
+        sorted_colored_genes = [ f'<text style="color:blue";>{gene}</text>' if gene in dynamic_gene_symbols else f'<text style="color:gray";>{gene}</text>' for gene in sorted_genes ]
         phenotype_genes[hpo_id] = {
             "description": hpo_term.get("description"),
-            "genes": sorted(gene_list),
+            "genes": ", ".join(sorted_colored_genes),
         }
     return phenotype_genes
 
