@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Institute-level phenotype models with sub-panels containing HPO and OMIM terms
 - Runnable Docker demo
 - Docker image build and push github action
+- Parse and save synopsis, phenotype and cohort terms from config files upon case upload
 - Tutorial and files for deploying app on containers (Kubernetes pods)
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
