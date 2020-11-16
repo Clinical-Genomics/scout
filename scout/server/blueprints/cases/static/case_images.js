@@ -102,8 +102,8 @@ function draw_tracks(individual, prefixes, institute, case_name){
     for(i = 0; i< chromspecs_list.length; i++){
         // upd_sites_imgObj.src = upd_sites_imgPath + upd_sites_images[i]
         // upd_regions_imgObj.src = upd_regions_imgPath + upd_regions_images[i]
-        x_pos = i % number_of_columns == 0? 0 : CYT_WIDTH * (i% number_of_columns) + OFFSET_X
-        y_pos =  Math.floor( i/number_of_columns ) * 135;
+        x_pos = i % number_of_columns == 0? 0 : CYT_WIDTH * (i% number_of_columns) + OFFSET_X + 5
+        y_pos =  Math.floor( i/number_of_columns ) * 140;
 
         var g = document.createElementNS('http://www.w3.org/2000/svg','g');
         var ideo_image = make_svgimage(ideo_imgPath + ideo_images[i],
@@ -111,29 +111,6 @@ function draw_tracks(individual, prefixes, institute, case_name){
                                        y_pos,
                                        "25px", "500px", );
 
-        if(individual.chromograph_images.upd_regions){
-            var upd_regions_image = make_svgimage(upd_regions_imgPath + upd_regions_images[i],
-                                          x_pos+5,
-                                          y_pos + 25,
-                                          "25px", "500px", );
-            g.appendChild(upd_regions_image);
-        }
-
-        if(individual.chromograph_images.upd_sites){
-            var upd_sites_image = make_svgimage(upd_sites_imgPath + upd_sites_images[i],
-                                          x_pos + 0+5,  // compensate for image pixel start
-                                          y_pos + 55 , // place below UPD
-                                          "25px", "500px", );
-            g.appendChild(upd_sites_image);
-        }
-
-        if(individual.chromograph_images.coverage){
-            var coverage_image = make_svgimage(coverage_imgPath + coverage_images[i],
-                                          x_pos + 0+5,  // compensate for image pixel start
-                                          y_pos + 85 , // place below UPD
-                                          "25px", "500px", );
-            g.appendChild(coverage_image);
-        }
 
         var t = chromosome_text(CHROMOSOMES[i], x_pos, y_pos);
 	console.log(t)
@@ -143,7 +120,31 @@ function draw_tracks(individual, prefixes, institute, case_name){
         g.appendChild(ideo_image);
         g.appendChild(clipPath);
         g.appendChild(t);
-        svg_element.append(g)
+
+	if(individual.chromograph_images.upd_regions){
+            var upd_regions_image = make_svgimage(upd_regions_imgPath + upd_regions_images[i],
+                                          x_pos+5,
+                                          y_pos + 30,
+                                          "25px", "500px", );
+            g.appendChild(upd_regions_image);
+        }
+
+        if(individual.chromograph_images.upd_sites){
+            var upd_sites_image = make_svgimage(upd_sites_imgPath + upd_sites_images[i],
+                                          x_pos + 0+5,  // compensate for image pixel start
+                                          y_pos + 60 , // place below UPD
+                                          "25px", "500px", );
+            g.appendChild(upd_sites_image);
+        }
+
+        if(individual.chromograph_images.coverage){
+            var coverage_image = make_svgimage(coverage_imgPath + coverage_images[i],
+                                          x_pos + 0+5,  // compensate for image pixel start
+                                          y_pos + 90 , // place below UPD
+                                          "25px", "500px", );
+            g.appendChild(coverage_image);
+        }
+       svg_element.append(g)
     }
 }
 
@@ -223,6 +224,7 @@ function get_chromosomes(sex){
  */
 function make_clipPath(chrom, x_offset, y_offset){
     const c = 10
+    x_offset += 5   // make space for text labels
     var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     var clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
     clipPath.setAttributeNS(null, 'id', "clip-chr"+chrom.name)
