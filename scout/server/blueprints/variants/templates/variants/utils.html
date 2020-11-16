@@ -256,25 +256,12 @@
       {{ wtf.form_field(form.cytoband_end) }}
     </div>
   </div>
-  <div class="form-group">
-    <div class="row">
-      <div class="col-1">
-      </div>
-      <div class="col-1">
-      </div>
-      <div class="col-1">
-      </div>
-      <div class="col-5">
-        {{ wtf.form_field(form.chrom_pos) }}
-      </div>
-      <div class="col-2">
-      </div>
-      <div class="col-2">
-      </div>
-      <div class="col-2">
-      </div>
+  <div class="row justify-content-center">
+    <div class="col-5">
+      {{ wtf.form_field(form.chrom_pos) }}
     </div>
   </div>
+</div>
 </div>
 <div class="form-group">
   <div class="row justify-content-between" style="margin-top:20px;">
@@ -391,23 +378,9 @@
       {{ wtf.form_field(form.cytoband_end) }}
     </div>
   </div>
-</div>
-<div class="form-group">
-  <div class="row">
-    <div class="col-1">
-    </div>
-    <div class="col-1">
-    </div>
-    <div class="col-1">
-    </div>
+  <div class="row justify-content-center">
     <div class="col-5">
       {{ wtf.form_field(form.chrom_pos) }}
-    </div>
-    <div class="col-2">
-    </div>
-    <div class="col-2">
-    </div>
-    <div class="col-2">
     </div>
   </div>
 </div>
@@ -525,6 +498,11 @@
           {{ wtf.form_field(form.cytoband_end) }}
         </div>
         <div class="col-md-1 col-lg-1 col-xl-5" id="empty_space"></div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-5">
+          {{ wtf.form_field(form.chrom_pos) }}
+        </div>
       </div>
     </div>
 
