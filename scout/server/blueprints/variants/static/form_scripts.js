@@ -121,7 +121,6 @@ function initSearchConstraints(selectorId, textId){
         }
         // populate textfield
         textId.value = selectorId.options[selectorId.selectedIndex].value
-        updateCoordinateFields(event.target)
     });
 }
 
@@ -155,12 +154,12 @@ function enableDismiss(){
 }
 
 
-// Update chromosome position
+// Link chromosome position input field with chromosome and cytoband dropdowns.
+// Changes to chrom and cytoband dropdowns are reflected in chrom_pos input
+// Changes in chrom_pos input are reflected in chrom, start and end fields
 function updateCoordinateFields(element) {
   const chrom = document.forms["filters_form"].elements["chrom"];
   const chromPos = document.forms["filters_form"].elements["chrom_pos"];
-  const cytoStart = document.forms["filters_form"].elements["cytoband_start"];
-  const cytoEnd = document.forms["filters_form"].elements["cytoband_end"];
   const chromPosPattern = "(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)(?::([0-9]+)?(?:-([0-9]+)?)?)?$";
   // parse chromosome position info
   let chrName, startPos, endPos;
@@ -176,12 +175,6 @@ function updateCoordinateFields(element) {
     chromPos.value = element.selectedOptions[0].value;
   } else if (element === chromPos && chrName == null) {
     console.log('regex not matching')
-  } else if (element === cytoStart) {
-    // If the cytoband changed
-    chromPos.value = updateChromPos(chrName, cytoStart.value, endPos);
-  } else if (element === cytoEnd) {
-    // If the cytoband changed
-    chromPos.value = updateChromPos(chrName, startPos, cytoEnd.value);
   } else {
     // update start, end input fields
     chrom.querySelector(`[value="${chrName}"]`).toggleAttribute('selected');
@@ -192,16 +185,4 @@ function updateCoordinateFields(element) {
       document.forms["filters_form"].elements["end"].value = endPos;
     }
   }
-}
-
-
-// Update chromosome position field
-function updateChromPos(chrName="", start, end) {
-  let results = chrName == null ? "" : chrName;
-  if ([start, end].some(pos => pos !== null)){
-    start = start == null ? "" : start
-    end = end == null ? "" : end
-    results = `${results}:${start}-${end}`
-  }
-  return results
 }
