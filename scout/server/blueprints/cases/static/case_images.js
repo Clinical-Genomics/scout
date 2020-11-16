@@ -107,21 +107,21 @@ function draw_tracks(individual, prefixes, institute, case_name){
 
         var g = document.createElementNS('http://www.w3.org/2000/svg','g');
         var ideo_image = make_svgimage(ideo_imgPath + ideo_images[i],
-                                       x_pos,
+                                       x_pos+5,
                                        y_pos,
                                        "25px", "500px", );
 
         if(individual.chromograph_images.upd_regions){
             var upd_regions_image = make_svgimage(upd_regions_imgPath + upd_regions_images[i],
-                                          x_pos,
-                                          y_pos + 27,
+                                          x_pos+5,
+                                          y_pos + 25,
                                           "25px", "500px", );
             g.appendChild(upd_regions_image);
         }
 
         if(individual.chromograph_images.upd_sites){
             var upd_sites_image = make_svgimage(upd_sites_imgPath + upd_sites_images[i],
-                                          x_pos + 0,  // compensate for image pixel start
+                                          x_pos + 0+5,  // compensate for image pixel start
                                           y_pos + 55 , // place below UPD
                                           "25px", "500px", );
             g.appendChild(upd_sites_image);
@@ -129,7 +129,7 @@ function draw_tracks(individual, prefixes, institute, case_name){
 
         if(individual.chromograph_images.coverage){
             var coverage_image = make_svgimage(coverage_imgPath + coverage_images[i],
-                                          x_pos + 0,  // compensate for image pixel start
+                                          x_pos + 0+5,  // compensate for image pixel start
                                           y_pos + 85 , // place below UPD
                                           "25px", "500px", );
             g.appendChild(coverage_image);
@@ -198,7 +198,7 @@ function replace_escape_char(str, escape_char, substitution){
  */
 function chromosome_text(text, x, y){
     var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    t.setAttributeNS(null, 'x', x-3);
+    t.setAttributeNS(null, 'x', x);
     t.setAttributeNS(null, 'y', y+10);
     t.appendChild( document.createTextNode(text) );
     return t;
