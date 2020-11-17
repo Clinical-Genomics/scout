@@ -19,7 +19,7 @@ function populateCytobands(cytobands){
   } else {
     chromosome = chrom;
   }
-  
+
   var chrom_cytobands = cytobands[chromosome]["cytobands"]; // chromosome-specific cytobands
 
   for (elem of [cytoStart, cytoEnd]) {
@@ -63,7 +63,7 @@ function populateCytobands(cytobands){
 // ValidateForm()
 // Controll user input fields (start, end) in varaint filter.
 // Verify the format of Chromosome position
-// 
+//
 function validateForm(){
   var start = document.forms["filters_form"].elements["start"].value
   var end = document.forms["filters_form"].elements["end"].value
@@ -84,7 +84,7 @@ function validateForm(){
   // Validate Chromosome position form
   //Expected format: <chr number>:<start>-<end>[+-]?<padding>
   var chrom_pos = document.forms["filters_form"].elements["chrom_pos"].value.replaceAll(',', '')
-  const chrPosPattern = "^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)(?::([0-9]+)-([0-9]+)([+-]{1}[0-9]+)?)$";
+  const chrPosPattern = "^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)(?::([0-9]+)-([0-9]+)([+-]{1}[0-9]+)?)?$";
   if(chrom_pos) {
     if (!RegExp(chrPosPattern).test(chrom_pos)) {
       alert("Invalid format of chromosome position, expected format <chr number>:<start>-<end>[+-]?<padding>");
@@ -160,12 +160,12 @@ function enableDismiss(){
 function updateCoordinateFields(element) {
   const chrom = document.forms["filters_form"].elements["chrom"];
   const chromPos = document.forms["filters_form"].elements["chrom_pos"];
-  const chromPosPattern = "(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)(?::([0-9]+)?(?:-([0-9]+)?)?)?$";
+  const chromPosPattern = "^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)(?::([0-9]+)-([0-9]+)([+-]{1})?([0-9]+)?)?$";
   // parse chromosome position info
-  let chrName, startPos, endPos;
+  let chrName, startPos, endPos, sign, padding;
   try {
-    [_, chrName, startPos, endPos] = chromPos.value.replaceAll(',', '').match(chromPosPattern);
-    console.log(`Parsing ChrPos: ${chrName}, start: ${startPos}-${endPos}`)
+    [_, chrName, startPos, endPos, sign, padding] = chromPos.value.replaceAll(',', '').match(chromPosPattern);
+    console.log(`Parsing ChrPos: ${chrName}, coord: ${startPos}-${endPos}, padding: ${sign}${padding}`)
   } catch (err) {
     console.log('ChrPos empty')
   }
@@ -174,15 +174,25 @@ function updateCoordinateFields(element) {
     // if alterations in chromosome input field triggered the event
     chromPos.value = element.selectedOptions[0].value;
   } else if (element === chromPos && chrName == null) {
-    console.log('regex not matching')
+    console.log(`ChrPos regexp not matching ${chromPos.value}`)
+		chrom.querySelector(`[value=""]`).selected = true;
   } else {
-    // update start, end input fields
-    chrom.querySelector(`[value="${chrName}"]`).toggleAttribute('selected');
-    if (startPos != null) {
-      document.forms["filters_form"].elements["start"].value = startPos;
-    }
-    if (endPos != null) {
-      document.forms["filters_form"].elements["end"].value = endPos;
-    }
-  }
+		console.log(chrName)
+		chrom.querySelector(`[value="${chrName}"]`).selected = true;
+		// set default padding and sign
+		padding = padding != null ? padding : 0
+		sign = sign != null ? sign : '+'
+		// Update start and end input fields
+		if (startPos != null) {
+			// invert sign expand before starting position
+			let newStartPos = eval(`${startPos} ${sign == '+' ? '-' : '+' } ${padding}`);
+			newStartPos = newStartPos < 0 ? 0 : newStartPos
+			document.forms["filters_form"].elements["start"].value = newStartPos;
+		}
+		if (endPos != null) {
+			let newEndPos = eval(`${endPos} ${sign} ${padding}`);
+			newEndPos = newEndPos < 0 ? 0 : newEndPos
+			document.forms["filters_form"].elements["end"].value = newEndPos;
+		}
+	}
 }
