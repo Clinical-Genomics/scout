@@ -7,6 +7,7 @@ from bson.json_util import dumps
 from xlsxwriter import Workbook
 
 from scout.export.variant import export_variants, export_verified_variants
+from scout.adapter.mongo import MongoAdapter
 from .utils import json_option
 from scout.constants import CALLERS
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
@@ -112,11 +113,17 @@ def verified(collaborator, test, outpath=None):
 @click.option("--case-id", help="Find causative variants for case")
 @json_option
 @with_appcontext
-def variants(collaborator, document_id, case_id, json):
+def variants(collaborator: str, document_id: str, case_id: str, json: bool):
     """Export causatives for a collaborator in .vcf format"""
     LOG.info("Running scout export variants")
-    adapter = store
+    adapter: MongoAdapter = store
     collaborator = collaborator or "cust000"
+    LOG.info("Use collaborator %s", collaborator)
+    if case_id:
+        case_obj = adapter.case(case_id)
+        if not case_obj:
+            LOG.info("Case %s does not exist", case_id)
+            raise click.Abort
 
     variants = export_variants(adapter, collaborator, document_id=document_id, case_id=case_id)
 
