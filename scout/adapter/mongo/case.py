@@ -550,7 +550,6 @@ class CaseHandler(object):
         institute_obj = self.institute(config_data["owner"])
         if not institute_obj:
             raise IntegrityError("Institute '%s' does not exist in database" % config_data["owner"])
-
         # Parse the case information
         parsed_case = parse_case(config=config_data)
         # Build the case object
@@ -576,6 +575,7 @@ class CaseHandler(object):
         if existing_case and not update:
             raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
 
+
         old_evaluated_variants = (
             None  # acmg, manual rank, cancer tier, dismissed, mosaic, commented
         )
@@ -600,6 +600,7 @@ class CaseHandler(object):
         ]
 
         try:
+
             for vcf_file in files:
                 # Check if file exists
                 if not case_obj["vcf_files"].get(vcf_file["file_name"]):

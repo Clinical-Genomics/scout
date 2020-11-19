@@ -138,6 +138,7 @@ def build_case(case_data, adapter):
     sorted_inds = sorted(ind_objs, key=lambda ind: -ind["phenotype"])
     case_obj["individuals"] = sorted_inds
 
+
     now = datetime.now()
     case_obj["created_at"] = now
     case_obj["updated_at"] = now
@@ -220,23 +221,27 @@ def build_case(case_data, adapter):
 
     # phenotype information
     phenotypes = []
-    for phenotype in case_data.get("phenotype_terms", []):
-        phenotype_obj = adapter.hpo_term(phenotype)
-        if phenotype_obj is None:
-            LOG.warning(
-                f"Could not find term with ID '{phenotype}' in HPO collection, skipping phenotype term."
-            )
-            continue
-        phenotypes.append({"phenotype_id": phenotype, "feature": phenotype_obj.get("description")})
+    case_phenotype_terms = case_data.get("phenotype_terms")
+    if case_phenotype_terms:
+        for phenotype in case_phenotype_terms:
+            phenotype_obj = adapter.hpo_term(phenotype)
+            if phenotype_obj is None:
+                LOG.warning(
+                    f"Could not find term with ID '{phenotype}' in HPO collection, skipping phenotype term."
+                )
+                continue
+            phenotypes.append({"phenotype_id": phenotype, "feature": phenotype_obj.get("description")})
     if phenotypes:
         case_obj["phenotype_terms"] = phenotypes
 
     # phenotype groups
     phenotype_groups = []
-    for phenotype in case_data.get("phenotype_groups", []):
-        phenotype_obj = build_phenotype(phenotype, adapter)
-        if phenotype_obj:
-            phenotype_groups.append(phenotype_obj)
+    case_phenotype_groups = case_data.get("phenotype_groups")
+    if case_phenotype_groups:
+        for phenotype in case_phenotype_groups:
+            phenotype_obj = build_phenotype(phenotype, adapter)
+            if phenotype_obj:
+                phenotype_groups.append(phenotype_obj)
     if phenotype_groups:
         case_obj["phenotype_groups"] = phenotype_groups
 
