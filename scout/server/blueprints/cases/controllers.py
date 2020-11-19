@@ -587,7 +587,7 @@ def update_cancer_samples(
 
 
 def phenotypes_genes(store, case_obj):
-    """Generate a dictionary consisting of phenotype term with associated genes from the case HPO panel
+    """Generate a dictionary consisting of phenotype terms with associated genes from the case HPO panel
 
     Args:
         store(adapter.MongoAdapter)
@@ -639,6 +639,7 @@ def phenotypes_genes(store, case_obj):
             "genes": ", ".join(sorted(unique_genes)),
         }
     return hpo_genes
+
 
 def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
     """Return the list of HGNC symbols that match annotated HPO terms.
