@@ -613,7 +613,7 @@ def phenotypes_genes(store, case_obj):
         if hpo_term is None:
             LOG.warning(f"Could not find HPO term with ID '{hpo_id}' in database")
             continue
-        # Create a list with all gene symbols (or HGNC ID is symbol is missing) associated with the phenotype
+        # Create a list with all gene symbols (or HGNC ID if symbol is missing) associated with the phenotype
         gene_list = []
         for gene_id in hpo_term.get("genes", []):
             gene_obj = store.hgnc_gene(gene_id, build)
