@@ -219,17 +219,21 @@ def build_case(case_data, adapter):
             )
 
     # phenotype information
-    phenotypes = []
-    for phenotype in case_data.get("phenotype_terms", []):
-        phenotype_obj = adapter.hpo_term(phenotype)
-        if phenotype_obj is None:
-            LOG.warning(
-                f"Could not find term with ID '{phenotype}' in HPO collection, skipping phenotype term."
+    if case_data.get("phenotype_terms"):
+        phenotypes = []
+        for phenotype in case_data["phenotype_terms"]:
+            LOG.error(f"PHENOTYPE IN LOOP:{phenotype}")
+            phenotype_obj = adapter.hpo_term(phenotype)
+            if phenotype_obj is None:
+                LOG.warning(
+                    f"Could not find term with ID '{phenotype}' in HPO collection, skipping phenotype term."
+                )
+                continue
+            phenotypes.append(
+                {"phenotype_id": phenotype, "feature": phenotype_obj.get("description")}
             )
-            continue
-        phenotypes.append({"phenotype_id": phenotype, "feature": phenotype_obj.get("description")})
-    if phenotypes:
-        case_obj["phenotype_terms"] = phenotypes
+        if phenotypes:
+            case_obj["phenotype_terms"] = phenotypes
 
     # phenotype groups
     phenotype_groups = []
