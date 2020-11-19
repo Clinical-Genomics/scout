@@ -640,6 +640,7 @@ def phenotypes_genes(store, case_obj):
         }
     return hpo_genes
 
+
 def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
     """Return the list of HGNC symbols that match annotated HPO terms.
 
