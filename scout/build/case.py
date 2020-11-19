@@ -222,7 +222,6 @@ def build_case(case_data, adapter):
     if case_data.get("phenotype_terms"):
         phenotypes = []
         for phenotype in case_data["phenotype_terms"]:
-            LOG.error(f"PHENOTYPE IN LOOP:{phenotype}")
             phenotype_obj = adapter.hpo_term(phenotype)
             if phenotype_obj is None:
                 LOG.warning(
