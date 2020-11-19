@@ -235,13 +235,14 @@ def build_case(case_data, adapter):
             case_obj["phenotype_terms"] = phenotypes
 
     # phenotype groups
-    phenotype_groups = []
-    for phenotype in case_data.get("phenotype_groups", []):
-        phenotype_obj = build_phenotype(phenotype, adapter)
-        if phenotype_obj:
-            phenotype_groups.append(phenotype_obj)
-    if phenotype_groups:
-        case_obj["phenotype_groups"] = phenotype_groups
+    if case_data.get("phenotype_groups"):
+        phenotype_groups = []
+        for phenotype in case_data["phenotype_groups"]:
+            phenotype_obj = build_phenotype(phenotype, adapter)
+            if phenotype_obj:
+                phenotype_groups.append(phenotype_obj)
+        if phenotype_groups:
+            case_obj["phenotype_groups"] = phenotype_groups
 
     # Files
     case_obj["madeline_info"] = case_data.get("madeline_info")
