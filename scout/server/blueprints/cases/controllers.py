@@ -594,7 +594,7 @@ def phenotypes_genes(store, case_obj):
         case_obj(dict): models.Case
 
     Returns:
-        phenotype_genes(dict): a dictionary with HPO term IDs as keys and HPO terms and genes as values
+        hpo_genes(dict): a dictionary with HPO term IDs as keys and HPO terms and genes as values
     """
     build = case_obj["genome_build"]
     # Make sure build is either "37" or "38"
@@ -602,31 +602,43 @@ def phenotypes_genes(store, case_obj):
         build = "38"
     else:
         build = "37"
-    dynamic_gene_list = [ gene["hgnc_id"] for gene in case_obj.get("dynamic_gene_list", []) ]
-    dynamic_gene_symbols = []
-    phenotype_genes = {}
+    dynamic_gene_list = [gene["hgnc_id"] for gene in case_obj.get("dynamic_gene_list", [])]
+    by_phenotype = True  # display genes by phenotype
+    unique_genes = set()
+    hpo_genes = {}
+    # Loop over the dynamic phenotypes of a case
     for hpo_id in case_obj.get("dynamic_panel_phenotypes", []):
         hpo_term = store.hpo_term(hpo_id)
+        # Check that HPO term exists in database
         if hpo_term is None:
-            flash(f"Could not find HPO term with ID '{hpo_id}' in database")
+            LOG.warning(f"Could not find HPO term with ID '{hpo_id}' in database")
             continue
+        # Create a list with all gene symbols (or HGNC ID is symbol is missing) associated with the phenotype
         gene_list = []
-        # Create a list with all gene symbols (or IDs) associated with the phenotype
         for gene_id in hpo_term.get("genes", []):
             gene_obj = store.hgnc_gene(gene_id, build)
             if gene_obj is None:
                 continue
-            if gene_id in dynamic_gene_list:
-                dynamic_gene_symbols.append(gene_obj.get("hgnc_symbol", gene_id))
-            gene_list.append(gene_obj.get("hgnc_symbol", gene_id))
-        sorted_genes = sorted(gene_list)
-        # highlight genes in the dynamic HPO list by making them blue, while the rest will be printed in gray color
-        sorted_colored_genes = [ f'<text style="color:blue";>{gene}</text>' if gene in dynamic_gene_symbols else f'<text style="color:gray";>{gene}</text>' for gene in sorted_genes ]
-        phenotype_genes[hpo_id] = {
+            if gene_id not in dynamic_gene_list:
+                # gene was filtered out because min matching phenotypes > 1
+                by_phenotype = False  # do not display genes by phenotype
+                continue
+            add_symbol = gene_obj.get("hgnc_symbol", f"hgnc:{gene_id}")
+            gene_list.append(add_symbol)
+            unique_genes.add(add_symbol)
+
+        hpo_genes[hpo_id] = {
             "description": hpo_term.get("description"),
-            "genes": ", ".join(sorted_colored_genes),
+            "genes": ", ".join(sorted(gene_list)),
         }
-    return phenotype_genes
+
+    if by_phenotype is False:
+        hpo_genes = {}
+        hpo_genes["Analysed genes"] = {
+            "description": "HPO panel",
+            "genes": ", ".join(sorted(unique_genes)),
+        }
+    return hpo_genes
 
 
 def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
