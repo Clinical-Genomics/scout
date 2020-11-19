@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Institute-level phenotype models with sub-panels containing HPO and OMIM terms
 - Runnable Docker demo
 - Docker image build and push github action
+- Makefile with shortcuts to docker commands
 - Parse and save synopsis, phenotype and cohort terms from config files upon case upload
 - Support for custom public igv tracks stored on the cloud
 ### Fixed
