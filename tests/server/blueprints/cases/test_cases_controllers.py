@@ -27,7 +27,7 @@ def test_phenotypes_genes(app, case_obj):
     case_obj["dynamic_panel_phenotypes"] = ["HP:0001250"]
     case_obj["dynamic_gene_list"] = [{"hgnc_id": gene_id} for gene_id in gene_list]
 
-    # WHEN the phenotypes_genes is invoked providing a list of HPO terms:
+    # WHEN the phenotypes_genes is invoked providing test case
     pheno_dict = phenotypes_genes(store, case_obj)
 
     # THEN it should return a dictionary
