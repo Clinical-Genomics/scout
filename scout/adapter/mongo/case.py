@@ -325,17 +325,20 @@ class CaseHandler(object):
             order = self._populate_name_query(query, name_query, owner, collaborator)
 
         if within_days:
-            verbs = []
+            verbs = set()
 
             if has_causatives:
-                verbs.append("mark_causative")
+                verbs.add("mark_causative")
             if finished:
-                verbs.append("archive")
-                verbs.append("mark_causative")
+                verbs.add("archive")
+                verbs.add("mark_causative")
             if reruns:
-                verbs.append("rerun")
+                verbs.add("rerun")
             if research_requested:
-                verbs.append("open_research")
+                verbs.add("open_research")
+            if status and status == "solved":
+                verbs.add("mark_causative")
+            verbs = list(verbs)
 
             days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
             # Look up 'mark_causative' events added since specified number days ago
