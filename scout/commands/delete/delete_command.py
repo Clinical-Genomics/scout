@@ -25,11 +25,6 @@ LOG = logging.getLogger(__name__)
 )
 @click.option("-variants-threshold", type=click.INT, help="With more variants than")
 @click.option(
-    "--purge",
-    is_flag=True,
-    help="Remove all variants for a case except causatives, pinned and evaluated",
-)
-@click.option(
     "--dry-run",
     is_flag=True,
     default=True,
@@ -43,7 +38,6 @@ def variants(
     older_than,
     min_rank_threshold,
     variants_threshold,
-    purge,
     dry_run,
 ):
     """Delete variants for one or more cases"""
@@ -75,7 +69,14 @@ def variants(
             click.echo(
                 f'Skipping case {case["display_name"]} ({case["_id"]}) --> has less variants than {variants_threshold}'
             )
-            continue
+
+        # Get evaluated variants for the case
+        case_evaluated = store.evaluated_variants(case_id=case["_id"])
+        evaluated_not_dismissed = [
+            variant["_id"] for variant in case_evaluated if "dismiss_variant" not in variant
+        ]
+
+        click.echo(f"So far: --->{evaluated_not_dismissed}")
 
 
 @click.command("panel", short_help="Delete a gene panel")
