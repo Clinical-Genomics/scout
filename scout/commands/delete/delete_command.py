@@ -1,11 +1,57 @@
 import logging
 
 import click
+from datetime import datetime, timedelta
 from flask import url_for, current_app
 from flask.cli import with_appcontext
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
+
+
+@click.command("variants", short_help="Delete variants for one or more cases")
+@click.option("-d", "--display-name", help="Case display name")
+@click.option("-c", "--case-id", help="Case id")
+@click.option(
+    "-status",
+    type=click.Choice(["solved", "archived", "migrated", "active", "inactive", "prioritized"]),
+    multiple=True,
+    default=["solved", "archived", "migrated"],
+    help="Restrict to cases with specified status",
+)
+@click.option("-older-than", type=click.INT, default=0, help="Older than (months)")
+@click.option(
+    "-min_rank-threshold", type=click.INT, default=5, help="With rank threshold lower than"
+)
+@click.option("-variants-threshold", type=click.INT, default=5000, help="With more variants than")
+@click.option(
+    "--purge",
+    is_flag=True,
+    help="Remove all variants for a case except causatives, pinned and evaluated",
+)
+@with_appcontext
+def variants(
+    display_name, case_id, status, older_than, min_rank_threshold, variants_threshold, purge
+):
+    """Delete variants for one or more cases"""
+
+    case_query = {}
+    if display_name:
+        case_query["display_name"]
+    elif case_id:
+        case_query["_id"]
+    else:
+        if status:
+            case_query["status"] = {"$in": list(status)}
+        if older_than:
+            older_than_date = datetime.now() - timedelta(weeks=older_than * 4)  # 4 weeks in a month
+            case_query["analysis_date"] = {"$lt": older_than_date}
+
+    # Retrieve _id of all cases where case_query applies
+    results = store.cases(query=case_query).distinct("_id")
+
+    for result in results:
+        click.echo(result)
 
 
 @click.command("panel", short_help="Delete a gene panel")
@@ -176,3 +222,4 @@ delete.add_command(case)
 delete.add_command(user)
 delete.add_command(index)
 delete.add_command(exons)
+delete.add_command(variants)
