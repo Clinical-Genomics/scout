@@ -1,14 +1,22 @@
+# configs
 .configs
 .coveragerc
 .editorconfig
+
+# git
 .git
 .github
 .gitignore
 .pre-commit-config.yaml
+
+# python
 mkdocs.yml
 docs
 site
 tests
 scripts
+
+# Docker
 Dockerfile
 docker-compose.yml
+volumes

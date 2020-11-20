@@ -27,19 +27,19 @@ This README only gives a brief overview of Scout, for a more complete reference,
 
 ## Runnable demo image - does not require installing of software and database
 
-A simple demo instance of Scout requires the installation of Docker and can be launched using the command:
-`docker-compose run -d`
+A simple demo instance of Scout requires the installation of Docker and can be launched either by using the command:
+`docker-compose run -d` or `make up`.
+
+The repository includes a Makefile with common shortcuts to simplify setting up and working with Scout. To see a full list and description of these shortcuts run: `make help`.
 
 This demo is consisting of 3 containers:
 - a lightweight mongodb instance
 - scout-cli --> the Scout command line, connected to the database. Populates the database with demo data
 - scout-web --> the Scout web app, that serves the app on localhost, port 5000.
 
-Once the server is started you could open the app in the browser at the following address: http://localhost:5000/
+Once the server has started you and open the app in the web browser at the following address: http://localhost:5000/
 
-The command to stop the demo is the following:
-`docker-compose down`
-
+The command to stop the demo are either `docker-compose down` or `make down`.
 
 ## Installation
 
@@ -232,6 +232,21 @@ To run unit tests:
 
 ```bash
 pytest
+```
+
+## Docker tips and tricks
+
+Docker can simplify the development of Scout as it offers a portable configuration-free environment with all dependancies included. The default `docker-compose.yml` file is designed for demoing and not for development. You can extend the included compose file with your own custom configuration to make it more development friendly. For more information on how to extend docker-compse files see, [https://docs.docker.com/compose/extends/][docker docs]. The following are an example configuration.
+
+``` yaml
+services:
+  mongodb:
+    volumes:
+      - ./volumes/mongodb/data:/data/db  #  make db persistent by storing data on host file system
+  scout-web:
+    environment:
+	  FLASK_ENV: development  # set environment variables
+	command: scout --host mongodb serve --host 0.0.0.0  # not running on demo db
 ```
 
 ## Example of analysis config
