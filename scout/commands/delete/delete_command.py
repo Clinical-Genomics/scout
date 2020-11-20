@@ -23,17 +23,33 @@ LOG = logging.getLogger(__name__)
 @click.option(
     "-min_rank-threshold", type=click.INT, default=5, help="With rank threshold lower than"
 )
-@click.option("-variants-threshold", type=click.INT, default=5000, help="With more variants than")
+@click.option("-variants-threshold", type=click.INT, help="With more variants than")
 @click.option(
     "--purge",
     is_flag=True,
     help="Remove all variants for a case except causatives, pinned and evaluated",
 )
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=True,
+    help="Remove all variants for a case except causatives, pinned and evaluated",
+)
 @with_appcontext
 def variants(
-    display_name, case_id, status, older_than, min_rank_threshold, variants_threshold, purge
+    display_name,
+    case_id,
+    status,
+    older_than,
+    min_rank_threshold,
+    variants_threshold,
+    purge,
+    dry_run,
 ):
     """Delete variants for one or more cases"""
+
+    if dry_run:
+        click.echo("--------------- DRY RUN COMMAND ---------------")
 
     case_query = {}
     if display_name:
@@ -48,10 +64,18 @@ def variants(
             case_query["analysis_date"] = {"$lt": older_than_date}
 
     # Retrieve _id of all cases where case_query applies
-    results = store.cases(query=case_query).distinct("_id")
-
-    for result in results:
-        click.echo(result)
+    cases = store.cases(query=case_query)
+    for case in cases:
+        # Skip case if specified number of variants to keep is less than total number of case variants
+        if (
+            variants_threshold
+            and store.variant_collection.count_documents({"case_id": case["_id"]})
+            < variants_threshold
+        ):
+            click.echo(
+                f'Skipping case {case["display_name"]} ({case["_id"]}) --> has less variants than {variants_threshold}'
+            )
+            continue
 
 
 @click.command("panel", short_help="Delete a gene panel")
