@@ -2,13 +2,14 @@ import os
 import click
 import logging
 import datetime
+import json as json_lib
 from flask.cli import with_appcontext
-from bson.json_util import dumps
 from xlsxwriter import Workbook
 
 from scout.export.variant import export_variants, export_verified_variants
 from scout.adapter.mongo import MongoAdapter
 from .utils import json_option
+from .export_handler import my_handler
 from scout.constants import CALLERS
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.server.extensions import store
@@ -128,7 +129,7 @@ def variants(collaborator: str, document_id: str, case_id: str, json: bool):
     variants = export_variants(adapter, collaborator, document_id=document_id, case_id=case_id)
 
     if json:
-        click.echo(dumps([var for var in variants]))
+        click.echo(json_lib.dumps([var for var in variants], default=my_handler))
         return
 
     vcf_header = VCF_HEADER
