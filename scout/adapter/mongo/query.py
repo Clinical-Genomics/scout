@@ -50,7 +50,7 @@ class QueryHandler(object):
         variants_query = {}
         case_subquery = {"case_id": case_id}
 
-        # Create query to delete all variants that shouldn't be kept of with rank higher than min_rank_threshold
+        # Create query to delete all variants that shouldn't be kept or with rank higher than min_rank_threshold
         if variants_to_keep or min_rank_threshold:
             variants_query["$and"] = [case_subquery]
             if variants_to_keep:
