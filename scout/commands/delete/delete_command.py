@@ -27,7 +27,6 @@ LOG = logging.getLogger(__name__)
 @click.option(
     "--dry-run",
     is_flag=True,
-    default=True,
     help="Remove all variants for a case except causatives, pinned and evaluated",
 )
 @with_appcontext
@@ -41,9 +40,11 @@ def variants(
     dry_run,
 ):
     """Delete variants for one or more cases"""
-
+    total_deleted = 0
     if dry_run:
         click.echo("--------------- DRY RUN COMMAND ---------------")
+    else:
+        click.confirm('Variants are going to be deleted from database. Continue?', abort=True)
 
     case_query = {}
     if display_name:
@@ -57,26 +58,51 @@ def variants(
             older_than_date = datetime.now() - timedelta(weeks=older_than * 4)  # 4 weeks in a month
             case_query["analysis_date"] = {"$lt": older_than_date}
 
-    # Retrieve _id of all cases where case_query applies
+    # Get all cases where case_query applies
+    n_cases = store.case_collection.count_documents(case_query)
     cases = store.cases(query=case_query)
-    for case in cases:
-        # Skip case if specified number of variants to keep is less than total number of case variants
-        if (
-            variants_threshold
-            and store.variant_collection.count_documents({"case_id": case["_id"]})
-            < variants_threshold
-        ):
-            click.echo(
-                f'Skipping case {case["display_name"]} ({case["_id"]}) --> has less variants than {variants_threshold}'
-            )
-
-        # Get evaluated variants for the case
-        case_evaluated = store.evaluated_variants(case_id=case["_id"])
+    for nr, case in enumerate(cases, 1):
+        case_id = case["_id"]
+        case_n_variants = store.variant_collection.count_documents({"case_id": case_id})
+        # Skip case if user provided a number of variants to keep and this number is less than total number of case variants
+        if ( variants_threshold and case_n_variants < variants_threshold):
+            # click.echo(f'Skipping case {case["display_name"]} ({case["_id"]}) --> has less variants than {variants_threshold}')
+            continue
+        click.echo(f"#### {nr}/{n_cases} ###### {case['display_name']} ({case_id})")
+        # Get evaluated variants for the case that haven't been dismissed
+        case_evaluated = store.evaluated_variants(case_id=case_id)
         evaluated_not_dismissed = [
             variant["_id"] for variant in case_evaluated if "dismiss_variant" not in variant
         ]
+        # Do not remove variants that are either pinned, causative or evaluated not dismissed
+        variants_to_keep = case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed or []
+        variants_query = {}
+        case_subquery = {"case_id": case_id}
+        # Create query to delete all variants that shouldn't be kept of with rank higher than min_rank_threshold
+        if variants_to_keep or min_rank_threshold:
+            variants_query["$and"]=[case_subquery]
+            if variants_to_keep:
+                variants_query["$and"].append({"_id": {"$nin":variants_to_keep}})
+            if min_rank_threshold:
+                variants_query["$and"].append({"rank_score": {"$lt":min_rank_threshold}})
+        else:
+            variants_query = case_subquery
 
-        click.echo(f"So far: --->{evaluated_not_dismissed}")
+        if dry_run:
+            # Just print how many variants would be removed for this case
+            remove_n_variants = store.variant_collection.count_documents(variants_query)
+            click.echo(f"Remove {remove_n_variants} / {case_n_variants} total variants")
+            continue
+
+        # delete variants specified by variants_query
+        result = store.variant_collection.delete_many(variants_query)
+        click.echo(f"Deleted {result.deleted_count} / {case_n_variants} total variants")
+        total_deleted += result.deleted_count
+
+    click.echo(f"Total number of deleted variants: {total_deleted}")
+
+
+
 
 
 @click.command("panel", short_help="Delete a gene panel")
