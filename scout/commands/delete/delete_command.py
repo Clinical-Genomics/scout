@@ -47,13 +47,12 @@ def variants(
 
     case_query = {}
     if case_id:
-        case_query["_id"]
-    else:
-        if status:
-            case_query["status"] = {"$in": list(status)}
-        if older_than:
-            older_than_date = datetime.now() - timedelta(weeks=older_than * 4)  # 4 weeks in a month
-            case_query["analysis_date"] = {"$lt": older_than_date}
+        case_query["_id"] = case_id
+    if status:
+        case_query["status"] = {"$in": list(status)}
+    if older_than:
+        older_than_date = datetime.now() - timedelta(weeks=older_than * 4)  # 4 weeks in a month
+        case_query["analysis_date"] = {"$lt": older_than_date}
 
     # Estimate the average size of a variant document in database
     avg_var_size = store.collection_stats("variant").get("avgObjSize", 0)  # in bytes
