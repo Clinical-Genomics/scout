@@ -101,7 +101,7 @@ def variants(
         click.echo(f"Deleted {result.deleted_count} / {case_n_variants} total variants")
         total_deleted += result.deleted_count
 
-    items_name = "deleted variants" or "estimated deleted variants"
+    items_name = "deleted variants" or "estimated deleted variants" if dry_run
     click.echo(f"Total {items_name}: {total_deleted}")
     click.echo(f"Estimated space freed (GB): {total_deleted * avg_var_size/1073741824}")
 
