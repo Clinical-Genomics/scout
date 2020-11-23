@@ -27,7 +27,7 @@ LOG = logging.getLogger(__name__)
 @click.option(
     "--dry-run",
     is_flag=True,
-    help="Remove all variants for a case except causatives, pinned and evaluated",
+    help="Perform a simulation without removing any variant",
 )
 @with_appcontext
 def variants(
