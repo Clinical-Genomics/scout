@@ -68,6 +68,7 @@ def test_delete_variants(mock_app, case_obj):
     assert result.exit_code == 0
     assert "estimated deleted variants" not in result.output
     assert "Estimated space freed" in result.output
+    # and variants should be deleted
     assert sum(1 for i in store.variant_collection.find()) < n_initial_vars
 
 

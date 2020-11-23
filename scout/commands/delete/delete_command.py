@@ -106,7 +106,7 @@ def variants(
         items_name = "estimated deleted variants"
 
     click.echo(f"Total {items_name}: {total_deleted}")
-    click.echo(f"Estimated space freed (GB): {total_deleted * avg_var_size/1073741824}")
+    click.echo(f"Estimated space freed (GB): {(total_deleted * avg_var_size) / 1073741824}")
 
 
 @click.command("panel", short_help="Delete a gene panel")
