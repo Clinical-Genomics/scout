@@ -915,30 +915,17 @@ def download_hpo_genes(institute_id, case_name):
     """Download the genes contained in a case dynamic gene list"""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    dynamic_gene_objs = case_obj.get("dynamic_gene_list")
-    csv_header = ["HGNC symbol", "HGNC ID", "Description"]
-    csv_lines = [
-        ",".join(
-            [
-                str(gene_obj.get("hgnc_symbol")),
-                str(gene_obj.get("hgnc_id")),
-                '"' + gene_obj.get("description") + '"',
-            ]
-        )
-        for gene_obj in dynamic_gene_objs
-    ]
-
-    download_day = str(datetime.datetime.now().strftime("%Y-%m-%d"))
-    # prepare headers:
-    headers = Headers()
-
-    headers.add(
-        "Content-Disposition",
-        "attachment",
-        filename=f"HPO_gene_list.{institute_id}.{case_name}.{download_day}.csv",
-    )
-    return Response(
-        _generate_csv(",".join(csv_header), csv_lines), mimetype="text/csv", headers=headers
+    # Create export object consisting of dynamic phenotypes with associated genes as a dictionary
+    phenotype_terms_with_genes = controllers.phenotypes_genes(store, case_obj)
+    html_content = ""
+    for term_id, term in phenotype_terms_with_genes.items():
+        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br>{term.get('genes')}<br>"
+    return render_pdf(
+        HTML(string=html_content),
+        download_filename=case_obj["display_name"]
+        + "_"
+        + datetime.datetime.now().strftime("%Y-%m-%d")
+        + "_dynamic_phenotypes.pdf",
     )
 
 
@@ -998,10 +985,3 @@ def host_image_aux(institute_id, case_name, image, imgstr):
     img_path = abs_path + "/" + imgstr
     LOG.debug("Attempting to send {}/{}".format(img_path, image))
     return send_from_directory(img_path, image)
-
-
-def _generate_csv(header, lines):
-    """Download a text file composed of any header and lines"""
-    yield header + "\n"
-    for line in lines:  # lines have already quoted fields
-        yield line + "\n"
