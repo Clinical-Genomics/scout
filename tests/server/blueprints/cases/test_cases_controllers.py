@@ -9,21 +9,11 @@ from scout.server.blueprints.cases.controllers import (
     phenotypes_genes,
 )
 
-GENE_LIST = [26113, 9479, 10889, 18040, 10258]
 
-
-def test_phenotypes_genes(gene_database, case_obj):
+def test_phenotypes_genes(gene_database, case_obj, hpo_term, gene_list):
     """Test function that creates phenotype terms dictionaries with gene symbol info"""
-
     adapter = gene_database
     # Given a database with one phenotype term containing genes
-    gene_list = GENE_LIST
-    hpo_term = {
-        "_id": "HP:0001250",
-        "hpo_id": "HP:0001250",
-        "description": "Seizure",
-        "genes": gene_list,
-    }
     assert adapter.hpo_term_collection.insert_one(hpo_term)
 
     # And a case with that dynamic phenotype and gene list
@@ -42,27 +32,20 @@ def test_phenotypes_genes(gene_database, case_obj):
     assert len(pheno_dict["HP:0001250"]["genes"].split(", ")) == len(hpo_term["genes"])
 
 
-def test_phenotype_genes_matching_phenotypes(gene_database, case_obj):
+def test_phenotype_genes_matching_phenotypes(gene_database, case_obj, hpo_term, gene_list):
     """Test the function that creates the phenotype-genes terms dictionaries with genes matching more than 1 phenotype"""
 
     adapter = gene_database
     assert adapter.hgnc_collection.find_one()
     # Given a database with 2 phenotype term containing matching genes
-    gene_list = GENE_LIST
 
-    hpo_term1 = {
-        "_id": "HP:0001250",
-        "hpo_id": "HP:0001250",
-        "description": "Seizure",
-        "genes": gene_list,
-    }
     hpo_term2 = {
         "_id": "HP:0001298",
         "hpo_id": "HP:0001298",
         "description": "Encephalopathy",
         "genes": gene_list[2:],  # this term has last 3 genes overlapping with term 1
     }
-    assert adapter.hpo_term_collection.insert([hpo_term1, hpo_term2])
+    assert adapter.hpo_term_collection.insert([hpo_term, hpo_term2])
     # And a case with that dynamic phenotype and gene list
     case_obj["dynamic_panel_phenotypes"] = ["HP:0001250", "HP:0001298"]
     case_obj["dynamic_gene_list"] = [{"hgnc_id": gene_id} for gene_id in gene_list[2:]]
