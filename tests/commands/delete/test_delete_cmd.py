@@ -18,7 +18,6 @@ def test_delete_variants_dry_run(mock_app, case_obj):
     )
     assert result.exit_code == 0
     n_initial_vars = sum(1 for i in store.variant_collection.find())
-    n_variants_to_exclude = store.variant_collection.count_documents(VARIANTS_QUERY)
 
     # Then the function that delete variants in dry run should run without error
     cmd_params = [
