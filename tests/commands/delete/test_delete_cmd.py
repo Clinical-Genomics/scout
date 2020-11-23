@@ -6,6 +6,38 @@ from scout.commands import cli
 from scout.server.extensions import store
 
 
+def test_delete_dry_run(mock_app, case_obj):
+    """test command for cleaning variants collection - simulate deletion"""
+
+    # Given a database with SNV variants
+    runner = mock_app.test_cli_runner()
+    result = runner.invoke(
+        cli, ["load", "variants", case_obj["_id"], "--snv", "--rank-treshold", 10]
+    )
+    assert result.exit_code == 0
+    n_initial_vars = sum(1 for i in store.variant_collection.find()) == 0
+
+    # Then the function that delete variants in dry run should run without error
+    cmd_params = [
+        "delete",
+        "variants",
+        "-status",
+        "inactive",
+        "-older-than",
+        2,
+        "-min_rank-threshold",
+        15,
+        "--dry-run",
+    ]
+    result = runner.invoke(cli, cmd_params)
+    assert result.exit_code == 0
+    assert "estimated deleted variants" in result.output
+    assert "Estimated space freed" in result.output
+
+    # And no variants should be deleted
+    sum(1 for i in store.variant_collection.find()) == n_initial_vars
+
+
 def test_delete_panel_non_existing(empty_mock_app, dummypanel_obj):
     "Test the CLI command that deletes a gene panel"
     mock_app = empty_mock_app
