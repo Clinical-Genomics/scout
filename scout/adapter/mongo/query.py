@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import logging
 import re
 from scout.constants import (
@@ -13,6 +14,54 @@ from scout.constants import SPIDEX_HUMAN, CLINSIG_MAP
 
 
 class QueryHandler(object):
+    def build_case_query(self, case_id=None, status=None, older_than=None):
+        """Build case query based on case id, status and analysis date
+
+        Args:
+            case_id(str): id of a case
+            status(list): one or more case status
+            older_than(int): to select cases older than a number of months
+
+        Returns:
+            case_query(dict): query dictionary
+        """
+
+        case_query = {}
+        if case_id:
+            case_query["_id"] = case_id
+        if status:
+            case_query["status"] = {"$in": list(status)}
+        if older_than:
+            older_than_date = datetime.now() - timedelta(weeks=older_than * 4)  # 4 weeks in a month
+            case_query["analysis_date"] = {"$lt": older_than_date}
+        return case_query
+
+    def delete_variants_query(self, case_id, variants_to_keep=[], min_rank_threshold=None):
+        """Build a query to delete variants from a case
+
+        Args:
+            case_id(str): id of a case
+            variants_to_keep(list): a list of variant ids
+            min_rank_threshold(int): remove variants with rank lower than this number
+
+        Return:
+            variant_query(dict): query dictionary
+        """
+        variants_query = {}
+        case_subquery = {"case_id": case_id}
+
+        # Create query to delete all variants that shouldn't be kept of with rank higher than min_rank_threshold
+        if variants_to_keep or min_rank_threshold:
+            variants_query["$and"] = [case_subquery]
+            if variants_to_keep:
+                variants_query["$and"].append({"_id": {"$nin": variants_to_keep}})
+            if min_rank_threshold:
+                variants_query["$and"].append({"rank_score": {"$lt": min_rank_threshold}})
+        else:
+            variants_query = case_subquery
+
+        return variants_query
+
     def build_variant_query(
         self, query=None, institute_id=None, category="snv", variant_type=["clinical"]
     ):

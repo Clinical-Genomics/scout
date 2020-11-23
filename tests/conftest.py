@@ -1323,7 +1323,7 @@ def scout_config(request, config_file):
     """Return a dictionary with scout configs"""
     print("")
     in_handle = get_file_handle(config_file)
-    data = yaml.load(in_handle, Loader=yaml.FullLoader)
+    data = yaml.safe_load(in_handle)
     return data
 
 
@@ -1331,7 +1331,7 @@ def scout_config(request, config_file):
 def cancer_scout_config(request):
     """Return a dictionary with cancer case scout configs"""
     in_handle = get_file_handle(cancer_load_path)
-    data = yaml.load(in_handle, Loader=yaml.FullLoader)
+    data = yaml.safe_load(in_handle)
     return data
 
 

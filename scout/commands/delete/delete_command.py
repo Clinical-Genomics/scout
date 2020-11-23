@@ -1,7 +1,6 @@
 import logging
 
 import click
-from datetime import datetime, timedelta
 from flask import url_for, current_app
 from flask.cli import with_appcontext
 from scout.server.extensions import store
@@ -42,17 +41,11 @@ def variants(
     items_name = "deleted variants"
     if dry_run:
         click.echo("--------------- DRY RUN COMMAND ---------------")
+        items_name = "estimated deleted variants"
     else:
         click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
 
-    case_query = {}
-    if case_id:
-        case_query["_id"] = case_id
-    if status:
-        case_query["status"] = {"$in": list(status)}
-    if older_than:
-        older_than_date = datetime.now() - timedelta(weeks=older_than * 4)  # 4 weeks in a month
-        case_query["analysis_date"] = {"$lt": older_than_date}
+    case_query = store.build_case_query(case_id, status, older_than)
 
     # Estimate the average size of a variant document in database
     avg_var_size = store.collection_stats("variant").get("avgObjSize", 0)  # in bytes
@@ -77,17 +70,7 @@ def variants(
         variants_to_keep = (
             case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed or []
         )
-        variants_query = {}
-        case_subquery = {"case_id": case_id}
-        # Create query to delete all variants that shouldn't be kept of with rank higher than min_rank_threshold
-        if variants_to_keep or min_rank_threshold:
-            variants_query["$and"] = [case_subquery]
-            if variants_to_keep:
-                variants_query["$and"].append({"_id": {"$nin": variants_to_keep}})
-            if min_rank_threshold:
-                variants_query["$and"].append({"rank_score": {"$lt": min_rank_threshold}})
-        else:
-            variants_query = case_subquery
+        variants_query = store.delete_variants_query(case_id, variants_to_keep, min_rank_threshold)
 
         if dry_run:
             # Just print how many variants would be removed for this case
@@ -100,9 +83,6 @@ def variants(
         result = store.variant_collection.delete_many(variants_query)
         click.echo(f"Deleted {result.deleted_count} / {case_n_variants} total variants")
         total_deleted += result.deleted_count
-
-    if dry_run:
-        items_name = "estimated deleted variants"
 
     click.echo(f"Total {items_name}: {total_deleted}")
     click.echo(f"Estimated space freed (GB): {(total_deleted * avg_var_size) / 1073741824}")
