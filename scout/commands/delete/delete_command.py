@@ -44,7 +44,7 @@ def variants(
     if dry_run:
         click.echo("--------------- DRY RUN COMMAND ---------------")
     else:
-        click.confirm('Variants are going to be deleted from database. Continue?', abort=True)
+        click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
 
     case_query = {}
     if display_name:
@@ -65,7 +65,7 @@ def variants(
         case_id = case["_id"]
         case_n_variants = store.variant_collection.count_documents({"case_id": case_id})
         # Skip case if user provided a number of variants to keep and this number is less than total number of case variants
-        if ( variants_threshold and case_n_variants < variants_threshold):
+        if variants_threshold and case_n_variants < variants_threshold:
             # click.echo(f'Skipping case {case["display_name"]} ({case["_id"]}) --> has less variants than {variants_threshold}')
             continue
         click.echo(f"#### {nr}/{n_cases} ###### {case['display_name']} ({case_id})")
@@ -75,16 +75,18 @@ def variants(
             variant["_id"] for variant in case_evaluated if "dismiss_variant" not in variant
         ]
         # Do not remove variants that are either pinned, causative or evaluated not dismissed
-        variants_to_keep = case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed or []
+        variants_to_keep = (
+            case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed or []
+        )
         variants_query = {}
         case_subquery = {"case_id": case_id}
         # Create query to delete all variants that shouldn't be kept of with rank higher than min_rank_threshold
         if variants_to_keep or min_rank_threshold:
-            variants_query["$and"]=[case_subquery]
+            variants_query["$and"] = [case_subquery]
             if variants_to_keep:
-                variants_query["$and"].append({"_id": {"$nin":variants_to_keep}})
+                variants_query["$and"].append({"_id": {"$nin": variants_to_keep}})
             if min_rank_threshold:
-                variants_query["$and"].append({"rank_score": {"$lt":min_rank_threshold}})
+                variants_query["$and"].append({"rank_score": {"$lt": min_rank_threshold}})
         else:
             variants_query = case_subquery
 
@@ -100,9 +102,6 @@ def variants(
         total_deleted += result.deleted_count
 
     click.echo(f"Total number of deleted variants: {total_deleted}")
-
-
-
 
 
 @click.command("panel", short_help="Delete a gene panel")
