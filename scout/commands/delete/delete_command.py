@@ -54,6 +54,9 @@ def variants(
             older_than_date = datetime.now() - timedelta(weeks=older_than * 4)  # 4 weeks in a month
             case_query["analysis_date"] = {"$lt": older_than_date}
 
+    # Estimate the average size of a variant document in database
+    avg_var_size = store.collection_stats("variant")["avgObjSize"]  # in bytes
+
     # Get all cases where case_query applies
     n_cases = store.case_collection.count_documents(case_query)
     cases = store.cases(query=case_query)
@@ -89,6 +92,7 @@ def variants(
         if dry_run:
             # Just print how many variants would be removed for this case
             remove_n_variants = store.variant_collection.count_documents(variants_query)
+            total_deleted += remove_n_variants
             click.echo(f"Remove {remove_n_variants} / {case_n_variants} total variants")
             continue
 
@@ -97,7 +101,9 @@ def variants(
         click.echo(f"Deleted {result.deleted_count} / {case_n_variants} total variants")
         total_deleted += result.deleted_count
 
-    click.echo(f"Total number of deleted variants: {total_deleted}")
+    items_name = "deleted variants" or "estimated deleted variants"
+    click.echo(f"Total {items_name}: {total_deleted}")
+    click.echo(f"Estimated space freed (GB): {total_deleted * avg_var_size/1073741824}")
 
 
 @click.command("panel", short_help="Delete a gene panel")
