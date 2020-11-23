@@ -56,7 +56,7 @@ def variants(
             case_query["analysis_date"] = {"$lt": older_than_date}
 
     # Estimate the average size of a variant document in database
-    avg_var_size = store.collection_stats("variant")["avgObjSize"]  # in bytes
+    avg_var_size = store.collection_stats("variant").get("avgObjSize", 0)  # in bytes
 
     # Get all cases where case_query applies
     n_cases = store.case_collection.count_documents(case_query)
