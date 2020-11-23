@@ -10,7 +10,6 @@ LOG = logging.getLogger(__name__)
 
 
 @click.command("variants", short_help="Delete variants for one or more cases")
-@click.option("-d", "--display-name", help="Case display name")
 @click.option("-c", "--case-id", help="Case id")
 @click.option(
     "-status",
@@ -31,7 +30,6 @@ LOG = logging.getLogger(__name__)
 )
 @with_appcontext
 def variants(
-    display_name,
     case_id,
     status,
     older_than,
@@ -47,9 +45,7 @@ def variants(
         click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
 
     case_query = {}
-    if display_name:
-        case_query["display_name"]
-    elif case_id:
+    if case_id:
         case_query["_id"]
     else:
         if status:
