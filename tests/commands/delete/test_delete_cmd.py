@@ -5,6 +5,8 @@ from pymongo import IndexModel, ASCENDING
 from scout.commands import cli
 from scout.server.extensions import store
 
+VARIANTS_QUERY = {"rank_score": {"$lt": 15}}
+
 
 def test_delete_variants_dry_run(mock_app, case_obj):
     """test command for cleaning variants collection - simulate deletion"""
@@ -16,6 +18,7 @@ def test_delete_variants_dry_run(mock_app, case_obj):
     )
     assert result.exit_code == 0
     n_initial_vars = sum(1 for i in store.variant_collection.find())
+    n_variants_to_exclude = store.variant_collection.count_documents(VARIANTS_QUERY)
 
     # Then the function that delete variants in dry run should run without error
     cmd_params = [
@@ -50,6 +53,7 @@ def test_delete_variants(mock_app, case_obj):
     )
     assert result.exit_code == 0
     n_initial_vars = sum(1 for i in store.variant_collection.find())
+    n_variants_to_exclude = store.variant_collection.count_documents(VARIANTS_QUERY)
 
     # Then the function that delete variants should run without error
     cmd_params = [
@@ -69,7 +73,9 @@ def test_delete_variants(mock_app, case_obj):
     assert "estimated deleted variants" not in result.output
     assert "Estimated space freed" in result.output
     # and variants should be deleted
-    assert sum(1 for i in store.variant_collection.find()) < n_initial_vars
+    n_current_vars = sum(1 for i in store.variant_collection.find())
+    assert n_current_vars < n_initial_vars
+    assert n_current_vars + n_variants_to_exclude == n_initial_vars
 
 
 def test_delete_panel_non_existing(empty_mock_app, dummypanel_obj):
