@@ -9,13 +9,15 @@ from scout.server.blueprints.cases.controllers import (
     phenotypes_genes,
 )
 
+GENE_LIST = [26113, 9479, 10889, 18040, 10258]
+
 
 def test_phenotypes_genes(gene_database, case_obj):
     """Test function that creates phenotype terms dictionaries with gene symbol info"""
 
     adapter = gene_database
     # Given a database with one phenotype term containing genes
-    gene_list = [26113, 9479, 10889, 18040, 10258]
+    gene_list = GENE_LIST
     hpo_term = {
         "_id": "HP:0001250",
         "hpo_id": "HP:0001250",
@@ -46,7 +48,7 @@ def test_phenotype_genes_matching_phenotypes(gene_database, case_obj):
     adapter = gene_database
     assert adapter.hgnc_collection.find_one()
     # Given a database with 2 phenotype term containing matching genes
-    gene_list = [26113, 9479, 10889, 18040, 10258]
+    gene_list = GENE_LIST
 
     hpo_term1 = {
         "_id": "HP:0001250",
