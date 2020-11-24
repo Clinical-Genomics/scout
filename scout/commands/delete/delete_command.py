@@ -44,12 +44,13 @@ def variants(
         click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
 
     # Retrieve all cases and their number of variants
-    click.echo(f"Retrieving case with n. variants >= variants_threshold:{variants_threshold}")
+    click.echo(f"Retrieving cases with n. variants >= variants_threshold:{variants_threshold}")
     pipeline = store.case_n_variants_query(variants_threshold)
     cases_n_variants = store.variant_collection.aggregate(pipeline)
     case_ids_variants = {item["_id"]: item["count"] for item in cases_n_variants}
 
     case_query = store.build_case_query(case_id, status, older_than)
+    click.echo(f"Retrieving cases with query: {case_query}")
 
     # Estimate the average size of a variant document in database
     avg_var_size = store.collection_stats("variant").get("avgObjSize", 0)  # in bytes
