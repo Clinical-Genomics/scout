@@ -43,7 +43,12 @@ def variants(
     else:
         click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
 
-    case_query = store.build_case_query(case_id, status, older_than)
+    # Retrieve all cases and their number of variants
+    pipeline = store.case_n_variants(variants_threshold)
+    cases_n_variants = store.variant_collection.aggregate(pipeline)
+    case_ids_variants = {item["_id"]: item["count"] for item in cases_n_variants}
+
+    case_query = store.build_case_query(case_id, status, older_than, list(case_ids_variants.keys()))
 
     # Estimate the average size of a variant document in database
     avg_var_size = store.collection_stats("variant").get("avgObjSize", 0)  # in bytes
@@ -53,12 +58,9 @@ def variants(
     cases = store.cases(query=case_query)
     for nr, case in enumerate(cases, 1):
         case_id = case["_id"]
-        case_n_variants = store.variant_collection.count_documents({"case_id": case_id})
-        # Skip case if user provided a number of variants to keep and this number is less than total number of case variants
-        if variants_threshold and case_n_variants < variants_threshold:
-            # click.echo(f'Skipping case {case["display_name"]} ({case["_id"]}) --> has less variants than {variants_threshold}')
-            continue
-        click.echo(f"#### {nr}/{n_cases} ###### {case['display_name']} ({case_id})")
+        case_n_variants = case_ids_variants[case_id]
+
+        click.echo(f"#### Case n. {nr}/{n_cases} ###### {case['display_name']} ({case_id})")
         # Get evaluated variants for the case that haven't been dismissed
         case_evaluated = store.evaluated_variants(case_id=case_id)
         evaluated_not_dismissed = [

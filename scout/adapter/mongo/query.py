@@ -14,18 +14,32 @@ from scout.constants import SPIDEX_HUMAN, CLINSIG_MAP
 
 
 class QueryHandler(object):
-    def build_case_query(self, case_id=None, status=None, older_than=None):
+    def case_n_variants(self, variants_threshold=0):
+        """Builds an aggregate pipeline to return number of variants for each case id
+
+        Args:
+            variants_threshold(int): to select cases with n variants >= variants_threshold
+
+        Returns:
+            pipeline(list): A query aggregate pipeline.
+        """
+        group = {"$group": {"_id": "$case_id", "count": {"$sum": 1}}}
+        match = {"$match": {"count": {"$gte": variants_threshold}}}
+        pipeline = [group, match]
+        return pipeline
+
+    def build_case_query(self, case_id=None, status=None, older_than=None, case_ids=[]):
         """Build case query based on case id, status and analysis date
 
         Args:
             case_id(str): id of a case
             status(list): one or more case status
             older_than(int): to select cases older than a number of months
+            case_ids(list): a list of case _ids
 
         Returns:
             case_query(dict): query dictionary
         """
-
         case_query = {}
         if case_id:
             case_query["_id"] = case_id
@@ -34,6 +48,8 @@ class QueryHandler(object):
         if older_than:
             older_than_date = datetime.now() - timedelta(weeks=older_than * 4)  # 4 weeks in a month
             case_query["analysis_date"] = {"$lt": older_than_date}
+        if case_ids:
+            case_query["_id"] = {"$in": case_ids}
         return case_query
 
     def delete_variants_query(self, case_id, variants_to_keep=[], min_rank_threshold=None):
