@@ -19,7 +19,7 @@ LOG = logging.getLogger(__name__)
 )
 @click.option("-older-than", type=click.INT, default=0, help="Older than (months)")
 @click.option("-rank-threshold", type=click.INT, default=5, help="With rank threshold lower than")
-@click.option("-variants-threshold", type=click.INT, help="Cases with more variants than")
+@click.option("-variants-threshold", type=click.INT, help="With more variants than")
 @click.option(
     "--dry-run",
     is_flag=True,
@@ -43,14 +43,7 @@ def variants(
     else:
         click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
 
-    # Retrieve all cases and their number of variants
-    click.echo(f"Retrieving cases with n. variants >= variants_threshold:{variants_threshold}")
-    pipeline = store.case_n_variants_query(variants_threshold)
-    cases_n_variants = store.variant_collection.aggregate(pipeline)
-    case_ids_variants = {item["_id"]: item["count"] for item in cases_n_variants}
-
     case_query = store.build_case_query(case_id, status, older_than)
-    click.echo(f"Retrieving cases with query: {case_query}")
 
     # Estimate the average size of a variant document in database
     avg_var_size = store.collection_stats("variant").get("avgObjSize", 0)  # in bytes
@@ -60,10 +53,11 @@ def variants(
     cases = store.cases(query=case_query)
     for nr, case in enumerate(cases, 1):
         case_id = case["_id"]
-        if case_id not in case_ids_variants:
+        case_n_variants = store.variant_collection.count_documents({"case_id": case_id})
+        # Skip case if user provided a number of variants to keep and this number is less than total number of case variants
+        if variants_threshold and case_n_variants < variants_threshold:
+            # click.echo(f'Skipping case {case["display_name"]} ({case["_id"]}) --> has less variants than {variants_threshold}')
             continue
-        case_n_variants = case_ids_variants[case_id]
-
         click.echo(f"#### Case n. {nr}/{n_cases} ###### {case['display_name']} ({case_id})")
         # Get evaluated variants for the case that haven't been dismissed
         case_evaluated = store.evaluated_variants(case_id=case_id)

@@ -14,20 +14,6 @@ from scout.constants import SPIDEX_HUMAN, CLINSIG_MAP
 
 
 class QueryHandler(object):
-    def case_n_variants_query(self, variants_threshold=0):
-        """Builds an aggregate pipeline to return number of variants for each case id
-
-        Args:
-            variants_threshold(int): to select cases with n variants >= variants_threshold
-
-        Returns:
-            pipeline(list): A query aggregate pipeline.
-        """
-        group = {"$group": {"_id": "$case_id", "count": {"$sum": 1}}}
-        match = {"$match": {"count": {"$gte": variants_threshold}}}
-        pipeline = [group, match]
-        return pipeline
-
     def build_case_query(self, case_id=None, status=None, older_than=None):
         """Build case query based on case id, status and analysis date
 
