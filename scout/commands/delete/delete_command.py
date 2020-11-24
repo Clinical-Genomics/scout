@@ -18,10 +18,8 @@ LOG = logging.getLogger(__name__)
     help="Restrict to cases with specified status",
 )
 @click.option("-older-than", type=click.INT, default=0, help="Older than (months)")
-@click.option(
-    "-min_rank-threshold", type=click.INT, default=5, help="With rank threshold lower than"
-)
-@click.option("-variants-threshold", type=click.INT, help="With more variants than")
+@click.option("-rank-threshold", type=click.INT, default=5, help="With rank threshold lower than")
+@click.option("-variants-threshold", type=click.INT, help="Cases with more variants than")
 @click.option(
     "--dry-run",
     is_flag=True,
@@ -32,7 +30,7 @@ def variants(
     case_id,
     status,
     older_than,
-    min_rank_threshold,
+    rank_threshold,
     variants_threshold,
     dry_run,
 ):
@@ -70,7 +68,7 @@ def variants(
         variants_to_keep = (
             case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed or []
         )
-        variants_query = store.delete_variants_query(case_id, variants_to_keep, min_rank_threshold)
+        variants_query = store.delete_variants_query(case_id, variants_to_keep, rank_threshold)
 
         if dry_run:
             # Just print how many variants would be removed for this case
