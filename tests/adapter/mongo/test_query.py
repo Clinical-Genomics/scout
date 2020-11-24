@@ -3,6 +3,16 @@ import re
 from pymongo import ReturnDocument
 
 
+def test_case_n_variants_query(adapter):
+    """Test building the pipeline query to get n variants by case"""
+
+    pipeline = adapter.case_n_variants_query(50)
+    assert pipeline == [
+        {"$group": {"_id": "$case_id", "count": {"$sum": 1}}},
+        {"$match": {"count": {"$gte": 50}}},
+    ]
+
+
 def test_build_gene_variant_query(adapter):
     hgnc_symbols = ["POT1"]
 
