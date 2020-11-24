@@ -44,7 +44,7 @@ def variants(
         click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
 
     # Retrieve all cases and their number of variants
-    pipeline = store.case_n_variants(variants_threshold)
+    pipeline = store.case_n_variants_query(variants_threshold)
     cases_n_variants = store.variant_collection.aggregate(pipeline)
     case_ids_variants = {item["_id"]: item["count"] for item in cases_n_variants}
 

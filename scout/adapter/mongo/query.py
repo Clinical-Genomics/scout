@@ -14,7 +14,7 @@ from scout.constants import SPIDEX_HUMAN, CLINSIG_MAP
 
 
 class QueryHandler(object):
-    def case_n_variants(self, variants_threshold=0):
+    def case_n_variants_query(self, variants_threshold=0):
         """Builds an aggregate pipeline to return number of variants for each case id
 
         Args:
