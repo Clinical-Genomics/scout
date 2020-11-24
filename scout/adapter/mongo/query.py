@@ -28,7 +28,7 @@ class QueryHandler(object):
         pipeline = [group, match]
         return pipeline
 
-    def build_case_query(self, case_id=None, status=None, older_than=None, case_ids=[]):
+    def build_case_query(self, case_id=None, status=None, older_than=None):
         """Build case query based on case id, status and analysis date
 
         Args:
@@ -48,8 +48,6 @@ class QueryHandler(object):
         if older_than:
             older_than_date = datetime.now() - timedelta(weeks=older_than * 4)  # 4 weeks in a month
             case_query["analysis_date"] = {"$lt": older_than_date}
-        if case_ids:
-            case_query["_id"] = {"$in": case_ids}
         return case_query
 
     def delete_variants_query(self, case_id, variants_to_keep=[], min_rank_threshold=None):
