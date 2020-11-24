@@ -56,7 +56,6 @@ def variants(
         case_n_variants = store.variant_collection.count_documents({"case_id": case_id})
         # Skip case if user provided a number of variants to keep and this number is less than total number of case variants
         if variants_threshold and case_n_variants < variants_threshold:
-            # click.echo(f'Skipping case {case["display_name"]} ({case["_id"]}) --> has less variants than {variants_threshold}')
             continue
         click.echo(f"#### Case n. {nr}/{n_cases} ###### {case['display_name']} ({case_id})")
         # Get evaluated variants for the case that haven't been dismissed
