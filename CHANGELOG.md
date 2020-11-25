@@ -7,13 +7,24 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 - Institute-level phenotype models with sub-panels containing HPO and OMIM terms
+- Runnable Docker demo
+- Docker image build and push github action
+- Makefile with shortcuts to docker commands
+- Parse and save synopsis, phenotype and cohort terms from config files upon case upload
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
 - Breakpoint two IGV button now shows correct chromosome when different from bp1
+- Missing font lib in Docker image causing the PDF report download page to crash
+- Sentieon Manta calls lack Somaticscore - load anyway
+- ClinVar submissions crashing due to pinned variants that are not loaded
+- Point ExAC pLI score to new gnomad server address
+- Bug uploading cases missing phenotype terms in config file
+- STRs loaded but not shown on browser page
 ### Changed
 - Make matching causative and managed variants foldable on case page
 - Remove calls to PyMongo functions marked as deprecated in backend and frontend(as of version 3.7).
 - Improved `scout update individual` command
+- Export dynamic phenotypes with ordered gene lists as PDF
 
 ## [4.23]
 ### Added

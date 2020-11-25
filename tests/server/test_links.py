@@ -14,6 +14,17 @@ def test_add_gene_links():
     assert "hgnc_link" in gene_obj
 
 
+def test_add_hg38_gene_links():
+    """Test to add hg38 gene links to a gene object"""
+    # GIVEN a minimal gene and a genome build
+    gene_obj = {"hgnc_id": 257}
+    build = 38
+    # WHEN adding the gene links
+    add_gene_links(gene_obj, build)
+    # THEN assert some links are added
+    assert "hgnc_link" in gene_obj
+
+
 def test_ucsc_link():
     """Test if ucsc link is correctly added"""
     # GIVEN a minimal gene and a genome build

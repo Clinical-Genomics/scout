@@ -60,7 +60,7 @@ class TestMockMatchMakerServer(object):
         adapter = populated_database
 
         # Add an HPO term to this scout case
-        assert case_obj.get("phenotype_terms") is None
+        assert len(case_obj.get("phenotype_terms")) == 0
         phenotype_term = {
             "phenotype_id": "HP:0011031",
             "feature": "Abnormality of iron homeostasis",

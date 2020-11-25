@@ -44,6 +44,7 @@ def add_gene_links(gene_obj, build=37):
     gene_obj["clingen_link"] = clingen(hgnc_id)
     gene_obj["expression_atlas_link"] = expression_atlas(ensembl_id)
     gene_obj["exac_link"] = exac(ensembl_id)
+    gene_obj["gnomad_link"] = gnomad(ensembl_id, build)
     # Add links that use entrez_id
     gene_obj["entrez_link"] = entrez(gene_obj.get("entrez_id"))
     # Add links that use omim id
@@ -90,10 +91,22 @@ def ensembl(ensembl_id, build=37):
 
 
 def exac(ensembl_id):
-
-    link = "http://exac.broadinstitute.org/gene/{}"
+    link = "https://gnomad.broadinstitute.org/gene/{}?dataset=exac"
     if not ensembl_id:
         return None
+
+    return link.format(ensembl_id)
+
+
+def gnomad(ensembl_id, build=37):
+    if not ensembl_id:
+        return None
+
+    link = "https://gnomad.broadinstitute.org/gene/{}?dataset="
+    if build == 37:
+        link += "gnomad_r2_1"
+    if build == 38:
+        link += "gnomad_r3"
 
     return link.format(ensembl_id)
 

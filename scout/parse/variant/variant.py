@@ -244,9 +244,8 @@ def parse_variant(
         parsed_variant["str_swegen_std"] = float(str_swegen_std)
 
     ################# Add somatic info ##################
-    somatic = variant.INFO.get("SOMATIC")
-    if somatic:
-        somatic_score = variant.INFO.get("SOMATICSCORE")
+    somatic_score = variant.INFO.get("SOMATICSCORE")
+    if somatic_score:
         parsed_variant["somatic_score"] = int(somatic_score)
 
     ################# Add custom info ##################
