@@ -9,6 +9,7 @@ LOG = logging.getLogger(__name__)
 
 
 @click.command("variants", short_help="Delete variants for one or more cases")
+@click.option("-u", "--user", help="User running this command (email)", required=True)
 @click.option("-c", "--case-id", help="Case id")
 @click.option(
     "-status",
@@ -27,6 +28,7 @@ LOG = logging.getLogger(__name__)
 )
 @with_appcontext
 def variants(
+    user,
     case_id,
     status,
     older_than,
@@ -35,6 +37,12 @@ def variants(
     dry_run,
 ):
     """Delete variants for one or more cases"""
+
+    user_obj = store.user(user)
+    if user_obj is None:
+        click.echo(f"Could not find a user with email '{user}' in database")
+        return
+
     total_deleted = 0
     items_name = "deleted variants"
     if dry_run:
@@ -81,8 +89,21 @@ def variants(
         click.echo(f"Deleted {result.deleted_count} / {case_n_variants} total variants")
         total_deleted += result.deleted_count
 
+        # Create event in database
+        institute_obj = store.institute(case["owner"])
+        with current_app.test_request_context("/cases"):
+            url = url_for(
+                "cases.case", institute_id=institute_obj["_id"], case_name=case["display_name"]
+            )
+            filters = f"Rank-score threshold:{rank_threshold}, case n. variants threshold: {variants_threshold}."
+            store.remove_variants_event(
+                institute=institute_obj, case=case, user=user_obj, link=url, content=filters
+            )
+
     click.echo(f"Total {items_name}: {total_deleted}")
-    click.echo(f"Estimated space freed (GB): {(total_deleted * avg_var_size) / 1073741824}")
+    click.echo(
+        f"Estimated space freed (GB): {round((total_deleted * avg_var_size) / 1073741824, 4)}"
+    )
 
 
 @click.command("panel", short_help="Delete a gene panel")
