@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Docker image build and push github action
 - Makefile with shortcuts to docker commands
 - Parse and save synopsis, phenotype and cohort terms from config files upon case upload
+- STR variants filter
+- Display source, Z-score, inheritance pattern for STR annotations from Stranger (>0.6.1) if available
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
 - Breakpoint two IGV button now shows correct chromosome when different from bp1
@@ -25,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove calls to PyMongo functions marked as deprecated in backend and frontend(as of version 3.7).
 - Improved `scout update individual` command
 - Export dynamic phenotypes with ordered gene lists as PDF
+
 
 ## [4.23]
 ### Added
