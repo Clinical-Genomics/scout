@@ -578,7 +578,6 @@ class CaseHandler(object):
         if existing_case and not update:
             raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
 
-
         old_evaluated_variants = (
             None  # acmg, manual rank, cancer tier, dismissed, mosaic, commented
         )
