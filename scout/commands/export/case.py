@@ -72,7 +72,7 @@ def cases(
             LOG.info("No cases could be found")
 
     if json:
-        click.echo(json_lib.dumps(models, default=bson_handler()))
+        click.echo(json_lib.dumps(models, default=bson_handler))
         return
 
     for model in models:

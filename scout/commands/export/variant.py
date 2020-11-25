@@ -7,7 +7,6 @@ from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
 from scout.export.variant import export_variants, export_verified_variants
-from scout.adapter.mongo import MongoAdapter
 from .utils import json_option
 from .export_handler import bson_handler
 from scout.constants import CALLERS
@@ -129,7 +128,7 @@ def variants(collaborator: str, document_id: str, case_id: str, json: bool):
     variants = export_variants(adapter, collaborator, document_id=document_id, case_id=case_id)
 
     if json:
-        click.echo(json_lib.dumps([var for var in variants], default=bson_handler()))
+        click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
         return
 
     vcf_header = VCF_HEADER
