@@ -20,6 +20,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Point ExAC pLI score to new gnomad server address
 - Bug uploading cases missing phenotype terms in config file
 - STRs loaded but not shown on browser page
+- Bug when using adapter.variant.get_causatives with case_id without causatives
+- Problem with fetching "solved" from scout export cases cli
+- Better serialising of datetime and bson.ObjectId
+
 ### Changed
 - Make matching causative and managed variants foldable on case page
 - Remove calls to PyMongo functions marked as deprecated in backend and frontend(as of version 3.7).

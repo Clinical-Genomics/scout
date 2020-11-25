@@ -11,7 +11,7 @@ import click
 from scout.constants import CASE_STATUSES
 from scout.server.extensions import store
 from .utils import json_option
-from .export_handler import my_handler
+from .export_handler import bson_handler
 
 LOG = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ def cases(
             LOG.info("No cases could be found")
 
     if json:
-        click.echo(json_lib.dumps(models, default=my_handler))
+        click.echo(json_lib.dumps(models, default=bson_handler()))
         return
 
     for model in models:

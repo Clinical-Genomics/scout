@@ -4,10 +4,10 @@ import datetime
 import bson
 
 
-def my_handler(x):
-    if isinstance(x, datetime.datetime):
-        return x.isoformat()
-    elif isinstance(x, bson.objectid.ObjectId):
-        return str(x)
+def bson_handler(field):
+    if isinstance(field, datetime.datetime):
+        return field.isoformat()
+    if isinstance(field, bson.objectid.ObjectId):
+        return str(field)
     else:
-        raise TypeError(x)
+        raise TypeError(field)

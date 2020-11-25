@@ -9,7 +9,7 @@ from xlsxwriter import Workbook
 from scout.export.variant import export_variants, export_verified_variants
 from scout.adapter.mongo import MongoAdapter
 from .utils import json_option
-from .export_handler import my_handler
+from .export_handler import bson_handler
 from scout.constants import CALLERS
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.server.extensions import store
@@ -117,7 +117,7 @@ def verified(collaborator, test, outpath=None):
 def variants(collaborator: str, document_id: str, case_id: str, json: bool):
     """Export causatives for a collaborator in .vcf format"""
     LOG.info("Running scout export variants")
-    adapter: MongoAdapter = store
+    adapter = store
     collaborator = collaborator or "cust000"
     LOG.info("Use collaborator %s", collaborator)
     if case_id:
@@ -129,7 +129,7 @@ def variants(collaborator: str, document_id: str, case_id: str, json: bool):
     variants = export_variants(adapter, collaborator, document_id=document_id, case_id=case_id)
 
     if json:
-        click.echo(json_lib.dumps([var for var in variants], default=my_handler))
+        click.echo(json_lib.dumps([var for var in variants], default=bson_handler()))
         return
 
     vcf_header = VCF_HEADER
