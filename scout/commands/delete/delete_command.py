@@ -59,6 +59,9 @@ def variants(
     # Get all cases where case_query applies
     n_cases = store.case_collection.count_documents(case_query)
     cases = store.cases(query=case_query)
+    filters = (
+        f"Rank-score threshold:{rank_threshold}, case n. variants threshold:{variants_threshold}."
+    )
     for nr, case in enumerate(cases, 1):
         case_id = case["_id"]
         case_n_variants = store.variant_collection.count_documents({"case_id": case_id})
@@ -95,7 +98,6 @@ def variants(
             url = url_for(
                 "cases.case", institute_id=institute_obj["_id"], case_name=case["display_name"]
             )
-            filters = f"Rank-score threshold:{rank_threshold}, case n. variants threshold: {variants_threshold}."
             store.remove_variants_event(
                 institute=institute_obj, case=case, user=user_obj, link=url, content=filters
             )
