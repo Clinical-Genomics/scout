@@ -208,8 +208,10 @@ def str_variants(institute_id, case_name):
             ("position", pymongo.ASCENDING),
         ]
     )
-
-    data = controllers.str_variants(store, institute_obj, case_obj, variants_query, page)
+    result_size = store.count_variants(case_obj["_id"], {}, None, category)
+    data = controllers.str_variants(
+        store, institute_obj, case_obj, variants_query, result_size, page
+    )
     return dict(
         institute=institute_obj,
         case=case_obj,
