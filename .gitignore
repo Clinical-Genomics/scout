@@ -73,10 +73,7 @@ scripts/local
 *sqlite
 
 #Docker
-volumes/mongodb/data/*
-!volumes/mongodb/data/.gitkeep
-volumes/scout/data/*
-!volumes/scout/data/.gitkeep
+volumes
 
 # Emacs (Just so I don't have to see them green in Atom ;-)
 *~
