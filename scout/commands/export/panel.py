@@ -21,16 +21,13 @@ LOG = logging.getLogger(__name__)
 )
 @click.option("--bed", help="Export genes in bed like format", is_flag=True)
 @with_appcontext
-def panel(panel, build, bed, version):
+def panel_cmd(panel: str, build: str, bed: bool, version: float):
     """Export gene panels to .bed like format.
 
     Specify any number of panels on the command line
     """
     LOG.info("Running scout export panel")
     adapter = store
-
-    # Save all chromosomes found in the collection if panels
-    chromosomes_found = set()
 
     if not panel:
         LOG.warning("Please provide at least one gene panel")
