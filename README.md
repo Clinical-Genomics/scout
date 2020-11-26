@@ -57,7 +57,7 @@ If you would like to install Scout for local development: -->
 ```bash
 git clone https://github.com/Clinical-Genomics/scout
 cd scout
-pip install --requirement requirements.txt --editable .
+pip install --editable .
 ```
 
 Scout PDF reports are created using [Flask-WeasyPrint](https://pythonhosted.org/Flask-WeasyPrint/). This library requires external dependencies which need be installed separately (namely Cairo and Pango). See platform-specific instructions for Linux, macOS and Windows available on the WeasyPrint installation [pages](https://weasyprint.readthedocs.io/en/stable/install.html#).
