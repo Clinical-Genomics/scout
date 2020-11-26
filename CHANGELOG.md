@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [4.25]
+### Fixed
+- Install requirements.txt via setup file
+
 ## [4.24]
 ### Added
 - Institute-level phenotype models with sub-panels containing HPO and OMIM terms
