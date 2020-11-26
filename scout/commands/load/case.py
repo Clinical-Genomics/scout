@@ -109,7 +109,7 @@ def case(
     LOG.info("Use family %s" % config_data["family"])
 
     try:
-        case_obj = adapter.load_case(config_data, update, keep_actions)
+        adapter.load_case(config_data, update, keep_actions)
     except Exception as err:
         LOG.error("Something went wrong during loading")
         LOG.warning(err)

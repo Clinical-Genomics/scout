@@ -138,6 +138,7 @@ def build_case(case_data, adapter):
     sorted_inds = sorted(ind_objs, key=lambda ind: -ind["phenotype"])
     case_obj["individuals"] = sorted_inds
 
+
     now = datetime.now()
     case_obj["created_at"] = now
     case_obj["updated_at"] = now
@@ -219,6 +220,7 @@ def build_case(case_data, adapter):
             )
 
     # phenotype information
+
     if case_data.get("phenotype_terms"):
         phenotypes = []
         for phenotype in case_data["phenotype_terms"]:
@@ -228,6 +230,7 @@ def build_case(case_data, adapter):
                     f"Could not find term with ID '{phenotype}' in HPO collection, skipping phenotype term."
                 )
                 continue
+
             phenotypes.append(
                 {"phenotype_id": phenotype, "feature": phenotype_obj.get("description")}
             )
