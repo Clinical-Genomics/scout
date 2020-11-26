@@ -20,7 +20,7 @@ from .exon import exons
 from .gene import genes
 from .hpo import hpo_genes
 from .mitochondrial_report import mt_report
-from .panel import panel
+from .panel import panel_cmd
 from .transcript import transcripts
 from .variant import variants, verified
 
@@ -36,7 +36,7 @@ def export():
     pass
 
 
-export.add_command(panel)
+export.add_command(panel_cmd)
 export.add_command(genes)
 export.add_command(transcripts)
 export.add_command(exons)
