@@ -1,9 +1,5 @@
 from scout.utils.convert import make_bool_pass_none, convert_number
 
-import logging
-
-LOG = logging.getLogger(__name__)
-
 
 def parse_smn_file(lines):
     """Parse a SMNCopyNumberCaller TSV file.
@@ -28,11 +24,6 @@ def parse_smn_file(lines):
             smn_ind_info["sample_id"] = ind_info["Sample"]
             smn_ind_info["is_sma"] = make_bool_pass_none(ind_info["isSMA"])
             smn_ind_info["is_sma_carrier"] = make_bool_pass_none(ind_info["isCarrier"])
-            LOG.debug(
-                "Got carrier %s converted from %s",
-                smn_ind_info["is_sma_carrier"],
-                ind_info["isCarrier"],
-            )
             smn_ind_info["smn1_cn"] = convert_number(ind_info["SMN1_CN"])
             smn_ind_info["smn2_cn"] = convert_number(ind_info["SMN2_CN"])
             smn_ind_info["smn2delta78_cn"] = convert_number(ind_info["SMN2delta7-8_CN"])
