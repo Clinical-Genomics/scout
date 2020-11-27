@@ -7,7 +7,7 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
-BYTES_IN_ONE_GIGABYTES = 1073741824  # (1024*1024*1024)
+BYTES_IN_ONE_GIGABYTE = 1073741824  # (1024*1024*1024)
 
 
 @click.command("variants", short_help="Delete variants for one or more cases")
@@ -106,7 +106,7 @@ def variants(
 
     click.echo(f"Total {items_name}: {total_deleted}")
     click.echo(
-        f"Estimated space freed (GB): {round((total_deleted * avg_var_size) / BYTES_IN_ONE_GIGABYTES, 4)}"
+        f"Estimated space freed (GB): {round((total_deleted * avg_var_size) / BYTES_IN_ONE_GIGABYTE, 4)}"
     )
 
 
