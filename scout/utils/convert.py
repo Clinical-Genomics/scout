@@ -17,6 +17,12 @@ def isint(x):
         return a == b
 
 
+def make_bool_pass_none(string):
+    if str(string).lower() == "none":
+        return None
+    return make_bool(string)
+
+
 def make_bool(string):
     """Convert a string to boolean"""
     if str(string).lower() in ["yes", "true", "1", "t"]:

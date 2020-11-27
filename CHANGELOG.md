@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [x.x.x]
+### Fixed
+- Parse SMN None calls to None rather than False
+
 ## [4.24.1]
 ### Fixed
 - Install requirements.txt via setup file

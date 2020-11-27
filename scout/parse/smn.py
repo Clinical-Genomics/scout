@@ -1,4 +1,4 @@
-from scout.utils.convert import make_bool, convert_number
+from scout.utils.convert import make_bool_pass_none, convert_number
 
 
 def parse_smn_file(lines):
@@ -22,8 +22,8 @@ def parse_smn_file(lines):
             ind_info = dict(zip(header, line.split("\t")))
             smn_ind_info = {}
             smn_ind_info["sample_id"] = ind_info["Sample"]
-            smn_ind_info["is_sma"] = make_bool(ind_info["isSMA"])
-            smn_ind_info["is_sma_carrier"] = make_bool(ind_info["isCarrier"])
+            smn_ind_info["is_sma"] = make_bool_pass_none(ind_info["isSMA"])
+            smn_ind_info["is_sma_carrier"] = make_bool_pass_none(ind_info["isCarrier"])
             smn_ind_info["smn1_cn"] = convert_number(ind_info["SMN1_CN"])
             smn_ind_info["smn2_cn"] = convert_number(ind_info["SMN2_CN"])
             smn_ind_info["smn2delta78_cn"] = convert_number(ind_info["SMN2delta7-8_CN"])
