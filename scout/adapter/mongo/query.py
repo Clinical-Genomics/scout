@@ -36,7 +36,7 @@ class QueryHandler(object):
             case_query["analysis_date"] = {"$lt": older_than_date}
         return case_query
 
-    def delete_variants_query(self, case_id, variants_to_keep=[], min_rank_threshold=None):
+    def delete_variants_query(self, case_id, variants_to_keep=[], min_rank_threshold=None) -> dict:
         """Build a query to delete variants from a case
 
         Args:
