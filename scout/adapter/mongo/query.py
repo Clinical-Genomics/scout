@@ -14,7 +14,7 @@ from scout.constants import SPIDEX_HUMAN, CLINSIG_MAP
 
 
 class QueryHandler(object):
-    def build_case_query(self, case_id=None, status=None, older_than=None):
+    def build_case_query(self, case_id=None, status=None, older_than=None) -> dict:
         """Build case query based on case id, status and analysis date
 
         Args:
