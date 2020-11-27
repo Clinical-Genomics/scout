@@ -28,14 +28,14 @@ LOG = logging.getLogger(__name__)
 )
 @with_appcontext
 def variants(
-    user,
-    case_id,
-    status,
-    older_than,
-    rank_threshold,
-    variants_threshold,
-    dry_run,
-):
+    user: str,
+    case_id: str,
+    status: list,
+    older_than: int,
+    rank_threshold: int,
+    variants_threshold: int,
+    dry_run: bool,
+) -> None:
     """Delete variants for one or more cases"""
 
     user_obj = store.user(user)
