@@ -121,7 +121,7 @@ class MongoAdapter(
         """
         return self.db.list_collection_names()
 
-    def collection_stats(self, coll_name):
+    def collection_stats(self, coll_name: str) -> dict:
         """Returns stats from a single collection
 
         Args:
