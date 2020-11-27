@@ -18,9 +18,7 @@ def isint(x):
 
 
 def make_bool_pass_none(string):
-    if string is None:
-        return None
-    if str(string).lower() in ["none"]:
+    if str(string).lower() == "none":
         return None
     return make_bool(string)
 
