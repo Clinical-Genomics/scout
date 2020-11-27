@@ -225,7 +225,9 @@ class CaseEventHandler(object):
         LOG.debug("Case updated")
         return updated_case
 
-    def remove_variants_event(self, institute, case, user, link, content):
+    def remove_variants_event(
+        self, institute: dict, case: dict, user: dict, link: str, content: str
+    ) -> None:
         """Create an event for the action of deleting variants from a case
 
         Args:
