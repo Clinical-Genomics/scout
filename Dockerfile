@@ -16,7 +16,6 @@ WORKDIR /home/worker/app
 COPY . /home/worker/app
 
 # Install scout app
-RUN pip install -r requirements.txt
 RUN pip install -e .
 
 # Run commands as non-root user
