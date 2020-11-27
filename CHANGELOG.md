@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
+### Added
+### Fixed
+### Changed
+
+## [4.25]
+### Added
+- Command line function to remove variants from one or all cases
 ### Fixed
 - Parse SMN None calls to None rather than False
 
@@ -19,7 +26,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Docker image build and push github action
 - Makefile with shortcuts to docker commands
 - Parse and save synopsis, phenotype and cohort terms from config files upon case upload
-- Command line function to remove variants from one or all cases
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
 - Breakpoint two IGV button now shows correct chromosome when different from bp1
