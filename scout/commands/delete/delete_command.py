@@ -7,6 +7,108 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
+BYTES_IN_ONE_GIGABYTE = 1073741824  # (1024*1024*1024)
+
+
+@click.command("variants", short_help="Delete variants for one or more cases")
+@click.option("-u", "--user", help="User running this command (email)", required=True)
+@click.option("-c", "--case-id", help="Case id")
+@click.option(
+    "-status",
+    type=click.Choice(["solved", "archived", "migrated", "active", "inactive", "prioritized"]),
+    multiple=True,
+    default=["solved", "archived", "migrated"],
+    help="Restrict to cases with specified status",
+)
+@click.option("-older-than", type=click.INT, default=0, help="Older than (months)")
+@click.option("-rank-threshold", type=click.INT, default=5, help="With rank threshold lower than")
+@click.option("-variants-threshold", type=click.INT, help="With more variants than")
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help="Perform a simulation without removing any variant",
+)
+@with_appcontext
+def variants(
+    user: str,
+    case_id: str,
+    status: list,
+    older_than: int,
+    rank_threshold: int,
+    variants_threshold: int,
+    dry_run: bool,
+) -> None:
+    """Delete variants for one or more cases"""
+
+    user_obj = store.user(user)
+    if user_obj is None:
+        click.echo(f"Could not find a user with email '{user}' in database")
+        return
+
+    total_deleted = 0
+    items_name = "deleted variants"
+    if dry_run:
+        click.echo("--------------- DRY RUN COMMAND ---------------")
+        items_name = "estimated deleted variants"
+    else:
+        click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
+
+    case_query = store.build_case_query(case_id, status, older_than)
+
+    # Estimate the average size of a variant document in database
+    avg_var_size = store.collection_stats("variant").get("avgObjSize", 0)  # in bytes
+
+    # Get all cases where case_query applies
+    n_cases = store.case_collection.count_documents(case_query)
+    cases = store.cases(query=case_query)
+    filters = (
+        f"Rank-score threshold:{rank_threshold}, case n. variants threshold:{variants_threshold}."
+    )
+    for nr, case in enumerate(cases, 1):
+        case_id = case["_id"]
+        case_n_variants = store.variant_collection.count_documents({"case_id": case_id})
+        # Skip case if user provided a number of variants to keep and this number is less than total number of case variants
+        if variants_threshold and case_n_variants < variants_threshold:
+            continue
+        click.echo(f"#### Case n. {nr}/{n_cases} ###### {case['display_name']} ({case_id})")
+        # Get evaluated variants for the case that haven't been dismissed
+        case_evaluated = store.evaluated_variants(case_id=case_id)
+        evaluated_not_dismissed = [
+            variant["_id"] for variant in case_evaluated if "dismiss_variant" not in variant
+        ]
+        # Do not remove variants that are either pinned, causative or evaluated not dismissed
+        variants_to_keep = (
+            case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed or []
+        )
+        variants_query = store.delete_variants_query(case_id, variants_to_keep, rank_threshold)
+
+        if dry_run:
+            # Just print how many variants would be removed for this case
+            remove_n_variants = store.variant_collection.count_documents(variants_query)
+            total_deleted += remove_n_variants
+            click.echo(f"Remove {remove_n_variants} / {case_n_variants} total variants")
+            continue
+
+        # delete variants specified by variants_query
+        result = store.variant_collection.delete_many(variants_query)
+        click.echo(f"Deleted {result.deleted_count} / {case_n_variants} total variants")
+        total_deleted += result.deleted_count
+
+        # Create event in database
+        institute_obj = store.institute(case["owner"])
+        with current_app.test_request_context("/cases"):
+            url = url_for(
+                "cases.case", institute_id=institute_obj["_id"], case_name=case["display_name"]
+            )
+            store.remove_variants_event(
+                institute=institute_obj, case=case, user=user_obj, link=url, content=filters
+            )
+
+    click.echo(f"Total {items_name}: {total_deleted}")
+    click.echo(
+        f"Estimated space freed (GB): {round((total_deleted * avg_var_size) / BYTES_IN_ONE_GIGABYTE, 4)}"
+    )
+
 
 @click.command("panel", short_help="Delete a gene panel")
 @click.option("--panel-id", help="The panel identifier name", required=True)
@@ -176,3 +278,4 @@ delete.add_command(case)
 delete.add_command(user)
 delete.add_command(index)
 delete.add_command(exons)
+delete.add_command(variants)
