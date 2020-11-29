@@ -624,19 +624,29 @@
           {% if variant.chromosome == 'MT' %}
             <a href="https://www.mitomap.org/foswiki/bin/view////Main/SearchAllele" target="_blank">MitoMap</a>
           {% endif %}
+          {% if cancer %}
+            {% if gene.tp53_link %}
+              <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>
+            {% endif %}
+            {% if gene.iarctp53_link %}
+              <a href="{{ gene.iarctp53_link }}" class="btn btn-outline-secondary" target="_blank">IARC TP53</a>
+            {% endif %}
+            <a href="{{ gene.cbioportal_link }}" class="btn btn-outline-secondary" target="_blank">cBioPortal</a>
+            <a href="{{ gene.oncokb_link }}" class="btn btn-outline-secondary" target="_blank">OncoKB</a>
+          {% endif %}
         </div>
-      </div>
-      <div class="panel-body">
-        <form action="http://marrvel.org/search" method="POST" target="_blank">
-          <button type="submit" class="btn btn-outline-secondary">MARRVEL</button>
-          <input type="hidden" name="variantGeneId" value="{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{ variant.alternative }}">
-          <input type="hidden" name="inGeneSymbol" value="{{ gene.common.hgnc_symbol if gene.common }}">
-          <input type="hidden" name="OMIMdbCheck" value="on">
-          <input type="hidden" name="ExACdbCheck" value="on">
-          <input type="hidden" name="Geno2MPdbCheck" value="on">
-          <input type="hidden" name="DGVdbCheck" value="on">
-          <input type="hidden" name="DECIPHERdbCheck" value="on">
-        </form>
+        <div class="btn-group-justified">
+          <form action="http://marrvel.org/search" method="POST" target="_blank">
+            <button type="submit" class="btn btn-outline-secondary">MARRVEL</button>
+            <input type="hidden" name="variantGeneId" value="{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{ variant.alternative }}">
+            <input type="hidden" name="inGeneSymbol" value="{{ gene.common.hgnc_symbol if gene.common }}">
+            <input type="hidden" name="OMIMdbCheck" value="on">
+            <input type="hidden" name="ExACdbCheck" value="on">
+            <input type="hidden" name="Geno2MPdbCheck" value="on">
+            <input type="hidden" name="DGVdbCheck" value="on">
+            <input type="hidden" name="DECIPHERdbCheck" value="on">
+          </form>
+        </div>
       </div>
     {% endfor %}
   </div>
