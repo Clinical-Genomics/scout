@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Links to cBioPortal, MutanTP53, IARC TP53, OncoKB
 ### Fixed
 ### Changed
 
