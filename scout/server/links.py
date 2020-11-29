@@ -214,7 +214,7 @@ def ucsc(ucsc_id):
     return link.format(ucsc_id)
 
 
-def add_tx_links(tx_obj, build=37):
+def add_tx_links(tx_obj, build=37, hgnc_symbol=None):
     try:
         build = int(build)
     except ValueError:
@@ -242,11 +242,8 @@ def add_tx_links(tx_obj, build=37):
     tx_obj["varsome_link"] = varsome(
         build, tx_obj.get("refseq_id"), tx_obj.get("coding_sequence_name")
     )
-    # TP53 link
     tx_obj["tp53_link"] = mutantp53(tx_obj.get("hgnc_id"), tx_obj.get("protein_sequence_name"))
-    tx_obj["cbioportal_link"] = cbioportal(
-        tx_obj.get("hgnc_symbol"), tx_obj.get("protein_sequence_name")
-    )
+    tx_obj["cbioportal_link"] = cbioportal(hgnc_symbol, tx_obj.get("protein_sequence_name"))
 
     return tx_obj
 
@@ -481,7 +478,10 @@ def ucsc_link(variant_obj, build=None):
 
 def cbioportal(hgnc_symbol, protein_sequence_name):
     link = "https://www.cbioportal.org/ln?q={}:MUT%20%3D{}"
-    if not hgnc_symbol or not protein_sequence_name:
+
+    if not hgnc_symbol:
+        return None
+    if not protein_sequence_name:
         return None
     return link.format(hgnc_symbol, protein_sequence_name)
 
