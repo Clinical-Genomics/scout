@@ -41,18 +41,3 @@ def empty_mock_app(real_adapter):
         )
     )
     return _mock_app
-
-
-@pytest.fixture
-def mock_app(real_populated_database):
-    """Return the path to a mocked app object with data"""
-    _mock_app = create_app(
-        config=dict(
-            TESTING=True,
-            DEBUG=True,
-            MONGO_DBNAME=REAL_DATABASE,
-            DEBUG_TB_ENABLED=False,
-            LOGIN_DISABLED=True,
-        )
-    )
-    return _mock_app
