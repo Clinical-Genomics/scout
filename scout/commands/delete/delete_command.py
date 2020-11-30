@@ -8,29 +8,40 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 BYTES_IN_ONE_GIGABYTE = 1073741824  # (1024*1024*1024)
-DELETE_VARIANTS_HEADER = "Case n.\tNcases\tInstitute\tCase name\tCase ID\tCase track\tAnalysis date\tStatus\tResearch\tTotal variants\tRemoved variants"
+DELETE_VARIANTS_HEADER = [
+    "Case n.",
+    "Ncases",
+    "Institute" "Case name",
+    "Case ID",
+    "Case track",
+    "Analysis date",
+    "Status",
+    "Research",
+    "Total variants",
+    "Removed variants",
+]
 
 
 @click.command("variants", short_help="Delete variants for one or more cases")
 @click.option("-u", "--user", help="User running this command (email)", required=True)
 @click.option("-c", "--case-id", help="Case id")
 @click.option(
-    "-status",
+    "--status",
     type=click.Choice(["solved", "archived", "migrated", "active", "inactive", "prioritized"]),
     multiple=True,
     default=["solved", "archived", "migrated"],
     help="Restrict to cases with specified status",
 )
-@click.option("-older-than", type=click.INT, default=0, help="Older than (months)")
+@click.option("--older-than", type=click.INT, default=0, help="Older than (months)")
 @click.option(
-    "-analysis-type",
+    "--analysis-type",
     type=click.Choice(["wgs", "wes", "panel"]),
     multiple=True,
     default=["wgs"],
     help="Type of analysis",
 )
-@click.option("-rank-threshold", type=click.INT, default=5, help="With rank threshold lower than")
-@click.option("-variants-threshold", type=click.INT, help="With more variants than")
+@click.option("--rank-threshold", type=click.INT, default=5, help="With rank threshold lower than")
+@click.option("--variants-threshold", type=click.INT, help="With more variants than")
 @click.option(
     "--dry-run",
     is_flag=True,
@@ -63,7 +74,7 @@ def variants(
         click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
 
     case_query = store.build_case_query(case_id, status, older_than, analysis_type)
-
+    click.echo(case_query)
     # Estimate the average size of a variant document in database
     avg_var_size = store.collection_stats("variant").get("avgObjSize", 0)  # in bytes
 
@@ -73,7 +84,7 @@ def variants(
     filters = (
         f"Rank-score threshold:{rank_threshold}, case n. variants threshold:{variants_threshold}."
     )
-    click.echo(DELETE_VARIANTS_HEADER)
+    click.echo("\t".join(DELETE_VARIANTS_HEADER))
     for nr, case in enumerate(cases, 1):
         case_id = case["_id"]
         case_n_variants = store.variant_collection.count_documents({"case_id": case_id})
