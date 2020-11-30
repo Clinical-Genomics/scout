@@ -8,6 +8,7 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 BYTES_IN_ONE_GIGABYTE = 1073741824  # (1024*1024*1024)
+DELETE_VARIANTS_HEADER = "Case n.\tNcases\tInstitute\tCase name\tCase ID\tCase track\tAnalysis date\tTotal variants\tRemoved variants"
 
 
 @click.command("variants", short_help="Delete variants for one or more cases")
@@ -64,13 +65,13 @@ def variants(
     filters = (
         f"Rank-score threshold:{rank_threshold}, case n. variants threshold:{variants_threshold}."
     )
+    click.echo(DELETE_VARIANTS_HEADER)
     for nr, case in enumerate(cases, 1):
         case_id = case["_id"]
         case_n_variants = store.variant_collection.count_documents({"case_id": case_id})
         # Skip case if user provided a number of variants to keep and this number is less than total number of case variants
         if variants_threshold and case_n_variants < variants_threshold:
             continue
-        click.echo(f"#### Case n. {nr}/{n_cases} ###### {case['display_name']} ({case_id})")
         # Get evaluated variants for the case that haven't been dismissed
         case_evaluated = store.evaluated_variants(case_id=case_id)
         evaluated_not_dismissed = [
@@ -86,13 +87,42 @@ def variants(
             # Just print how many variants would be removed for this case
             remove_n_variants = store.variant_collection.count_documents(variants_query)
             total_deleted += remove_n_variants
-            click.echo(f"Remove {remove_n_variants} / {case_n_variants} total variants")
+            click.echo(
+                "\t".join(
+                    [
+                        str(nr),
+                        str(n_cases),
+                        case["owner"],
+                        case["display_name"],
+                        case_id,
+                        case.get("track", ""),
+                        str(case["analysis_date"]),
+                        str(case_n_variants),
+                        str(total_deleted),
+                    ]
+                )
+            )
             continue
 
         # delete variants specified by variants_query
         result = store.variant_collection.delete_many(variants_query)
         click.echo(f"Deleted {result.deleted_count} / {case_n_variants} total variants")
         total_deleted += result.deleted_count
+        click.echo(
+            "\t".join(
+                [
+                    str(nr),
+                    str(n_cases),
+                    case["owner"],
+                    case["display_name"],
+                    case_id,
+                    case.get("track", ""),
+                    str(case["analysis_date"]),
+                    str(case_n_variants),
+                    str(total_deleted),
+                ]
+            )
+        )
 
         # Create event in database
         institute_obj = store.institute(case["owner"])
