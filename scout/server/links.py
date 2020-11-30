@@ -1,6 +1,9 @@
+import re
+
 from pprint import pprint as pp
 
 from scout.constants import SPIDEX_HUMAN
+from scout.utils.convert import convert_aa_3_to_1
 
 
 def add_gene_links(gene_obj, build=37):
@@ -483,7 +486,14 @@ def cbioportal(hgnc_symbol, protein_sequence_name):
         return None
     if not protein_sequence_name:
         return None
-    return link.format(hgnc_symbol, protein_sequence_name)
+    p = re.compile("p.([A-Za-z]+)(\d+)([A-Za-z]+)")
+    m = p.match(protein_sequence_name)
+    ref = convert_aa_3_to_1(m.group(1))
+    alt = convert_aa_3_to_1(m.group(3))
+    pos = m.group(2)
+    protein_change = "".join([ref, pos, alt])
+
+    return link.format(hgnc_symbol, protein_change)
 
 
 def mutantp53(hgnc_id, protein_variant):

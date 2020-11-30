@@ -42,3 +42,31 @@ def convert_number(string):
     elif isfloat(string):
         res = float(string)
     return res
+
+
+def convert_aa_3_to_1(string):
+    aa_3_to_1 = {
+        "Ala": "A",
+        "Arg": "R",
+        "Asn": "N",
+        "Asp": "D",
+        "Asx": "B",
+        "Cys": "C",
+        "Glu": "E",
+        "Gln": "Q",
+        "Glx": "Z",
+        "Gly": "G",
+        "His": "H",
+        "Ile": "I",
+        "Leu": "L",
+        "Lys": "K",
+        "Met": "M",
+        "Phe": "F",
+        "Pro": "P",
+        "Ser": "S",
+        "Thr": "T",
+        "Trp": "W",
+        "Tyr": "Y",
+        "Val": "V",
+    }
+    return aa_3_to_1.get(string, None)
