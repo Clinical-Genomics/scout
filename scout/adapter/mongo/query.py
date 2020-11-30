@@ -33,7 +33,7 @@ class QueryHandler(object):
         if case_id:
             case_query["_id"] = case_id
         if analysis_type:
-            {"individuals.analysis_type": {"$in": analysis_type}}
+            case_query["individuals.analysis_type"] = {"$in": analysis_type}
         if older_than:
             older_than_date = datetime.now() - timedelta(weeks=older_than * 4)  # 4 weeks in a month
             case_query["analysis_date"] = {"$lt": older_than_date}

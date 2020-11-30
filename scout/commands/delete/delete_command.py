@@ -106,7 +106,7 @@ def variants(
                         case.get("track", ""),
                         str(case["analysis_date"]),
                         case.get("status", ""),
-                        case.get("is_research", ""),
+                        str(case.get("is_research", "")),
                         str(case_n_variants),
                         str(total_deleted),
                     ]
@@ -129,7 +129,7 @@ def variants(
                     case.get("track", ""),
                     str(case["analysis_date"]),
                     case.get("status", ""),
-                    case.get("is_research", ""),
+                    str(case.get("is_research", "")),
                     str(case_n_variants),
                     str(total_deleted),
                 ]
