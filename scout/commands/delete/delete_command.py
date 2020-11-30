@@ -20,7 +20,7 @@ DELETE_VARIANTS_HEADER = [
     "Total variants",
     "Removed variants",
 ]
-CASE_STATUS = []
+CASE_STATUS = ["solved", "archived", "migrated", "active", "inactive", "prioritized"]
 
 
 @click.command("variants", short_help="Delete variants for one or more cases")
@@ -30,7 +30,7 @@ CASE_STATUS = []
     "--status",
     type=click.Choice(CASE_STATUS),
     multiple=True,
-    default=CASE_STATUS,
+    default=[],
     help="Restrict to cases with specified status",
 )
 @click.option("--older-than", type=click.INT, default=0, help="Older than (months)")
