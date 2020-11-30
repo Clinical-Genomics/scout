@@ -22,7 +22,7 @@ DELETE_VARIANTS_HEADER = "Case n.\tNcases\tInstitute\tCase name\tCase ID\tCase t
     help="Restrict to cases with specified status",
 )
 @click.option("-older-than", type=click.INT, default=0, help="Older than (months)")
-@click.option("-rank-threshold", type=click.INT, default=5, help="With rank threshold lower than")
+@click.option("-rank-threshold", type=click.INT, default=10, help="With rank threshold lower than")
 @click.option("-variants-threshold", type=click.INT, help="With more variants than")
 @click.option(
     "--dry-run",
