@@ -74,7 +74,6 @@ def variants(
         click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
 
     case_query = store.build_case_query(case_id, status, older_than, analysis_type)
-    click.echo(case_query)
     # Estimate the average size of a variant document in database
     avg_var_size = store.collection_stats("variant").get("avgObjSize", 0)  # in bytes
 
