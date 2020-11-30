@@ -18,7 +18,7 @@ class CaseEventHandler(object):
         This function will create an Event to log that a person has been assigned
         to a case. Also the user will be added to case "assignees".
 
-        Arguments:
+        Args:
             institute (dict): A institute
             case (dict): A case
             user (dict): A User object
@@ -58,7 +58,7 @@ class CaseEventHandler(object):
         unassigned from a case. Also the user will be removed from case
         "assignees".
 
-        Arguments:
+        Args:
             institute (dict): A Institute object
             case (dict): A Case object
             user (dict): A User object (Should this be a user id?)
@@ -107,7 +107,7 @@ class CaseEventHandler(object):
         Status could be anyone of:
             ("prioritized", "inactive", "active", "solved", "archived")
 
-        Arguments:
+        Args:
             institute (dict): A Institute object
             case (dict): A Case object
             user (dict): A User object
@@ -157,7 +157,7 @@ class CaseEventHandler(object):
             This function will create an Event and update the synopsis for
              a case.
 
-        Arguments:
+        Args:
             institute (dict): A Institute object
             case (dict): A Case object
             user (dict): A User object
@@ -194,7 +194,7 @@ class CaseEventHandler(object):
     def archive_case(self, institute, case, user, link):
         """Create an event for archiving a case.
 
-        Arguments:
+        Args:
             institute (dict): A Institute object
             case (dict): Case object
             user (dict): A User object
@@ -225,10 +225,32 @@ class CaseEventHandler(object):
         LOG.debug("Case updated")
         return updated_case
 
+    def remove_variants_event(
+        self, institute: dict, case: dict, user: dict, link: str, content: str
+    ) -> None:
+        """Create an event for the action of deleting variants from a case
+
+        Args:
+            institute (dict): A Institute object
+            case (dict): Case object
+            user (dict): A User object
+            link (str): The url to be used in the event
+        """
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category="case",
+            verb="remove_variants",
+            subject=case["display_name"],
+            content=content,
+        )
+
     def open_research(self, institute, case, user, link):
         """Create an event for opening the research list a case.
 
-        Arguments:
+        Args:
             institute (dict): A Institute object
             case (dict): Case object
             user (dict): A User object
@@ -262,7 +284,7 @@ class CaseEventHandler(object):
     def request_rerun(self, institute, case, user, link):
         """Request a case to be re-analyzed.
 
-        Arguments:
+        Args:
             institute (dict): A Institute object
             case (dict): Case object
             user (dict): A User object
@@ -299,7 +321,7 @@ class CaseEventHandler(object):
     def share(self, institute, case, collaborator_id, user, link):
         """Share a case with a new institute.
 
-        Arguments:
+        Args:
             institute (dict): A Institute object
             case (dict): Case object
             collaborator_id (str): A instute id
@@ -333,7 +355,7 @@ class CaseEventHandler(object):
     def unshare(self, institute, case, collaborator_id, user, link):
         """Revoke access for a collaborator for a case.
 
-        Arguments:
+        Args:
             institute (dict): A Institute object
             case (dict): Case object
             collaborator_id (str): A instute id
@@ -368,7 +390,7 @@ class CaseEventHandler(object):
     def diagnose(self, institute, case, user, link, level, omim_id, remove=False):
         """Diagnose a case using OMIM ids.
 
-        Arguments:
+        Args:
             institute (dict): A Institute object
             case (dict): Case object
             user (dict): A User object
@@ -421,7 +443,7 @@ class CaseEventHandler(object):
     def add_cohort(self, institute, case, user, link, tag):
         """Add a cohort tag to case
 
-        Arguments:
+        Args:
             institute (dict): A Institute object
             case (dict): Case object
             user (dict): A User object
@@ -454,7 +476,7 @@ class CaseEventHandler(object):
     def remove_cohort(self, institute, case, user, link, tag):
         """Remove a cohort tag from case
 
-        Arguments:
+        Args:
             institute (dict): A Institute object
             case (dict): Case object
             user (dict): A User object
@@ -487,7 +509,7 @@ class CaseEventHandler(object):
     def mark_checked(self, institute, case, user, link, unmark=False):
         """Mark a case as checked from an analysis point of view.
 
-        Arguments:
+        Args:
             institute (dict): A Institute object
             case (dict): Case object
             user (dict): A User object
@@ -526,7 +548,7 @@ class CaseEventHandler(object):
     ):
         """Update HPO clinical filter setting for a case.
 
-        Arguments:
+        Args:
             institute_obj (dict): A Institute object
             case_obj (dict): Case object
             user_obj (dict): A User object
@@ -558,7 +580,7 @@ class CaseEventHandler(object):
     def update_default_panels(self, institute_obj, case_obj, user_obj, link, panel_objs):
         """Update default panels for a case.
 
-        Arguments:
+        Args:
             institute_obj (dict): A Institute object
             case_obj (dict): Case object
             user_obj (dict): A User object
