@@ -22,6 +22,13 @@ DELETE_VARIANTS_HEADER = "Case n.\tNcases\tInstitute\tCase name\tCase ID\tCase t
     help="Restrict to cases with specified status",
 )
 @click.option("-older-than", type=click.INT, default=0, help="Older than (months)")
+@click.option(
+    "-analysis-type",
+    type=click.Choice(["wgs", "wes", "panel"]),
+    multiple=True,
+    default=["wgs"],
+    help="Type of analysis",
+)
 @click.option("-rank-threshold", type=click.INT, default=5, help="With rank threshold lower than")
 @click.option("-variants-threshold", type=click.INT, help="With more variants than")
 @click.option(
@@ -35,6 +42,7 @@ def variants(
     case_id: str,
     status: list,
     older_than: int,
+    analysis_type: list,
     rank_threshold: int,
     variants_threshold: int,
     dry_run: bool,
@@ -54,7 +62,7 @@ def variants(
     else:
         click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
 
-    case_query = store.build_case_query(case_id, status, older_than)
+    case_query = store.build_case_query(case_id, status, older_than, analysis_type)
 
     # Estimate the average size of a variant document in database
     avg_var_size = store.collection_stats("variant").get("avgObjSize", 0)  # in bytes
