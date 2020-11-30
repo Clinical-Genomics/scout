@@ -10,7 +10,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 ### Changed
 - Print output of variants delete command as a tab separated table
-- default delete variants rank score threshold to 10, instead of 5
 
 ## [4.25]
 ### Added
