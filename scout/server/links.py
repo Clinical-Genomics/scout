@@ -1,9 +1,7 @@
-import re
-
 from pprint import pprint as pp
 
 from scout.constants import SPIDEX_HUMAN
-from scout.utils.convert import convert_aa_3_to_1
+from scout.utils.convert import amino_acid_residue_change_3_to_1
 
 
 def add_gene_links(gene_obj, build=37):
@@ -247,6 +245,7 @@ def add_tx_links(tx_obj, build=37, hgnc_symbol=None):
     )
     tx_obj["tp53_link"] = mutantp53(tx_obj.get("hgnc_id"), tx_obj.get("protein_sequence_name"))
     tx_obj["cbioportal_link"] = cbioportal(hgnc_symbol, tx_obj.get("protein_sequence_name"))
+    tx_obj["mycancergenome_link"] = mycancergenome(hgnc_symbol, tx_obj.get("protein_sequence_name"))
 
     return tx_obj
 
@@ -479,6 +478,22 @@ def ucsc_link(variant_obj, build=None):
     return url_template.format(this=variant_obj)
 
 
+def mycancergenome(hgnc_symbol, protein_sequence_name):
+    link = "https://www.mycancergenome.org/content/alteration/{}-{}"
+
+    if not hgnc_symbol:
+        return None
+    if not protein_sequence_name:
+        return None
+
+    protein_change = amino_acid_residue_change_3_to_1(protein_sequence_name)
+
+    if not protein_change:
+        return None
+
+    return link.format(hgnc_symbol, protein_change.lower())
+
+
 def cbioportal(hgnc_symbol, protein_sequence_name):
     link = "https://www.cbioportal.org/ln?q={}:MUT%20%3D{}"
 
@@ -486,12 +501,11 @@ def cbioportal(hgnc_symbol, protein_sequence_name):
         return None
     if not protein_sequence_name:
         return None
-    p = re.compile("p.([A-Za-z]+)(\d+)([A-Za-z]+)")
-    m = p.match(protein_sequence_name)
-    ref = convert_aa_3_to_1(m.group(1))
-    alt = convert_aa_3_to_1(m.group(3))
-    pos = m.group(2)
-    protein_change = "".join([ref, pos, alt])
+
+    protein_change = amino_acid_residue_change_3_to_1(protein_sequence_name)
+
+    if not protein_change:
+        return None
 
     return link.format(hgnc_symbol, protein_change)
 

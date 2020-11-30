@@ -624,13 +624,13 @@
           {% if variant.chromosome == 'MT' %}
             <a href="https://www.mitomap.org/foswiki/bin/view////Main/SearchAllele" target="_blank">MitoMap</a>
           {% endif %}
+          {% if gene.tp53_link %}
+            <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>
+          {% endif %}
+          {% if gene.iarctp53_link %}
+            <a href="{{ gene.iarctp53_link }}" class="btn btn-outline-secondary" target="_blank">IARC TP53</a>
+          {% endif %}
           {% if cancer %}
-            {% if gene.tp53_link %}
-              <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>
-            {% endif %}
-            {% if gene.iarctp53_link %}
-              <a href="{{ gene.iarctp53_link }}" class="btn btn-outline-secondary" target="_blank">IARC TP53</a>
-            {% endif %}
             <a href="{{ gene.cbioportal_link }}" class="btn btn-outline-secondary" target="_blank">cBioPortal</a>
             <a href="{{ gene.oncokb_link }}" class="btn btn-outline-secondary" target="_blank">OncoKB</a>
           {% endif %}

@@ -1,3 +1,8 @@
+import re
+
+from scout.constants import AMINO_ACID_RESIDUE_3_TO_1
+
+
 def isfloat(x):
     try:
         a = float(x)
@@ -44,29 +49,11 @@ def convert_number(string):
     return res
 
 
-def convert_aa_3_to_1(string):
-    aa_3_to_1 = {
-        "Ala": "A",
-        "Arg": "R",
-        "Asn": "N",
-        "Asp": "D",
-        "Asx": "B",
-        "Cys": "C",
-        "Glu": "E",
-        "Gln": "Q",
-        "Glx": "Z",
-        "Gly": "G",
-        "His": "H",
-        "Ile": "I",
-        "Leu": "L",
-        "Lys": "K",
-        "Met": "M",
-        "Phe": "F",
-        "Pro": "P",
-        "Ser": "S",
-        "Thr": "T",
-        "Trp": "W",
-        "Tyr": "Y",
-        "Val": "V",
-    }
-    return aa_3_to_1.get(string, None)
+def amino_acid_residue_change_3_to_1(protein_sequence_name):
+    p = re.compile("p.([A-Za-z]+)(\d+)([A-Za-z]+)")
+    m = p.match(protein_sequence_name)
+    ref = AMINO_ACID_RESIDUE_3_TO_1.get(m.group(1), None)
+    alt = AMINO_ACID_RESIDUE_3_TO_1.get(m.group(3), None)
+    pos = m.group(2)
+    protein_change = "".join([ref, pos, alt])
+    return protein_change
