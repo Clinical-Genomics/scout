@@ -88,7 +88,19 @@ def variants(
             remove_n_variants = store.variant_collection.count_documents(variants_query)
             total_deleted += remove_n_variants
             click.echo(
-                f"{nr}\t{n_cases}\t{case['owner']}\t{case['display_name']}\t{case_id}\t{case.get('track','')}\t{case['analysis_date']}\t{case_n_variants}\t{total_deleted}"
+                "\t".join(
+                    [
+                        str(nr),
+                        str(n_cases),
+                        case["owner"],
+                        case["display_name"],
+                        case_id,
+                        case.get("track", ""),
+                        str(case["analysis_date"]),
+                        str(case_n_variants),
+                        str(total_deleted),
+                    ]
+                )
             )
             continue
 
@@ -97,7 +109,19 @@ def variants(
         click.echo(f"Deleted {result.deleted_count} / {case_n_variants} total variants")
         total_deleted += result.deleted_count
         click.echo(
-            f"{nr}\t{n_cases}\t{case['owner']}\t{case['display_name']}\t{case_id}\t{case.get('track','')}\t{case['analysis_date']}\t{case_n_variants}\t{total_deleted}"
+            "\t".join(
+                [
+                    str(nr),
+                    str(n_cases),
+                    case["owner"],
+                    case["display_name"],
+                    case_id,
+                    case.get("track", ""),
+                    str(case["analysis_date"]),
+                    str(case_n_variants),
+                    str(total_deleted),
+                ]
+            )
         )
 
         # Create event in database
