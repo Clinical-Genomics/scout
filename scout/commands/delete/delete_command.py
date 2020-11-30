@@ -8,7 +8,7 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 BYTES_IN_ONE_GIGABYTE = 1073741824  # (1024*1024*1024)
-DELETE_VARIANTA_HEADER = "Case n.\tNcases\tInstitute\tCase name\tCase ID\tCase track\tAnalysis date\tTotal variants\tRemoved variants"
+DELETE_VARIANTS_HEADER = "Case n.\tNcases\tInstitute\tCase name\tCase ID\tCase track\tAnalysis date\tTotal variants\tRemoved variants"
 
 
 @click.command("variants", short_help="Delete variants for one or more cases")
@@ -65,7 +65,7 @@ def variants(
     filters = (
         f"Rank-score threshold:{rank_threshold}, case n. variants threshold:{variants_threshold}."
     )
-    click.echo(DELETE_VARIANTA_HEADER)
+    click.echo(DELETE_VARIANTS_HEADER)
     for nr, case in enumerate(cases, 1):
         case_id = case["_id"]
         case_n_variants = store.variant_collection.count_documents({"case_id": case_id})
