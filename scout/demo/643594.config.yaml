@@ -19,10 +19,10 @@ samples:
     vcf2cytosure: scout/demo/ADM1059A2.dummy.cgh
     tissue_type: blood
     chromograph_images:
-        'upd_regions': '/Users/Mikael/Work/cancer_scout2/downloads/deepbeagle/2020-11-02/ACC5341A12_gatkcomb_rhocall_vt_af_upd.regions_'
-        'upd_sites': '/Users/Mikael/Work/cancer_scout2/downloads/deepbeagle/2020-11-02/ACC5341A12_gatkcomb_rhocall_vt_af_upd.sites_'
+        'upd_regions': ''
+        'upd_sites': ''
         'coverage': ''
-        'chr': '' 
+        'autozyg': ''
 
   - analysis_type: wes
     sample_id: ADM1059A1
