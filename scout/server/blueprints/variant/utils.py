@@ -98,7 +98,7 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
             transcript["is_primary"] = True
 
         # Add the transcript links
-        add_tx_links(transcript, genome_build)
+        add_tx_links(transcript, genome_build, hgnc_symbol)
         # If the transcript has a ref seq identifier we add that
         # to the variants transcript
         refseq_id = hgnc_transcript.get("refseq_id")
