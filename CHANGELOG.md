@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
+### Added
+- Extend the delete variants command to print analysis date, track, institute, status and research status
+- Delete variants by type of analysis (wgs|wes|panel)
+- Links to cBioPortal, MutanTP53, IARC TP53, OncoKB, MyCancerGenome, CIViC
+### Fixed
+### Changed
+- Print output of variants delete command as a tab separated table
+
+## [4.25]
+### Added
+- Command line function to remove variants from one or all cases
 ### Fixed
 - Parse SMN None calls to None rather than False
 

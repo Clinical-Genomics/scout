@@ -1,4 +1,94 @@
 #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol<tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
+HP:0000135	Hypogonadism	7157	TP53	-	mim2gene	OMIM:618165
+HP:0000238	Hydrocephalus	7157	TP53		orphadata	ORPHA:2807
+HP:0000238	Hydrocephalus	7157	TP53	susceptibility	mim2gene	OMIM:260500
+HP:0000252	Microcephaly	7157	TP53	-	mim2gene	OMIM:618165
+HP:0000737	Irritability	7157	TP53		orphadata	ORPHA:1501
+HP:0000739	Anxiety	7157	TP53		orphadata	ORPHA:1501
+HP:0000822	Hypertension	7157	TP53		orphadata	ORPHA:1501
+HP:0000859	Hyperaldosteronism	7157	TP53		orphadata	ORPHA:1501
+HP:0000952	Jaundice	7157	TP53		orphadata	ORPHA:1333
+HP:0000969	Edema	7157	TP53		orphadata	ORPHA:668
+HP:0000969	Edema	7157	TP53		orphadata	ORPHA:668
+HP:0000975	Hyperhidrosis	7157	TP53		orphadata	ORPHA:1501
+HP:0000998	Hypertrichosis	7157	TP53		orphadata	ORPHA:1501
+HP:0001085	Papilledema	7157	TP53	susceptibility	mim2gene	OMIM:260500
+HP:0001250	Seizure	7157	TP53	-	mim2gene	OMIM:618165
+HP:0001250	Seizure	7157	TP53		orphadata	ORPHA:2807
+HP:0001250	Seizure	7157	TP53	susceptibility	mim2gene	OMIM:260500
+HP:0001276	Hypertonia	7157	TP53		orphadata	ORPHA:2807
+HP:0001297	Stroke	7157	TP53		orphadata	ORPHA:3318
+HP:0001298	Encephalopathy	7157	TP53		orphadata	ORPHA:524
+HP:0001394	Cirrhosis	7157	TP53	-	mim2gene	OMIM:114550
+HP:0001396	Cholestasis	7157	TP53		orphadata	ORPHA:1333
+HP:0001425	Heterogeneous	7157	TP53	-	mim2gene	OMIM:114550
+HP:0001425	Heterogeneous	7157	TP53	-	mim2gene	OMIM:114480
+HP:0001433	Hepatosplenomegaly	7157	TP53		orphadata	ORPHA:1333
+HP:0001744	Splenomegaly	7157	TP53		orphadata	ORPHA:3318
+HP:0001903	Anemia	7157	TP53	-	mim2gene	OMIM:618165
+HP:0001909	Leukemia	7157	TP53	-	mim2gene	OMIM:151623
+HP:0001909	Leukemia	7157	TP53		orphadata	ORPHA:3318
+HP:0100242	Sarcoma	7157	TP53		orphadata	ORPHA:524
+HP:0100242	Sarcoma	7157	TP53	susceptibility	mim2gene	OMIM:259500
+HP:0100242	Sarcoma	7157	TP53	-	mim2gene	OMIM:151623
+HP:0001945	Fever	7157	TP53		orphadata	ORPHA:668
+HP:0001945	Fever	7157	TP53		orphadata	ORPHA:668
+HP:0001962	Palpitations	7157	TP53		orphadata	ORPHA:1501
+HP:0002013	Vomiting	7157	TP53	susceptibility	mim2gene	OMIM:260500
+HP:0002014	Diarrhea	7157	TP53		orphadata	ORPHA:1333
+HP:0002018	Nausea	7157	TP53	susceptibility	mim2gene	OMIM:260500
+HP:0002039	Anorexia	7157	TP53		orphadata	ORPHA:1333
+HP:0002315	Headache	7157	TP53	susceptibility	mim2gene	OMIM:260500
+HP:0100768	Choriocarcinoma	7157	TP53	-	mim2gene	OMIM:151623
+HP:0002664	Neoplasm	7157	TP53		orphadata	ORPHA:524
+HP:0002664	Neoplasm	7157	TP53	-	mim2gene	OMIM:607107
+HP:0002664	Neoplasm	7157	TP53		orphadata	ORPHA:3318
+HP:0002664	Neoplasm	7157	TP53	-	mim2gene	OMIM:260350
+HP:0002664	Neoplasm	7157	TP53		orphadata	ORPHA:2807
+HP:0002664	Neoplasm	7157	TP53	susceptibility	mim2gene	OMIM:259500
+HP:0002664	Neoplasm	7157	TP53		orphadata	ORPHA:145
+HP:0002664	Neoplasm	7157	TP53	susceptibility	mim2gene	OMIM:202300
+HP:0002664	Neoplasm	7157	TP53	susceptibility	mim2gene	OMIM:260500
+HP:0002664	Neoplasm	7157	TP53	-	mim2gene	OMIM:114550
+HP:0002664	Neoplasm	7157	TP53	-	mim2gene	OMIM:114480
+HP:0002664	Neoplasm	7157	TP53	susceptibility	mim2gene	OMIM:137800
+HP:0002664	Neoplasm	7157	TP53	-	mim2gene	OMIM:151623
+HP:0002664	Neoplasm	7157	TP53		orphadata	ORPHA:1333
+HP:0002664	Neoplasm	7157	TP53		orphadata	ORPHA:1501
+HP:0002665	Lymphoma	7157	TP53		orphadata	ORPHA:524
+HP:0002667	Nephroblastoma	7157	TP53	-	mim2gene	OMIM:151623
+HP:0002669	Osteosarcoma	7157	TP53	-	mim2gene	OMIM:151623
+HP:0002669	Osteosarcoma	7157	TP53		orphadata	ORPHA:524
+HP:0002669	Osteosarcoma	7157	TP53	susceptibility	mim2gene	OMIM:259500
+HP:0002716	Lymphadenopathy	7157	TP53		orphadata	ORPHA:1333
+HP:0002797	Osteolysis	7157	TP53		orphadata	ORPHA:668
+HP:0002797	Osteolysis	7157	TP53		orphadata	ORPHA:668
+HP:0002861	Melanoma	7157	TP53		orphadata	ORPHA:524
+HP:0002861	Melanoma	7157	TP53		orphadata	ORPHA:1333
+HP:0002861	Melanoma	7157	TP53		orphadata	ORPHA:145
+HP:0002863	Myelodysplasia	7157	TP53		orphadata	ORPHA:3318
+HP:0002888	Ependymoma	7157	TP53	susceptibility	mim2gene	OMIM:137800
+HP:0002900	Hypokalemia	7157	TP53		orphadata	ORPHA:1501
+HP:0003271	Visceromegaly	7157	TP53		orphadata	ORPHA:3318
+HP:0003271	Visceromegaly	7157	TP53		orphadata	ORPHA:1333
+HP:0003401	Paresthesia	7157	TP53		orphadata	ORPHA:3318
+HP:0004374	Hemiplegia/hemiparesis	7157	TP53		orphadata	ORPHA:2807
+HP:0040075	Hypopituitarism	7157	TP53		orphadata	ORPHA:1501
+HP:0025615	Abscess	7157	TP53		orphadata	ORPHA:1333
+HP:0009592	Astrocytoma	7157	TP53	susceptibility	mim2gene	OMIM:137800
+HP:0009733	Glioma	7157	TP53	susceptibility	mim2gene	OMIM:137800
+HP:0009919	Retinoblastoma	7157	TP53	susceptibility	mim2gene	OMIM:259500
+HP:0011675	Arrhythmia	7157	TP53		orphadata	ORPHA:1501
+HP:0011974	Myelofibrosis	7157	TP53		orphadata	ORPHA:3318
+HP:0012115	Hepatitis	7157	TP53	-	mim2gene	OMIM:114550
+HP:0012378	Fatigue	7157	TP53		orphadata	ORPHA:1333
+HP:0012531	Pain	7157	TP53		orphadata	ORPHA:3318
+HP:0012531	Pain	7157	TP53		orphadata	ORPHA:668
+HP:0012531	Pain	7157	TP53		orphadata	ORPHA:668
+HP:0012531	Pain	7157	TP53		orphadata	ORPHA:1333
+HP:0012531	Pain	7157	TP53		orphadata	ORPHA:1501
+HP:0012740	Papilloma	7157	TP53		orphadata	ORPHA:2807
+HP:0012740	Papilloma	7157	TP53	susceptibility	mim2gene	OMIM:260500
 HP:0004332	Abnormal lymphocyte morphology	5897	RAG2	-	mim2gene	OMIM:233650
 HP:0004332	Abnormal lymphocyte morphology	200942	KLHDC8B	susceptibility	mim2gene	OMIM:236000
 HP:0004332	Abnormal lymphocyte morphology	2672	GFI1	-	mim2gene	OMIM:613107
