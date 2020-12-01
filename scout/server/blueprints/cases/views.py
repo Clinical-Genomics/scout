@@ -973,8 +973,6 @@ def host_upd_regions_image(institute_id, case_name, individual, image):
 )
 def host_upd_sites_image(institute_id, case_name, individual, image):
     """Generate UPD image file paths"""
-
-    LOG.debug("SITES")
     return host_image_aux(institute_id, case_name, individual, image, "upd_sites")
 
 
@@ -983,16 +981,20 @@ def host_upd_sites_image(institute_id, case_name, individual, image):
 )
 def host_coverage_image(institute_id, case_name, individual, image):
     """Generate Coverage image file paths"""
-    LOG.debug("COVERAGE")
     return host_image_aux(institute_id, case_name, individual, image, "coverage")
 
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/autozyg_images/<image>", methods=["GET", "POST"]
+)
+def host_autozyg_image(institute_id, case_name, individual, image):
+    """Generate Coverage image file paths"""
+    return host_image_aux(institute_id, case_name, individual, image, "autozyg")
 
 @cases_bp.route(
     "/<institute_id>/<case_name>/<individual>/ideograms/<image>", methods=["GET", "POST"]
 )
 def host_chr_image(institute_id, case_name, individual, image):
     """Generate CHR image file paths. Points to servers 'public/static'"""
-    LOG.debug("CHR")
     public_folder = "/public/static/ideograms/"
     img_path = public_folder + image
     LOG.debug("ideaogram: {}".format(img_path))
