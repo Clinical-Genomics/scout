@@ -105,6 +105,18 @@
                       <a href="{{ transcript.varsome_link }}" class="badge badge-secondary text-white" target="_blank"
                         data-toggle="tooltip" title="Varsome">V</a>
                     {% endif %}
+                    {% if transcript.tp53_link %}
+                      <a href="{{ transcript.tp53_link }}" class="badge badge-secondary text-white" target="_blank"
+                        data-toggle="tooltip" title="MutanTP53">TP53</a>
+                    {% endif %}
+                    {% if transcript.cbioportal_link %}
+                      <a href="{{ transcript.cbioportal_link }}" class="badge badge-secondary text-white" target="_blank"
+                        data-toggle="tooltip" title="cBioPortal">CBP</a>
+                    {% endif %}
+                    {% if transcript.mycancergenome_link %}
+                      <a href="{{ transcript.mycancergenome_link }}" class="badge badge-secondary text-white" target="_blank"
+                        data-toggle="tooltip" title="MyCancerGenome">MCG</a>
+                    {% endif %}
                   </td>
                 </tr>
               {% endfor %}

@@ -14,7 +14,9 @@ from scout.constants import SPIDEX_HUMAN, CLINSIG_MAP
 
 
 class QueryHandler(object):
-    def build_case_query(self, case_id=None, status=None, older_than=None) -> dict:
+    def build_case_query(
+        self, case_id=None, status=None, older_than=None, analysis_type=[]
+    ) -> dict:
         """Build case query based on case id, status and analysis date
 
         Args:
@@ -22,6 +24,7 @@ class QueryHandler(object):
             status(list): one or more case status
             older_than(int): to select cases older than a number of months
             case_ids(list): a list of case _ids
+            analysis_type(list): a list of type of analysis ["wgs", "wes", "panel"]
 
         Returns:
             case_query(dict): query dictionary
@@ -29,11 +32,13 @@ class QueryHandler(object):
         case_query = {}
         if case_id:
             case_query["_id"] = case_id
-        if status:
-            case_query["status"] = {"$in": list(status)}
+        if analysis_type:
+            case_query["individuals.analysis_type"] = {"$in": analysis_type}
         if older_than:
             older_than_date = datetime.now() - timedelta(weeks=older_than * 4)  # 4 weeks in a month
             case_query["analysis_date"] = {"$lt": older_than_date}
+        if status:
+            case_query["status"] = {"$in": list(status)}
         return case_query
 
     def delete_variants_query(self, case_id, variants_to_keep=[], min_rank_threshold=None) -> dict:
