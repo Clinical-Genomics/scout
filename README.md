@@ -25,6 +25,22 @@
 
 This README only gives a brief overview of Scout, for a more complete reference, please check out our docs: [www.clinicalgenomics.se/scout](http://www.clinicalgenomics.se/scout/).
 
+## Runnable demo image - does not require installing of software and database
+
+A simple demo instance of Scout requires the installation of Docker and can be launched either by using the command:
+`docker-compose run -d` or `make up`.
+
+The repository includes a Makefile with common shortcuts to simplify setting up and working with Scout. To see a full list and description of these shortcuts run: `make help`.
+
+This demo is consisting of 3 containers:
+- a lightweight mongodb instance
+- scout-cli --> the Scout command line, connected to the database. Populates the database with demo data
+- scout-web --> the Scout web app, that serves the app on localhost, port 5000.
+
+Once the server has started you and open the app in the web browser at the following address: http://localhost:5000/
+
+The command to stop the demo are either `docker-compose down` or `make down`.
+
 ## Installation
 
 <!-- You can install the latest release of Scout using `pip`:
@@ -41,7 +57,7 @@ If you would like to install Scout for local development: -->
 ```bash
 git clone https://github.com/Clinical-Genomics/scout
 cd scout
-pip install --requirement requirements.txt --editable .
+pip install --editable .
 ```
 
 Scout PDF reports are created using [Flask-WeasyPrint](https://pythonhosted.org/Flask-WeasyPrint/). This library requires external dependencies which need be installed separately (namely Cairo and Pango). See platform-specific instructions for Linux, macOS and Windows available on the WeasyPrint installation [pages](https://weasyprint.readthedocs.io/en/stable/install.html#).
@@ -54,7 +70,7 @@ docker run --name mongo -p 27017:27017 mongo
 
 ## Usage
 
-### Demo
+### Demo - requires pip-installing the app in a container and a running instance of mongodb
 
 Once installed, you can setup Scout by running a few commands using the included command line interface. Given you have a MongoDB server listening on the default port (27017), this is how you would setup a fully working Scout demo:
 
@@ -113,9 +129,9 @@ This is an example of the config file:
 # list of email addresses to send errors to in production
 ADMINS = ['paul.anderson@magnolia.com']
 
-MONGO_HOST = 'localhost'
+MONGO_HOST = 'localhost'		
 MONGO_PORT = 27017
-MONGO_DBNAME = 'scoutTest'
+MONGO_DBNAME = 'scout'
 MONGO_USERNAME = 'testUser'
 MONGO_PASSWORD = 'testPass'
 
@@ -148,6 +164,8 @@ TEMPLATES_AUTO_RELOAD = False  			# consider turning off in production
 SECRET_KEY = 'secret key'               # override in production!
 ```
 
+Most of the config settings are optional. A minimal config would consist of SECRET_KEY and MONGO_DBNAME.
+
 Starting the server in now really easy, for the demo and local development we will use the CLI:
 
 ```bash
@@ -163,12 +181,10 @@ such as Gunicorn.
 This is also how we can multiprocess the server and use encrypted HTTPS connections.
 
 ```bash
-SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 --access-logfile - --error-logfile
- - --keyfile /tmp/myserver.key --certfile /tmp/server.crt wsgi_gunicorn:app
+SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 scout.server.auto:app
 ```
 
-> The `wsgi_gunicorn.py` file is included in the repo and configures Flask to work with Gunicorn.
-
+For added security and flexibility, we recommend a reverse proxy solution like NGINX.
 
 ### Setting up a user login system
 
@@ -216,6 +232,21 @@ To run unit tests:
 
 ```bash
 pytest
+```
+
+## Docker tips and tricks
+
+Docker can simplify the development of Scout as it offers a portable configuration-free environment with all dependancies included. The default `docker-compose.yml` file is designed for demoing and not for development. You can extend the included compose file with your own custom configuration to make it more development friendly. For more information on how to extend docker-compse files see, [https://docs.docker.com/compose/extends/][docker docs]. The following are an example configuration.
+
+``` yaml
+services:
+  mongodb:
+    volumes:
+      - ./volumes/mongodb/data:/data/db  #  make db persistent by storing data on host file system
+  scout-web:
+    environment:
+	  FLASK_ENV: development  # set environment variables
+	command: scout --host mongodb serve --host 0.0.0.0  # not running on demo db
 ```
 
 ## Example of analysis config

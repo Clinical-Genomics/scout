@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
-
 import operator
-
 from pymongo.errors import DuplicateKeyError, BulkWriteError
-from pymongo import ASCENDING
+import pymongo
+from anytree import RenderTree, Node, search, resolver
+from anytree.exporter import DictExporter
 
 from scout.exceptions import IntegrityError
 
@@ -95,8 +95,12 @@ class HpoHandler(object):
             query_dict["hpo_id"] = hpo_term
             search_term = hpo_term
 
-        limit = limit or int(10e10)
-        res = self.hpo_term_collection.find(query_dict).limit(limit).sort("hpo_number", ASCENDING)
+        limit = limit or 0
+        res = (
+            self.hpo_term_collection.find(query_dict)
+            .limit(limit)
+            .sort("hpo_number", pymongo.ASCENDING)
+        )
 
         return res
 
@@ -122,3 +126,66 @@ class HpoHandler(object):
 
         sorted_genes = sorted(genes.items(), key=operator.itemgetter(1), reverse=True)
         return sorted_genes
+
+    def organize_tree(self, all_terms, root):
+        """Organizes a set of Tree node objects into a tree, according to their ancestors and children
+
+        Args:
+            all_terms(dict): a dictionary with "term_name" as keys and term_dict as values
+            root(anytree.Node)
+        Returns
+            root(anytree.Node): the updated root node of the tree
+        """
+        # Move tree nodes in the right position according to the ontology
+        for key, term in all_terms.items():
+            ancestors = term["ancestors"]
+            if len(ancestors) == 0:
+                continue
+            for ancestor in ancestors:
+                ancestor_node = search.find_by_attr(root, ancestor)
+                if ancestor_node is None:  # It's probably the term on the top
+                    continue
+                node = search.find_by_attr(root, key)
+                node.parent = ancestor_node
+        return root
+
+    def build_phenotype_tree(self, hpo_id):
+        """Creates an HPO Tree based on one or more given ancestors
+        Args:
+            hpo_id(str): an HPO term
+        Returns:
+            tree_dict(dict): a tree of all HPO children of the given term, as a dictionary
+        """
+        root = Node(id="root", name="root", parent=None)
+        all_terms = {}
+        unique_terms = set()
+
+        def _hpo_terms_list(hpo_ids):
+            for term_id in hpo_ids:
+                term_obj = self.hpo_term(term_id)
+                if term_obj is None:
+                    continue
+                # sort term children by ascending HPO number
+                children = sorted(
+                    term_obj["children"], key=lambda x: int("".join([i for i in x if i.isdigit()]))
+                )
+                term_obj["children"] = children
+                all_terms[term_id] = term_obj
+                if term_id not in unique_terms:
+                    node = Node(term_id, parent=root, description=term_obj["description"])
+                    unique_terms.add(term_id)
+                # recursive loop to collect children, children of children and so on
+                _hpo_terms_list(term_obj["children"])
+
+        # compile a list of all HPO term objects to include in the submodel
+        _hpo_terms_list([hpo_id])  # trigger the recursive loop to collect nested HPO terms
+        # rearrange tree according to the HPO ontology
+        root = self.organize_tree(all_terms, root)
+        node_resolver = resolver.Resolver("name")
+        # Extract a tree structure having the chosen HPO term (hpo_id) as ancestor of all the children terms
+        term_node = node_resolver.get(root, hpo_id)
+        LOG.info(f"Built ontology for HPO term:{hpo_id}:\n{RenderTree(term_node)}")
+        exporter = DictExporter()
+        # Export this tree structure as dictionary, so that can be saved in database
+        tree_dict = exporter.export(term_node)
+        return tree_dict

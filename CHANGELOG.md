@@ -6,13 +6,134 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Extend the delete variants command to print analysis date, track, institute, status and research status
+- Delete variants by type of analysis (wgs|wes|panel)
+- Links to cBioPortal, MutanTP53, IARC TP53, OncoKB, MyCancerGenome
+### Fixed
+### Changed
+- Print output of variants delete command as a tab separated table
+
+## [4.25]
+### Added
+- Command line function to remove variants from one or all cases
+### Fixed
+- Parse SMN None calls to None rather than False
+
+## [4.24.1]
+### Fixed
+- Install requirements.txt via setup file
+
+## [4.24]
+### Added
+- Institute-level phenotype models with sub-panels containing HPO and OMIM terms
+- Runnable Docker demo
+- Docker image build and push github action
+- Makefile with shortcuts to docker commands
+- Parse and save synopsis, phenotype and cohort terms from config files upon case upload
+### Fixed
+- Update dismissed variant status when variant dismissed key is missing
+- Breakpoint two IGV button now shows correct chromosome when different from bp1
+- Missing font lib in Docker image causing the PDF report download page to crash
+- Sentieon Manta calls lack Somaticscore - load anyway
+- ClinVar submissions crashing due to pinned variants that are not loaded
+- Point ExAC pLI score to new gnomad server address
+- Bug uploading cases missing phenotype terms in config file
+- STRs loaded but not shown on browser page
+- Bug when using adapter.variant.get_causatives with case_id without causatives
+- Problem with fetching "solved" from scout export cases cli
+- Better serialising of datetime and bson.ObjectId
+- Added `volumes` folder to .gitignore
+### Changed
+- Make matching causative and managed variants foldable on case page
+- Remove calls to PyMongo functions marked as deprecated in backend and frontend(as of version 3.7).
+- Improved `scout update individual` command
+- Export dynamic phenotypes with ordered gene lists as PDF
+
+## [4.23]
+### Added
+- Save custom IGV track settings
+- Show a flash message with clear info about non-valid genes when gene panel creation fails
+- CNV report link in cancer case side navigation
+- Return to comment section after editing, deleting or submitting a comment
+- Managed variants
+- MT vs 14 chromosome mean coverage stats if Scout is connected to Chanjo
+### Fixed
+- missing `vcf_cancer_sv` and `vcf_cancer_sv_research` to manual.
+- Split ClinVar multiple clnsig values (slash-separated) and strip them of underscore for annotations without accession number
+- Timeout of `All SNVs and INDELs` page when no valid gene is provided in the search
+- Round CADD (MIPv9)
+- Missing default panel value
+- Invisible other causatives lines when other causatives lack gene symbols
+### Changed
+- Do not freeze mkdocs-material to version 4.6.1
+- Remove pre-commit dependency
+
+## [4.22]
+### Added
+- Editable cases comments
+- Editable variants comments
+### Fixed
+- Empty variant activity panel
+- STRs variants popover
+- Split new ClinVar multiple significance terms for a variant
+- Edit the selected comment, not the latest
+### Changed
+- Updated RELEASE docs.
+- Pinned variants card style on the case page
+- Merged `scout export exons` and `scout view exons` commands
+
+
+## [4.21.2]
+### Added
+### Fixed
+- Do not pre-filter research variants by (case-default) gene panels
+- Show OMIM disease tooltip reliably
+### Changed
+
+## [4.21.1]
+### Added
+### Fixed
+- Small change to Pop Freq column in variants ang gene panels to avoid strange text shrinking on small screens
+- Direct use of HPO list for Clinical HPO SNV (and cancer SNV) filtering
+- PDF coverage report redirecting to login page
+### Changed
+- Remove the option to dismiss single variants from all variants pages
+- Bulk dismiss SNVs, SVs and cancer SNVs from variants pages
+
+## [4.21]
+### Added
+- Support to configure LoqusDB per institute
 - Highlight causative variants in the variants list
 - Add tests. Mostly regarding building internal datatypes.
+- Remove leading and trailing whitespaces from panel_name and display_name when panel is created
+- Mark MANE transcript in list of transcripts in "Transcript overview" on variant page
+- Show default panel name in case sidebar
+- Previous buttons for variants pagination
+- Adds a gh action that checks that the changelog is updated
+- Adds a gh action that deploys new releases automatically to pypi
+- Warn users if case default panels are outdated
+- Define institute-specific gene panels for filtering in institute settings
+- Use institute-specific gene panels in variants filtering
+- Show somatic VAF for pinned and causative variants on case page
+
 ### Fixed
 - Report pages redirect to login instead of crashing when session expires
 - Variants filter loading in cancer variants page
+- User, Causative and Cases tables not scaling to full page
+- Improved docs for an initial production setup
+- Compatibility with latest version of Black
+- Fixed tests for Click>7
+- Clinical filter required an extra click to Filter to return variants
+- Restore pagination and shrink badges in the variants page tables
+- Removing a user from the command line now inactivates the case only if user is last assignee and case is active
+- Bugfix, LoqusDB per institute feature crashed when institute id was empty string
+- Bugfix, LoqusDB calls where missing case count
+- filter removal and upload for filters deleted from another page/other user
+- Visualize outdated gene panels info in a popover instead of a tooltip in case page side panel
+
 ### Changed
 - Highlight color on normal STRs in the variants table from green to blue
+- Display breakpoints coordinates in verification emails only for structural variants
 
 
 ## [4.20]
@@ -26,6 +147,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bug occurring when rerun is requested twice
 - Peddy info fields in the demo config file
 - Added load config safety check for multiple alignment files for one individual
+- Formatting of cancer variants table
+- Missing Score in SV variants table
 
 ### Changed
 - Updated the documentation on how to create a new software release

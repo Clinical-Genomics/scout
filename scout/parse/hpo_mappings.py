@@ -13,7 +13,8 @@ def parse_hpo_to_genes(lines):
 
     Args:
         lines(iterable(str)): example:
-        #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol<tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
+        #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol\
+        <tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
         HP:0000002	Abnormality of body height	3954	LETM1	-	mim2gene	OMIM:194190
         HP:0000002	Abnormality of body height	197131	UBR1	-	mim2gene	OMIM:243800
         HP:0000002	Abnormality of body height	79633	FAT4		orphadata	ORPHA:314679
@@ -36,7 +37,8 @@ def parse_hpo_diseases(hpo_lines):
 
             Args:
                 lines(iterable(str)): example:
-                #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol<tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
+                #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol\
+                <tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
                 HP:0000002	Abnormality of body height	3954	LETM1	-	mim2gene	OMIM:194190
                 HP:0000002	Abnormality of body height	197131	UBR1	-	mim2gene	OMIM:243800
                 HP:0000002	Abnormality of body height	79633	FAT4		orphadata	ORPHA:314679
@@ -87,7 +89,8 @@ def parse_hpo_disease(hpo_line):
         Args:
             hpo_line(str) a line with the following formatting:
 
-            #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol<tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
+            #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol\
+            <tab>Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
             HP:0000002	Abnormality of body height	3954	LETM1	-	mim2gene	OMIM:194190
             HP:0000002	Abnormality of body height	197131	UBR1	-	mim2gene	OMIM:243800
             HP:0000002	Abnormality of body height	79633	FAT4		orphadata	ORPHA:314679

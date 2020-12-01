@@ -63,11 +63,17 @@ class InstituteForm(FlaskForm):
     pheno_group = TextField("New phenotype group", validators=[validators.Optional()])
     pheno_abbrev = TextField("Abbreviation", validators=[validators.Optional()])
 
+    gene_panels = NonValidatingSelectMultipleField(
+        "Gene panels for variants filtering", validators=[validators.Optional()]
+    )
+
     pheno_groups = NonValidatingSelectMultipleField("Custom phenotype groups", choices=hpo_tuples)
     cohorts = NonValidatingSelectMultipleField(
         "Available patient cohorts", validators=[validators.Optional()]
     )
     institutes = NonValidatingSelectMultipleField("Institutes to share cases with", choices=[])
+    loqusdb_id = TextField("LoqusDB id", validators=[validators.Optional()])
+
     submit_btn = SubmitField("Save settings")
 
 
@@ -110,3 +116,19 @@ class CaseFilterForm(FlaskForm):
     skip_assigned = BooleanField("Hide assigned")
     is_research = BooleanField("Research only")
     search = SubmitField(label="Search")
+
+
+class PhenoModelForm(FlaskForm):
+    """Base Phenopanel form, not including any subpanel"""
+
+    model_name = TextField("Phenotype panel name", validators=[validators.InputRequired()])
+    model_desc = TextField("Description", validators=[validators.Optional()])
+    create_model = SubmitField("create")
+
+
+class PhenoSubPanelForm(FlaskForm):
+    """A form corresponfing to a phenopanel sub-panel"""
+
+    title = TextField("Subpanel title", validators=[validators.InputRequired()])
+    subtitle = TextField("Subpanel subtitle", validators=[validators.Optional()])
+    add_subpanel = SubmitField("save subpanel")

@@ -1,3 +1,4 @@
+from scout.constants import USER_DEFAULT_TRACKS
 from scout.models import User
 
 
@@ -20,7 +21,7 @@ def build_user(user_info):
     except KeyError as err:
         raise KeyError("A user has to have a name")
 
-    user_obj = User(email=email, name=name, id=user_info.get("id"))
+    user_obj = User(email=email, name=name, id=user_info.get("id"), igv_tracks=USER_DEFAULT_TRACKS)
 
     ##TODO check that these are on the correct format
     if "roles" in user_info:

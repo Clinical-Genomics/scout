@@ -32,17 +32,14 @@
 
 1. After getting the pull request approved by a reviewer merge it to master.
 
-1. Pull the new version of master and **tag** the release:
+1. Draft a new release on GitHub, add some text - e.g. and abbreviated CHANGELOG - and release.
+This adds a version tag, builds and submits to PyPi.
+
+1. *Skip if using GitHub Action* Pull the new version of master and **tag** the release:
 
     ```bash
     git tag -a v2.0.0 -m "version 2.0.0 release"
     git push origin v2.0.0
-    ```
-
-1. Publish to PyPI (Requires correct PyPI owner permissions)
-
-    ```bash
-    python setup.py upload
     ```
 
 1. build and publish docs (Make sure no unwanted files are added when doing `git add .`, run `git status` first)

@@ -11,129 +11,129 @@ def build_variant(
 ):
     """Build a variant object based on parsed information
 
-        Args:
-            variant(dict)
-            institute_id(str)
-            gene_to_panels(dict): A dictionary with
-                {<hgnc_id>: {
-                    'panel_names': [<panel_name>, ..],
-                    'disease_associated_transcripts': [<transcript_id>, ..]
-                    }
-                    .
-                    .
+    Args:
+        variant(dict)
+        institute_id(str)
+        gene_to_panels(dict): A dictionary with
+            {<hgnc_id>: {
+                'panel_names': [<panel_name>, ..],
+                'disease_associated_transcripts': [<transcript_id>, ..]
                 }
+                .
+                .
+            }
 
-            hgncid_to_gene(dict): A dictionary with
-                {<hgnc_id>: <hgnc_gene info>
-                    .
-                    .
-                }
-            sample_info(dict): A dictionary with info about samples.
-                               Strictly for cancer to tell which is tumor
+        hgncid_to_gene(dict): A dictionary with
+            {<hgnc_id>: <hgnc_gene info>
+                .
+                .
+            }
+        sample_info(dict): A dictionary with info about samples.
+                           Strictly for cancer to tell which is tumor
 
 
-        Returns:
-            variant_obj(dict)
+    Returns:
+        variant_obj(dict)
 
-        variant = dict(
-            # document_id is a md5 string created by institute_genelist_caseid_variantid:
-            _id = str, # required, same as document_id
-            document_id = str, # required
-            # variant_id is a md5 string created by chrom_pos_ref_alt (simple_id)
-            variant_id = str, # required
-            # display name is variant_id (no md5)
-            display_name = str, # required
+    variant = dict(
+        # document_id is a md5 string created by institute_genelist_caseid_variantid:
+        _id = str, # required, same as document_id
+        document_id = str, # required
+        # variant_id is a md5 string created by chrom_pos_ref_alt (simple_id)
+        variant_id = str, # required
+        # display name is variant_id (no md5)
+        display_name = str, # required
 
-            # chrom_pos_ref_alt
-            simple_id = str,
-            # The variant can be either research or clinical.
-            # For research variants we display all the available information while
-            # the clinical variants have limited annotation fields.
-            variant_type = str, # required, choices=('research', 'clinical'))
+        # chrom_pos_ref_alt
+        simple_id = str,
+        # The variant can be either research or clinical.
+        # For research variants we display all the available information while
+        # the clinical variants have limited annotation fields.
+        variant_type = str, # required, choices=('research', 'clinical'))
 
-            category = str, # choices=('sv', 'snv', 'str')
-            sub_category = str, # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd')
-            mate_id = str, # For SVs this identifies the other end
+        category = str, # choices=('sv', 'snv', 'str')
+        sub_category = str, # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd')
+        mate_id = str, # For SVs this identifies the other end
 
-            case_id = str, # case_id is a string like owner_caseid
-            chromosome = str, # required
-            position = int, # required
-            end = int, # required
-            length = int, # required
-            reference = str, # required
-            alternative = str, # required
+        case_id = str, # case_id is a string like owner_caseid
+        chromosome = str, # required
+        position = int, # required
+        end = int, # required
+        length = int, # required
+        reference = str, # required
+        alternative = str, # required
 
-            rank_score = float, # required
-            variant_rank = int, # required
-            rank_score_results = list, # List if dictionaries
-            variant_rank = int, # required
+        rank_score = float, # required
+        variant_rank = int, # required
+        rank_score_results = list, # List if dictionaries
+        variant_rank = int, # required
 
-            institute = str, # institute_id, required
+        institute = str, # institute_id, required
 
-            sanger_ordered = bool,
-            validation = str, # Sanger validation, choices=('True positive', 'False positive')
+        sanger_ordered = bool,
+        validation = str, # Sanger validation, choices=('True positive', 'False positive')
 
-            quality = float,
-            filters = list, # list of strings
-            samples = list, # list of dictionaries that are <gt_calls>
-            genetic_models = list, # list of strings choices=GENETIC_MODELS
-            compounds = list, # sorted list of <compound> ordering='combined_score'
+        quality = float,
+        filters = list, # list of strings
+        samples = list, # list of dictionaries that are <gt_calls>
+        genetic_models = list, # list of strings choices=GENETIC_MODELS
+        compounds = list, # sorted list of <compound> ordering='combined_score'
 
-            genes = list, # list with <gene>
-            dbsnp_id = str,
+        genes = list, # list with <gene>
+        dbsnp_id = str,
 
-            # Gene ids:
-            hgnc_ids = list, # list of hgnc ids (int)
-            hgnc_symbols = list, # list of hgnc symbols (str)
-            panels = list, # list of panel names that the variant ovelapps
+        # Gene ids:
+        hgnc_ids = list, # list of hgnc ids (int)
+        hgnc_symbols = list, # list of hgnc symbols (str)
+        panels = list, # list of panel names that the variant ovelapps
 
-            # Frequencies:
-            thousand_genomes_frequency = float,
-            thousand_genomes_frequency_left = float,
-            thousand_genomes_frequency_right = float,
-            exac_frequency = float,
-            max_thousand_genomes_frequency = float,
-            max_exac_frequency = float,
-            local_frequency = float,
-            local_obs_old = int,
-            local_obs_hom_old = int,
-            local_obs_total_old = int, # default=638
+        # Frequencies:
+        thousand_genomes_frequency = float,
+        thousand_genomes_frequency_left = float,
+        thousand_genomes_frequency_right = float,
+        exac_frequency = float,
+        max_thousand_genomes_frequency = float,
+        max_exac_frequency = float,
+        local_frequency = float,
+        local_obs_old = int,
+        local_obs_hom_old = int,
+        local_obs_total_old = int, # default=638
 
-            # Predicted deleteriousness:
-            cadd_score = float,
-            revel_score = float,
-            clnsig = list, # list of <clinsig>
-            spidex = float,
+        # Predicted deleteriousness:
+        cadd_score = float,
+        revel_score = float,
+        clnsig = list, # list of <clinsig>
+        spidex = float,
 
-            missing_data = bool, # default False
+        missing_data = bool, # default False
 
-            # STR specific information
-            str_repid = str, repeat id generally corresponds to gene symbol
-            str_ru = str, used e g in PanelApp naming of STRs
-            str_ref = int, reference copy number
-            str_len = int, number of repeats found in case
-            str_status = str, this indicates the severity of the expansion level
-            str_normal_max = int, max number of repeats to call an STR variant normal
-            str_pathologic_min = int, min number of repeats to call an STR variant pathologic
+        # STR specific information
+        str_repid = str, repeat id generally corresponds to gene symbol
+        str_ru = str, used e g in PanelApp naming of STRs
+        str_ref = int, reference copy number
+        str_len = int, number of repeats found in case
+        str_status = str, this indicates the severity of the expansion level
+        str_normal_max = int, max number of repeats to call an STR variant normal
+        str_pathologic_min = int, min number of repeats to call an STR variant pathologic
 
-            # Callers
-            gatk = str, # choices=VARIANT_CALL, default='Not Used'
-            samtools = str, # choices=VARIANT_CALL, default='Not Used'
-            freebayes = str, # choices=VARIANT_CALL, default='Not Used'
+        # Callers
+        gatk = str, # choices=VARIANT_CALL, default='Not Used'
+        samtools = str, # choices=VARIANT_CALL, default='Not Used'
+        freebayes = str, # choices=VARIANT_CALL, default='Not Used'
 
-            # Conservation:
-            phast_conservation = list, # list of str, choices=CONSERVATION
-            gerp_conservation = list, # list of str, choices=CONSERVATION
-            phylop_conservation = list, # list of str, choices=CONSERVATION
+        # Conservation:
+        phast_conservation = list, # list of str, choices=CONSERVATION
+        gerp_conservation = list, # list of str, choices=CONSERVATION
+        phylop_conservation = list, # list of str, choices=CONSERVATION
 
-            # Database options:
-            gene_lists = list,
-            manual_rank = int, # choices=[0, 1, 2, 3, 4, 5]
-            cancer_tier = str # choices=['1A', '1B', '2A', '2B', '3', '4']
-            dismiss_variant = list,
+        # Database options:
+        gene_lists = list,
+        manual_rank = int, # choices=[0, 1, 2, 3, 4, 5]
+        cancer_tier = str # choices=['1A', '1B', '2A', '2B', '3', '4']
+        dismiss_variant = list,
 
-            acmg_evaluation = str, # choices=ACMG_TERMS
-        )
+        acmg_evaluation = str, # choices=ACMG_TERMS
+    )
     """
     gene_to_panels = gene_to_panels or {}
     hgncid_to_gene = hgncid_to_gene or {}
@@ -260,9 +260,7 @@ def build_variant(
 
     # To make gene searches more effective
     if "hgnc_ids" in variant:
-        variant_obj["hgnc_ids"] = [
-            hgnc_id for hgnc_id in variant["hgnc_ids"] if hgnc_id
-        ]
+        variant_obj["hgnc_ids"] = [hgnc_id for hgnc_id in variant["hgnc_ids"] if hgnc_id]
 
     # Add the hgnc symbols from the database genes
     hgnc_symbols = []
@@ -331,9 +329,7 @@ def build_variant(
         variant_obj["thousand_genomes_frequency"] = float(frequencies["thousand_g"])
 
     if frequencies.get("thousand_g_max"):
-        variant_obj["max_thousand_genomes_frequency"] = float(
-            frequencies["thousand_g_max"]
-        )
+        variant_obj["max_thousand_genomes_frequency"] = float(frequencies["thousand_g_max"])
 
     if frequencies.get("exac"):
         variant_obj["exac_frequency"] = float(frequencies["exac"])
@@ -348,14 +344,10 @@ def build_variant(
         variant_obj["max_gnomad_frequency"] = float(frequencies["gnomad_max"])
 
     if frequencies.get("thousand_g_left"):
-        variant_obj["thousand_genomes_frequency_left"] = float(
-            frequencies["thousand_g_left"]
-        )
+        variant_obj["thousand_genomes_frequency_left"] = float(frequencies["thousand_g_left"])
 
     if frequencies.get("thousand_g_right"):
-        variant_obj["thousand_genomes_frequency_right"] = float(
-            frequencies["thousand_g_right"]
-        )
+        variant_obj["thousand_genomes_frequency_right"] = float(frequencies["thousand_g_right"])
 
     # add the local observation counts from the old archive
     if variant.get("local_obs_old"):

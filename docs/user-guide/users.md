@@ -4,8 +4,8 @@ A user represents an individual with access to all [cases](cases.md) that belong
 
 ## Create a user
 
-Users are created through the CLI with command `scout load user`, please se the `--help` argument for more information.
-Email is used as user identification, a user can be admin which means that they have access to all institutes in the instance. 
+Users are created through the CLI with command `scout load user`. Please see the `--help` argument for more information.
+Email is used as user identification. A user can be admin which means that they have access to all institutes in the instance.
 
 Example:
 

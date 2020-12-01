@@ -8,7 +8,6 @@ import pymongo
 import pytest
 import yaml
 from cyvcf2 import VCF
-from flask_login import login_user, logout_user
 
 # Adapter stuff
 from mongomock import MongoClient
@@ -68,6 +67,7 @@ from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
 from scout.parse.variant.headers import parse_rank_results_header
 from scout.server.blueprints.login.models import LoginUser
+from scout.server.app import create_app
 from scout.utils.handle import get_file_handle
 from scout.utils.link import link_genes
 
@@ -77,6 +77,22 @@ REAL_DATABASE = "realtestdb"
 # root_logger = logging.getLogger()
 # init_log(root_logger, loglevel='INFO')
 LOG = logging.getLogger(__name__)
+
+
+@pytest.fixture
+def mock_app(real_populated_database):
+    """Return the path to a mocked app object with data"""
+    _mock_app = create_app(
+        config=dict(
+            TESTING=True,
+            DEBUG=True,
+            MONGO_DBNAME=REAL_DATABASE,
+            DEBUG_TB_ENABLED=False,
+            LOGIN_DISABLED=True,
+        )
+    )
+    return _mock_app
+
 
 ##################### Gene fixtures #####################
 
@@ -392,6 +408,8 @@ def case_obj(request, parsed_case):
     case["updated_at"] = parsed_case["analysis_date"]
     case["delivery_report"] = parsed_case["delivery_report"]
     case["assignees"] = []
+    case["phenotype_terms"] = []  # do not assign any phenotype
+    case["cohorts"] = []  # do not assign any cohort
 
     return case
 
@@ -482,6 +500,35 @@ def institute_obj(request, parsed_institute):
     # move institute created time 1 day back in time
     institute["created_at"] = datetime.datetime.now() - datetime.timedelta(days=1)
     return institute
+
+
+#############################################################
+################# Managed variant fixtures ##################
+#############################################################
+
+
+@pytest.fixture(scope="function")
+def managed_variants_lines(request):
+    managed_variants_lines = [
+        "##my_csv_file",
+        "#chromosome;position;end;reference;alternative;category;sub_category;description\n",
+        "14;76548781;76548781;CTGGACC;G;snv;indel;IFT43 indel test\n",
+        "17;48696925;48696925;G;T;snv;snv;CACNA1G intronic test\n",
+        "7;124491972;124491972;C;A;snv;snv;POT1 test snv\n",
+    ]
+    return managed_variants_lines
+
+
+@pytest.fixture(scope="function")
+def managed_variants_first_line_header(request):
+    managed_variants_lines = [
+        "chromosome;position;end;reference;alternative;category;sub_category;description\n",
+        "14;76548781;76548781;CTGGACC;G;snv;indel;IFT43 indel test\n",
+        "17;48696925;48696925;G;T;snv;snv;CACNA1G intronic test\n",
+        ";;;;;;;\n",
+        "7;124491972;124491972;C;A;snv;snv;POT1 test snv\n",
+    ]
+    return managed_variants_lines
 
 
 #############################################################
@@ -1276,7 +1323,7 @@ def scout_config(request, config_file):
     """Return a dictionary with scout configs"""
     print("")
     in_handle = get_file_handle(config_file)
-    data = yaml.load(in_handle, Loader=yaml.FullLoader)
+    data = yaml.safe_load(in_handle)
     return data
 
 
@@ -1284,7 +1331,7 @@ def scout_config(request, config_file):
 def cancer_scout_config(request):
     """Return a dictionary with cancer case scout configs"""
     in_handle = get_file_handle(cancer_load_path)
-    data = yaml.load(in_handle, Loader=yaml.FullLoader)
+    data = yaml.safe_load(in_handle)
     return data
 
 

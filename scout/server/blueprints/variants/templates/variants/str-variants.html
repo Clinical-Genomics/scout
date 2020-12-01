@@ -1,8 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 {% from "utils.html" import comments_table %}
-{% from "variants/utils.html" import cell_rank %}
-{% from "variant/buttons.html" import dismiss_variant_table_button %}
+{% from "variants/utils.html" import cell_rank, dismiss_variants_block%}
 
 
 {% block title %}
@@ -44,17 +43,16 @@
       <thead>
         <tr>
           <th style="width:8%" title="Index">Index</th>
-          <th style="width:18%" title="Dismiss Variant">Dismiss variant</th>
-          <th style="width:8%" title="Repeat ID">Repeat locus</th>
-          <th style="width:8%" title="Repeat unit">Reference repeat unit</th>
-          <th style="width:5%" title="ALT">Estimated size</th>
-          <th style="width:5%" title="ReferenceSize">Reference size</th>
-          <th style="width:8%" title="Status">Status</th>
-          <th style="width:6%" title="Max normal">Max normal</th>
-          <th style="width:6%" title="Min pathologic">Min pathologic</th>
-          <th style="width:12%" title="GT">Genotype</th>
-          <th style="width:6%" title="Chromosome">Chr.</th>
-          <th style="width:10%" title="Position">Position</th>
+          <th title="Repeat ID">Repeat locus</th>
+          <th title="Repeat unit">Reference repeat unit</th>
+          <th title="ALT">Estimated size</th>
+          <th title="ReferenceSize">Reference size</th>
+          <th title="Status">Status</th>
+          <th title="Max normal">Max normal</th>
+          <th title="Min pathologic">Min pathologic</th>
+          <th title="GT">Genotype</th>
+          <th title="Chromosome">Chr.</th>
+          <th title="Position">Position</th>
         </tr>
       </thead>
       <tbody>
@@ -78,7 +76,6 @@
 	            <tr>
 	        {% endif %}
             <td>{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
-            <td>{{ dismiss_variant_table_button(variant, institute, case, dismiss_variant_options) }}</td>
             <td>{{ variant.str_repid }}</td>
 	          <td class="text-right">{{ variant.str_ru }}</td>
             <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
@@ -105,7 +102,6 @@
                   <input type="hidden" name="contig" value="{{variant.chromosome}}">
                   <input type="hidden" name="start" value="{{variant.position - 50}}">
                   <input type="hidden" name="stop" value="{{variant.position + 50}}">
-                  <input type="hidden" name="center_guide" value="T">
                   <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
                 </form>
               {% endif %}
@@ -128,28 +124,37 @@
 {% macro footer() %}
 <form>
   <div class="container-fluid">
-    <div class="form-group text-center">
-      {% if more_variants %}
-        <div class="row">
-            <div class="col-6">
-              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
-                  First page
-              </a>
-              </div>
-              <div class="col-6">
-                <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
-                  Next page
-                </a>
-              </div>
+      {% if not more_variants %}
+        <div class="row justify-content-center">
+          <i class="text-muted">No more variants to display</i>
         </div>
-      {% else %}
-        <i class="text-muted">No more variants to display</i>
-        <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
-      First page
-        </a>
       {% endif %}
+      <div class="row justify-content-center">
+        <div class="btn-group" role="group">
+          {% if page > 1 %}
+            <div>
+              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
+                First page
+              </a>
+            </div>
+          {% endif %}
+          {% if page > 2 %}
+            <div>
+              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=(page - 1), **form.data) }}">
+                Previous page
+              </a>
+            </div>
+          {% endif %}
+          {% if more_variants %}
+            <div class="col">
+              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
+                Next page
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
     </div>
-  </div>
 </form>
 {% endmacro %}
 

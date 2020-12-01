@@ -14,6 +14,7 @@ class Institute(dict):
     internal_id = str, # like 'cust000', required
     display_name = str, # like 'Clinical Genomics', required
     sanger_recipients = list, # list of email adressess
+    loqusdb_id = str, # points to loqusdb configuration in server.py
 
     created_at = datetime, # Defaults to now
     updated_at = datetime, # Defaults to now
@@ -32,6 +33,7 @@ class Institute(dict):
         internal_id,
         display_name,
         sanger_recipients,
+        loqusdb_id,
         created_at=None,
         updated_at=None,
         coverage_cutoff=None,
@@ -45,6 +47,7 @@ class Institute(dict):
         self["_id"] = internal_id
         self["display_name"] = display_name
         self["sanger_recipients"] = sanger_recipients
+        self["loqusdb_id"] = loqusdb_id
         self["collaborators"] = collaborators
         self["phenotype_groups"] = phenotype_groups
         self["cohorts"] = cohorts

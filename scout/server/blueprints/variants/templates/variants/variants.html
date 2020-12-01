@@ -1,8 +1,6 @@
 {% extends "layout_bs4.html" %}
-{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank %}
+{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
-{% from "variant/buttons.html" import dismiss_variant_table_button %}
-
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} variants
@@ -39,8 +37,9 @@
 {% endblock %}
 {% block content_main %}
     <div class="container-float">
-       <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
+      <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
          enctype="multipart/form-data" onsubmit="return validateForm()">
+         {{ pagination_hidden_div(page) }}
         <div class="card panel-default" id="accordion">
           <div class="card-header">
             <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
@@ -51,26 +50,27 @@
           </div>
           <div class="card-footer text-center py-3">
             {% if "all_variants" in session %}
-              Filtered {{session['filtered_variants']}} / {{session["all_variants"]}} variants
+              Showing {{session['filtered_variants']}} / {{session["all_variants"]}} variants
             {% endif %}
           </div>
         </div>
-      </form>
+
+
       <div class="card mt-3">
         <table class="table table-hover table-bordered" style="table-layout: fixed">
           <thead>
             <tr>
-              <th style="width:6%" title="Rank position">Rank </th>
-              <th style="width:18%" title="Dismiss Variant">Dismiss variant</th>
-              <th style="width:5%" title="Rank score">Score</th>
-              <th style="width:4%" title="Chromosome">Chr.</th>
+              <th style="width:3%"></th>
+              <th style="width:12%" title="Rank position">Rank </th>
+              <th style="width:6%" title="Rank score">Score</th>
+              <th style="width:6%" title="Chromosome">Chr.</th>
               <th style="width:8%" title="HGNC symbols">Gene</th>
-              <th style="width:4%" title="Poulation frequency">PopFreq</th>
-              <th style="width:5%" title="CADD score">CADD</th>
+              <th style="width:6%" title="Poulation frequency">Pop Freq</th>
+              <th style="width:6%" title="CADD score">CADD</th>
               <th style="width:8%" title="Gene region annotation">Gene annotation</th>
-              <th style="width:12%" title="Functional annotation">Func. annotation</th>
-              <th style="width:12%" title="Inheritance models">Inheritance model</th>
-              <th style="width:6%" title="Overlapping">Overlapping</th>
+              <th style="width:18%" title="Functional annotation">Func. annotation</th>
+              <th style="width:18%" title="Inheritance models">Inheritance model</th>
+              <th style="width:8%" title="Overlapping">Overlapping</th>
             </tr>
           </thead>
           <tbody>
@@ -82,8 +82,8 @@
               {% else %}
                 <tr>
               {% endif %}
+                <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
                 <td class="text-left">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
-                <td>{{ dismiss_variant_table_button(variant, institute, case, dismiss_variant_options) }}</td>
                 <td class="text-right">{{ variant.rank_score|int }}</td>
                 <td>{{ variant.chromosome }}</td>
                 <td>{{ gene_cell(variant) }}</td>
@@ -111,9 +111,13 @@
             {% endfor %}
           </tbody>
         </table>
+        {{ dismiss_variants_block(dismiss_variant_options) }}
       </div><!-- end of <div class="card mt-3">-->
+    </form> <!--end of form containing filters and variants' table elements -->
     </div> <!-- end of class="container-float"> -->
-      {{ footer() }}
+    <div class="container-fluid">
+      {{ pagination_footer(more_variants, page) }}
+    </div>
 {% endblock %}
 
 {% macro cell_cadd(variant) %}
@@ -125,7 +129,11 @@
       {{ (variant.polyphen_predictions or ['-'])|join(',') }}
     </div>
   ">
-    {{ variant.cadd_score }}
+    {% if variant.cadd_score %}
+      {{ variant.cadd_score|round(1) }} 
+    {% else %}
+      -
+    {% endif %}
   </div>
 {% endmacro %}
 
@@ -154,24 +162,6 @@
   {% endif %}
 {% endmacro %}
 
-{% macro footer() %}
-  <div class="container-fluid">
-      {% if more_variants %}
-        <div class="d-flex justify-content-around">
-	         <div>
-            <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
-          </div>
-          <div>
-            <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value={{ page + 1 }}>Next page</button>
-          </div>
-	     </div>
-      {% else %}
-        <i class="text-muted">No more variants to display</i>
-        <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
-      {% endif %}
-  </div>
-{% endmacro %}
-
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
@@ -193,8 +183,6 @@
 
     var cytoEnd = document.getElementById("cytoband_end");
     initSearchConstraints(cytoEnd, endElem)
-
-
 
     window.onload=function() {
       populateCytobands({{cytobands|safe}});

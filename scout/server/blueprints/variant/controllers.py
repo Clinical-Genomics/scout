@@ -16,11 +16,13 @@ from scout.constants import (
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     VERBS_MAP,
+    IGV_TRACKS,
 )
 from scout.parse.variant.ids import parse_document_id
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import institute_and_case, user_institutes, variant_case
 from scout.utils.scout_requests import fetch_refseq_version
+
 
 from .utils import (
     add_gene_info,
@@ -82,6 +84,7 @@ def variant(
             'cancer_tier_options': CANCER_TIER_OPTIONS,
             'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
             'ACMG_OPTIONS': ACMG_OPTIONS,
+            'igv_tracks': IGV_TRACKS,
             'evaluations': <list(evaluations)>,
         }
 
@@ -115,7 +118,7 @@ def variant(
         variant_case(store, case_obj, variant_obj)
 
     # Collect all the events for the variant
-    events = store.events(institute_obj, case=case_obj, variant_id=variant_id)
+    events = list(store.events(institute_obj, case=case_obj, variant_id=variant_id))
     for event in events:
         event["verb"] = VERBS_MAP[event["verb"]]
 
@@ -130,6 +133,8 @@ def variant(
         other_causatives = [
             causative for causative in store.other_causatives(case_obj, variant_obj)
         ]
+
+    managed_variant = store.find_managed_variant_id(variant_obj["variant_id"])
 
     # Gather display information for the genes
     variant_obj.update(predictions(variant_obj.get("genes", [])))
@@ -209,6 +214,7 @@ def variant(
         "variant": variant_obj,
         variant_category: True,
         "causatives": other_causatives,
+        "managed_variant": managed_variant,
         "events": events,
         "overlapping_vars": overlapping_vars,
         "manual_rank_options": MANUAL_RANK_OPTIONS,
@@ -216,6 +222,7 @@ def variant(
         "dismiss_variant_options": dismiss_options,
         "mosaic_variant_options": MOSAICISM_OPTIONS,
         "ACMG_OPTIONS": ACMG_OPTIONS,
+        "igv_tracks": IGV_TRACKS[genome_build],
         "evaluations": evaluations,
     }
 
@@ -260,7 +267,10 @@ def observations(store, loqusdb, case_obj, variant_obj):
         "variant_type": variant_obj.get("sub_category", "").upper(),
         "category": variant_obj["category"],
     }
-    obs_data = loqusdb.get_variant(variant_query) or {}
+
+    institute_id = variant_obj["institute"]
+    institute_obj = store.institute(institute_id)
+    obs_data = loqusdb.get_variant(variant_query, loqusdb_id=institute_obj.get("loqusdb_id")) or {}
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)
         obs_data["total"] = loqusdb.case_count()
@@ -269,7 +279,6 @@ def observations(store, loqusdb, case_obj, variant_obj):
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
 
     obs_data["cases"] = []
-    institute_id = variant_obj["institute"]
     for i, case_id in enumerate(obs_data.get("families", [])):
         if i > 10:
             break
@@ -377,6 +386,9 @@ def clinvar_export(store, institute_id, case_name, variant_id):
 
     # gather missing transcript info from entrez (refseq id version)
     for pinned_var in pinned:
+        # Exclude variants that aren't loaded
+        if isinstance(pinned_var, str):
+            continue
         for gene in pinned_var.get("genes", []):
             for transcript in gene.get("transcripts"):
                 refseq_id = transcript.get("refseq_id")

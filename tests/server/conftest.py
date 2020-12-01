@@ -26,7 +26,7 @@ class LoqusdbMock:
     def case_count(self):
         return self.nr_cases
 
-    def get_variant(self, var_dict):
+    def get_variant(self, var_dict, loqusdb_id=None):
         var = self.variants.get(var_dict["_id"], {})
         var["total"] = self.nr_cases
         return var
@@ -38,9 +38,6 @@ class LoqusdbMock:
 
     def _all_variants(self):
         return self.variants
-
-
-# -*- coding: utf-8 -*-
 
 
 class MockMail:
@@ -158,6 +155,36 @@ def ldap_app(request):
 
     request.addfinalizer(teardown)
     return app
+
+
+@pytest.fixture
+def hpo_checkboxes():
+    """Returns a list of dictionaries representing HPO checkboxes"""
+    checkbox1 = {
+        "_id": "HP:0025190",
+        "hpo_id": "HP:0025190",
+        "description": "Bilateral tonic-clonic seizure with generalized onset",
+        "children": ["HP:0032661"],
+        "ancestors": [],
+    }
+    checkbox2 = {
+        "_id": "HP:0032661",
+        "hpo_id": "HP:0032661",
+        "description": "Generalized convulsive status epilepticus",
+        "children": [],
+        "ancestors": ["HP:0025190"],
+    }
+    return [checkbox1, checkbox2]
+
+
+@pytest.fixture
+def omim_checkbox():
+    """Returns a dictionaries representing an OMIM checkboxe"""
+    checkbox = {
+        "_id": "OMIM:121210",
+        "description": "Febrile seizures familial 1",
+    }
+    return checkbox
 
 
 @pytest.fixture

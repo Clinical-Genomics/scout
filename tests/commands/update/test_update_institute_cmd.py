@@ -13,7 +13,7 @@ def test_update_institute(mock_app):
     # Test CLI base, no arguments provided
     result = runner.invoke(cli, ["update", "institute"])
     # it should return error message
-    assert 'Error: Missing argument "institute-id"' in result.output
+    assert "Error: Missing argument" in result.output
 
     # Test CLI passing institute id that is not in database
     result = runner.invoke(cli, ["update", "institute", "cust666"])

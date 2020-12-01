@@ -30,4 +30,5 @@ for more info, run `scout --help`
 
 Scout login system currently supports
 1. Google login via OpenID Connect. Click [here](./login-system.md/##Google-OpenID-Connect-login-system) for instructions on how to set up a Google login system
-1. Connection via Lightweight Directory Access Protocol (LPAD). Click [here](./login-system.md/##Login-using-Lightweight-Directory-Access-Protocol-(LDAP) for instructions on how to set up a LDAP login system
+1. Connection via Lightweight Directory Access Protocol (LDAP). Click [here](./login-system.md/##Login-using-Lightweight-Directory-Access-Protocol-(LDAP) for instructions on how to set up a LDAP login system.
+1. [Simple login](./login-system.md/##Simple-login-with-userid-and-password) - for operation tests or a trusted local environment only. Fallback - will operate if no other auth configuration is specified.

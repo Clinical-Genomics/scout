@@ -701,7 +701,7 @@ class VariantEventHandler(object):
         else:
             LOG.info(
                 "Reset dismiss variant from {0} for variant {1}".format(
-                    variant["dismiss_variant"], variant["display_name"]
+                    variant.get("dismiss_variant", "None"), variant["display_name"]
                 )
             )
             action = "$unset"

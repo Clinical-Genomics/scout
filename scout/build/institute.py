@@ -8,6 +8,7 @@ LOG = logging.getLogger(__name__)
 def build_institute(
     internal_id,
     display_name,
+    loqusdb_id=None,
     sanger_recipients=None,
     collaborators=None,
     phenotype_groups=None,
@@ -35,6 +36,7 @@ def build_institute(
         internal_id=internal_id,
         display_name=display_name,
         sanger_recipients=sanger_recipients,
+        loqusdb_id=loqusdb_id,
         collaborators=collaborators,
         phenotype_groups=phenotype_groups,
         cohorts=cohorts,

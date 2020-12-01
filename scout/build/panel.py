@@ -44,9 +44,7 @@ def build_gene(gene_info, adapter):
             raise KeyError()
     except KeyError as err:
         raise KeyError(
-            "Gene {0} is missing hgnc id. Panel genes has to have hgnc_id".format(
-                symbol
-            )
+            "Gene {0} is missing hgnc id. Panel genes has to have hgnc_id".format(symbol)
         )
 
     hgnc_gene = adapter.hgnc_gene(hgnc_id)
@@ -122,7 +120,10 @@ def build_panel(panel_info, adapter):
     """
 
     panel_name = panel_info.get("panel_id", panel_info.get("panel_name"))
-    if not panel_name:
+
+    if panel_name:
+        panel_name = panel_name.strip()
+    else:
         raise KeyError("Panel has to have a id")
 
     panel_obj = dict(panel_name=panel_name)
@@ -148,21 +149,22 @@ def build_panel(panel_info, adapter):
 
     panel_obj["maintainer"] = panel_info.get("maintainer", [])
     panel_obj["display_name"] = panel_info.get("display_name", panel_obj["panel_name"])
+    if panel_obj["display_name"]:
+        panel_obj["display_name"] = panel_obj["display_name"].strip()
     panel_obj["description"] = panel_info.get("description")
 
     gene_objs = []
-    fail = False
+    errors = []
     for gene_info in panel_info.get("genes", []):
         try:
             gene_obj = build_gene(gene_info, adapter)
             gene_objs.append(gene_obj)
         except IntegrityError as err:
             LOG.warning(err)
-            fail = True
-
-    if fail:
+            errors.append(f"{gene_info.get('hgnc_symbol')} ({gene_info.get('hgnc_id')})")
+    if errors:
         raise IntegrityError(
-            "Some genes did not exist in database. Please see log messages."
+            f"The following genes: {', '.join(errors)} were not found in Scout database."
         )
 
     panel_obj["genes"] = gene_objs

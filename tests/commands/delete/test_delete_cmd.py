@@ -5,6 +5,97 @@ from pymongo import IndexModel, ASCENDING
 from scout.commands import cli
 from scout.server.extensions import store
 
+VARIANTS_QUERY = {"rank_score": {"$lt": 15}}
+RANK_THRESHOLD = 15
+VARIANTS_THRESHOLD = 10
+
+
+def test_delete_variants_dry_run(mock_app, case_obj, user_obj):
+    """test command for cleaning variants collection - simulate deletion"""
+
+    assert store.user_collection.find_one()
+
+    # Given a database with SNV variants
+    runner = mock_app.test_cli_runner()
+    result = runner.invoke(
+        cli, ["load", "variants", case_obj["_id"], "--snv", "--rank-treshold", 5]
+    )
+    assert result.exit_code == 0
+    n_initial_vars = sum(1 for i in store.variant_collection.find())
+
+    # Then the function that delete variants in dry run should run without error
+    cmd_params = [
+        "delete",
+        "variants",
+        "-u",
+        user_obj["email"],
+        "--status",
+        "inactive",
+        "--older-than",
+        2,
+        "--analysis-type",
+        "wes",
+        "--rank-threshold",
+        RANK_THRESHOLD,
+        "--variants-threshold",
+        VARIANTS_THRESHOLD,
+        "--dry-run",
+    ]
+    result = runner.invoke(cli, cmd_params)
+    assert result.exit_code == 0
+    assert "estimated deleted variants" in result.output
+    assert "Estimated space freed" in result.output
+
+    # And no variants should be deleted
+    assert sum(1 for i in store.variant_collection.find()) == n_initial_vars
+
+
+def test_delete_variants(mock_app, case_obj, user_obj):
+    """Test deleting variants using the delete variants command line"""
+
+    # Given a database with SNV variants
+    runner = mock_app.test_cli_runner()
+    result = runner.invoke(
+        cli, ["load", "variants", case_obj["_id"], "--snv", "--rank-treshold", 5]
+    )
+    assert result.exit_code == 0
+    n_initial_vars = sum(1 for i in store.variant_collection.find())
+    n_variants_to_exclude = store.variant_collection.count_documents(VARIANTS_QUERY)
+
+    # Then the function that delete variants should run without error
+    cmd_params = [
+        "delete",
+        "variants",
+        "-u",
+        user_obj["email"],
+        "--status",
+        "inactive",
+        "--older-than",
+        2,
+        "--analysis-type",
+        "wes",
+        "--rank-threshold",
+        RANK_THRESHOLD,
+        "--variants-threshold",
+        VARIANTS_THRESHOLD,
+    ]
+    result = runner.invoke(cli, cmd_params, input="y")
+    assert result.exit_code == 0
+    assert "estimated deleted variants" not in result.output
+    assert "Estimated space freed" in result.output
+    # variants should be deleted
+    n_current_vars = sum(1 for i in store.variant_collection.find())
+    assert n_current_vars < n_initial_vars
+    assert n_current_vars + n_variants_to_exclude == n_initial_vars
+    # and a relative event should be created
+    event = store.event_collection.find_one()
+    assert event["verb"] == "remove_variants"
+    assert event["case"] == case_obj["_id"]
+    assert (
+        event["content"]
+        == f"Rank-score threshold:{RANK_THRESHOLD}, case n. variants threshold:{VARIANTS_THRESHOLD}."
+    )
+
 
 def test_delete_panel_non_existing(empty_mock_app, dummypanel_obj):
     "Test the CLI command that deletes a gene panel"
@@ -93,8 +184,8 @@ def test_delete_nonexisting_user(empty_mock_app, user_obj):
     assert "User unknown_email@email.com could not be found in database" in result.output
 
 
-def test_delete_user(empty_mock_app, user_obj, case_obj, institute_obj):
-    "Test the CLI command that will delete a user"
+def test_delete_last_user_active_case(empty_mock_app, user_obj, case_obj, institute_obj):
+    "Test the CLI command that will delete the last user of an active case"
     mock_app = empty_mock_app
 
     runner = mock_app.test_cli_runner()
@@ -111,6 +202,7 @@ def test_delete_user(empty_mock_app, user_obj, case_obj, institute_obj):
     assert store.event_collection.find_one() is None
 
     case_obj["assignees"] = [user_obj["email"]]
+    case_obj["status"] = "active"
     store.case_collection.insert_one(case_obj)
     assert store.case_collection.find_one({"assignees": {"$in": case_obj["assignees"]}})
 
@@ -121,8 +213,88 @@ def test_delete_user(empty_mock_app, user_obj, case_obj, institute_obj):
     assert result.exit_code == 0
     assert store.user_collection.find_one() is None
 
-    ## The case should not have an assignee
-    assert store.case_collection.find_one({"assignees": {"$in": case_obj["assignees"]}}) is None
+    # The case should be archived and should not have an assignee
+    updated_case = store.case_collection.find_one({"_id": case_obj["_id"]})
+    assert updated_case["status"] == "inactive"
+    assert updated_case["assignees"] == []
+
+    ## And a new event for unassigning the user should have been created in event collection
+    assert store.event_collection.find_one()
+
+
+def test_delete_user_active_case(empty_mock_app, user_obj, case_obj, institute_obj):
+    "Test the CLI command that will delete one of the users of an active case"
+
+    mock_app = empty_mock_app
+
+    runner = mock_app.test_cli_runner()
+    assert runner
+
+    ## GIVEN there is one user in populated database
+    store.user_collection.insert_one(user_obj)
+    assert store.user_collection.find_one()
+
+    ## And the user is an assignee of a case of an institute
+    store.institute_collection.insert_one(institute_obj)
+
+    ## And no events in the database
+    assert store.event_collection.find_one() is None
+
+    case_obj["assignees"] = [user_obj["email"], "user2@email"]
+    case_obj["status"] = "active"
+    store.case_collection.insert_one(case_obj)
+    assert store.case_collection.find_one({"assignees": {"$in": case_obj["assignees"]}})
+
+    ## WHEN deleting the user from the CLI
+    result = runner.invoke(cli, ["delete", "user", "-m", user_obj["email"]])
+
+    ## THEN the user should be gone
+    assert result.exit_code == 0
+    assert store.user_collection.find_one() is None
+
+    # The case should NOT be inactivated and should still have the other assignee
+    updated_case = store.case_collection.find_one({"_id": case_obj["_id"]})
+    assert updated_case["status"] == "active"
+    assert updated_case["assignees"] == ["user2@email"]
+
+    ## And a new event for unassigning the user should have been created in event collection
+    assert store.event_collection.find_one()
+
+
+def test_delete_last_user_solved_case(empty_mock_app, user_obj, case_obj, institute_obj):
+    "Test the CLI command that will delete the last user of a solved case"
+    mock_app = empty_mock_app
+
+    runner = mock_app.test_cli_runner()
+    assert runner
+
+    ## GIVEN there is one user in populated database
+    store.user_collection.insert_one(user_obj)
+    assert store.user_collection.find_one()
+
+    ## And the user is an assignee of a case of an institute
+    store.institute_collection.insert_one(institute_obj)
+
+    ## And no events in the database
+    assert store.event_collection.find_one() is None
+
+    case_obj["assignees"] = [user_obj["email"]]
+    case_obj["status"] = "solved"
+    store.case_collection.insert_one(case_obj)
+    assert store.case_collection.find_one({"assignees": {"$in": case_obj["assignees"]}})
+
+    ## WHEN deleting the user from the CLI
+    result = runner.invoke(cli, ["delete", "user", "-m", user_obj["email"]])
+
+    ## THEN the user should be gone
+    assert result.exit_code == 0
+    assert store.user_collection.find_one() is None
+
+    # The case should keep the original status and should not have an assignee
+    updated_case = store.case_collection.find_one({"_id": case_obj["_id"]})
+    assert updated_case["status"] == "solved"
+    assert updated_case["assignees"] == []
+
     ## And a new event for unassigning the user should have been created in event collection
     assert store.event_collection.find_one()
 

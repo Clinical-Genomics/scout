@@ -72,4 +72,4 @@ Please note that the while the `-id ldap_id` option is not a mandatory parameter
 
 ## Simple login with userid and password
 
-Basic login with userid and password is the login system available whenever no advanced login system (either Google or LDAP) is specified in the Scout config file. It is an un-secure system which is not recommended to use. This is also the login system available in the demo instance of Scout.
+Basic login with userid and password is the login system available whenever no advanced login system (either Google or LDAP) is specified in the Scout config file. To enable it, comment out or remove the LDAP and GOOGLE lines mentioned above from your config. It is an un-secure system which is not recommended to use. This is also the login system available in the demo instance of Scout.

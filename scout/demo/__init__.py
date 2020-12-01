@@ -14,7 +14,7 @@ clinical_snv_file = "demo/643594.clinical.vcf.gz"
 research_snv_file = "demo/643594.research.vcf.gz"
 customannotation_snv_file = "demo/customannotations_one.vcf.gz"
 vep_97_annotated_snv_file = "demo/vep97_annotated_clnsig_conservation_revel.vcf"
-manta_annotated_sv_cancer_file = "demo/manta_vep_94_annotated_sv_cancer_file.vcf"
+manta_annotated_sv_cancer_file = "demo/manta_vep_94_annotated_sv_cancer_file.vcf.gz"
 
 ped_path = pkg_resources.resource_filename("scout", ped_file)
 clinical_sv_file = "demo/643594.clinical.SV.vcf.gz"
@@ -44,3 +44,6 @@ empty_sv_clinical_path = pkg_resources.resource_filename("scout", empty_sv_file)
 
 delivery_report_file = "demo/delivery_report.html"
 delivery_report_path = pkg_resources.resource_filename("scout", delivery_report_file)
+
+cnv_report_file = "demo/cancer_cnv_report.pdf"
+cnv_report_path = pkg_resources.resource_filename("scout", cnv_report_file)

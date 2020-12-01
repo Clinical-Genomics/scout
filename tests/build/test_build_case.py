@@ -7,8 +7,17 @@ from scout.build import build_case
 
 
 def test_build_case(parsed_case, adapter, institute_obj, dummypanel_obj):
+    """Test function that build a case object when a case is loaded"""
+
+    # GIVEN a database containing an institute
     adapter.institute_collection.insert_one(institute_obj)
+    # A gene panel
     adapter.panel_collection.insert_one(dummypanel_obj)
+    # And a phenotype term
+    adapter.hpo_term_collection.insert_one(
+        {"_id": "HP:0001250", "hpo_id": "HP:0001250", "description": "Seizures"}
+    )
+
     # GIVEN a parsed case
     # WHEN bulding a case model
     case_obj = build_case(parsed_case, adapter)
@@ -19,7 +28,14 @@ def test_build_case(parsed_case, adapter, institute_obj, dummypanel_obj):
     assert case_obj["owner"] == parsed_case["owner"]
     assert case_obj["collaborators"] == parsed_case["collaborators"]
     assert len(case_obj["individuals"]) == len(parsed_case["individuals"])
-    assert case_obj["synopsis"] == ""
+    assert case_obj["synopsis"] != ""
+    assert case_obj["phenotype_terms"]
+    assert case_obj["cohorts"]
+
+    # Since case object contains cohorts, also its institute should be updated with the same cohorts
+    assert "cohorts" not in institute_obj
+    updated_institute = adapter.institute_collection.find_one()
+    assert "cohorts" in updated_institute
 
     assert case_obj["status"] == "inactive"
     assert case_obj["is_research"] is False
@@ -48,9 +64,7 @@ def test_build_case(parsed_case, adapter, institute_obj, dummypanel_obj):
     # assert case_obj['diagnosis_phenotypes'] == []
     # assert case_obj['diagnosis_genes'] == []
 
-    if parsed_case["vcf_files"].get("vcf_sv") or parsed_case["vcf_files"].get(
-        "vcf_sv_research"
-    ):
+    if parsed_case["vcf_files"].get("vcf_sv") or parsed_case["vcf_files"].get("vcf_sv_research"):
         assert case_obj["has_svvariants"] is True
     else:
         assert case_obj["has_svvariants"] is False

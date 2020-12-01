@@ -102,11 +102,11 @@ def fetch_hpo_terms():
 
 def fetch_genes_to_hpo_to_disease():
     """Fetch the latest version of the map from genes to phenotypes
-    Returns:
+        Returns:
         res(list(str)): A list with the lines formatted this way:
-        #Format: entrez-gene-id<tab>entrez-gene-symbol<tab>HPO-Term-Name<tab>HPO-Term-ID<tab>
-        Frequency-Raw<tab>Frequency-HPO<tab>Additional Info from G-D source<tab>G-D source<tab>
-        disease-ID for link
+        #Format: entrez-gene-id<tab>entrez-gene-symbol<tab>HPO-Term-Name<tab>\
+        HPO-Term-ID<tab>Frequency-Raw<tab>Frequency-HPO<tab>
+        Additional Info from G-D source<tab>G-D source<tab>disease-ID for link
         72	ACTG2	HP:0002027	Abdominal pain			-	mim2gene	OMIM:155310
         72	ACTG2	HP:0000368	Low-set, posteriorly rotated ears		HP:0040283		orphadata
         ORPHA:2604
@@ -121,11 +121,13 @@ def fetch_hpo_to_genes_to_disease():
     Returns:
         res(list(str)): A list with the lines formatted this way:
 
-        #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol<tab>Additional Info
-         from G-D source<tab>G-D source<tab>disease-ID for link
+        #Format: HPO-id<tab>HPO label<tab>entrez-gene-id<tab>entrez-gene-symbol\
+        <tab>Additional Info from G-D source<tab>G-D source
+        <tab>disease-ID for link
         HP:0000002	Abnormality of body height	3954	LETM1	-	mim2gene	OMIM:194190
         HP:0000002	Abnormality of body height	197131	UBR1	-	mim2gene	OMIM:243800
         HP:0000002	Abnormality of body height	79633	FAT4		orphadata	ORPHA:314679
+
     """
     url = HPO_URL.format("phenotype_to_genes.txt")
     return fetch_resource(url)

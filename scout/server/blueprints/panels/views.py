@@ -48,10 +48,6 @@ def panels():
                 description=request.form["description"],
             )
             if new_panel_id is None:
-                flash(
-                    "Something went wrong and the panel list was not updated!",
-                    "warning",
-                )
                 return redirect(request.referrer)
 
             flash("new gene panel added, {}!".format(new_panel_name), "success")

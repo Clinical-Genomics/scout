@@ -19,6 +19,8 @@ MT_EXPORT_HEADER = [
     "AD Alternative",
 ]
 
+MT_COV_STATS_HEADER = ["Mean MT coverage", "Mean chrom 14 scoverage", "Estimated mtDNA copy number"]
+
 VCF_HEADER = [
     "##fileformat=VCFv4.2",
     '##INFO=<ID=END,Number=1,Type=Integer,Description="End position of the variant described in this record">',

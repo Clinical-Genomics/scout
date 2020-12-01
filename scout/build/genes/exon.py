@@ -4,21 +4,21 @@ from scout.models.hgnc_map import Exon
 def build_exon(exon_info, build="37"):
     """Build a Exon object object
 
-        Args:
-            exon_info(dict): Exon information
+    Args:
+        exon_info(dict): Exon information
 
-        Returns:
-            exon_obj(Exon)
-        
-        "exon_id": str, # str(chrom-start-end)
-        "chrom": str, 
-        "start": int, 
-        "end": int,     
-        "transcript": str, # ENST ID
-        "hgnc_id": int,      # HGNC_id
-        "rank": int, # Order of exon in transcript
-        "strand": int, # 1 or -1
-        "build": str, # Genome build
+    Returns:
+        exon_obj(Exon)
+
+    "exon_id": str, # str(chrom-start-end)
+    "chrom": str,
+    "start": int,
+    "end": int,
+    "transcript": str, # ENST ID
+    "hgnc_id": int,      # HGNC_id
+    "rank": int, # Order of exon in transcript
+    "strand": int, # 1 or -1
+    "build": str, # Genome build
     """
     try:
         ensembl_exon_id = exon_info["ens_exon_id"]

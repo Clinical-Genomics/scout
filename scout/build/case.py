@@ -6,7 +6,7 @@ from scout.exceptions import PedigreeError, ConfigError, IntegrityError
 
 from . import build_individual
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 def build_phenotype(phenotype_id, adapter):
@@ -64,7 +64,7 @@ def build_case(case_data, adapter):
         is_research = bool, # default=False
         research_requested = bool, # default=False
         rerun_requested = bool, # default=False
-
+        cohorts = list, # list of strings
         analysis_date = datetime,
         analyses = list, # list of dict
 
@@ -87,6 +87,8 @@ def build_case(case_data, adapter):
 
         multiqc = str, # path to dir with multiqc information
 
+        cnv_report = str, # path to file with cnv report
+
         vcf_files = dict, # A dictionary with vcf files
 
         diagnosis_phenotypes = list, # List of references to diseases
@@ -98,7 +100,7 @@ def build_case(case_data, adapter):
 
     )
     """
-    log.info("build case with id: {0}".format(case_data["case_id"]))
+    LOG.info("build case with id: {0}".format(case_data["case_id"]))
     case_obj = {
         "_id": case_data["case_id"],
         "display_name": case_data.get("display_name", case_data["case_id"]),
@@ -135,6 +137,7 @@ def build_case(case_data, adapter):
     # sort the samples to put the affected individual first
     sorted_inds = sorted(ind_objs, key=lambda ind: -ind["phenotype"])
     case_obj["individuals"] = sorted_inds
+
 
     now = datetime.now()
     case_obj["created_at"] = now
@@ -203,23 +206,46 @@ def build_case(case_data, adapter):
     if case_data.get("rank_score_threshold"):
         case_obj["rank_score_threshold"] = float(case_data["rank_score_threshold"])
 
+    # Cohort information
+    if case_data.get("cohorts"):
+        case_obj["cohorts"] = case_data["cohorts"]
+        # Check if all case cohorts are registered under the institute
+        institute_cohorts = set(institute_obj.get("cohorts", []))
+        all_cohorts = institute_cohorts.union(set(case_obj["cohorts"]))
+        if len(all_cohorts) > len(institute_cohorts):
+            # if not, update institute with new cohorts
+            LOG.warning("Updating institute object with new cohort terms")
+            adapter.institute_collection.find_one_and_update(
+                {"_id": institute_obj["_id"]}, {"$set": {"cohorts": list(all_cohorts)}}
+            )
+
     # phenotype information
-    phenotypes = []
-    for phenotype in case_data.get("phenotype_terms", []):
-        phenotype_obj = build_phenotype(phenotype, adapter)
-        if phenotype_obj:
-            phenotypes.append(phenotype_obj)
-    if phenotypes:
-        case_obj["phenotype_terms"] = phenotypes
+
+    if case_data.get("phenotype_terms"):
+        phenotypes = []
+        for phenotype in case_data["phenotype_terms"]:
+            phenotype_obj = adapter.hpo_term(phenotype)
+            if phenotype_obj is None:
+                LOG.warning(
+                    f"Could not find term with ID '{phenotype}' in HPO collection, skipping phenotype term."
+                )
+                continue
+
+            phenotypes.append(
+                {"phenotype_id": phenotype, "feature": phenotype_obj.get("description")}
+            )
+        if phenotypes:
+            case_obj["phenotype_terms"] = phenotypes
 
     # phenotype groups
-    phenotype_groups = []
-    for phenotype in case_data.get("phenotype_groups", []):
-        phenotype_obj = build_phenotype(phenotype, adapter)
-        if phenotype_obj:
-            phenotype_groups.append(phenotype_obj)
-    if phenotype_groups:
-        case_obj["phenotype_groups"] = phenotype_groups
+    if case_data.get("phenotype_groups"):
+        phenotype_groups = []
+        for phenotype in case_data["phenotype_groups"]:
+            phenotype_obj = build_phenotype(phenotype, adapter)
+            if phenotype_obj:
+                phenotype_groups.append(phenotype_obj)
+        if phenotype_groups:
+            case_obj["phenotype_groups"] = phenotype_groups
 
     # Files
     case_obj["madeline_info"] = case_data.get("madeline_info")
@@ -228,13 +254,13 @@ def build_case(case_data, adapter):
 
     if "multiqc" in case_data:
         case_obj["multiqc"] = case_data.get("multiqc")
+    if "cnv_report" in case_data:
+        case_obj["cnv_report"] = case_data.get("cnv_report")
     case_obj["vcf_files"] = case_data.get("vcf_files", {})
     case_obj["delivery_report"] = case_data.get("delivery_report")
 
     case_obj["has_svvariants"] = False
-    if case_obj["vcf_files"].get("vcf_sv") or case_obj["vcf_files"].get(
-        "vcf_sv_research"
-    ):
+    if case_obj["vcf_files"].get("vcf_sv") or case_obj["vcf_files"].get("vcf_sv_research"):
         case_obj["has_svvariants"] = True
 
     case_obj["has_strvariants"] = False

@@ -1,9 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_table %}
-{% from "variants/utils.html" import sv_filters, cell_rank %}
+{% from "variants/utils.html" import sv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block %}
 {% from "variants/components.html" import frequency_cell_general %}
-{% from "variant/buttons.html" import dismiss_variant_table_button %}
-
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
@@ -43,6 +41,7 @@
   <div class="container-float">
     <form method="POST" id="filters_form" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name)}}"
   onsubmit="return validateForm()">
+    {{ pagination_hidden_div(page) }}
       <div class="card panel-default" id="accordion">
         <div class="card-header">
           <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">SvFilters</a></strong>
@@ -56,39 +55,41 @@
             Showing {{session['filtered_variants']}} / {{session["all_variants"]}} variants
           {% endif %}
         </div>
-    </div>
+      </div>
+      <div class="card mt-3">
+        <table id="variantsTable" class="table table-hover table-bordered" style="table-layout: fixed">
+          <thead>
+            <tr>
+              <th style="width:3%"></th>
+              <th>Rank</th>
+              <th>Score</th>
+              <th>Type</th>
+              <th>Chr</th>
+              <th>Start loc</th>
+              <th>Stop loc</th>
+              <th>Length</th>
+              <th>Region</th>
+              <th>Function</th>
+              <th>Frequency</th>
+              <th>Gene(s)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for variant in variants %}
+              {{ variant_row(variant) }}
+            {% else %}
+              <tr>
+                  <td colspan="11">No matching variants</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {{ dismiss_variants_block(dismiss_variant_options) }}
+      </div>
     </form>
   </div>
-  <div class="card mt-3">
-    <table id="variantsTable" class="table table-hover table-bordered" style="table-layout: fixed">
-      <thead>
-        <tr>
-          <th style="width:8%">Rank</th>
-          <th style="width:18%">Dismiss variant</th>
-          <th style="width:6%">Type</th>
-          <th style="width:6%">Chr</th>
-          <th style="width:5%">Start loc</th>
-          <th style="width:5%">Stop loc</th>
-          <th style="width:8%">Length</th>
-          <th style="width:8%">Region</th>
-          <th style="width:8%">Function</th>
-          <th style="width:9%">Frequency</th>
-          <th style="width:7%">Gene(s)</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for variant in variants %}
-          {{ variant_row(variant) }}
-        {% else %}
-          <tr>
-              <td colspan="11">No matching variants</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
   <div class="container-fluid">
-    {{ pagination() }}
+  {{ pagination_footer(more_variants, page) }}
   </div>
 {% endblock %}
 
@@ -100,16 +101,16 @@
   {% else %}
   <tr>
   {% endif %}
+    <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
     <td class="text-left">
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
-    <td>{{ dismiss_variant_table_button(variant, institute, case, dismiss_variant_options) }}</td>
     <td class="text-right">{{ variant.rank_score|int }}</td>
     <td>{{ variant.sub_category|upper }}</td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
     <td>{{ variant.position }}</td>
     <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
-    <td class="text-right">{{ variant.length }}</td>
+    <td class="text-right">{{ '-' if variant.length == 100000000000 else variant.length }}</td>
     <td>
       {% if 'region_annotations' in variant %}
         {% for annotation in variant.region_annotations[:3] %}
@@ -146,24 +147,6 @@
   </tr>
 {% endmacro %}
 
-{% macro pagination() %}
-  <div class="container-fluid">
-    {% if more_variants %}
-    <div class="d-flex justify-content-around">
-        <div>
-            <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
-        </div>
-       <div>
-          <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value={{ page + 1 }}>Next page</button>
-       </div>
-    </div>
-    {% else %}
-      <i class="text-muted">No more variants to display</i>
-      <button name="page" type="submit" class="btn btn-outline-secondary mx-auto d-block" value=1>First page</button>
-    {% endif %}
-  </div>
-{% endmacro %}
-
 
 {% block scripts %}
   {{ super() }}
@@ -186,7 +169,6 @@
 
     var cytoEnd = document.getElementById("cytoband_end");
     initSearchConstraints(cytoEnd, endElem)
-
 
     $('select[multiple]').selectpicker({
         width: '100%'

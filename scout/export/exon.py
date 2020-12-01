@@ -16,12 +16,44 @@ import logging
 LOG = logging.getLogger(__name__)
 
 
+def export_gene_exons(adapter, hgnc_id, build="37"):
+    """Export all exons from one gene
+
+    Args:
+        adapter(scout.adapter.MongoAdapter)
+        hgnc_id(int): hgnc ID of a gene
+        build(str): "37" or "38"
+
+    Yields:
+        printlines(str): formatted like this: Chrom\tStart\tEnd\tExonId\tTranscripts\tHgncIDs\tHgncSymbols
+
+    """
+    gene_obj = adapter.hgnc_gene(hgnc_id, build)
+    if gene_obj is None:
+        LOG.warning(f"Could't find a gene with HGNC id '{hgnc_id}' in Scout database.")
+        return
+    query = {"hgnc_id": hgnc_id, "build": build}
+    result = adapter.exon_collection.find(query)
+    print_line = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}"
+
+    for exon in result:
+        yield print_line.format(
+            exon["chrom"],
+            exon["start"],
+            exon["end"],
+            exon["exon_id"],
+            exon["transcript"],
+            hgnc_id,
+            gene_obj["hgnc_symbol"],
+        )
+
+
 def export_exons(adapter, build="37"):
     """Export all exons of a certain build from the database
 
     Args:
         adapter(scout.adapter.MongoAdapter)
-        build(str)
+        build(str): "37" or "38"
 
     Yields:
         transcript(scout.models.Transcript)

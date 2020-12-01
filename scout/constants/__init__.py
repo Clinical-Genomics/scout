@@ -50,8 +50,10 @@ from .variants_export import (
     EXPORT_HEADER,
     VCF_HEADER,
     MT_EXPORT_HEADER,
+    MT_COV_STATS_HEADER,
     VERIFIED_VARIANTS_HEADER,
 )
+from .igv_tracks import IGV_TRACKS, HUMAN_REFERENCE, CASE_SPECIFIC_TRACKS, USER_DEFAULT_TRACKS
 
 cytobands_37_handle = get_file_handle(cytoband_files.get("37"))
 cytobands_38_handle = get_file_handle(cytoband_files.get("38"))
@@ -73,6 +75,7 @@ BUILDS = ["37", "38", "GRCh38"]
 
 CYTOBANDS_37 = parse_cytoband(cytobands_37_handle)
 CYTOBANDS_38 = parse_cytoband(cytobands_38_handle)
+
 
 CHROMOSOMES = (
     "1",
@@ -146,3 +149,28 @@ CALLERS = {
 
 BND_ALT_PATTERN = re.compile(r".*[\],\[](.*?):(.*?)[\],\[]")
 CHR_PATTERN = re.compile(r"(chr)?(.*)", re.IGNORECASE)
+
+AMINO_ACID_RESIDUE_3_TO_1 = {
+    "Ala": "A",
+    "Arg": "R",
+    "Asn": "N",
+    "Asp": "D",
+    "Asx": "B",
+    "Cys": "C",
+    "Glu": "E",
+    "Gln": "Q",
+    "Glx": "Z",
+    "Gly": "G",
+    "His": "H",
+    "Ile": "I",
+    "Leu": "L",
+    "Lys": "K",
+    "Met": "M",
+    "Phe": "F",
+    "Pro": "P",
+    "Ser": "S",
+    "Thr": "T",
+    "Trp": "W",
+    "Tyr": "Y",
+    "Val": "V",
+}

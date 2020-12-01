@@ -18,43 +18,43 @@ def build_phenotype(phenotype_info):
 def build_hgnc_gene(gene_info, build="37"):
     """Build a hgnc_gene object
 
-        Args:
-            gene_info(dict): Gene information
+    Args:
+        gene_info(dict): Gene information
 
-        Returns:
-            gene_obj(dict)
-    
-            {
-                '_id': ObjectId(),
-                # This is the hgnc id, required:
-                'hgnc_id': int, 
-                # The primary symbol, required 
-                'hgnc_symbol': str,
-                'ensembl_id': str, # required
-                'build': str, # '37' or '38', defaults to '37', required
-                
-                'chromosome': str, # required
-                'start': int, # required
-                'end': int, # required
-                
-                'description': str, # Gene description
-                'aliases': list(), # Gene symbol aliases, includes hgnc_symbol, str
-                'entrez_id': int,
-                'omim_id': int,
-                'pli_score': float,
-                'primary_transcripts': list(), # List of refseq transcripts (str)
-                'ucsc_id': str,
-                'uniprot_ids': list(), # List of str
-                'vega_id': str,
-                'transcripts': list(), # List of hgnc_transcript
-                
-                # Inheritance information
-                'inheritance_models': list(), # List of model names
-                'incomplete_penetrance': bool, # Acquired from HPO
-                
-                # Phenotype information
-                'phenotypes': list(), # List of dictionaries with phenotype information
-            }
+    Returns:
+        gene_obj(dict)
+
+        {
+            '_id': ObjectId(),
+            # This is the hgnc id, required:
+            'hgnc_id': int,
+            # The primary symbol, required
+            'hgnc_symbol': str,
+            'ensembl_id': str, # required
+            'build': str, # '37' or '38', defaults to '37', required
+
+            'chromosome': str, # required
+            'start': int, # required
+            'end': int, # required
+
+            'description': str, # Gene description
+            'aliases': list(), # Gene symbol aliases, includes hgnc_symbol, str
+            'entrez_id': int,
+            'omim_id': int,
+            'pli_score': float,
+            'primary_transcripts': list(), # List of refseq transcripts (str)
+            'ucsc_id': str,
+            'uniprot_ids': list(), # List of str
+            'vega_id': str,
+            'transcripts': list(), # List of hgnc_transcript
+
+            # Inheritance information
+            'inheritance_models': list(), # List of model names
+            'incomplete_penetrance': bool, # Acquired from HPO
+
+            # Phenotype information
+            'phenotypes': list(), # List of dictionaries with phenotype information
+        }
     """
     try:
         hgnc_id = int(gene_info["hgnc_id"])

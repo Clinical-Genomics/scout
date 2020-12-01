@@ -13,7 +13,6 @@ from .index import index
 from .intervals import intervals
 from .collections import collections
 from .transcripts import transcripts
-from .exons import exons
 from .case import cases
 from .hgnc import hgnc
 
@@ -41,6 +40,5 @@ view.add_command(index)
 view.add_command(intervals)
 view.add_command(collections)
 view.add_command(transcripts)
-view.add_command(exons)
 view.add_command(cases)
 view.add_command(hgnc)

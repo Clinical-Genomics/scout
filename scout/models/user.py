@@ -29,6 +29,7 @@ class User(dict):
         location=None,
         institutes=None,
         roles=None,
+        igv_tracks=None,
     ):
         super(User, self).__init__()
         self["email"] = email
@@ -39,3 +40,4 @@ class User(dict):
         self["location"] = location
         self["institutes"] = institutes or []
         self["roles"] = roles or []
+        self["igv_tracks"] = igv_tracks or []

@@ -1,0 +1,131 @@
+{% extends "layout_bs4.html" %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - Advanced phenotype models
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.0/css/buttons.dataTables.min.css">
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }} cases </a>
+  </li>
+  <li class="nav-item active">
+    <a class="nav-link" href="#">Advanced phenotype models </a>
+  </li>
+{% endblock %}
+
+
+{% macro phenomodels_macro() %}
+  {{ confirm_delete() }}
+  {{ create_model_macro() }}
+  {{ phenomodel_list() }}
+{% endmacro %}
+
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
+  <div class="col">
+    {{ phenomodels_macro() }}
+  </div>
+</div><!-- end of body row div -->
+</div><!-- end of container-float-->
+{% endblock %}
+
+{% macro confirm_delete() %}
+<form action="{{ url_for('overview.remove_phenomodel') }}" method="POST">
+  <input id="model_id" type="hidden" value="" name="model_id">
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <p>Confirm delete this model?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Delete</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+{% endmacro %}
+
+{% macro create_model_macro() %}
+  <div class="card mt-3">
+    <div class="card-body" style="padding-top:2px;">
+      <h5 class="card-title">Create new phenotype model</h5>
+      <form action="{{ url_for('overview.advanced_phenotypes', institute_id=institute._id) }}" method="POST">
+        <div class="form-row">
+          <div class="col-4">
+            {{ pheno_form.model_name(class="form-control", placeholder="Name") }}
+          </div>
+          <div class="col-6">
+            {{ pheno_form.model_desc(class="form-control", placeholder="Description (optional)") }}
+          </div>
+          <div class="col-2">
+            {{ pheno_form.create_model(class="form-control btn-primary") }}
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro phenomodel_list() %}
+  <div class="card mt-3">
+    <div class="card-body" style="overflow-y: auto; height: 700px;">
+      <table class="table table-sm" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Nr subpanels</th>
+            <th>Created</th>
+            <th>Updated</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for model in phenomodels %}
+            <tr>
+              <td>
+                <a href="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=model._id) }}">{{model.name}}</button></a>
+              </td>
+              <td>{{model.description}}</td>
+              <td>{{model.subpanels|length if model.subpanels else '0'}}</td>
+              <td>{{model.created.strftime('%Y-%m-%d')}}</td>
+              <td>{{model.updated.strftime('%Y-%m-%d')}}</td>
+              <td>
+                <button type="button" class="btn btn-danger btn-sm removeModel" data-id="{{model._id}}" aria-hidden="true" data-toggle="modal" data-target="#deleteModal"><i class="fa fa-trash-o"></i></button>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endmacro %}
+
+
+{% block scripts %}
+{{ super() }}
+<script>
+  $(document).on("click", ".removeModel", function () {
+    var modelId = $(this).data('id');
+    $('input#model_id').val(modelId);
+});
+</script>
+{% endblock %}

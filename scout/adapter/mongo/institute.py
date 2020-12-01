@@ -39,11 +39,13 @@ class InstituteHandler(object):
         internal_id,
         sanger_recipient=None,
         sanger_recipients=None,
+        loqusdb_id=None,
         coverage_cutoff=None,
         frequency_cutoff=None,
         display_name=None,
         remove_sanger=None,
         phenotype_groups=None,
+        gene_panels=None,
         group_abbreviations=None,
         add_groups=None,
         sharing_institutes=None,
@@ -55,11 +57,13 @@ class InstituteHandler(object):
             internal_id(str): The internal institute id
             sanger_recipient(str): Email adress to add for sanger order
             sanger_recipients(list): A list of sanger recipients email addresses
+            loqusdb_id(str): identify loqusdb setting to use
             coverage_cutoff(int): Update coverage cutoff
             frequency_cutoff(float): New frequency cutoff
             display_name(str): New display name
             remove_sanger(str): Email adress for sanger user to be removed
             phenotype_groups(iterable(str)): New phenotype groups
+            gene_panels(dict): a dictionary of panels with key=panel_name and value=display_name
             group_abbreviations(iterable(str))
             add_groups(bool): If groups should be added. If False replace groups
             sharing_institutes(list(str)): Other institutes to share cases with
@@ -140,11 +144,18 @@ class InstituteHandler(object):
                 existing_groups[hpo_term] = {"name": description, "abbr": abbreviation}
             updates["$set"]["phenotype_groups"] = existing_groups
 
+        if gene_panels is not None:
+            updates["$set"]["gene_panels"] = gene_panels
+
         if sharing_institutes is not None:
             updates["$set"]["collaborators"] = sharing_institutes
 
         if cohorts is not None:
             updates["$set"]["cohorts"] = cohorts
+
+        if loqusdb_id is not None:
+            LOG.info("Updating loqusdb id for institute: %s to %s", internal_id, loqusdb_id)
+            updates["$set"]["loqusdb_id"] = loqusdb_id
 
         if updates["$set"].keys() or updates.get("$push") or updates.get("$pull"):
             updates["$set"]["updated_at"] = datetime.now()

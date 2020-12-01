@@ -13,6 +13,7 @@ from flask import (
 )
 
 from .partial import send_file_partial
+from scout.constants import HUMAN_REFERENCE
 from . import controllers
 
 alignviewers_bp = Blueprint(
@@ -50,117 +51,39 @@ def unindexed_remote_static():
 @alignviewers_bp.route("/igv", methods=["POST"])
 def igv():
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)"""
+
+    # Set genome build for displaying alignments:
+    # Genome build is 37 if request.form.get("build") is 37 and chr != MT
+    # Genome build is 38 if request.form.get("build") is 38 or if chrom == MT
+    chromosome_build = request.form.get("build")
     chrom = request.form.get("contig")
     if chrom == "MT":
         chrom = "M"
+    if chromosome_build in ["GRCh38", "38"] or chrom == "M":
+        chromosome_build = "38"
+    else:
+        chromosome_build = "37"
 
     start = request.form.get("start")
     stop = request.form.get("stop")
-
     locus = "chr{0}:{1}-{2}".format(chrom, start, stop)
-    LOG.debug("Displaying locus %s", locus)
 
-    chromosome_build = request.form.get("build")
-    LOG.debug("Chromosome build is %s", chromosome_build)
+    display_obj = {}  # Initialize the dictionary containing all tracks info
 
-    samples = request.form.get("sample").split(",")
-    LOG.debug("samples: %s", samples)
+    # Set up IGV tracks that are common for all cases:
+    display_obj["reference_track"] = HUMAN_REFERENCE[
+        chromosome_build
+    ]  # Human reference is always present
+    # General tracks (Genes, Clinvar and ClinVar SNVs are shown according to user preferences)
+    controllers.set_common_tracks(display_obj, chromosome_build, request.form)
 
-    bam_files = None
-    bai_files = None
-    rhocall_bed_files = None
-    rhocall_wig_files = None
-    tiddit_coverage_files = None
-    updregion_files = None
-    updsites_files = None
+    # Set up bam/cram alignments for case samples:
+    controllers.set_sample_tracks(display_obj, request.form)
 
-    if request.form.get("align") == "mt_bam":
-        bam_files = request.form.get("mt_bam").split(",")
-        bai_files = request.form.get("mt_bai").split(",")
-    else:
-        if request.form.get("bam"):
-            bam_files = request.form.get("bam").split(",")
-            LOG.debug("loading the following BAM tracks: %s", bam_files)
-        if request.form.get("bai"):
-            bai_files = request.form.get("bai").split(",")
-        if request.form.get("rhocall_bed"):
-            rhocall_bed_files = request.form.get("rhocall_bed").split(",")
-            LOG.debug("loading the following rhocall BED tracks: %s", rhocall_bed_files)
-        if request.form.get("rhocall_wig"):
-            rhocall_wig_files = request.form.get("rhocall_wig").split(",")
-            LOG.debug("loading the following rhocall WIG tracks: %s", rhocall_wig_files)
-        if request.form.get("tiddit_coverage_wig"):
-            tiddit_coverage_files = request.form.get("tiddit_coverage_wig").split(",")
-            LOG.debug(
-                "loading the following tiddit_coverage tracks: %s",
-                tiddit_coverage_files,
-            )
-        if request.form.get("upd_regions_bed"):
-            updregion_files = request.form.get("upd_regions_bed").split(",")
-            LOG.debug("loading the following upd sites tracks: %s", updregion_files)
-        if request.form.get("upd_sites_bed"):
-            updsites_files = request.form.get("upd_sites_bed").split(",")
-            LOG.debug("loading the following upd region tracks: %s", updsites_files)
+    # When chrom != MT, set up case-specific tracks (might be present according to the pipeline)
+    if chrom != "M":
+        controllers.set_case_specific_tracks(display_obj, request.form)
 
-    display_obj = {}
-
-    display_obj["reference_track"] = controllers.reference_track(chromosome_build, chrom)
-    display_obj["genes_track"] = controllers.genes_track(chromosome_build, chrom)
-    display_obj["clinvar_snvs"] = controllers.clinvar_track(chromosome_build, chrom)
-    display_obj["clinvar_cnvs"] = controllers.clinvar_cnvs_track(chromosome_build, chrom)
-
-    # Init upcoming igv-tracks
-    sample_tracks = []
-    upd_regions_bed_tracks = []
-    upd_sites_bed_tracks = []
-
-    counter = 0
-    for sample in samples:
-        # some samples might not have an associated bam file, take care if this
-        if len(bam_files) > counter and bam_files[counter]:
-            sample_tracks.append(
-                {
-                    "name": sample,
-                    "url": bam_files[counter],
-                    "format": bam_files[counter].split(".")[-1],  # "bam" or "cram"
-                    "indexURL": bai_files[counter],
-                    "height": 700,
-                }
-            )
-        counter += 1
-
-    display_obj["sample_tracks"] = sample_tracks
-
-    if rhocall_wig_files:
-        rhocall_wig_tracks = make_igv_tracks("Rhocall Zygosity", rhocall_wig_files)
-        display_obj["rhocall_wig_tracks"] = rhocall_wig_tracks
-    if rhocall_bed_files:
-        rhocall_bed_tracks = make_igv_tracks("Rhocall Regions", rhocall_bed_files)
-        display_obj["rhocall_bed_tracks"] = rhocall_bed_tracks
-    if tiddit_coverage_files:
-        tiddit_wig_tracks = make_igv_tracks("TIDDIT Coverage", tiddit_coverage_files)
-        display_obj["tiddit_wig_tracks"] = tiddit_wig_tracks
-    if updregion_files:
-        updregion_tracks = make_igv_tracks("UPD region", updregion_files)
-        display_obj["updregion_tracks"] = updregion_tracks
-    if updsites_files:
-        updsites_tracks = make_igv_tracks("UPD sites", updsites_files)
-        display_obj["updsites_tracks"] = updsites_tracks
-
-    if request.form.get("center_guide"):
-        display_obj["display_center_guide"] = True
-    else:
-        display_obj["display_center_guide"] = False
+    display_obj["display_center_guide"] = True
 
     return render_template("alignviewers/igv_viewer.html", locus=locus, **display_obj)
-
-
-def make_igv_tracks(name, file_list):
-    """ Return a dict according to IGV track format. """
-
-    track_list = []
-    counter = 0
-    for r in file_list:
-        track_list.append({"name": name, "url": file_list[counter], "min": 0.0, "max": 30.0})
-        counter += 1
-    return track_list

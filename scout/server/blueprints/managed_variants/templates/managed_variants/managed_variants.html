@@ -1,0 +1,284 @@
+{% extends "layout_bs4.html" %}
+
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% from "variants/utils.html" import pagination_footer, pagination_hidden_div %}
+
+{% block title %}
+  {{ super() }} - Managed variants
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+   <li class="nav-item active">
+     <span class="navbar-text">Managed variants</span>
+   </li>
+{% endblock %}
+{% block content_main %}
+
+
+<form method="POST" id="add_form" action="{{url_for('managed_variants.add_managed_variant')}}" enctype="multipart/form-data">
+  <div class="container-float">
+    <div id="accordion_add" >
+       <div class="card mt-3">
+        <div class="card-header">
+          <h5>
+            <a data-toggle="collapse" data-parent="#accordion_add" href="#collapseAdd">
+                Add variant
+            </a>
+          </h5>
+        </div>
+        <div id="collapseAdd" class="panel-collapse collapse">
+          <div class="card-body">{{ add_variant_form() }}</div>
+        </div>
+       </div>
+    </div>
+  </div>
+</form>
+
+<form method="POST" id="load_form" action="{{url_for('managed_variants.upload_managed_variants')}}" enctype="multipart/form-data">
+  <div class="container-float">
+    <div id="accordion_load" >
+       <div class="card mt-3">
+        <div class="card-header">
+          <h5>
+            <a data-toggle="collapse" data-parent="#accordion_load" href="#collapseLoad">
+                Load variants
+            </a>
+          </h5>
+        </div>
+        <div id="collapseLoad" class="panel-collapse collapse">
+          <div class="card-body">{{ load_variant_form() }}</div>
+        </div>
+       </div>
+    </div>
+  </div>
+</form>
+
+
+<form method="POST" id="filters_form" action="{{url_for('managed_variants.managed_variants')}}" enctype="multipart/form-data">
+  <div class="container-float">
+    {{ pagination_hidden_div(page) }}
+    <div id="accordion" >
+       <div class="card mt-3">
+        <div class="card-header">
+          <h5>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
+                Filters
+            </a>
+          </h5>
+        </div>
+        <div id="collapseFilters" class="panel-collapse collapse">
+          <div class="card-body">{{ filter_variants_form() }}</div>
+        </div>
+       </div>
+    </div>
+  </div>
+</form>
+
+
+
+<div class="table-responsive" style="padding-top: 25px;">
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th style="width:10%">Chr</th>
+        <th style="width:10%">Start</th>
+        <th style="width:10%">End</th>
+        <th style="width:10%">Ref</th>
+        <th style="width:10%">Alt</th>
+        <th style="width:10%">Kind</th>
+        <th style="width:10%">Category</th>
+        <th style="width:30%">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for variant in managed_variants %}
+        <tr>
+          <td>{{ variant.chromosome }}</td>
+          <td>{{ variant.position }}</td>
+          <td>{{ variant.end }}</td>
+          <td>{{ variant.reference }}</td>
+          <td>{{ variant.alternative }}</td>
+          <td>{{ variant.sub_category }}</td>
+          <td>{{ variant.category }}</td>
+          <td>
+            {{ variant.description }}
+            <div class="float-right">
+              <form method="POST" action="{{ url_for('managed_variants.remove_managed_variant', variant_id=variant.managed_variant_id) }}">
+                  <button id="{{variant._id}}" type="button" data-toggle="collapse" href="#modifydiv_{{variant._id}}" aria-expanded="false" aria-controls="modifydiv_{{variant._id}}" class="btn btn-warning btn-xs">
+                    <span class="fa fa-pencil-square-o"></span>
+                  </button>
+                  <button id="remove_{{variant._id}}" type="submit" href="remove_{{variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o"></span></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        <tr>
+        {{ modify_variant(variant) }}
+        </div>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="container-fluid">
+  {{ pagination_footer(more_variants, page) }}
+</div>
+
+{% endblock %}
+
+{% macro modify_variant(variant) %}
+  <tr id="modifydiv_{{variant._id}}" class="collapse">
+    {{ modify_variant_form(variant) }}
+  </tr>
+{% endmacro %}
+
+{% macro modify_variant_form(variant) %}
+  <form method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant.managed_variant_id) }}" enctype="multipart/form-data" class="form-horizontal">
+      {{ modify_form.csrf_token }}
+      <input type="hidden" name="variant_id" value="{{ variant._id }}">
+      <td>{{ modify_form.chromosome(class_="form-control") }}</td>
+      <td><input type="number" class="form-control" name="position" id="position" value="{{ variant.position }}"></td>
+      <td><input type="number" class="form-control" name="end" id="end" value="{{ variant.end }}"></td>
+      <td><input type="text" class="form-control" name="reference" id="reference" value="{{ variant.reference }}"></td>
+      <td><input type="text" class="form-control" name="alternative" id="alternative" value="{{ variant.alternative }}"></td>
+      <td>{{ modify_form.sub_category(class_="form-control") }}</td>
+      <td>{{ modify_form.category(class_="form-control") }}</td>
+      <td>
+         <div class="input-group">
+           <input type="text" class="form-control" name="description" id="description" value="{{ variant.description }}">
+           <button name="add_variant" id="add_variant" type="submit" class="btn btn-primary btn-sm">Save</button>
+           <button name="cancel" id="cancel" type="cancel" class="btn btn-outline-secondary btn-sm">Cancel</button>
+         </div>
+      </td>
+
+  </form>
+{% endmacro %}
+
+{% macro load_variant_form() %}
+    <div class="row">
+      Upload managed variants CSV file
+      <div class="col-sm-5 text-center">
+        <input type="file" name="csv_file" class="custom-file-input" required>
+        <label class="custom-file-label" for="csv_file">Choose file</label><br>
+        <p class="help-block">How do I format my <a href="https://www.clinicalgenomics.se/scout/user-guide/panels/#uploading-a-new-gene-panel-version">managed variants file</a>?</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col text-center">
+        <button type="submit" class="btn btn-outline-secondary">Upload</button>
+      </div>
+    </div>
+{% endmacro %}
+
+{% macro add_variant_form() %}
+    {{ add_form.csrf_token }}
+
+<div class="table-responsive" style="padding-top: 25px;">
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>Chr</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Ref</th>
+        <th>Alt</th>
+        <th>Category</th>
+        <th>Kind</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+      <td>{{ add_form.chromosome(class_="form-control") }}</td>
+      <td><input type="number" name="position" id="position" class="form-control"></td>
+      <td><input type="number" name="end" id="end" class="form-control"></td>
+      <td><input type="text" name="reference" id="reference" class="form-control"></td>
+      <td><input type="text" name="alternative" id="alternative" class="form-control"></td>
+      <td>{{ add_form.category(class_="form-control") }}</td>
+      <td>{{ add_form.sub_category(class_="form-control") }}</td>
+      <td>
+        <input type="text" name="description" id="description" class="form-control">
+      </td>
+      </tr>
+      <tr>
+        <td colspan=12>
+          <button name="add_variant" id="submit" type="submit" class="btn btn-primary btn-sm">Add</button>
+          <button name="cancel" id="cancel" type="cancel" class="btn btn-outline-secondary btn-sm">Cancel</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endmacro %}
+
+{% macro filter_variants_form() %}
+
+    {{ filters_form.csrf_token }}
+
+    <div class="row">
+      <div class="col-2">
+        {{ wtf.form_field(filters_form.category)}}
+      </div>
+      <div class="col-2">
+        {{ wtf.form_field(filters_form.sub_category)}}
+      </div>
+      <div class="col-4">
+        {{ wtf.form_field(filters_form.description) }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-2">
+        {{ wtf.form_field(filters_form.chromosome) }}
+      </div>
+      <div class="col-2">
+        {{ wtf.form_field(filters_form.position) }}
+      </div>
+      <div class="col-2">
+        {{ wtf.form_field(filters_form.end) }}
+      </div>
+      <div class="col-2">
+        {{ wtf.form_field(filters_form.cytoband_start) }}
+      </div>
+      <div class="col-2">
+        {{ wtf.form_field(filters_form.cytoband_end) }}
+      </div>
+    </div>
+    <div class="row justify-content-center mt-3">
+      <div class="col col-md-8">
+        <div class="row">
+          <div class="col">
+            {{ filters_form.filter_variants(class_="btn btn-primary form-control") }}
+          </div>
+        </div>
+      </div>
+    </div>
+{% endmacro %}
+
+{% block scripts %}
+{{ super() }}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+<script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="popover"]').popover({
+      container: 'body',
+    });
+
+    $('table').stickyTableHeaders({
+      fixedOffset: $(".navbar-fixed-top")
+    });
+
+    $('select[multiple]').multiselect({
+      buttonWidth: '100%'
+    });
+  })
+
+</script>
+{% endblock %}

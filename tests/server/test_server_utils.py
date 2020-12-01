@@ -1,6 +1,6 @@
 """Tests for server utils"""
 import tempfile
-
+import pytest
 from scout.server.links import get_variant_links
 from scout.server.utils import append_safe, find_index, variant_case
 
@@ -89,6 +89,11 @@ def test_append_safe_except():
     """Test to append_safe empty dict"""
     # GIVEN a simple dict with list
     a_dict = {}
+
+    # WHEN calling append() on a empty dict
+    # THEN KeyError exception is raised
+    with pytest.raises(KeyError):
+        a_dict["2"].append(2)
 
     # WHEN calling append_safe() on a empty
     append_safe(a_dict, "a", 2)

@@ -19,6 +19,8 @@ from intervaltree import IntervalTree
 from scout.parse.variant.headers import parse_rank_results_header, parse_vep_header
 from scout.parse.variant.rank_score import parse_rank_score
 from scout.parse.variant.clnsig import is_pathogenic
+from scout.parse.variant.coordinates import parse_coordinates
+from scout.parse.variant.managed_variant import parse_managed_variant_id
 
 from scout.parse.variant import parse_variant
 from scout.build import build_variant
@@ -411,12 +413,19 @@ class VariantLoader(object):
             mt_variant = "MT" in variant.CHROM
             rank_score = parse_rank_score(variant.INFO.get("RankScore"), case_obj["_id"])
             pathogenic = is_pathogenic(variant)
+            managed = self._is_managed(variant, category)
 
             # Check if the variant should be loaded at all
             # if rank score is None means there are no rank scores annotated, all variants will be loaded
             # Otherwise we load all variants above a rank score treshold
             # Except for MT variants where we load all variants
-            if (rank_score is None) or (rank_score > rank_threshold) or mt_variant or pathogenic:
+            if (
+                (rank_score is None)
+                or (rank_score > rank_threshold)
+                or mt_variant
+                or pathogenic
+                or managed
+            ):
                 nr_inserted += 1
                 # Parse the vcf variant
                 parsed_variant = parse_variant(
@@ -515,6 +524,42 @@ class VariantLoader(object):
         LOG.debug("Nr bulks inserted: %s", nr_bulks)
 
         return nr_inserted
+
+    def _is_managed(
+        self,
+        variant,
+        category="snv",
+        build="37",
+    ):
+        """Check if variant is on the managaged list.
+        All variants on the list will be loaded regardless of the kind of relevance.
+
+        Arguments:
+            variant(cyvcf2.Variant)
+            category(str): snv, sv, str, cancer, cancer_sv
+            build(str): "37" or "38"
+
+        Returns:
+            is_managed(boolean)
+
+        """
+
+        coordinates = parse_coordinates(variant, category, build)
+
+        return (
+            self.find_managed_variant(
+                parse_managed_variant_id(
+                    coordinates["chrom"],
+                    coordinates["position"],
+                    coordinates["ref"],
+                    coordinates["alt"],
+                    category,
+                    coordinates["sub_category"],
+                    build,
+                )
+            )
+            is not None
+        )
 
     def load_variants(
         self,
