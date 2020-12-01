@@ -524,6 +524,7 @@ def parse_case(config):
         "cnv_report": config.get("cnv_report"),
         "multiqc": config.get("multiqc"),
         "track": config.get("track", "rare"),
+        "chromograph_image_files": config.get("chromograph_image_files"),
         "chromograph_prefixes": config.get(
             "chromograph_prefixes",
             {"upd_regions": "upd_regions", "upd_sites": "upd_sites", "chr": ""},
