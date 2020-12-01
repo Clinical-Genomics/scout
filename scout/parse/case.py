@@ -420,7 +420,10 @@ def parse_individual(sample):
     ind_info["tissue_type"] = sample.get("tissue_type")
 
     ind_info["chromograph_images"] = sample.get(
-        "chromograph_images", {"upd_regions": "upd", "upd_sites": "upd_chr", "coverage": ""}
+        "chromograph_images", {"upd_regions": "upd",
+                               "upd_sites": "upd_chr",
+                               "coverage": "",
+                               "autozyg": ""}
     )
 
     # Remove key-value pairs from ind_info where key==None and return

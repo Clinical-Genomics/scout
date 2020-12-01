@@ -64,10 +64,10 @@ function draw_tracks(individual, prefixes, institute, case_name){
     console.log("DRAW TRACKS");
     console.log(individual.chromograph_images)
 
-    if (individual.chromograph_images.upd_sites){
-        console.log("printRHO ", );
-        var upd_sites_imgPath = create_path(institute, case_name, individual, 'upd_sites_images')
-        var upd_sites_images = make_names("upd_sites-");
+    if (individual.chromograph_images.autozyg){
+        console.log("print autozyg ", );
+        var autozyg_imgPath = create_path(institute, case_name, individual, 'autozyg_images')
+        var autozyg_images = make_names("autozyg-");
     }
     if (individual.chromograph_images.upd_regions){
         console.log("print UPD_REGIONS ", );
@@ -79,7 +79,7 @@ function draw_tracks(individual, prefixes, institute, case_name){
         var coverage_imgPath = create_path(institute, case_name, individual, 'coverage_images')
         var coverage_images = make_names("coverage-");
     }
-    
+
 
     // ideograms always exist
     var ideo_imgPath = static_path_ideograms(institute, case_name, individual, 'ideaograms')
@@ -87,12 +87,12 @@ function draw_tracks(individual, prefixes, institute, case_name){
 
     console.log("PATHS")
     console.log("ideo: " + ideo_imgPath)
-    console.log("sites: " + upd_sites_imgPath)
+    console.log("autozygosity: " + autozyg_imgPath)
     console.log("regions: " + upd_regions_imgPath)
     console.log("coverage" + coverage_imgPath)
 
-    
-    var upd_sites_imgObj = new Image()
+
+    var autozyg_imgObj = new Image()
     var upd_regions_imgObj = new Image()
     var coverage_imgObj = new Image()
 
@@ -100,7 +100,7 @@ function draw_tracks(individual, prefixes, institute, case_name){
     var chromspecs_list = get_chromosomes(individual.sex)
 
     for(i = 0; i< chromspecs_list.length; i++){
-        // upd_sites_imgObj.src = upd_sites_imgPath + upd_sites_images[i]
+        // autozyg_imgObj.src = autozyg_imgPath + autozyg_images[i]
         // upd_regions_imgObj.src = upd_regions_imgPath + upd_regions_images[i]
         x_pos = i % number_of_columns == 0? 0 : CYT_WIDTH * (i% number_of_columns) + OFFSET_X + 5
         y_pos =  Math.floor( i/number_of_columns ) * 140;
@@ -129,12 +129,12 @@ function draw_tracks(individual, prefixes, institute, case_name){
             g.appendChild(upd_regions_image);
         }
 
-        if(individual.chromograph_images.upd_sites){
-            var upd_sites_image = make_svgimage(upd_sites_imgPath + upd_sites_images[i],
+        if(individual.chromograph_images.autozyg){
+            var autozyg_image = make_svgimage(autozyg_imgPath + autozyg_images[i],
                                           x_pos + 0+5,  // compensate for image pixel start
                                           y_pos + 60 , // place below UPD
                                           "25px", "500px", );
-            g.appendChild(upd_sites_image);
+            g.appendChild(autozyg_image);
         }
 
         if(individual.chromograph_images.coverage){

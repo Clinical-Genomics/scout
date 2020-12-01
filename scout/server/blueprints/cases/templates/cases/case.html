@@ -441,11 +441,6 @@
 
 
 
-
-
-
-
-
 {% block scripts %}
 {{ super() }}
   <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
@@ -459,7 +454,7 @@
 <script>
   window.onload=function(){
       console.log("Window is loaded!")
-      
+
       add_image_to_individual_panel( {{case.individuals|tojson}},
                                      {{case.chromograph_prefixes|tojson}},
                                      "{{institute._id}}",
@@ -563,8 +558,6 @@ $('[data-toggle=sidebar-collapse]').click(function() {
 });
 
 
-
-
 <style>
 /*Matchmaker card styling*/
 .matchmaker-grid {
@@ -588,7 +581,6 @@ $('[data-toggle=sidebar-collapse]').click(function() {
   grid-column: 2;
   grid-row: 2;
 }
-
 </style>
 
 
