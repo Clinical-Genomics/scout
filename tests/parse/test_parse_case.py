@@ -4,7 +4,7 @@ from pprint import pprint as pp
 import pytest
 
 from scout.constants import REV_SEX_MAP
-from scout.exceptions import PedigreeError
+from scout.exceptions import ConfigError, PedigreeError
 from scout.parse.case import (
     parse_case,
     parse_case_data,
@@ -451,3 +451,14 @@ def test_missing_optional_igv_param(scout_config):
     # THEN parsing the config will not raise an exception
     case_data = parse_case(scout_config)
     assert case_data
+
+
+@pytest.mark.parametrize("key", ["owner", "family"])
+def test_missing_mandatory_config_key(scout_config, key):
+    ## GIVEN a scout_config (dict) containing user case information
+
+    ## WHEN deleting key
+    scout_config.pop(key)
+    ## THEN calling parse_case() will raise ConfigError
+    with pytest.raises(ConfigError):
+        parse_case(scout_config)
