@@ -214,7 +214,7 @@ def test_amino_acid_residue_change_3_to_1_fs():
     assert r == None
 
 
-def test_amino_acid_residue_change_3_to_1_fs():
+def test_amino_acid_residue_change_3_to_1_fs_ext():
     ## GIVEN a protein change on HGVS 3-letter format
     a = "p.Arg544Glnext*17"
     ## WHEN converting to 1-letter change string
