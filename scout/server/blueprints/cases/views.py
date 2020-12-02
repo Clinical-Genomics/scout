@@ -959,29 +959,69 @@ def multiqc(institute_id, case_name):
     return send_from_directory(out_dir, filename)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/roh_images/<image>")
-def host_roh_image(institute_id, case_name, image):
-    """Generate ROH image file paths"""
-    return host_image_aux(institute_id, case_name, image, "roh_images")
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/upd_regions_images/<image>", methods=["GET", "POST"]
+)
+def host_upd_regions_image(institute_id, case_name, individual, image):
+    """Generate UPD REGIONS image file paths"""
+    LOG.debug("REGIONS")
+    return host_image_aux(institute_id, case_name, individual, image, "upd_regions")
 
 
-@cases_bp.route("/<institute_id>/<case_name>/upd_images/<image>")
-def host_upd_image(institute_id, case_name, image):
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/upd_sites_images/<image>", methods=["GET", "POST"]
+)
+def host_upd_sites_image(institute_id, case_name, individual, image):
     """Generate UPD image file paths"""
-    return host_image_aux(institute_id, case_name, image, "upd_images")
+    return host_image_aux(institute_id, case_name, individual, image, "upd_sites")
 
 
-@cases_bp.route("/<institute_id>/<case_name>/chr_images/<image>")
-def host_chr_image(institute_id, case_name, image):
-    """Generate CHR image file paths"""
-    return host_image_aux(institute_id, case_name, image, "chr_images")
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/coverage_images/<image>", methods=["GET", "POST"]
+)
+def host_coverage_image(institute_id, case_name, individual, image):
+    """Generate Coverage image file paths"""
+    return host_image_aux(institute_id, case_name, individual, image, "coverage")
 
 
-def host_image_aux(institute_id, case_name, image, imgstr):
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/autozyg_images/<image>", methods=["GET", "POST"]
+)
+def host_autozyg_image(institute_id, case_name, individual, image):
+    """Generate Coverage image file paths"""
+    return host_image_aux(institute_id, case_name, individual, image, "autozyg")
+
+
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/ideograms/<image>", methods=["GET", "POST"]
+)
+def host_chr_image(institute_id, case_name, individual, image):
+    """Generate CHR image file paths. Points to servers 'public/static'"""
+    public_folder = "/public/static/ideograms/"
+    img_path = public_folder + image
+    LOG.debug("ideaogram: {}".format(img_path))
+    return send_from_directory(img_path, image)
+
+
+def host_image_aux(institute_id, case_name, individual, image, key):
     """Auxilary function for generate absolute file paths"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    chr_path = case_obj.get("chromograph_image_files")
-    abs_path = os.path.abspath(chr_path)
-    img_path = abs_path + "/" + imgstr
-    LOG.debug("Attempting to send {}/{}".format(img_path, image))
-    return send_from_directory(img_path, image)
+    # Find path
+    for ind in case_obj["individuals"]:
+        if ind["individual_id"] == individual:
+            # LOG.debug("ind host_image_aux: {}".format(ind))
+            try:
+                # path contains both dir structure and a file prefix
+                path = ind["chromograph_images"][key]
+                abs_path = os.path.abspath(path)
+                img_path = abs_path + image.split("-")[-1]  # get suffix
+                return send_file(img_path)
+            except Exception as err:
+                LOG.debug("Error : {}".format(err))
+
+
+def _generate_csv(header, lines):
+    """Download a text file composed of any header and lines"""
+    yield header + "\n"
+    for line in lines:  # lines have already quoted fields
+        yield line + "\n"
