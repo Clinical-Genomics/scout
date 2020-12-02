@@ -173,4 +173,6 @@ AMINO_ACID_RESIDUE_3_TO_1 = {
     "Trp": "W",
     "Tyr": "Y",
     "Val": "V",
+    "Ter": "*",
+    "del": "del",
 }
