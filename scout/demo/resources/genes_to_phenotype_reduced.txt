@@ -16,6 +16,176 @@
 2	A2M	HP:0002423	Long-tract signs			susceptibility	mim2gene	OMIM:104300
 2	A2M	HP:0002511	Alzheimer disease			susceptibility	mim2gene	OMIM:104300
 2	A2M	HP:0000006	Autosomal dominant inheritance			susceptibility	mim2gene	OMIM:104300
+7157	TP53	HP:0001428	Somatic mutation			-	mim2gene	OMIM:114480
+7157	TP53	HP:0000006	Autosomal dominant inheritance			-	mim2gene	OMIM:114480
+7157	TP53	HP:0001425	Heterogeneous			-	mim2gene	OMIM:114480
+7157	TP53	HP:0003002	Breast carcinoma			-	mim2gene	OMIM:114480
+7157	TP53	HP:0200022	Choroid plexus papilloma	null			orphadata	ORPHA:2807
+7157	TP53	HP:0000238	Hydrocephalus	null			orphadata	ORPHA:2807
+7157	TP53	HP:0100543	Cognitive impairment	null			orphadata	ORPHA:2807
+7157	TP53	HP:0001250	Seizure	null			orphadata	ORPHA:2807
+7157	TP53	HP:0000505	Visual impairment	null			orphadata	ORPHA:2807
+7157	TP53	HP:0001276	Hypertonia	null			orphadata	ORPHA:2807
+7157	TP53	HP:0004374	Hemiplegia/hemiparesis	null			orphadata	ORPHA:2807
+7157	TP53	HP:0005513	Increased megakaryocyte count	null			orphadata	ORPHA:3318
+7157	TP53	HP:0003401	Paresthesia	null			orphadata	ORPHA:3318
+7157	TP53	HP:0001658	Myocardial infarction	null			orphadata	ORPHA:3318
+7157	TP53	HP:0002488	Acute leukemia	null			orphadata	ORPHA:3318
+7157	TP53	HP:0002863	Myelodysplasia	null			orphadata	ORPHA:3318
+7157	TP53	HP:0011875	Abnormal platelet morphology	null			orphadata	ORPHA:3318
+7157	TP53	HP:0004420	Arterial thrombosis	null			orphadata	ORPHA:3318
+7157	TP53	HP:0100749	Chest pain	null			orphadata	ORPHA:3318
+7157	TP53	HP:0003010	Prolonged bleeding time	null			orphadata	ORPHA:3318
+7157	TP53	HP:0011974	Myelofibrosis	null			orphadata	ORPHA:3318
+7157	TP53	HP:0001744	Splenomegaly	null			orphadata	ORPHA:3318
+7157	TP53	HP:0100576	Amaurosis fugax	null			orphadata	ORPHA:3318
+7157	TP53	HP:0002326	Transient ischemic attack	null			orphadata	ORPHA:3318
+7157	TP53	HP:0004936	Venous thrombosis	null			orphadata	ORPHA:3318
+7157	TP53	HP:0000252	Microcephaly			-	mim2gene	OMIM:618165
+7157	TP53	HP:0000029	Testicular atrophy			-	mim2gene	OMIM:618165
+7157	TP53	HP:0000135	Hypogonadism			-	mim2gene	OMIM:618165
+7157	TP53	HP:0001903	Anemia			-	mim2gene	OMIM:618165
+7157	TP53	HP:0002750	Delayed skeletal maturation			-	mim2gene	OMIM:618165
+7157	TP53	HP:0004313	Decreased circulating antibody level			-	mim2gene	OMIM:618165
+7157	TP53	HP:0001250	Seizure			-	mim2gene	OMIM:618165
+7157	TP53	HP:0001263	Global developmental delay			-	mim2gene	OMIM:618165
+7157	TP53	HP:0004322	Short stature			-	mim2gene	OMIM:618165
+7157	TP53	HP:0012410	Pure red cell aplasia			-	mim2gene	OMIM:618165
+7157	TP53	HP:0000006	Autosomal dominant inheritance			-	mim2gene	OMIM:618165
+7157	TP53	HP:0002910	Elevated hepatic transaminase	null			orphadata	ORPHA:1333
+7157	TP53	HP:0003002	Breast carcinoma	null			orphadata	ORPHA:1333
+7157	TP53	HP:0001824	Weight loss	null			orphadata	ORPHA:1333
+7157	TP53	HP:0002861	Melanoma	null			orphadata	ORPHA:1333
+7157	TP53	HP:0004396	Poor appetite	null			orphadata	ORPHA:1333
+7157	TP53	HP:0025318	Ovarian carcinoma	null			orphadata	ORPHA:1333
+7157	TP53	HP:0003003	Colon cancer	null			orphadata	ORPHA:1333
+7157	TP53	HP:0002017	Nausea and vomiting	null			orphadata	ORPHA:1333
+7157	TP53	HP:0003418	Back pain	null			orphadata	ORPHA:1333
+7157	TP53	HP:0001433	Hepatosplenomegaly	null			orphadata	ORPHA:1333
+7157	TP53	HP:0005249	Functional intestinal obstruction	null			orphadata	ORPHA:1333
+7157	TP53	HP:0100592	Peritoneal abscess	null			orphadata	ORPHA:1333
+7157	TP53	HP:0000819	Diabetes mellitus	null			orphadata	ORPHA:1333
+7157	TP53	HP:0001738	Exocrine pancreatic insufficiency	null			orphadata	ORPHA:1333
+7157	TP53	HP:0006725	Pancreatic adenocarcinoma	null			orphadata	ORPHA:1333
+7157	TP53	HP:0002039	Anorexia	null			orphadata	ORPHA:1333
+7157	TP53	HP:0002254	Intermittent diarrhea	null			orphadata	ORPHA:1333
+7157	TP53	HP:0012334	Extrahepatic cholestasis	null			orphadata	ORPHA:1333
+7157	TP53	HP:0002896	Neoplasm of the liver	null			orphadata	ORPHA:1333
+7157	TP53	HP:0004389	Intestinal pseudo-obstruction	null			orphadata	ORPHA:1333
+7157	TP53	HP:0002027	Abdominal pain	null			orphadata	ORPHA:1333
+7157	TP53	HP:0002716	Lymphadenopathy	null			orphadata	ORPHA:1333
+7157	TP53	HP:0000952	Jaundice	null			orphadata	ORPHA:1333
+7157	TP53	HP:0012432	Chronic fatigue	null			orphadata	ORPHA:1333
+7157	TP53	HP:0001402	Hepatocellular carcinoma			-	mim2gene	OMIM:114550
+7157	TP53	HP:0001413	Micronodular cirrhosis			-	mim2gene	OMIM:114550
+7157	TP53	HP:0001428	Somatic mutation			-	mim2gene	OMIM:114550
+7157	TP53	HP:0000006	Autosomal dominant inheritance			-	mim2gene	OMIM:114550
+7157	TP53	HP:0006572	Subacute progressive viral hepatitis			-	mim2gene	OMIM:114550
+7157	TP53	HP:0001425	Heterogeneous			-	mim2gene	OMIM:114550
+7157	TP53	HP:0030406	Primary peritoneal carcinoma	null			orphadata	ORPHA:145
+7157	TP53	HP:0002861	Melanoma	null			orphadata	ORPHA:145
+7157	TP53	HP:0002894	Neoplasm of the pancreas	null			orphadata	ORPHA:145
+7157	TP53	HP:0012125	Prostate cancer	null			orphadata	ORPHA:145
+7157	TP53	HP:0003002	Breast carcinoma	null			orphadata	ORPHA:145
+7157	TP53	HP:0100615	Ovarian neoplasm	null			orphadata	ORPHA:145
+7157	TP53	HP:0011027	Abnormal fallopian tube morphology	null			orphadata	ORPHA:145
+7157	TP53	HP:0000006	Autosomal dominant inheritance			susceptibility	mim2gene	OMIM:614740
+7157	TP53	HP:0001428	Somatic mutation			-	mim2gene	OMIM:260350
+7157	TP53	HP:0410067	Increased level of L-fucose in urine			-	mim2gene	OMIM:260350
+7157	TP53	HP:0000006	Autosomal dominant inheritance			-	mim2gene	OMIM:260350
+7157	TP53	HP:0002894	Neoplasm of the pancreas			-	mim2gene	OMIM:260350
+7157	TP53	HP:0030448	Soft tissue sarcoma			-	mim2gene	OMIM:151623
+7157	TP53	HP:0100768	Choriocarcinoma			-	mim2gene	OMIM:151623
+7157	TP53	HP:0002667	Nephroblastoma			-	mim2gene	OMIM:151623
+7157	TP53	HP:0000006	Autosomal dominant inheritance			-	mim2gene	OMIM:151623
+7157	TP53	HP:0012125	Prostate cancer			-	mim2gene	OMIM:151623
+7157	TP53	HP:0003003	Colon cancer			-	mim2gene	OMIM:151623
+7157	TP53	HP:0030078	Lung adenocarcinoma			-	mim2gene	OMIM:151623
+7157	TP53	HP:0002488	Acute leukemia			-	mim2gene	OMIM:151623
+7157	TP53	HP:0006744	Adrenocortical carcinoma			-	mim2gene	OMIM:151623
+7157	TP53	HP:0002894	Neoplasm of the pancreas			-	mim2gene	OMIM:151623
+7157	TP53	HP:0002669	Osteosarcoma			-	mim2gene	OMIM:151623
+7157	TP53	HP:0003002	Breast carcinoma			-	mim2gene	OMIM:151623
+7157	TP53	HP:0000006	Autosomal dominant inheritance			susceptibility	mim2gene	OMIM:202300
+7157	TP53	HP:0006744	Adrenocortical carcinoma			susceptibility	mim2gene	OMIM:202300
+7157	TP53	HP:0000007	Autosomal recessive inheritance			susceptibility	mim2gene	OMIM:202300
+7157	TP53	HP:0008069	Neoplasm of the skin	null			orphadata	ORPHA:524
+7157	TP53	HP:0100273	Neoplasm of the colon	null			orphadata	ORPHA:524
+7157	TP53	HP:0002669	Osteosarcoma	null			orphadata	ORPHA:524
+7157	TP53	HP:0002861	Melanoma	null			orphadata	ORPHA:524
+7157	TP53	HP:0003002	Breast carcinoma	null			orphadata	ORPHA:524
+7157	TP53	HP:0002665	Lymphoma	null			orphadata	ORPHA:524
+7157	TP53	HP:0004375	Neoplasm of the nervous system	null			orphadata	ORPHA:524
+7157	TP53	HP:0002448	Progressive encephalopathy	null			orphadata	ORPHA:524
+7157	TP53	HP:0002894	Neoplasm of the pancreas	null			orphadata	ORPHA:524
+7157	TP53	HP:0100641	Neoplasm of the adrenal cortex	null			orphadata	ORPHA:524
+7157	TP53	HP:0001428	Somatic mutation			susceptibility	mim2gene	OMIM:137800
+7157	TP53	HP:0002888	Ependymoma			susceptibility	mim2gene	OMIM:137800
+7157	TP53	HP:0009592	Astrocytoma			susceptibility	mim2gene	OMIM:137800
+7157	TP53	HP:0012174	Glioblastoma multiforme			susceptibility	mim2gene	OMIM:137800
+7157	TP53	HP:0000006	Autosomal dominant inheritance			susceptibility	mim2gene	OMIM:137800
+7157	TP53	HP:0001962	Palpitations	null			orphadata	ORPHA:1501
+7157	TP53	HP:0000822	Hypertension	null			orphadata	ORPHA:1501
+7157	TP53	HP:0500022	Abnormal serum dehydroepiandrosterone level	null			orphadata	ORPHA:1501
+7157	TP53	HP:0025436	Elevated serum 11-deoxycortisol	null			orphadata	ORPHA:1501
+7157	TP53	HP:0000080	Abnormality of reproductive system physiology	null			orphadata	ORPHA:1501
+7157	TP53	HP:0001824	Weight loss	null			orphadata	ORPHA:1501
+7157	TP53	HP:0012030	Increased urinary cortisol level	null			orphadata	ORPHA:1501
+7157	TP53	HP:0000737	Irritability	null			orphadata	ORPHA:1501
+7157	TP53	HP:0000819	Diabetes mellitus	null			orphadata	ORPHA:1501
+7157	TP53	HP:0000859	Hyperaldosteronism	null			orphadata	ORPHA:1501
+7157	TP53	HP:0002900	Hypokalemia	null			orphadata	ORPHA:1501
+7157	TP53	HP:0011748	Adrenocorticotropic hormone deficiency	null			orphadata	ORPHA:1501
+7157	TP53	HP:0003110	Abnormality of urine homeostasis	null			orphadata	ORPHA:1501
+7157	TP53	HP:0000975	Hyperhidrosis	null			orphadata	ORPHA:1501
+7157	TP53	HP:0030078	Lung adenocarcinoma	null			orphadata	ORPHA:1501
+7157	TP53	HP:0001065	Striae distensae	null			orphadata	ORPHA:1501
+7157	TP53	HP:0003466	Paradoxical increased cortisol secretion on dexamethasone suppression test	null			orphadata	ORPHA:1501
+7157	TP53	HP:0000998	Hypertrichosis	null			orphadata	ORPHA:1501
+7157	TP53	HP:0000739	Anxiety	null			orphadata	ORPHA:1501
+7157	TP53	HP:0025134	Increased serum estradiol	null			orphadata	ORPHA:1501
+7157	TP53	HP:0001324	Muscle weakness	null			orphadata	ORPHA:1501
+7157	TP53	HP:0004324	Increased body weight	null			orphadata	ORPHA:1501
+7157	TP53	HP:0002027	Abdominal pain	null			orphadata	ORPHA:1501
+7157	TP53	HP:0006744	Adrenocortical carcinoma	null			orphadata	ORPHA:1501
+7157	TP53	HP:0025380	Increased serum androstenedione	null			orphadata	ORPHA:1501
+7157	TP53	HP:0025269	Panic attack	null			orphadata	ORPHA:1501
+7157	TP53	HP:0000007	Autosomal recessive inheritance			susceptibility	mim2gene	OMIM:259500
+7157	TP53	HP:0002669	Osteosarcoma			susceptibility	mim2gene	OMIM:259500
+7157	TP53	HP:0009919	Retinoblastoma			susceptibility	mim2gene	OMIM:259500
+7157	TP53	HP:0001428	Somatic mutation			susceptibility	mim2gene	OMIM:259500
+7157	TP53	HP:0001939	Abnormality of metabolism/homeostasis			susceptibility	mim2gene	OMIM:259500
+7157	TP53	HP:0001824	Weight loss	null			orphadata	ORPHA:668
+7157	TP53	HP:0002756	Pathologic fracture	null			orphadata	ORPHA:668
+7157	TP53	HP:0006491	Abnormality of the tibial metaphysis	null			orphadata	ORPHA:668
+7157	TP53	HP:0001386	Joint swelling	null			orphadata	ORPHA:668
+7157	TP53	HP:0001945	Fever	null			orphadata	ORPHA:668
+7157	TP53	HP:0002797	Osteolysis	null			orphadata	ORPHA:668
+7157	TP53	HP:0006489	Abnormality of the femoral metaphysis	null			orphadata	ORPHA:668
+7157	TP53	HP:0003155	Elevated alkaline phosphatase	null			orphadata	ORPHA:668
+7157	TP53	HP:0012531	Pain	null			orphadata	ORPHA:668
+7157	TP53	HP:0025435	Increased lactate dehydrogenase level	null			orphadata	ORPHA:668
+7157	TP53	HP:0001824	Weight loss	null			orphadata	ORPHA:668
+7157	TP53	HP:0002756	Pathologic fracture	null			orphadata	ORPHA:668
+7157	TP53	HP:0006491	Abnormality of the tibial metaphysis	null			orphadata	ORPHA:668
+7157	TP53	HP:0001386	Joint swelling	null			orphadata	ORPHA:668
+7157	TP53	HP:0001945	Fever	null			orphadata	ORPHA:668
+7157	TP53	HP:0002797	Osteolysis	null			orphadata	ORPHA:668
+7157	TP53	HP:0006489	Abnormality of the femoral metaphysis	null			orphadata	ORPHA:668
+7157	TP53	HP:0003155	Elevated alkaline phosphatase	null			orphadata	ORPHA:668
+7157	TP53	HP:0012531	Pain	null			orphadata	ORPHA:668
+7157	TP53	HP:0025435	Increased lactate dehydrogenase level	null			orphadata	ORPHA:668
+7157	TP53	HP:0100630	Neoplasia of the nasopharynx			-	mim2gene	OMIM:607107
+7157	TP53	HP:0010982	Polygenic inheritance			-	mim2gene	OMIM:607107
+7157	TP53	HP:0001085	Papilledema			susceptibility	mim2gene	OMIM:260500
+7157	TP53	HP:0001250	Seizure			susceptibility	mim2gene	OMIM:260500
+7157	TP53	HP:0002013	Vomiting			susceptibility	mim2gene	OMIM:260500
+7157	TP53	HP:0002315	Headache			susceptibility	mim2gene	OMIM:260500
+7157	TP53	HP:0000006	Autosomal dominant inheritance			susceptibility	mim2gene	OMIM:260500
+7157	TP53	HP:0000238	Hydrocephalus			susceptibility	mim2gene	OMIM:260500
+7157	TP53	HP:0200022	Choroid plexus papilloma			susceptibility	mim2gene	OMIM:260500
+7157	TP53	HP:0000007	Autosomal recessive inheritance			susceptibility	mim2gene	OMIM:260500
+7157	TP53	HP:0002018	Nausea			susceptibility	mim2gene	OMIM:260500
 8195	MKKS	HP:0012227	Urethral stricture		HP:0040283		orphadata	ORPHA:2473
 8195	MKKS	HP:0001156	Brachydactyly		HP:0040283		orphadata	ORPHA:2473
 8195	MKKS	HP:0001263	Global developmental delay		HP:0040283		orphadata	ORPHA:2473
