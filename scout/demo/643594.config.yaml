@@ -75,13 +75,13 @@ peddy_sex: scout/demo/643594.sex_check.csv
 
 delivery_report: scout/demo/delivery_report.html
 
-
-chromograph_image_files: scout/demo/images
-chromograph_prefixes: ''
-
 default_gene_panels: [panel1]
 gene_panels: [panel1]
-
+chromograph_image_files: scout/demo/images
+chromograph_prefixes:
+    'roh': "roh_chr"
+    'upd': "upd_chr"
+    'chr': "cytoband.txt.chr"
 smn_tsv: scout/demo/643594.solo.smn.tsv
 
 # meta data
