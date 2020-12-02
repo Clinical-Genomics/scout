@@ -205,6 +205,15 @@ def test_amino_acid_residue_change_3_to_1_stop():
     assert r == "S241*"
 
 
+def test_amino_acid_residue_change_3_to_1_synonymous():
+    ## GIVEN a protein change on HGVS 3-letter format
+    a = "p.="
+    ## WHEN converting to 1-letter change string
+    r = amino_acid_residue_change_3_to_1(a)
+    ## THEN the result is correct
+    assert r == None
+
+
 def test_amino_acid_residue_change_3_to_1_fs():
     ## GIVEN a protein change on HGVS 3-letter format
     a = "p.Arg544GlufsTer3"
