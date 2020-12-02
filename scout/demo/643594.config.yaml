@@ -77,7 +77,7 @@ delivery_report: scout/demo/delivery_report.html
 
 
 chromograph_image_files: scout/demo/images
-chromograph_prefixes: "asdf"
+chromograph_prefixes: ''
 
 default_gene_panels: [panel1]
 gene_panels: [panel1]
