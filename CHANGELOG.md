@@ -4,7 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [x.x.x]
+## [4.26]
+### Added
+### Fixed
+### Changed
+
+## [4.26]
 ### Added
 - Extend the delete variants command to print analysis date, track, institute, status and research status
 - Delete variants by type of analysis (wgs|wes|panel)
