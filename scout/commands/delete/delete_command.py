@@ -11,7 +11,8 @@ BYTES_IN_ONE_GIGABYTE = 1073741824  # (1024*1024*1024)
 DELETE_VARIANTS_HEADER = [
     "Case n.",
     "Ncases",
-    "Institute" "Case name",
+    "Institute",
+    "Case name",
     "Case ID",
     "Case track",
     "Analysis date",
@@ -119,7 +120,7 @@ def variants(
                         case.get("status", ""),
                         str(case.get("is_research", "")),
                         str(case_n_variants),
-                        str(total_deleted),
+                        str(remove_n_variants),
                     ]
                 )
             )
@@ -142,7 +143,7 @@ def variants(
                     case.get("status", ""),
                     str(case.get("is_research", "")),
                     str(case_n_variants),
-                    str(total_deleted),
+                    str(result.deleted_count),
                 ]
             )
         )
