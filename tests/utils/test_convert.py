@@ -193,7 +193,7 @@ def test_amino_acid_residue_change_3_to_1_none():
     ## WHEN converting to 1-letter change string
     r = amino_acid_residue_change_3_to_1(a)
     ## THEN the result is correct
-    assert r == None
+    assert r is None
 
 
 def test_amino_acid_residue_change_3_to_1_stop():
@@ -211,7 +211,7 @@ def test_amino_acid_residue_change_3_to_1_synonymous():
     ## WHEN converting to 1-letter change string
     r = amino_acid_residue_change_3_to_1(a)
     ## THEN the result is correct
-    assert r == None
+    assert r is None
 
 
 def test_amino_acid_residue_change_3_to_1_fs():
@@ -220,7 +220,7 @@ def test_amino_acid_residue_change_3_to_1_fs():
     ## WHEN converting to 1-letter change string
     r = amino_acid_residue_change_3_to_1(a)
     ## THEN the result is undefined
-    assert r == None
+    assert r is None
 
 
 def test_amino_acid_residue_change_3_to_1_fs_ext():
@@ -229,7 +229,7 @@ def test_amino_acid_residue_change_3_to_1_fs_ext():
     ## WHEN converting to 1-letter change string
     r = amino_acid_residue_change_3_to_1(a)
     ## THEN the result is undefined
-    assert r == None
+    assert r is None
 
 
 def test_amino_acid_residue_change_3_to_1_multiple():
@@ -238,7 +238,7 @@ def test_amino_acid_residue_change_3_to_1_multiple():
     ## WHEN converting to 1-letter change string
     r = amino_acid_residue_change_3_to_1(a)
     ## THEN the result is undefined
-    assert r == None
+    assert r is None
 
 
 def test_amino_acid_residue_change_3_to_1_del():
@@ -247,4 +247,4 @@ def test_amino_acid_residue_change_3_to_1_del():
     ## WHEN converting to 1-letter change string
     r = amino_acid_residue_change_3_to_1(a)
     ## THEN the result is undefined
-    assert r == None
+    assert r is None
