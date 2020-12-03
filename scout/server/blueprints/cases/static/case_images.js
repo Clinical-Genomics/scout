@@ -41,6 +41,7 @@ const CHROMSPECS_LIST =
  */
 function add_image_to_individual_panel(individuals, prefixes, institute, case_name){
     for (var i=0; i<individuals.length; i++){
+        console.log("PATHS: "+individuals[i].chromograph_images)
         if(individuals[i].chromograph_images){
             draw_tracks(individuals[i], prefixes, institute, case_name)
         }
@@ -64,18 +65,18 @@ function draw_tracks(individual, prefixes, institute, case_name){
     console.log("DRAW TRACKS");
     console.log(individual.chromograph_images)
 
-    if (individual.chromograph_images.autozyg){
-        console.log("print autozyg ", );
+    if (individual.chromograph_images.autozyg != undefined){
+        console.log("print autozyg: "+ individual.chromograph_images.autozyg);
         var autozyg_imgPath = create_path(institute, case_name, individual, 'autozyg_images')
         var autozyg_images = make_names("autozyg-");
     }
-    if (individual.chromograph_images.upd_regions){
-        console.log("print UPD_REGIONS ", );
+    if (individual.chromograph_images.upd_regions != undefined){
+        console.log("print UPD_REGIONS: "+ individual.chromograph_images.upd_regions);
         var upd_regions_imgPath = create_path(institute, case_name, individual, 'upd_regions_images')
         var upd_regions_images = make_names("upd_regions-");
     }
-    if (individual.chromograph_images.coverage){
-        console.log("printCOVERAGE ", );
+    if (individual.chromograph_images.coverage != undefined){
+        console.log("printCOVERAGE: "+individual.chromograph_images.coverage );
         var coverage_imgPath = create_path(institute, case_name, individual, 'coverage_images')
         var coverage_images = make_names("coverage-");
     }
@@ -83,7 +84,7 @@ function draw_tracks(individual, prefixes, institute, case_name){
 
     // ideograms always exist
     var ideo_imgPath = static_path_ideograms(institute, case_name, individual, 'ideaograms')
-    var ideo_images = make_names(prefixes.chr)
+    var ideo_images = make_names('')
 
     console.log("PATHS")
     console.log("ideo: " + ideo_imgPath)
@@ -98,6 +99,7 @@ function draw_tracks(individual, prefixes, institute, case_name){
 
     var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
     var chromspecs_list = get_chromosomes(individual.sex)
+    console.log(individual)
 
     for(i = 0; i< chromspecs_list.length; i++){
         // autozyg_imgObj.src = autozyg_imgPath + autozyg_images[i]
@@ -107,7 +109,7 @@ function draw_tracks(individual, prefixes, institute, case_name){
 
         var g = document.createElementNS('http://www.w3.org/2000/svg','g');
         var ideo_image = make_svgimage(ideo_imgPath + ideo_images[i],
-                                       x_pos+5,
+                                       x_pos+15,
                                        y_pos,
                                        "25px", "500px", );
 
@@ -120,10 +122,9 @@ function draw_tracks(individual, prefixes, institute, case_name){
         g.appendChild(ideo_image);
         g.appendChild(clipPath);
         g.appendChild(t);
-
 	if(individual.chromograph_images.upd_regions){
             var upd_regions_image = make_svgimage(upd_regions_imgPath + upd_regions_images[i],
-                                          x_pos+5,
+                                          x_pos+15,
                                           y_pos + 30,
                                           "25px", "500px", );
             g.appendChild(upd_regions_image);
@@ -131,7 +132,7 @@ function draw_tracks(individual, prefixes, institute, case_name){
 
         if(individual.chromograph_images.autozyg){
             var autozyg_image = make_svgimage(autozyg_imgPath + autozyg_images[i],
-                                          x_pos + 0+5,  // compensate for image pixel start
+                                          x_pos + 0+15,  // 
                                           y_pos + 60 , // place below UPD
                                           "25px", "500px", );
             g.appendChild(autozyg_image);
@@ -139,7 +140,7 @@ function draw_tracks(individual, prefixes, institute, case_name){
 
         if(individual.chromograph_images.coverage){
             var coverage_image = make_svgimage(coverage_imgPath + coverage_images[i],
-                                          x_pos + 0+5,  // compensate for image pixel start
+                                          x_pos + 0+15, //
                                           y_pos + 90 , // place below UPD
                                           "25px", "500px", );
             g.appendChild(coverage_image);
