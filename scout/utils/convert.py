@@ -50,10 +50,22 @@ def convert_number(string):
 
 
 def amino_acid_residue_change_3_to_1(protein_sequence_name):
+    if protein_sequence_name is None:
+        return None
+
     p = re.compile("p.([A-Za-z]+)(\d+)([A-Za-z]+)")
     m = p.match(protein_sequence_name)
+    if m is None:
+        return None
+
     ref = AMINO_ACID_RESIDUE_3_TO_1.get(m.group(1), None)
     alt = AMINO_ACID_RESIDUE_3_TO_1.get(m.group(3), None)
+
     pos = m.group(2)
+
+    if ref is None or m.group(2) is None or alt is None:
+        return None
+
     protein_change = "".join([ref, pos, alt])
+
     return protein_change
