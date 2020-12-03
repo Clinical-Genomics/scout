@@ -9,30 +9,30 @@ const CHROMOSOMES = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
 
 // Ideogram measurements used for cropping to a nice picture
 const CHROMSPECS_LIST =
-      [{name: '1', length: 482, cent_start: 245, cent_length: 13 },
-       {name: '2', length: 470, cent_start: 185, cent_length: 13 },
-       {name: '3', length: 387, cent_start: 180, cent_length: 13 },
-       {name: '4', length: 372, cent_start: 105, cent_length: 13 },
-       {name: '5', length: 353, cent_start: 105, cent_length: 10 },
-       {name: '6', length: 336, cent_start: 121, cent_length: 13 },
-       {name: '7', length: 313, cent_start: 125, cent_length: 13 },
-       {name: '8', length: 290, cent_start: 100, cent_length: 8 },
-       {name: '9', length: 280, cent_start: 103, cent_length: 8 },
-       {name: '10', length: 270, cent_start: 90, cent_length: 10 },
-       {name: '11', length: 267, cent_start: 115, cent_length: 10 },
-       {name: '12', length: 265, cent_start: 80, cent_length: 13 },
-       {name: '13', length: 232, cent_start: 47, cent_length: 8 },
-       {name: '14', length: 217, cent_start: 47, cent_length: 8 },
-       {name: '15', length: 207, cent_start: 47, cent_length: 8 },
-       {name: '16', length: 184, cent_start: 82, cent_length: 8 },
-       {name: '17', length: 167, cent_start: 57, cent_length: 8 },
-       {name: '18', length: 162, cent_start: 46, cent_length: 8 },
-       {name: '19', length: 127, cent_start: 64, cent_length: 8 },
-       {name: '20', length: 132, cent_start: 64, cent_length: 8 },
-       {name: '21', length: 107, cent_start: 38, cent_length: 8 },
-       {name: '22', length: 114, cent_start: 42, cent_length: 8 },
-       {name: 'X', length: 305, cent_start: 127, cent_length: 8 },
-       {name: 'Y', length: 127, cent_start: 39, cent_length: 4 }]
+      [{name: '1', length: 500, cent_start: 255, cent_length: 13 },
+       {name: '2', length: 487, cent_start: 193, cent_length: 13 },
+       {name: '3', length: 397, cent_start: 187, cent_length: 13 },
+       {name: '4', length: 385, cent_start: 105, cent_length: 13 },
+       {name: '5', length: 367, cent_start: 102, cent_length: 10 },
+       {name: '6', length: 346, cent_start: 125, cent_length: 13 },
+       {name: '7', length: 321, cent_start: 125, cent_length: 10 },
+       {name: '8', length: 293, cent_start: 98, cent_length: 8 }, //
+       {name: '9', length: 283, cent_start: 107, cent_length: 8 },
+       {name: '10', length: 271, cent_start: 88, cent_length: 8 },
+       {name: '11', length: 270, cent_start: 111, cent_length: 10 },
+       {name: '12', length: 268, cent_start: 78, cent_length: 10 },
+       {name: '13', length: 232, cent_start: 44, cent_length: 8 },
+       {name: '14', length: 217, cent_start: 42, cent_length: 8 },
+       {name: '15', length: 207, cent_start: 40, cent_length: 8 },
+       {name: '16', length: 182, cent_start: 80, cent_length: 8 },
+       {name: '17', length: 165, cent_start: 55, cent_length: 8 },
+       {name: '18', length: 158, cent_start: 42, cent_length: 8 },
+       {name: '19', length: 119, cent_start: 60, cent_length: 8 },
+       {name: '20', length: 127, cent_start: 60, cent_length: 8 },
+       {name: '21', length: 95, cent_start: 33, cent_length: 8 },
+       {name: '22', length: 104, cent_start: 38, cent_length: 8 },
+       {name: 'X', length: 312, cent_start: 127, cent_length: 8 },
+       {name: 'Y', length: 107, cent_start: 32, cent_length: 4 }]
 
 
 /**
@@ -224,8 +224,13 @@ function get_chromosomes(sex){
  * ends and a waist at the centromere.
  */
 function make_clipPath(chrom, x_offset, y_offset){
+    console.log("clippath " + chrom.name)
+    console.log("length: " + chrom.length)
+    console.log("x offest: " + x_offset)
+    console.log("y offest: " + y_offset)
+    
     const c = 10
-    x_offset += 5   // make space for text labels
+    x_offset += 0   // make space for text labels
     var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     var clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
     clipPath.setAttributeNS(null, 'id', "clip-chr"+chrom.name)
@@ -242,21 +247,24 @@ function make_clipPath(chrom, x_offset, y_offset){
     var start_u = {x: chrom.cent_start + x_offset,
                    y: y_offset,
                    length: chrom.cent_length}
-    var r = 10
-    var cent_l = calc_centromere_lower(start_l)
+    var r = 7
+    var cent_lower = calc_centromere_lower(start_l)
     var b_left = "L " + " " + String( 30 + x_offset) + " " + String(y_offset + 25) + " "
-    var c1 = "C " + " " + String(30 - r + x_offset) + " " + String(25 + y_offset) + " "
-        + String(30 - r + x_offset) + " " + String(y_offset) + " "
+
+    // Bezier curve for left bend, format= bezier-1: x,y bezier-2: x,y, endpoint: x,y
+    var c1 = "C " + " " + String(15 - r + x_offset) + " " + String(25 + y_offset) + " "
+        + String(15 - r + x_offset) + " " + String(y_offset) + " "
         + String(30 + x_offset) + " " + String( y_offset) + " "
 
-    var cent_u = calc_centromere_upper(start_u)
+    var cent_upper = calc_centromere_upper(start_u)
     var right = "L " + String(chrom.length + x_offset) + " " + String(y_offset) + " "
 
-    var c2 = "C " + " " + String(chrom.length + r + x_offset) + " " + String(y_offset) + " "
-        + String(chrom.length + r + x_offset) + " " + String(y_offset+25) + " "
+    // Bezier curve for right bend
+    var c2 = "C " + " " + String(chrom.length+15 + r + x_offset) + " " + String(y_offset) + " "
+        + String(chrom.length +15 + r + x_offset) + " " + String(y_offset+25) + " "
         + String(chrom.length + x_offset) + " " + String( y_offset+25)+ " "
 
-    path = m + cent_l + b_left + c1 + cent_u + right + c2
+    path = m + cent_lower + b_left + c1 + cent_upper + right + c2
 
     // without_cent = start +  b_left + c1 + right + c2
     p1.setAttributeNS(null, 'd', path)
