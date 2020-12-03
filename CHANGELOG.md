@@ -4,7 +4,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [x.x.x]
+### Added
+### Fixed
+- Links with 1-letter aa codes crash on frameshift etc
+### Changed
+
+## [4.26.1]
+### Added
+### Fixed
+- Links with 1-letter aa codes crash on frameshift etc
+### Changed
+
+## [4.26]
 ### Added
 - Extend the delete variants command to print analysis date, track, institute, status and research status
 - Delete variants by type of analysis (wgs|wes|panel)
