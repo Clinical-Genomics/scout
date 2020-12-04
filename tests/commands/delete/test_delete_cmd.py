@@ -39,7 +39,7 @@ def test_delete_variants_dry_run(mock_app, case_obj, user_obj):
         RANK_THRESHOLD,
         "--variants-threshold",
         VARIANTS_THRESHOLD,
-        "--exclude-ctg",
+        "--keep-ctg",
         "str",
         "--dry-run",
     ]
