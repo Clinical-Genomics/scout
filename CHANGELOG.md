@@ -7,8 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Exclude one or more variant categories when running variants delete command
 ### Fixed
-- Links with 1-letter aa codes crash on frameshift etc
 ### Changed
 
 ## [4.26.1]
