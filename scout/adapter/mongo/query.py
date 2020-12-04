@@ -41,13 +41,16 @@ class QueryHandler(object):
             case_query["status"] = {"$in": list(status)}
         return case_query
 
-    def delete_variants_query(self, case_id, variants_to_keep=[], min_rank_threshold=None) -> dict:
+    def delete_variants_query(
+        self, case_id, variants_to_keep=[], min_rank_threshold=None, exclude_ctg=[]
+    ) -> dict:
         """Build a query to delete variants from a case
 
         Args:
             case_id(str): id of a case
             variants_to_keep(list): a list of variant ids
             min_rank_threshold(int): remove variants with rank lower than this number
+            exclude_ctg(list): exclude one of more variants categories. Example ["cancer", "cancer_sv"]
 
         Return:
             variant_query(dict): query dictionary
@@ -56,10 +59,12 @@ class QueryHandler(object):
         case_subquery = {"case_id": case_id}
 
         # Create query to delete all variants that shouldn't be kept or with rank higher than min_rank_threshold
-        if variants_to_keep or min_rank_threshold:
+        if variants_to_keep or min_rank_threshold or exclude_ctg:
             variants_query["$and"] = [case_subquery]
             if variants_to_keep:
                 variants_query["$and"].append({"_id": {"$nin": variants_to_keep}})
+            if exclude_ctg:
+                variants_query["$and"].append({"category": {"$nin": exclude_ctg}})
             if min_rank_threshold:
                 variants_query["$and"].append({"rank_score": {"$lt": min_rank_threshold}})
         else:
@@ -408,12 +413,7 @@ class QueryHandler(object):
             position_query = {
                 "$or": [
                     {"end": {"$gte": int(query["start"]), "$lte": int(query["end"])}},  # 1
-                    {
-                        "position": {
-                            "$lte": int(query["end"]),
-                            "$gte": int(query["start"]),
-                        }
-                    },  # 2
+                    {"position": {"$lte": int(query["end"]), "$gte": int(query["start"]),}},  # 2
                     {
                         "$and": [
                             {"position": {"$gte": int(query["start"])}},
@@ -494,12 +494,7 @@ class QueryHandler(object):
             if criterion == "local_obs":
                 local_obs = query.get("local_obs")
                 mongo_secondary_query.append(
-                    {
-                        "$or": [
-                            {"local_obs_old": None},
-                            {"local_obs_old": {"$lt": local_obs + 1}},
-                        ]
-                    }
+                    {"$or": [{"local_obs_old": None}, {"local_obs_old": {"$lt": local_obs + 1}},]}
                 )
 
             if criterion in ["clingen_ngi", "swegen"]:
@@ -593,10 +588,7 @@ class QueryHandler(object):
 
                 if query.get("size_shorter"):
                     size_query = {
-                        "$or": [
-                            {"length": {"$lt": int(size)}},
-                            {"length": {"$exists": False}},
-                        ]
+                        "$or": [{"length": {"$lt": int(size)}}, {"length": {"$exists": False}},]
                     }
                     LOG.debug("Adding size less than, undef inclusive to query.")
 

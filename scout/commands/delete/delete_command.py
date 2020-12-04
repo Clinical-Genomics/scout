@@ -22,6 +22,7 @@ DELETE_VARIANTS_HEADER = [
     "Removed variants",
 ]
 CASE_STATUS = ["solved", "archived", "migrated", "active", "inactive", "prioritized"]
+VARIANT_CATEGORIES = ["snv", "sv", "cancer", "cancer_sv", "str"]
 
 
 @click.command("variants", short_help="Delete variants for one or more cases")
@@ -45,9 +46,14 @@ CASE_STATUS = ["solved", "archived", "migrated", "active", "inactive", "prioriti
 @click.option("--rank-threshold", type=click.INT, default=5, help="With rank threshold lower than")
 @click.option("--variants-threshold", type=click.INT, help="With more variants than")
 @click.option(
-    "--dry-run",
-    is_flag=True,
-    help="Perform a simulation without removing any variant",
+    "--exclude-ctg",
+    type=click.Choice(VARIANT_CATEGORIES),
+    multiple=True,
+    default=["str"],
+    help="Exclude one of more variant categories from deletion",
+)
+@click.option(
+    "--dry-run", is_flag=True, help="Perform a simulation without removing any variant",
 )
 @with_appcontext
 def variants(
@@ -58,6 +64,7 @@ def variants(
     analysis_type: list,
     rank_threshold: int,
     variants_threshold: int,
+    exclude_ctg: list,
     dry_run: bool,
 ) -> None:
     """Delete variants for one or more cases"""
@@ -101,7 +108,9 @@ def variants(
         variants_to_keep = (
             case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed or []
         )
-        variants_query = store.delete_variants_query(case_id, variants_to_keep, rank_threshold)
+        variants_query = store.delete_variants_query(
+            case_id, variants_to_keep, rank_threshold, exclude_ctg
+        )
 
         if dry_run:
             # Just print how many variants would be removed for this case
