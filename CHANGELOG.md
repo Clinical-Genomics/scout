@@ -9,7 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 ### Changed
 
-## [4.26.2]
+## [4.27]
 ### Added
 - Exclude one or more variant categories when running variants delete command
 ### Fixed
