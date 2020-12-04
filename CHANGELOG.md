@@ -4,8 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-
 ## [x.x.x]
+### Added
+### Fixed
+### Changed
+
+## [4.26.2]
 ### Added
 - Exclude one or more variant categories when running variants delete command
 ### Fixed
