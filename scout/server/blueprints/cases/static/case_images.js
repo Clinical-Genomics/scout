@@ -62,21 +62,17 @@ function draw_tracks(individual, prefixes, institute, case_name){
     const CYT_HEIGHT = 50 ;
     const CYT_WIDTH = 500 ;
     var svg_element = document.getElementById("svg_" + individual["individual_id"])
-    console.log("DRAW TRACKS");
     console.log(individual.chromograph_images)
 
     if (individual.chromograph_images.autozyg != undefined){
-        console.log("print autozyg: "+ individual.chromograph_images.autozyg);
         var autozyg_imgPath = create_path(institute, case_name, individual, 'autozyg_images')
         var autozyg_images = make_names("autozyg-");
     }
     if (individual.chromograph_images.upd_regions != undefined){
-        console.log("print UPD_REGIONS: "+ individual.chromograph_images.upd_regions);
         var upd_regions_imgPath = create_path(institute, case_name, individual, 'upd_regions_images')
         var upd_regions_images = make_names("upd_regions-");
     }
     if (individual.chromograph_images.coverage != undefined){
-        console.log("printCOVERAGE: "+individual.chromograph_images.coverage );
         var coverage_imgPath = create_path(institute, case_name, individual, 'coverage_images')
         var coverage_images = make_names("coverage-");
     }
@@ -86,20 +82,12 @@ function draw_tracks(individual, prefixes, institute, case_name){
     var ideo_imgPath = static_path_ideograms(institute, case_name, individual, 'ideaograms')
     var ideo_images = make_names('')
 
-    console.log("PATHS")
-    console.log("ideo: " + ideo_imgPath)
-    console.log("autozygosity: " + autozyg_imgPath)
-    console.log("regions: " + upd_regions_imgPath)
-    console.log("coverage" + coverage_imgPath)
-
-
     var autozyg_imgObj = new Image()
     var upd_regions_imgObj = new Image()
     var coverage_imgObj = new Image()
 
     var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
     var chromspecs_list = get_chromosomes(individual.sex)
-    console.log(individual)
 
     for(i = 0; i< chromspecs_list.length; i++){
         // autozyg_imgObj.src = autozyg_imgPath + autozyg_images[i]
@@ -115,7 +103,6 @@ function draw_tracks(individual, prefixes, institute, case_name){
 
 
         var t = chromosome_text(CHROMOSOMES[i], x_pos, y_pos);
-	console.log(t)
         var clipPath = make_clipPath(CHROMSPECS_LIST[i], x_pos, y_pos)
         ideo_image.setAttributeNS(null, 'clip-path', "url(#clip-chr"+CHROMSPECS_LIST[i].name +")")
 
@@ -224,11 +211,6 @@ function get_chromosomes(sex){
  * ends and a waist at the centromere.
  */
 function make_clipPath(chrom, x_offset, y_offset){
-    console.log("clippath " + chrom.name)
-    console.log("length: " + chrom.length)
-    console.log("x offest: " + x_offset)
-    console.log("y offest: " + y_offset)
-    
     const c = 10
     x_offset += 0   // make space for text labels
     var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
