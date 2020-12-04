@@ -49,11 +49,13 @@ VARIANT_CATEGORIES = ["snv", "sv", "cancer", "cancer_sv", "str"]
     "--exclude-ctg",
     type=click.Choice(VARIANT_CATEGORIES),
     multiple=True,
-    default=["str"],
+    required=False,
     help="Exclude one of more variant categories from deletion",
 )
 @click.option(
-    "--dry-run", is_flag=True, help="Perform a simulation without removing any variant",
+    "--dry-run",
+    is_flag=True,
+    help="Perform a simulation without removing any variant",
 )
 @with_appcontext
 def variants(
@@ -111,6 +113,8 @@ def variants(
         variants_query = store.delete_variants_query(
             case_id, variants_to_keep, rank_threshold, exclude_ctg
         )
+
+        LOG.error(variants_query)
 
         if dry_run:
             # Just print how many variants would be removed for this case
