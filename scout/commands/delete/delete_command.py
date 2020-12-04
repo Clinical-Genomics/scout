@@ -114,8 +114,6 @@ def variants(
             case_id, variants_to_keep, rank_threshold, exclude_ctg
         )
 
-        LOG.error(variants_query)
-
         if dry_run:
             # Just print how many variants would be removed for this case
             remove_n_variants = store.variant_collection.count_documents(variants_query)
