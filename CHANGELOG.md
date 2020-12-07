@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 - Marrvel link
+- OMIM gene fields accept any custom number as OMIM gene
 ### Changed
 
 ## [4.27]
