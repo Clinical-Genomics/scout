@@ -456,7 +456,7 @@ def case_diagnosis(institute_id, case_name):
 
     # Make sure omim term exists in database:
     omim_obj = store.disease_term(omim_id.strip())
-    if not omim_obj:
+    if level == "phenotype" and omim_obj is None:
         flash("Couldn't find any disease term with id: {}".format(omim_id), "warning")
         return redirect(request.referrer)
 

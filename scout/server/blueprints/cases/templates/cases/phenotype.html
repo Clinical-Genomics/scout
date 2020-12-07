@@ -111,12 +111,12 @@
   <form action="{{ url_for('cases.case_diagnosis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
     <div class="row data-width="100%">
       <div class="col-md-10">
-        {% if type == "phenotype" %}
-          <input name="omim_term" class="typeahead_omim form-control" data-provide="typeahead" autocomplete="off"
+        {% if type == "phenotype"%}
+          <input name="omim_term" class="form-control typeahead_omim" data-provide="typeahead" autocomplete="off"
             required placeholder="Disease description or OMIM number">
         {% else %}
-          <input name="omim_term" class="typeahead_gene form-control" data-provide="typeahead" autocomplete="off"
-            required placeholder="Gene symbol">
+          <input name="omim_term" class="form-control" data-provide="typeahead" autocomplete="off"
+            required placeholder="Gene MIM number">
         {% endif %}
       </div>
       <div class="col-md-2">
