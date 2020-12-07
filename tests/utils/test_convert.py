@@ -1,4 +1,10 @@
-from scout.utils.convert import isfloat, isint, make_bool, convert_number
+from scout.utils.convert import (
+    isfloat,
+    isint,
+    make_bool,
+    convert_number,
+    amino_acid_residue_change_3_to_1,
+)
 
 
 def test_is_float_float():
@@ -170,3 +176,75 @@ def test_make_bool_YES():
     res = make_bool(a)
     ## THEN assert it is True
     assert res is True
+
+
+def test_amino_acid_residue_change_3_to_1():
+    ## GIVEN a protein change on HGVS 3-letter format
+    a = "p.Ser241Phe"
+    ## WHEN converting to 1-letter change string
+    r = amino_acid_residue_change_3_to_1(a)
+    ## THEN the result is correct
+    assert r == "S241F"
+
+
+def test_amino_acid_residue_change_3_to_1_none():
+    ## GIVEN a protein change on HGVS 3-letter format
+    a = None
+    ## WHEN converting to 1-letter change string
+    r = amino_acid_residue_change_3_to_1(a)
+    ## THEN the result is correct
+    assert r is None
+
+
+def test_amino_acid_residue_change_3_to_1_stop():
+    ## GIVEN a protein change on HGVS 3-letter format
+    a = "p.Ser241Ter"
+    ## WHEN converting to 1-letter change string
+    r = amino_acid_residue_change_3_to_1(a)
+    ## THEN the result is correct
+    assert r == "S241*"
+
+
+def test_amino_acid_residue_change_3_to_1_synonymous():
+    ## GIVEN a protein change on HGVS 3-letter format
+    a = "p.="
+    ## WHEN converting to 1-letter change string
+    r = amino_acid_residue_change_3_to_1(a)
+    ## THEN the result is correct
+    assert r is None
+
+
+def test_amino_acid_residue_change_3_to_1_fs():
+    ## GIVEN a protein change on HGVS 3-letter format
+    a = "p.Arg544GlufsTer3"
+    ## WHEN converting to 1-letter change string
+    r = amino_acid_residue_change_3_to_1(a)
+    ## THEN the result is undefined
+    assert r is None
+
+
+def test_amino_acid_residue_change_3_to_1_fs_ext():
+    ## GIVEN a protein change on HGVS 3-letter format
+    a = "p.Arg544Glnext*17"
+    ## WHEN converting to 1-letter change string
+    r = amino_acid_residue_change_3_to_1(a)
+    ## THEN the result is undefined
+    assert r is None
+
+
+def test_amino_acid_residue_change_3_to_1_multiple():
+    ## GIVEN a protein change on HGVS 3-letter format
+    a = "p.MetLys997ArgGlu"
+    ## WHEN converting to 1-letter change string
+    r = amino_acid_residue_change_3_to_1(a)
+    ## THEN the result is undefined
+    assert r is None
+
+
+def test_amino_acid_residue_change_3_to_1_del():
+    ## GIVEN a protein change on HGVS 3-letter format
+    a = "p.Phe2_Met46del"
+    ## WHEN converting to 1-letter change string
+    r = amino_acid_residue_change_3_to_1(a)
+    ## THEN the result is undefined
+    assert r is None

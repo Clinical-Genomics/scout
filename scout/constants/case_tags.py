@@ -38,6 +38,7 @@ VERBS_MAP = {
     "cancer_tier": "updated cancer tier for",
     "add_phenotype": "added HPO term for",
     "remove_phenotype": "removed HPO term for",
+    "remove_variants": "removed variants for",
     "add_case": "added case",
     "update_case": "updated case",
     "update_individual": "updated individuals for",

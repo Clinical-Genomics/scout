@@ -37,7 +37,7 @@ def gene(store, hgnc_id):
                 transcript["position"] = "{this[chrom]}:{this[start]}-{this[end]}".format(
                     this=transcript
                 )
-                add_tx_links(transcript, build)
+                add_tx_links(transcript, build, record["hgnc_symbol"])
 
             for phenotype in record.get("phenotypes", []):
                 phenotype["omim_link"] = omim(phenotype.get("mim_number"))
