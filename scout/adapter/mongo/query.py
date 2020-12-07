@@ -36,13 +36,16 @@ class QueryHandler(object):
             case_query["status"] = {"$in": list(status)}
         return case_query
 
-    def delete_variants_query(self, case_id, variants_to_keep=[], min_rank_threshold=None) -> dict:
+    def delete_variants_query(
+        self, case_id, variants_to_keep=[], min_rank_threshold=None, keep_ctg=[]
+    ) -> dict:
         """Build a query to delete variants from a case
 
         Args:
             case_id(str): id of a case
             variants_to_keep(list): a list of variant ids
             min_rank_threshold(int): remove variants with rank lower than this number
+            keep_ctg(list): exclude one of more variants categories from deletion. Example ["cancer", "cancer_sv"]
 
         Return:
             variant_query(dict): query dictionary
@@ -51,10 +54,12 @@ class QueryHandler(object):
         case_subquery = {"case_id": case_id}
 
         # Create query to delete all variants that shouldn't be kept or with rank higher than min_rank_threshold
-        if variants_to_keep or min_rank_threshold:
+        if variants_to_keep or min_rank_threshold or keep_ctg:
             variants_query["$and"] = [case_subquery]
             if variants_to_keep:
                 variants_query["$and"].append({"_id": {"$nin": variants_to_keep}})
+            if keep_ctg:
+                variants_query["$and"].append({"category": {"$nin": keep_ctg}})
             if min_rank_threshold:
                 variants_query["$and"].append({"rank_score": {"$lt": min_rank_threshold}})
         else:
