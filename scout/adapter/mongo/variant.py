@@ -158,7 +158,7 @@ class VariantHandler(VariantLoader):
         category="snv",
         nr_of_variants=10,
         skip=0,
-        sort_key="variant_rank",
+        sort_key="rank_score",
     ):
         """Returns variants specified in question for a specific case.
 
@@ -171,7 +171,7 @@ class VariantHandler(VariantLoader):
             category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
-            sort_key: ['variant_rank', 'rank_score', 'position']
+            sort_key: ['rank_score', 'position']
 
         Returns:
              pymongo.cursor
@@ -191,8 +191,6 @@ class VariantHandler(VariantLoader):
             case_id, query=query, variant_ids=variant_ids, category=category
         )
         sorting = []
-        if sort_key == "variant_rank":
-            sorting = [("variant_rank", pymongo.ASCENDING)]
         if sort_key == "rank_score":
             sorting = [("rank_score", pymongo.DESCENDING)]
         if sort_key == "position":

@@ -266,7 +266,7 @@
   </div>
   <div class="card-body">
     {% if causatives_detailed or partial_causatives_detailed %}
-      {% for causative in causatives_detailed|sort(attribute='variant_rank') + partial_causatives_detailed|sort(attribute='variant_rank') %}
+      {% for causative in causatives_detailed|sort(attribute='rank_score') + partial_causatives_detailed|sort(attribute='rank_score') %}
         {% do printed_vars.append(causative['_id']) %}
         {% if causative.category == 'snv' %}
           {{ sn_variant_content(causative, loop.index) }}
@@ -290,7 +290,7 @@
   <div class="card-body">
     {% set duplicated_variants = [] %}
     {% if suspects_detailed %}
-      {% for pinned in suspects_detailed|sort(attribute='variant_rank') %}
+      {% for pinned in suspects_detailed|sort(attribute='rank_score') %}
         {% if pinned['_id'] not in printed_vars %}
           {% do printed_vars.append(pinned['_id']) %}
           {% if pinned.category == 'snv' %}
@@ -321,7 +321,7 @@
   <div class="card-body">
     {% set duplicated_variants = [] %}
     {% if classified_detailed %}
-      {% for variant in classified_detailed|sort(attribute='variant_rank') %}
+      {% for variant in classified_detailed|sort(attribute='rank_score') %}
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {% if variant.category == 'snv' %}
@@ -352,7 +352,7 @@
   <div class="card-body">
     {% set duplicated_variants = [] %}
     {% if tagged_detailed %}
-      {% for variant in tagged_detailed|sort(attribute='variant_rank') %}
+      {% for variant in tagged_detailed|sort(attribute='rank_score') %}
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {% if variant.category == 'snv' %}
@@ -369,7 +369,7 @@
       {% endfor %}
     {% endif %}
     {% if tier_detailed %}
-      {% for variant in tier_detailed|sort(attribute='variant_rank') %}
+      {% for variant in tier_detailed|sort(attribute='rank_score') %}
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {{ sn_variant_content(variant, loop.index) }}
@@ -397,7 +397,7 @@
   <div class="card-body">
     {% set duplicated_variants = [] %}
     {% if commented_detailed %}
-      {% for variant in commented_detailed|sort(attribute='variant_rank') %}
+      {% for variant in commented_detailed|sort(attribute='rank_score') %}
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {% if variant.category == 'snv' %}
@@ -1105,7 +1105,7 @@
     </table>
 
 
-    {% if variant.comments | count_cursor > 0  %}    
+    {% if variant.comments | count_cursor > 0  %}
       <br>
       <table id="panel-table" class="table table-sm" style="background-color: transparent">
         <thead>

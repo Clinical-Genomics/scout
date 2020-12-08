@@ -584,7 +584,7 @@
      href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
                       variant_id=variant._id) }}">
 {% endif %}
-  {{ variant.variant_rank }}&nbsp;</a>
+  {{ variant.simple_id }}&nbsp;</a>
 
   {% set comment_count = variant.comments | count_cursor %}
 

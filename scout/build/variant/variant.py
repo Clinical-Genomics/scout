@@ -64,7 +64,6 @@ def build_variant(
         alternative = str, # required
 
         rank_score = float, # required
-        variant_rank = int, # required
         rank_score_results = list, # List if dictionaries
         variant_rank = int, # required
 
