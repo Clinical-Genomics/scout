@@ -67,8 +67,6 @@
           <th title="ALT">Estimated size</th>
           <th title="ReferenceSize">Reference size</th>
           <th title="Status">Status</th>
-          <th title="Max normal">Max normal</th>
-          <th title="Min pathologic">Min pathologic</th>
           <th title="GT">Genotype</th>
           <th title="Chromosome">Chr.</th>
           <th title="Position">Position</th>
@@ -95,13 +93,11 @@
 	            <tr>
 	        {% endif %}
             <td>{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
-            <td>{{ variant.str_repid }}</td>
+            <td>{{ str_locus_info(variant) }}</td>
 	          <td class="text-right">{{ variant.str_display_ru }}</td>
             <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
             <td class="text-right">{{ variant.str_ref }}</td>
-            <td>{{ variant.str_status }}</td>
-            <td>{{ variant.str_normal_max }}</td>
-            <td>{{ variant.str_pathologic_min }}</td>
+            <td>{{ str_status(variant) }}</td>
             <td>{% for sample in variant.samples %}
                   {% if sample.genotype_call != "./." %}
                     <div class="float-left">{{ sample.display_name }}</div>
@@ -183,3 +179,34 @@
 
   </script>
 {% endblock %}
+
+{% macro str_status(variant) %}
+<a class="badge badge-secondary text-white"
+  data-toggle="popover"
+  data-html="true"
+  data-trigger="hover click"
+  data-content="<table>
+    <tr><td>Reference size</td><td>{{ variant.str_normal_max }}</td></tr>
+    <tr><td>Normal max</td><td>{{ variant.str_normal_max }}</td></tr>
+    <tr><td>Pathologic min</td><td>{{ variant.str_pathologic_min }}</td><tr>
+      </table>"
+  title="">{{ variant.str_status }}</a>
+{% endmacro %}
+
+{% macro str_locus_info(variant) %}
+  <a
+  class="badge badge-secondary text-white"
+  data-toggle="popover"
+  data-html="true"
+  data-trigger="hover"
+  data-content="
+  <div class='text-left'>
+    <div><strong>Disease:</strong> {{ variant.str_disease }} ({{ variant.str_inheritance_mode }})</div>
+    <div><strong>Source:</strong> {{ variant.str_source.display }}</div>
+    <div>Click to visit {{ variant.str_source.type }}
+
+  </div>"
+  title=""
+  href="{{ variant.str_source_link }}">{{ variant.str_repid }}
+  </a>
+{% endmacro %}
