@@ -445,10 +445,11 @@ def mt_report(institute_id, case_name):
 def case_diagnosis(institute_id, case_name):
     """Add or remove a diagnosis for a case."""
 
+    level = "phenotype" if "phenotype" in request.form else "gene"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
-    level = "phenotype" if "phenotype" in request.form else "gene"
+
     omim_id = request.form["omim_term"].split("|")[0]
 
     if not "OMIM:" in omim_id:  # Could be an omim number provided by user
@@ -456,7 +457,7 @@ def case_diagnosis(institute_id, case_name):
 
     # Make sure omim term exists in database:
     omim_obj = store.disease_term(omim_id.strip())
-    if not omim_obj:
+    if level == "phenotype" and omim_obj is None:
         flash("Couldn't find any disease term with id: {}".format(omim_id), "warning")
         return redirect(request.referrer)
 
