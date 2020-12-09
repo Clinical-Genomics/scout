@@ -4,11 +4,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-
 ## [x.x.x]
 ### Added
 ### Fixed
-- Links with 1-letter aa codes crash on frameshift etc
+- Marrvel link
+- OMIM gene field accepts any custom number as OMIM gene
+### Changed
+
+## [4.27]
+### Added
+- Exclude one or more variant categories when running variants delete command
+### Fixed
 ### Changed
 
 ## [4.26.1]
