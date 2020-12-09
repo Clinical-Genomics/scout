@@ -680,6 +680,7 @@ class CaseHandler(object):
             - has_strvariants: If there are new strvariants
             - multiqc: If there's an updated multiqc report location
             - mme_submission: If case was submitted to MatchMaker Exchange
+            - variants_stats: number of variants by type
 
             Args:
                 case_obj(dict): The new case information
@@ -744,6 +745,7 @@ class CaseHandler(object):
                     "multiqc": case_obj.get("multiqc"),
                     "mme_submission": case_obj.get("mme_submission"),
                     "status": case_obj.get("status"),
+                    "variants_stats": case_obj.get("variants_stats"),
                 },
             },
             return_document=pymongo.ReturnDocument.AFTER,

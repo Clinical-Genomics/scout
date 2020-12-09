@@ -163,7 +163,7 @@ def variants(institute_id, case_name):
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     # Setup variant count session with variant count by category
-    controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
+    controllers.variant_count_session(store, institute_id, case_obj, variant_type, category)
     session["filtered_variants"] = result_size
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
@@ -256,7 +256,7 @@ def sv_variants(institute_id, case_name):
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
 
     # Setup variant count session with variant count by category
-    controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
+    controllers.variant_count_session(store, institute_id, case_obj, variant_type, category)
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     session["filtered_variants"] = result_size
@@ -389,7 +389,7 @@ def cancer_sv_variants(institute_id, case_name):
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
 
     # Setup variant count session with variant count by category
-    controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
+    controllers.variant_count_session(store, institute_id, case_obj, variant_type, category)
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     session["filtered_variants"] = result_size

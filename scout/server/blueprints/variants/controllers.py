@@ -471,7 +471,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
     more_variants = True if variant_count > (skip_count + per_page) else False
 
     # Setup variant count session with variant count by category
-    variant_count_session(store, institute_id, case_obj["_id"], "clinical", "cancer")
+    variant_count_session(store, institute_id, case_obj, "clinical", "cancer")
     session["filtered_variants"] = variant_count
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
@@ -494,25 +494,27 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
     return data
 
 
-def variant_count_session(store, institute_id, case_id, var_type, var_category):
+def variant_count_session(store, institute_id, case, var_type, var_category):
     """Create a session object containing variant count for each variant category
 
     Args:
         store(scout.adapter.MongoAdapter)
         institute_id(str): Institute ID
-        case_id(str): Case ID
+        case(dict): Case dictionary
         var_type(str): "research" or "clinical"
         var_category(str): "snv", "cancer", "cancer_sv", "sv"
     """
-    # Run the query just once for a case
+    # Run the query just once for a cases
     if (
         session.get("institute") != institute_id
-        or session.get("case") != case_id
+        or session.get("case") != case["_id"]
         or session["case_variants"] is None
     ):
-        session["case"] = case_id
+        session["case"] = case["_id"]
         session["institute"] = institute_id
-        case_variants = store.case_variants_count(case_id, institute_id)
+        case_variants = case.get("variants_stats") or store.case_variants_count(
+            case["_id"], institute_id, True
+        )
         session["case_variants"] = case_variants
 
     if session["case_variants"].get(var_type):
