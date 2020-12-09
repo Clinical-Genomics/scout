@@ -16,7 +16,6 @@ from flask import (
     redirect,
     request,
     send_file,
-    session,
     url_for,
 )
 from flask_login import current_user
@@ -53,6 +52,9 @@ def variants(institute_id, case_name):
     category = "snv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = request.args.get("variant_type", "clinical")
+    variants_stats = case_obj.get("variants_stats") or store.case_variants_count(
+        case_obj["_id"], institute_id, True
+    )
 
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
@@ -162,9 +164,6 @@ def variants(institute_id, case_name):
     variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
-    # Setup variant count session with variant count by category
-    controllers.variant_count_session(store, institute_id, case_obj, variant_type, category)
-    session["filtered_variants"] = result_size
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
@@ -255,11 +254,8 @@ def sv_variants(institute_id, case_name):
 
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
 
-    # Setup variant count session with variant count by category
-    controllers.variant_count_session(store, institute_id, case_obj, variant_type, category)
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
-    session["filtered_variants"] = result_size
     # if variants should be exported
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
@@ -388,11 +384,8 @@ def cancer_sv_variants(institute_id, case_name):
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
 
-    # Setup variant count session with variant count by category
-    controllers.variant_count_session(store, institute_id, case_obj, variant_type, category)
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
-    session["filtered_variants"] = result_size
     # if variants should be exported
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
