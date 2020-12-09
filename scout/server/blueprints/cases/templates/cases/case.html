@@ -241,16 +241,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
 {% macro modal_synopsis() %}
   <form action="{{ url_for('cases.case_synopsis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
     <div class="modal fade" id="edit-synopsis" role="dialog">
@@ -453,9 +443,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
 
 <script>
-  window.onload=function(){
-      console.log("Window is loaded!")
+  window.onload= add_image_panels();
+  window.onresize= function(){
+      console.log("Width '%s' ", $(window).width())
+      add_image_panels();
+  }
 
+
+  function add_image_panels(){
+      console.log("Window is loaded!")
       add_image_to_individual_panel( {{case.individuals|tojson}},
                                      {{case.chromograph_prefixes|tojson}},
                                      "{{institute._id}}",
@@ -463,6 +459,7 @@
                                    )
   }
 </script>
+
 
 <script>
  $('#panel-table').DataTable({

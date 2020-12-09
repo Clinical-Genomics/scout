@@ -49,11 +49,6 @@ function add_image_to_individual_panel(individuals, prefixes, institute, case_na
 }
 
 
-
-
-// <svg id="svg_ADM1059A1"> </svg>
-
-
 /**
  * Draw RHO call pictures -coverage- and UPD pictures -color coded
  * genome regions- onto the dashboard.
@@ -61,8 +56,14 @@ function add_image_to_individual_panel(individuals, prefixes, institute, case_na
 function draw_tracks(individual, prefixes, institute, case_name){
     const CYT_HEIGHT = 50 ;
     const CYT_WIDTH = 500 ;
+    var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
     var svg_element = document.getElementById("svg_" + individual["individual_id"])
+    clear_svg(svg_element)
+    svg_element = document.getElementById("svg_" + individual["individual_id"]) // get svg_element again, now clean
+    set_svg_size(svg_element, number_of_columns)
     console.log(individual.chromograph_images)
+
+
 
     if (individual.chromograph_images.autozyg != undefined){
         var autozyg_imgPath = create_path(institute, case_name, individual, 'autozyg_images')
@@ -86,7 +87,7 @@ function draw_tracks(individual, prefixes, institute, case_name){
     var upd_regions_imgObj = new Image()
     var coverage_imgObj = new Image()
 
-    var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
+
     var chromspecs_list = get_chromosomes(individual.sex)
 
     for(i = 0; i< chromspecs_list.length; i++){
@@ -138,6 +139,34 @@ function draw_tracks(individual, prefixes, institute, case_name){
 
 
 /**
+ * Clear svg palette before painting new graphics, otherwise they
+ * will stack ontop of eachother
+ */
+function clear_svg(svg_element){
+    var parent  = svg_element.parentElement
+    var emptySvg = svg_element.cloneNode(false)
+    parent.removeChild(svg_element)
+    parent.appendChild(emptySvg)
+}
+
+
+/**
+ * Set svg size depending number of columns
+ *
+ */
+function set_svg_size(svg_element, number_of_columns){
+    if(number_of_columns == 2){
+          svg_element.setAttribute('width', 1200)
+          svg_element.setAttribute('height', 1700)
+      }
+    if(number_of_columns == 3){
+          svg_element.setAttribute('width', 1500)
+          svg_element.setAttribute('height', 1100)
+    }
+}
+
+
+/**
  * Create an URL path
  *
  */
@@ -159,8 +188,8 @@ function static_path_ideograms(institute, case_name, individual, dir_name){
 
 
 /**
- * Draw RHO call pictures -coverage- and UPD pictures -color coded
- * genome regions- onto the dashboard. Return a list of names.
+ * Returns an array or filenames based on `prefix` argument
+ *
  */
 function make_names(prefix){
     var names = [];
