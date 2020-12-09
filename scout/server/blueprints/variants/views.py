@@ -179,6 +179,8 @@ def variants(institute_id, case_name):
         cytobands=cytobands,
         page=page,
         expand_search=str(request.method == "POST"),
+        result_size=result_size,
+        total_variants=variants_stats[variant_type][category],
         **data,
     )
 
@@ -231,9 +233,12 @@ def sv_variants(institute_id, case_name):
     page = int(request.form.get("page", 1))
     variant_type = request.args.get("variant_type", "clinical")
     category = "sv"
-
     # Define case and institute objects
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variants_stats = case_obj.get("variants_stats") or store.case_variants_count(
+        case_obj["_id"], institute_id, True
+    )
+
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
 
@@ -275,6 +280,8 @@ def sv_variants(institute_id, case_name):
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
         expand_search=str(request.method == "POST"),
+        result_size=result_size,
+        total_variants=variants_stats[variant_type][category],
         **data,
     )
 
@@ -284,9 +291,10 @@ def sv_variants(institute_id, case_name):
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     category = "cancer"
-
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-
+    variants_stats = case_obj.get("variants_stats") or store.case_variants_count(
+        case_obj["_id"], institute_id, True
+    )
     user_obj = store.user(current_user.email)
     if request.method == "POST":
         if request.form.getlist("dismiss"):  # dismiss a list of variants
@@ -360,6 +368,8 @@ def cancer_variants(institute_id, case_name):
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
         expand_search=str(request.method == "POST"),
+        result_size=result_size,
+        total_variants=variants_stats[variant_type][category],
         **data,
     )
 
@@ -372,9 +382,12 @@ def cancer_sv_variants(institute_id, case_name):
     page = int(request.form.get("page", 1))
     variant_type = request.args.get("variant_type", "clinical")
     category = "cancer_sv"
-
     # Define case and institute objects
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variants_stats = case_obj.get("variants_stats") or store.case_variants_count(
+        case_obj["_id"], institute_id, True
+    )
+
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
 
@@ -409,6 +422,8 @@ def cancer_sv_variants(institute_id, case_name):
         cytobands=cytobands,
         page=page,
         expand_search=str(request.method == "POST"),
+        result_size=result_size,
+        total_variants=variants_stats[variant_type][category],
         **data,
     )
 
