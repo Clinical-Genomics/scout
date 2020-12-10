@@ -7,7 +7,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 ### Fixed
+- Freeze coloredlogs temporarily
 - Marrvel link
+- OMIM gene field accepts any custom number as OMIM gene
 ### Changed
 
 ## [4.27]
