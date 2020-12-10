@@ -180,7 +180,7 @@ def variants(institute_id, case_name):
         page=page,
         expand_search=str(request.method == "POST"),
         result_size=result_size,
-        total_variants=variants_stats[variant_type][category],
+        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
     )
 
@@ -281,7 +281,7 @@ def sv_variants(institute_id, case_name):
         page=page,
         expand_search=str(request.method == "POST"),
         result_size=result_size,
-        total_variants=variants_stats[variant_type][category],
+        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
     )
 
@@ -291,6 +291,7 @@ def sv_variants(institute_id, case_name):
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     category = "cancer"
+    variant_type = request.args.get("variant_type", "clinical")
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variants_stats = case_obj.get("variants_stats") or store.case_variants_count(
         case_obj["_id"], institute_id, True
@@ -349,7 +350,6 @@ def cancer_variants(institute_id, case_name):
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
-    variant_type = request.args.get("variant_type", "clinical")
     variants_query = store.variants(case_obj["_id"], category="cancer", query=form.data)
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
@@ -369,7 +369,7 @@ def cancer_variants(institute_id, case_name):
         },
         expand_search=str(request.method == "POST"),
         result_size=result_size,
-        total_variants=variants_stats[variant_type][category],
+        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
     )
 
@@ -423,7 +423,7 @@ def cancer_sv_variants(institute_id, case_name):
         page=page,
         expand_search=str(request.method == "POST"),
         result_size=result_size,
-        total_variants=variants_stats[variant_type][category],
+        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
     )
 

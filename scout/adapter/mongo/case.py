@@ -696,7 +696,7 @@ class CaseHandler(object):
 
         updated_at = datetime.datetime.now()
         if keep_date:
-            updated_at = old_case["updated_at"]
+            updated_at = old_case.get("updated_at")
 
         # collect already available info from individuals
         old_individuals = old_case.get("individuals")
