@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Add VAF to cancer case general report, and remove some of its unused fields
 ### Fixed
 - Freeze coloredlogs temporarily
 - Marrvel link
