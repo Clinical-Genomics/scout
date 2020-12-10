@@ -15,10 +15,7 @@ def test_load_cnv_report(mock_app, case_obj):
     assert runner
 
     # Test CLI function
-    result = runner.invoke(
-        cli,
-        ["load", "cnv-report", case_obj["_id"], cnv_report_path, "-u"],
-    )
+    result = runner.invoke(cli, ["load", "cnv-report", case_obj["_id"], cnv_report_path, "-u"],)
 
     assert "saved report to case!" in result.output
     assert result.exit_code == 0
@@ -31,10 +28,8 @@ def test_invalid_path_load_cnv_report(mock_app, case_obj):
     assert runner
 
     # Test CLI function
-    result = runner.invoke(
-        cli,
-        ["load", "cnv-report", case_obj["_id"], "invalid-path", "-u"],
-    )
-
-    assert "Path 'invalid-path' does not exist." in result.output
+    result = runner.invoke(cli, ["load", "cnv-report", case_obj["_id"], "invalid-path", "-u"],)
+    error_string1 = "Path 'invalid-path' does not exist."
+    error_string2 = 'Path "invalid-path" does not exist.'
+    assert error_string1 or error_string2 in result.output
     assert result.exit_code == 2
