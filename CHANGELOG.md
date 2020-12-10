@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Update case variants count after deleting variants
 ### Fixed
+- Freeze coloredlogs temporarily
 - Marrvel link
 - OMIM gene field accepts any custom number as OMIM gene
 ### Changed
