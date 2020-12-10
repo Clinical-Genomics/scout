@@ -169,7 +169,7 @@ def variants(
             )
 
         # Update case variants count
-        store.case_variants_count(case_id, institute_id, institute_obj["_id"], True)
+        store.case_variants_count(case_id, institute_obj["_id"], True)
 
     click.echo(f"Total {items_name}: {total_deleted}")
     click.echo(

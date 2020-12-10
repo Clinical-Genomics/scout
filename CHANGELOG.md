@@ -6,10 +6,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Update case variants count after deleting variants
 ### Fixed
 - Marrvel link
 - OMIM gene field accepts any custom number as OMIM gene
 ### Changed
+- Save case variants count in case document and not in sessions
 
 ## [4.27]
 ### Added
