@@ -10,7 +10,7 @@ Flask-Markdown
 Flask-WTF
 Flask-Mail
 Flask-WeasyPrint
-coloredlogs
+coloredlogs<=14.0
 query_phenomizer
 Flask-Babel
 livereload
