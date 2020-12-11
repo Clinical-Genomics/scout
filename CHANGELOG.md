@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Freeze coloredlogs temporarily
 - Marrvel link
 - OMIM gene field accepts any custom number as OMIM gene
+- Fix Pytest single quote vs double quote string
 ### Changed
 
 ## [4.27]
