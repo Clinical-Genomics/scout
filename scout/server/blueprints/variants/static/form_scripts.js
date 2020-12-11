@@ -91,7 +91,6 @@ function validateForm(){
       return false;
     }
     var chromPosMatch  = chrom_pos.match(chrPosPattern);
-    var name = chromPosMatch[1];
     var start = chromPosMatch[2];
     var end = chromPosMatch[3];
     var padding = chromPosMatch[5];
