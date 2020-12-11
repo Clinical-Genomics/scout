@@ -986,11 +986,11 @@ def host_coverage_image(institute_id, case_name, individual, image):
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<individual>/autozyg_images/<image>", methods=["GET", "POST"]
+    "/<institute_id>/<case_name>/<individual>/autozygous_images/<image>", methods=["GET", "POST"]
 )
-def host_autozyg_image(institute_id, case_name, individual, image):
+def host_autozygous_image(institute_id, case_name, individual, image):
     """Generate Coverage image file paths"""
-    return host_image_aux(institute_id, case_name, individual, image, "autozyg")
+    return host_image_aux(institute_id, case_name, individual, image, "autozygous")
 
 
 @cases_bp.route(

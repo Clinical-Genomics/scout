@@ -28,7 +28,7 @@ samples:
     vcf2cytosure: scout/demo/ADM1059A2.dummy.cgh
     tissue_type: blood
     chromograph_images:
-        'autozyg': 'scout/demo/images/chromograph_demo/autozigous_regions'
+        'autozygous': 'scout/demo/images/chromograph_demo/autozigous_regions'
         'coverage': 'scout/demo/images/chromograph_demo/coverage'
         'upd_regions': 'scout/demo/images/chromograph_demo/upd_regions'
         'upd_sites': 'scout/demo/images/chromograph_demo/upd_sites'

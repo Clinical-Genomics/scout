@@ -65,9 +65,9 @@ function draw_tracks(individual, prefixes, institute, case_name){
 
 
 
-    if (individual.chromograph_images.autozyg != undefined){
-        var autozyg_imgPath = create_path(institute, case_name, individual, 'autozyg_images')
-        var autozyg_images = make_names("autozyg-");
+    if (individual.chromograph_images.autozygous != undefined){
+        var autozygous_imgPath = create_path(institute, case_name, individual, 'autozygous_images')
+        var autozygous_images = make_names("autozygous-");
     }
     if (individual.chromograph_images.upd_regions != undefined){
         var upd_regions_imgPath = create_path(institute, case_name, individual, 'upd_regions_images')
@@ -83,7 +83,7 @@ function draw_tracks(individual, prefixes, institute, case_name){
     var ideo_imgPath = static_path_ideograms(institute, case_name, individual, 'ideaograms')
     var ideo_images = make_names('')
 
-    var autozyg_imgObj = new Image()
+    var autozygous_imgObj = new Image()
     var upd_regions_imgObj = new Image()
     var coverage_imgObj = new Image()
 
@@ -91,7 +91,7 @@ function draw_tracks(individual, prefixes, institute, case_name){
     var chromspecs_list = get_chromosomes(individual.sex)
 
     for(i = 0; i< chromspecs_list.length; i++){
-        // autozyg_imgObj.src = autozyg_imgPath + autozyg_images[i]
+        // autozygous_imgObj.src = autozygous_imgPath + autozygous_images[i]
         // upd_regions_imgObj.src = upd_regions_imgPath + upd_regions_images[i]
         x_pos = i % number_of_columns == 0? 0 : CYT_WIDTH * (i% number_of_columns) + OFFSET_X + 5
         y_pos =  Math.floor( i/number_of_columns ) * 140;
@@ -118,12 +118,12 @@ function draw_tracks(individual, prefixes, institute, case_name){
             g.appendChild(upd_regions_image);
         }
 
-        if(individual.chromograph_images.autozyg){
-            var autozyg_image = make_svgimage(autozyg_imgPath + autozyg_images[i],
+        if(individual.chromograph_images.autozygous){
+            var autozygous_image = make_svgimage(autozygous_imgPath + autozygous_images[i],
                                           x_pos + 0+15,  // 
                                           y_pos + 60 , // place below UPD
                                           "25px", "500px", );
-            g.appendChild(autozyg_image);
+            g.appendChild(autozygous_image);
         }
 
         if(individual.chromograph_images.coverage){
