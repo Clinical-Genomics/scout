@@ -84,17 +84,17 @@ function validateForm(){
   // Validate Chromosome position form
   //Expected format: <chr number>:<start>-<end>[+-]?<padding>
   var chrom_pos = document.forms["filters_form"].elements["chrom_pos"].value.replaceAll(',', '')
-  const chrPosPattern = "^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)(?::([0-9]+)-([0-9]+)([+-]{1}[0-9]+)?)?$";
+  var chrPosPattern = "^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)(?::([0-9]+)-([0-9]+)([+-]{1}[0-9]+)?)?$";
   if(chrom_pos) {
     if (!RegExp(chrPosPattern).test(chrom_pos)) {
       alert("Invalid format of chromosome position, expected format <chr number>:<start>-<end>[+-]?<padding>");
       return false;
     }
-    const chromPosMatch  = chrom_pos.match(chrPosPattern);
-    let name = chromPosMatch[1];
-    let start = chromPosMatch[2];
-    let end = chromPosMatch[3];
-    let padding = chromPosMatch[5];
+    var chromPosMatch  = chrom_pos.match(chrPosPattern);
+    var name = chromPosMatch[1];
+    var start = chromPosMatch[2];
+    var end = chromPosMatch[3];
+    var padding = chromPosMatch[5];
     if (Number(start) < 0 || Number(end) < 0) {
       alert("Invalid coordinates, coordinates must be greater than zero");
       return false;
@@ -158,11 +158,11 @@ function enableDismiss(){
 // Changes to chrom and cytoband dropdowns are reflected in chrom_pos input
 // Changes in chrom_pos input are reflected in chrom, start and end fields
 function updateCoordinateFields(element) {
-  const chrom = document.forms["filters_form"].elements["chrom"];
-  const chromPos = document.forms["filters_form"].elements["chrom_pos"];
-  const chromPosPattern = "^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)(?::([0-9]+)-([0-9]+)([+-]{1})?([0-9]+)?)?$";
+  var chrom = document.forms["filters_form"].elements["chrom"];
+  var chromPos = document.forms["filters_form"].elements["chrom_pos"];
+  var chromPosPattern = "^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)(?::([0-9]+)-([0-9]+)([+-]{1})?([0-9]+)?)?$";
   // parse chromosome position info
-  let chrName, startPos, endPos, sign, padding;
+  var chrName, startPos, endPos, sign, padding;
   try {
     [_, chrName, startPos, endPos, sign, padding] = chromPos.value.replaceAll(',', '').match(chromPosPattern);
     console.log(`Parsing ChrPos: ${chrName}, coord: ${startPos}-${endPos}, padding: ${sign}${padding}`)
@@ -185,12 +185,12 @@ function updateCoordinateFields(element) {
 		// Update start and end input fields
 		if (startPos != null) {
 			// invert sign expand before starting position
-			let newStartPos = eval(`${startPos} ${sign == '+' ? '-' : '+' } ${padding}`);
+			var newStartPos = eval(`${startPos} ${sign == '+' ? '-' : '+' } ${padding}`);
 			newStartPos = newStartPos < 0 ? 0 : newStartPos
 			document.forms["filters_form"].elements["start"].value = newStartPos;
 		}
 		if (endPos != null) {
-			let newEndPos = eval(`${endPos} ${sign} ${padding}`);
+			var newEndPos = eval(`${endPos} ${sign} ${padding}`);
 			newEndPos = newEndPos < 0 ? 0 : newEndPos
 			document.forms["filters_form"].elements["end"].value = newEndPos;
 		}
