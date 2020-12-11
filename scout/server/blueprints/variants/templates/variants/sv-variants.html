@@ -158,6 +158,12 @@
 
     var startElem = document.getElementById("start");
     var endElem = document.getElementById("end");
+    var coords=[startElem,endElem];
+
+    coords.forEach(function (item, index) {
+      item.addEventListener("input", function() {
+      eraseChromPosString()});
+    });
 
     var chromSel = document.getElementById("chrom");
     chromSel.addEventListener("change", function() {

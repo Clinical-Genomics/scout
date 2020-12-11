@@ -152,6 +152,11 @@ function enableDismiss(){
   }
 }
 
+function eraseChromPosString() {
+  // Erase content of chrom_pos field
+  document.forms["filters_form"].elements["chrom_pos"].value = "";
+}
+
 
 // Link chromosome position input field with chromosome and cytoband dropdowns.
 // Changes to chrom and cytoband dropdowns are reflected in chrom_pos input
