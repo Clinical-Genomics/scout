@@ -17,11 +17,6 @@ samples:
     mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/ADM1059A2.dummy.cgh
     tissue_type: blood
-    chromograph_images:
-                        'roh': ""
-                        'upd': ""
-                        'cov': ""
-
 
   - analysis_type: wes
     sample_id: ADM1059A1
@@ -49,7 +44,6 @@ samples:
     vcf2cytosure: scout/demo/ADM1059A3.dummy.cgh
     tissue_type: blood
 
-
 vcf_snv: scout/demo/643595.clinical.vcf.gz
 
 madeline: scout/demo/madeline.xml
@@ -68,8 +62,3 @@ rank_model_version: '1.20'
 rank_score_threshold: -100
 analysis_date: 2016-10-12 14:00:46
 human_genome_build: 37
-
-chromograph_prefixes:
-    'roh': "roh_chr"
-    'upd': "upd_chr"
-    'chr': "cytoband.txt.chr"

@@ -449,3 +449,13 @@ def test_missing_mandatory_config_key(scout_config, key):
     ## THEN calling parse_case() will raise ConfigError
     with pytest.raises(ConfigError):
         parse_case(scout_config)
+
+
+@pytest.mark.parametrize("key", ["smn_tsv"])
+def test_missing_config_key(scout_config, key):
+    ## GIVEN a scout_config (dict) containing user case information
+
+    ## WHEN deleting key
+    scout_config.pop(key)
+    ## THEN calling parse_case() will log and continue
+    parse_case(scout_config)
