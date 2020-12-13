@@ -394,7 +394,7 @@ def parse_individual(sample):
     ind_info["analysis_type"] = sample.get("analysis_type")
 
     # Path to downloadable vcf2cytosure file
-    ind_info["vcf2cytoure"] = sample.get("vcf2cytosure")
+    ind_info["vcf2cytosure"] = sample.get("vcf2cytosure")
 
     # load sma file if it is not done at this point!
     ind_info["is_sma"] = sample.get("is_sma", None)
@@ -419,10 +419,7 @@ def parse_individual(sample):
 
     ind_info["tissue_type"] = sample.get("tissue_type")
 
-    ind_info["chromograph_images"] = sample.get(
-        "chromograph_images",
-        {"upd_regions": "upd", "upd_sites": "upd_chr", "coverage": "", "autozygous": ""},
-    )
+    ind_info["chromograph_images"] = sample.get("chromograph_images")
 
     # Remove key-value pairs from ind_info where key==None and return
     return removeNoneValues(ind_info)
@@ -586,15 +583,14 @@ def parse_ped(ped_stream, family_type="ped"):
     return family_id, samples
 
 
-def removeNoneValues(dict):
+def removeNoneValues(dictionary):
     """If value = None in key/value pair, the pair is removed.
         Python >3
     Args:
-        dict: dictionary
+        dictionary: dict
 
     Returns:
-        dictionary
-
+        dict
     """
 
-    return {k: v for k, v in dict.items() if v is not None}
+    return {k: v for k, v in dictionary.items() if v is not None}

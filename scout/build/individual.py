@@ -89,7 +89,6 @@ def build_individual(ind):
         "tiddit_coverage_wig",
         "upd_regions_bed",
         "upd_sites_bed"
-        # "chromograph_images"
     ]
 
     for ind_file in ind_files:
