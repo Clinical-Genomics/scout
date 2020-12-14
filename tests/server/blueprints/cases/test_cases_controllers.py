@@ -126,6 +126,11 @@ def test_case_report_content(adapter, institute_obj, case_obj, variant_obj):
         assert len(data[var_type]) == 0
 
 
+def test_cancer_case_report_content(adapter, institute_obj, cancer_case_obj, cancer_variant_obj):
+    ## test case report for a cancer case
+    test_case_report_content(adapter, institute_obj, cancer_case_obj, cancer_variant_obj)
+
+
 def test_case_controller_rank_model_link(adapter, institute_obj, dummy_case):
     # GIVEN an adapter with a case
     dummy_case["rank_model_version"] = "1.3"
