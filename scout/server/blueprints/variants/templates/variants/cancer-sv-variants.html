@@ -246,11 +246,26 @@
 
     var startElem = document.getElementById("start");
     var endElem = document.getElementById("end");
+    var coords=[startElem,endElem];
+
+    coords.forEach(function (item, index) {
+      item.addEventListener("input", function() {
+      eraseChromPosString()});
+    });
 
     var chromSel = document.getElementById("chrom");
     chromSel.addEventListener("change", function() {
       populateCytobands({{cytobands|safe}});
     });
+
+    var chromPosInpt = document.getElementById("chrom_pos");
+    chromPosInpt.addEventListener("change", function() {
+      populateCytobands({{cytobands|safe}});
+    })
+
+   chromPosInpt.addEventListener("input", function() {
+      updateCoordinateFields(event.target)
+   })
 
     var cytoStart = document.getElementById("cytoband_start");
     initSearchConstraints(cytoStart, startElem)
