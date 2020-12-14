@@ -325,6 +325,7 @@ def parse_individual(sample):
             'msi': str,
             'tumor_purity': float,
             'tissue_type': str,
+            'chromograph_images': str
         }
 
     """
@@ -417,6 +418,8 @@ def parse_individual(sample):
         ind_info["tumor_purity"] = float(Fraction(ind_info["tumor_purity"]))
 
     ind_info["tissue_type"] = sample.get("tissue_type")
+
+    ind_info["chromograph_images"] = sample.get("chromograph_images")
 
     # Remove key-value pairs from ind_info where key==None and return
     return removeNoneValues(ind_info)
@@ -518,8 +521,6 @@ def parse_case(config):
         "cnv_report": config.get("cnv_report"),
         "multiqc": config.get("multiqc"),
         "track": config.get("track", "rare"),
-        "chromograph_image_files": config.get("chromograph_image_files"),
-        "chromograph_prefixes": config.get("chromograph_prefixes"),
     }
 
     # add SMN info
@@ -582,15 +583,14 @@ def parse_ped(ped_stream, family_type="ped"):
     return family_id, samples
 
 
-def removeNoneValues(dict):
+def removeNoneValues(dictionary):
     """If value = None in key/value pair, the pair is removed.
         Python >3
     Args:
-        dict: dictionary
+        dictionary: dict
 
     Returns:
-        dictionary
-
+        dict
     """
 
-    return {k: v for k, v in dict.items() if v is not None}
+    return {k: v for k, v in dictionary.items() if v is not None}
