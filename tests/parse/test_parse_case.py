@@ -4,7 +4,7 @@ from pprint import pprint as pp
 import pytest
 
 from scout.constants import REV_SEX_MAP
-from scout.exceptions import PedigreeError
+from scout.exceptions import ConfigError, PedigreeError
 from scout.parse.case import (
     parse_case,
     parse_case_data,
@@ -126,22 +126,6 @@ def test_parse_case_rank_model_version(scout_config):
     case_data = parse_case(scout_config)
     # THEN the case should have the same rank model version like the config
     assert case_data["rank_model_version"] == scout_config["rank_model_version"]
-
-
-def test_parse_case_chromograph_prefixes(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case a correct chromograph_prefixes
-    assert case_data["chromograph_prefixes"]
-
-
-def test_parse_case_madeline(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case a correct chromograph_image_files
-    assert case_data["chromograph_image_files"]
 
 
 def test_parse_case_vcf_files(scout_config):
@@ -408,6 +392,7 @@ def test_parse_optional_igv_param(scout_config):
         sample["upd_regions_bed"] = "path/to/up"
         sample["upd_sites_bed"] = "path/to/us"
         sample["tiddit_coverage_wig"] = "path/to/tc"
+        sample["chromograph_images"] = "path/to/ci"
     scout_config["samples"] = samples
 
     # THEN parsing the config will add those to case data
@@ -422,6 +407,7 @@ def test_parse_optional_igv_param(scout_config):
                 individual["upd_regions_bed"],
                 individual["upd_sites_bed"],
                 individual["tiddit_coverage_wig"],
+                individual["chromograph_images"],
             )
         )
 
@@ -433,6 +419,7 @@ def test_parse_optional_igv_param(scout_config):
                 sample["upd_regions_bed"],
                 sample["upd_sites_bed"],
                 sample["tiddit_coverage_wig"],
+                sample["chromograph_images"],
             )
         )
 
@@ -451,3 +438,24 @@ def test_missing_optional_igv_param(scout_config):
     # THEN parsing the config will not raise an exception
     case_data = parse_case(scout_config)
     assert case_data
+
+
+@pytest.mark.parametrize("key", ["owner", "family"])
+def test_missing_mandatory_config_key(scout_config, key):
+    ## GIVEN a scout_config (dict) containing user case information
+
+    ## WHEN deleting key
+    scout_config.pop(key)
+    ## THEN calling parse_case() will raise ConfigError
+    with pytest.raises(ConfigError):
+        parse_case(scout_config)
+
+
+@pytest.mark.parametrize("key", ["smn_tsv"])
+def test_missing_config_key(scout_config, key):
+    ## GIVEN a scout_config (dict) containing user case information
+
+    ## WHEN deleting key
+    scout_config.pop(key)
+    ## THEN calling parse_case() will log and continue
+    parse_case(scout_config)
