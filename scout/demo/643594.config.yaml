@@ -65,6 +65,8 @@ vcf_str: scout/demo/643594.clinical.str.annotated.vcf.gz
 vcf_snv_research: scout/demo/643594.research.vcf.gz
 vcf_sv_research: scout/demo/643594.research.SV.vcf.gz
 
+smn_tsv: scout/demo/643594.solo.smn.tsv
+
 madeline: scout/demo/madeline.xml
 
 peddy_ped: scout/demo/643594.peddy.ped
@@ -73,9 +75,8 @@ peddy_sex: scout/demo/643594.sex_check.csv
 
 delivery_report: scout/demo/delivery_report.html
 
-#default_gene_panels: [panel1]
-#gene_panels: [panel1]
-smn_tsv: scout/demo/643594.solo.smn.tsv
+default_gene_panels: [panel1]
+gene_panels: [panel1]
 
 # meta data
 rank_model_version: '1.20'

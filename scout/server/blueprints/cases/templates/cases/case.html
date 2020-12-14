@@ -209,9 +209,11 @@
 <!-- Iterate through Individuals, if chromograph_files is presenet add a panel for images -->
 {% macro insert_multi_image_panel() %}
   {% for i in case.individuals %}
+  {% if i.chromograph_images %}
   {% if i.chromograph_images.coverage or i.chromograph_images.autozygous or i.chromograph_images.upd_sites %}
      {{ add_collapsable_panel(i.individual_id, i.display_name) }}
   {% endif  %}
+  {% endif %}
   {% endfor %}
 {% endmacro %}
 
