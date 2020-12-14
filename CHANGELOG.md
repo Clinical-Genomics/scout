@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Chromograph integration for displaying PNGs in case-page
+- Add VAF to cancer case general report, and remove some of its unused fields
 - Variants filter compatible with genome browser location strings
 - Tutorial and files for deploying app on containers (Kubernetes pods)
 ### Fixed
@@ -32,7 +34,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Extend the delete variants command to print analysis date, track, institute, status and research status
 - Delete variants by type of analysis (wgs|wes|panel)
 - Links to cBioPortal, MutanTP53, IARC TP53, OncoKB, MyCancerGenome, CIViC
-- Chromograph integration for displaying PNGs in case-page
 ### Fixed
 - Deleted variants count
 ### Changed
