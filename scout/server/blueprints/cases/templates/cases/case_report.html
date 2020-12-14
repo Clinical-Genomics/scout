@@ -52,11 +52,7 @@
 
 <div id="container" class="container">
   <h4>Scout case analysis report</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
-	 {% if cancer %}
-    {{ phenotype_panel() }}
-   {% else %}
-    {{ phenotype_panel() }}
-   {% endif %}
+   {{ phenotype_panel() }}
    {{ gene_panels_panel()}}
    {{ causatives_panel()}}
    {{ pinned_panel() }}
@@ -102,11 +98,7 @@
 	              <tr>
 	                <th>Sample</th>
 	                <th>Sex</th>
-                  {% if cancer %}
-                    <th>Type</th>
-                  {% else %}
-                    <th>Affected</th>
-                  {% endif %}
+                  <th>Status</th>
 	                <th>Sequencing</th>
                   {% if not cancer %}
 	                 <th>Ancestry (pred.)</th>
@@ -133,17 +125,9 @@
 	                  <td>
 	                  {% if ind.phenotype==2 %} <!--for later use-->
 	                    {% do affected.append(ind.display_name) %}
-                      {% if cancer %}
-                        <span class="badge badge-pill badge-danger" title="{{ ind.phenotype_human }}">{{ ind.phenotype_human }}</span>
-                      {% else %}
-                        <span class="badge badge-pill badge-danger" title="Affected">YES</span>
-                      {% endif %}
-                  {% else %}
-                      {% if cancer %}
-                        <span class="badge badge-pill badge-secondary" title="{{ ind.phenotype_human }}">{{ ind.phenotype_human }}</span>
-                      {% else %}
-	                      <span class="badge badge-pill badge-secondary" title="Not affected">NO</span>
-                      {% endif %}
+                      <span class="badge badge-pill badge-danger" title="{{ ind.phenotype_human }}">{{ ind.phenotype_human }}</span>
+                    {% else %}
+                      <span class="badge badge-pill badge-secondary" title="{{ ind.phenotype_human }}">{{ ind.phenotype_human }}</span>
 	                  {% endif %}
 	                  </td>
 	                  <td>{{ ind.analysis_type|upper }}</td>
