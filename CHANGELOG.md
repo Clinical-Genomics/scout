@@ -6,6 +6,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Chromograph integration for displaying PNGs in case-page
+- Add VAF to cancer case general report, and remove some of its unused fields
+- Variants filter compatible with genome browser location strings
 ### Fixed
 - Freeze coloredlogs temporarily
 - Marrvel link
@@ -30,7 +33,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Extend the delete variants command to print analysis date, track, institute, status and research status
 - Delete variants by type of analysis (wgs|wes|panel)
 - Links to cBioPortal, MutanTP53, IARC TP53, OncoKB, MyCancerGenome, CIViC
-- Chromograph integration for displaying PNGs in case-page
 ### Fixed
 - Deleted variants count
 ### Changed
@@ -53,7 +55,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Docker image build and push github action
 - Makefile with shortcuts to docker commands
 - Parse and save synopsis, phenotype and cohort terms from config files upon case upload
-- Variants filter compatible with genome browser location strings
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
 - Breakpoint two IGV button now shows correct chromosome when different from bp1
