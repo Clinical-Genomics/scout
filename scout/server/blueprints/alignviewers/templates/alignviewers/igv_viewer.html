@@ -65,6 +65,15 @@
                             {% endif %}
                         },
                       {% endfor %}
+                      {% for custTrack in cloud_public_tracks %}
+                        {
+                          name: "{{ custTrack.name }}",
+                          type: "{{ custTrack.type }}",
+                          format: "{{ custTrack.format }}",
+                          url: "{{ custTrack.url|replace('%2F','/') }}",
+                          indexURL: "{{ custTrack.indexURL|replace('%2F','/') }}",
+                        },
+                      {% endfor %}
                       {% for wtrack in rhocall_wig %}
                       {
                         type: "wig",
