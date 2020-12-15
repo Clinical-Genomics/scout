@@ -52,21 +52,3 @@ RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/b
 RANK_MODEL_LINK_POSTFIX = "-.ini"
 SV_RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/svrank_model_-v"
 SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
-
-
-CLOUD_IGV_TRACKS = [
-    {
-        "name": "custom_public_bucket",
-        "access": "public",
-        "tracks": [
-            {
-                "name": "dbVar Pathogenic or Likely Pathogenic",
-                "type": "variant",
-                "format": "vcf",
-                "build": "37",
-                "url": "http://public-igv-tracks-scout.s3.eu-north-1.amazonaws.com/GRCh37.variant_call.clinical.pathogenic_or_likely_pathogenic.vcf.gz",
-                "indexURL": "http://public-igv-tracks-scout.s3.eu-north-1.amazonaws.com/GRCh37.variant_call.clinical.pathogenic_or_likely_pathogenic.vcf.gz.tbi",
-            }
-        ],
-    },
-]
