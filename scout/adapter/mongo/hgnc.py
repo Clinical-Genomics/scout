@@ -113,18 +113,12 @@ class GeneHandler(object):
             search(bool): if partial searching should be used
 
         Returns:
-            result()
+            pymongo.cursor
         """
         LOG.debug("Fetching genes with symbol %s" % hgnc_symbol)
         if search:
             # first search for a full match
-            query = {
-                "$or": [
-                    {"aliases": hgnc_symbol},
-                    {"hgnc_id": int(hgnc_symbol) if hgnc_symbol.isdigit() else None},
-                ],
-                "build": str(build),
-            }
+            query = self.get_query_alias_or_id(hgnc_symbol, build)
             nr_genes = self.nr_genes(query=query)
             if nr_genes != 0:
                 return self.hgnc_collection.find(query)
@@ -135,8 +129,34 @@ class GeneHandler(object):
                     "build": str(build),
                 }
             )
-
         return self.hgnc_collection.find({"build": build, "aliases": hgnc_symbol})
+
+    def hgnc_genes_find_one(self, hgnc_symbol, build="37"):
+        """Find one hgnc genes that match a hgnc symbol. Replaces depricated
+        pymongo.cursor.count()
+
+        Check both hgnc_symbol and aliases
+
+        Args:
+            hgnc_symbol(str)
+            build(str): The build in which to search
+        Returns:
+           One single hgnc document
+        """
+
+        LOG.debug("Find one genes with symbol %s" % hgnc_symbol)
+        return self.hgnc_collection.find_one(filter={"build": build, "aliases": hgnc_symbol})
+
+    def get_query_alias_or_id(self, hgnc_symbol, build):
+        """ Return query to search for hgnc-symbol or aliases """
+        query = {
+            "$or": [
+                {"aliases": hgnc_symbol},
+                {"hgnc_id": int(hgnc_symbol) if hgnc_symbol.isdigit() else None},
+            ],
+            "build": str(build),
+        }
+        return query
 
     def all_genes(self, build=None, add_transcripts=False, limit=100000):
         """Fetch all hgnc genes

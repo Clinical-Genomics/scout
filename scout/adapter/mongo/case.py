@@ -325,17 +325,20 @@ class CaseHandler(object):
             order = self._populate_name_query(query, name_query, owner, collaborator)
 
         if within_days:
-            verbs = []
+            verbs = set()
 
             if has_causatives:
-                verbs.append("mark_causative")
+                verbs.add("mark_causative")
             if finished:
-                verbs.append("archive")
-                verbs.append("mark_causative")
+                verbs.add("archive")
+                verbs.add("mark_causative")
             if reruns:
-                verbs.append("rerun")
+                verbs.add("rerun")
             if research_requested:
-                verbs.append("open_research")
+                verbs.add("open_research")
+            if status and status == "solved":
+                verbs.add("mark_causative")
+            verbs = list(verbs)
 
             days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
             # Look up 'mark_causative' events added since specified number days ago
@@ -359,7 +362,7 @@ class CaseHandler(object):
         if order:
             return self.case_collection.find(query)
 
-        return self.case_collection.find(query).sort("updated_at", -1)
+        return self.case_collection.find(query, no_cursor_timeout=True).sort("updated_at", -1)
 
     def prioritized_cases(self, institute_id=None):
         """Fetches any prioritized cases from the backend.
@@ -579,7 +582,6 @@ class CaseHandler(object):
         institute_obj = self.institute(config_data["owner"])
         if not institute_obj:
             raise IntegrityError("Institute '%s' does not exist in database" % config_data["owner"])
-
         # Parse the case information
         parsed_case = parse_case(config=config_data)
         # Build the case object
@@ -629,6 +631,7 @@ class CaseHandler(object):
         ]
 
         try:
+
             for vcf_file in files:
                 # Check if file exists
                 if not case_obj["vcf_files"].get(vcf_file["file_name"]):

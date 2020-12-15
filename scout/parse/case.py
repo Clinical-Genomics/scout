@@ -325,6 +325,7 @@ def parse_individual(sample):
             'msi': str,
             'tumor_purity': float,
             'tissue_type': str,
+            'chromograph_images': str
         }
 
     """
@@ -418,6 +419,8 @@ def parse_individual(sample):
 
     ind_info["tissue_type"] = sample.get("tissue_type")
 
+    ind_info["chromograph_images"] = sample.get("chromograph_images")
+
     # Remove key-value pairs from ind_info where key==None and return
     return removeNoneValues(ind_info)
 
@@ -473,12 +476,22 @@ def parse_case(config):
         raise ConfigError("A case has to have a 'family'")
 
     individuals = parse_individuals(config["samples"])
+    synopsis = None
+    if config.get("synopsis"):
+        synopsis = (
+            ". ".join(config["synopsis"])
+            if isinstance(config["synopsis"], list)
+            else config["synopsis"]
+        )
 
     case_data = {
         "owner": config["owner"],
         "collaborators": [config["owner"]],
         "case_id": config["family"],
         "display_name": config.get("family_name", config["family"]),
+        "synopsis": synopsis,
+        "phenotype_terms": config.get("phenotype_terms"),
+        "cohorts": config.get("cohorts"),
         "genome_build": config.get("human_genome_build"),
         "lims_id": config.get("lims_id"),
         "rank_model_version": str(config.get("rank_model_version", "")),
@@ -508,8 +521,6 @@ def parse_case(config):
         "cnv_report": config.get("cnv_report"),
         "multiqc": config.get("multiqc"),
         "track": config.get("track", "rare"),
-        "chromograph_image_files": config.get("chromograph_image_files"),
-        "chromograph_prefixes": config.get("chromograph_prefixes"),
     }
 
     # add SMN info
@@ -572,15 +583,14 @@ def parse_ped(ped_stream, family_type="ped"):
     return family_id, samples
 
 
-def removeNoneValues(dict):
+def removeNoneValues(dictionary):
     """If value = None in key/value pair, the pair is removed.
         Python >3
     Args:
-        dict: dictionary
+        dictionary: dict
 
     Returns:
-        dictionary
-
+        dict
     """
 
-    return {k: v for k, v in dict.items() if v is not None}
+    return {k: v for k, v in dictionary.items() if v is not None}

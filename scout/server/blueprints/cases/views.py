@@ -52,7 +52,7 @@ def index():
     """Display a list of all user institutes."""
     institute_objs = user_institutes(store, current_user)
     institutes_count = (
-        (institute_obj, store.cases(collaborator=institute_obj["_id"]).count())
+        (institute_obj, sum(1 for i in store.cases(collaborator=institute_obj["_id"])))
         for institute_obj in institute_objs
         if institute_obj
     )
@@ -112,10 +112,7 @@ def matchmaker_matches(institute_id, case_name):
     data = controllers.mme_matches(case_obj, institute_obj, mme_base_url, mme_token)
     data["panel"] = panel
     if data and data.get("server_errors"):
-        flash(
-            "MatchMaker server returned error:{}".format(data["server_errors"]),
-            "danger",
-        )
+        flash("MatchMaker server returned error:{}".format(data["server_errors"]), "danger")
         return redirect(request.referrer)
     if not data:
         data = {"institute": institute_obj, "case": case_obj, "panel": panel}
@@ -260,9 +257,7 @@ def matchmaker_add(institute_id, case_name):
         store.case_mme_update(case_obj=case_obj, user_obj=user_obj, mme_subm_obj=add_result)
     flash(
         "Number of new patients in matchmaker:{0}, number of updated records:{1}, number of failed requests:{2}".format(
-            n_inserted,
-            n_updated,
-            len(add_result.get("server_responses")) - n_succes_response,
+            n_inserted, n_updated, len(add_result.get("server_responses")) - n_succes_response
         ),
         category,
     )
@@ -400,11 +395,7 @@ def pdf_case_report(institute_id, case_name):
             temp_madeline.write(case_obj["madeline_info"])
 
     html_report = render_template(
-        "cases/case_report.html",
-        institute=institute_obj,
-        case=case_obj,
-        format="pdf",
-        **data,
+        "cases/case_report.html", institute=institute_obj, case=case_obj, format="pdf", **data
     )
     return render_pdf(
         HTML(string=html_report),
@@ -454,10 +445,11 @@ def mt_report(institute_id, case_name):
 def case_diagnosis(institute_id, case_name):
     """Add or remove a diagnosis for a case."""
 
+    level = "phenotype" if "phenotype" in request.form else "gene"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
-    level = "phenotype" if "phenotype" in request.form else "gene"
+
     omim_id = request.form["omim_term"].split("|")[0]
 
     if not "OMIM:" in omim_id:  # Could be an omim number provided by user
@@ -465,19 +457,13 @@ def case_diagnosis(institute_id, case_name):
 
     # Make sure omim term exists in database:
     omim_obj = store.disease_term(omim_id.strip())
-    if not omim_obj:
+    if level == "phenotype" and omim_obj is None:
         flash("Couldn't find any disease term with id: {}".format(omim_id), "warning")
         return redirect(request.referrer)
 
     remove = True if request.args.get("remove") == "yes" else False
     store.diagnose(
-        institute_obj,
-        case_obj,
-        user_obj,
-        link,
-        level=level,
-        omim_id=omim_id,
-        remove=remove,
+        institute_obj, case_obj, user_obj, link, level=level, omim_id=omim_id, remove=remove
     )
     return redirect(request.referrer)
 
@@ -513,11 +499,7 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
             else:
                 # assume omim id
                 store.add_phenotype(
-                    institute_obj,
-                    case_obj,
-                    user_obj,
-                    case_url,
-                    omim_term=phenotype_term,
+                    institute_obj, case_obj, user_obj, case_url, omim_term=phenotype_term
                 )
         except ValueError:
             return abort(400, ("unable to add phenotype: {}".format(phenotype_term)))
@@ -594,10 +576,7 @@ def phenotypes_actions(institute_id, case_name):
         password = current_app.config["PHENOMIZER_PASSWORD"]
         diseases = controllers.hpo_diseases(username, password, hpo_ids)
         return render_template(
-            "cases/diseases.html",
-            diseases=diseases,
-            institute=institute_obj,
-            case=case_obj,
+            "cases/diseases.html", diseases=diseases, institute=institute_obj, case=case_obj
         )
 
     if action == "DELETE":
@@ -735,10 +714,7 @@ def pin_variant(institute_id, case_name, variant_id):
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
     link = url_for(
-        "variant.variant",
-        institute_id=institute_id,
-        case_name=case_name,
-        variant_id=variant_id,
+        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id
     )
     if request.form["action"] == "ADD":
         store.pin_variant(institute_obj, case_obj, user_obj, link, variant_obj)
@@ -755,18 +731,14 @@ def mark_validation(institute_id, case_name, variant_id):
     user_obj = store.user(current_user.email)
     validate_type = request.form["type"] or None
     link = url_for(
-        "variant.variant",
-        institute_id=institute_id,
-        case_name=case_name,
-        variant_id=variant_id,
+        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id
     )
     store.validate(institute_obj, case_obj, user_obj, link, variant_obj, validate_type)
     return redirect(request.referrer or link)
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<variant_id>/<partial_causative>/causative",
-    methods=["POST"],
+    "/<institute_id>/<case_name>/<variant_id>/<partial_causative>/causative", methods=["POST"]
 )
 def mark_causative(institute_id, case_name, variant_id, partial_causative=False):
     """Mark a variant as confirmed causative."""
@@ -774,23 +746,14 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
     link = url_for(
-        "variant.variant",
-        institute_id=institute_id,
-        case_name=case_name,
-        variant_id=variant_id,
+        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id
     )
     if request.form["action"] == "ADD":
         if "partial_causative" in request.form:
             omim_terms = request.form.getlist("omim_select")
             hpo_terms = request.form.getlist("hpo_select")
             store.mark_partial_causative(
-                institute_obj,
-                case_obj,
-                user_obj,
-                link,
-                variant_obj,
-                omim_terms,
-                hpo_terms,
+                institute_obj, case_obj, user_obj, link, variant_obj, omim_terms, hpo_terms
             )
         else:
             store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
@@ -953,32 +916,17 @@ def download_hpo_genes(institute_id, case_name):
     """Download the genes contained in a case dynamic gene list"""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    dynamic_gene_objs = case_obj.get("dynamic_gene_list")
-    csv_header = ["HGNC symbol", "HGNC ID", "Description"]
-    csv_lines = [
-        ",".join(
-            [
-                str(gene_obj.get("hgnc_symbol")),
-                str(gene_obj.get("hgnc_id")),
-                '"' + gene_obj.get("description") + '"',
-            ]
-        )
-        for gene_obj in dynamic_gene_objs
-    ]
-
-    download_day = str(datetime.datetime.now().strftime("%Y-%m-%d"))
-    # prepare headers:
-    headers = Headers()
-
-    headers.add(
-        "Content-Disposition",
-        "attachment",
-        filename=f"HPO_gene_list.{institute_id}.{case_name}.{download_day}.csv",
-    )
-    return Response(
-        _generate_csv(",".join(csv_header), csv_lines),
-        mimetype="text/csv",
-        headers=headers,
+    # Create export object consisting of dynamic phenotypes with associated genes as a dictionary
+    phenotype_terms_with_genes = controllers.phenotypes_genes(store, case_obj)
+    html_content = ""
+    for term_id, term in phenotype_terms_with_genes.items():
+        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br>{term.get('genes')}<br>"
+    return render_pdf(
+        HTML(string=html_content),
+        download_filename=case_obj["display_name"]
+        + "_"
+        + datetime.datetime.now().strftime("%Y-%m-%d")
+        + "_dynamic_phenotypes.pdf",
     )
 
 
@@ -1012,32 +960,65 @@ def multiqc(institute_id, case_name):
     return send_from_directory(out_dir, filename)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/roh_images/<image>")
-def host_roh_image(institute_id, case_name, image):
-    """Generate ROH image file paths"""
-    return host_image_aux(institute_id, case_name, image, "roh_images")
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/upd_regions_images/<image>", methods=["GET", "POST"]
+)
+def host_upd_regions_image(institute_id, case_name, individual, image):
+    """Generate UPD REGIONS image file paths"""
+    LOG.debug("REGIONS")
+    return host_image_aux(institute_id, case_name, individual, image, "upd_regions")
 
 
-@cases_bp.route("/<institute_id>/<case_name>/upd_images/<image>")
-def host_upd_image(institute_id, case_name, image):
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/upd_sites_images/<image>", methods=["GET", "POST"]
+)
+def host_upd_sites_image(institute_id, case_name, individual, image):
     """Generate UPD image file paths"""
-    return host_image_aux(institute_id, case_name, image, "upd_images")
+    return host_image_aux(institute_id, case_name, individual, image, "upd_sites")
 
 
-@cases_bp.route("/<institute_id>/<case_name>/chr_images/<image>")
-def host_chr_image(institute_id, case_name, image):
-    """Generate CHR image file paths"""
-    return host_image_aux(institute_id, case_name, image, "chr_images")
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/coverage_images/<image>", methods=["GET", "POST"]
+)
+def host_coverage_image(institute_id, case_name, individual, image):
+    """Generate Coverage image file paths"""
+    return host_image_aux(institute_id, case_name, individual, image, "coverage")
 
 
-def host_image_aux(institute_id, case_name, image, imgstr):
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/autozygous_images/<image>", methods=["GET", "POST"]
+)
+def host_autozygous_image(institute_id, case_name, individual, image):
+    """Generate Coverage image file paths"""
+    return host_image_aux(institute_id, case_name, individual, image, "autozygous")
+
+
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<individual>/ideograms/<image>", methods=["GET", "POST"]
+)
+def host_chr_image(institute_id, case_name, individual, image):
+    """Generate CHR image file paths. Points to servers 'public/static'"""
+    public_folder = "/public/static/ideograms/"
+    img_path = public_folder + image
+    LOG.debug("ideaogram: {}".format(img_path))
+    return send_from_directory(img_path, image)
+
+
+def host_image_aux(institute_id, case_name, individual, image, key):
     """Auxilary function for generate absolute file paths"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    chr_path = case_obj.get("chromograph_image_files")
-    abs_path = os.path.abspath(chr_path)
-    img_path = abs_path + "/" + imgstr
-    LOG.debug("Attempting to send {}/{}".format(img_path, image))
-    return send_from_directory(img_path, image)
+    # Find path
+    for ind in case_obj["individuals"]:
+        if ind["individual_id"] == individual:
+            # LOG.debug("ind host_image_aux: {}".format(ind))
+            try:
+                # path contains both dir structure and a file prefix
+                path = ind["chromograph_images"][key]
+                abs_path = os.path.abspath(path)
+                img_path = abs_path + image.split("-")[-1]  # get suffix
+                return send_file(img_path)
+            except Exception as err:
+                LOG.debug("Error : {}".format(err))
 
 
 def _generate_csv(header, lines):

@@ -6,10 +6,75 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Chromograph integration for displaying PNGs in case-page
+- Add VAF to cancer case general report, and remove some of its unused fields
+- Variants filter compatible with genome browser location strings
+- Support for custom public igv tracks stored on the cloud
+### Fixed
+- Freeze coloredlogs temporarily
+- Marrvel link
+- Don't show TP53 link for silent changes
+- OMIM gene field accepts any custom number as OMIM gene
+- Fix Pytest single quote vs double quote string
+### Changed
+
+## [4.27]
+### Added
+- Exclude one or more variant categories when running variants delete command
+### Fixed
+### Changed
+
+## [4.26.1]
+### Added
+### Fixed
+- Links with 1-letter aa codes crash on frameshift etc
+### Changed
+
+## [4.26]
+### Added
+- Extend the delete variants command to print analysis date, track, institute, status and research status
+- Delete variants by type of analysis (wgs|wes|panel)
+- Links to cBioPortal, MutanTP53, IARC TP53, OncoKB, MyCancerGenome, CIViC
+### Fixed
+- Deleted variants count
+### Changed
+- Print output of variants delete command as a tab separated table
+
+## [4.25]
+### Added
+- Command line function to remove variants from one or all cases
+### Fixed
+- Parse SMN None calls to None rather than False
+
+## [4.24.1]
+### Fixed
+- Install requirements.txt via setup file
+
+## [4.24]
+### Added
+- Institute-level phenotype models with sub-panels containing HPO and OMIM terms
+- Runnable Docker demo
+- Docker image build and push github action
+- Makefile with shortcuts to docker commands
+- Parse and save synopsis, phenotype and cohort terms from config files upon case upload
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
+- Breakpoint two IGV button now shows correct chromosome when different from bp1
+- Missing font lib in Docker image causing the PDF report download page to crash
+- Sentieon Manta calls lack Somaticscore - load anyway
+- ClinVar submissions crashing due to pinned variants that are not loaded
+- Point ExAC pLI score to new gnomad server address
+- Bug uploading cases missing phenotype terms in config file
+- STRs loaded but not shown on browser page
+- Bug when using adapter.variant.get_causatives with case_id without causatives
+- Problem with fetching "solved" from scout export cases cli
+- Better serialising of datetime and bson.ObjectId
+- Added `volumes` folder to .gitignore
 ### Changed
 - Make matching causative and managed variants foldable on case page
+- Remove calls to PyMongo functions marked as deprecated in backend and frontend(as of version 3.7).
+- Improved `scout update individual` command
+- Export dynamic phenotypes with ordered gene lists as PDF
 
 ## [4.23]
 ### Added
@@ -29,7 +94,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Do not freeze mkdocs-material to version 4.6.1
 - Remove pre-commit dependency
-
 
 ## [4.22]
 ### Added

@@ -197,7 +197,7 @@
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
     <td>{{ variant.position }}</td>
     <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
-    <td>{{ variant.length }}</td>
+    <td>{{ '-' if variant.length == 100000000000 else variant.length }}</td>
     <td>
       {% if 'region_annotations' in variant %}
         {% for annotation in variant.region_annotations[:3] %}
@@ -246,11 +246,26 @@
 
     var startElem = document.getElementById("start");
     var endElem = document.getElementById("end");
+    var coords=[startElem,endElem];
+
+    coords.forEach(function (item, index) {
+      item.addEventListener("input", function() {
+      eraseChromPosString()});
+    });
 
     var chromSel = document.getElementById("chrom");
     chromSel.addEventListener("change", function() {
       populateCytobands({{cytobands|safe}});
     });
+
+    var chromPosInpt = document.getElementById("chrom_pos");
+    chromPosInpt.addEventListener("change", function() {
+      populateCytobands({{cytobands|safe}});
+    })
+
+   chromPosInpt.addEventListener("input", function() {
+      updateCoordinateFields(event.target)
+   })
 
     var cytoStart = document.getElementById("cytoband_start");
     initSearchConstraints(cytoStart, startElem)

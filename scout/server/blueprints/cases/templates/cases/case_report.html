@@ -52,7 +52,7 @@
 
 <div id="container" class="container">
   <h4>Scout case analysis report</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
-	 {{ phenotype_panel() }}
+   {{ phenotype_panel() }}
    {{ gene_panels_panel()}}
    {{ causatives_panel()}}
    {{ pinned_panel() }}
@@ -76,18 +76,16 @@
 	  <div class="card-body">
 	    <table class="table table-sm">
 	      <tr>
+          {% if case.madeline_info and case.individuals|length > 1 %}
 	        <td>
-	          {% if case.madeline_info and case.individuals|length > 1 %}
 	            {% if format == 'html' %}
 	              {{ case.madeline_info|safe }}
 	            {% else %}
 	              <object data="{{url_for('cases.static', filename='madeline.svg')}}"/>
 	            {% endif %}
-	          {% else %}
-	            <p>Single sample family. No pedigree available.</p>
-	          {% endif %}
-	        </td>
-	        <td>
+          </td>
+          {% endif %}
+          <td>
 	          <table class="table table-sm">
 	            <tr>
 	              <td>Case created: <strong>{{case.created_at.strftime('%Y-%m-%d')}}</strong></td>
@@ -100,12 +98,14 @@
 	              <tr>
 	                <th>Sample</th>
 	                <th>Sex</th>
-	                <th>Affected</th>
+                  <th>Status</th>
 	                <th>Sequencing</th>
-	                <th>Ancestry (pred.)</th>
-	                <th>Parenthood</th>
+                  {% if not cancer %}
+	                 <th>Ancestry (pred.)</th>
+	                 <th>Parenthood</th>
+                  {% endif %}
 	              </tr>
-	            </thead>
+	             </thead>
 	            <tbody>
 	              {% for ind in case.individuals %}
 	                <tr {% if ind.phenotype == 2 %} class="table-danger" {% endif %}>
@@ -125,14 +125,15 @@
 	                  <td>
 	                  {% if ind.phenotype==2 %} <!--for later use-->
 	                    {% do affected.append(ind.display_name) %}
-	                    <span class="badge badge-pill badge-danger" title="Affected">YES</span>
-	                  {% else %}
-	                    <span class="badge badge-pill badge-secondary" title="Not affected">NO</span>
+                      <span class="badge badge-pill badge-danger" title="{{ ind.phenotype_human }}">{{ ind.phenotype_human }}</span>
+                    {% else %}
+                      <span class="badge badge-pill badge-secondary" title="{{ ind.phenotype_human }}">{{ ind.phenotype_human }}</span>
 	                  {% endif %}
 	                  </td>
 	                  <td>{{ ind.analysis_type|upper }}</td>
-	                  <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
-	                  <td>
+                    {% if not cancer %}
+	                   <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
+                     <td>
 	                    {% if ind.confirmed_parent == True %}
 	                      <span class="badge badge-pill badge-sm badge-secondary">V</span>
 	                    {% elif ind.confirmed_parent == False %}
@@ -140,7 +141,8 @@
 	                    {% else %}
 	                      N/A
 	                    {% endif %}
-	                  </td>
+	                   </td>
+                    {% endif %}
 	                </tr>
 	              {% endfor %}
 	            </tbody>
@@ -179,7 +181,7 @@
 	          {% endif %}
 	        </td>
 	      </tr>
-	      {% if comments.count() %}
+              {% if comments | count_cursor > 0 %}
 	        <tr>
 	          <td colspan=2>
 	            <table id="panel-table" class="table table-sm" style="background-color: transparent">
@@ -268,11 +270,7 @@
     {% if causatives_detailed or partial_causatives_detailed %}
       {% for causative in causatives_detailed|sort(attribute='variant_rank') + partial_causatives_detailed|sort(attribute='variant_rank') %}
         {% do printed_vars.append(causative['_id']) %}
-        {% if causative.category == 'snv' %}
-          {{ sn_variant_content(causative, loop.index) }}
-        {% else %}
-          {{ sv_variant_content(causative, loop.index) }}
-        {% endif %}
+        {{ variant_content(causative, loop.index) }}
         <br>
       {% endfor %}
     {% else %}
@@ -293,11 +291,7 @@
       {% for pinned in suspects_detailed|sort(attribute='variant_rank') %}
         {% if pinned['_id'] not in printed_vars %}
           {% do printed_vars.append(pinned['_id']) %}
-          {% if pinned.category == 'snv' %}
-            {{ sn_variant_content(pinned, loop.index) }}
-          {% else %}
-            {{ sv_variant_content(pinned, loop.index) }}
-          {% endif %}
+          {{ variant_content(pinned, loop.index) }}
         {% else %}
           {% do duplicated_variants.append(pinned['_id']) %}
         {% endif %}
@@ -324,11 +318,7 @@
       {% for variant in classified_detailed|sort(attribute='variant_rank') %}
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
-          {% if variant.category == 'snv' %}
-            {{ sn_variant_content(variant, loop.index) }}
-          {% else %}
-            {{ sv_variant_content(variant, loop.index) }}
-          {% endif %}
+          {{ variant_content(variant, loop.index) }}
         {% else %}
           {% do duplicated_variants.append(variant['_id']) %}
         {% endif %}
@@ -355,13 +345,7 @@
       {% for variant in tagged_detailed|sort(attribute='variant_rank') %}
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
-          {% if variant.category == 'snv' %}
-            {{ sn_variant_content(variant, loop.index) }}
-          {% elif variant.category == 'cancer' %}
-            {{ sn_variant_content(variant, loop.index) }}
-          {% else %}
-            {{ sv_variant_content(variant, loop.index) }}
-          {% endif %}
+          {{ variant_content(variant, loop.index) }}
         {% else %}
           {% do duplicated_variants.append(variant['_id']) %}
         {% endif %}
@@ -372,7 +356,7 @@
       {% for variant in tier_detailed|sort(attribute='variant_rank') %}
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
-          {{ sn_variant_content(variant, loop.index) }}
+          {{ variant_content(variant, loop.index) }}
         {% else %}
           {% do duplicated_variants.append(variant['_id']) %}
         {% endif %}
@@ -389,6 +373,16 @@
 </div>
 {% endmacro %}
 
+{% macro variant_content(variant, index) %}
+  {% if variant.category == 'snv' %}
+    {{ sn_variant_content(variant, index) }}
+  {% elif variant.category == 'cancer' %}
+    {{ sn_variant_content(variant, index) }}
+  {% else %}
+    {{ sv_variant_content(variant, index) }}
+  {% endif %}
+{% endmacro %}
+
 {% macro commented_panel() %}
 <div class="card border-warning mb-3" style="border-width: 5px;">
   <div class="card-header bg-warning text-black">
@@ -401,6 +395,8 @@
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {% if variant.category == 'snv' %}
+            {{ sn_variant_content(variant, loop.index) }}
+          {% elif variant.category == 'cancer' %}
             {{ sn_variant_content(variant, loop.index) }}
           {% else %}
             {{ sv_variant_content(variant, loop.index) }}
@@ -488,7 +484,11 @@
                   <th rowspan="2">Sample</th>
                     <th rowspan="2">Genotype (GT)</th>
                     <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
-                    <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+                    {% if cancer %}
+                      <th rowspan="2" title="Variant Allele Frequency">VAF</th>
+                    {% else %}
+                      <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+                    {% endif %}
                   </tr>
                   <tr>
                     <th>Reference</th>
@@ -509,7 +509,15 @@
                         <td class="text-right"><small>N/A</small></td>
                         <td class="text-right"><small>N/A</small></td>
                     {% endif %}
-                    <td class="text-right">{{ sample.genotype_quality }}</td>
+                    {% if cancer %}
+                      {% if sample.allele_depths[1] != -1 %}
+                        <td class="text-right">{{ (sample.allele_depths[1]/sample.read_depth)|round(4) }}</td>
+                      {% else %}
+                        <td class="text-right">N/A</td>
+                      {% endif %}
+                    {% else %}
+                      <td class="text-right">{{ sample.genotype_quality }}</td>
+                    {% endif %}
                   </tr>
                 {% endfor %}
               </tbody>
@@ -520,7 +528,7 @@
             <table id="panel-table" class="table table-sm" style="background-color: transparent">
               <thead>
                 <tr>
-                  <th>Frequency
+                  <th>Pop. frequency
                     {% if variant.frequency == 'common' %}
                       <span class="badge badge-danger">{{variant.frequency}}</span>
                     {% elif variant.frequency == 'uncommon' %}
@@ -592,7 +600,9 @@
             <th>Scout score</th>
             <th>Manual rank</th>
             <th>CADD score</th>
-            <th>Inheritance models</th>
+            {% if not cancer %}
+              <th>Inheritance models</th>
+            {% endif %}
             <th>ACMG classification</th>
           </tr>
         </thead>
@@ -622,15 +632,17 @@
                 </strong>
               </span>
             </td>
-            <td>
-              <span class="float-left">
-                {% for model in variant.genetic_models|sort %}
-                  <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
-                {% else %}
-                  <span class="badge badge-warning">No models followed</span>
-                {% endfor %}
-              </span>
-            </td>
+            {% if not cancer %}
+              <td>
+                <span class="float-left">
+                  {% for model in variant.genetic_models|sort %}
+                    <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+                  {% else %}
+                    <span class="badge badge-warning">No models followed</span>
+                  {% endfor %}
+                </span>
+              </td>
+            {% endif %}
             <td>
               {% if variant.acmg_classification %}
                 <span class="badge badge-pill badge-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['code'] }}</span>
@@ -703,7 +715,7 @@
           {% endfor %}
         </tbody>
       </table>
-      {% if variant.comments.count() %}
+      {% if variant.comments | count_cursor > 0  %}
         <table id="panel-table" class="table table-sm" style="background-color: transparent">
           <thead>
             <tr>
@@ -768,7 +780,7 @@
                     <table class="table-borderless table-sm">
                       <thead>
                         <tr style="background-color: transparent">
-                          <th>Frequency
+                          <th>Pop. frequency
                             {% if variant.frequency == 'common' %}
                               <span class="badge badge-danger">{{variant.frequency}}</span>
                             {% elif variant.frequency == 'uncommon' %}
@@ -866,6 +878,7 @@
                                 <td class="text-center"><small>N/A</small></td>
                                 <td class="text-center"><small>N/A</small></td>
                             {% endif %}
+
                             <td class="text-center">{{ sample.genotype_quality }}</td>
                           </tr>
                         {% endfor %}
@@ -959,7 +972,11 @@
                 <th rowspan="2">Sample</th>
                   <th rowspan="2">Genotype (GT)</th>
                   <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
-                  <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+                  {% if cancer %}
+                    <th rowspan="2" title="Variant Allele Frequency">VAF</th>
+                  {% else %}
+                    <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+                  {% endif %}
                 </tr>
                 <tr>
                   <th>Reference</th>
@@ -980,7 +997,15 @@
                       <td class="text-right"><small>N/A</small></td>
                       <td class="text-right"><small>N/A</small></td>
                   {% endif %}
-                  <td class="text-right">{{ sample.genotype_quality }}</td>
+                  {% if cancer %}
+                    {% if sample.allele_depths[1] != -1 %}
+                      <td class="text-right">{{ (sample.allele_depths[1]/sample.read_depth)|round(4) }}</td>
+                    {% else %}
+                      <td class="text-right">N/A</td>
+                    {% endif %}
+                  {% else %}
+                    <td class="text-right">{{ sample.genotype_quality }}</td>
+                  {% endif %}
                 </tr>
               {% endfor %}
             </tbody>
@@ -990,7 +1015,7 @@
         <td>
           <table id="panel-table" class="table table-sm" style="background-color: transparent">
             <thead>
-              <th colspan=2>Frequencies</th>
+              <th colspan=2>Pop. frequency</th>
             </thead>
             <tbody>
               {% for freq_name, value, link in variant.frequencies %}
@@ -1016,7 +1041,9 @@
           <th>Scout Rank</th>
           <th>Scout score</th>
           <th>Manual rank</th>
-          <th>Inheritance models</th>
+          {% if not cancer %}
+            <th>Inheritance models</th>
+          {% endif %}
           <th>ACMG classification</th>
         </tr>
       </thead>
@@ -1104,7 +1131,8 @@
       </tbody>
     </table>
 
-    {% if variant.comments.count() %}
+
+    {% if variant.comments | count_cursor > 0  %}
       <br>
       <table id="panel-table" class="table table-sm" style="background-color: transparent">
         <thead>
@@ -1129,5 +1157,5 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
+  <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
 {% endblock %}
