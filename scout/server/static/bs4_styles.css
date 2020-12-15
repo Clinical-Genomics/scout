@@ -334,3 +334,22 @@ option {
 .nav .nav-item, .nav > .active > a {
   background-color: #f6f6f6 !important;
 }
+
+
+.panel-btn  a:before {
+   font-family: 'Glyphicons Halflings';
+   content: "\e114";
+   float: right;
+   transition: all 0.5s;
+}
+
+
+
+
+
+
+
+
+
+
+

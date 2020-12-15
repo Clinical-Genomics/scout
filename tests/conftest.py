@@ -21,6 +21,7 @@ from scout.build.variant import build_variant
 from scout.demo import (
     cancer_load_path,
     cancer_sv_path,
+    cancer_snv_path,
     clinical_snv_path,
     clinical_str_path,
     clinical_sv_path,
@@ -974,6 +975,31 @@ def one_cancer_manta_SV_variant(request, vep_94_manta_annotated_SV_variants_file
 
 
 @pytest.fixture(scope="function")
+def one_cancer_variant(request, cancer_snv_file):
+    LOG.info("Return one parsed STR variant")
+    variant_parser = VCF(cancer_snv_file)
+
+    variant = next(variant_parser)
+    return variant
+
+
+@pytest.fixture(scope="function")
+def parsed_cancer_variant(request, one_cancer_variant, cancer_case_obj):
+    """Return a parsed variant"""
+    variant_dict = parse_variant(one_cancer_variant, cancer_case_obj)
+    return variant_dict
+
+
+@pytest.fixture(scope="function")
+def cancer_variant_obj(request, parsed_cancer_variant):
+    LOG.info("Return one cancer variant obj")
+    institute_id = "cust000"
+
+    variant = build_variant(parsed_cancer_variant, institute_id=institute_id)
+    return variant
+
+
+@pytest.fixture(scope="function")
 def one_variant_customannotation(request, customannotation_snv_file):
     LOG.info("Return one parsed variant with custom annotations")
     variant_parser = VCF(customannotation_snv_file)
@@ -1281,6 +1307,13 @@ def vep_94_manta_annotated_SV_variants_file(request):
     annotated with VEP
     """
     return cancer_sv_path
+
+
+@pytest.fixture(scope="function")
+def cancer_snv_file(request):
+    """Get the path to a variant file"""
+    print("")
+    return cancer_snv_path
 
 
 @pytest.fixture(scope="function")
