@@ -6,6 +6,32 @@ from scout.utils import ensembl_rest_clients
 
 
 @pytest.fixture
+def igv_public_track():
+    """Return a dictionary coresponding to a public IGV track"""
+    test_public = {
+        "name": "custom_public_bucket",
+        "access": "public",
+        "tracks": [
+            {
+                "name": "Test public track",
+                "type": "variant",
+                "format": "vcf",
+                "build": "37",
+                "url": "url/to/public/track",
+                "indexURL": "url/to/public/track.index",
+            }
+        ],
+    }
+    return test_public
+
+
+@pytest.fixture
+def igv_test_tracks(test_public):
+    """Returns a list with test tracks for igv.js"""
+    return [test_public]  # this will contain also a private track in the future
+
+
+@pytest.fixture
 def refseq_response():
     """Return the string that is a refseq response"""
     _string = (
