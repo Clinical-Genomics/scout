@@ -72,6 +72,9 @@ pylintrc
 scripts/local
 *sqlite
 
+#Docker
+volumes
+
 # Emacs (Just so I don't have to see them green in Atom ;-)
 *~
 *#

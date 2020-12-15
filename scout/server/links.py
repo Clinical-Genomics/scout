@@ -1,6 +1,7 @@
 from pprint import pprint as pp
 
 from scout.constants import SPIDEX_HUMAN
+from scout.utils.convert import amino_acid_residue_change_3_to_1
 
 
 def add_gene_links(gene_obj, build=37):
@@ -44,6 +45,7 @@ def add_gene_links(gene_obj, build=37):
     gene_obj["clingen_link"] = clingen(hgnc_id)
     gene_obj["expression_atlas_link"] = expression_atlas(ensembl_id)
     gene_obj["exac_link"] = exac(ensembl_id)
+    gene_obj["gnomad_link"] = gnomad(ensembl_id, build)
     # Add links that use entrez_id
     gene_obj["entrez_link"] = entrez(gene_obj.get("entrez_id"))
     # Add links that use omim id
@@ -55,6 +57,32 @@ def add_gene_links(gene_obj, build=37):
     # Add links that use ucsc link
     gene_obj["ucsc_link"] = ucsc(gene_obj.get("ucsc_id"))
     gene_obj["genemania_link"] = genemania(hgnc_symbol)
+    gene_obj["oncokb_link"] = oncokb(hgnc_symbol)
+    gene_obj["cbioportal_link"] = cbioportal_gene(hgnc_symbol)
+    gene_obj["civic_link"] = civic_gene(hgnc_symbol)
+    gene_obj["iarctp53_link"] = iarctp53(hgnc_symbol)
+
+
+def civic_gene(hgnc_symbol):
+    link = "https://civicdb.org/links/entrez_name/{}"
+
+    if not hgnc_symbol:
+        return None
+    return link.format(hgnc_symbol)
+
+
+def cbioportal_gene(hgnc_symbol):
+    link = "https://www.cbioportal.org/ln?q={}%3AMUT"
+    if not hgnc_symbol:
+        return None
+    return link.format(hgnc_symbol)
+
+
+def oncokb(hgnc_symbol):
+    link = "https://www.oncokb.org/gene/{}"
+    if not hgnc_symbol:
+        return None
+    return link.format(hgnc_symbol)
 
 
 def genemania(hgnc_symbol):
@@ -90,10 +118,22 @@ def ensembl(ensembl_id, build=37):
 
 
 def exac(ensembl_id):
-
-    link = "http://exac.broadinstitute.org/gene/{}"
+    link = "https://gnomad.broadinstitute.org/gene/{}?dataset=exac"
     if not ensembl_id:
         return None
+
+    return link.format(ensembl_id)
+
+
+def gnomad(ensembl_id, build=37):
+    if not ensembl_id:
+        return None
+
+    link = "https://gnomad.broadinstitute.org/gene/{}?dataset="
+    if build == 37:
+        link += "gnomad_r2_1"
+    if build == 38:
+        link += "gnomad_r3"
 
     return link.format(ensembl_id)
 
@@ -184,7 +224,7 @@ def ucsc(ucsc_id):
     return link.format(ucsc_id)
 
 
-def add_tx_links(tx_obj, build=37):
+def add_tx_links(tx_obj, build=37, hgnc_symbol=None):
     try:
         build = int(build)
     except ValueError:
@@ -212,6 +252,9 @@ def add_tx_links(tx_obj, build=37):
     tx_obj["varsome_link"] = varsome(
         build, tx_obj.get("refseq_id"), tx_obj.get("coding_sequence_name")
     )
+    tx_obj["tp53_link"] = mutantp53(tx_obj.get("hgnc_id"), tx_obj.get("protein_sequence_name"))
+    tx_obj["cbioportal_link"] = cbioportal(hgnc_symbol, tx_obj.get("protein_sequence_name"))
+    tx_obj["mycancergenome_link"] = mycancergenome(hgnc_symbol, tx_obj.get("protein_sequence_name"))
 
     return tx_obj
 
@@ -287,6 +330,16 @@ def varsome(build, refseq_id, protein_sequence_name):
     link = "https://varsome.com/variant/hg{}/{}:{}"
 
     return link.format(build, refseq_id, protein_sequence_name)
+
+
+def iarctp53(hgnc_symbol):
+
+    if hgnc_symbol != "TP53":
+        return None
+
+    link = "https://p53.iarc.fr/TP53GeneVariations.aspx"
+
+    return link
 
 
 ############# Variant links ####################
@@ -432,6 +485,49 @@ def ucsc_link(variant_obj, build=None):
         )
 
     return url_template.format(this=variant_obj)
+
+
+def mycancergenome(hgnc_symbol, protein_sequence_name):
+    link = "https://www.mycancergenome.org/content/alteration/{}-{}"
+
+    if not hgnc_symbol:
+        return None
+    if not protein_sequence_name:
+        return None
+
+    protein_change = amino_acid_residue_change_3_to_1(protein_sequence_name)
+
+    if not protein_change:
+        return None
+
+    return link.format(hgnc_symbol, protein_change.lower())
+
+
+def cbioportal(hgnc_symbol, protein_sequence_name):
+    link = "https://www.cbioportal.org/ln?q={}:MUT%20%3D{}"
+
+    if not hgnc_symbol:
+        return None
+    if not protein_sequence_name:
+        return None
+
+    protein_change = amino_acid_residue_change_3_to_1(protein_sequence_name)
+
+    if not protein_change:
+        return None
+
+    return link.format(hgnc_symbol, protein_change)
+
+
+def mutantp53(hgnc_id, protein_variant):
+    if hgnc_id != 11998:
+        return None
+    if not protein_variant:
+        return None
+
+    url_template = "http://mutantp53.broadinstitute.org/?query={}"
+
+    return url_template.format(protein_variant)
 
 
 def alamut_link(variant_obj, build=None):

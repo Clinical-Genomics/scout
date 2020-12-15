@@ -35,6 +35,5 @@ def test_invalid_path_load_cnv_report(mock_app, case_obj):
         cli,
         ["load", "cnv-report", case_obj["_id"], "invalid-path", "-u"],
     )
-
-    assert "Path 'invalid-path' does not exist." in result.output
+    assert "does not exist" in result.output
     assert result.exit_code == 2

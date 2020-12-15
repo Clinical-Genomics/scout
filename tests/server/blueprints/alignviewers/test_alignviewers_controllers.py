@@ -1,5 +1,33 @@
 # -*- coding: utf-8 -*-
+from flask_login import current_user
+from flask import url_for
+from scout.server.extensions import cloud_tracks, store
 from scout.server.blueprints.alignviewers import controllers
+
+
+def test_set_cloud_public_tracks(app):
+    """ Test function that adds cloud public tracks to track display object"""
+
+    # GIVEN an app with public cloud tracks initialized
+    patched_track = {"37": [{"name": "test track"}]}
+    cloud_tracks.public_tracks = patched_track
+
+    display_obj = {}
+    build = "37"
+
+    with app.test_client() as client:
+
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+
+        # And the user has the test track preselected:
+        store.user_collection.find_one_and_update(
+            {"email": current_user.email}, {"$set": {"igv_tracks": ["test track"]}}
+        )
+
+        # Then the set_cloud_public_tracks controller should add the test track to the display object
+        controllers.set_cloud_public_tracks(display_obj, build)
+        assert display_obj["cloud_public_tracks"] == patched_track["37"]
 
 
 def test_make_igv_tracks():

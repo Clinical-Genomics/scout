@@ -29,6 +29,7 @@ Copyright (c) 2017 __MoonsoInc__. All rights reserved.
 """
 import logging
 from datetime import datetime
+from flask import current_app
 
 from .hgnc import GeneHandler
 from .transcript import TranscriptHandler
@@ -116,9 +117,21 @@ class MongoAdapter(
         """Return all collection names
 
         Returns:
-            collection_names(list(str))
+            list_collection_names(list(str))
         """
-        return self.db.collection_names(include_system_collections=False)
+        return self.db.list_collection_names()
+
+    def collection_stats(self, coll_name: str) -> dict:
+        """Returns stats from a single collection
+
+        Args:
+            coll_name: name of collection to retrieve stats for
+
+        Returns:
+            stats(dict): dictionary with collection stats
+        """
+        db = current_app.config.get("MONGO_DATABASE")
+        return db.command("collstats", coll_name)
 
     def __str__(self):
         return "MongoAdapter(db={0})".format(self.db)

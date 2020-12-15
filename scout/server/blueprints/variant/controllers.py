@@ -22,7 +22,7 @@ from scout.parse.variant.ids import parse_document_id
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import institute_and_case, user_institutes, variant_case
 from scout.utils.scout_requests import fetch_refseq_version
-
+from scout.server.extensions import cloud_tracks
 
 from .utils import (
     add_gene_info,
@@ -38,6 +38,26 @@ from .utils import (
 )
 
 LOG = logging.getLogger(__name__)
+
+
+def get_igv_tracks(build="37"):
+    """Return all available IGV tracks for the given genome build, as a set
+
+    Args:
+        build(str): "37" or "38"
+
+    Returns:
+        igv_tracks(set): A set of track names for a given genome build
+    """
+    igv_tracks = set()
+    # Collect hardcoded tracks, common for all Scout instances
+    for track in IGV_TRACKS.get(build, []):
+        igv_tracks.add(track.get("name"))
+    # Collect instance-specif cloud public tracks, if available
+    if hasattr(cloud_tracks, "public_tracks"):
+        for track in cloud_tracks.public_tracks.get(build, []):
+            igv_tracks.add(track.get("name"))
+    return igv_tracks
 
 
 def variant(
@@ -222,7 +242,7 @@ def variant(
         "dismiss_variant_options": dismiss_options,
         "mosaic_variant_options": MOSAICISM_OPTIONS,
         "ACMG_OPTIONS": ACMG_OPTIONS,
-        "igv_tracks": IGV_TRACKS[genome_build],
+        "igv_tracks": get_igv_tracks(genome_build),
         "evaluations": evaluations,
     }
 
@@ -386,6 +406,9 @@ def clinvar_export(store, institute_id, case_name, variant_id):
 
     # gather missing transcript info from entrez (refseq id version)
     for pinned_var in pinned:
+        # Exclude variants that aren't loaded
+        if isinstance(pinned_var, str):
+            continue
         for gene in pinned_var.get("genes", []):
             for transcript in gene.get("transcripts"):
                 refseq_id = transcript.get("refseq_id")

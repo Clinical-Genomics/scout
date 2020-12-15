@@ -5,6 +5,15 @@ owner: cust000
 family: 'internal_id'
 family_name: '643594'
 lims_id: 'LID1234'
+synopsis:
+  - 'Test case consisting of an affected male individual'
+  - 'Both parents are unaffected'
+phenotype_terms:
+  - HP:0001298
+  - HP:0001250
+cohorts:
+  - pedhep
+  - mito
 samples:
   - analysis_type: wes
     sample_id: ADM1059A2
@@ -18,6 +27,11 @@ samples:
     mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/ADM1059A2.dummy.cgh
     tissue_type: blood
+    chromograph_images:
+        'autozygous': 'scout/demo/images/chromograph_demo/autozygous_regions'
+        'coverage': 'scout/demo/images/chromograph_demo/coverage'
+        'upd_regions': 'scout/demo/images/chromograph_demo/upd_regions'
+        'upd_sites': 'scout/demo/images/chromograph_demo/upd_sites'
 
   - analysis_type: wes
     sample_id: ADM1059A1
@@ -51,6 +65,8 @@ vcf_str: scout/demo/643594.clinical.str.annotated.vcf.gz
 vcf_snv_research: scout/demo/643594.research.vcf.gz
 vcf_sv_research: scout/demo/643594.research.SV.vcf.gz
 
+smn_tsv: scout/demo/643594.solo.smn.tsv
+
 madeline: scout/demo/madeline.xml
 
 peddy_ped: scout/demo/643594.peddy.ped
@@ -61,12 +77,6 @@ delivery_report: scout/demo/delivery_report.html
 
 default_gene_panels: [panel1]
 gene_panels: [panel1]
-chromograph_image_files: scout/demo/images
-chromograph_prefixes:
-    'roh': "roh_chr"
-    'upd': "upd_chr"
-    'chr': "cytoband.txt.chr"
-smn_tsv: scout/demo/643594.solo.smn.tsv
 
 # meta data
 rank_model_version: '1.20'

@@ -1,4 +1,4 @@
-name: Publish to PyPI
+name: Publish to PyPI and Docker Hub
 
 on:
  release:
@@ -38,3 +38,20 @@ jobs:
      with:
        user: __token__
        password: ${{ secrets.pypi_password }}
+
+ docker-image-CI:
+   name: Docker Image CI
+   runs-on: ubuntu-latest
+   steps:
+
+    - name: Check out git repository
+      uses: actions/checkout@v2
+
+    - name: Build and publish to Docker Hub
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: clinicalgenomics/scout
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        tags: "latest,${{ github.event.release.tag_name }}"
+

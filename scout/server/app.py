@@ -120,6 +120,10 @@ def configure_extensions(app):
         # setup connection to google oauth2
         configure_oauth_login(app)
 
+    if app.config.get("CLOUD_IGV_TRACKS"):
+        LOG.info("Collecting IGV tracks from cloud resources")
+        extensions.cloud_tracks.init_app(app)
+
 
 def register_blueprints(app):
     """Register Flask blueprints."""
@@ -184,6 +188,13 @@ def register_filters(app):
     def fix_punctuation(text):
         """Adds a white space after puntuation"""
         return re.sub(r"(?<=[.,:;?!])(?=[^\s])", r" ", text)
+
+    @app.template_filter()
+    def count_cursor(pymongo_cursor):
+        """Count numer of returned documents (deprecated pymongo.cursor.count())"""
+        # Perform operations on a copy of the cursor so original does not move
+        cursor_copy = pymongo_cursor.clone()
+        return len(list(cursor_copy))
 
 
 def configure_oauth_login(app):

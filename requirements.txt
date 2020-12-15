@@ -10,12 +10,12 @@ Flask-Markdown
 Flask-WTF
 Flask-Mail
 Flask-WeasyPrint
-coloredlogs
+coloredlogs<=14.0
 query_phenomizer
 Flask-Babel
 livereload
 python-dateutil
-pymongo<3.7
+pymongo>=3.7
 pathlib
 WeasyPrint==0.42.3
 xlsxwriter

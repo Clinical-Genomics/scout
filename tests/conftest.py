@@ -8,7 +8,6 @@ import pymongo
 import pytest
 import yaml
 from cyvcf2 import VCF
-from flask_login import login_user, logout_user
 
 # Adapter stuff
 from mongomock import MongoClient
@@ -22,6 +21,7 @@ from scout.build.variant import build_variant
 from scout.demo import (
     cancer_load_path,
     cancer_sv_path,
+    cancer_snv_path,
     clinical_snv_path,
     clinical_str_path,
     clinical_sv_path,
@@ -68,6 +68,7 @@ from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
 from scout.parse.variant.headers import parse_rank_results_header
 from scout.server.blueprints.login.models import LoginUser
+from scout.server.app import create_app
 from scout.utils.handle import get_file_handle
 from scout.utils.link import link_genes
 
@@ -77,6 +78,22 @@ REAL_DATABASE = "realtestdb"
 # root_logger = logging.getLogger()
 # init_log(root_logger, loglevel='INFO')
 LOG = logging.getLogger(__name__)
+
+
+@pytest.fixture
+def mock_app(real_populated_database):
+    """Return the path to a mocked app object with data"""
+    _mock_app = create_app(
+        config=dict(
+            TESTING=True,
+            DEBUG=True,
+            MONGO_DBNAME=REAL_DATABASE,
+            DEBUG_TB_ENABLED=False,
+            LOGIN_DISABLED=True,
+        )
+    )
+    return _mock_app
+
 
 ##################### Gene fixtures #####################
 
@@ -392,6 +409,8 @@ def case_obj(request, parsed_case):
     case["updated_at"] = parsed_case["analysis_date"]
     case["delivery_report"] = parsed_case["delivery_report"]
     case["assignees"] = []
+    case["phenotype_terms"] = []  # do not assign any phenotype
+    case["cohorts"] = []  # do not assign any cohort
 
     return case
 
@@ -956,6 +975,31 @@ def one_cancer_manta_SV_variant(request, vep_94_manta_annotated_SV_variants_file
 
 
 @pytest.fixture(scope="function")
+def one_cancer_variant(request, cancer_snv_file):
+    LOG.info("Return one parsed STR variant")
+    variant_parser = VCF(cancer_snv_file)
+
+    variant = next(variant_parser)
+    return variant
+
+
+@pytest.fixture(scope="function")
+def parsed_cancer_variant(request, one_cancer_variant, cancer_case_obj):
+    """Return a parsed variant"""
+    variant_dict = parse_variant(one_cancer_variant, cancer_case_obj)
+    return variant_dict
+
+
+@pytest.fixture(scope="function")
+def cancer_variant_obj(request, parsed_cancer_variant):
+    LOG.info("Return one cancer variant obj")
+    institute_id = "cust000"
+
+    variant = build_variant(parsed_cancer_variant, institute_id=institute_id)
+    return variant
+
+
+@pytest.fixture(scope="function")
 def one_variant_customannotation(request, customannotation_snv_file):
     LOG.info("Return one parsed variant with custom annotations")
     variant_parser = VCF(customannotation_snv_file)
@@ -1266,6 +1310,13 @@ def vep_94_manta_annotated_SV_variants_file(request):
 
 
 @pytest.fixture(scope="function")
+def cancer_snv_file(request):
+    """Get the path to a variant file"""
+    print("")
+    return cancer_snv_path
+
+
+@pytest.fixture(scope="function")
 def sv_clinical_file(request):
     """Get the path to a variant file"""
     print("")
@@ -1305,7 +1356,7 @@ def scout_config(request, config_file):
     """Return a dictionary with scout configs"""
     print("")
     in_handle = get_file_handle(config_file)
-    data = yaml.load(in_handle, Loader=yaml.FullLoader)
+    data = yaml.safe_load(in_handle)
     return data
 
 
@@ -1313,7 +1364,7 @@ def scout_config(request, config_file):
 def cancer_scout_config(request):
     """Return a dictionary with cancer case scout configs"""
     in_handle = get_file_handle(cancer_load_path)
-    data = yaml.load(in_handle, Loader=yaml.FullLoader)
+    data = yaml.safe_load(in_handle)
     return data
 
 

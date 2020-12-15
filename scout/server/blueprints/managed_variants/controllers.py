@@ -7,9 +7,8 @@ from scout.build import build_managed_variant
 LOG = logging.getLogger(__name__)
 
 
-def managed_variants(store, managed_variants_query, page=1, per_page=50):
+def managed_variants(store, managed_variants_query, variant_count, page=1, per_page=50):
     """Pre-process list of variants."""
-    variant_count = managed_variants_query.count()
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
     managed_variants_res = managed_variants_query.skip(skip_count).limit(per_page)
