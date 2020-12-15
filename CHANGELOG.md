@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Chromograph integration for displaying PNGs in case-page
 - Add VAF to cancer case general report, and remove some of its unused fields
 - Variants filter compatible with genome browser location strings
+- Support for custom public igv tracks stored on the cloud
 - Update case variants count after deleting variants
 ### Fixed
 - Freeze coloredlogs temporarily
