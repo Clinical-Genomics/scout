@@ -268,10 +268,16 @@ def case_report_content(store, institute_obj, case_obj):
         except ValueError as err:
             sex = 0
         individual["sex_human"] = SEX_MAP[sex]
-        individual["phenotype_human"] = PHENOTYPE_MAP.get(individual["phenotype"])
+
+        pheno_map = PHENOTYPE_MAP
+        if case_obj.get("track", "rare") == "cancer":
+            pheno_map = CANCER_PHENOTYPE_MAP
+
+        individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
 
     dismiss_options = DISMISS_VARIANT_OPTIONS
-    if case_obj.get("track") == "cancer":
+    data["cancer"] = case_obj.get("track") == "cancer"
+    if data["cancer"]:
         dismiss_options = {
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
