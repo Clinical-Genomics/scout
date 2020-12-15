@@ -9,7 +9,7 @@
             <select name="user_tracks" class="selectpicker" data-width="80%" multiple>
               {% for track in igv_tracks %}
                 <!--pre-select option if user has saved it in preferences or select all options if user has no preferences yet-->
-                <option value="{{ track.name }}" {{ "selected" if track.name in current_user.igv_tracks or current_user.igv_tracks is not defined }}>{{ track.name }}</option>
+                <option value="{{ track }}" {{ "selected" if track in current_user.igv_tracks or current_user.igv_tracks is not defined }}>{{ track }}</option>
               {% endfor %}
             </select>
           </div>
