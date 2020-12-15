@@ -9,10 +9,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Chromograph integration for displaying PNGs in case-page
 - Add VAF to cancer case general report, and remove some of its unused fields
 - Variants filter compatible with genome browser location strings
+- Support for custom public igv tracks stored on the cloud
 - Tutorial and files for deploying app on containers (Kubernetes pods)
 ### Fixed
 - Freeze coloredlogs temporarily
 - Marrvel link
+- Don't show TP53 link for silent changes
 - OMIM gene field accepts any custom number as OMIM gene
 - Fix Pytest single quote vs double quote string
 ### Changed
