@@ -5,10 +5,10 @@ import pytest
 from scout.utils import ensembl_rest_clients
 
 
-@pytest.fixture
+@pytest.fixture()
 def igv_public_track():
     """Return a dictionary coresponding to a public IGV track"""
-    test_public = {
+    public_track = {
         "name": "custom_public_bucket",
         "access": "public",
         "tracks": [
@@ -22,13 +22,13 @@ def igv_public_track():
             }
         ],
     }
-    return test_public
+    return public_track
 
 
 @pytest.fixture
-def igv_test_tracks(test_public):
+def igv_test_tracks(igv_public_track):
     """Returns a list with test tracks for igv.js"""
-    return [test_public]  # this will contain also a private track in the future
+    return [igv_public_track]  # this will contain also a private track in the future
 
 
 @pytest.fixture
