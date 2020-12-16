@@ -115,6 +115,19 @@ def test_parse_gene():
     assert gene["mosaicism"] is False
     assert gene["database_entry_version"] == version
 
+    ## WHEN alternative transcript index name
+    gene_info.pop("disease_associated_transcripts")
+    gene_info["disease_associated_transcript"] = transcripts
+    ## THEN transcript asserts same
+    gene = parse_gene(gene_info)
+    assert gene["transcripts"] == transcripts.split(",")
+    ## WHEN alternative transcript index name
+    gene_info.pop("disease_associated_transcript")
+    gene_info["transcripts"] = transcripts
+    ## THEN transcript asserts same
+    gene = parse_gene(gene_info)
+    assert gene["transcripts"] == transcripts.split(",")
+
 
 def test_parse_panel_lines():
     ## GIVEN a iterable with panel lines
