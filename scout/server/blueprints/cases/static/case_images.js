@@ -39,11 +39,11 @@ const CHROMSPECS_LIST =
  * Iterate case.individuals. If a path to a image directory
  * is set, get panels on the page and add image content
  */
-function add_image_to_individual_panel(individuals, prefixes, institute, case_name){
+function add_image_to_individual_panel(individuals, institute, case_name){
     for (var i=0; i<individuals.length; i++){
         console.log("PATHS: "+individuals[i].chromograph_images)
         if(individuals[i].chromograph_images){
-            draw_tracks(individuals[i], prefixes, institute, case_name)
+            draw_tracks(individuals[i], institute, case_name)
         }
     }
 }
@@ -53,7 +53,7 @@ function add_image_to_individual_panel(individuals, prefixes, institute, case_na
  * Draw RHO call pictures -coverage- and UPD pictures -color coded
  * genome regions- onto the dashboard.
  */
-function draw_tracks(individual, prefixes, institute, case_name){
+function draw_tracks(individual, institute, case_name){
     const CYT_HEIGHT = 50 ;
     const CYT_WIDTH = 500 ;
     var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
@@ -372,5 +372,4 @@ function make_polygon(x_cyt, y_cyt, pos, link, ) {
     a.appendChild(poly)
     return a;
 }
-
 
