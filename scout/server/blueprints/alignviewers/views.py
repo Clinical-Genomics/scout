@@ -10,8 +10,9 @@ from flask import (
     request,
     current_app,
     flash,
+    redirect,
 )
-
+from flask_cors import cross_origin
 from .partial import send_file_partial
 from scout.constants import HUMAN_REFERENCE
 from . import controllers
@@ -25,6 +26,15 @@ alignviewers_bp = Blueprint(
 )
 
 LOG = logging.getLogger(__name__)
+
+
+@alignviewers_bp.route("/proxy_track", methods=["OPTIONS", "GET"])
+@cross_origin()
+def proxy_track():
+    """Proxy to a cloud track resource, with the CORS required by igv.js"""
+    resource = request.args.get("resource")
+    LOG.error(f"HERE BITCHES:{resource}")
+    return redirect(resource, code=302)
 
 
 @alignviewers_bp.route("/remote/static", methods=["OPTIONS", "GET"])

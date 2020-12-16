@@ -70,8 +70,8 @@
                           name: "{{ custTrack.name }}",
                           type: "{{ custTrack.type }}",
                           format: "{{ custTrack.format }}",
-                          url: "{{ custTrack.url|replace('%2F','/') }}",
-                          indexURL: "{{ custTrack.indexURL|replace('%2F','/') }}",
+                          url: '{{ url_for("alignviewers.proxy_track", resource=custTrack.url|replace("%2F","/")) }}',
+                          indexURL: '{{ url_for("alignviewers.proxy_track", resource=custTrack.indexURL|replace("%2F","/")) }}',
                         },
                       {% endfor %}
                       {% for wtrack in rhocall_wig %}
