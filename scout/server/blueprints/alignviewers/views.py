@@ -11,10 +11,10 @@ from flask import (
     current_app,
     flash,
 )
+
 from .partial import send_file_partial
 from scout.constants import HUMAN_REFERENCE
 from . import controllers
-
 
 alignviewers_bp = Blueprint(
     "alignviewers",
@@ -25,6 +25,7 @@ alignviewers_bp = Blueprint(
 )
 
 LOG = logging.getLogger(__name__)
+
 
 @alignviewers_bp.route("/remote/static", methods=["OPTIONS", "GET"])
 def remote_static():
