@@ -137,7 +137,14 @@ class QueryHandler(object):
             case_obj = self.case(display_name=similar_case_display_name, institute_id=institute_id)
             if case_obj:
                 LOG.debug("Search for cases similar to %s", case_obj.get("display_name"))
-                similar_cases = self.get_similar_cases(case_obj)
+
+                hpo_terms = []
+                for term in case_obj.get("phenotype_terms", []):
+                    hpo_terms.append(term.get("phenotype_id"))
+
+                similar_cases = self.cases_by_phenotype(
+                    hpo_terms, case_obj["owner"], case_obj["_id"]
+                )
                 LOG.debug("Similar cases: %s", similar_cases)
                 select_cases = [similar[0] for similar in similar_cases]
             else:

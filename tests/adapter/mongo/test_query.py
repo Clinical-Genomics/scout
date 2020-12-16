@@ -3,21 +3,32 @@ import re
 from pymongo import ReturnDocument
 
 
-def test_build_gene_variant_query(adapter):
+def test_build_gene_variant_query(adapter, case_obj, test_hpo_terms, institute_obj):
     hgnc_symbols = ["POT1"]
 
-    # GIVEN a empty database
+    # GIVEN a database containing two cases with phenotype
+    case_obj["phenotype_terms"] = test_hpo_terms
+    adapter.case_collection.insert_one(case_obj)
+    case_obj["_id"] = "internal_id_2"
+    adapter.case_collection.insert_one(case_obj)
+
+    # AND an institute
+    adapter.case_collection.insert_one(institute_obj)
 
     # WHEN building a query
     symbol_query = {}
     symbol_query["hgnc_symbols"] = hgnc_symbols
-    gene_variant_query = adapter.build_variant_query(query=symbol_query)
+    symbol_query["similar_case"] = [case_obj["display_name"]]
+    gene_variant_query = adapter.build_variant_query(
+        query=symbol_query, institute_id=institute_obj["_id"]
+    )
 
     # THEN the query should be on the right format
     assert gene_variant_query["variant_type"] == {"$in": ["clinical"]}  # default
     assert gene_variant_query["category"] == "snv"  # default
     assert gene_variant_query["rank_score"] == {"$gte": 15}  # default
-    assert gene_variant_query["hgnc_symbols"] == {"$in": hgnc_symbols}  # given
+    assert gene_variant_query["hgnc_symbols"] == {"$in": hgnc_symbols}
+    assert gene_variant_query["case_id"] == {"$in": ["internal_id_2"]}
 
 
 def test_build_query(adapter):
