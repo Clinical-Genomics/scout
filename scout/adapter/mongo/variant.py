@@ -829,7 +829,7 @@ class VariantHandler(VariantLoader):
                 case_id, institute_id
             )
         )
-        # case has stats, no update needed
+        # if case has stats and no update is needed, return variant count
         case_obj = self.case(case_id=case_id)
         if case_obj.get("variants_stats") and update_case is False:
             return case_obj["variants_stats"]
@@ -856,8 +856,8 @@ class VariantHandler(VariantLoader):
             else:
                 variants_by_type[var_type] = {var_category: item["total"]}
 
-        # Case needs to be updated with variants stats
-        if update_case:
+        # If case needs to be updated with variants stats
+        if case_obj.get("variants_stats") is None or update_case:
             case_obj["variants_stats"] = variants_by_type
             self.update_case(case_obj=case_obj, keep_date=True)
 
