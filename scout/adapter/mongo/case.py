@@ -392,7 +392,9 @@ class CaseHandler(object):
 
         return [
             case._id
-            for case in store.find({"group": {"$elemMatch": {"$eq": group_id}}}, {"_id": 1})
+            for case in self.case_collection.find(
+                {"group": {"$elemMatch": {"$eq": group_id}}}, {"_id": 1}
+            )
         ]
 
     def update_case_group_ids(self, case_id, group_ids):
@@ -405,7 +407,9 @@ class CaseHandler(object):
             updated_case(case_obj)
         """
 
-        updated_case = find_one_and_update({"_id": case_id}, {"$set": {"group": group_ids}})
+        updated_case = self.case_collection.find_one_and_update(
+            {"_id": case_id}, {"$set": {"group": group_ids}}
+        )
 
         return updated_case
 
