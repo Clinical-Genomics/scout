@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for custom public igv tracks stored on the cloud
 - Add tests to increase testing coverage
 ### Fixed
+- Bugfix: unused `chromgraph_prefix |tojson` removed
 - Freeze coloredlogs temporarily
 - Marrvel link
 - Don't show TP53 link for silent changes
@@ -19,6 +20,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix Pytest single quote vs double quote string
 - Bug in gene variants search when providing similar case display name
 ### Changed
+
+
 
 ## [4.27]
 ### Added
