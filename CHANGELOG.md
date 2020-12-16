@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add VAF to cancer case general report, and remove some of its unused fields
 - Variants filter compatible with genome browser location strings
 - Support for custom public igv tracks stored on the cloud
+- Small case group assessment sharing
 ### Fixed
 - Freeze coloredlogs temporarily
 - Marrvel link
