@@ -58,10 +58,10 @@ def test_check_coordinates():
 
     ## THEN a positin within bounds will be True
     within_bounds = 100
-    assert check_coordinates(chrom, within_bounds, coordinates) == True
+    assert check_coordinates(chrom, within_bounds, coordinates)
     ## THEN a positin out of bounds will be False
     out_of_bounds = 1111
-    assert check_coordinates(chrom, out_of_bounds, coordinates) == False
+    assert not check_coordinates(chrom, out_of_bounds, coordinates)
     ## THEN a positin within bounds will be True but wrong chromosome
     wrong_chrom = "2"
-    assert check_coordinates(wrong_chrom, within_bounds, coordinates) == False
+    assert not check_coordinates(wrong_chrom, within_bounds, coordinates)
