@@ -129,7 +129,6 @@ def test_parse_gene():
     assert gene["transcripts"] == transcripts.split(",")
 
 
-
 def test_parse_panel_lines():
     ## GIVEN a iterable with panel lines
     panel_lines = [
