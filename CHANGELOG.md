@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add VAF to cancer case general report, and remove some of its unused fields
 - Variants filter compatible with genome browser location strings
 - Support for custom public igv tracks stored on the cloud
+- Add tests to increase testing coverage
+- Update case variants count after deleting variants
 - Tutorial and files for deploying app on containers (Kubernetes pods)
 ### Fixed
 - Bugfix: unused `chromgraph_prefix |tojson` removed
@@ -20,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix Pytest single quote vs double quote string
 - Bug in gene variants search when providing similar case display name
 ### Changed
+- Save case variants count in case document and not in sessions
 
 
 
