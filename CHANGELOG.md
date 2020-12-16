@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for custom public igv tracks stored on the cloud
 - Update case variants count after deleting variants
 ### Fixed
+- Bugfix: unused `chromgraph_prefix |tojson` removed
 - Freeze coloredlogs temporarily
 - Marrvel link
 - Don't show TP53 link for silent changes
@@ -20,6 +21,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bug in gene variants search when providing similar case display name
 ### Changed
 - Save case variants count in case document and not in sessions
+
+
 
 ## [4.27]
 ### Added
