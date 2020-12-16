@@ -9,7 +9,6 @@ path.py
 Flask-Markdown
 Flask-WTF
 Flask-Mail
-flask_cors
 Flask-WeasyPrint
 coloredlogs<=14.0
 query_phenomizer
