@@ -10,14 +10,19 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add VAF to cancer case general report, and remove some of its unused fields
 - Variants filter compatible with genome browser location strings
 - Support for custom public igv tracks stored on the cloud
+- Add tests to increase testing coverage
 - Bypass igv.js CORS check using `https://github.com/Rob--W/cors-anywhere`
 ### Fixed
+- Bugfix: unused `chromgraph_prefix |tojson` removed
 - Freeze coloredlogs temporarily
 - Marrvel link
 - Don't show TP53 link for silent changes
 - OMIM gene field accepts any custom number as OMIM gene
 - Fix Pytest single quote vs double quote string
+- Bug in gene variants search when providing similar case display name
 ### Changed
+
+
 
 ## [4.27]
 ### Added
