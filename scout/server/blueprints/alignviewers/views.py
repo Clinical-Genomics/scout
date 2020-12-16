@@ -26,6 +26,7 @@ alignviewers_bp = Blueprint(
 
 LOG = logging.getLogger(__name__)
 
+
 @alignviewers_bp.route("/remote/static", methods=["OPTIONS", "GET"])
 def remote_static():
     """Stream *large* static files with special requirements."""
