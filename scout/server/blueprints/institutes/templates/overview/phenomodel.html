@@ -13,6 +13,13 @@
 .tree {
   list-style-type: none;
 }
+[data-toggle="collapse"] .fa:before {
+  content: "\f139";
+}
+
+[data-toggle="collapse"].collapsed .fa:before {
+  content: "\f13a";
+}
 </style>
 {% endblock %}
 
@@ -257,9 +264,13 @@
                   <strong>{{term_obj.term_title}}</strong><br>
                 {% endif %}
                 <input type="checkbox" name="cheked_terms" value="{{subpanel_id}}.{{term_id}}.{{term_id}}">
-                <label for="{{term_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label>
+                {% if term_obj.children %}
+                  <a href="#" onclick="toggleDiv('{{term_obj.name}}#children')"><label for="{{term_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label></a>
+                {% else %}
+                  <label for="{{term_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label>
+                {% endif %}
               </div>
-              <div style="margin-left: 35px;">
+              <div style="margin-left: 35px; display: none;" id="{{term_obj.name}}#children">
                 {% for item in term_obj.children recursive %}
                   <li class="tree">
                     <input type="checkbox" name="cheked_terms" value="{{subpanel_id}}.{{term_id}}.{{item.name}}"> <label>{{ item.description }} ({{item.name}})</label>
