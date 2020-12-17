@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add tests to increase testing coverage
 - Update case variants count after deleting variants
 - Bypass igv.js CORS check using `https://github.com/Rob--W/cors-anywhere`
+- Documentation on default and custom IGV.js tracks (admin docs)
 ### Fixed
 - Bugfix: unused `chromgraph_prefix |tojson` removed
 - Freeze coloredlogs temporarily
