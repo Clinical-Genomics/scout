@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for custom public igv tracks stored on the cloud
 - Add tests to increase testing coverage
 - Update case variants count after deleting variants
+- Lock phenomodels so they're editable by admins only
 ### Fixed
 - Bugfix: unused `chromgraph_prefix |tojson` removed
 - Freeze coloredlogs temporarily
@@ -22,8 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bug in gene variants search when providing similar case display name
 ### Changed
 - Save case variants count in case document and not in sessions
-
-
+- Collapse/expand main HPO checkboxes in  phenomodel preview
 
 ## [4.27]
 ### Added
