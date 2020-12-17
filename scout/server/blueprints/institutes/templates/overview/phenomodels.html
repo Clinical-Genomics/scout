@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.0/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 {% endblock %}
 
 {% block top_nav %}
@@ -25,9 +26,9 @@
   </li>
 {% endblock %}
 
-
 {% macro phenomodels_macro() %}
   {{ confirm_delete() }}
+  {{ lock_model() }}
   {{ create_model_macro() }}
   {{ phenomodel_list() }}
 {% endmacro %}
@@ -43,6 +44,38 @@
 </div><!-- end of body row div -->
 </div><!-- end of container-float-->
 {% endblock %}
+
+
+{% macro lock_model() %}
+  {% for model in phenomodels %}
+    <form action="{{ url_for('overview.lock_phenomodel') }}" method="POST">
+      <input id="model_id" type="hidden" value="{{model._id}}" name="model_id">
+      <div class="modal fade" id="lockModal-{{model._id}}" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-body">
+              <p><strong>Phenomodel {{model.name}} is {{ "locked" if model.admins|length > 0 else "unlocked" }}.</strong></p>
+              You will be able to modify this model in the future.<br>
+              Select other users allowed to modify this model, once it's locked:
+              <select multiple="multiple" name="user_admins" id="user_admins" class="selectpicker" data-width="100%" size="5">
+                {% for coll in collaborators %}
+                  <option value="{{coll[0]}}" {{"selected" if coll[0] in model.admins }}>{{coll[1]}} ({{coll[2]}})</option>
+                {% endfor %}
+              </select>
+              <br><br>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" name="lock" class="btn btn-primary"><i class="fa fa-lock"></i> Lock model for specified users</button>
+              <button type="submit" name="unlock" class="btn btn-warning"><i class="fa fa-unlock"></i> Unlock model to all users</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Exit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  {% endfor %}
+{% endmacro %}
+
 
 {% macro confirm_delete() %}
 <form action="{{ url_for('overview.remove_phenomodel') }}" method="POST">
@@ -95,6 +128,8 @@
             <th>Nr subpanels</th>
             <th>Created</th>
             <th>Updated</th>
+            <th>admin</th>
+            <th></th>
             <th></th>
           </tr>
         </thead>
@@ -108,9 +143,15 @@
               <td>{{model.subpanels|length if model.subpanels else '0'}}</td>
               <td>{{model.created.strftime('%Y-%m-%d')}}</td>
               <td>{{model.updated.strftime('%Y-%m-%d')}}</td>
+              <td style="width:30%">{{model.admins|join(", ") or "-"}}</th>
               <td>
                 <button type="button" class="btn btn-danger btn-sm removeModel" data-id="{{model._id}}" aria-hidden="true" data-toggle="modal" data-target="#deleteModal"><i class="fa fa-trash-o"></i></button>
               </td>
+              {% if model.admins|length == 0 or current_user.email in model.get("admins",[]) %}
+                <td>
+                  <button type="button" class="btn btn-primary btn-sm" data-id="{{model._id}}" aria-hidden="true" data-toggle="modal" data-target="#lockModal-{{model._id}}"><i class="fa {{ 'fa-lock' if model.admins|length > 0 else 'fa-unlock' }}"></i></button>
+                </td>
+              {% endif %}
             </tr>
           {% endfor %}
         </tbody>
@@ -122,10 +163,15 @@
 
 {% block scripts %}
 {{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
 <script>
   $(document).on("click", ".removeModel", function () {
     var modelId = $(this).data('id');
     $('input#model_id').val(modelId);
+});
+$('select[multiple]').selectpicker({
+    width: '100%'
+  });
 });
 </script>
 {% endblock %}
