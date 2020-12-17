@@ -139,7 +139,6 @@ def variants(
 
         # delete variants specified by variants_query
         result = store.variant_collection.delete_many(variants_query)
-        click.echo(f"Deleted {result.deleted_count} / {case_n_variants} total variants")
         total_deleted += result.deleted_count
         click.echo(
             "\t".join(
@@ -168,6 +167,9 @@ def variants(
             store.remove_variants_event(
                 institute=institute_obj, case=case, user=user_obj, link=url, content=filters
             )
+
+        # Update case variants count
+        store.case_variants_count(case_id, institute_obj["_id"], True)
 
     click.echo(f"Total {items_name}: {total_deleted}")
     click.echo(
