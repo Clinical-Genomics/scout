@@ -374,7 +374,6 @@ def advanced_phenotypes(institute_id):
 def lock_phenomodel():
     """Lock or unlock a specific phenomodel for editing"""
     form = request.form
-    LOG.error(form.getlist("user_admins"))
     model_id = form.get("model_id")
     phenomodel_obj = store.phenomodel(model_id)
     if phenomodel_obj is None:
