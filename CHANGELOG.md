@@ -23,7 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bug in gene variants search when providing similar case display name
 ### Changed
 - Save case variants count in case document and not in sessions
-- Collapse/expand main HPO checkboxes in  phenomodel preview
+- Collapse/expand main HPO checkboxes in phenomodel preview
 
 ## [4.27]
 ### Added
