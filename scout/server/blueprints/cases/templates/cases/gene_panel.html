@@ -38,14 +38,14 @@
           <label>Change default gene panels</label>
         </div>
         <div class="row">
-          <div class="col-xs-8">
-            <select name="panel_ids" class="form-control" multiple>
+          <div class="col-8">
+            <select name="panel_ids" class="selectpicker" multiple="multiple">
               {% for panel in case.panels %}
                 <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>{{ panel.display_name }}</option>
               {% endfor %}
             </select>
           </div>
-          <div class="col-xs-4">
+          <div class="col-4">
             <button class="btn btn-outline-secondary form-control">Save</button>
           </div>
         </div>
