@@ -198,7 +198,6 @@ def test_update_transcripts_information_refseq_id():
     assert variant_gene["transcripts"][0].get("refseq_id") == "NM_001193301"
     ## THEN assert that the variant obj has refseq ids
     assert variant_obj["has_refseq"] is True
-    ## THEN assert that the list of primary transcripts has been added
 
 
 def test_update_transcripts_information_refseq_id():
