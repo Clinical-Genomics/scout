@@ -72,10 +72,6 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
     """
     genome_build = genome_build or "37"
     disease_associated_no_version = variant_gene.get("disease_associated_no_version", set())
-    common_transcripts = {
-        transcript_obj["ensembl_transcript_id"]: transcript_obj
-        for transcript_obj in variant_gene.get("common", {}).get("transcripts", [])
-    }
     # Create a dictionary with transcripts information
     # Use ensembl transcript id as keys
     transcripts_dict = {}
@@ -93,7 +89,6 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
     for transcript in variant_gene.get("transcripts", []):
         tx_id = transcript["transcript_id"]
         hgnc_transcript = transcripts_dict.get(tx_id)
-
         # If the tx does not exist in ensembl anymore we skip it
         if not hgnc_transcript:
             continue
@@ -112,7 +107,6 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
         transcript["refseq_id"] = refseq_id
         variant_obj["has_refseq"] = True
 
-        refseq_transcripts.append(transcript)
         # Check if the refseq id are disease associated
         if refseq_id in disease_associated_no_version:
             transcript["is_disease_associated"] = True
@@ -121,9 +115,9 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
         # those
         transcript["refseq_identifiers"] = hgnc_transcript.get("refseq_identifiers", [])
 
-        transcript["change_str"] = transcript_str(
-            transcript, hgnc_symbol, common_transcripts.get(tx_id)
-        )
+        transcript["change_str"] = transcript_str(transcript, hgnc_symbol)
+
+        refseq_transcripts.append(transcript)
 
     variant_gene["primary_transcripts"] = refseq_transcripts
 
@@ -382,7 +376,7 @@ def evaluation(store, evaluation_obj):
     return evaluation_obj
 
 
-def transcript_str(transcript_obj, gene_name=None, common_transcript={}):
+def transcript_str(transcript_obj, gene_name=None):
     """Generate amino acid change as a string.
 
     Args:
@@ -404,17 +398,12 @@ def transcript_str(transcript_obj, gene_name=None, common_transcript={}):
         part_count_raw = transcript_obj["intron"]
 
     part_count = part_count_raw.rpartition("/")[0]
-
     change_str = "{}:{}{}:{}:{}".format(
         transcript_obj.get("refseq_id", ""),
         gene_part,
         part_count,
-        common_transcript.get(
-            "coding_sequence_name", transcript_obj.get("coding_sequence_name", "NA")
-        ),
-        common_transcript.get(
-            "protein_sequence_name", transcript_obj.get("protein_sequence_name", "NA")
-        ),
+        transcript_obj.get("coding_sequence_name", "NA"),
+        transcript_obj.get("protein_sequence_name", "NA"),
     )
     if gene_name:
         change_str = "{}:".format(gene_name) + change_str
