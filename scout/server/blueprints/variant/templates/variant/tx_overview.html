@@ -117,7 +117,7 @@
                       {% endif %}
                     </td>
                   </tr>
-                {% endfor %} <!-- { for refseq_id in transcript.refseq_identifiers } -->
+                {% endfor %} <!-- end of { for refseq_id in transcript.refseq_identifiers } loop -->
               {% endif %} <!-- end of else (if not variant.has_refseq) -->
             {% endfor %} <!-- end of { for transcript in gene.transcripts } loop -->
           {% endfor %} <!--end of { for gene in variant.genes } loop -->

@@ -346,16 +346,6 @@ def test_update_transcripts_information_is_primary():
     assert variant_gene["transcripts"][0].get("is_primary") is True
 
 
-def test_update_transcripts_information(hgnc_gene, variant_gene):
-    ## GIVEN a hgnc gene, a variant gene and a variant object
-    variant_obj = {}
-    assert "primary_transcripts" not in variant_gene
-    ## WHEN updating the transcript information for the variant gene
-    update_transcripts_information(variant_gene, hgnc_gene, variant_obj)
-    ## THEN assert the function has completed without errors
-    assert "primary_transcripts" in variant_gene
-
-
 def test_add_panel_specific_gene_info_disease_tx():
     ## GIVEN some panel genes and a gene object
     panel_info = [{"hgnc_id": 100, "symbol": "AAA", "disease_associated_transcripts": ["NM001.1"]}]
