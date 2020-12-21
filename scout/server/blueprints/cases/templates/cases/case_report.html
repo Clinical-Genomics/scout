@@ -686,9 +686,12 @@
                         {% endif %}
                       {% endfor %}
 
-                      <!-- print transcript info only if it's canonical, disease-associated or primary (print max 5 primary transcripts) -->
-                      {% if transcript.refseq_id and n_primary_txs.count <= 4 or transcript.is_canonical or transcript.is_disease_associated or hgnc_prim.primary %}
+                      {% if transcript.refseq_id %}
                         {% set n_primary_txs.count = n_primary_txs.count + 1 %}
+                      {% endif %}
+
+                      <!-- print transcript info only if it's canonical, disease-associated or primary (print max 5 primary transcripts) -->
+                      {% if transcript.refseq_id and n_primary_txs.count <= 5 or transcript.is_canonical or transcript.is_disease_associated or hgnc_prim.primary %}
                         <li>{{transcript.refseq_id}} - {{ (transcript.coding_sequence_name or '')|truncate(20, True) }} - {{ (transcript.protein_sequence_name or '')|url_decode }}
                         {% if transcript.is_canonical %}
                           <span class="badge badge-pill badge-secondary" title="canonical">C</span>
@@ -704,7 +707,7 @@
                     {% endfor %}
                   {% endif %}
                 </ul>
-                {% if n_primary_txs.count > 4 %}
+                {% if n_primary_txs.count > 5 %}
                 .. other transcripts available for this variant are not shown.<br><br>
                 {% endif %}
               </td>
@@ -1118,9 +1121,12 @@
                       {% endif %}
                     {% endfor %}
 
-                    <!-- print transcript info only if it's canonical, disease-associated or primary (print max 5 primary transcripts) -->
-                    {% if transcript.refseq_id and n_primary_txs.count <= 4 or transcript.is_canonical or transcript.is_disease_associated or hgnc_prim.primary %}
+                    {% if transcript.refseq_id %}
                       {% set n_primary_txs.count = n_primary_txs.count + 1 %}
+                    {% endif %}
+
+                    <!-- print transcript info only if it's canonical, disease-associated or primary (print max 5 primary transcripts) -->
+                    {% if transcript.refseq_id and n_primary_txs.count <= 5 or transcript.is_canonical or transcript.is_disease_associated or hgnc_prim.primary %}
                       <li>{{transcript.refseq_id}} - {{ (transcript.coding_sequence_name or '')|truncate(20, True) }} - {{ (transcript.protein_sequence_name or '')|url_decode }}
                       {% if transcript.is_canonical %}
                         <span class="badge badge-pill badge-secondary" title="canonical">C</span>
@@ -1136,7 +1142,7 @@
                   {% endfor %}
                 {% endif %}
               </ul>
-              {% if n_primary_txs.count > 4 %}
+              {% if n_primary_txs.count > 5 %}
               .. other transcripts available for this variant are not shown.<br><br>
               {% endif %}
             </td>
