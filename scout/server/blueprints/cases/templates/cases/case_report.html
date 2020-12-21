@@ -686,7 +686,7 @@
                         {% endif %}
                       {% endfor %}
 
-                      <!-- print transcript info only if it's canonical, disease-associated or primary (print max 3 primary transcripts) -->
+                      <!-- print transcript info only if it's canonical, disease-associated or primary (print max 5 primary transcripts) -->
                       {% if transcript.refseq_id and n_primary_txs.count <= 4 or transcript.is_canonical or transcript.is_disease_associated or hgnc_prim.primary %}
                         {% set n_primary_txs.count = n_primary_txs.count + 1 %}
                         <li>{{transcript.refseq_id}} - {{ (transcript.coding_sequence_name or '')|truncate(20, True) }} - {{ (transcript.protein_sequence_name or '')|url_decode }}
@@ -1118,7 +1118,7 @@
                       {% endif %}
                     {% endfor %}
 
-                    <!-- print transcript info only if it's canonical, disease-associated or primary (print max 3 primary transcripts) -->
+                    <!-- print transcript info only if it's canonical, disease-associated or primary (print max 5 primary transcripts) -->
                     {% if transcript.refseq_id and n_primary_txs.count <= 4 or transcript.is_canonical or transcript.is_disease_associated or hgnc_prim.primary %}
                       {% set n_primary_txs.count = n_primary_txs.count + 1 %}
                       <li>{{transcript.refseq_id}} - {{ (transcript.coding_sequence_name or '')|truncate(20, True) }} - {{ (transcript.protein_sequence_name or '')|url_decode }}
