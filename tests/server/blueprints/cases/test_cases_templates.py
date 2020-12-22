@@ -4,12 +4,13 @@ from scout.server.extensions import store
 from pymongo import ReturnDocument
 from flask import url_for, get_template_attribute
 
+
 def test_report_transcripts_macro(app, institute_obj, case_obj, variant_gene_updated_info):
     """Test the variant_transcripts macro present in the general report page"""
 
     # Given a gene variant annotated with 3 transcripts:
     # First transcript has refseq_id
-    assert variant_gene_updated_info["transcripts"][0]["refseq_id"] # One with refseq_id
+    assert variant_gene_updated_info["transcripts"][0]["refseq_id"]  # One with refseq_id
     assert variant_gene_updated_info["transcripts"][0]["is_primary"] is True
     assert variant_gene_updated_info["transcripts"][0]["is_canonical"] is False
 
@@ -39,8 +40,6 @@ def test_report_transcripts_macro(app, institute_obj, case_obj, variant_gene_upd
 
         # NOT the second
         assert variant_gene_updated_info["transcripts"][1]["transcript_id"] not in html
-
-
 
 
 def test_sidebar_macro(app, institute_obj, case_obj):
