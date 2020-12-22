@@ -83,7 +83,6 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
     # Add the transcripts to the gene object
     hgnc_gene["transcripts_dict"] = transcripts_dict
     hgnc_symbol = hgnc_gene["hgnc_symbol"]
-    refseq_transcripts = []
 
     # First loop over the variants transcripts
     for transcript in variant_gene.get("transcripts", []):
@@ -107,7 +106,6 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
         transcript["refseq_id"] = refseq_id
         variant_obj["has_refseq"] = True
 
-        refseq_transcripts.append(transcript)
         # Check if the refseq id are disease associated
         if refseq_id in disease_associated_no_version:
             transcript["is_disease_associated"] = True
@@ -115,10 +113,7 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
         # Since a ensemble transcript can have multiple refseq identifiers we add all of
         # those
         transcript["refseq_identifiers"] = hgnc_transcript.get("refseq_identifiers", [])
-
         transcript["change_str"] = transcript_str(transcript, hgnc_symbol)
-
-    variant_gene["primary_transcripts"] = refseq_transcripts
 
 
 def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
