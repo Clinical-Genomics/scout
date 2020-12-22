@@ -10,6 +10,7 @@ This includes instructions for bioinformaticians to install, manage and update a
   * [Genes, transcripts and exons](./genes.md)
   * [HPO terms](./hpo.md)
   * [Annotations](./annotations.md)
+  * [IGV browser settings](./igv-settings.md)
   * [Server](./server.md)
   * [Chanjo coverage integration](./chanjo_coverage_integration.md)
   * [Loqusdb integration](./loqusdb_integration.md)
