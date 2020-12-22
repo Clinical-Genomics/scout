@@ -50,6 +50,7 @@ nav:
       - Gene definitions: 'admin-guide/genes.md'
       - HPO terms: 'admin-guide/hpo.md'
       - Annotations: 'admin-guide/annotations.md'
+      - IGV browser settings: 'admin-guide/igv-settings.md'
       - Server: 'admin-guide/server.md'
       - Chanjo coverage integration: 'admin-guide/chanjo_coverage_integration.md'
       - Loqusdb integration: 'admin-guide/loqusdb_integration.md'
