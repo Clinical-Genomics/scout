@@ -189,15 +189,15 @@
     </div>
     <div class="list-group-item disabled"><strong>Amino acid changes</strong></div>
     {% for gene in variant.genes %}
-        {% for transcript in gene.primary_transcripts %}
-          {% for refseq_id in transcript.refseq_identifiers %}
+        {% for transcript in gene.transcripts %}
+          {% if "refseq_identifiers" in transcript or transcript.is_canonical %}
               {% if transcript.protein_sequence_name%}
                 <div class="list-group-item">
-                  {{ refseq_id }}<span class="text-muted"> ({{ transcript.transcript_id }})</span>:
+                  [{{ transcript.refseq_identifiers|join(", ") }}]<span class="text-muted"> ({{ transcript.transcript_id }})</span>:
                   {{ (transcript.protein_sequence_name or '')|url_decode }}
                 </div>
               {% endif %}
-            {% endfor %}
+            {% endif %}
           {% endfor %}
     {% endfor %}
     <div class="list-group-item disabled"><strong>GT call</strong></div>
