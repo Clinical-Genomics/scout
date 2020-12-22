@@ -82,15 +82,16 @@
       {{ insert_multi_image_panel() }}
 
       <div class="row">
-        {% if case.track != 'cancer' %}
         <div class="col-md-4">
+        {% if case.track != 'cancer' %}
           {% if case.madeline_info and case.individuals|length > 1 %}
             {{ pedigree_panel(case) }}
           {% else %}
             <p>No pedigree picture available.</p>
           {% endif %}
-        </div>
         {% endif %}
+          {{ group_panel(case) }}
+        </div>
 
         <div class="{% if case.track != 'cancer' %}col-8{%else%}col-12{%endif%}">
           {{ synopsis_panel() }}
@@ -205,6 +206,13 @@
   </div>
 {% endmacro %}
 
+{% macro group_panel(case) %}
+  <div class="card panel-default">
+    {% for group in case.group %}
+      <li>{{ group }}
+    {% endfor %}
+  </div>
+{% endmarcro %}
 
 <!-- Iterate through Individuals, if chromograph_files is presenet add a panel for images -->
 {% macro insert_multi_image_panel() %}
