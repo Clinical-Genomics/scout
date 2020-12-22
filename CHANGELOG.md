@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix Pytest single quote vs double quote string
 - Bug in gene variants search when providing similar case display name
 - Delete unused file `userpanel.py`
+- Primary transcripts in variant overview and general report
 ### Changed
 - Save case variants count in case document and not in sessions
 - Style of gene panels multiselect on case page
