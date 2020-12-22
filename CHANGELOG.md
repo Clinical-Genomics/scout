@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for custom public igv tracks stored on the cloud
 - Add tests to increase testing coverage
 - Update case variants count after deleting variants
+- Update IGV.js to latest (v2.7.4)
 - Tutorial and files for deploying app on containers (Kubernetes pods)
 ### Fixed
 - Bugfix: unused `chromgraph_prefix |tojson` removed
