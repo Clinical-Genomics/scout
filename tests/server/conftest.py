@@ -3,7 +3,6 @@ import logging
 
 import pytest
 import pymongo
-from bson import ObjectId
 from flask import request
 from flask_login import login_user, logout_user
 
@@ -185,6 +184,101 @@ def omim_checkbox():
         "description": "Febrile seizures familial 1",
     }
     return checkbox
+
+
+@pytest.fixture
+def variant_gene_updated_info():
+    """Returns a dictionary with the information from variant gene with updated info, ready to be visualized on the portal"""
+    updated_variant_gene = {
+        "hgnc_id": 30213,
+        "hgnc_symbol": "ATP13A2",
+        "ensembl_id": "ENSG00000159363",
+        "description": "ATPase cation transporting 13A2",
+        "inheritance": ["AR"],
+        "transcripts": [
+            {  # Transcript with refseq_id (and primary)
+                "transcript_id": "ENST00000452699",
+                "hgnc_id": 30213,
+                "protein_id": "ENSP00000413307",
+                "sift_prediction": "deleterious",
+                "polyphen_prediction": "probably_damaging",
+                "swiss_prot": "Q9NQ11",
+                "biotype": "protein_coding",
+                "functional_annotations": ["missense_variant"],
+                "region_annotations": ["exonic"],
+                "exon": "26/29",
+                "strand": "-",
+                "coding_sequence_name": "c.2963C>T",
+                "protein_sequence_name": "p.Pro988Leu",
+                "is_canonical": False,
+                "is_primary": True,
+                "refseq_id": "NM_022089",
+                "refseq_identifiers": ["NM_022089", "NM_001141973"],
+                "ensembl_37_link": "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?t=ENST00000452699",
+                "ensembl_38_link": "http://ensembl.org/Homo_sapiens/Gene/Summary?t=ENST00000452699",
+                "ensembl_link": "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?t=ENST00000452699",
+                "refseq_links": [
+                    {"link": "http://www.ncbi.nlm.nih.gov/nuccore/NM_022089", "id": "NM_022089"}
+                ],
+                "swiss_prot_link": "http://www.uniprot.org/uniprot/Q9NQ11",
+                "pfam_domain_link": None,
+                "prosite_profile_link": None,
+                "smart_domain_link": None,
+                "varsome_link": "https://varsome.com/variant/hg37/NM_022089:c.2963C>T",
+                "tp53_link": None,
+                "cbioportal_link": "https://www.cbioportal.org/ln?q=ATP13A2:MUT%20%3DP988L",
+                "mycancergenome_link": "https://www.mycancergenome.org/content/alteration/ATP13A2-p988l",
+                "change_str": "ATP13A2:NM_022089:exon26:c.2963C>T:p.Pro988Leu",
+            },
+            {  # Transcript with NO refseq_id, no primary, no canonical
+                "transcript_id": "NM_001141974.3",
+                "hgnc_id": 30213,
+                "protein_id": "NP_001135446.1",
+                "sift_prediction": "tolerated",
+                "polyphen_prediction": "possibly_damaging",
+                "swiss_prot": "unknown",
+                "biotype": "protein_coding",
+                "functional_annotations": ["missense_variant"],
+                "region_annotations": ["exonic"],
+                "exon": "25/27",
+                "strand": "-",
+                "coding_sequence_name": "c.2846C>T",
+                "protein_sequence_name": "p.Pro949Leu",
+                "is_canonical": False,
+            },
+            {  # Transcript with NO refseq_id, no primary, but canonical
+                "transcript_id": "NM_022089.4",
+                "hgnc_id": 30213,
+                "protein_id": "NP_071372.1",
+                "sift_prediction": "deleterious",
+                "polyphen_prediction": "possibly_damaging",
+                "swiss_prot": "unknown",
+                "biotype": "protein_coding",
+                "functional_annotations": ["missense_variant"],
+                "region_annotations": ["exonic"],
+                "exon": "26/29",
+                "strand": "-",
+                "coding_sequence_name": "c.2978C>T",
+                "protein_sequence_name": "p.Pro993Leu",
+                "is_canonical": True,
+            },
+        ],
+        "functional_annotation": "missense_variant",
+        "region_annotation": "exonic",
+        "sift_prediction": "deleterious",
+        "polyphen_prediction": "possibly_damaging",
+        "hgvs_identifier": "c.2978C>T",
+        "canonical_transcript": "NM_022089.4",
+        "exon": "26/29",
+        "disease_associated_transcripts": [],
+        "manual_penetrance": False,
+        "mosaicism": False,
+        "manual_inheritance": [],
+        "common": {
+            "primary_transcripts": ["NM_022089"],
+        },
+    }
+    return updated_variant_gene
 
 
 @pytest.fixture
