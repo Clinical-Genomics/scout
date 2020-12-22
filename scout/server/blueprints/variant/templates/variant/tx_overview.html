@@ -51,9 +51,9 @@
                       {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                     </a>
                   </td> <!-- end of gene symbol col-->
-                  <td>{{ transcript.refseq_identifiers|join(", ") }}</td>
+                  <td>{{ transcript.refseq_identifiers|join(", ") }}</td> <!-- Refseq IDs -->
                   <td class="d-flex align-items-center">
-                    <div> <!-- refseq id col-->
+                    <div> <!-- ID col-->
                       <span class="text"> {{ transcript.transcript_id }}</span>
                       {% if transcript.refseq_id in gene.common.primary_transcripts %}
                         <a href="#" data-toggle="tooltip" title="hgnc primary"><span class="badge badge-primary" title="hgnc primary">P</span></a>
@@ -68,14 +68,14 @@
                         <a href="#" data-toggle="tooltip" title="vep canonical"><span class="badge badge-info" title="vep canonical">C</span></a>
                       {% endif %}
                     </div>
-                  </td> <!-- end of refseq id col-->
-                  <td title="{{ transcript.coding_sequence_name or '' }}">
+                  </td> <!-- end of ID col-->
+                  <td title="{{ transcript.coding_sequence_name or '' }}"> <!-- >HGVS Description col -->
                     {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
                     <span class="text-muted float-right">
                       {{ (transcript.protein_sequence_name or '')|url_decode }}
                     </span>
-                  </td>
-                  <td class="text-center">
+                  </td>  <!-- end of HGVS Description col -->
+                  <td class="text-center"> <!-- Links col -->
                     {% if transcript.varsome_link %}
                       <a href="{{ transcript.varsome_link }}" class="badge badge-secondary text-white" target="_blank"
                         data-toggle="tooltip" title="Varsome">V</a>
@@ -92,7 +92,7 @@
                       <a href="{{ transcript.mycancergenome_link }}" class="badge badge-secondary text-white" target="_blank"
                         data-toggle="tooltip" title="MyCancerGenome">MCG</a>
                     {% endif %}
-                  </td>
+                  </td> <!-- end of Links col -->
                 </tr>
               {% endif %} <!-- end of { if "refseq_identifiers" in  transcript } -->
             {% endfor %} <!-- end of { for transcript in gene.transcripts } loop -->
