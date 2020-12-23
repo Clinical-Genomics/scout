@@ -176,7 +176,8 @@ def variants(institute_id, case_name):
         severe_so_terms=SEVERE_SO_TERMS,
         cytobands=cytobands,
         page=page,
-        expand_search=str(request.method == "POST"),
+        expand_search=request.form.get("expand_search") != "False"
+        and str(request.method == "POST"),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
