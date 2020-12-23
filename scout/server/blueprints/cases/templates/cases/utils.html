@@ -20,7 +20,7 @@
             <span class="badge badge-pill badge-danger" title="disease_associated">D</span>
           {% endif %}
           {% if gene.canonical_transcript == transcript.transcript_id %}
-            <span class="badge badge-pill badge-primary" title="primary_ref_transcript">hgnc primary:{{ transcript.transcript_id }}</span>
+            <span class="badge badge-pill badge-primary" title="primary_ref_transcript">hgnc primary:{{ transcript.transcript_id if transcript.transcript_id.startswith('NM_') else transcript.refseq_id  }}</span>
           {% endif %}
         </li>
       {% endif %}
