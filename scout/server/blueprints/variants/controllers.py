@@ -390,7 +390,9 @@ def variant_export_genes_info(store, gene_list):
     """
     gene_ids = []
     gene_names = []
+    canonical_txs = []
     hgvs_c = []
+    pt_c = []
 
     gene_info = []
 
@@ -401,20 +403,23 @@ def variant_export_genes_info(store, gene_list):
         gene_ids.append(hgnc_id)
         gene_names.append(gene_name)
 
+        if gene_obj.get("canonical_transcript"):
+            canonical_txs.append(gene_obj.get("canonical_transcript"))
+
         hgvs_nucleotide = "-"
+        protein_change = "-"
         # gather HGVS info from gene transcripts
+
         transcripts_list = gene_obj.get("transcripts")
         for transcript_obj in transcripts_list:
-            if (
-                transcript_obj.get("is_canonical") is not None
-                and transcript_obj.get("is_canonical") is True
-            ):
-                hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
+            if transcript_obj["transcript_id"] == gene_obj.get("canonical_transcript"):
+                hgvs_nucleotide = transcript_obj.get("coding_sequence_name") or "-"
+                protein_change = transcript_obj.get("protein_sequence_name") or "-"
         hgvs_c.append(hgvs_nucleotide)
+        pt_c.append(protein_change)
 
-    gene_info.append(";".join(str(x) for x in gene_ids))
-    gene_info.append(";".join(str(x) for x in gene_names))
-    gene_info.append(";".join(str(x) for x in hgvs_c))
+    for item in [gene_ids, gene_names, canonical_txs, hgvs_c, pt_c]:
+        gene_info.append(";".join(str(x) for x in item))
 
     return gene_info
 
