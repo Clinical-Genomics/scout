@@ -8,7 +8,7 @@ EXPORT_HEADER = [
     "Gene_name",
     "Canonical_transcript",
     "Canonical_transcript_HGVS",
-    "Canonical_transcript_Protein_change",
+    "Canonical_transcript_protein_change",
 ]
 
 MT_EXPORT_HEADER = [
