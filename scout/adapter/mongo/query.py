@@ -258,7 +258,7 @@ class QueryHandler(object):
                 continue
 
             # Do not retrieve dismissed variants if hide_dismissed checkbox is checked in filter form
-            if criterion == "hide_dismissed" and query.get("hide_dismissed") is True:
+            if criterion == "hide_dismissed" and query.get(criterion) is True:
                 mongo_query["dismiss_variant"] = {"$in": [None, []]}
 
             ##### end of fundamental query params
