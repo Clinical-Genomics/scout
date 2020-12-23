@@ -1,5 +1,5 @@
 {% extends "layout_bs4.html" %}
-{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block %}
+{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 
 {% block title %}
@@ -48,20 +48,7 @@
           <div class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}" id="collapseFilters">
               {{ snv_filters(form, institute, case) }}
           </div>
-          <div class="card-footer text-center">
-            <div class="row">
-              <div class="col-2 d-flex align-items-baseline justify-content-start">
-                <input type="hidden" id="expand_search" name="expand_search">
-                {{ form.hide_dismissed }}
-                {{form.hide_dismissed.label(class="ml-3")}}
-              </div>
-              <div class="col-2 offset-3 d-flex justify-content-start">
-                {% if "all_variants" in session %}
-                  Showing {{result_size}} / {{ total_variants }} variants
-                {% endif %}
-              </div>
-            </div>
-          </div>
+          {{ filter_form_footer(form, result_size, total_variants) }}
         </div>
 
       <div class="card mt-3">

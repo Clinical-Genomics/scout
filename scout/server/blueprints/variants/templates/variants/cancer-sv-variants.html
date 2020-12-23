@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_table %}
-{% from "variants/utils.html" import sv_filters,cell_rank, pagination_footer, pagination_hidden_div %}
+{% from "variants/utils.html" import sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
@@ -48,29 +48,7 @@
         <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}">
           <div class="card-body">{{ sv_filters(form, institute, case) }}</div>
         </div>
-        <div class="card-footer text-center">
-          <div class="row">
-            <div class="col-2 d-flex align-items-baseline justify-content-start">
-              <input type="hidden" id="expand_search" name="expand_search">
-              {{ form.hide_dismissed }}
-              {{form.hide_dismissed.label(class="ml-3")}}
-            </div>
-            <div class="card-footer text-center">
-              <div class="row">
-                <div class="col-2 d-flex align-items-baseline justify-content-start">
-                  <input type="hidden" id="expand_search" name="expand_search">
-                  {{ form.hide_dismissed }}
-                  {{form.hide_dismissed.label(class="ml-3")}}
-                </div>
-                <div class="col-2 offset-3 d-flex justify-content-start">
-                  {% if "all_variants" in session %}
-                    Showing {{result_size}} / {{ total_variants }} variants
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {{ filter_form_footer(form, result_size, total_variants) }}
       </div>
   </div>
   <div class="card mt-3">
