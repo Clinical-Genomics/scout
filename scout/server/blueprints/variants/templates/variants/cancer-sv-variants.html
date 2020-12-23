@@ -48,10 +48,28 @@
         <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}">
           <div class="card-body">{{ sv_filters(form, institute, case) }}</div>
         </div>
-        <div class="card-footer text-center py-3">
-          {% if "all_variants" in session %}
-            Showing {{result_size}} / {{ total_variants }} variants
-          {% endif %}
+        <div class="card-footer text-center">
+          <div class="row">
+            <div class="col-2 d-flex align-items-baseline justify-content-start">
+              <input type="hidden" id="expand_search" name="expand_search">
+              {{ form.hide_dismissed }}
+              {{form.hide_dismissed.label(class="ml-3")}}
+            </div>
+            <div class="card-footer text-center">
+              <div class="row">
+                <div class="col-2 d-flex align-items-baseline justify-content-start">
+                  <input type="hidden" id="expand_search" name="expand_search">
+                  {{ form.hide_dismissed }}
+                  {{form.hide_dismissed.label(class="ml-3")}}
+                </div>
+                <div class="col-2 offset-3 d-flex justify-content-start">
+                  {% if "all_variants" in session %}
+                    Showing {{result_size}} / {{ total_variants }} variants
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
   </div>
@@ -263,9 +281,15 @@
       populateCytobands({{cytobands|safe}});
     })
 
-   chromPosInpt.addEventListener("input", function() {
+    chromPosInpt.addEventListener("input", function() {
       updateCoordinateFields(event.target)
-   })
+    })
+
+    document.getElementById('hide_dismissed').onchange = function() {
+      document.getElementById('expand_search').value = "False";
+      var the_form = document.forms['filters_form'];
+      the_form.submit();
+    };
 
     var cytoStart = document.getElementById("cytoband_start");
     initSearchConstraints(cytoStart, startElem)

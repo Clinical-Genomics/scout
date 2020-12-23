@@ -276,7 +276,8 @@ def sv_variants(institute_id, case_name):
         severe_so_terms=SEVERE_SO_TERMS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
-        expand_search=str(request.method == "POST"),
+        expand_search=request.form.get("expand_search") != "False"
+        and str(request.method == "POST"),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
@@ -363,7 +364,8 @@ def cancer_variants(institute_id, case_name):
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
-        expand_search=str(request.method == "POST"),
+        expand_search=request.form.get("expand_search") != "False"
+        and str(request.method == "POST"),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
@@ -415,7 +417,8 @@ def cancer_sv_variants(institute_id, case_name):
         manual_rank_options=MANUAL_RANK_OPTIONS,
         cytobands=cytobands,
         page=page,
-        expand_search=str(request.method == "POST"),
+        expand_search=request.form.get("expand_search") != "False"
+        and str(request.method == "POST"),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
