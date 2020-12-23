@@ -1,6 +1,6 @@
 import copy
 import logging
-
+from scout.constants import EXPORT_HEADER
 from scout.server.blueprints.variants.controllers import (
     gene_panel_choices,
     variants_export_header,
@@ -205,7 +205,7 @@ def test_variant_csv_export(real_variant_database, case_obj):
 
     # Assert that exported document has n fields:
     # n = (EXPORT_HEADER items in variants_export.py) + (3 * number of individuals analysed for the case)
-    assert len(export_header) == 8 + 3 * len(case_obj["individuals"])
+    assert len(export_header) == len(EXPORT_HEADER) + 3 * len(case_obj["individuals"])
 
     # Given the lines of the document to be exported
     export_lines = variant_export_lines(adapter, case_obj, variants_to_export)
