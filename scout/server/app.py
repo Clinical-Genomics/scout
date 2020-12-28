@@ -196,6 +196,11 @@ def register_filters(app):
         cursor_copy = pymongo_cursor.clone()
         return len(list(cursor_copy))
 
+    @app.template_filter()
+    def sort_by_key(dict_list, sort_key):
+        """Sort a list of dictionaries by a key"""
+        return sorted(dict_list, key=lambda k: k[sort_key], reverse=True)
+
 
 def configure_oauth_login(app):
     """Register the Google Oauth login client using config settings"""
