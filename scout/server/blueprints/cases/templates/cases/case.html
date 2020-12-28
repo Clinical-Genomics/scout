@@ -14,6 +14,30 @@
 {% block css %}
 {{ super() }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+<style>
+/*Matchmaker card styling*/
+.matchmaker-grid {
+  display: grid;
+  grid-gap: 15px;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+}
+
+.matchmaker-grid-item1 {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.matchmaker-grid-item2 {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.matchmaker-grid-item3 {
+  grid-column: 2;
+  grid-row: 2;
+}
+</style>
 {% endblock %}
 
 {% block top_nav %}
@@ -451,17 +475,13 @@
 
 
   function add_image_panels(){
-      console.log("Window is loaded!")
       add_image_to_individual_panel( {{case.individuals|tojson}},
                                      "{{institute._id}}",
                                      "{{case.display_name}}"
-                                   )
+                                   );
   }
-</script>
 
-
-<script>
- $('#panel-table').DataTable({
+  $('#panel-table').DataTable({
     scrollY: 350,
     scrollCollapse: true,
     paging: false,
@@ -469,11 +489,8 @@
     ordering: true,
     info: false
         });
-</script>
 
-<script>
-$(function () {
-
+  $(function(){
       function getHpoTerms(query, process) {
         $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
           process(data)
@@ -519,12 +536,8 @@ $(function () {
 
       $('select[multiple]').selectpicker({
         width: '100%'
-        });
       });
 
-      $('select[multiple]').multiselect({
-        buttonWidth: '100%'
-      });
       $('table').stickyTableHeaders({
         scrollableArea: $(".fixed-panel")[0]
       });
@@ -558,32 +571,5 @@ $('#collapse-icon').addClass('fa-angle-double-left');
 $('[data-toggle=sidebar-collapse]').click(function() {
   SidebarCollapse();
 });
-
-
-<style>
-/*Matchmaker card styling*/
-.matchmaker-grid {
-  display: grid;
-  grid-gap: 15px;
-  grid-template-columns: auto auto;
-  grid-template-rows: auto auto;
-}
-
-.matchmaker-grid-item1 {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.matchmaker-grid-item2 {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-.matchmaker-grid-item3 {
-  grid-column: 2;
-  grid-row: 2;
-}
-</style>
-
-
+</script>
 {% endblock %}
