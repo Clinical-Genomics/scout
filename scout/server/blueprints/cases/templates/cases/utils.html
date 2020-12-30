@@ -1,5 +1,60 @@
 {% from "variants/utils.html" import tier_cell %}
 
+{% macro beacon_modal(case, current_user) %}
+<form method="POST" action="{{url_for('cases.beacon_submit')}}">
+<div class="modal fade" id="beacon_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Submit variants to Beacon</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <input type="hidden" name="case" value="{{case._id}}">
+
+          <!--Sample selection-->
+          <div class="row d-flex justify-content-center">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="sampleradio1" name="samples" value="affected" checked>
+              <label class="form-check-label" for="sampleradio1">
+                Affected individuals
+              </label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="sampleradio2" name="samples" value="all">
+              <label class="form-check-label" for="sampleradio2">
+                All individuals
+              </label>
+            </div>
+          </div>
+
+          <!--Variants selection-->
+          <div class="row d-flex justify-content-around align-items-center mt-3">
+            <label class="form-check-label" for="vcfselect">
+              Include
+            </label>
+            <select name="panel_ids" id="vcfselect" class="selectpicker" multiple="multiple">
+              {% for file, path in case.vcf_files.items() %}
+                {% if path %}
+                  <option value="{{file}}" {{ "selected" if "research" not in file }}>{{file|replace("vcf_", "")|replace("_", " ")|upper}}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+{% endmacro %}
+
 {% macro variant_transcripts(gene) %}
 <!-- Used in case_report template. Populate a table div with gene transcripts that are canonical, primary (max 5) or disease-associated -->
   {% set n_primary_txs = namespace(count=0) %}
