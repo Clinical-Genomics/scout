@@ -1,5 +1,5 @@
 """Code for performing requests"""
-
+import json
 import logging
 import urllib.request
 import zlib
@@ -22,6 +22,26 @@ HPO_URL = (
     "/artifact/util/annotation/{}"
 )
 HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
+
+
+def post_request(url, headers, data):
+    """Send a POST request to a URL and return its response
+
+    Args:
+        url(str): url to send request to
+        data(dict): data to be sent
+
+    Returns:
+        response(urllib3.response)
+    """
+    response = None
+    try:
+        LOG.info("Requesting %s", url)
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+    except Exception as ex:
+        LOG.error(f"An error occurred while sending a POST request to beacon server at:{url}")
+        LOG.error(ex)
+    return response
 
 
 def get_request(url):

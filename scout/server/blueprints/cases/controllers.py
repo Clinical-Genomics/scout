@@ -30,6 +30,7 @@ from scout.constants.variant_tags import (
     MANUAL_RANK_OPTIONS,
 )
 from scout.export.variant import export_mt_variants
+from scout.server.extensions import store
 from scout.parse.matchmaker import (
     genomic_features,
     hpo_terms,
@@ -39,6 +40,7 @@ from scout.parse.matchmaker import (
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.utils import institute_and_case
 from scout.utils.matchmaker import matchmaker_request
+from scout.utils.scout_requests import post_request
 
 LOG = logging.getLogger(__name__)
 
@@ -745,6 +747,56 @@ def multiqc(store, institute_id, case_name):
     """Find MultiQC report for the case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     return dict(institute=institute_obj, case=case_obj)
+
+
+def beacon_add(form):
+    """Save variants from one or more case samples to the Beacon server
+
+    Args:
+        form(werkzeug.datastructures.ImmutableMultiDict): beacon submission form
+
+    Returns:
+        save_result(dict): number of saved variants (dict values) from each VCF file (dict keys)
+    """
+
+    case_obj = store.case(form.get("case"))
+    # define case individuals (display name, same as in VCF) to filter VCF files with
+    individuals = []
+    if form.get("samples") == "affected":
+        individuals = [
+            ind["display_name"] for ind in case_obj["individuals"] if ind["phenotype"] == 2
+        ]
+    else:
+        individuals = [ind["display_name"] for ind in case_obj["individuals"]]
+
+    flash(individuals)
+
+    # define genes to filter VCF files with
+    gene_filter = set()
+    for panel in form.getlist("panels"):
+        gene_filter.update(store.panel_to_genes(panel_id=panel, gene_format="hgnc_id"))
+    flash(str(gene_filter))
+
+    # Prepare beacon request data
+    data = {
+        "dataset_id": case_obj["owner"],
+        "samples": individuals,
+        "genes": {"ids": list(gene_filter), "id_type": "HGNC"},
+        "assemblyId": "GRCh37" if "37" in str(case_obj["genome_build"]) else "GRCh38",
+    }
+    headers = {"Content-Type": "application/json"}
+    beacon_url = current_app.config.get("BEACON_URL")
+
+    # loop over selected VCF files and send an add request to Beacon for each one of them
+    for vcf_key in form.getlist("vcf_files"):
+        data["vcf_path"] = case_obj["vcf_files"].get(vcf_key)
+        resp = post_request(beacon_url, headers, data)
+        if resp.status_code != 200:
+            flash(str(resp.json), "danger")
+        else:
+            flash("YES")
+
+    return
 
 
 def mme_add(

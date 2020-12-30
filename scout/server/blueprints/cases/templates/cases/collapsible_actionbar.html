@@ -24,7 +24,7 @@
           {{ rerun(case) }}
           {{ share_case(institute, case, collaborators) }}
           {% if "beacon_submitter" in current_user.roles %}
-            {{ beacon_share(institute, case, current_user) }}
+            {{ beacon_share(institute, case) }}
           {% endif %}
           {% if case.needs_check %}
             {{ check_decipher(case, institute) }}
@@ -307,7 +307,7 @@
 </div>
 {% endmacro %}
 
-{% macro beacon_share(institute, case, current_user) %}
+{% macro beacon_share(institute, case) %}
 <a data-target="#beacon_modal" data-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fab fa-watchman-monitoring"></span>

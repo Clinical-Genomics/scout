@@ -1,6 +1,6 @@
 {% from "variants/utils.html" import tier_cell %}
 
-{% macro beacon_modal(case, current_user) %}
+{% macro beacon_modal(case) %}
 <form method="POST" action="{{url_for('cases.beacon_submit')}}">
 <div class="modal fade" id="beacon_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -30,12 +30,12 @@
             </div>
           </div>
 
-          <!--Variants selection-->
+          <!--VCF files (variant type) selection-->
           <div class="row d-flex justify-content-around align-items-center mt-3">
             <label class="form-check-label" for="vcfselect">
               Variants type:
             </label>
-            <select name="vcf_files" id="vcfselect" class="selectpicker" multiple="multiple" data-width="70%">>
+            <select multiple name="vcf_files" id="vcfselect" class="selectpicker" data-width="70%">>
               {% for file, path in case.vcf_files.items() %}
                 {% if path %}
                   <option value="{{file}}" {{ "selected" if "research" not in file }}>{{file|replace("vcf_", "")|replace("_", " ")|upper}}</option>
@@ -49,7 +49,7 @@
             <label class="form-check-label" for="vcfselect">
               Filter by panel:
             </label>
-            <select name="panels" id="panelselect" class="selectpicker" multiple="multiple" data-width="70%">>
+            <select multiple name="panels" id="panelselect" class="selectpicker" data-width="70%">>
               {% for panel in case.panels %}
                 <option value="{{panel.panel_id}}" {{ "selected" if panel.is_default }}>{{ panel.display_name|truncate(30, True) }} {{ panel.version }} ({{ panel.nr_genes }} genes)</option>
               {% endfor %}
