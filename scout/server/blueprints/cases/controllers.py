@@ -793,6 +793,10 @@ def beacon_add(form):
         flash_color = "success"
         if resp.get("status_code") != 200:
             flash_color = "warning"
+        else:  # update case in database
+            store.case_collection.find_one_and_update(
+                {"_id": case_obj["_id"]}, {"$set": {"beacon_samples": individuals}}
+            )
 
         flash(f"Beacon responded:{resp['message']}", flash_color)
     return
