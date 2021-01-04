@@ -37,7 +37,7 @@
             </label>
             <select multiple name="vcf_files" id="vcfselect" class="selectpicker" data-width="70%">>
               {% for file, path in case.vcf_files.items() %}
-                {% if path %}
+                {% if path and file in ["vcf_snv", "vcf_cancer", "vcf_snv_research", "vcf_cancer_research"] %} <!-- support for sharing SNVs for now -->
                   <option value="{{file}}" {{ "selected" if "research" not in file }}>{{file|replace("vcf_", "")|replace("_", " ")|upper}}</option>
                 {% endif %}
               {% endfor %}

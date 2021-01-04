@@ -22,9 +22,10 @@ HPO_URL = (
     "/artifact/util/annotation/{}"
 )
 HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
+JSON_HEADERS = {"Content-type": "application/json; charset=utf-8", "Accept": "text/json"}
 
 
-def post_request(url, headers, data):
+def post_request_json(url, data):
     """Send a POST request to a URL and return its response
 
     Args:
@@ -34,14 +35,19 @@ def post_request(url, headers, data):
     Returns:
         response(urllib3.response)
     """
-    response = None
+    resp = None
+    json_response = None
     try:
-        LOG.info("Requesting %s", url)
-        response = requests.post(url, headers=headers, data=json.dumps(data))
+        LOG.debug(f"Sending POST request with json data to {url}")
+        resp = requests.post(url, headers=JSON_HEADERS, json=data)
+        json_response = resp.json()
     except Exception as ex:
-        LOG.error(f"An error occurred while sending a POST request to beacon server at:{url}")
-        LOG.error(ex)
-    return response
+        LOG.error(
+            f"An error occurred while sending a POST request to beacon server at:{url} -->{ex}"
+        )
+    json_response["status_code"] = resp.status_code
+    LOG.debug(f"returned response is:{json_response}")
+    return json_response
 
 
 def get_request(url):
