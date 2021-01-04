@@ -33,7 +33,7 @@ def post_request_json(url, data):
         data(dict): data to be sent
 
     Returns:
-        response(urllib3.response)
+        response(dict)
     """
     resp = None
     json_response = None
@@ -47,7 +47,7 @@ def post_request_json(url, data):
         )
     json_response["status_code"] = resp.status_code
     LOG.debug(f"returned response is:{json_response}")
-    return json_response
+    return response
 
 
 def get_request(url):
