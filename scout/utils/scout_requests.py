@@ -26,14 +26,14 @@ JSON_HEADERS = {"Content-type": "application/json; charset=utf-8", "Accept": "te
 
 
 def post_request_json(url, data):
-    """Send a POST request to a URL and return its response
+    """Send json data via POST request and return response
 
     Args:
         url(str): url to send request to
         data(dict): data to be sent
 
     Returns:
-        response(dict)
+        json_response(dict)
     """
     resp = None
     json_response = None
@@ -47,7 +47,7 @@ def post_request_json(url, data):
         )
     json_response["status_code"] = resp.status_code
     LOG.debug(f"returned response is:{json_response}")
-    return response
+    return json_response
 
 
 def get_request(url):
