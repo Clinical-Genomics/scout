@@ -6,60 +6,97 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Submit variants to Beacon</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Beacon submission</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-          <input type="hidden" name="case" value="{{case._id}}">
+          {% if not "beacon" in case %}
+            <!-- form to submit variants to beacon -->
+            <input type="hidden" name="case" value="{{case._id}}">
 
-          <!--Sample selection-->
-          <div class="row d-flex justify-content-center">
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" id="sampleradio1" name="samples" value="affected" checked>
-              <label class="form-check-label" for="sampleradio1">
-                Affected individuals
-              </label>
+            <!--Sample selection-->
+            <div class="row d-flex justify-content-center">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="sampleradio1" name="samples" value="affected" checked>
+                <label class="form-check-label" for="sampleradio1">
+                  Affected individuals
+                </label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="sampleradio2" name="samples" value="all">
+                <label class="form-check-label" for="sampleradio2">
+                  All individuals
+                </label>
+              </div>
             </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" id="sampleradio2" name="samples" value="all">
-              <label class="form-check-label" for="sampleradio2">
-                All individuals
+
+            <!--VCF files (variant type) selection-->
+            <div class="row d-flex justify-content-around align-items-center mt-3">
+              <label class="form-check-label" for="vcfselect">
+                Variants type:
               </label>
+              <select multiple name="vcf_files" id="vcfselect" class="selectpicker" data-width="70%">>
+                {% for file, path in case.vcf_files.items() %}
+                  {% if path and file in ["vcf_snv", "vcf_cancer", "vcf_snv_research", "vcf_cancer_research"] %} <!-- support for sharing SNVs for now -->
+                    <option value="{{file}}" {{ "selected" if "research" not in file }}>{{file|replace("vcf_", "")|replace("_", " ")|upper}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
             </div>
-          </div>
 
-          <!--VCF files (variant type) selection-->
-          <div class="row d-flex justify-content-around align-items-center mt-3">
-            <label class="form-check-label" for="vcfselect">
-              Variants type:
-            </label>
-            <select multiple name="vcf_files" id="vcfselect" class="selectpicker" data-width="70%">>
-              {% for file, path in case.vcf_files.items() %}
-                {% if path and file in ["vcf_snv", "vcf_cancer", "vcf_snv_research", "vcf_cancer_research"] %} <!-- support for sharing SNVs for now -->
-                  <option value="{{file}}" {{ "selected" if "research" not in file }}>{{file|replace("vcf_", "")|replace("_", " ")|upper}}</option>
-                {% endif %}
-              {% endfor %}
-            </select>
-          </div>
-
-          <!--Gene panel selection-->
-          <div class="row d-flex justify-content-around align-items-center mt-3">
-            <label class="form-check-label" for="vcfselect">
-              Filter by panel:
-            </label>
-            <select multiple name="panels" id="panelselect" class="selectpicker" data-width="70%">>
-              {% for panel in case.panels %}
-                <option value="{{panel.panel_id}}" {{ "selected" if panel.is_default }}>{{ panel.display_name|truncate(30, True) }} {{ panel.version }} ({{ panel.nr_genes }} genes)</option>
-              {% endfor %}
-            </select>
-          </div>
-
+            <!--Gene panel selection-->
+            <div class="row d-flex justify-content-around align-items-center mt-3">
+              <label class="form-check-label" for="vcfselect">
+                Filter by panel:
+              </label>
+              <select multiple name="panels" id="panelselect" class="selectpicker" data-width="70%">>
+                {% for panel in case.panels %}
+                  <option value="{{panel.panel_id}}" {{ "selected" if panel.is_default }}>{{ panel.display_name|truncate(30, True) }} {{ panel.version }} ({{ panel.nr_genes }} genes)</option>
+                {% endfor %}
+              </select>
+            </div>
+          <!-- end of form to submit variants to beacon -->
+          <!-- case variants are already in beacon, display info -->
+          {% else %}
+            <div class="d-flex justify-content-center">
+              <table class="table table-sm">
+                <tbody>
+                  <tr>
+                    <td><strong>Created date</strong></td>
+                    <td>{{case.beacon.created_at.strftime('%Y-%m-%d %H:%M:%S')}}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Created by</strong></td>
+                    <td>{{case.beacon.user}}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>VCF samples</strong></td>
+                    <td>{{ case.beacon.samples|join(", ") }}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>VCF filter</strong></td>
+                    <td>{{ "gene panels" if case.beacon.panels|length > 0 else "entire VCF" }}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>VCF types</strong></td>
+                    <td>{{ case.beacon.vcf_files|join(", ") }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Submit</button>
+      <div class="modal-footer d-flex justify-content-around">
+        <div>
+          {% if case.beacon %}
+            <a href="{{url_for('cases.beacon_remove', case_id=case._id)}}" class="btn btn-danger text-white">Remove all case variants from Beacon</a>
+          {% else %}
+            <button type="submit" class="btn btn-primary">Add variants to beacon</button>
+          {% endif %}
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
       </div>
     </div>
   </div>
