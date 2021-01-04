@@ -47,7 +47,7 @@ def post_request_json(url, data):
         )
         return {"message": ex}
 
-    json_response["status_code"] = resp["status_code"]
+    json_response["status_code"] = resp.status_code
     LOG.debug(f"returned response is:{json_response}")
     return json_response
 
