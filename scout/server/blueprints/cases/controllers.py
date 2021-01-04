@@ -777,17 +777,18 @@ def beacon_add(form):
         gene_filter.update(store.panel_to_genes(panel_id=panel, gene_format="hgnc_id"))
 
     # Prepare beacon request data
+    assembly = "GRCh37" if "37" in str(case_obj["genome_build"]) else "GRCh38"
     data = {
-        "dataset_id": case_obj["owner"],
+        "dataset_id": "_".join([case_obj["owner"], assembly]),
         "samples": individuals,
         "genes": {"ids": list(gene_filter), "id_type": "HGNC"},
-        "assemblyId": "GRCh37" if "37" in str(case_obj["genome_build"]) else "GRCh38",
+        "assemblyId": assembly,
     }
 
     # loop over selected VCF files and send an add request to Beacon for each one of them
     for vcf_key in form.getlist("vcf_files"):
         data["vcf_path"] = case_obj["vcf_files"].get(vcf_key)
-        resp = post_request_json(beacon_url, data)
+        resp = post_request_json("/".join([beacon_url, "add"]), data)
 
         flash_color = "success"
         if resp.get("status_code") != 200:
