@@ -36,7 +36,7 @@ def post_request_json(url, data):
         json_response(dict)
     """
     resp = None
-    json_response = None
+    json_response = {}
     try:
         LOG.debug(f"Sending POST request with json data to {url}")
         resp = requests.post(url, headers=JSON_HEADERS, json=data)
@@ -45,7 +45,9 @@ def post_request_json(url, data):
         LOG.error(
             f"An error occurred while sending a POST request to beacon server at:{url} -->{ex}"
         )
-    json_response["status_code"] = resp.status_code
+        return {"message": ex}
+
+    json_response["status_code"] = resp["status_code"]
     LOG.debug(f"returned response is:{json_response}")
     return json_response
 

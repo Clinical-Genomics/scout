@@ -90,7 +90,7 @@ def sma(institute_id, case_name):
 @cases_bp.route("/beacon_submit", methods=["POST"])
 def beacon_submit():
     """Submit case variants to Beacon"""
-    flash(request.form)
+
     controllers.beacon_add(request.form)
     return redirect(request.referrer)
 

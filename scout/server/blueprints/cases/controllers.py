@@ -40,7 +40,7 @@ from scout.parse.matchmaker import (
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.utils import institute_and_case
 from scout.utils.matchmaker import matchmaker_request
-from scout.utils.scout_requests import post_request
+from scout.utils.scout_requests import post_request_json
 
 LOG = logging.getLogger(__name__)
 
@@ -755,27 +755,26 @@ def beacon_add(form):
     Args:
         form(werkzeug.datastructures.ImmutableMultiDict): beacon submission form
 
-    Returns:
-        save_result(dict): number of saved variants (dict values) from each VCF file (dict keys)
     """
+    beacon_url = current_app.config.get("BEACON_URL")
+    if not beacon_url:
+        flash("Could not find Beacon URL in config file")
+        return
 
     case_obj = store.case(form.get("case"))
     # define case individuals (display name, same as in VCF) to filter VCF files with
     individuals = []
     if form.get("samples") == "affected":
         individuals = [
-            ind["display_name"] for ind in case_obj["individuals"] if ind["phenotype"] == 2
+            ind["individual_id"] for ind in case_obj["individuals"] if ind["phenotype"] == 2
         ]
     else:
-        individuals = [ind["display_name"] for ind in case_obj["individuals"]]
-
-    flash(individuals)
+        individuals = [ind["individual_id"] for ind in case_obj["individuals"]]
 
     # define genes to filter VCF files with
     gene_filter = set()
     for panel in form.getlist("panels"):
         gene_filter.update(store.panel_to_genes(panel_id=panel, gene_format="hgnc_id"))
-    flash(str(gene_filter))
 
     # Prepare beacon request data
     data = {
@@ -784,18 +783,17 @@ def beacon_add(form):
         "genes": {"ids": list(gene_filter), "id_type": "HGNC"},
         "assemblyId": "GRCh37" if "37" in str(case_obj["genome_build"]) else "GRCh38",
     }
-    headers = {"Content-Type": "application/json"}
-    beacon_url = current_app.config.get("BEACON_URL")
 
     # loop over selected VCF files and send an add request to Beacon for each one of them
     for vcf_key in form.getlist("vcf_files"):
         data["vcf_path"] = case_obj["vcf_files"].get(vcf_key)
-        resp = post_request(beacon_url, headers, data)
-        if resp.status_code != 200:
-            flash(str(resp.json), "danger")
-        else:
-            flash("YES")
+        resp = post_request_json(beacon_url, data)
 
+        flash_color = "success"
+        if resp.get("status_code") != 200:
+            flash_color = "warning"
+
+        flash(f"Beacon responded:{resp['message']}", flash_color)
     return
 
 
