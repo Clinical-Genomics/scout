@@ -749,8 +749,37 @@ def multiqc(store, institute_id, case_name):
     return dict(institute=institute_obj, case=case_obj)
 
 
+def beacon_remove(case_id):
+    """Remove all variants from a case in Beacon by handling a POST request to the /apiv1.0/delete Beacon endpoint.
+
+    Args:
+        case_id(str): A case _id
+
+    """
+    LOG.error("HERE BITCHES")
+    beacon_url = current_app.config.get("BEACON_URL")
+    if not beacon_url:
+        flash("Could not find Beacon URL in config file")
+        return
+
+    case_obj = store.case(case_id=case_id)
+
+    # Prepare beacon request data
+    assembly = "GRCh37" if "37" in str(case_obj["genome_build"]) else "GRCh38"
+    dataset_id = "_".join([case_obj["owner"], assembly])
+    samples = [ind["individual_id"] for ind in case_obj["individuals"]]
+
+    data = {"dataset_id": dataset_id, "samples": samples}
+    resp = post_request_json("/".join([beacon_url, "delete"]), data)
+    LOG.error("DONE BITCHES")
+
+    flash(f"Beacon responded:{resp['message']}")
+    return
+
+
 def beacon_add(form):
-    """Save variants from one or more case samples to the Beacon server
+    """Save variants from one or more case samples to the Beacon server.
+       Handle a POST request to the /apiv1.0/add Beacon endpoint
 
     Args:
         form(werkzeug.datastructures.ImmutableMultiDict): beacon submission form
@@ -761,8 +790,8 @@ def beacon_add(form):
         flash("Could not find Beacon URL in config file")
         return
 
-    case_obj = store.case(form.get("case"))
-    # define case individuals (display name, same as in VCF) to filter VCF files with
+    case_obj = store.case(case_id=form.get("case"))
+    # define case individuals (individual_id, same as in VCF) to filter VCF files with
     individuals = []
     if form.get("samples") == "affected":
         individuals = [
@@ -775,6 +804,14 @@ def beacon_add(form):
     gene_filter = set()
     for panel in form.getlist("panels"):
         gene_filter.update(store.panel_to_genes(panel_id=panel, gene_format="hgnc_id"))
+
+    submission = {
+        "created_at": datetime.datetime.now(),
+        "user": current_user.email,
+        "samples": individuals,
+        "panels": form.getlist("panels"),
+        "vcf_files": [],
+    }
 
     # Prepare beacon request data
     assembly = "GRCh37" if "37" in str(case_obj["genome_build"]) else "GRCh38"
@@ -794,11 +831,16 @@ def beacon_add(form):
         if resp.get("status_code") != 200:
             flash_color = "warning"
         else:  # update case in database
-            store.case_collection.find_one_and_update(
-                {"_id": case_obj["_id"]}, {"$set": {"beacon_samples": individuals}}
-            )
+            if "Number of inserted variants for samples" not in resp["message"]:
+                continue
+            submission["vcf_files"].append(vcf_key)
 
         flash(f"Beacon responded:{resp['message']}", flash_color)
+
+    if len(submission["vcf_files"]) > 0:
+        store.case_collection.find_one_and_update(
+            {"_id": case_obj["_id"]}, {"$set": {"beacon": submission}}
+        )
     return
 
 

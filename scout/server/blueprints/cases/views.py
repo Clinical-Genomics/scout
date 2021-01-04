@@ -95,6 +95,14 @@ def beacon_submit():
     return redirect(request.referrer)
 
 
+@cases_bp.route("/beacon_remove/<case_id>", methods=["GET"])
+def beacon_remove(case_id):
+    """Remove all variants from a case from Beacon"""
+
+    controllers.beacon_remove(case_id)
+    return redirect(request.referrer)
+
+
 @cases_bp.route("/<institute_id>/<case_name>/mme_matches", methods=["GET", "POST"])
 @templated("cases/matchmaker.html")
 def matchmaker_matches(institute_id, case_name):
