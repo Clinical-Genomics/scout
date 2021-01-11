@@ -95,14 +95,16 @@ scout setup database
 
 for more info, run `scout --help`
 
-> If you intent to use authentication, make sure you are using a Google email!
-
-The previous command setup the database with a curated collection of gene definitions with links to OMIM along with HPO phenotype terms. Now we will load some example data. Scout expects the analysis to be accomplished using various gene panels so let's load one and then our first analysis case:
+The previous command initializes the database with a curated collection of gene definitions with links to OMIM along with HPO phenotype terms. Now we will load some example data. Scout expects the analysis to be accomplished using various gene panels so let's load one and then our first analysis case:
 
 ```bash
 scout load panel scout/demo/panel_1.txt
 scout load case scout/demo/643594.config.yaml
 ```
+
+## Set up a user log in system
+
+
 
 ## Integration with chanjo for coverage report visualization
 
@@ -135,19 +137,11 @@ MONGO_DBNAME = 'scout'
 MONGO_USERNAME = 'testUser'
 MONGO_PASSWORD = 'testPass'
 
-# enable user authentication using Google OAuth
+# enable user authentication using Google oauth2
 GOOGLE = dict(
-		consumer_key='CLIENT_ID',
-		consumer_secret='CLIENT_SECRET',
-		base_url='https://www.googleapis.com/oauth2/v1/',
-		authorize_url='https://accounts.google.com/o/oauth2/auth',
-		request_token_url=None,
-		request_token_params={
-				'scope': ("https://www.googleapis.com/auth/userinfo.profile "
-						  "https://www.googleapis.com/auth/userinfo.email"),
-		},
-		access_token_url='https://accounts.google.com/o/oauth2/token',
-		access_token_method='POST'
+   client_id="client_id_string.apps.googleusercontent.com",
+   client_secret="client_secret_string",
+   discovery_url="https://accounts.google.com/.well-known/openid-configuration"
 )
 
 # enable Phenomizer gene predictions from phenotype terms
@@ -187,13 +181,12 @@ SCOUT_CONFIG=./config.py gunicorn --workers 4 --bind 0.0.0.0:8080 scout.server.a
 For added security and flexibility, we recommend a reverse proxy solution like NGINX.
 
 ### Setting up a user login system
-
 Scout currently supports 3 mutually exclusive types of login:
 - Google authentication via OpenID Connect
-- LDAP authentication]
+- LDAP authentication
 - Simple authentication using userid and password
 
-A description on how to set up an advanced login system is available in the [admin guide](docs/admin-guide/login-system.md)
+The first 2 solutions are both suitable for a production server. A description on how to set up an advanced login system is available in the [admin guide](docs/admin-guide/login-system.md)
 
 
 ### Integration with MatchMaker Exchange
