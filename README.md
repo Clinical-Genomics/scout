@@ -102,10 +102,6 @@ scout load panel scout/demo/panel_1.txt
 scout load case scout/demo/643594.config.yaml
 ```
 
-## Set up a user log in system
-
-
-
 ## Integration with chanjo for coverage report visualization
 
 Scout may be configured to visualize coverage reports produced by [Chanjo][chanjo]. Instructions on
@@ -137,7 +133,7 @@ MONGO_DBNAME = 'scout'
 MONGO_USERNAME = 'testUser'
 MONGO_PASSWORD = 'testPass'
 
-# enable user authentication using Google oauth2
+# enable user authentication using Google OAuth 2.0
 GOOGLE = dict(
    client_id="client_id_string.apps.googleusercontent.com",
    client_secret="client_secret_string",
@@ -182,7 +178,7 @@ For added security and flexibility, we recommend a reverse proxy solution like N
 
 ### Setting up a user login system
 Scout currently supports 3 mutually exclusive types of login:
-- Google authentication via OpenID Connect
+- Google authentication via OpenID Connect (OAuth 2.0)
 - LDAP authentication
 - Simple authentication using userid and password
 
