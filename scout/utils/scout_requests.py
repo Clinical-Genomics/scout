@@ -22,15 +22,15 @@ HPO_URL = (
     "/artifact/util/annotation/{}"
 )
 HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
-JSON_HEADERS = {"Content-type": "application/json; charset=utf-8", "Accept": "text/json"}
 
 
-def post_request_json(url, data):
+def post_request_json(url, data, headers):
     """Send json data via POST request and return response
 
     Args:
         url(str): url to send request to
         data(dict): data to be sent
+        headers(dict): request headers
 
     Returns:
         json_response(dict)
@@ -39,7 +39,7 @@ def post_request_json(url, data):
     json_response = {}
     try:
         LOG.debug(f"Sending POST request with json data to {url}")
-        resp = requests.post(url, headers=JSON_HEADERS, json=data)
+        resp = requests.post(url, headers=headers, json=data)
         json_response = resp.json()
     except Exception as ex:
         LOG.error(
