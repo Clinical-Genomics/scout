@@ -42,10 +42,7 @@ def post_request_json(url, data, headers):
         resp = requests.post(url, headers=headers, json=data)
         json_response = resp.json()
     except Exception as ex:
-        LOG.error(
-            f"An error occurred while sending a POST request to beacon server at:{url} -->{ex}"
-        )
-        return {"message": ex}
+        return {"message": f"An error occurred while sending a POST request to url {url} -> {ex}"}
 
     json_response["status_code"] = resp.status_code
     LOG.debug(f"returned response is:{json_response}")
