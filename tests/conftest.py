@@ -1513,6 +1513,7 @@ def mocked_beacon():
         def __init__(self):
             self.status_code = 200
             self.url = "http://beacon_url"
+            self.token = "xyz"
 
         def json(self):
             return {"message": "OK"}

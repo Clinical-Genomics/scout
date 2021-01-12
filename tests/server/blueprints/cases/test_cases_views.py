@@ -724,7 +724,7 @@ def test_beacon_submit(app, case_obj, monkeypatch, mocked_beacon):
 
     # GIVEN an initialized app containing the right config settings
     current_app.config["BEACON_URL"] = mocked_beacon.url
-    current_app.config["BEACON_TOKEN"] = "xyz"
+    current_app.config["BEACON_TOKEN"] = mocked_beacon.token
 
     with app.test_client() as client:
         # GIVEN that the user could be logged in
@@ -768,7 +768,7 @@ def test_beacon_remove(app, case_obj, monkeypatch, mocked_beacon):
 
     # GIVEN an initialized app containing the right config settings
     current_app.config["BEACON_URL"] = mocked_beacon.url
-    current_app.config["BEACON_TOKEN"] = "xyz"
+    current_app.config["BEACON_TOKEN"] = mocked_beacon.token
 
     with app.test_client() as client:
         # GIVEN that the user could be logged in
