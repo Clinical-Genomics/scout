@@ -1076,7 +1076,6 @@ def variant_obj(request, parsed_variant):
 @pytest.fixture(scope="function")
 def cyvcf2_variant():
     """Return a variant object"""
-    print("")
 
     class Cyvcf2Variant(object):
         def __init__(self):
@@ -1499,6 +1498,27 @@ def genemap_handle(request, genemap_file):
     """Get a file handle to a mim2genes file"""
 
     return get_file_handle(genemap_file)
+
+
+#############################################################
+###################### Beacon Fixtures ######################
+#############################################################
+
+
+@pytest.fixture(scope="function")
+def mocked_beacon():
+    """A success response from a mocked Beacon server"""
+
+    class MockBeaconResponse:
+        def __init__(self):
+            self.status_code = 200
+            self.url = "http://beacon_url"
+
+        def json(self):
+            return {"message": "OK"}
+
+    resp = MockBeaconResponse()
+    return resp
 
 
 #############################################################

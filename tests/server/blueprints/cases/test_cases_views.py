@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
-from flask import url_for, current_app, get_template_attribute
+import requests
+from flask import url_for, current_app, jsonify
 from flask_login import current_user
 
 from scout.demo import delivery_report_path
@@ -473,7 +474,7 @@ def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission, user_o
     store.update_case(case_obj)
 
     res = store.case_collection.find({"mme_submission": {"$exists": True}})
-    assert sum(1 for i in res) == 1
+    assert res
 
     # Monkeypatch response with MME matches
     def mock_matches(*args, **kwargs):
@@ -684,3 +685,106 @@ def test_omimterms(app, test_omim_term):
 
         # containing the OMIM term
         assert test_omim_term["_id"] in str(resp.data)
+
+
+def test_beacon_submit_wrong_config(app, case_obj):
+    """Test saving variants to a Beacon server when Beacon connection parameters are not set"""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        form_data = {
+            "case": case_obj["_id"],
+            "samples": "affected",
+            "vcf_files": ["vcf_snv_research", "vcf_snv"],
+        }
+        # WHEN case page is loaded
+        resp = client.post(
+            url_for("cases.beacon_submit"),
+            data=form_data,
+        )
+        # THEN it should redirect to case page
+        assert resp.status_code == 302
+        updated_case = store.case_collection.find_one()
+        # and submission should not be saved in case object
+        assert "beacon" not in updated_case
+
+
+def test_beacon_submit(app, case_obj, monkeypatch, mocked_beacon):
+    """Test submitting variants to a Beacon server"""
+
+    # GIVEN a mocked Beacon server
+    def mock_response(*args, **kwargs):
+        return mocked_beacon
+
+    monkeypatch.setattr(requests, "post", mock_response)
+
+    # GIVEN an initialized app containing the right config settings
+    current_app.config["BEACON_URL"] = mocked_beacon.url
+    current_app.config["BEACON_TOKEN"] = "xyz"
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        form_data = {
+            "case": case_obj["_id"],
+            "samples": "affected",
+            "vcf_files": ["vcf_snv_research", "vcf_snv"],
+        }
+        # WHEN users submits a POST request to Beacon
+        resp = client.post(
+            url_for("cases.beacon_submit"),
+            data=form_data,
+        )
+        # THEN it should redirect to case page
+        assert resp.status_code == 302
+        updated_case = store.case_collection.find_one()
+        # and submissions details should be saved in case object
+        assert "beacon" in updated_case
+        assert updated_case["beacon"]["samples"]
+        assert updated_case["beacon"]["vcf_files"] == form_data["vcf_files"]
+
+
+def test_beacon_remove(app, case_obj, monkeypatch, mocked_beacon):
+    """Test removing variants submitted to Beacon for test case"""
+
+    # GIVEN a mocked Beacon server
+    def mock_response(*args, **kwargs):
+        return mocked_beacon
+
+    monkeypatch.setattr(requests, "post", mock_response)
+
+    # GIVEN a case with variants saved to Beacon
+    store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]}, {"$set": {"beacon": {"samples": ["ADM1059A2"]}}}
+    )
+    case_obj = store.case_collection.find_one()
+    assert case_obj["beacon"]
+
+    # GIVEN an initialized app containing the right config settings
+    current_app.config["BEACON_URL"] = mocked_beacon.url
+    current_app.config["BEACON_TOKEN"] = "xyz"
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN users submits a GET request to remove data from Beacon
+        resp = client.get(
+            url_for(
+                "cases.beacon_remove",
+                case_id=case_obj["_id"],
+            )
+        )
+        # THEN it should redirect to case page
+        assert resp.status_code == 302
+
+        # And case page should no more have an associated Beacon submission
+        updated_case = store.case_collection.find_one()
+        assert "beacon" not in updated_case
