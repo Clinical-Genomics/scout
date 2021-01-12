@@ -785,6 +785,6 @@ def test_beacon_remove(app, case_obj, monkeypatch, mocked_beacon):
         # THEN it should redirect to case page
         assert resp.status_code == 302
 
-        # And case page should no more have an associated Beacon submission
+        # And case should no more have an associated Beacon submission
         updated_case = store.case_collection.find_one()
         assert "beacon" not in updated_case
