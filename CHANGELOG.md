@@ -16,7 +16,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bypass igv.js CORS check using `https://github.com/Rob--W/cors-anywhere`
 - Documentation on default and custom IGV.js tracks (admin docs)
 - Hide dismissed variants in variants pages and variants export function
-
 ### Fixed
 - Bugfix: unused `chromgraph_prefix |tojson` removed
 - Freeze coloredlogs temporarily
@@ -27,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bug in gene variants search when providing similar case display name
 - Delete unused file `userpanel.py`
 - Primary transcripts in variant overview and general report
+- Google OAuth2 login setup in README file
 ### Changed
 - Save case variants count in case document and not in sessions
 - Style of gene panels multiselect on case page
