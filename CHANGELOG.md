@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bug in gene variants search when providing similar case display name
 - Delete unused file `userpanel.py`
 - Primary transcripts in variant overview and general report
+- Google OAuth2 login setup in README file
 - Javascript error in case page
 ### Changed
 - Save case variants count in case document and not in sessions
