@@ -1,7 +1,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% from "utils.html" import comments_table %}
 
-{% macro dismiss_variants_block(dismiss_variant_options, case_id) %}
+{% macro dismiss_variants_block(dismiss_variant_options, institute, case) %}
 <div class="row d-flex align-items-center mb-3">
   <div class="col-2 ml-3">Dismiss selected variants:</div>
   <div class="col-5 align-items-start">
@@ -15,7 +15,7 @@
     <button type="submit" disabled name="dismiss_submit" id="dismiss_submit" class="btn btn-sm btn-primary form-control">Dismiss variants</button>
   </div>
   <div class="col-2">
-    <a role="button" href='{{ url_for("variants.reset_dismissed", case_id=case_id )}}' class="btn btn-warning">Reset dismissed</a>
+    <a role="button" href='{{ url_for("variants.reset_dismissed", institute_id=institute._id, case_name=case.display_name )}}' class="btn btn-warning text-dark">Reset dismissed</a>
   </div>
 </div>
 {% endmacro %}

@@ -44,10 +44,12 @@ variants_bp = Blueprint(
 )
 
 
-@variants_bp.route("/reset_dismissed/<case_id>", methods=["GET"])
-def reset_dismissed(case_id):
+@variants_bp.route("/<institute_id>/<case_name>/reset_dismissed", methods=["GET"])
+def reset_dismissed(institute_id, case_name):
     """Reset all dismissed variants for a case"""
-    return "HERE BITCHES"
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    controllers.reset_all_dimissed(store, institute_obj, case_obj)
+    return redirect(request.referrer)
 
 
 @variants_bp.route("/<institute_id>/<case_name>/variants", methods=["GET", "POST"])
