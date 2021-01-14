@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update IGV.js to latest (v2.7.4)
 - Bypass igv.js CORS check using `https://github.com/Rob--W/cors-anywhere`
 - Documentation on default and custom IGV.js tracks (admin docs)
+- Lock phenomodels so they're editable by admins only
 ### Fixed
 - Bugfix: unused `chromgraph_prefix |tojson` removed
 - Freeze coloredlogs temporarily
@@ -30,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Save case variants count in case document and not in sessions
 - Style of gene panels multiselect on case page
+- Collapse/expand main HPO checkboxes in phenomodel preview
 - Show canonical transcript as hgnc primary on case report
 
 ## [4.27]
