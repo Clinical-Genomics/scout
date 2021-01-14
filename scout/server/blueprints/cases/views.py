@@ -1019,7 +1019,7 @@ def host_image_aux(institute_id, case_name, individual, image, key):
                 return send_file(img_path)
             except Exception as err:
                 # redirect to missing file icon upon error
-                LOG.debug("Error: {}".format(err))
+                LOG.warning("send_file() exception: {}".format(err))
                 return redirect("/public/static/file-earmark-x.svg")
 
 
