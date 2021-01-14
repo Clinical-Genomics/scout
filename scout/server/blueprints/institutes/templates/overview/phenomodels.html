@@ -78,22 +78,24 @@
 
 
 {% macro confirm_delete() %}
-<form action="{{ url_for('overview.remove_phenomodel') }}" method="POST">
-  <input id="model_id" type="hidden" value="" name="model_id">
-  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-body">
-          <p>Confirm delete this model?</p>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-danger">Delete</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+  {% for model in phenomodels %}
+    <form action="{{ url_for('overview.remove_phenomodel') }}" method="POST">
+      <input id="model_id" type="hidden" value="{{model._id}}" name="model_id">
+      <div class="modal fade" id="deleteModal-{{model._id}}" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-body">
+              <p>Confirm delete this model?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-danger">Delete</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-</form>
+    </form>
+  {% endfor %}
 {% endmacro %}
 
 {% macro create_model_macro() %}
@@ -145,7 +147,7 @@
               <td>{{model.updated.strftime('%Y-%m-%d')}}</td>
               <td style="width:30%">{{model.admins|join(", ") or "-"}}</th>
               <td>
-                <button type="button" class="btn btn-danger btn-sm removeModel" data-id="{{model._id}}" aria-hidden="true" data-toggle="modal" data-target="#deleteModal"><i class="fa fa-trash-o"></i></button>
+                <button type="button" class="btn btn-danger btn-sm removeModel" data-id="{{model._id}}" aria-hidden="true" data-toggle="modal" data-target="#deleteModal-{{model._id}}"><i class="fa fa-trash-o"></i></button>
               </td>
               {% if model.admins|length == 0 or current_user.email in model.get("admins",[]) %}
                 <td>
