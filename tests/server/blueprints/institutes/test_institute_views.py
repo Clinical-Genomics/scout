@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 from flask import url_for
+from flask_login import current_user
 from scout.server.extensions import store
 
 TEST_SUBPANEL = dict(
@@ -81,6 +82,66 @@ def test_phenomodel_GET(app, user_obj, institute_obj):
             )
         )
         assert "Test model" in str(resp.data)
+
+
+def test_phenomodel_lock(app, user_obj, institute_obj):
+    """Test the endpoint to lock a phenomodel and make it editable only by admins"""
+
+    # GIVEN an institute with a phenotype model
+    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
+    model = store.phenomodel_collection.find_one()
+    assert "admins" not in model
+
+    admins = ["user1@email", "user2@email"]
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+
+        # WHEN the user locks model up using two admins
+        form_data = dict(model_id=model["_id"], lock="", user_admins=admins)
+        resp = client.post(
+            url_for("overview.lock_phenomodel"),
+            data=form_data,
+        )
+        # Then the page should redirect
+        assert resp.status_code == 302
+        # And current user + admins emails will be registered as the emails of the admins
+        locked_model = store.phenomodel_collection.find_one()
+        assert locked_model["admins"] == [current_user.email] + admins
+
+
+def test_phenomodel_unlock(app, user_obj, institute_obj):
+    """Test the endpoint to unlock a phenomodel and make it editable only by all users"""
+
+    # GIVEN an institute with phenotype model
+    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
+    model = store.phenomodel_collection.find_one()
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+        # Given that the phenomodel is locked and current user is admin
+        model["admins"] = [current_user.email]
+        store.update_phenomodel(model["_id"], model)
+        locked_model = store.phenomodel_collection.find_one()
+        assert locked_model["admins"] == [current_user.email]
+
+        # When the test_phenomodel_lock endpoint is used to unlock the model
+        form_data = dict(
+            model_id=model["_id"],
+        )
+        resp = client.post(
+            url_for("overview.lock_phenomodel"),
+            data=form_data,
+        )
+        # Then the page should redirect
+        assert resp.status_code == 302
+        # And the model will have no admins
+        unlocked_model = store.phenomodel_collection.find_one()
+        assert unlocked_model["admins"] == []
 
 
 def test_phenomodel_POST_rename_model(app, user_obj, institute_obj):
