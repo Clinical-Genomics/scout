@@ -29,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Save case variants count in case document and not in sessions
 - Style of gene panels multiselect on case page
+- Replaced GQ (Genotype quality) with VAF (Variant allele frequency) in cancer variants GT table
 
 
 ## [4.27]
