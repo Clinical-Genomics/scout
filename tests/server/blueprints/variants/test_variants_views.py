@@ -102,6 +102,7 @@ def test_bulk_dismiss_variants(app, institute_obj, case_obj):
         form_data = {
             "dismiss": snv_variant["_id"],
             "dismiss_choices": dismiss_choices,
+            "dismiss_submit": "",
         }
 
         resp = client.post(
