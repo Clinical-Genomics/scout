@@ -39,11 +39,13 @@
                   <td class="text-right"><small>N/A</small></td>
               {% endif %}
               {% if variant.category == "cancer" %}
+                {% set cancer_var = namespace() %}
                 {% if sample.allele_depths[1] != -1 %}
-                  <td class="text-right">{{ (sample.allele_depths[1]/sample.read_depth)|round(4) }}</td>
+                  {% set cancer_var.vaf = (sample.allele_depths[1]/sample.read_depth)|round(4) %}
                 {% else %}
-                  <td class="text-right">N/A</td>
+                  {% set cancer_var.vaf = "N/A" %}
                 {% endif %}
+                <td class="text-right">{{ cancer_var.vaf }}</td>
               {% else %}
                 <td class="text-right">{{ sample.genotype_quality }}</td>
               {% endif %}
