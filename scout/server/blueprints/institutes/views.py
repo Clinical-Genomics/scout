@@ -343,20 +343,51 @@ def advanced_phenotypes(institute_id):
     """Show institute-level advanced phenotypes"""
     institute_obj = institute_and_case(store, institute_id)
 
+    # Get a list of all users which are registered to this institute or collaborate with it
+    collaborators = set()
+    for inst_id in [institute_id] + institute_obj.get("collaborators", []):
+        for user in store.users(institute=inst_id):
+            if (
+                user["email"] == current_user.email
+            ):  # Do not include current user among collaborators
+                continue
+            collaborators.add((user["email"], user["name"], inst_id))
+
     if request.form.get("create_model"):  # creating a new phenomodel
         store.create_phenomodel(
             institute_id, request.form.get("model_name"), request.form.get("model_desc")
         )
 
     pheno_form = PhenoModelForm(request.form or None)
-    phenomodels = store.phenomodels(institute_id=institute_id)
+    phenomodels = list(store.phenomodels(institute_id=institute_id))
 
     data = {
         "institute": institute_obj,
+        "collaborators": collaborators,
         "pheno_form": pheno_form,
         "phenomodels": phenomodels,
     }
     return data
+
+
+@blueprint.route("/advanced_phenotypes/lock", methods=["POST"])
+def lock_phenomodel():
+    """Lock or unlock a specific phenomodel for editing"""
+    form = request.form
+    model_id = form.get("model_id")
+    phenomodel_obj = store.phenomodel(model_id)
+    if phenomodel_obj is None:
+        return redirect(request.referrer)
+
+    phenomodel_obj["admins"] = []
+    if (
+        "lock" in form
+    ):  # lock phenomodel for all users except current user and specified collaborators
+        phenomodel_obj["admins"] = [current_user.email] + form.getlist("user_admins")
+
+    # update phenomodels admins:
+    store.update_phenomodel(model_id, phenomodel_obj)
+    return redirect(request.referrer)
 
 
 @blueprint.route("/advanced_phenotypes/remove", methods=["POST"])

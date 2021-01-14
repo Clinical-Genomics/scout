@@ -55,6 +55,7 @@ class PhenoModelHandler(object):
                     "description": model_obj["description"],
                     "subpanels": model_obj.get("subpanels", {}),
                     "updated": datetime.datetime.now(),
+                    "admins": model_obj.get("admins", []),
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER,
