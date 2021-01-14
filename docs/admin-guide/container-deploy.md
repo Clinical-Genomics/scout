@@ -55,7 +55,7 @@ This secret should be edited to include the real scout-username and scout-passwo
 `echo -n "some string" | base64`
 
 1. **Create the above secrets** with the command:
-`kubectl apply -f secrets.yaml`
+`kubectl apply -f scout/containers/kubernetes/secrets.yaml`
 
 1. Create s ConfigMap for passing setup parameters to Scout pods. This ConfigMap will contain all parameters specified by a python config file. Basic ConfigMap allowing to authenticate to mongodb:
 ```
@@ -74,11 +74,11 @@ data:
 The config parameters should be modified according to the MongoDB connection settings on the server.
 
 1. **Create the configmap** with the command:
-`kubectl apply -f scout-configmap.yaml`
+`kubectl apply -f scout/containers/kubernetes/scout-configmap.yaml`
 
 1. Create a Deployment for mongo and a relative service that will run on port 27017. Note that the example file (mongo.yaml) is running a lightweight version image of Mongo (vepo/mongo) and not the official Mongo image. This container can be replaced with any other application that serves a MongoDB using authentication.
 Run the Deployment and the service:
-`kubectl apply -f mongo.yaml`
+`kubectl apply -f scout/containers/kubernetes/mongo.yaml`
 
 ### Deploying the Scout command line
 To create a running container with the Scout command line can be used a Docker image stored either locally (in that case the Scout Dockerfile should be built first) or on the Docker Hub. This example pulls the latest from Docker Hub to build an interactive pod. Define a scout-cli.yaml file with the following content:
@@ -105,7 +105,7 @@ spec:
 Note that the configMap representing the config file is mapped inside "volumes". This is necessary to make the content of the config file available to the pod.
 
 1. **Create the pod** with the following command:
-`kubectl apply -f scout-cli.yaml`
+`kubectl apply -f scout/containers/kubernetes/scout-cli.yaml`
 
 1. You can launch a shell from this running container using the command:
 `kubectl exec -it scout-cli -- bash`
@@ -167,7 +167,7 @@ spec:
       nodePort: 30000
 ```
 1. **create a Scout web server Deployment** with the command:
-`kubectl apply -f scout-web.yaml`
+`kubectl apply -f scout/containers/kubernetes/scout-web.yaml`
 
 ### Overview of the running containers and starting the minikube service
 1. After the steps above a number of container should be running on the virtual machine. An overview of all containers together with accessory services and itams will be available using the command:
