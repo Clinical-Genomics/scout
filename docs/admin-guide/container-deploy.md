@@ -177,6 +177,6 @@ kubectl get all
 
 1. Start the scout web app service using the command:
 ```
-Minikube service scout-web-service
+minikube service scout-web-service
 ```
 This way the app will be accessible in the browser
