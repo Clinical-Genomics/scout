@@ -1034,7 +1034,9 @@ def host_image_aux(institute_id, case_name, individual, image, key):
                 img_path = abs_path + image.split("-")[-1]  # get suffix
                 return send_file(img_path)
             except Exception as err:
-                LOG.debug("Error : {}".format(err))
+                # redirect to missing file icon upon error
+                LOG.warning("send_file() exception: {}".format(err))
+                return redirect("/public/static/file-earmark-x.svg")
 
 
 def _generate_csv(header, lines):
