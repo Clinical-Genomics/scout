@@ -767,9 +767,9 @@ def remove_case_group(store, current_user, institute_id, case_name, case_group):
     )
 
     current_group_cases = store.case_group_ids(case_group)
+
     if current_group_cases == []:
-        self.case_group_collection.find_one_and_delete({"_id": case_group})
-        LOG.debug("Case group was empty and hence deleted.")
+        store.remove_case_group(case_group)
 
     return updated_case
 
