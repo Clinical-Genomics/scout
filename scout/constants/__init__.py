@@ -64,6 +64,7 @@ COLLECTIONS = [
     "institute",
     "event",
     "case",
+    "case_group",
     "gene_panel",
     "hpo_term",
     "disease_term",

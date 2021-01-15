@@ -36,7 +36,7 @@
 
 {% macro comments_panel(institute, case, current_user, comments, variant_id=None) %}
   <div class="card panel-default">
-    <div class="panel-heading" id="comments">Comments</div>
+    <div class="panel-heading" id="comments"><span class="fa fa-comment"></span>&nbsp;Comments</div>
     <div class="card-body">
       <div class="list-group" style="max-height:200px; overflow-y: scroll;">
         {% for comment in comments %}
@@ -161,7 +161,7 @@
 
 {% macro pedigree_panel(case) %}
   <div class="card panel-default">
-    <div class="panel-heading">Pedigree</div>
+    <div class="panel-heading"><span class="fa fa-sitemap">&nbsp;Pedigree</div>
     <div class="card-body">
       <div class="table-responsive">
       {% if case.individuals|length == 1 %}

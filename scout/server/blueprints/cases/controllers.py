@@ -75,6 +75,11 @@ def case(store, institute_obj, case_obj):
         individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
         case_obj["individual_ids"].append(individual["individual_id"])
 
+        if case_obj.get("group"):
+            case_obj["group"] = {}
+            for group in case.group:
+                case_obj["group"][group] = store.case_group_ids(group)
+
     case_obj["assignees"] = [store.user(user_email) for user_email in case_obj.get("assignees", [])]
 
     # Fetch the variant objects for suspects and causatives

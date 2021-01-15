@@ -99,6 +99,7 @@ class MongoAdapter(
         self.institute_collection = database.institute
         self.event_collection = database.event
         self.case_collection = database.case
+        self.case_group_collection = database.case_group
         self.panel_collection = database.gene_panel
         self.hpo_term_collection = database.hpo_term
         self.disease_term_collection = database.disease_term

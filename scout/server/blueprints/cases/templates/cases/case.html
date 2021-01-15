@@ -218,7 +218,7 @@
 
 {% macro synopsis_panel() %}
   <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Free text field. Write a summary about the case! Markdown format">Synopsis</div>
+    <div data-toggle='tooltip' class="panel-heading" title="Free text field. Write a summary about the case! Markdown format"><i class="fa fa-id-card-o"></i>&nbsp;Synopsis</div>
       <div class="card-body">
         {{ case.synopsis|markdown if case.synopsis else 'Nothing written yet...' }}
       </div>
@@ -232,11 +232,21 @@
 
 {% macro group_panel(case) %}
   <div class="card panel-default">
-    {% for group in case.group %}
-      <li>{{ group }}
-    {% endfor %}
+    <div data-toggle='tooltip' class="panel-heading" title=""><span class="fa fa-users"></span>&nbsp;Group connected cases</div>
+    <div class="card-body">
+      <ul>
+      {% for group in case.group %}
+        <li>
+          <span class="fa fa-users"></span>{{ group }}<a href="" class="btn btn-danger btn-xs text-white"><span class="fa fa-trash-o  text-white"></span>Remove group
+          <span class="fa fa-plus-square-o text-white"></span>Add to group
+          <span class="fa fa-minus-square-o text-white"></span>Remove from group
+        </li>
+      {% endfor %}
+      </ul>
+      <a href="" class="btn btn-primary btn-xs text-white"><span class="fa fa-user-plus text-white mr-3"></span>Add group</a>
+    </div>
   </div>
-{% endmarcro %}
+{% endmacro %}
 
 <!-- Iterate through Individuals, if chromograph_files is presenet add a panel for images -->
 {% macro insert_multi_image_panel() %}
