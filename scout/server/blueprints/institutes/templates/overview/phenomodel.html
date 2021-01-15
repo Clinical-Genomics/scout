@@ -32,6 +32,8 @@
   </li>
 {% endblock %}
 
+{% set disable = phenomodel.admins|length > 0 and current_user.email not in phenomodel.admins %}
+
 {% macro phenomodel_page() %}
 <div class="card mt-3">
   <div style="padding: 0;" class="card-body mt-3 ml-3 mr-3">
@@ -45,7 +47,7 @@
           {{ pheno_form.model_desc(class="form-control", placeholder="Description (optional)") }}
         </div>
         <div class="col-1">
-          <button type="submit" value="update" name="update_model" class="btn btn-primary">update</button
+          <button type="submit" value="update" name="update_model" class="btn btn-primary" {{ "disabled" if disable}}>update</button
         </div>
       </div>
       <h6 class="text-muted ml-3 mt-3">created: {{phenomodel.created.strftime('%Y-%m-%d')}} - updated: {{phenomodel.updated.strftime('%Y-%m-%d')}}</h6>
@@ -58,8 +60,8 @@
   <div class="d-flex justify-content-center">
     <div class="btn-group btn-group-toggle" data-toggle="buttons" >
       <button class="btn-secondary btn-sm" aria-hidden="true" data-toggle="modal" data-target="#preview">Preview</button>
-      <button class="btn btn-primary btn-sm" onclick="showDiv('new_subpanel','add_terms')">Create a new subpanel</button>
-      <button class="btn btn-primary btn-sm" onclick="showDiv('add_terms','new_subpanel')" {{ "disabled" if not phenomodel.subpanels }}>Add terms to an existing subpanel</button>
+      <button class="btn btn-primary btn-sm" onclick="showDiv('new_subpanel','add_terms')" {{ "disabled" if disable }}>Create a new subpanel</button>
+      <button class="btn btn-primary btn-sm" onclick="showDiv('add_terms','new_subpanel')" {{ "disabled" if disable or not phenomodel.subpanels  }} }}>Add terms to an existing subpanel</button>
     </div>
   </div>
   <div class="panel-collapse collapse mt-3" id="new_subpanel">
@@ -189,7 +191,7 @@
                             {{term_obj.custom_name or term_obj.description}} ({{term_id}})
                           {% endif %}
                           <!--button to remove a checkbox group-->
-                          <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}#{{subpanel_id}}"><i class="fa fa-times"></i></button>
+                          <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}#{{subpanel_id}}" {{ "disabled" if disable }}><i class="fa fa-times"></i></button>
                         </form>
                       </div>
                       <div style="margin-left: 35px; display: none;" id="{{subpanel_id}}#{{term_id}}">
@@ -211,7 +213,7 @@
           <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
             <div class="d-flex justify-content-between">
               <text class="text-muted mb-1 ml-1" style="font-size:14px;">Updated: {{subpanel.updated.strftime('%Y-%m-%d %H:%M:%S')}}</text>
-              <button type="submit" class="button btn btn-danger btn-sm" name="subpanel_delete" value="{{subpanel_id}}"><i class="fa fa-times"></i> Remove panel</button>
+              <button type="submit" class="button btn btn-danger btn-sm" name="subpanel_delete" value="{{subpanel_id}}" {{ "disabled" if disable }}><i class="fa fa-times"></i> Remove panel</button>
             </div>
           </form>
         </div><!-- end of card body-->
@@ -257,9 +259,13 @@
                   <strong>{{term_obj.term_title}}</strong><br>
                 {% endif %}
                 <input type="checkbox" name="cheked_terms" value="{{subpanel_id}}.{{term_id}}.{{term_id}}">
-                <label for="{{term_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label>
+                {% if term_obj.children %}
+                  <a href="#" onclick="toggleDiv('{{term_obj.name}}#children')"><label for="{{term_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label></a>
+                {% else %}
+                  <label for="{{term_id}}">{{term_obj.custom_name or term_obj.description}} ({{term_id}})</label>
+                {% endif %}
               </div>
-              <div style="margin-left: 35px;">
+              <div style="margin-left: 35px; display: none;" id="{{term_obj.name}}#children">
                 {% for item in term_obj.children recursive %}
                   <li class="tree">
                     <input type="checkbox" name="cheked_terms" value="{{subpanel_id}}.{{term_id}}.{{item.name}}"> <label>{{ item.description }} ({{item.name}})</label>
@@ -278,7 +284,7 @@
         {% endfor %}<!-- end of loop over the subpanels of the model-->
       </div>
       <div class="modal-footer">
-        <button type="submit" name="model_save" value="{{phenomodel._id}}" class="btn btn-primary">Save selected terms</button>
+        <button type="submit" name="model_save" value="{{phenomodel._id}}" class="btn btn-primary" {{ "disabled" if disable }}>Save selected terms</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
