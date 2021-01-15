@@ -238,6 +238,7 @@ class CaseHandler(object):
         phenotype_terms=False,
         group=None,
         pinned=False,
+        cohort=False,
         name_query=None,
         yield_query=False,
         within_days=None,
@@ -257,6 +258,7 @@ class CaseHandler(object):
             is_research(bool)
             status(str)
             group(str): fetch all cases in a named case group
+            cohort(bool): Fetch all cases with cohort tags
             phenotype_terms(bool): Fetch all cases with phenotype
             pinned(bool): Fetch all cases with pinned variants
             name_query(str): Could be hpo term, HPO-group, user, part of display name,
