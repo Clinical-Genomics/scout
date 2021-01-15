@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update IGV.js to latest (v2.7.4)
 - Bypass igv.js CORS check using `https://github.com/Rob--W/cors-anywhere`
 - Documentation on default and custom IGV.js tracks (admin docs)
+- Lock phenomodels so they're editable by admins only
 - Button to reset all dismissed variants for a case
 ### Fixed
 - Bugfix: unused `chromgraph_prefix |tojson` removed
@@ -28,10 +29,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Primary transcripts in variant overview and general report
 - Google OAuth2 login setup in README file
 - Redirect to 'missing file'-icon if configured file is missing
+- Javascript error in case page
 ### Changed
 - Save case variants count in case document and not in sessions
 - Style of gene panels multiselect on case page
-
+- Collapse/expand main HPO checkboxes in phenomodel preview
 
 ## [4.27]
 ### Added
