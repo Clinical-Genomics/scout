@@ -849,9 +849,10 @@ def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_lis
         case_obj(dict): a case dictionary
         link_page(str): "variant.variant" for snvs, "variant.sv_variant" for SVs and so on
         variants_list(list): list of variant._ids (strings)
-        dismiss_reasons(list): list of dismiss options. If empty, the variant status will change to not dismissed
+        dismiss_reasons(list): list of dismiss options.
     """
     user_obj = store.user(current_user.email)
+    dismiss_reasons = [int(reason) for reason in dismiss_reasons]
     for variant_id in variants_list:
         variant_obj = store.variant(variant_id)
         if variant_obj is None:
