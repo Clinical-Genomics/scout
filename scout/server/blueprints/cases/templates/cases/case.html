@@ -237,13 +237,13 @@
       <ul>
       {% for group in case.group %}
         <li>
-          <span class="fa fa-users"></span>{{ group }}<a href="" class="btn btn-danger btn-xs text-white"><span class="fa fa-trash-o  text-white"></span>Remove group
-          <span class="fa fa-plus-square-o text-white"></span>Add to group
-          <span class="fa fa-minus-square-o text-white"></span>Remove from group
+          <span class="fa fa-users"></span>{{ group }}<a href="{{ url_for( remove_group(case, group) }}" class="btn btn-danger btn-xs text-white"><a href="" class="btn btn-primary btn-xs text-white"><span class="fa fa-trash-o  text-white"></span>Remove group</a>
+          <a href="go_group_modal" class="btn btn-primary btn-xs text-white"><span class="fa fa-plus-square-o text-white"></span>Add to group</a>
+          <a href="{{ url_for(remove_from_group(group, case)) }}" class="btn btn-primary btn-xs text-white"><span class="fa fa-minus-square-o text-white"></span>Remove from group</a>
         </li>
       {% endfor %}
       </ul>
-      <a href="" class="btn btn-primary btn-xs text-white"><span class="fa fa-user-plus text-white mr-3"></span>Add group</a>
+      <a href="{{ url_for(add_group(case,institute)) }}" class="btn btn-primary btn-xs text-white"><span class="fa fa-user-plus text-white mr-3"></span>Add group</a>
     </div>
   </div>
 {% endmacro %}

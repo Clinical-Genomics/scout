@@ -911,6 +911,14 @@ def update_clinical_filter_hpo(institute_id, case_name):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/<institute_id>/<case_name>/add_case_group", methods["GET"])
+def add_case_group(institute_id, case_name):
+    """Add a new case group for an institute and bind it in selected case."""
+    controllers.add_case_group(store, institute_id, case_name)
+
+    return redirect(request.referrer)
+
+
 @cases_bp.route("/<institute_id>/<case_name>/download-hpo-genes", methods=["GET"])
 def download_hpo_genes(institute_id, case_name):
     """Download the genes contained in a case dynamic gene list"""

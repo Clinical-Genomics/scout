@@ -37,7 +37,6 @@ from .case_tags import (
     REV_PHENOTYPE_MAP,
     CASE_STATUSES,
     VERBS_MAP,
-    VERBS,
     SAMPLE_SOURCE,
     CASE_SEARCH_TERMS,
 )

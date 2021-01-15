@@ -182,7 +182,7 @@ def case(store, institute_obj, case_obj):
 
     events = list(store.events(institute_obj, case=case_obj))
     for event in events:
-        event["verb"] = VERBS_MAP[event["verb"]]
+        event["verb"] = VERBS_MAP.get(event["verb"], "did %s for".format(event["verb"]))
 
     case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
 
@@ -733,6 +733,23 @@ def update_clinical_filter_hpo(store, current_user, institute_id, case_name, hpo
     user_obj = store.user(current_user.email)
     link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
     store.update_clinical_filter_hpo(institute_obj, case_obj, user_obj, link, hpo_clinical_filter)
+
+
+def add_case_group(store, current_user, institute_id, case_name):
+    """Add a new case group for an institute and bind it in selected case."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
+    user_obj = store.user(current_user.email)
+
+    group = store.init_case_group(institute_id)
+    current_group_ids = case_obj.get("group", [])
+    current_group_ids.append(group)
+    updated_case = store.update_case_group_ids(
+        institute_obj, case_obj, user_obj, link, current_group_ids
+    )
+
+    return updated_case
 
 
 def vcf2cytosure(store, institute_id, case_name, individual_id):
