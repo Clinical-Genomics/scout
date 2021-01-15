@@ -114,7 +114,7 @@
             <p>No pedigree picture available.</p>
           {% endif %}
         {% endif %}
-          {{ group_panel(case) }}
+          {{ group_panel() }}
         </div>
 
         <div class="{% if case.track != 'cancer' %}col-8{%else%}col-12{%endif%}">
@@ -230,20 +230,33 @@
   </div>
 {% endmacro %}
 
-{% macro group_panel(case) %}
+{% macro group_panel() %}
   <div class="card panel-default">
     <div data-toggle='tooltip' class="panel-heading" title=""><span class="fa fa-users"></span>&nbsp;Group connected cases</div>
     <div class="card-body">
-      <ul>
-      {% for group in case.group %}
-        <li>
-          <span class="fa fa-users"></span>{{ group }}<a href="{{ url_for( remove_group(case, group) }}" class="btn btn-danger btn-xs text-white"><a href="" class="btn btn-primary btn-xs text-white"><span class="fa fa-trash-o  text-white"></span>Remove group</a>
-          <a href="go_group_modal" class="btn btn-primary btn-xs text-white"><span class="fa fa-plus-square-o text-white"></span>Add to group</a>
-          <a href="{{ url_for(remove_from_group(group, case)) }}" class="btn btn-primary btn-xs text-white"><span class="fa fa-minus-square-o text-white"></span>Remove from group</a>
-        </li>
-      {% endfor %}
-      </ul>
-      <a href="{{ url_for(add_group(case,institute)) }}" class="btn btn-primary btn-xs text-white"><span class="fa fa-user-plus text-white mr-3"></span>Add group</a>
+      {% if case.group %}
+        <ul>
+        {% for group_id, group_member_ids in case.group.items() %}
+          <li>
+            <span class="fa fa-users"></span>{{ group_id }}
+            <a href="go_group_modal with {{group_id}}" class="btn btn-primary btn-xs text-white"><span class="fa fa-plus-square-o text-white"></span>Add to group</a>
+            <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=case.display_name, case_group=group_id) }}"
+                 class="btn btn-danger btn-xs text-white">
+                 <span class="fa fa-trash-o text-white"></span>Remove group</a>
+            <ul>
+            {% for grouped_case in case_member_ids %}
+              <div class="row">
+                <div class="col"><a href="{{ url_for('cases.case', institute_id=grouped_case.owner, case_name=grouped_case.display_name) }}"">{{ grouped_case.display_name }}</a></div>
+                <div class="col"><a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_id=grouped_case._id, case_group=group_id) }}" class="btn btn-primary btn-xs text-white">
+                  <span class="fa fa-minus-square-o text-white"></span>Remove from group</a></div>
+              </div>
+            {% endfor %}
+            </ul>
+          </li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+      <a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="btn btn-primary btn-xs text-white"><span class="fa fa-user-plus text-white mr-3"></span>Add group</a>
     </div>
   </div>
 {% endmacro %}

@@ -577,7 +577,7 @@ class CaseEventHandler(object):
         LOG.debug("Case updated")
         return updated_case
 
-    def update_case_group_ids(self, institute_obj, case_obj, user_obj, link, group_id):
+    def update_case_group_ids(self, institute_obj, case_obj, user_obj, link, group_ids):
         """Sets case group_ids, used to group a small number of cases for similar analysis.
 
         Args:

@@ -911,10 +911,19 @@ def update_clinical_filter_hpo(institute_id, case_name):
     return redirect(request.referrer)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/add_case_group", methods["GET"])
+@cases_bp.route("/<institute_id>/<case_name>/add_case_group", methods=["GET"])
 def add_case_group(institute_id, case_name):
     """Add a new case group for an institute and bind it in selected case."""
-    controllers.add_case_group(store, institute_id, case_name)
+
+    controllers.add_case_group(store, current_user, institute_id, case_name)
+
+    return redirect(request.referrer)
+
+
+@cases_bp.route("/<institute_id>/<case_name>/<case_group>/remove_case_group", methods=["GET"])
+def remove_case_group(institute_id, case_name, case_group):
+    """Unbind a case group from a case. Remove the group if it is no longer in use."""
+    controllers.remove_case_group(store, institute_id, case_name, case_group)
 
     return redirect(request.referrer)
 

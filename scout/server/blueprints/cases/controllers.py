@@ -75,12 +75,13 @@ def case(store, institute_obj, case_obj):
         individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
         case_obj["individual_ids"].append(individual["individual_id"])
 
-        if case_obj.get("group"):
-            case_obj["group"] = {}
-            for group in case.group:
-                case_obj["group"][group] = store.case_group_ids(group)
-
     case_obj["assignees"] = [store.user(user_email) for user_email in case_obj.get("assignees", [])]
+
+    # Fetch ids for grouped cases
+    if case_obj.get("group"):
+        case_obj["group"] = []
+        for group in case_obj.get("group"):
+            case_obj["group"][group] = store.case_group_ids(group)
 
     # Fetch the variant objects for suspects and causatives
     suspects = [
@@ -737,17 +738,38 @@ def update_clinical_filter_hpo(store, current_user, institute_id, case_name, hpo
 
 def add_case_group(store, current_user, institute_id, case_name):
     """Add a new case group for an institute and bind it in selected case."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
     user_obj = store.user(current_user.email)
 
     group = store.init_case_group(institute_id)
     current_group_ids = case_obj.get("group", [])
     current_group_ids.append(group)
+
     updated_case = store.update_case_group_ids(
         institute_obj, case_obj, user_obj, link, current_group_ids
     )
+    return updated_case
+
+
+def remove_case_group(store, current_user, institute_id, case_name, case_group):
+    """Remove a case group from selected institute - and from db if it is no longer in use."""
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
+    user_obj = store.user(current_user.email)
+
+    current_group_ids = case_obj.get("group", [])
+    current_group_ids.remove(case_group)
+    updated_case = store.update_case_group_ids(
+        institute_obj, case_obj, user_obj, link, current_group_ids
+    )
+
+    current_group_cases = store.case_group_ids(case_group)
+    if current_group_cases == []:
+        self.case_group_collection.find_one_and_delete({"_id": case_group})
+        LOG.debug("Case group was empty and hence deleted.")
 
     return updated_case
 
