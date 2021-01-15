@@ -41,7 +41,6 @@ const CHROMSPECS_LIST =
  */
 function add_image_to_individual_panel(individuals, institute, case_name){
     for (var i=0; i<individuals.length; i++){
-        console.log("PATHS: "+individuals[i].chromograph_images)
         if(individuals[i].chromograph_images){
             draw_tracks(individuals[i], institute, case_name)
         }
@@ -120,7 +119,7 @@ function draw_tracks(individual, institute, case_name){
 
         if(individual.chromograph_images.autozygous){
             var autozygous_image = make_svgimage(autozygous_imgPath + autozygous_images[i],
-                                          x_pos + 0+15,  // 
+                                          x_pos + 0+15,  //
                                           y_pos + 60 , // place below UPD
                                           "25px", "500px", );
             g.appendChild(autozygous_image);
@@ -372,4 +371,3 @@ function make_polygon(x_cyt, y_cyt, pos, link, ) {
     a.appendChild(poly)
     return a;
 }
-
