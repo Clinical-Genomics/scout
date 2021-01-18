@@ -738,15 +738,24 @@ def update_clinical_filter_hpo(store, current_user, institute_id, case_name, hpo
     store.update_clinical_filter_hpo(institute_obj, case_obj, user_obj, link, hpo_clinical_filter)
 
 
-def add_case_group(store, current_user, institute_id, case_name):
-    """Add a new case group for an institute and bind it in selected case."""
+def add_case_group(store, current_user, institute_id, case_name, group=None):
+    """Add a new case group for an institute and bind it in selected case.
+    Args:
+        current_user    (user)current user
+        institute_id    (str)institute id
+        case_name       (str)case display name
+        group           (ObjectId)case group id
+    Returns:
+        updated_case    (InsertOneResult)
+    """
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
     user_obj = store.user(current_user.email)
 
-    group = store.init_case_group(institute_id)
-    # note to self - use other name or fix, right?
+    if not group:
+        group = store.init_case_group(institute_id)
+
     current_group_ids = case_obj.get("group", [])
     current_group_ids.append(group)
 

@@ -236,13 +236,16 @@
     <div class="card-body">
       {% if case_groups %}
         {% for group_id, case_group in case_groups.items() %}
+          {{ modal_add_to_group(group_id) }}
           <div class="row">
             <div class="col">
               <span class="fa fa-users"></span>&nbsp;
             </div>
             <div class="col text-right">
               <div class="btn-group">
-                <a href="go_group_modal with {{group_id}}" class="btn btn-primary btn-xs text-white"><span class="fa fa-plus-square-o text-white"></span>&nbsp;Add to group</a>
+                <button type="button" class="btn btn-outline-secondary form-control" data-toggle="modal" data-target="#add-case-group-{{group_id}}">
+                  <span class="fa fa-plus-square-o"></span>&nbsp;Add to group
+                </button>
               </div>
             </div>
           </div>
@@ -250,11 +253,10 @@
           {% for grouped_case in case_group %}
             <li class="list-group-item">
                 <a href="{{ url_for('cases.case', institute_id=grouped_case.owner, case_name=grouped_case.display_name) }}"">{{ grouped_case.display_name }}</a>
-
-              <span class="pull-right">
-                <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=grouped_case.display_name, case_group=group_id) }}" class="btn btn-link btn-sm">
-                  <span class="fa fa-remove"></span></a>
-              </span>
+                <span class="pull-right">
+                  <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=grouped_case.display_name, case_group=group_id) }}" class="btn btn-link btn-sm">
+                    <span class="fa fa-remove"></span></a>
+                </span>
             </li>
           {% endfor %}
           </ul>
@@ -263,6 +265,31 @@
       <a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="btn btn-primary btn-xs text-white"><span class="fa fa-user-plus text-white mr-3"></span>Add group</a>
     </div>
   </div>
+{% endmacro %}
+
+{% macro modal_add_to_group(group_id) %}
+  <form action="{{ url_for('cases.add_case_group', institute_id=institute._id, case_name="unused") }}" method="POST">
+    <div class="modal fade" id="add-case-group-{{group_id}}" role="dialog">
+      <input type="hidden" id="group_id">{{group_id}}
+      <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="case_pick_dialog">Add case to existing case group</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="text" name="other_case_name" class="form-control" cols="30" rows="10">{{ case_name }}</input>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+        </div>
+      </div>
+    </div>
+  </form>
 {% endmacro %}
 
 <!-- Iterate through Individuals, if chromograph_files is presenet add a panel for images -->
