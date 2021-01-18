@@ -603,6 +603,7 @@ class CaseEventHandler(object):
             {"$set": {"group": group_ids}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
+
         return updated_case
 
     def update_default_panels(self, institute_obj, case_obj, user_obj, link, panel_objs):

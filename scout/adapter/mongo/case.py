@@ -397,7 +397,7 @@ class CaseHandler(object):
         """
 
         return [
-            case._id
+            case["_id"]
             for case in self.case_collection.find(
                 {"group": {"$elemMatch": {"$eq": group_id}}}, {"_id": 1}
             )

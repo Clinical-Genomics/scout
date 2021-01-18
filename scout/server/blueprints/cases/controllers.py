@@ -79,9 +79,9 @@ def case(store, institute_obj, case_obj):
 
     # Fetch ids for grouped cases
     if case_obj.get("group"):
-        case_obj["group"] = []
+        case_groups = {}
         for group in case_obj.get("group"):
-            case_obj["group"][group] = store.case_group_ids(group)
+            case_groups[group] = list(store.case_group_ids(group))
 
     # Fetch the variant objects for suspects and causatives
     suspects = [
@@ -203,6 +203,7 @@ def case(store, institute_obj, case_obj):
         "managed_variants": [var for var in store.check_managed(case_obj=case_obj)],
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "hpo_groups": pheno_groups,
+        "case_groups": case_groups,
         "events": events,
         "suspects": suspects,
         "causatives": causatives,
@@ -744,6 +745,7 @@ def add_case_group(store, current_user, institute_id, case_name):
     user_obj = store.user(current_user.email)
 
     group = store.init_case_group(institute_id)
+    # note to self - use other name or fix, right?
     current_group_ids = case_obj.get("group", [])
     current_group_ids.append(group)
 

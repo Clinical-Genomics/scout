@@ -234,9 +234,9 @@
   <div class="card panel-default">
     <div data-toggle='tooltip' class="panel-heading" title=""><span class="fa fa-users"></span>&nbsp;Group connected cases</div>
     <div class="card-body">
-      {% if case.group %}
+      {% if case_groups %}
         <ul>
-        {% for group_id, group_member_ids in case.group.items() %}
+        {% for group_id, group_member_ids in case_groups.items() %}
           <li>
             <span class="fa fa-users"></span>{{ group_id }}
             <a href="go_group_modal with {{group_id}}" class="btn btn-primary btn-xs text-white"><span class="fa fa-plus-square-o text-white"></span>Add to group</a>
