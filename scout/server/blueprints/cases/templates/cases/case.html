@@ -243,9 +243,6 @@
             <div class="col text-right">
               <div class="btn-group">
                 <a href="go_group_modal with {{group_id}}" class="btn btn-primary btn-xs text-white"><span class="fa fa-plus-square-o text-white"></span>&nbsp;Add to group</a>
-                <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=case.display_name, case_group=group_id) }}"
-                  class="btn btn-danger btn-xs text-white">
-                  <span class="fa fa-trash-o text-white"></span>&nbsp;Remove group</a>
               </div>
             </div>
           </div>

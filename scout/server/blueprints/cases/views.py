@@ -923,7 +923,7 @@ def add_case_group(institute_id, case_name):
 @cases_bp.route("/<institute_id>/<case_name>/<case_group>/remove_case_group", methods=["GET"])
 def remove_case_group(institute_id, case_name, case_group):
     """Unbind a case group from a case. Remove the group if it is no longer in use."""
-    controllers.remove_case_group(store, institute_id, case_name, case_group)
+    controllers.remove_case_group(store, current_user, institute_id, case_name, case_group)
 
     return redirect(request.referrer)
 

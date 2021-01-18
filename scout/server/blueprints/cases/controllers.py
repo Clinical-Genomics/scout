@@ -7,6 +7,7 @@ import os
 
 import query_phenomizer
 import requests
+from bson.objectid import ObjectId
 from bs4 import BeautifulSoup
 from flask import current_app, url_for, flash
 from flask_login import current_user
@@ -763,7 +764,9 @@ def remove_case_group(store, current_user, institute_id, case_name, case_group):
     user_obj = store.user(current_user.email)
 
     current_group_ids = case_obj.get("group", [])
-    current_group_ids.remove(case_group)
+
+    # STR OBJID mismatch?
+    current_group_ids.remove(ObjectId(case_group))
     updated_case = store.update_case_group_ids(
         institute_obj, case_obj, user_obj, link, current_group_ids
     )
