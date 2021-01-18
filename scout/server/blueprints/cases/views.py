@@ -94,7 +94,7 @@ def matchmaker_matches(institute_id, case_name):
     # check that only authorized users can access MME patients matches
     panel = 1
     if request.method == "POST":
-        panel = panel = request.form.get("pane_id")
+        panel = request.form.get("pane_id")
     user_obj = store.user(current_user.email)
     if "mme_submitter" not in user_obj["roles"]:
         flash("unauthorized request", "warning")
@@ -911,11 +911,15 @@ def update_clinical_filter_hpo(institute_id, case_name):
     return redirect(request.referrer)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/add_case_group", methods=["GET, POST"])
+@cases_bp.route("/<institute_id>/<case_name>/add_case_group", methods=["GET", "POST"])
 def add_case_group(institute_id, case_name):
-    """Add a new case group for an institute and bind it in selected case."""
+    """Add a new case group for an institute and bind it in selected case.
 
-    # GET (with no group_id) requests init of a new group
+    GET request (with no group_id) requests init of a new group
+    POST request adds other_case_name to the group
+    """
+
+    #
     group_id = request.form.get("group_id", None)
     if request.method == "POST":
         case_name = request.form.get("other_case_name")

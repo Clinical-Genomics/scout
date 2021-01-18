@@ -739,12 +739,13 @@ def update_clinical_filter_hpo(store, current_user, institute_id, case_name, hpo
 
 
 def add_case_group(store, current_user, institute_id, case_name, group=None):
-    """Add a new case group for an institute and bind it in selected case.
+    """Bind a case group in a selected a case, creating it in current institute if not given.
+
     Args:
         current_user    (user)current user
         institute_id    (str)institute id
         case_name       (str)case display name
-        group           (ObjectId)case group id
+        group           (str)case group id - converts to ObjectId
     Returns:
         updated_case    (InsertOneResult)
     """
@@ -757,7 +758,7 @@ def add_case_group(store, current_user, institute_id, case_name, group=None):
         group = store.init_case_group(institute_id)
 
     current_group_ids = case_obj.get("group", [])
-    current_group_ids.append(group)
+    current_group_ids.append(ObjectId(group))
 
     updated_case = store.update_case_group_ids(
         institute_obj, case_obj, user_obj, link, current_group_ids
