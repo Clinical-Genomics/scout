@@ -236,19 +236,20 @@
     <div class="card-body">
       {% if case_groups %}
         <ul>
-        {% for group_id, group_member_ids in case_groups.items() %}
+        {% for group_id, case_group in case_groups.items() %}
           <li>
-            <span class="fa fa-users"></span>{{ group_id }}
-            <a href="go_group_modal with {{group_id}}" class="btn btn-primary btn-xs text-white"><span class="fa fa-plus-square-o text-white"></span>Add to group</a>
-            <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=case.display_name, case_group=group_id) }}"
+            <span class="fa fa-users"></span>&nbsp;<div class="btn-group">
+              <a href="go_group_modal with {{group_id}}" class="btn btn-primary btn-xs text-white"><span class="fa fa-plus-square-o text-white"></span>&nbsp;Add to group</a>
+              <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=case.display_name, case_group=group_id) }}"
                  class="btn btn-danger btn-xs text-white">
-                 <span class="fa fa-trash-o text-white"></span>Remove group</a>
+                 <span class="fa fa-trash-o text-white"></span>&nbsp;Remove group</a>
+                 </div>
             <ul>
-            {% for grouped_case in case_member_ids %}
+            {% for grouped_case in case_group %}
               <div class="row">
                 <div class="col"><a href="{{ url_for('cases.case', institute_id=grouped_case.owner, case_name=grouped_case.display_name) }}"">{{ grouped_case.display_name }}</a></div>
-                <div class="col"><a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_id=grouped_case._id, case_group=group_id) }}" class="btn btn-primary btn-xs text-white">
-                  <span class="fa fa-minus-square-o text-white"></span>Remove from group</a></div>
+                <div class="col"><a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=grouped_case.display_name, case_group=group_id) }}" class="btn btn-danger btn-xs text-white">
+                  <span class="fa fa-minus-square-o text-white"></span>&nbsp;Remove from group</a></div>
               </div>
             {% endfor %}
             </ul>

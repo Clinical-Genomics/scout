@@ -81,7 +81,7 @@ def case(store, institute_obj, case_obj):
     if case_obj.get("group"):
         case_groups = {}
         for group in case_obj.get("group"):
-            case_groups[group] = list(store.case_group_ids(group))
+            case_groups[group] = list(store.cases(group=group))
 
     # Fetch the variant objects for suspects and causatives
     suspects = [
