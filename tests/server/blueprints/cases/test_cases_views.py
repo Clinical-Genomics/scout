@@ -326,7 +326,7 @@ def test_update_case_comment(app, institute_obj, case_obj, user_obj):
 
 
 def test_add_case_group(app, case_obj, institute_obj):
-    """Test adding a case group"""
+    """Test adding a case group."""
 
     ### GIVEN an initialized app
     with app.test_client() as client:
@@ -347,9 +347,8 @@ def test_add_case_group(app, case_obj, institute_obj):
 
 
 def test_remove_case_group(app, case_obj, institute_obj):
-
+    """Test removing a case group."""
     ### GIVEN an initialized app
-
     group_id = ObjectId("101010101010101010101010")
     result = store.case_collection.find_one_and_update(
         {"_id": case_obj["_id"]}, {"$set": {"group": [group_id]}}
@@ -372,9 +371,6 @@ def test_remove_case_group(app, case_obj, institute_obj):
 
         # THEN the response should be a redirect
         assert resp.status_code == 302
-
-
-#    group_ids = result["group"]
 
 
 def test_download_hpo_genes(app, case_obj, institute_obj):
