@@ -679,7 +679,7 @@ def assign(institute_id, case_name, user_id=None, inactivate=False):
     return redirect(request.referrer)
 
 
-@cases_bp.route("/api/v1/<institute_id>")
+@cases_bp.route("/api/v1/<institute_id>/cases")
 def caselist(institute_id):
     """Quick search for cases for autocompletion"""
     query = request.args.get("query")
