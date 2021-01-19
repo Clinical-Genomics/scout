@@ -1,0 +1,22 @@
+[Unit]
+Description=Podman scout-create-datadir.service
+Wants=network.target
+After=network-online.target
+BindsTo=scout-pod.service
+After=scout-pod.service
+
+ConditionPathIsDirectory=!%S/scout-mongo-data/data
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+
+StateDirectory=scout-mongo-data
+StateDirectoryMode=0700
+ExecStart=/bin/mkdir %S/scout-mongo-data/data
+
+KillMode=none
+Type=oneshot
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target default.target
