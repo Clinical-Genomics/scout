@@ -79,8 +79,8 @@ def case(store, institute_obj, case_obj):
     case_obj["assignees"] = [store.user(user_email) for user_email in case_obj.get("assignees", [])]
 
     # Fetch ids for grouped cases
+    case_groups = {}
     if case_obj.get("group"):
-        case_groups = {}
         for group in case_obj.get("group"):
             case_groups[group] = list(store.cases(group=group))
 
