@@ -280,7 +280,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <input type="text" name="other_case_name" class="form-control" cols="30" rows="10">Case name - eg F0010101</input>
+          <input type="text" name="other_case_name" class="typeahead_cases form-control" data-provide="typeahead" autocomplete="off" placeholder="Search..." cols="30" rows="10">Case name</input>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
@@ -568,6 +568,17 @@
           process(data)
         });
       }
+      function getCases(query, process) {
+        $.get("{{ url_for('cases.caselist', institute_id=institute._id) }}", {query: query}, function(data) {
+          process(data)
+        });
+      }
+
+      $(".typeahead_cases").typeahead({
+        name: 'cases_list',
+        source: getCases,
+        minLength: 3,
+      });
 
       $(".typeahead_hpo").typeahead({
         name: 'hpo_term',

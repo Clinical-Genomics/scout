@@ -679,6 +679,23 @@ def assign(institute_id, case_name, user_id=None, inactivate=False):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/api/v1/<institute_id>")
+def caselist(institute_id):
+    """Quick search for cases for autocompletion"""
+    query = request.args.get("query")
+    if query is None:
+        return abort(500)
+    display_names = sorted(
+        [
+            case["display_name"]
+            for case in store.cases(owner=institute_id, name_query="case:" + query)
+        ]
+    )
+    json_terms = [{"name": "{}".format(display_name)} for display_name in display_names]
+
+    return jsonify(json_terms)
+
+
 @cases_bp.route("/api/v1/hpo-terms")
 def hpoterms():
     """Search for HPO terms."""
