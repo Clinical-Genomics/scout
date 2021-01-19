@@ -3,6 +3,8 @@ import datetime
 from flask import url_for, current_app, get_template_attribute
 from flask_login import current_user
 
+from bson.objectid import ObjectId
+
 from scout.demo import delivery_report_path
 from scout.server.blueprints.cases import controllers
 from scout.server.extensions import store
@@ -321,6 +323,58 @@ def test_update_case_comment(app, institute_obj, case_obj, user_obj):
         updated_var_event = store.event_collection.find_one({"verb": "comment_update"})
         # With the same subject of the comment
         assert updated_var_event["subject"] == updated_comment["subject"]
+
+
+def test_add_case_group(app, case_obj, institute_obj):
+    """Test adding a case group"""
+
+    ### GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN we invoke the add group endpoint with GET
+        resp = client.get(
+            url_for(
+                "cases.add_case_group",
+                institute_id=institute_obj["_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+
+        # THEN the response should be a redirect
+        assert resp.status_code == 302
+
+
+def test_remove_case_group(app, case_obj, institute_obj):
+
+    ### GIVEN an initialized app
+
+    group_id = ObjectId("101010101010101010101010")
+    result = store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]}, {"$set": {"group": [group_id]}}
+    )
+
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN we invoke the add group endpoint with GET
+        resp = client.get(
+            url_for(
+                "cases.remove_case_group",
+                institute_id=institute_obj["_id"],
+                case_name=case_obj["display_name"],
+                case_group=group_id,
+            )
+        )
+
+        # THEN the response should be a redirect
+        assert resp.status_code == 302
+
+
+#    group_ids = result["group"]
 
 
 def test_download_hpo_genes(app, case_obj, institute_obj):
