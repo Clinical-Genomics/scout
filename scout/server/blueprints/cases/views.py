@@ -681,7 +681,7 @@ def assign(institute_id, case_name, user_id=None, inactivate=False):
 
 @cases_bp.route("/api/v1/<institute_id>/cases")
 def caselist(institute_id):
-    """Quick search for cases for autocompletion"""
+    """Search for cases for autocompletion"""
     query = request.args.get("query")
     if query is None:
         return abort(500)

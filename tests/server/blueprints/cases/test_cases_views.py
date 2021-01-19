@@ -714,6 +714,30 @@ def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
         assert resp.mimetype == "application/pdf"
 
 
+def test_caselist(app, case_obj):
+    """Test the API return of cases for autocompletion"""
+
+    # GIVEN a case
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN the API is invoked with a query string containing part of the case term description
+        resp = client.get(
+            url_for(
+                "cases.caselist", institute_id=case_obj["owner"], query=case_obj["display_name"]
+            )
+        )
+        # THEN it should return a valid response
+        assert resp.status_code == 200
+
+        # containing the case display name
+        assert case_obj["display_name"] in str(resp.data)
+
+
 def test_omimterms(app, test_omim_term):
     """Test The API which returns all OMIM terms when queried from case page"""
 
