@@ -93,6 +93,8 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
                 group_case_ids.update(store.case_group_ids(group_id))
 
             for group_case_id in group_case_ids:
+                if group_case_id == case_obj["_id"]:
+                    continue
                 cohort_var_obj = store.variant(
                     case_id=group_case_id,
                     simple_id=variant_obj["simple_id"],

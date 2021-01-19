@@ -918,8 +918,6 @@ def add_case_group(institute_id, case_name):
     GET request (with no group_id) requests init of a new group
     POST request adds other_case_name to the group
     """
-
-    #
     group_id = request.form.get("group_id", None)
     if request.method == "POST":
         case_name = request.form.get("other_case_name")
