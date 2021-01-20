@@ -386,7 +386,7 @@ class CaseHandler(object):
 
         return self.case_collection.find(query).sort("updated_at", -1)
 
-    def case_group_ids(self, group_id):
+    def case_ids_from_group_id(self, group_id):
         """Fetches any cases with given group_id from backend.
 
         Args:

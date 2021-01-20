@@ -757,11 +757,11 @@ def add_case_group(store, current_user, institute_id, case_name, group=None):
     if not group:
         group = store.init_case_group(institute_id)
 
-    current_group_ids = case_obj.get("group", [])
-    current_group_ids.append(ObjectId(group))
+    current_group_ids = set(case_obj.get("group", []))
+    current_group_ids.add(ObjectId(group))
 
     updated_case = store.update_case_group_ids(
-        institute_obj, case_obj, user_obj, link, current_group_ids
+        institute_obj, case_obj, user_obj, link, list(current_group_ids)
     )
     return updated_case
 
@@ -781,7 +781,7 @@ def remove_case_group(store, current_user, institute_id, case_name, case_group):
         institute_obj, case_obj, user_obj, link, current_group_ids
     )
 
-    current_group_cases = store.case_group_ids(case_group)
+    current_group_cases = store.case_ids_from_group_id(case_group)
 
     if current_group_cases == []:
         store.remove_case_group(case_group)

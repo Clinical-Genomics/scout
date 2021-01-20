@@ -117,7 +117,7 @@
           {{ group_panel() }}
         </div>
 
-        <div class="{% if case.track != 'cancer' %}col-8{%else%}col-12{%endif%}">
+        <div class="col-8">
           {{ synopsis_panel() }}
           {{ comments_panel(institute, case, current_user, comments) }}
         </div>
@@ -232,19 +232,19 @@
 
 {% macro group_panel() %}
   <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title=""><span class="fa fa-users"></span>&nbsp;Group connected cases</div>
+    <div data-toggle='tooltip' class="panel-heading" title="Group cases to share user variant assessments like comments, classification and dismissal. A case can be in multiple groups."><span class="fa fa-users"></span>&nbsp;Group connected cases</div>
     <div class="card-body">
       {% if case_groups %}
         {% for group_id, case_group in case_groups.items() %}
-          {{ modal_add_to_group(group_id) }}
+          {{ modal_add_to_group(group_id, case_group) }}
           <div class="row">
             <div class="col">
-              <span class="fa fa-users"></span>&nbsp;
+              <span class="fa fa-users"></span>&nbsp;Group #{{ group_id|string|truncate(9) }}
             </div>
             <div class="col text-right">
               <div class="btn-group">
                 <button type="button" class="btn btn-outline-secondary form-control" data-toggle="modal" data-target="#add-case-group-{{group_id}}">
-                  <span class="fa fa-plus-square-o"></span>&nbsp;Add to group
+                  <span class="fa fa-plus-square-o"></span>&nbsp;Bind other case
                 </button>
               </div>
             </div>
@@ -262,29 +262,35 @@
           </ul>
         {% endfor %}
       {% endif %}
-      <a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="btn btn-primary btn-xs text-white"><span class="fa fa-user-plus text-white mr-3"></span>Add group</a>
+      <a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="btn btn-primary btn-xs text-white"><span class="fa fa-user-plus text-white mr-3"></span>Create new group</a>
     </div>
   </div>
 {% endmacro %}
 
-{% macro modal_add_to_group(group_id) %}
+{% macro modal_add_to_group(group_id, case_group) %}
   <form action="{{ url_for('cases.add_case_group', institute_id=institute._id, case_name="unused") }}" method="POST">
     <div class="modal fade" id="add-case-group-{{group_id}}" role="dialog">
       <input type="hidden" name="group_id" value="{{ group_id }}">
       <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="case_pick_dialog">Add case to existing case group - case {{case.display_name}}</h5>
+          <h5 class="modal-title" id="case_pick_dialog">Add other case to this case group</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <input type="text" name="other_case_name" class="typeahead_cases form-control" data-provide="typeahead" autocomplete="off" placeholder="Search..." cols="30" rows="10">Case name</input>
+          Cases already in this group:
+          <ul class="list-group">
+          {% for grouped_case in case_group %}
+            <li class="list-group-item">{{ grouped_case.display_name }}</li>
+          {% endfor %}
+          Add case:
+          <input type="text" name="other_case_name" class="typeahead_cases form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for case name..." cols="30" rows="10"></input>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="submit" class="btn btn-primary">Add case</button>
         </div>
         </div>
       </div>
