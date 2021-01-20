@@ -109,7 +109,7 @@ def _get_group_assessments(store, case_obj, variant_obj):
 
     group_case_ids = set()
     for group_id in case_obj.get("group"):
-        group_case_ids.update(store.case_group_ids(group_id))
+        group_case_ids.update(store.case_ids_from_group_id(group_id))
 
         for group_case_id in group_case_ids:
             # Returning an extra assessment for variants from the same case is pointless
