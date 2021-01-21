@@ -236,6 +236,7 @@ class CaseHandler(object):
         is_research=False,
         status=None,
         phenotype_terms=False,
+        group=None,
         pinned=False,
         cohort=False,
         name_query=None,
@@ -256,7 +257,9 @@ class CaseHandler(object):
             research_requested(bool)
             is_research(bool)
             status(str)
-            phenotype_terms(bool): Fetch all cases with phenotype terms
+            group(ObjectId): fetch all cases in a named case group
+            cohort(bool): Fetch all cases with cohort tags
+            phenotype_terms(bool): Fetch all cases with phenotype
             pinned(bool): Fetch all cases with pinned variants
             name_query(str): Could be hpo term, HPO-group, user, part of display name,
                              part of inds or part of synopsis
@@ -316,6 +319,9 @@ class CaseHandler(object):
 
         if cohort:
             query["cohorts"] = {"$exists": True, "$ne": []}
+
+        if group:
+            query["group"] = {"$in": [group]}
 
         if assignee:
             query["assignees"] = {"$in": [assignee]}
@@ -379,6 +385,23 @@ class CaseHandler(object):
         query["status"] = "prioritized"
 
         return self.case_collection.find(query).sort("updated_at", -1)
+
+    def case_ids_from_group_id(self, group_id):
+        """Fetches any cases with given group_id from backend.
+
+        Args:
+            group_id(str): A tag for related cases. A case can belong to several groups.
+
+        Returns:
+            case_ids(list): A list of case _ids
+        """
+
+        return [
+            case["_id"]
+            for case in self.case_collection.find(
+                {"group": {"$elemMatch": {"$eq": group_id}}}, {"_id": 1}
+            )
+        ]
 
     def nr_cases(self, institute_id=None):
         """Return the number of cases

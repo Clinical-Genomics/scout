@@ -106,17 +106,18 @@
       {{ insert_multi_image_panel() }}
 
       <div class="row">
-        {% if case.track != 'cancer' %}
         <div class="col-md-4">
+        {% if case.track != 'cancer' %}
           {% if case.madeline_info and case.individuals|length > 1 %}
             {{ pedigree_panel(case) }}
           {% else %}
             <p>No pedigree picture available.</p>
           {% endif %}
-        </div>
         {% endif %}
+          {{ group_panel() }}
+        </div>
 
-        <div class="{% if case.track != 'cancer' %}col-8{%else%}col-12{%endif%}">
+        <div class="col-8">
           {{ synopsis_panel() }}
           {{ comments_panel(institute, case, current_user, comments) }}
         </div>
@@ -218,7 +219,7 @@
 
 {% macro synopsis_panel() %}
   <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Free text field. Write a summary about the case! Markdown format">Synopsis</div>
+    <div data-toggle='tooltip' class="panel-heading" title="Free text field. Write a summary about the case! Markdown format"><i class="fa fa-id-card-o"></i>&nbsp;Synopsis</div>
       <div class="card-body">
         {{ case.synopsis|markdown if case.synopsis else 'Nothing written yet...' }}
       </div>
@@ -230,6 +231,84 @@
   </div>
 {% endmacro %}
 
+{% macro group_panel() %}
+  <div class="card panel-default">
+    <div data-toggle='tooltip' class="panel-heading" title="Group cases to share user variant assessments like comments, classification and dismissal. A case can be in multiple groups."><span class="fa fa-users"></span>&nbsp;Group connected cases</div>
+    <div class="card-body">
+      {% if case_groups %}
+        {% for group_id, case_group in case_groups.items() %}
+          {{ modal_add_to_group(group_id, case_group, case_group_label[group_id]) }}
+          <div class="row" >
+            <div class="col">
+              <form action="{{ url_for('cases.case_group_update_label', case_group=group_id)}}" method="POST">
+                <div class="input-group">
+                  <div class="input-group-prepend"><span class="fa fa-users input-group-text"></span></div>
+
+                  <input type="text" class="form-control" name="label" id="case_group_label-{{group_id}}" placeholder="{{ case_group_label[group_id] }}">
+                    <button type="submit" class="input-group-append btn btn-outline-secondary text-secondary form-control">Label</button>
+                </div>
+              </form>
+            </div>
+            <div class="col text-right">
+              <div class="btn-group">
+                <button type="button" class="btn btn-outline-secondary form-control" data-toggle="modal" data-target="#add-case-group-{{group_id}}">
+                  <span class="fa fa-plus-square-o"></span>&nbsp;Bind other case
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-12">
+              <ul class="list-group">
+              {% for grouped_case in case_group %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('cases.case', institute_id=grouped_case.owner, case_name=grouped_case.display_name) }}"">{{ grouped_case.display_name }}</a>
+                    <span class="pull-right">
+                      <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=grouped_case.display_name, case_group=group_id) }}" class="btn btn-link btn-sm">
+                        <span class="fa fa-remove"></span></a>
+                    </span>
+                </li>
+              {% endfor %}
+              </ul>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+      <a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="btn btn-primary btn-xs text-white"><span class="fa fa-user-plus text-white mr-3"></span>Create new group</a>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro modal_add_to_group(group_id, case_group, label) %}
+  <form action="{{ url_for('cases.add_case_group', institute_id=institute._id, case_name="unused") }}" method="POST">
+    <div class="modal fade" id="add-case-group-{{group_id}}" role="dialog">
+      <input type="hidden" name="group_id" value="{{ group_id }}">
+      <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="case_pick_dialog">Add other case to case group ({{ label }})</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Cases already in this group:
+          <ul class="list-group">
+          {% for grouped_case in case_group %}
+            <li class="list-group-item">{{ grouped_case.display_name }}</li>
+          {% endfor %}
+          Add case:
+          <input type="text" name="other_case_name" class="typeahead_cases form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for case name..." cols="30" rows="10"></input>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Add case</button>
+        </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
 
 <!-- Iterate through Individuals, if chromograph_files is presenet add a panel for images -->
 {% macro insert_multi_image_panel() %}
@@ -251,12 +330,12 @@
       <div id={{"collapse_" + id_tag}}>
 	<div class="card panel-default">
 	  <div class="panel-heading" >
-            <div class="panel-heading" href={{"#collapsing_" + id_tag}} data-toggle="collapse" datatarget={{"#collapsing_" + id_tag}} aria-expanded="true" aria-controls={{"collapsing_" + id_tag}} data-parent={{"#collapse_" + id_tag}}> <h5 class="panel-heading">Images {{display_name}} &gt</h5>	<span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span> </div>
+      <div class="panel-heading" href={{"#collapsing_" + id_tag}} data-toggle="collapse" datatarget={{"#collapsing_" + id_tag}} aria-expanded="true" aria-controls={{"collapsing_" + id_tag}} data-parent={{"#collapse_" + id_tag}}>Images {{display_name}} &gt	<span class="pull-right clickable"><span class="glyphicon glyphicon-chevron-up"></span></span></div>
           </div>
-          <div id={{"collapsing_" + id_tag}} class="collapse" data-parent={{"#collapse_" + id_tag}} >
+          <div id={{"collapsing_" + id_tag}} class="collapse" data-parent={{"#collapse_" + id_tag}}>
             <div class="card-body">
               <svg id={{"svg_"+id_tag}} width="1200" height="1700"> </svg>
-	    </div>
+	          </div>
           </div>
         </div>
       </div>
@@ -507,6 +586,17 @@
           process(data)
         });
       }
+      function getCases(query, process) {
+        $.get("{{ url_for('cases.caselist', institute_id=institute._id) }}", {query: query}, function(data) {
+          process(data)
+        });
+      }
+
+      $(".typeahead_cases").typeahead({
+        name: 'cases_list',
+        source: getCases,
+        minLength: 3,
+      });
 
       $(".typeahead_hpo").typeahead({
         name: 'hpo_term',

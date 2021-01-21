@@ -7,6 +7,7 @@ import os
 
 import query_phenomizer
 import requests
+from bson.objectid import ObjectId
 from bs4 import BeautifulSoup
 from flask import current_app, url_for, flash
 from flask_login import current_user
@@ -79,6 +80,14 @@ def case(store, institute_obj, case_obj):
         case_obj["individual_ids"].append(individual["individual_id"])
 
     case_obj["assignees"] = [store.user(user_email) for user_email in case_obj.get("assignees", [])]
+
+    # Fetch ids for grouped cases
+    case_groups = {}
+    case_group_label = {}
+    if case_obj.get("group"):
+        for group in case_obj.get("group"):
+            case_groups[group] = list(store.cases(group=group))
+            case_group_label[group] = store.case_group_label(group)
 
     # Fetch the variant objects for suspects and causatives
     suspects = [
@@ -180,7 +189,7 @@ def case(store, institute_obj, case_obj):
 
     events = list(store.events(institute_obj, case=case_obj))
     for event in events:
-        event["verb"] = VERBS_MAP[event["verb"]]
+        event["verb"] = VERBS_MAP.get(event["verb"], "did %s for".format(event["verb"]))
 
     case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
 
@@ -200,6 +209,8 @@ def case(store, institute_obj, case_obj):
         "managed_variants": [var for var in store.check_managed(case_obj=case_obj)],
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "hpo_groups": pheno_groups,
+        "case_groups": case_groups,
+        "case_group_label": case_group_label,
         "events": events,
         "suspects": suspects,
         "causatives": causatives,
@@ -731,6 +742,65 @@ def update_clinical_filter_hpo(store, current_user, institute_id, case_name, hpo
     user_obj = store.user(current_user.email)
     link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
     store.update_clinical_filter_hpo(institute_obj, case_obj, user_obj, link, hpo_clinical_filter)
+
+
+def add_case_group(store, current_user, institute_id, case_name, group=None):
+    """Bind a case group in a selected a case, creating it in current institute if not given.
+
+    Args:
+        current_user    (user)current user
+        institute_id    (str)institute id
+        case_name       (str)case display name
+        group           (str)case group id - converts to ObjectId
+    Returns:
+        updated_case    (InsertOneResult)
+    """
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
+    user_obj = store.user(current_user.email)
+
+    if not group:
+        group = store.init_case_group(institute_id)
+
+    current_group_ids = set(case_obj.get("group", []))
+    current_group_ids.add(ObjectId(group))
+
+    updated_case = store.update_case_group_ids(
+        institute_obj, case_obj, user_obj, link, list(current_group_ids)
+    )
+    return updated_case
+
+
+def remove_case_group(store, current_user, institute_id, case_name, case_group):
+    """Remove a case group from selected institute - and from db if it is no longer in use."""
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
+    user_obj = store.user(current_user.email)
+
+    current_group_ids = case_obj.get("group", [])
+
+    # STR OBJID mismatch?
+    current_group_ids.remove(ObjectId(case_group))
+    updated_case = store.update_case_group_ids(
+        institute_obj, case_obj, user_obj, link, current_group_ids
+    )
+
+    current_group_cases = store.case_ids_from_group_id(case_group)
+
+    if current_group_cases == []:
+        store.remove_case_group(case_group)
+
+    return updated_case
+
+
+def case_group_update_label(store, case_group_id, case_group_label):
+    """Update a case group label."""
+
+    result = store.case_group_update_label(ObjectId(case_group_id), case_group_label)
+
+    return result
 
 
 def vcf2cytosure(store, institute_id, case_name, individual_id):

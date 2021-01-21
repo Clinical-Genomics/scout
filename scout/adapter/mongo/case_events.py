@@ -577,6 +577,35 @@ class CaseEventHandler(object):
         LOG.debug("Case updated")
         return updated_case
 
+    def update_case_group_ids(self, institute_obj, case_obj, user_obj, link, group_ids):
+        """Sets case group_ids, used to group a small number of cases for similar analysis.
+
+        Args:
+            case_id(str): case_id
+            group_ids(list(str)): A list of group defining tags for related cases. A case can belong to several groups.
+        Returns:
+            updated_case(case_obj)
+        """
+
+        self.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=link,
+            category="case",
+            verb="update_case_group_ids",
+            subject=case_obj["display_name"],
+        )
+
+        LOG.info("Update case group ids for {}".format(case_obj["display_name"]))
+        updated_case = self.case_collection.find_one_and_update(
+            {"_id": case_obj["_id"]},
+            {"$set": {"group": group_ids}},
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
+
+        return updated_case
+
     def update_default_panels(self, institute_obj, case_obj, user_obj, link, panel_objs):
         """Update default panels for a case.
 

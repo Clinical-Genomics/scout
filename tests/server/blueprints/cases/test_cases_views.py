@@ -4,6 +4,8 @@ import requests
 from flask import url_for, current_app, jsonify
 from flask_login import current_user
 
+from bson.objectid import ObjectId
+
 from scout.demo import delivery_report_path
 from scout.server.blueprints.cases import controllers
 from scout.server.extensions import store
@@ -322,6 +324,54 @@ def test_update_case_comment(app, institute_obj, case_obj, user_obj):
         updated_var_event = store.event_collection.find_one({"verb": "comment_update"})
         # With the same subject of the comment
         assert updated_var_event["subject"] == updated_comment["subject"]
+
+
+def test_add_case_group(app, case_obj, institute_obj):
+    """Test adding a case group."""
+
+    ### GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN we invoke the add group endpoint with GET
+        resp = client.get(
+            url_for(
+                "cases.add_case_group",
+                institute_id=institute_obj["_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+
+        # THEN the response should be a redirect
+        assert resp.status_code == 302
+
+
+def test_remove_case_group(app, case_obj, institute_obj):
+    """Test removing a case group."""
+    ### GIVEN an initialized app
+    group_id = ObjectId("101010101010101010101010")
+    result = store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]}, {"$set": {"group": [group_id]}}
+    )
+
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN we invoke the add group endpoint with GET
+        resp = client.get(
+            url_for(
+                "cases.remove_case_group",
+                institute_id=institute_obj["_id"],
+                case_name=case_obj["display_name"],
+                case_group=group_id,
+            )
+        )
+
+        # THEN the response should be a redirect
+        assert resp.status_code == 302
 
 
 def test_download_hpo_genes(app, case_obj, institute_obj):
@@ -663,6 +713,30 @@ def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
         assert resp.status_code == 200
         # and it should contain a pdf file, not HTML code
         assert resp.mimetype == "application/pdf"
+
+
+def test_caselist(app, case_obj):
+    """Test the API return of cases for autocompletion"""
+
+    # GIVEN a case
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN the API is invoked with a query string containing part of the case term description
+        resp = client.get(
+            url_for(
+                "cases.caselist", institute_id=case_obj["owner"], query=case_obj["display_name"]
+            )
+        )
+        # THEN it should return a valid response
+        assert resp.status_code == 200
+
+        # containing the case display name
+        assert case_obj["display_name"] in str(resp.data)
 
 
 def test_omimterms(app, test_omim_term):
