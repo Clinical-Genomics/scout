@@ -589,3 +589,27 @@ def test_update_default_panels(adapter, institute_obj, case_obj, user_obj, dummy
     # # THEN a unassign event should be created
     # event = adapter.event_collection.find_one({'verb': 'unassign'})
     # assert event['link'] == 'unassignlink'
+
+
+def test_update_case_group(adapter, institute_obj, case_obj, user_obj):
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    # GIVEN no events in the event collection
+    assert sum(1 for i in adapter.event_collection.find()) == 0
+
+    group_ids = ["1234", "5678"]
+
+    # WHEN calling update function
+    hpo_clinical_filter = True
+    updated_case = adapter.update_case_group_ids(
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        user_obj=user_obj,
+        link="update_case_group_link",
+        group_ids=group_ids,
+    )
+    # THEN group ids are actually updated
+    assert updated_case["group"] == group_ids
+    # THEN an event should have been created
+    assert sum(1 for i in adapter.event_collection.find()) == 1
