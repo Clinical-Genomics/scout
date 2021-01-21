@@ -94,7 +94,7 @@ def matchmaker_matches(institute_id, case_name):
     # check that only authorized users can access MME patients matches
     panel = 1
     if request.method == "POST":
-        panel = panel = request.form.get("pane_id")
+        panel = request.form.get("pane_id")
     user_obj = store.user(current_user.email)
     if "mme_submitter" not in user_obj["roles"]:
         flash("unauthorized request", "warning")
@@ -679,6 +679,23 @@ def assign(institute_id, case_name, user_id=None, inactivate=False):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/api/v1/<institute_id>/cases")
+def caselist(institute_id):
+    """Search for cases for autocompletion"""
+    query = request.args.get("query")
+    if query is None:
+        return abort(500)
+    display_names = sorted(
+        [
+            case["display_name"]
+            for case in store.cases(owner=institute_id, name_query="case:" + query)
+        ]
+    )
+    json_terms = [{"name": "{}".format(display_name)} for display_name in display_names]
+
+    return jsonify(json_terms)
+
+
 @cases_bp.route("/api/v1/hpo-terms")
 def hpoterms():
     """Search for HPO terms."""
@@ -908,6 +925,40 @@ def update_clinical_filter_hpo(institute_id, case_name):
     controllers.update_clinical_filter_hpo(
         store, current_user, institute_id, case_name, hpo_clinical_filter
     )
+    return redirect(request.referrer)
+
+
+@cases_bp.route("/<institute_id>/<case_name>/add_case_group", methods=["GET", "POST"])
+def add_case_group(institute_id, case_name):
+    """Add a new case group for an institute and bind it in selected case.
+
+    GET request (with no group_id) requests init of a new group
+    POST request adds other_case_name to the group
+    """
+    group_id = request.form.get("group_id", None)
+    if request.method == "POST":
+        case_name = request.form.get("other_case_name")
+
+    controllers.add_case_group(store, current_user, institute_id, case_name, group_id)
+
+    return redirect(request.referrer)
+
+
+@cases_bp.route("/<institute_id>/<case_name>/<case_group>/remove_case_group", methods=["GET"])
+def remove_case_group(institute_id, case_name, case_group):
+    """Unbind a case group from a case. Remove the group if it is no longer in use."""
+    controllers.remove_case_group(store, current_user, institute_id, case_name, case_group)
+
+    return redirect(request.referrer)
+
+
+@cases_bp.route("/<case_group>/case_group_update_label", methods=["POST"])
+def case_group_update_label(case_group):
+    """Unbind a case group from a case. Remove the group if it is no longer in use."""
+    label = request.form.get("label", "unlabeled")
+
+    controllers.case_group_update_label(store, case_group, label)
+
     return redirect(request.referrer)
 
 

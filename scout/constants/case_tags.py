@@ -57,11 +57,10 @@ VERBS_MAP = {
     "update_clinical_filter_hpo": "updated clinical filter HPO status for",
     "mme_add": "Exported to MatchMaker patient",
     "mme_remove": "Removed from MatchMaker patient",
-    "filter_stash": "stored a filter for ",
+    "filter_stash": "stored a filter for",
     "update_sample": "updated sample data for",
+    "update_case_group_ids": "updated case group ids for",
 }
-
-VERBS = list(VERBS_MAP.keys())
 
 # Tissue types for rare disease samples and controls
 
