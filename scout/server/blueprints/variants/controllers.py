@@ -84,6 +84,10 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
             )
 
         variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
+
+        if case_obj.get("group"):
+            variant_obj["group_assessments"] = _get_group_assessments(store, case_obj, variant_obj)
+
         variants.append(
             parse_variant(
                 store, institute_obj, case_obj, variant_obj, update=True, genome_build=genome_build
@@ -91,6 +95,35 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
         )
 
     return {"variants": variants, "more_variants": more_variants}
+
+
+def _get_group_assessments(store, case_obj, variant_obj):
+    """Return manual variant assessments for other cases grouped with this one.
+
+    Args:
+        case_obj
+    Returns:
+        group_assessments(list(dict))
+    """
+    group_assessments = []
+
+    group_case_ids = set()
+    for group_id in case_obj.get("group"):
+        group_case_ids.update(store.case_ids_from_group_id(group_id))
+
+        for group_case_id in group_case_ids:
+            # Returning an extra assessment for variants from the same case is pointless
+            if group_case_id == case_obj["_id"]:
+                continue
+
+            cohort_var_obj = store.variant(
+                case_id=group_case_id,
+                simple_id=variant_obj["simple_id"],
+                variant_type=variant_obj["variant_type"],
+            )
+            group_assessments.extend(get_manual_assessments(cohort_var_obj))
+
+    return group_assessments
 
 
 def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
