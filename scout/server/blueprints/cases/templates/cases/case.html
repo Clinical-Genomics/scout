@@ -236,10 +236,17 @@
     <div class="card-body">
       {% if case_groups %}
         {% for group_id, case_group in case_groups.items() %}
-          {{ modal_add_to_group(group_id, case_group) }}
-          <div class="row">
+          {{ modal_add_to_group(group_id, case_group, case_group_label[group_id]) }}
+          <div class="row" >
             <div class="col">
-              <span class="fa fa-users"></span>&nbsp;Group #{{ group_id|string|truncate(9) }}
+              <form action="{{ url_for('cases.case_group_update_label', case_group=group_id)}}" method="POST">
+                <div class="input-group">
+                  <div class="input-group-prepend"><span class="fa fa-users input-group-text"></span></div>
+
+                  <input type="text" class="form-control" name="label" id="case_group_label-{{group_id}}" placeholder="{{ case_group_label[group_id] }}">
+                    <button type="submit" class="input-group-append btn btn-outline-secondary text-secondary form-control">Label</button>
+                </div>
+              </form>
             </div>
             <div class="col text-right">
               <div class="btn-group">
@@ -249,17 +256,21 @@
               </div>
             </div>
           </div>
-          <ul class="list-group">
-          {% for grouped_case in case_group %}
-            <li class="list-group-item">
-                <a href="{{ url_for('cases.case', institute_id=grouped_case.owner, case_name=grouped_case.display_name) }}"">{{ grouped_case.display_name }}</a>
-                <span class="pull-right">
-                  <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=grouped_case.display_name, case_group=group_id) }}" class="btn btn-link btn-sm">
-                    <span class="fa fa-remove"></span></a>
-                </span>
-            </li>
-          {% endfor %}
-          </ul>
+          <div class="row mb-4">
+            <div class="col-12">
+              <ul class="list-group">
+              {% for grouped_case in case_group %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('cases.case', institute_id=grouped_case.owner, case_name=grouped_case.display_name) }}"">{{ grouped_case.display_name }}</a>
+                    <span class="pull-right">
+                      <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=grouped_case.display_name, case_group=group_id) }}" class="btn btn-link btn-sm">
+                        <span class="fa fa-remove"></span></a>
+                    </span>
+                </li>
+              {% endfor %}
+              </ul>
+            </div>
+          </div>
         {% endfor %}
       {% endif %}
       <a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="btn btn-primary btn-xs text-white"><span class="fa fa-user-plus text-white mr-3"></span>Create new group</a>
@@ -267,14 +278,14 @@
   </div>
 {% endmacro %}
 
-{% macro modal_add_to_group(group_id, case_group) %}
+{% macro modal_add_to_group(group_id, case_group, label) %}
   <form action="{{ url_for('cases.add_case_group', institute_id=institute._id, case_name="unused") }}" method="POST">
     <div class="modal fade" id="add-case-group-{{group_id}}" role="dialog">
       <input type="hidden" name="group_id" value="{{ group_id }}">
       <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="case_pick_dialog">Add other case to this case group</h5>
+          <h5 class="modal-title" id="case_pick_dialog">Add other case to case group ({{ label }})</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>

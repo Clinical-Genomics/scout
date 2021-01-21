@@ -952,6 +952,16 @@ def remove_case_group(institute_id, case_name, case_group):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/<case_group>/case_group_update_label", methods=["POST"])
+def case_group_update_label(case_group):
+    """Unbind a case group from a case. Remove the group if it is no longer in use."""
+    label = request.form.get("label", "unlabeled")
+
+    controllers.case_group_update_label(store, case_group, label)
+
+    return redirect(request.referrer)
+
+
 @cases_bp.route("/<institute_id>/<case_name>/download-hpo-genes", methods=["GET"])
 def download_hpo_genes(institute_id, case_name):
     """Download the genes contained in a case dynamic gene list"""

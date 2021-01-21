@@ -80,9 +80,11 @@ def case(store, institute_obj, case_obj):
 
     # Fetch ids for grouped cases
     case_groups = {}
+    case_group_label = {}
     if case_obj.get("group"):
         for group in case_obj.get("group"):
             case_groups[group] = list(store.cases(group=group))
+            case_group_label[group] = store.case_group_label(group)
 
     # Fetch the variant objects for suspects and causatives
     suspects = [
@@ -205,6 +207,7 @@ def case(store, institute_obj, case_obj):
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "hpo_groups": pheno_groups,
         "case_groups": case_groups,
+        "case_group_label": case_group_label,
         "events": events,
         "suspects": suspects,
         "causatives": causatives,
@@ -787,6 +790,14 @@ def remove_case_group(store, current_user, institute_id, case_name, case_group):
         store.remove_case_group(case_group)
 
     return updated_case
+
+
+def case_group_update_label(store, case_group_id, case_group_label):
+    """Update a case group label."""
+
+    result = store.case_group_update_label(ObjectId(case_group_id), case_group_label)
+
+    return result
 
 
 def vcf2cytosure(store, institute_id, case_name, individual_id):
