@@ -17,6 +17,7 @@ This command will backup all non-static collections that saves user input data, 
         institute_collection
         event_collection
         case_collection
+        case_group_collection
         panel_collection
         acmg_collection
         clinvar_submission_collection

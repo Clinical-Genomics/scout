@@ -2,7 +2,7 @@
 
 {% macro cohort_panel(case, institute, cohort_tags) %}
   <div class="card panel-default">
-    <div class="panel-heading">Cohort tag</div>
+    <div class="panel-heading"><span class="fa fa-tag"></span>&nbsp;Cohort tag</div>
     <div class="card-body">
       <ul class="list-group">
       {% for cohort_tag in case.cohorts %}
@@ -120,7 +120,7 @@
 
 {% macro phenotype_groups_panel(case, institute, hpo_groups) %}
   <div class="card panel-default">
-    <div class="panel-heading">Phenotype groups</div>
+    <div class="panel-heading"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype groups</div>
     <div class="card-body">
       <ul class="list-group">
         {% for hpo_term in case.phenotype_groups %}
@@ -156,7 +156,7 @@
 {% macro phenotype_terms_panel(case, institute) %}
   {% set url = 'http://hpo.jax.org/app/browse/term/HP:0000018' %}
   <div class="card panel-default">
-    <div class="panel-heading">Phenotype terms (<a target="_blank" href="{{ url }}" class="text-white">HPO web</a>)</div>
+    <div class="panel-heading"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype terms (<a target="_blank" href="{{ url }}" class="text-white">HPO web</a>)</div>
     <div class="card-body">
       <form method="POST" action="{{ url_for('cases.phenotypes', institute_id=institute._id, case_name=case.display_name) }}">
         <div class="row form-inline">
@@ -192,7 +192,7 @@
 {% macro phenotypes_panel(case, institute, config) %}
   <form action="{{ url_for('cases.phenotypes_actions', institute_id=institute._id, case_name=case.display_name)+'#phenotypes_panel' }}" method="POST">
     <div id="phenotypes_panel" class="card panel-default">
-      <div class="panel-heading">Added phenotypes</div>
+      <div class="panel-heading"><span class="fa fa-stethoscope"></span>&nbsp;Added phenotypes</div>
       <div class="card-body">
         <ul class="list-group">
           {% for hpo_term in case.phenotype_terms %}
