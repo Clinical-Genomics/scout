@@ -140,7 +140,7 @@ def variant(
     # Collect all the events for the variant
     events = list(store.events(institute_obj, case=case_obj, variant_id=variant_id))
     for event in events:
-        event["verb"] = VERBS_MAP[event["verb"]]
+        event["verb"] = VERBS_MAP.get(event["verb"], "did %s for".format(event["verb"]))
 
     # Comments are not on case level so these needs to be fetched on their own
     variant_obj["comments"] = store.events(

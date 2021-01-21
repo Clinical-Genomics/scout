@@ -34,6 +34,7 @@ from flask import current_app
 from .hgnc import GeneHandler
 from .transcript import TranscriptHandler
 from .case import CaseHandler
+from .case_group import CaseGroupHandler
 from .institute import InstituteHandler
 from .event import EventHandler
 from .hpo import HpoHandler
@@ -58,6 +59,7 @@ log = logging.getLogger(__name__)
 class MongoAdapter(
     GeneHandler,
     CaseHandler,
+    CaseGroupHandler,
     InstituteHandler,
     EventHandler,
     HpoHandler,
@@ -99,6 +101,7 @@ class MongoAdapter(
         self.institute_collection = database.institute
         self.event_collection = database.event
         self.case_collection = database.case
+        self.case_group_collection = database.case_group
         self.panel_collection = database.gene_panel
         self.hpo_term_collection = database.hpo_term
         self.disease_term_collection = database.disease_term
