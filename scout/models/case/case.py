@@ -90,4 +90,5 @@ case = dict(
     has_strvariants=bool,  # default=False
     is_migrated=bool,  # default=False
     multiqc=str,  # path to multiqc report
+    group=list,  # a list of group ids for cases conceptually grouped together with this
 )
