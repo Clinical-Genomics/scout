@@ -192,6 +192,7 @@ def str_variants(institute_id, case_name):
     category = "str"
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, False)
 
     user_obj = store.user(current_user.email)
 
@@ -234,10 +235,7 @@ def str_variants(institute_id, case_name):
         ]
     )
 
-    controllers.variant_count_session(store, institute_id, case_obj["_id"], variant_type, category)
     result_size = store.count_variants(case_obj["_id"], query, None, category)
-
-    session["filtered_variants"] = result_size
 
     data = controllers.str_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
@@ -252,6 +250,8 @@ def str_variants(institute_id, case_name):
         form=form,
         page=page,
         expand_search=str(request.method == "POST"),
+        result_size=result_size,
+        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
     )
 
