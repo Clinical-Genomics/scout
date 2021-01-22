@@ -1,0 +1,46 @@
+# Deployment document for Scout web server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout-web-deployment
+  labels:
+    app: scout-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout-web
+  template:
+    metadata:
+      labels:
+        app: scout-web
+    spec:
+      volumes:
+      - name: config-vol
+        configMap:
+          name: scoutconfig
+      containers:
+      - name: scout-web # serve scout pages using scout-web service
+        image: clinicalgenomics/scout
+        volumeMounts:
+        - name: config-vol
+          mountPath: /config
+        ports:
+        - containerPort: 5000
+        command: ["scout"]
+        args: ["--flask-config", "/config/config.py", "serve", "--host", "0.0.0.0"]
+---
+# External service document
+apiVersion: v1
+kind: Service
+metadata:
+  name: scout-web-service
+spec:
+  selector:
+    app: scout-web
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+      nodePort: 30000

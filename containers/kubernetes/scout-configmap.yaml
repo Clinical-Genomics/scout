@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scoutconfig
+data:
+  config.py: |
+    MONGO_HOST="mongodb-service"
+    MONGO_PORT= 27017
+    MONGO_DBNAME= "scout-demo"
+    MONGO_USERNAME= "scoutUser"
+    MONGO_PASSWORD= "scoutPassword"
