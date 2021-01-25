@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_table %}
-{% from "variants/utils.html" import sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer %}
+{% from "variants/utils.html" import sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer, dismiss_variants_block %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
@@ -55,6 +55,7 @@
     <table id="variantsTable" class="table table-hover table-bordered">
       <thead>
         <tr>
+          <th style="width:3%"></th>
           <th>Index</th>
           <th>Score</th>
           <th>Type</th>
@@ -78,6 +79,7 @@
         {% endfor %}
       </tbody>
     </table>
+    {{ dismiss_variants_block(dismiss_variant_options) }}
   </form>
   </div>
   <div class="container-fluid">
@@ -185,6 +187,7 @@
   {% else %}
   <tr>
   {% endif %}
+    <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
     <td>
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
