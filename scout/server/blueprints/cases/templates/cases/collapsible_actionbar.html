@@ -1,4 +1,4 @@
-{% macro action_bar(institute, case, collaborators) %}
+{% macro action_bar(institute, case, collaborators, current_user) %}
 <!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
   <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
       <!-- Bootstrap List Group -->
@@ -23,6 +23,9 @@
           {% endif %}
           {{ rerun(case) }}
           {{ share_case(institute, case, collaborators) }}
+          {% if "beacon_submitter" in current_user.roles %}
+            {{ beacon_share(institute, case) }}
+          {% endif %}
           {% if case.needs_check %}
             {{ check_decipher(case, institute) }}
           {% endif %}
@@ -259,7 +262,7 @@
 {% endmacro %}
 
 {% macro share_case(institute, case, collaborators) %}
-<a href="#submenu4" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">  <div class="d-flex w-100 justify-content-start align-items-center"
+<a href="#submenu4" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fa fa-handshake-o fa-fw mr-3"></span>
     <span class="menu-collapsed">Share case</span>
@@ -302,6 +305,16 @@
     </form>
   {% endif %}
 </div>
+{% endmacro %}
+
+{% macro beacon_share(institute, case) %}
+<a data-target="#beacon_modal" data-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+  <div class="d-flex w-100 justify-content-start align-items-center">
+    <span class="fab fa-watchman-monitoring"></span>
+    <span class="menu-collapsed ml-3">Share to Beacon</span>
+    <span class="submenu-icon ml-auto"></span>
+  </div>
+</a>
 {% endmacro %}
 
 {% macro check_decipher(case, institute) %}
