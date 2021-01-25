@@ -87,6 +87,22 @@ def sma(institute_id, case_name):
     return dict(institute=institute_obj, case=case_obj, format="html", **data)
 
 
+@cases_bp.route("/beacon_submit", methods=["POST"])
+def beacon_submit():
+    """Submit case variants to Beacon"""
+
+    controllers.beacon_add(request.form)
+    return redirect(request.referrer)
+
+
+@cases_bp.route("/beacon_remove/<case_id>", methods=["GET"])
+def beacon_remove(case_id):
+    """Remove all variants from a case from Beacon"""
+
+    controllers.beacon_remove(case_id)
+    return redirect(request.referrer)
+
+
 @cases_bp.route("/<institute_id>/<case_name>/mme_matches", methods=["GET", "POST"])
 @templated("cases/matchmaker.html")
 def matchmaker_matches(institute_id, case_name):
