@@ -587,6 +587,8 @@ class CaseHandler(object):
 
         old_sanger_variants = self.case_sanger_variants(case_obj["_id"])
 
+        genome_build = str(parsed_case.get("genome_build", 37))
+
         if old_case:
             LOG.info(
                 "Update case id for existing case: %s -> %s",
@@ -644,6 +646,7 @@ class CaseHandler(object):
                     case_obj=case_obj,
                     variant_type=variant_type,
                     category=category,
+                    build=genome_build,
                     rank_threshold=case_obj.get("rank_score_threshold", 5),
                 )
 
