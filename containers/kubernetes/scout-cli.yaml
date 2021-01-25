@@ -1,0 +1,25 @@
+# Scout pod for running cli commands
+apiVersion: v1
+kind: Pod
+metadata:
+  name: scout-cli
+spec:
+  containers:
+    - name: scout-cli
+      image: clinicalgenomics/scout
+      tty: true
+      volumeMounts:
+      - name: config-vol
+        mountPath: /config
+      #- name: data-volume
+      #  mountPath: /data
+
+  volumes:
+  - name: config-vol
+    configMap:
+      name: scoutconfig
+  #- name: data-volume
+  #  hostPath:
+     # directory location on host
+     #path: /path/to/NGS/data
+     #type: Directory
