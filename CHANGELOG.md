@@ -31,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Google OAuth2 login setup in README file
 - Redirect to 'missing file'-icon if configured file is missing
 - Javascript error in case page
+- Fix compound matching during variant loading for hg38
 ### Changed
 - Save case variants count in case document and not in sessions
 - Style of gene panels multiselect on case page
