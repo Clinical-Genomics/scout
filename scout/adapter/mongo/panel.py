@@ -317,7 +317,6 @@ class PanelHandler:
             gene_list(list): a list of hgnc terms (either symbols or HGNC ids)
 
         """
-        gene_list = []
         panel_obj = None
         if panel_id:
             panel_obj = self.panel(panel_id)
@@ -325,7 +324,7 @@ class PanelHandler:
             panel_obj = self.gene_panel(panel_name)
 
         if panel_obj is None:
-            return gene_list
+            return []
 
         gene_list = [gene_obj.get(gene_format, "") for gene_obj in panel_obj.get("genes", [])]
         return gene_list
