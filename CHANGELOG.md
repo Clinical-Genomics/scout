@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Lock phenomodels so they're editable by admins only
 - Small case group assessment sharing
 - Tutorial and files for deploying app on containers (Kubernetes pods)
+- Canonical transcript and protein change of canonical transcript in exported variants excel sheet
 - Button to reset all dismissed variants for a case
 ### Fixed
 - Bugfix: unused `chromgraph_prefix |tojson` removed
