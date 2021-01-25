@@ -1,5 +1,5 @@
 """Code for performing requests"""
-
+import json
 import logging
 import urllib.request
 import zlib
@@ -22,6 +22,31 @@ HPO_URL = (
     "/artifact/util/annotation/{}"
 )
 HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
+
+
+def post_request_json(url, data, headers):
+    """Send json data via POST request and return response
+
+    Args:
+        url(str): url to send request to
+        data(dict): data to be sent
+        headers(dict): request headers
+
+    Returns:
+        json_response(dict)
+    """
+    resp = None
+    json_response = {}
+    try:
+        LOG.debug(f"Sending POST request with json data to {url}")
+        resp = requests.post(url, headers=headers, json=data)
+        json_response = resp.json()
+    except Exception as ex:
+        return {"message": f"An error occurred while sending a POST request to url {url} -> {ex}"}
+
+    json_response["status_code"] = resp.status_code
+    LOG.debug(f"returned response is:{json_response}")
+    return json_response
 
 
 def get_request(url):

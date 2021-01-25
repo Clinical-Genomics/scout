@@ -42,7 +42,7 @@ def test_report_transcripts_macro(app, institute_obj, case_obj, variant_gene_upd
         assert variant_gene_updated_info["transcripts"][1]["transcript_id"] not in html
 
 
-def test_sidebar_macro(app, institute_obj, case_obj):
+def test_sidebar_macro(app, institute_obj, case_obj, user_obj):
     """test the case sidebar macro"""
 
     # GIVEN a case with several delivery reports, both in "delivery_report" field and "analyses" field
@@ -68,23 +68,18 @@ def test_sidebar_macro(app, institute_obj, case_obj):
         ),
     ]
     # update test case with the analyses above
-    updated_case = store.case_collection.find_one_and_update(
-        {"_id": case_obj["_id"]},
-        {
-            "$set": {
-                "analysis_date": today,
-                "delivery_report": new_report,
-                "analyses": case_analyses,
-            }
-        },
-        return_document=ReturnDocument.AFTER,
-    )
+    case_obj["analysis_date"] = today
+    case_obj["delivery_report"] = new_report
+    case_obj["analyses"] = case_analyses
+
+    # update test user by adding beacon_submitter as role
+    user_obj["roles"] = ["beacon_submitter"]
 
     # GIVEN an initialized app
     with app.test_client() as client:
         # WHEN the case sidebar macro is called
         macro = get_template_attribute("cases/collapsible_actionbar.html", "action_bar")
-        html = macro(institute_obj, updated_case)
+        html = macro(institute=institute_obj, case=case_obj, current_user=user_obj)
 
         # It should show the expected items:
         assert "Reports" in html
@@ -109,14 +104,15 @@ def test_sidebar_macro(app, institute_obj, case_obj):
         assert "Research list" in html
         assert "Reruns" in html
         assert "Share case" in html
+        assert "Share to Beacon" in html
 
 
-def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj):
+def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj, user_obj):
     # GIVEN an initialized app
     with app.test_client() as client:
         # WHEN the case sidebar macro is called
         macro = get_template_attribute("cases/collapsible_actionbar.html", "action_bar")
-        html = macro(institute_obj, cancer_case_obj)
+        html = macro(institute=institute_obj, case=cancer_case_obj, current_user=user_obj)
 
         # It should show the expected items:
         assert "CNV report" in html
