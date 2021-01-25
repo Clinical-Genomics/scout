@@ -14,7 +14,7 @@ LOG = logging.getLogger(__name__)
     "--update-role",
     "-r",
     # There will be more roles in the future
-    type=click.Choice(["admin", "mme_submitter"]),
+    type=click.Choice(["admin", "mme_submitter", "beacon_submitter"]),
     help="Add a role to the user",
 )
 @click.option("--remove-admin", is_flag=True, help="Remove admin rights from user")
