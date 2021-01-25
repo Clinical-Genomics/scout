@@ -3,6 +3,7 @@
 This includes instructions for bioinformaticians to install, manage and update a scout instance
 
 * [Admin Guide](./README.md)
+  * [Deploy Scout in containers](./container-deploy.md)
   * [Setup](./setup-scout.md)
   * [Loading](./loading.md)
   * [Load config](./load-config.md)
