@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation on default and custom IGV.js tracks (admin docs)
 - Lock phenomodels so they're editable by admins only
 - Small case group assessment sharing
+- Tutorial and files for deploying app on containers (Kubernetes pods)
 - Hide dismissed variants in variants pages and variants export function
 ### Fixed
 - Bugfix: unused `chromgraph_prefix |tojson` removed
