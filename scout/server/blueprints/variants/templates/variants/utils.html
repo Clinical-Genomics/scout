@@ -10,9 +10,7 @@
       {{ form.hide_dismissed.label(class="ml-3") }}
     </div>
     <div class="col-2 offset-3 d-flex justify-content-start">
-      {% if "all_variants" in session %}
-        Showing {{result_size}} / {{ total_variants }} variants
-      {% endif %}
+      Showing {{result_size}} / {{ total_variants }} variants
     </div>
   </div>
 </div>
