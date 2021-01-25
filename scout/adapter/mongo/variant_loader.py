@@ -390,7 +390,7 @@ class VariantLoader(object):
         genes = [gene_obj for gene_obj in self.all_genes(build=build)]
         gene_to_panels = self.gene_to_panels(case_obj)
         hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
-        genomic_intervals = self.get_coding_intervals(genes=genes)
+        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
 
         LOG.info("Start inserting {0} {1} variants into database".format(variant_type, category))
         start_insertion = datetime.now()
