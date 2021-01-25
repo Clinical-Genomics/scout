@@ -475,6 +475,10 @@ def parse_case(config):
     if "family" not in config:
         raise ConfigError("A case has to have a 'family'")
 
+    allowed_genome_builds = ["37", "38"]
+    if str(config.get("human_genome_build")) not in allowed_genome_builds:
+        raise ConfigError(f"human_genome_build must be one of {allowed_genome_builds}")
+
     individuals = parse_individuals(config["samples"])
     synopsis = None
     if config.get("synopsis"):
