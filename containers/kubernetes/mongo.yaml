@@ -1,0 +1,62 @@
+# Deployment document
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-deployment
+  labels:
+    app: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: vepo/mongo # Lightweight Docker image for MongoDB using auth
+        ports:
+        - containerPort: 27017
+        env:
+        - name: AUTH
+          value: "y"
+        - name: ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongodb-root-username
+        - name: ADMIN_PASS
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: mongodb-root-password
+        - name: APPLICATION_DATABASE
+          value: scout-demo
+        - name: APPLICATION_USER
+          valueFrom:
+            secretKeyRef:
+              name: scout-secret
+              key: scout-username
+        - name: APPLICATION_PASS
+          valueFrom:
+            secretKeyRef:
+              name: scout-secret
+              key: scout-password
+
+# Creating an internal service for connecting to mongodb, on a different document:
+---
+# Mongodb service document
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+spec:
+  selector:
+    app: mongodb
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
