@@ -19,6 +19,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Small case group assessment sharing
 - Tutorial and files for deploying app on containers (Kubernetes pods)
 - Canonical transcript and protein change of canonical transcript in exported variants excel sheet
+- Support for Font Awesome version 6
+- Submit to Beacon from case page sidebar
 - Hide dismissed variants in variants pages and variants export function
 ### Fixed
 - Bugfix: unused `chromgraph_prefix |tojson` removed
