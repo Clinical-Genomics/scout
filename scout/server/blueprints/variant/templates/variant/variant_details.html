@@ -40,8 +40,10 @@
               {% endif %}
               {% if variant.category == "cancer" %}
                 {% set cancer_var = namespace() %}
-                {% if sample.allele_depths[1] != -1 %}
-                  {% set cancer_var.vaf = (sample.allele_depths[1]/sample.read_depth)|round(4) %}
+                {% if sample.is_affected and sample.sample_id == variant.tumor.ind_id %}
+                  {% set cancer_var.vaf = variant.tumor.alt_freq|round(4) %}
+                {% elif sample.sample_id == variant.normal.ind_id %} <!--normal-->
+                  {% set cancer_var.vaf = variant.normal.alt_freq|round(4) %}
                 {% else %}
                   {% set cancer_var.vaf = "N/A" %}
                 {% endif %}
