@@ -880,7 +880,7 @@ def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_lis
         link = link = url_for(
             link_page,
             institute_id=institute_obj["_id"],
-            case_name=case_obj["_id"],
+            case_name=case_obj["display_name"],
             variant_id=variant_id,
         )
         # dismiss variant

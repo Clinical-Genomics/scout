@@ -119,6 +119,7 @@ class VariantFiltersForm(FlaskForm):
     cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
     cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
 
+    hide_dismissed = BooleanField("Hide dismissed", default=False)
     filter_variants = SubmitField(label="Filter variants")
     export = SubmitField(label="Filter and export")
 
