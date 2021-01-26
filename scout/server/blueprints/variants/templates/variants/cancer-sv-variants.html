@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_table %}
-{% from "variants/utils.html" import sv_filters,cell_rank, pagination_footer, pagination_hidden_div %}
+{% from "variants/utils.html" import sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer, dismiss_variants_block %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
@@ -37,28 +37,25 @@
 {% endblock %}
 
 {% block content_main %}
+<form method="POST" id="filters_form" action="{{url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name)}}" >
   <div class="container-float">
-    <form method="POST" id="filters_form" action="{{url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name)}}" >
       {{ pagination_hidden_div(page) }}
       <div class="card panel-default" id="accordion">
         <div class="card-header">
           <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">SvFilters</a></strong>
         </div>
         <!--Expand filters form if filters were used in a previous POST request-->
-        <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}">
+        <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search is true }}">
           <div class="card-body">{{ sv_filters(form, institute, case) }}</div>
         </div>
-        <div class="card-footer text-center py-3">
-          {% if "all_variants" in session %}
-            Showing {{result_size}} / {{ total_variants }} variants
-          {% endif %}
-        </div>
+        {{ filter_form_footer(form, result_size, total_variants) }}
       </div>
   </div>
   <div class="card mt-3">
     <table id="variantsTable" class="table table-hover table-bordered">
       <thead>
         <tr>
+          <th style="width:3%"></th>
           <th>Index</th>
           <th>Score</th>
           <th>Type</th>
@@ -82,11 +79,12 @@
         {% endfor %}
       </tbody>
     </table>
-  </form>
+    {{ dismiss_variants_block(dismiss_variant_options) }}
   </div>
   <div class="container-fluid">
     {{ pagination_footer(more_variants, page) }}
   </div>
+  </form>
 {% endblock %}
 
 {% macro filters_form() %}
@@ -189,6 +187,7 @@
   {% else %}
   <tr>
   {% endif %}
+    <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
     <td>
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
@@ -263,9 +262,15 @@
       populateCytobands({{cytobands|safe}});
     })
 
-   chromPosInpt.addEventListener("input", function() {
+    chromPosInpt.addEventListener("input", function() {
       updateCoordinateFields(event.target)
-   })
+    })
+
+    document.getElementById('hide_dismissed').onchange = function() {
+      document.getElementById('expand_search').value = "False";
+      var the_form = document.forms['filters_form'];
+      the_form.submit();
+    };
 
     var cytoStart = document.getElementById("cytoband_start");
     initSearchConstraints(cytoStart, startElem)

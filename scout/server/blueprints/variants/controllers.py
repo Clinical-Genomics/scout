@@ -19,6 +19,7 @@ from scout.constants import (
     CANCER_TIER_OPTIONS,
     CLINSIG_MAP,
     DISMISS_VARIANT_OPTIONS,
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     SEVERE_SO_TERMS,
@@ -223,14 +224,18 @@ def get_manual_assessments(variant_obj):
                 assessment["display_class"] = classification["color"]
 
             if assessment_type == "dismiss_variant":
+                dismiss_variant_options = {
+                    **DISMISS_VARIANT_OPTIONS,
+                    **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+                }
                 assessment["label"] = "Dismissed"
                 assessment["title"] = "dismiss:<br>"
                 for reason in variant_obj[assessment_type]:
                     if not isinstance(reason, int):
                         reason = int(reason)
                         assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                            DISMISS_VARIANT_OPTIONS[reason]["label"],
-                            DISMISS_VARIANT_OPTIONS[reason]["description"],
+                            dismiss_variant_options[reason]["label"],
+                            dismiss_variant_options[reason]["description"],
                         )
                 assessment["display_class"] = "secondary"
 
@@ -879,7 +884,7 @@ def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_lis
         link = link = url_for(
             link_page,
             institute_id=institute_obj["_id"],
-            case_name=case_obj["_id"],
+            case_name=case_obj["display_name"],
             variant_id=variant_id,
         )
         # dismiss variant

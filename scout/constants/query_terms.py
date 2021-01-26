@@ -15,6 +15,7 @@ FUNDAMENTAL_CRITERIA = [
     "start",
     "end",
     "variant_ids",
+    "hide_dismissed",
 ]
 
 # If there is only one primary criterion given without any secondary, it will also be

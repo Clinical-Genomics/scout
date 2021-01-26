@@ -166,6 +166,7 @@ def variants(institute_id, case_name):
         return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.variants(store, institute_obj, case_obj, variants_query, result_size, page)
+    expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -176,7 +177,7 @@ def variants(institute_id, case_name):
         severe_so_terms=SEVERE_SO_TERMS,
         cytobands=cytobands,
         page=page,
-        expand_search=str(request.method == "POST"),
+        expand_search=expand_search,
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
@@ -297,7 +298,7 @@ def sv_variants(institute_id, case_name):
     data = controllers.sv_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
-
+    expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -308,7 +309,7 @@ def sv_variants(institute_id, case_name):
         severe_so_terms=SEVERE_SO_TERMS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
-        expand_search=str(request.method == "POST"),
+        expand_search=expand_search,
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
@@ -352,7 +353,7 @@ def cancer_variants(institute_id, case_name):
                     ".cancer_variants",
                     institute_id=institute_id,
                     case_name=case_name,
-                    expand_search="True",
+                    expand_search=True,
                 )
             )
         page = int(request.form.get("page", 1))
@@ -387,7 +388,7 @@ def cancer_variants(institute_id, case_name):
     data = controllers.cancer_variants(
         store, institute_id, case_name, variants_query, result_size, form, page=page
     )
-
+    expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
     return dict(
         variant_type=variant_type,
         cytobands=cytobands,
@@ -395,7 +396,7 @@ def cancer_variants(institute_id, case_name):
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
-        expand_search=str(request.method == "POST"),
+        expand_search=expand_search,
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
@@ -417,6 +418,16 @@ def cancer_sv_variants(institute_id, case_name):
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
 
+    if request.form.getlist("dismiss"):  # dismiss a list of variants
+        controllers.dismiss_variant_list(
+            store,
+            institute_obj,
+            case_obj,
+            "variant.sv_variant",
+            request.form.getlist("dismiss"),
+            request.form.getlist("dismiss_choices"),
+        )
+
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
@@ -432,7 +443,7 @@ def cancer_sv_variants(institute_id, case_name):
     data = controllers.sv_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
-
+    expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -447,7 +458,7 @@ def cancer_sv_variants(institute_id, case_name):
         manual_rank_options=MANUAL_RANK_OPTIONS,
         cytobands=cytobands,
         page=page,
-        expand_search=str(request.method == "POST"),
+        expand_search=expand_search,
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
