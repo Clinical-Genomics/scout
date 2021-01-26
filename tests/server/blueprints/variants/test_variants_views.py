@@ -360,16 +360,16 @@ def test_sv_cancer_variants(app, institute_obj, case_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-    # WHEN accessing the sv-variants page
-    resp = client.get(
-        url_for(
-            "variants.cancer_sv_variants",
-            institute_id=institute_obj["internal_id"],
-            case_name=case_obj["display_name"],
+        # WHEN accessing the sv-variants page
+        resp = client.get(
+            url_for(
+                "variants.cancer_sv_variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
         )
-    )
-    # THEN it should return a page
-    assert resp.status_code == 200
+        # THEN it should return a page
+        assert resp.status_code == 200
 
 
 def test_filter_export_cancer_variants(app, institute_obj, case_obj):
