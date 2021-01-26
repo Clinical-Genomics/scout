@@ -40,7 +40,7 @@
               {% endif %}
               {% if variant.category == "cancer" %}
                 {% set cancer_var = namespace() %}
-                {% if sample.is_affected and sample.sample_id == variant.tumor.ind_id %}
+                {% if sample.sample_id == variant.tumor.ind_id %}
                   {% set cancer_var.vaf = variant.tumor.alt_freq|round(4) %}
                 {% elif sample.sample_id == variant.normal.ind_id %} <!--normal-->
                   {% set cancer_var.vaf = variant.normal.alt_freq|round(4) %}
