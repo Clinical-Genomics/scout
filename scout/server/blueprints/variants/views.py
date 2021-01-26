@@ -177,7 +177,7 @@ def variants(institute_id, case_name):
         cytobands=cytobands,
         page=page,
         expand_search=request.form.get("expand_search") != "False"
-        and str(request.method == "POST"),
+        and request.method == "POST",
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
@@ -265,7 +265,8 @@ def sv_variants(institute_id, case_name):
     data = controllers.sv_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
-
+    expand_search == request.method == "POST" and request.form.get("expand_search") in ["True", ""]
+    flash(f"Here-->{request.form.get('expand_search')}")
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -276,8 +277,7 @@ def sv_variants(institute_id, case_name):
         severe_so_terms=SEVERE_SO_TERMS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
-        expand_search=request.form.get("expand_search") != "False"
-        and str(request.method == "POST"),
+        expand_search=expand_search,
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
@@ -365,7 +365,7 @@ def cancer_variants(institute_id, case_name):
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
         expand_search=request.form.get("expand_search") != "False"
-        and str(request.method == "POST"),
+        and request.method == "POST",
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
@@ -428,7 +428,7 @@ def cancer_sv_variants(institute_id, case_name):
         cytobands=cytobands,
         page=page,
         expand_search=request.form.get("expand_search") != "False"
-        and str(request.method == "POST"),
+        and request.method == "POST",
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
