@@ -14,7 +14,11 @@
             <th rowspan="2">Sample</th>
             <th rowspan="2">Genotype (GT)</th>
             <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
-            <th rowspan="2" colspan="1" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+            {% if variant.category == "cancer" %}
+              <th rowspan="2" colspan="1" title="Variant Allele Frequency.">Variant Allele Frequency (VAF)</th>
+            {% else %}
+              <th rowspan="2" colspan="1" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+            {% endif %}
             <tr>
               <th>Reference</th>
               <th>Alternative</th>
@@ -34,7 +38,19 @@
                   <td class="text-right"><small>N/A</small></td>
                   <td class="text-right"><small>N/A</small></td>
               {% endif %}
-              <td class="text-right">{{ sample.genotype_quality }}</td>
+              {% if variant.category == "cancer" %}
+                {% set cancer_var = namespace() %}
+                {% if sample.sample_id == variant.tumor.ind_id %}
+                  {% set cancer_var.vaf = variant.tumor.alt_freq|round(4) %}
+                {% elif sample.sample_id == variant.normal.ind_id %} <!--normal-->
+                  {% set cancer_var.vaf = variant.normal.alt_freq|round(4) %}
+                {% else %}
+                  {% set cancer_var.vaf = "N/A" %}
+                {% endif %}
+                <td class="text-right">{{ cancer_var.vaf }}</td>
+              {% else %}
+                <td class="text-right">{{ sample.genotype_quality }}</td>
+              {% endif %}
             </tr>
           {% endfor %}
         </tbody>
