@@ -45,7 +45,17 @@ def test_build_query(adapter):
     assert query["variant_type"] == "clinical"
 
 
-def test_gene_symbols_query(adapter, case_obj, variant_objs):
+def test_build_query_hide_dismissed(adapter, case_obj):
+    """test variants query with hide_dismissed parameter"""
+
+    # WHEN hide_dismissed = True param is provided to the query builder
+    query = {"hide_dismissed": True}
+    mongo_query = adapter.build_query(case_obj["_id"], query=query)
+    # Then the variant query should filter for values with non-existing or empty "dismiss_variant" field
+    assert mongo_query["dismiss_variant"] == {"$in": [None, []]}
+
+
+def test_gene_symbols_query(adapter, case_obj):
     """Test variants query using HGNC symbol"""
 
     # WHEN hgnc_symbols params is provided to the query builder
@@ -62,7 +72,7 @@ def test_gene_symbols_query(adapter, case_obj, variant_objs):
     }
 
 
-def test_gene_panel_query(adapter, case_obj, variant_objs):
+def test_gene_panel_query(adapter, case_obj):
     """Test variants query using a gene panel cointaining a certain gene"""
 
     # GIVEN a database containing a minimal gene panel
@@ -84,7 +94,7 @@ def test_gene_panel_query(adapter, case_obj, variant_objs):
     }
 
 
-def test_gene_symbol_gene_panel_query(adapter, case_obj, variant_obj):
+def test_gene_symbol_gene_panel_query(adapter, case_obj):
     """Test variants query using a gene panel cointaining a certain gene and a hgnc symbol of another gene"""
 
     # GIVEN a database containing a minimal gene panel

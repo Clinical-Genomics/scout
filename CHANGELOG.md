@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Canonical transcript and protein change of canonical transcript in exported variants excel sheet
 - Support for Font Awesome version 6
 - Submit to Beacon from case page sidebar
+- Hide dismissed variants in variants pages and variants export function
 ### Fixed
 - Bugfix: unused `chromgraph_prefix |tojson` removed
 - Freeze coloredlogs temporarily
@@ -35,6 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Redirect to 'missing file'-icon if configured file is missing
 - Javascript error in case page
 - Fix compound matching during variant loading for hg38
+- Cancer variants view containing variants dismissed with cancer-specific reasons
 ### Changed
 - Save case variants count in case document and not in sessions
 - Style of gene panels multiselect on case page
