@@ -1,6 +1,21 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% from "utils.html" import comments_table %}
 
+{% macro filter_form_footer(form, result_size, total_variants) %}
+<div class="card-footer text-center">
+  <div class="row">
+    <div class="col-2 d-flex align-items-baseline justify-content-start">
+      <input type="hidden" id="expand_search" name="expand_search">
+      {{ form.hide_dismissed }}
+      {{ form.hide_dismissed.label(class="ml-3") }}
+    </div>
+    <div class="col-2 offset-3 d-flex justify-content-start">
+      Showing {{result_size}} / {{ total_variants }} variants
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
 {% macro dismiss_variants_block(dismiss_variant_options, institute, case) %}
 <div class="row d-flex align-items-center mb-3">
   <div class="col-2 ml-3">Dismiss selected variants:</div>
