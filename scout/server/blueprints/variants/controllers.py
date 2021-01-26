@@ -874,14 +874,13 @@ def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_lis
     user_obj = store.user(current_user.email)
     for variant_id in variants_list:
         variant_obj = store.variant(variant_id)
-        LOG.error(f"here->{variant_id}")
         if variant_obj is None:
             continue
         # create variant link
         link = link = url_for(
             link_page,
             institute_id=institute_obj["_id"],
-            case_name=case_obj["_id"],
+            case_name=case_obj["display_name"],
             variant_id=variant_id,
         )
         # dismiss variant
