@@ -1,14 +1,20 @@
-__Status:__ Experimental. (Don't use for production).
-
 # Systemd services of Scout
 
+* [ Introduction ](#intro)
+* [ General installation on a Linux distro](#general_installation)
+  * [ Fixes for using Fedora CoreOS ](#fedora_coreos)
+    * [ Generating the igntion file ](#ignition_file)
+    * [ Run fedora CoreOS using the ignition file ](#run_ignition)
+  * [ Alternative ways of running Scout ](#alternative_boot)
+
+<a name="intro"></a>
 ## Requirements
 
 * podman version >= 2.0.4
 
-## Introduction 
+## Introduction
 
-Scout can be run by installing a few systemd unit files (the text files scout-*.service) 
+Scout can be run by installing a few systemd unit files (the text files scout-*.service)
 into a Linux user's home directory. The Scout software and Mongodb software will then be run in containers from Dockerhub.
 
 | Systemd service | Description |
@@ -22,19 +28,20 @@ into a Linux user's home directory. The Scout software and Mongodb software will
 
 It is also possible to run the Scout systemd services in the same way but on a new Fedora CoreOS computer.
 
+<a name="general_installation"></a>
 ## Installation into the home directory of a Linux user
 
 In the Git repo root directory, run
 
-1. Copy the systemd unit files to _~/.config/systemd/user_
+1. Copy the systemd unit files located under scout/containers/systemd to _~/.config/systemd/user_
 
 ```
 mkdir -p ~/.config/systemd/user
-cp systemd/scout-pod.service ~/.config/systemd/user
-cp systemd/scout-create-datadir.service ~/.config/systemd/user
-cp systemd/scout-mongo.service ~/.config/systemd/user
-cp systemd/scout-setup-demo.service ~/.config/systemd/user
-cp systemd/scout-scout.service ~/.config/systemd/user
+cp scout/containers/systemd/scout-pod.service ~/.config/systemd/user
+cp scout/containers/systemd/scout-create-datadir.service ~/.config/systemd/user
+cp scout/containers/systemd/scout-mongo.service ~/.config/systemd/user
+cp scout/containers/systemd/scout-setup-demo.service ~/.config/systemd/user
+cp scout/containers/systemd/scout-scout.service ~/.config/systemd/user
 ```
 
 2. __Optional step__ If you would like to use a locally built scout container instead of the one from dockerhub, run
@@ -69,12 +76,16 @@ systemctl --user status scout-pod.service scout-create-datadir.service scout-mon
 If you would like the services to start automatically after a reboot of your computer,
 run
 
-```
+```s
 loginctl enable-linger $USER
 ```
+If the above command should fail due to permission issues, run it as superuser (sudo).
 
+
+<a name="fedora_coreos"></a>
 # Using Fedora CoreOS
 
+<a name="ignition_file"></a>
 ## Generating the Ignition file _scout.ign_
 
 To start Fedora CoreOS, the [Ignition file](https://docs.fedoraproject.org/en-US/fedora-coreos/producing-ign/) _scout.ign_ is needed.
@@ -95,7 +106,7 @@ This GitHub Actions workflow generates such an Ignition file:
 
 ```
 name: Run Fedora CoreOS Configuration Transpiler
-on: 
+on:
   push:
     branch:
       - master
@@ -125,6 +136,7 @@ References:
 * https://github.com/coreos/fcct
 * https://github.com/coreos/fcct/blob/master/docs/specs.md
 
+<a name="run_ignition"></a>
 # Using the generated Ignition file to run Fedora CoreOS
 
 The Ignition file _scout.ign_ can be used to run Scout in different ways:
@@ -146,6 +158,7 @@ https://docs.fedoraproject.org/en-US/fedora-coreos/
 
 See for instance __User guides__ -> __Provisioning Machines__
 
+<a name="alternative_boot"></a>
 ## Run Scout in live mode in RAM memory from a USB stick
 
 Download the Bare metal __ISO__ from
@@ -174,13 +187,13 @@ aws ec2 run-instances <other options> --image-id <ami> --user-data file://scout.
 
 ## Run Scout in a VM on an Ubuntu 20.04 host with virt-install
 
-Assume you are logged in as the user __mytest__ 
+Assume you are logged in as the user __mytest__
 
 ```
 mytest@laptop:~$  cat /etc/issue
 Ubuntu 20.04.1 LTS \n \l
 
-mytest@laptop:~$ 
+mytest@laptop:~$
 ```
 
 Download and decompress
@@ -189,7 +202,7 @@ mytest@laptop:~$ wget https://builds.coreos.fedoraproject.org/prod/streams/next/
 mytest@laptop:~$ unxz fedora-coreos-32.20200901.1.0-qemu.x86_64.qcow2.xz
 ```
 
-Add the line 
+Add the line
 ```
  /home/mytest/scout.ign rk
 ```
@@ -228,7 +241,7 @@ The IP address is printed on the screen the installation.
 Another way to list the IP address, is to run the command `virsh net-dhcp-leases default`
 
 ```
-mytest@laptop:~$ virsh net-dhcp-leases default 
+mytest@laptop:~$ virsh net-dhcp-leases default
  Expiry Time           MAC address         Protocol   IP address           Hostname   Client ID or DUID
 ------------------------------------------------------------------------------------------------------------
  2020-09-02 21:57:10   52:54:00:88:3c:a3   ipv4       192.168.122.237/24   -          01:52:54:00:88:3c:a3
@@ -258,11 +271,11 @@ append the kernel arguments
 A sketch (untested)
 
 1.
-``` 
+```
 ssh -i ssh_private_key core@<IPADDRESS OF FEDORA-COREOS-MACHINE>
 ```
 
-2. 
+2.
 
 
 ```
