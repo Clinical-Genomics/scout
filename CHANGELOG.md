@@ -45,6 +45,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Collapse/expand main HPO checkboxes in phenomodel preview
 - Replaced GQ (Genotype quality) with VAF (Variant allele frequency) in cancer variants GT table
 - Allow loading of cancer cases with no tumor_purity field
+- Truncate cDNA and protein changes in case report when the're linger than 15 characters
 
 
 ## [4.27]
