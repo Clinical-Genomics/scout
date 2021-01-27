@@ -534,8 +534,6 @@
   </form>
 {% endmacro %}
 
-
-
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
@@ -561,14 +559,16 @@
                                    );
   }
 
-  $('#panel-table').DataTable({
-    scrollY: 350,
-    scrollCollapse: true,
-    paging: false,
-    searching: false,
-    ordering: true,
-    info: false
-        });
+  {% if case.panels %}
+    $('#panel-table').DataTable({
+      scrollY: 350,
+      scrollCollapse: true,
+      paging: false,
+      searching: false,
+      ordering: true,
+      info: false
+    });
+  {% endif %}
 
   $(function(){
       function getHpoTerms(query, process) {
