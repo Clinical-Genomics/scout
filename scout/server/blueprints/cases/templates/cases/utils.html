@@ -116,7 +116,7 @@
 
         <!-- show transcript info only if it's canonical, disease-associated or primary (print max 5 primary transcripts) -->
       {% if transcript.refseq_identifiers and n_primary_txs.count <= 5 or transcript.is_canonical or transcript.is_disease_associated or transcript.is_primary %}
-        <li>{{transcript.transcript_id}}, RefSeq:[{{ transcript.refseq_identifiers|join(", ") or "-" }}], {{ (transcript.coding_sequence_name or '')|truncate(20, True) }},  {{ (transcript.protein_sequence_name|truncate(20, True) or '')|url_decode }}
+        <li>{{transcript.transcript_id}}, RefSeq:[{{ transcript.refseq_identifiers|join(", ") or "-" }}], {{ (transcript.coding_sequence_name or '')|truncate(15, True) }},  {{ (transcript.protein_sequence_name|truncate(15, True) or '')|url_decode }}
           {% if transcript.is_canonical %}
             <span class="badge badge-pill badge-info" title="canonical">C</span>
           {% endif %}
