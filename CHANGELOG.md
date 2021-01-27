@@ -38,11 +38,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix compound matching during variant loading for hg38
 - Cancer variants view containing variants dismissed with cancer-specific reasons
 - Zoom to SV variant length was missing IGV contig select
+- Tooltips on case page when case has no default gene panels
 ### Changed
 - Save case variants count in case document and not in sessions
 - Style of gene panels multiselect on case page
 - Collapse/expand main HPO checkboxes in phenomodel preview
 - Replaced GQ (Genotype quality) with VAF (Variant allele frequency) in cancer variants GT table
+- Allow loading of cancer cases with no tumor_purity field
 
 
 ## [4.27]
