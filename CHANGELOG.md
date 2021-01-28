@@ -39,7 +39,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Delete unused file `userpanel.py`
 - Primary transcripts in variant overview and general report
 - Google OAuth2 login setup in README file
-- Redirect to 'missing file'-icon if configured file is missing
+- Redirect to 'missing file'-icon if configured chromogram file is missing
 - Javascript error in case page
 - Fix compound matching during variant loading for hg38
 - Cancer variants view containing variants dismissed with cancer-specific reasons
