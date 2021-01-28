@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for Font Awesome version 6
 - Submit to Beacon from case page sidebar
 - Hide dismissed variants in variants pages and variants export function
+- Systemd service files and instruction to deploy Scout using podman
 ### Fixed
 - Bugfix: unused `chromgraph_prefix |tojson` removed
 - Freeze coloredlogs temporarily

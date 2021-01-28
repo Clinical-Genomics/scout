@@ -1,0 +1,23 @@
+[Unit]
+Description=Podman scout-mongo.service
+Wants=network.target
+After=network-online.target
+BindsTo=scout-pod.service
+After=scout-pod.service scout-create-datadir.service
+Wants=scout-create-datadir.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=on-failure
+StateDirectory=scout-mongo-data
+StateDirectoryMode=0700
+ExecStartPre=/bin/rm -f %t/scout-mongo.pid %t/scout-mongo.ctr-id
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/scout-mongo.pid --cidfile %t/scout-mongo.ctr-id --cgroups=no-conmon --pod-id-file %t/scout-pod.pod-id --replace --name scout-mongo -d --volume=%S/scout-mongo-data/data:/data/db:Z --security-opt label=disable docker.io/mvertes/alpine-mongo:latest
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/scout-mongo.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/scout-mongo.ctr-id
+PIDFile=%t/scout-mongo.pid
+KillMode=none
+Type=forking
+
+[Install]
+WantedBy=multi-user.target default.target

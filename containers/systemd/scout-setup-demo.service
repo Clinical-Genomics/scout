@@ -1,0 +1,25 @@
+[Unit]
+Description=Podman scout-setup-demo.service
+Wants=network.target
+After=network-online.target
+BindsTo=scout-pod.service
+After=scout-pod.service scout-mongo.service 
+Requires=scout-pod.service scout-mongo.service
+ConditionPathExists=!%S/scout-mongo-data/demo_has_been_set_up
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+StateDirectory=scout-mongo-data
+StateDirectoryMode=0700
+ExecStartPre=/bin/rm -f %t/scout-setup-demo.pid %t/scout-setup-demo.ctr-id
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/scout-setup-demo.pid --cidfile %t/scout-setup-demo.ctr-id --cgroups=no-conmon --pod-id-file %t/scout-pod.pod-id --replace --name scout-setup-demo --security-opt label=disable docker.io/clinicalgenomics/scout:latest scout setup demo
+ExecStartPost=/bin/touch %S/scout-mongo-data/demo_has_been_set_up
+KillMode=none
+Type=oneshot
+RemainAfterExit=yes
+# Pulling the container docker.io/clinicalgenomics/scout:latest from Dockerhub may take a while as its size is about 700 Mb
+# Let's increase the TimeoutStartSec value
+TimeoutStartSec=1800s
+
+[Install]
+WantedBy=multi-user.target default.target
