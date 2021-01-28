@@ -142,8 +142,8 @@ class QueryHandler(object):
                 for term in case_obj.get("phenotype_terms", []):
                     hpo_terms.append(term.get("phenotype_id"))
 
-                similar_cases = self.cases_by_phenotype(
-                    hpo_terms, case_obj["owner"], case_obj["_id"]
+                similar_cases = (
+                    self.cases_by_phenotype(hpo_terms, case_obj["owner"], case_obj["_id"]) or []
                 )
                 LOG.debug("Similar cases: %s", similar_cases)
                 select_cases = [similar[0] for similar in similar_cases]
@@ -189,6 +189,7 @@ class QueryHandler(object):
                 'gene_panels': list(str),
                 'mvl_tag": boolean,
                 'decipher": boolean,
+                'hide_dismissed': boolean
             }
 
         Arguments:
@@ -212,18 +213,22 @@ class QueryHandler(object):
             if criterion == "case_id":
                 LOG.debug("Building a mongo query for %s" % case_id)
                 mongo_query["case_id"] = case_id
+                continue
 
-            elif criterion == "variant_ids" and variant_ids:
+            if criterion == "variant_ids" and variant_ids:
                 LOG.debug("Adding variant_ids %s to query" % ", ".join(variant_ids))
                 mongo_query["variant_id"] = {"$in": variant_ids}
+                continue
 
-            elif criterion == "category":
+            if criterion == "category":
                 LOG.debug("Querying category %s" % category)
                 mongo_query["category"] = category
+                continue
 
-            elif criterion == "variant_type":
+            if criterion == "variant_type":
                 mongo_query["variant_type"] = query.get("variant_type", "clinical")
                 LOG.debug("Set variant type to %s", mongo_query["variant_type"])
+                continue
 
             # Requests to filter based on gene panels, hgnc_symbols or
             # coordinate ranges must always be honored. They are always added to
@@ -231,12 +236,13 @@ class QueryHandler(object):
             # are used, addition of relative gene symbols is delayed until after
             # the rest of the query content is clear.
 
-            elif criterion in ["hgnc_symbols", "gene_panels"]:
+            if criterion in ["hgnc_symbols", "gene_panels"]:
                 gene_query = self.gene_filter(query, mongo_query)
                 if len(gene_query) > 0 or "hpo" in query.get("gene_panels", []):
                     mongo_query["hgnc_symbols"] = {"$in": gene_query}
+                continue
 
-            elif criterion == "chrom" and query.get("chrom"):  # filter by coordinates
+            if criterion == "chrom" and query.get("chrom"):  # filter by coordinates
                 coordinate_query = None
                 if category == "snv":
                     mongo_query["chromosome"] = query["chrom"]
@@ -244,10 +250,16 @@ class QueryHandler(object):
                         self.coordinate_filter(query, mongo_query)
                 else:  # sv
                     coordinate_query = [self.sv_coordinate_query(query)]
+                continue
 
-            elif criterion == "variant_ids" and variant_ids:
+            if criterion == "variant_ids" and variant_ids:
                 LOG.debug("Adding variant_ids %s to query" % ", ".join(variant_ids))
                 mongo_query["variant_id"] = {"$in": variant_ids}
+                continue
+
+            # Do not retrieve dismissed variants if hide_dismissed checkbox is checked in filter form
+            if criterion == "hide_dismissed" and query.get(criterion) is True:
+                mongo_query["dismiss_variant"] = {"$in": [None, []]}
 
             ##### end of fundamental query params
 

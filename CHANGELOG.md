@@ -6,6 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+### Changed
+
+## [4.28]
+### Added
 - Chromograph integration for displaying PNGs in case-page
 - Add VAF to cancer case general report, and remove some of its unused fields
 - Variants filter compatible with genome browser location strings
@@ -17,23 +22,37 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation on default and custom IGV.js tracks (admin docs)
 - Lock phenomodels so they're editable by admins only
 - Small case group assessment sharing
+- Tutorial and files for deploying app on containers (Kubernetes pods)
+- Canonical transcript and protein change of canonical transcript in exported variants excel sheet
+- Support for Font Awesome version 6
+- Submit to Beacon from case page sidebar
+- Hide dismissed variants in variants pages and variants export function
+- Systemd service files and instruction to deploy Scout using podman
 ### Fixed
 - Bugfix: unused `chromgraph_prefix |tojson` removed
 - Freeze coloredlogs temporarily
 - Marrvel link
-- Don't show TP53 link for silent changes
+- Don't show TP53 link for silent or synonymous changes
 - OMIM gene field accepts any custom number as OMIM gene
 - Fix Pytest single quote vs double quote string
-- Bug in gene variants search when providing similar case display name
+- Bug in gene variants search by similar cases and no similar case is found
 - Delete unused file `userpanel.py`
 - Primary transcripts in variant overview and general report
 - Google OAuth2 login setup in README file
-- Redirect to 'missing file'-icon if configured file is missing
+- Redirect to 'missing file'-icon if configured Chromograph file is missing
 - Javascript error in case page
+- Fix compound matching during variant loading for hg38
+- Cancer variants view containing variants dismissed with cancer-specific reasons
+- Zoom to SV variant length was missing IGV contig select
+- Tooltips on case page when case has no default gene panels
 ### Changed
 - Save case variants count in case document and not in sessions
 - Style of gene panels multiselect on case page
 - Collapse/expand main HPO checkboxes in phenomodel preview
+- Replaced GQ (Genotype quality) with VAF (Variant allele frequency) in cancer variants GT table
+- Allow loading of cancer cases with no tumor_purity field
+- Truncate cDNA and protein changes in case report if longer than 20 characters
+
 
 ## [4.27]
 ### Added

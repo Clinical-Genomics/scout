@@ -10,8 +10,19 @@ import responses
 from scout.utils import scout_requests
 
 
+def test_post_request_json_bad_url():
+    """Test function that sends a POST request to an url with headers and json data"""
+
+    url = "http://BAR"
+    data = {"param": "FOO"}
+    headers = {"Content-type": "application/json; charset=utf-8", "Accept": "text/json"}
+
+    json_resp = scout_requests.post_request_json(url, data, headers)
+    assert "An error occurred while sending a POST request to url" in json_resp["message"]
+
+
 def test_get_request_bad_url():
-    """Test functions that accepts an url and returns decoded data from it"""
+    """Test function that accepts an url and returns decoded data from it"""
 
     # test function with a url that is not valid
     url = "fakeyurl"

@@ -19,6 +19,7 @@ from scout.constants import (
     CANCER_TIER_OPTIONS,
     CLINSIG_MAP,
     DISMISS_VARIANT_OPTIONS,
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     SEVERE_SO_TERMS,
@@ -223,14 +224,18 @@ def get_manual_assessments(variant_obj):
                 assessment["display_class"] = classification["color"]
 
             if assessment_type == "dismiss_variant":
+                dismiss_variant_options = {
+                    **DISMISS_VARIANT_OPTIONS,
+                    **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+                }
                 assessment["label"] = "Dismissed"
                 assessment["title"] = "dismiss:<br>"
                 for reason in variant_obj[assessment_type]:
                     if not isinstance(reason, int):
                         reason = int(reason)
                         assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                            DISMISS_VARIANT_OPTIONS[reason]["label"],
-                            DISMISS_VARIANT_OPTIONS[reason]["description"],
+                            dismiss_variant_options[reason]["label"],
+                            dismiss_variant_options[reason]["description"],
                         )
                 assessment["display_class"] = "secondary"
 
@@ -425,7 +430,9 @@ def variant_export_genes_info(store, gene_list):
     """
     gene_ids = []
     gene_names = []
+    canonical_txs = []
     hgvs_c = []
+    pt_c = []
 
     gene_info = []
 
@@ -436,20 +443,23 @@ def variant_export_genes_info(store, gene_list):
         gene_ids.append(hgnc_id)
         gene_names.append(gene_name)
 
+        if gene_obj.get("canonical_transcript"):
+            canonical_txs.append(gene_obj.get("canonical_transcript"))
+
         hgvs_nucleotide = "-"
+        protein_change = "-"
         # gather HGVS info from gene transcripts
+
         transcripts_list = gene_obj.get("transcripts")
         for transcript_obj in transcripts_list:
-            if (
-                transcript_obj.get("is_canonical") is not None
-                and transcript_obj.get("is_canonical") is True
-            ):
-                hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
+            if transcript_obj["transcript_id"] == gene_obj.get("canonical_transcript"):
+                hgvs_nucleotide = transcript_obj.get("coding_sequence_name") or "-"
+                protein_change = transcript_obj.get("protein_sequence_name") or "-"
         hgvs_c.append(hgvs_nucleotide)
+        pt_c.append(protein_change)
 
-    gene_info.append(";".join(str(x) for x in gene_ids))
-    gene_info.append(";".join(str(x) for x in gene_names))
-    gene_info.append(";".join(str(x) for x in hgvs_c))
+    for item in [gene_ids, gene_names, canonical_txs, hgvs_c, pt_c]:
+        gene_info.append(";".join(str(x) for x in item))
 
     return gene_info
 
@@ -874,7 +884,7 @@ def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_lis
         link = link = url_for(
             link_page,
             institute_id=institute_obj["_id"],
-            case_name=case_obj["_id"],
+            case_name=case_obj["display_name"],
             variant_id=variant_id,
         )
         # dismiss variant

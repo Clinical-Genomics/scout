@@ -512,7 +512,7 @@
                         <td class="text-right"><small>N/A</small></td>
                     {% endif %}
                     {% if cancer %}
-                      {% if sample.allele_depths[1] != -1 %}
+                      {% if sample.read_depth and sample.allele_depths[1] != -1 %}
                         <td class="text-right">{{ (sample.allele_depths[1]/sample.read_depth)|round(4) }}</td>
                       {% else %}
                         <td class="text-right">N/A</td>
@@ -972,7 +972,7 @@
                       <td class="text-right"><small>N/A</small></td>
                   {% endif %}
                   {% if cancer %}
-                    {% if sample.allele_depths[1] != -1 %}
+                    {% if sample.read_depth and sample.allele_depths[1] != -1 %}
                       <td class="text-right">{{ (sample.allele_depths[1]/sample.read_depth)|round(4) }}</td>
                     {% else %}
                       <td class="text-right">N/A</td>
