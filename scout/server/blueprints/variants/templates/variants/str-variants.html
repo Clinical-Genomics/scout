@@ -185,28 +185,35 @@
   data-toggle="popover"
   data-html="true"
   data-trigger="hover click"
-  data-content="<table>
-    <tr><td>Reference size</td><td>{{ variant.str_normal_max }}</td></tr>
-    <tr><td>Normal max</td><td>{{ variant.str_normal_max }}</td></tr>
-    <tr><td>Pathologic min</td><td>{{ variant.str_pathologic_min }}</td><tr>
-      </table>"
+  data-content="{% if variant.str_normal_max %}
+    <table>
+      <tr><td>Reference size</td><td>{{ variant.str_normal_max }}</td></tr>
+      <tr><td>Normal max</td><td>{{ variant.str_normal_max }}</td></tr>
+      <tr><td>Pathologic min</td><td>{{ variant.str_pathologic_min }}</td><tr>
+    </table>
+    {% else %}
+      <div>Normal range not provided. Consider updating to a new version of Stranger.</div>
+    {% endif %}"
   title="">{{ variant.str_status }}</a>
 {% endmacro %}
 
 {% macro str_locus_info(variant) %}
   <a
-  class="badge badge-secondary text-white"
+  class="link text-black"
   data-toggle="popover"
   data-html="true"
   data-trigger="hover"
   data-content="
   <div class='text-left'>
-    <div><strong>Disease:</strong> {{ variant.str_disease }} ({{ variant.str_inheritance_mode }})</div>
+    {% if variant.str_disease %}
+      <div><strong>Disease:</strong> {{ variant.str_disease }} ({{ variant.str_inheritance_mode }})</div>
+    {% else %}
+      <div>Disease information not provided with locus. Consider updating to a new version of Stranger.</div>
+    {% endif %}
     {% if variant.str_source is defined %}
       <div><strong>Source:{{ variant.str_source.display }}</strong> </div>
       <div>Click to visit {{ variant.str_source.type }}
     {%endif%}
-
   </div>"
   title=""
   href="{{ variant.str_source_link }}">{{ variant.str_repid }}
