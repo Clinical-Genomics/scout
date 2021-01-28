@@ -219,7 +219,7 @@ def parse_variant(
 
     # str disease - disease name annotation
     str_disease = variant.INFO.get("Disease")
-    if str_inheritance_mode:
+    if str_disease:
         parsed_variant["str_disease"] = str(str_disease)
 
     # str disease inheritance mode string annotation
