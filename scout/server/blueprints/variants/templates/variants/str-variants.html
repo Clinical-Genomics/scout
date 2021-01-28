@@ -202,8 +202,10 @@
   data-content="
   <div class='text-left'>
     <div><strong>Disease:</strong> {{ variant.str_disease }} ({{ variant.str_inheritance_mode }})</div>
-    <div><strong>Source:</strong> {{ variant.str_source.display }}</div>
-    <div>Click to visit {{ variant.str_source.type }}
+    {% if variant.str_source is defined %}
+      <div><strong>Source:{{ variant.str_source.display }}</strong> </div>
+      <div>Click to visit {{ variant.str_source.type }}
+    {%endif%}
 
   </div>"
   title=""
