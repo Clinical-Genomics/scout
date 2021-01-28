@@ -522,7 +522,7 @@ def cbioportal(hgnc_symbol, protein_sequence_name):
 def mutantp53(hgnc_id, protein_variant):
     if hgnc_id != 11998:
         return None
-    if not protein_variant:
+    if not protein_variant or protein_variant.endswith("=") or protein_variant.endswith("%3D"):
         return None
 
     url_template = "http://mutantp53.broadinstitute.org/?query={}"
