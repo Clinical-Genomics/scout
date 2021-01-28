@@ -28,10 +28,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bugfix: unused `chromgraph_prefix |tojson` removed
 - Freeze coloredlogs temporarily
 - Marrvel link
-- Don't show TP53 link for silent changes
+- Don't show TP53 link for silent or synonymous changes
 - OMIM gene field accepts any custom number as OMIM gene
 - Fix Pytest single quote vs double quote string
-- Bug in gene variants search when providing similar case display name
+- Bug in gene variants search by similar cases and no similar case is found
 - Delete unused file `userpanel.py`
 - Primary transcripts in variant overview and general report
 - Google OAuth2 login setup in README file

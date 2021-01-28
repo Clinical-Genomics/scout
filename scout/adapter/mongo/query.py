@@ -142,8 +142,8 @@ class QueryHandler(object):
                 for term in case_obj.get("phenotype_terms", []):
                     hpo_terms.append(term.get("phenotype_id"))
 
-                similar_cases = self.cases_by_phenotype(
-                    hpo_terms, case_obj["owner"], case_obj["_id"]
+                similar_cases = (
+                    self.cases_by_phenotype(hpo_terms, case_obj["owner"], case_obj["_id"]) or []
                 )
                 LOG.debug("Similar cases: %s", similar_cases)
                 select_cases = [similar[0] for similar in similar_cases]
