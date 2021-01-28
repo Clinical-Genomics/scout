@@ -1,15 +1,4 @@
-# Deploy Scout using containers
-
-A Docker image for creating both backend and frontend containers is available on [Docker Hub](https://hub.docker.com/repository/docker/clinicalgenomics/scout). Alternatively the Dockerfile used for creating the image is available in this repository.
-
-A local image of the repository can be created by moving the Dockerfile in the root folder of the app and from the same location, in a terminal, running the following command:
-
-docker build -t scout .
-
-The container with the docker image contains only the app installation files and its required libraries. In order to work, the container must be connected with at least one other container hosting a running mongodb instance or a database running on the local machine.
-
-
-## Example deploying Scout using Kubernetes
+# Example deploying Scout using Kubernetes
 Kubernetes is an open-source platform for managing containerized applications. This tutorial will show how to setup a virtual box containing a master and a work node on a local virtual machine using [minikube](https://github.com/kubernetes/minikube) and how to setup the necessary containers to run a MongoDB instance, a pod with the Scout command line and a pod with the Scout server on macOS. Alternatively, for macOS and Windows, consider  [Docker Desktop](https://www.docker.com/products/docker-desktop) which has builtin Kubernetes support. The default install locations for Docker Desktop do overlap with Homebrew hyperkit and minikube so it is easiest to pick one of the alternatives.
 
 ### Requirements
