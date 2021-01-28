@@ -6,6 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+### Changed
+
+## [4.28]
+### Added
 - Chromograph integration for displaying PNGs in case-page
 - Add VAF to cancer case general report, and remove some of its unused fields
 - Variants filter compatible with genome browser location strings
