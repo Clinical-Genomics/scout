@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- STR variants filter
+- Display source, Z-score, inheritance pattern for STR annotations from Stranger (>0.6.1) if available
 ### Fixed
 ### Changed
 
@@ -93,8 +95,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Docker image build and push github action
 - Makefile with shortcuts to docker commands
 - Parse and save synopsis, phenotype and cohort terms from config files upon case upload
-- STR variants filter
-- Display source, Z-score, inheritance pattern for STR annotations from Stranger (>0.6.1) if available
 ### Fixed
 - Update dismissed variant status when variant dismissed key is missing
 - Breakpoint two IGV button now shows correct chromosome when different from bp1
