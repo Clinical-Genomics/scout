@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 ### Fixed
+- Pretty print HGVS on gene variants (URL-decode VEP)
 ### Changed
 
 ## [4.28]
