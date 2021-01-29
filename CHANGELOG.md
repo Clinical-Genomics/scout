@@ -5,9 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
-### Added
+### Addeds
 ### Fixed
 - ACMG classification page crashing when trying to visualize a classification that was removed
+- Broken or missing link in the documentation
 ### Changed
 
 ## [4.28]
