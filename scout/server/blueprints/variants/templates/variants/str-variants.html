@@ -94,7 +94,7 @@
 	        {% endif %}
             <td>{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
             <td>{{ str_locus_info(variant) }}</td>
-	          <td class="text-right">{{ variant.str_display_ru }}</td>
+	          <td class="text-right">{{ variant.str_display_ru or variant.str_ru  }}</td>
             <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
             <td class="text-right">{{ variant.str_ref }}</td>
             <td>{{ str_status(variant) }}</td>
