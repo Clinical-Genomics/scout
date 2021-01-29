@@ -1,175 +1,171 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url>
      <loc>http://www.clinicalgenomics.se/scout/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/install/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/faq/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/features/hpo/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/user-guide/getting-started/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/user-guide/using-scout/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/user-guide/pages/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/user-guide/institutes/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/user-guide/users/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/user-guide/cases/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/user-guide/variants/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/user-guide/genes/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/user-guide/panels/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/user-guide/annotations/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/user-guide/acmg-criterias/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/user-guide/dashboard/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/admin-guide/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/admin-guide/setup-scout/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/admin-guide/loading/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/admin-guide/load-config/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/admin-guide/genes/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/admin-guide/hpo/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/admin-guide/annotations/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
+     <changefreq>daily</changefreq>
+    </url><url>
+     <loc>http://www.clinicalgenomics.se/scout/admin-guide/igv-settings/</loc>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/admin-guide/server/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/admin-guide/chanjo_coverage_integration/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/admin-guide/loqusdb_integration/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/admin-guide/indexes/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/admin-guide/institute/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/admin-guide/display-data/cases/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/admin-guide/backup/</loc>
-     <lastmod>2020-07-08</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>http://www.clinicalgenomics.se/scout/blog/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/blog/new-3.0/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/blog/new-3.1/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/blog/new-3.2/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/blog/new-3.3/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/blog/new-3.4/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/blog/new-3.5/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/blog/new-4.0.0/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/blog/new-4.7.3/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/blog/new-4.17/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/blog/new-4.18/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url><url>
      <loc>http://www.clinicalgenomics.se/scout/blog/new-4.19/</loc>
-     <lastmod>2020-07-08</lastmod>
-     <changefreq>daily</changefreq>
-    </url><url>
-     <loc>http://www.clinicalgenomics.se/scout/GLOSSARY/</loc>
-     <lastmod>2020-07-08</lastmod>
+     <lastmod>2021-01-29</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>

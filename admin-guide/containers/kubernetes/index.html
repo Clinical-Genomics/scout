@@ -1,0 +1,1123 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="http://www.clinicalgenomics.se/scout/admin-guide/containers/kubernetes/">
+      
+      
+        <meta name="author" content="Clinical Genomics bioinfo team">
+      
+      <link rel="shortcut icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.7">
+    
+    
+      
+        <title>Example deploying Scout using Kubernetes - Scout Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.19753c6b.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.196e0c26.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#546d78">
+        
+      
+    
+    
+    
+      
+        
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="cyan">
+      
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#example-deploying-scout-using-kubernetes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="http://www.clinicalgenomics.se/scout/" title="Scout Docs" class="md-header-nav__button md-logo" aria-label="Scout Docs">
+      
+  <img src="../../../img/logo-only.png" alt="logo">
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            Scout Docs
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Example deploying Scout using Kubernetes
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/Clinical-Genomics/scout/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="http://www.clinicalgenomics.se/scout/" title="Scout Docs" class="md-nav__button md-logo" aria-label="Scout Docs">
+      
+  <img src="../../../img/logo-only.png" alt="logo">
+
+    </a>
+    Scout Docs
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/Clinical-Genomics/scout/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../.." class="md-nav__link">
+      Introduction
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../install/" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../../faq/" class="md-nav__link">
+      FAQ
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" >
+    <label class="md-nav__link" for="nav-4">
+      Features
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Features" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        <span class="md-nav__icon md-icon"></span>
+        Features
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../features/hpo/" class="md-nav__link">
+      HPO phenotypes
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5" >
+    <label class="md-nav__link" for="nav-5">
+      User guide
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="User guide" data-md-level="1">
+      <label class="md-nav__title" for="nav-5">
+        <span class="md-nav__icon md-icon"></span>
+        User guide
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../user-guide/getting-started/" class="md-nav__link">
+      Getting started
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../user-guide/using-scout/" class="md-nav__link">
+      General
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../user-guide/pages/" class="md-nav__link">
+      Pages
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../user-guide/institutes/" class="md-nav__link">
+      Institutes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../user-guide/users/" class="md-nav__link">
+      Users
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../user-guide/cases/" class="md-nav__link">
+      Cases
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../user-guide/variants/" class="md-nav__link">
+      Variants
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../user-guide/genes/" class="md-nav__link">
+      Genes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../user-guide/panels/" class="md-nav__link">
+      Gene panels
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../user-guide/annotations/" class="md-nav__link">
+      Annotations
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../user-guide/acmg-criterias/" class="md-nav__link">
+      ACMG
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../user-guide/dashboard/" class="md-nav__link">
+      Dashboard
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6" >
+    <label class="md-nav__link" for="nav-6">
+      Admin guide
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Admin guide" data-md-level="1">
+      <label class="md-nav__title" for="nav-6">
+        <span class="md-nav__icon md-icon"></span>
+        Admin guide
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../" class="md-nav__link">
+      Intro
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../setup-scout/" class="md-nav__link">
+      Setup
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../loading/" class="md-nav__link">
+      Loading
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../load-config/" class="md-nav__link">
+      Load config
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../genes/" class="md-nav__link">
+      Gene definitions
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../hpo/" class="md-nav__link">
+      HPO terms
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../annotations/" class="md-nav__link">
+      Annotations
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../igv-settings/" class="md-nav__link">
+      IGV browser settings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../server/" class="md-nav__link">
+      Server
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../chanjo_coverage_integration/" class="md-nav__link">
+      Chanjo coverage integration
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../loqusdb_integration/" class="md-nav__link">
+      Loqusdb integration
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../indexes/" class="md-nav__link">
+      Indexes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../institute/" class="md-nav__link">
+      Institutes
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-6-14" type="checkbox" id="nav-6-14" >
+    <label class="md-nav__link" for="nav-6-14">
+      Display data
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Display data" data-md-level="2">
+      <label class="md-nav__title" for="nav-6-14">
+        <span class="md-nav__icon md-icon"></span>
+        Display data
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../display-data/cases/" class="md-nav__link">
+      Cases
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../backup/" class="md-nav__link">
+      Backup and restore
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-7" type="checkbox" id="nav-7" >
+    <label class="md-nav__link" for="nav-7">
+      Blog
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Blog" data-md-level="1">
+      <label class="md-nav__title" for="nav-7">
+        <span class="md-nav__icon md-icon"></span>
+        Blog
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../blog/new-3.0/" class="md-nav__link">
+      Whats new in 3.0?
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../blog/new-3.1/" class="md-nav__link">
+      Whats new in 3.1?
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../blog/new-3.2/" class="md-nav__link">
+      Whats new in 3.2?
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../blog/new-3.3/" class="md-nav__link">
+      Whats new in 3.3?
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../blog/new-3.4/" class="md-nav__link">
+      Whats new in 3.4?
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../blog/new-3.5/" class="md-nav__link">
+      Whats new in 3.5?
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../blog/new-4.0.0/" class="md-nav__link">
+      Whats new in 4.0?
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../blog/new-4.7.3/" class="md-nav__link">
+      Whats new in 4.7?
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../blog/new-4.17/" class="md-nav__link">
+      Whats new in 4.17?
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../blog/new-4.18/" class="md-nav__link">
+      Whats new in 4.18?
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../blog/new-4.19/" class="md-nav__link">
+      Whats new in 4.19?
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    Requirements
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation-and-setup-of-the-database-and-config-files" class="md-nav__link">
+    Installation and Setup of the database and config files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploying-the-scout-command-line" class="md-nav__link">
+    Deploying the Scout command line
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploying-the-scout-server" class="md-nav__link">
+    Deploying the Scout server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview-of-the-running-containers-and-starting-the-minikube-service" class="md-nav__link">
+    Overview of the running containers and starting the minikube service
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/Clinical-Genomics/scout/edit/master/docs/admin-guide/containers/kubernetes.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="example-deploying-scout-using-kubernetes">Example deploying Scout using Kubernetes</h1>
+<p>Kubernetes is an open-source platform for managing containerized applications. This tutorial will show how to setup a virtual box containing a master and a work node on a local virtual machine using <a href="https://github.com/kubernetes/minikube">minikube</a> and how to setup the necessary containers to run a MongoDB instance, a pod with the Scout command line and a pod with the Scout server on macOS. Alternatively, for macOS and Windows, consider  <a href="https://www.docker.com/products/docker-desktop">Docker Desktop</a> which has builtin Kubernetes support. The default install locations for Docker Desktop do overlap with Homebrew hyperkit and minikube so it is easiest to pick one of the alternatives.</p>
+<h3 id="requirements">Requirements</h3>
+<ol>
+<li>Install hyperkit and minikube on your local machine (OS X 10.10.3 Yosemite or later):</li>
+</ol>
+<pre><code>brew install hyperkit
+brew install minikube
+</code></pre>
+<p>The second command, brew install minikube, will install also the Kubernetes cli (kubectl). Minikube can be alternatively installed using another container manager, such as Podman or VMWare. More documentation is available <a href="https://minikube.sigs.k8s.io/docs/start/">here</a>.</p>
+<h3 id="installation-and-setup-of-the-database-and-config-files">Installation and Setup of the database and config files</h3>
+<ol>
+<li>Start minikube kubernetes cluster inside hypervisor (hyperkit):</li>
+</ol>
+<pre><code>minikube start --vm-driver=hyperkit
+</code></pre>
+<ol>
+<li>
+<p>Note that all files described in this tutorial are available in the folder "containers", in the scout root directory.</p>
+</li>
+<li>
+<p>The file named "secrets.yaml" contains 2 files: one storing the secrets for the mongodb service (mongodb-secret) and one for the secrets of the Scout app (scout-secret). Secrets can also be stored in different files. In the example they're on the same file, separated by "---".</p>
+</li>
+</ol>
+<pre><code># mongodb secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongodb-secret
+type: Opaque
+data:
+  mongodb-root-username: dXNlcm5hbWU= # base-64 encoded &quot;username&quot;
+  mongodb-root-password: cGFzc3dvcmQ= # base-64 encoded &quot;password&quot;
+</code></pre>
+<p>1.</p>
+<pre><code># scout secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: scout-secret
+type: Opaque
+data:
+  scout-username: c2NvdXRVc2Vy # base-64 encoded &quot;scoutUser&quot;
+  scout-password: c2NvdXRQYXNzd29yZA== # base-64 encoded &quot;scoutPassword&quot;
+</code></pre>
+<p>This secret should be edited to include the real scout-username and scout-password. Note that these fields should be base-64 encoded. To encode these strings you can run the following command:
+<code>echo -n "some string" | base64</code></p>
+<ol>
+<li>
+<p><strong>Create the above secrets</strong> with the command:
+<code>kubectl apply -f scout/containers/kubernetes/secrets.yaml</code></p>
+</li>
+<li>
+<p>Create s ConfigMap for passing setup parameters to Scout pods. This ConfigMap will contain all parameters specified by a python config file. Basic ConfigMap allowing to authenticate to mongodb:</p>
+</li>
+</ol>
+<pre><code>apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scoutconfig
+data:
+  config.py: |
+    MONGO_HOST=&quot;mongodb-service&quot;
+    MONGO_PORT= 27017
+    MONGO_DBNAME= &quot;scout-demo&quot;
+    MONGO_USERNAME= &quot;scoutUser&quot;
+    MONGO_PASSWORD= &quot;scoutPassword&quot;
+</code></pre>
+<p>The config parameters should be modified according to the MongoDB connection settings on the server.</p>
+<ol>
+<li>
+<p><strong>Create the configmap</strong> with the command:
+<code>kubectl apply -f scout/containers/kubernetes/scout-configmap.yaml</code></p>
+</li>
+<li>
+<p>Create a Deployment for mongo and a relative service that will run on port 27017. Note that the example file (mongo.yaml) is running a lightweight version image of Mongo (vepo/mongo) and not the official Mongo image. This container can be replaced with any other application that serves a MongoDB using authentication.
+Run the Deployment and the service:
+<code>kubectl apply -f scout/containers/kubernetes/mongo.yaml</code></p>
+</li>
+</ol>
+<h3 id="deploying-the-scout-command-line">Deploying the Scout command line</h3>
+<p>To create a running container with the Scout command line can be used a Docker image stored either locally (in that case the Scout Dockerfile should be built first) or on the Docker Hub. This example pulls the latest from Docker Hub to build an interactive pod. Define a scout-cli.yaml file with the following content:</p>
+<pre><code># Scout pod for running cli commands
+apiVersion: v1
+kind: Pod
+metadata:
+  name: scout-cli
+spec:
+  containers:
+    - name: scout-cli
+      image: clinicalgenomics/scout
+      tty: true
+      volumeMounts:
+      - name: config-vol
+        mountPath: /config
+
+  volumes:
+  - name: config-vol
+    configMap:
+      name: scoutconfig
+</code></pre>
+<p>Note that the configMap representing the config file is mapped inside "volumes". This is necessary to make the content of the config file available to the pod.</p>
+<ol>
+<li>
+<p><strong>Create the pod</strong> with the following command:
+<code>kubectl apply -f scout/containers/kubernetes/scout-cli.yaml</code></p>
+</li>
+<li>
+<p>You can launch a shell from this running container using the command:
+<code>kubectl exec -it scout-cli -- bash</code></p>
+</li>
+<li>
+<p>From inside the shell, you can run any scout-specific command. For instance to setup the demo database:
+<code>scout --flask-config /config/config.py setup demo</code>
+Note that for connecting to the mongo database it is necessary to provide the param --flask-config with the path to the mapped config file on the container.</p>
+</li>
+</ol>
+<h3 id="deploying-the-scout-server">Deploying the Scout server</h3>
+<p>The scout Deployment file (first file included in the scout-web.yaml example) contains the steps to pull the Scout image from Docker Hub, define a volume with the config file, and launching the server on port 5000:</p>
+<pre><code># Deployment document for Scout web server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout-web-deployment
+  labels:
+    app: scout-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout-web
+  template:
+    metadata:
+      labels:
+        app: scout-web
+    spec:
+      volumes:
+      - name: config-vol
+        configMap:
+          name: scoutconfig
+      containers:
+      - name: scout-web # serve scout pages using scout-web service
+        image: clinicalgenomics/scout
+        volumeMounts:
+        - name: config-vol
+          mountPath: /config
+        ports:
+        - containerPort: 5000
+        command: [&quot;scout&quot;]
+        args: [&quot;--flask-config&quot;, &quot;/config/config.py&quot;, &quot;serve&quot;, &quot;--host&quot;, &quot;0.0.0.0&quot;]
+</code></pre>
+<p>The second file present in the configuration represents the service that makes the server available to applications outside the container (for example the web browser):</p>
+<pre><code># External service document
+apiVersion: v1
+kind: Service
+metadata:
+  name: scout-web-service
+spec:
+  selector:
+    app: scout-web
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+      nodePort: 30000
+</code></pre>
+<ol>
+<li><strong>create a Scout web server Deployment</strong> with the command:
+<code>kubectl apply -f scout/containers/kubernetes/scout-web.yaml</code></li>
+</ol>
+<h3 id="overview-of-the-running-containers-and-starting-the-minikube-service">Overview of the running containers and starting the minikube service</h3>
+<ol>
+<li>After the steps above a number of container should be running on the virtual machine. An overview of all containers together with accessory services and itams will be available using the command:</li>
+</ol>
+<pre><code>kubectl get all
+</code></pre>
+<ol>
+<li>Start the scout web app service using the command:</li>
+</ol>
+<pre><code>minikube service scout-web-service
+</code></pre>
+<p>This way the app will be accessible in the browser</p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../../assets/javascripts/vendor.0ac82a11.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.f81dfb4d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../../assets/javascripts/worker/search.4ac00218.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>
