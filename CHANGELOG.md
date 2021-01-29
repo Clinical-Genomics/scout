@@ -6,6 +6,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+- ACMG classification page crashing when trying to visualize a classification that was removed
+- Pretty print HGVS on gene variants (URL-decode VEP)
+### Changed
+
+## [4.28]
+### Added
 - Chromograph integration for displaying PNGs in case-page
 - Add VAF to cancer case general report, and remove some of its unused fields
 - Variants filter compatible with genome browser location strings
@@ -35,7 +42,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Delete unused file `userpanel.py`
 - Primary transcripts in variant overview and general report
 - Google OAuth2 login setup in README file
-- Redirect to 'missing file'-icon if configured file is missing
+- Redirect to 'missing file'-icon if configured Chromograph file is missing
 - Javascript error in case page
 - Fix compound matching during variant loading for hg38
 - Cancer variants view containing variants dismissed with cancer-specific reasons
