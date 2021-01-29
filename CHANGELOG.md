@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- markdown_include in development requirements file
 ### Fixed
 - ACMG classification page crashing when trying to visualize a classification that was removed
 - Broken or missing link in the documentation
