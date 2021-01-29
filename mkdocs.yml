@@ -29,6 +29,7 @@ nav:
       - HPO phenotypes: 'features/hpo.md'
 
   - User guide:
+      - Readme: 'user-guide/README.md'
       - Getting started: 'user-guide/getting-started.md'
       - General: 'user-guide/using-scout.md'
       - Pages: 'user-guide/pages.md'
@@ -45,6 +46,10 @@ nav:
   - Admin guide:
       - Intro: 'admin-guide/README.md'
       - Setup: 'admin-guide/setup-scout.md'
+      - Deploying Scout in containers:
+          - Dockerfile and docker-compose: 'admin-guide/containers/container-deploy.md'
+          - Deploying using Kubernetes: 'admin-guide/containers/kubernetes.md'
+          - Deploying as a systemd service with podman: 'admin-guide/containers/systemd.md'
       - Loading: 'admin-guide/loading.md'
       - Load config: 'admin-guide/load-config.md'
       - Gene definitions: 'admin-guide/genes.md'
