@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 - ACMG classification page crashing when trying to visualize a classification that was removed
+- Pretty print HGVS on gene variants (URL-decode VEP)
 ### Changed
 
 ## [4.28]
