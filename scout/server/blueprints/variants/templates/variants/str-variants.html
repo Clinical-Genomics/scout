@@ -199,6 +199,7 @@
 
 {% macro str_locus_info(variant) %}
   <a
+  href="{{ variant.str_source_link }}"
   class="link text-black"
   data-toggle="popover"
   data-html="true"
@@ -211,11 +212,10 @@
       <div>Disease information not provided with locus. Consider updating to a new version of Stranger.</div>
     {% endif %}
     {% if variant.str_source is defined %}
-      <div><strong>Source:{{ variant.str_source.display }}</strong> </div>
+      <div><strong>Source:</strong> {{ variant.str_source.display }} </div>
       <div>Click to visit {{ variant.str_source.type }}
     {%endif%}
   </div>"
-  title=""
-  href="{{ variant.str_source_link }}">{{ variant.str_repid }}
+  title="">{{ variant.str_repid }}
   </a>
 {% endmacro %}
