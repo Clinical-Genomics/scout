@@ -67,7 +67,7 @@
                 <div>{{ annotation }}</div>
               {% endfor %}
             </td>
-            <td> {{ variant.hgvs }}</td>
+            <td> {{ (variant.hgvs or '')|url_decode  }}</td>
           </tr>
         {% else %}
         <tr>

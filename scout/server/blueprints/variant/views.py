@@ -228,6 +228,9 @@ def variant_update(institute_id, case_name, variant_id):
 def evaluation(evaluation_id):
     """Show or delete an ACMG evaluation."""
     evaluation_obj = store.get_evaluation(evaluation_id)
+    if evaluation_obj is None:
+        flash("Evaluation was not found in database", "warning")
+        return redirect(request.referrer)
     evaluation_controller(store, evaluation_obj)
     if request.method == "POST":
         link = url_for(
