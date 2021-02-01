@@ -18,3 +18,4 @@ This includes instructions for bioinformaticians to install, manage and update a
   * [Indexes](./indexes.md)
   * [Scripts folder](./scripts.md)
   * [Backup and restore](./backup.md)
+  * [Migration instructions for major and semi major releases](./breaking.md)

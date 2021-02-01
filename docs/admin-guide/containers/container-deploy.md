@@ -21,7 +21,7 @@ The container with the docker image contains only the app installation files and
 
 ## Docker tips and tricks
 
-Docker can simplify the development of Scout as it offers a portable configuration-free environment with all dependancies included. The default `docker-compose.yml` file is designed for demoing and not for development. You can extend the included compose file with your own custom configuration to make it more development friendly. For more information on how to extend docker-compse files see, [https://docs.docker.com/compose/extends/][docker docs]. The following is an example configuration:
+Docker can simplify the development of Scout as it offers a portable configuration-free environment with all dependancies included. The default `docker-compose.yml` file is designed for demoing and not for development. You can extend the included compose file with your own custom configuration to make it more development friendly. For more information on how to extend docker-compose files see [docker docs](https://docs.docker.com/compose/extends/). The following is an example configuration:
 
 ``` yaml
 services:
