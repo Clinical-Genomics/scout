@@ -377,7 +377,7 @@ def get_variant_links(variant_obj, build=None):
 def str_source_link(variant_obj):
     """Compose link for STR data source."""
 
-    if not variant_obj["str_source"]:
+    if not variant_obj.get("str_source"):
         return None
 
     source = variant_obj["str_source"]
