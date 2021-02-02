@@ -55,6 +55,7 @@ def cnv_report(case_id, report_path, update):
         LOG.error(err)
         raise click.Abort()
 
+
 @click.command("coverage-qc-report")
 @click.argument("case-id", required=True)
 @click.argument("report-path", type=click.Path(exists=True), required=True)

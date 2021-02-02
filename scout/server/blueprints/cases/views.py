@@ -871,6 +871,7 @@ def cnv_report(institute_id, case_name):
     filename = os.path.basename(data["case"]["cnv_report"])
     return send_from_directory(out_dir, filename)
 
+
 @cases_bp.route("/<institute_id>/<case_name>/coverage-qc-report")
 def coverage_qc_report(institute_id, case_name):
     """Display coverage and qc report."""
@@ -880,7 +881,6 @@ def coverage_qc_report(institute_id, case_name):
     out_dir = os.path.abspath(os.path.dirname(data["case"]["coverage_qc_report"]))
     filename = os.path.basename(data["case"]["coverage_qc_report"])
     return send_from_directory(out_dir, filename)
-
 
 
 @cases_bp.route("/<institute_id>/<case_name>/share", methods=["POST"])

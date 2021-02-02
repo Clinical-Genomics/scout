@@ -145,7 +145,9 @@ def parse_case_data(
     )
 
     config_data["cnv_report"] = cnv_report if cnv_report else config_data.get("cnv_report")
-    config_data["coverage_qc_report"] = coverage_qc_report if coverage_qc_report else config_data.get("coverage_qc_report")
+    config_data["coverage_qc_report"] = (
+        coverage_qc_report if coverage_qc_report else config_data.get("coverage_qc_report")
+    )
 
     config_data["rank_model_version"] = str(config_data.get("rank_model_version", ""))
     config_data["rank_score_threshold"] = config_data.get("rank_score_threshold", 0)
