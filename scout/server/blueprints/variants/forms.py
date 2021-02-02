@@ -155,7 +155,9 @@ class StrFiltersForm(FlaskForm):
 
     variant_type = HiddenField(default="clinical")
 
+    hgnc_symbols = TagListField("HGNC Symbols/Ids (case sensitive)")
     gene_panels = SelectMultipleField(choices=[])
+
     repids = TagListField("Repeat IDs")
 
     chrom = SelectField(
