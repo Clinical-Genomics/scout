@@ -12,6 +12,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ACMG classification page crashing when trying to visualize a classification that was removed
 - Pretty print HGVS on gene variants (URL-decode VEP)
 - Broken or missing link in the documentation
+- Multiple gene names in ClinVar submission form
+- Inheritance model select field in ClinVar submission
 ### Changed
 
 ## [4.28]
