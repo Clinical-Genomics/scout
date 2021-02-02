@@ -158,8 +158,6 @@ class StrFiltersForm(FlaskForm):
     hgnc_symbols = TagListField("HGNC Symbols/Ids (case sensitive)")
     gene_panels = SelectMultipleField(choices=[])
 
-    repids = TagListField("Repeat IDs")
-
     chrom = SelectField(
         "Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS, default=""
     )
