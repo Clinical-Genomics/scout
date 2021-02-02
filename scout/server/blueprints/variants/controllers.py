@@ -162,7 +162,9 @@ def str_variants(
     # case bam_files for quick access to alignment view.
     case_append_alignments(case_obj)
 
-    return variants(store, institute_obj, case_obj, variants_query, variant_count, page, per_page)
+    return variants(
+        store, institute_obj, case_obj, variants_query, variant_count, page=page, per_page=per_page
+    )
 
 
 def get_manual_assessments(variant_obj):

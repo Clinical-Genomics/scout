@@ -174,6 +174,9 @@ class StrFiltersForm(FlaskForm):
     delete_filter = SubmitField(label="Delete filter")
 
     filter_variants = SubmitField(label="Filter variants")
+
+    hide_dismissed = BooleanField("Hide dismissed", default=False)
+    filter_variants = SubmitField(label="Filter variants")
     export = SubmitField(label="Filter and export")
 
 

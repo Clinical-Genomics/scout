@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 {% from "utils.html" import comments_table %}
-{% from "variants/utils.html" import cell_rank, dismiss_variants_block, pagination_footer, pagination_hidden_div, str_filters %}
+{% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, pagination_footer, pagination_hidden_div, str_filters %}
 
 
 {% block title %}
@@ -47,14 +47,10 @@
         <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
       </div>
       <!--Expand filters form if filters were used in a previous POST request-->
-      <div class="card-body panel-collapse collapse {{ 'show' if expand_search == 'True' }}" id="collapseFilters">
+      <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
           {{ str_filters(form, institute, case) }}
       </div>
-      <div class="card-footer text-center py-3">
-        {% if "all_variants" in session %}
-          Showing {{session['filtered_variants']}} / {{session["all_variants"]}} variants
-        {% endif %}
-      </div>
+    {{ filter_form_footer(form, result_size, total_variants) }}
     </div>
   </form>
   <div class="card mt-3">
@@ -159,6 +155,12 @@
     var cytoEnd = document.getElementById("cytoband_end");
     initSearchConstraints(cytoEnd, endElem)
 
+    document.getElementById('hide_dismissed').onchange = function() {
+      document.getElementById('expand_search').value = "False";
+      var the_form = document.forms['filters_form'];
+      the_form.submit();
+    };
+
     window.onload=function() {
       populateCytobands({{cytobands|safe}});
     }
@@ -197,7 +199,6 @@
         </td></tr>
         <tr><td>SweGen mean</td><td>{{variant.str_swegen_mean|round(2)}}</td></tr>
         <tr><td>SweGen std</td><td>{{variant.str_swegen_std|round(2)}}</td></tr>
-
       {% endif %}
     </table>
     {% endif %}
