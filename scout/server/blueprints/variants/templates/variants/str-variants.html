@@ -95,7 +95,7 @@
             <td>{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
             <td>{{ str_locus_info(variant) }}</td>
 	          <td class="text-right">{{ variant.str_display_ru or variant.str_ru  }}</td>
-            <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
+            <td class="text-right"><b>{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</b></td>
             <td class="text-right">{{ variant.str_ref }}</td>
             <td>{{ str_status(variant) }}</td>
             <td>{% for sample in variant.samples %}
@@ -190,8 +190,18 @@
       <tr><td>Reference size</td><td>{{ variant.str_normal_max }}</td></tr>
       <tr><td>Normal max</td><td>{{ variant.str_normal_max }}</td></tr>
       <tr><td>Pathologic min</td><td>{{ variant.str_pathologic_min }}</td><tr>
+      <tr><td colspan=2>&nbsp;</td></tr>
+      {% if variant.str_swegen_mean %}
+        <tr><td>SweGen Z-score</td><td>
+          {{ ((variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "")|int - variant.str_swegen_mean ) / variant.str_swegen_std) | round(2) }}
+        </td></tr>
+        <tr><td>SweGen mean</td><td>{{variant.str_swegen_mean|round(2)}}</td></tr>
+        <tr><td>SweGen std</td><td>{{variant.str_swegen_std|round(2)}}</td></tr>
+
+      {% endif %}
     </table>
-    {% else %}
+    {% endif %}
+    {% if not variant.str_normal_max %}
       <div>Normal range not provided. Consider updating to a new version of Stranger.</div>
     {% endif %}"
   title="">{{ variant.str_status }}</a>
@@ -201,6 +211,7 @@
   <a
   href="{{ variant.str_source_link }}"
   class="link text-black"
+  target="_blank"
   data-toggle="popover"
   data-html="true"
   data-trigger="hover"
