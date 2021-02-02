@@ -88,6 +88,7 @@ def test_load_cnv_report_using_case_id_with_update_success(adapter, cancer_case_
     updated_case_obj = adapter.case_collection.find_one()
     assert updated_case_obj["cnv_report"] == report_path
 
+
 def test_load_coverage_qc_report_using_case_id_with_update_success(adapter, cancer_case_obj):
 
     adapter.case_collection.insert_one(cancer_case_obj)
