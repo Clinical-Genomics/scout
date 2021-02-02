@@ -702,7 +702,7 @@ class CaseHandler(object):
             - madeline_info: If there is a new pedigree
             - vcf_files: paths to the new files
             - cnv_report: path to the CNV report file
-            - coverage_qc_report: path to the coverage and qc report file
+            - coverage_qc_report: path to the static coverage and qc report file
             - has_svvariants: If there are new svvariants
             - has_strvariants: If there are new strvariants
             - multiqc: If there's an updated multiqc report location
