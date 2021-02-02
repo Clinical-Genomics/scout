@@ -88,6 +88,7 @@ def build_case(case_data, adapter):
         multiqc = str, # path to dir with multiqc information
 
         cnv_report = str, # path to file with cnv report
+        coverage_qc_report = str, # path to file with coverage and qc report
 
         vcf_files = dict, # A dictionary with vcf files
 
@@ -256,6 +257,8 @@ def build_case(case_data, adapter):
         case_obj["multiqc"] = case_data.get("multiqc")
     if "cnv_report" in case_data:
         case_obj["cnv_report"] = case_data.get("cnv_report")
+    if "coverage_qc_report" in case_data:
+        case_obj["coverage_qc_report"] = case_data.get("coverage_qc_report")
     case_obj["vcf_files"] = case_data.get("vcf_files", {})
     case_obj["delivery_report"] = case_data.get("delivery_report")
 

@@ -702,6 +702,7 @@ class CaseHandler(object):
             - madeline_info: If there is a new pedigree
             - vcf_files: paths to the new files
             - cnv_report: path to the CNV report file
+            - coverage_qc_report: path to the coverage and qc report file
             - has_svvariants: If there are new svvariants
             - has_strvariants: If there are new strvariants
             - multiqc: If there's an updated multiqc report location
@@ -751,6 +752,7 @@ class CaseHandler(object):
                     "analysis_date": case_obj["analysis_date"],
                     "delivery_report": case_obj.get("delivery_report"),
                     "cnv_report": case_obj.get("cnv_report"),
+                    "coverage_qc_report": case_obj.get("coverage_qc_report"),
                     "individuals": case_obj["individuals"],
                     "updated_at": updated_at,
                     "rerun_requested": case_obj.get("rerun_requested", False),
