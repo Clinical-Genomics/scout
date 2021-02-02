@@ -1,7 +1,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% from "utils.html" import comments_table %}
 
-{% macro filter_form_footer(form, result_size, total_variants) %}
+{% macro filter_form_footer(form, result_size, total_variants, more_variants, page, nvars) %}
 <div class="card-footer text-center">
   <div class="row">
     <div class="col-2 d-flex align-items-baseline justify-content-start">
@@ -9,8 +9,11 @@
       {{ form.hide_dismissed }}
       {{ form.hide_dismissed.label(class="ml-3") }}
     </div>
-    <div class="col-2 offset-3 d-flex justify-content-start">
-      Showing {{result_size}} / {{ total_variants }} variants
+    <div class="col-3 offset-3 d-flex justify-content-start">
+      Filter returns {{result_size}} / {{ total_variants }} variants.
+    </div>
+    <div class="col-3 offset-1 d-flex justify-content-end">
+      Showing {%if more_variants %}page {{page}}{%else%}last page{% endif %} with {{nvars}} variants.
     </div>
   </div>
 </div>
@@ -779,21 +782,21 @@
           {% if page > 1 %}
              <div>
                <label for="paginate-first" class="btn btn-outline-secondary" tabindex="0">
-                 First page
+                 First&nbsp;page
                </label>
              </div>
           {% endif %}
           {% if page > 2 %}
             <div>
               <label for="paginate-previous" class="btn btn-outline-secondary" tabindex="0">
-                Previous page
+                Previous&nbsp;page
               </label>
             </div>
           {% endif %}
           {% if more_variants %}
             <div>
               <label for="paginate-next" class="btn btn-outline-secondary" tabindex="0">
-                Next page
+                Next&nbsp;page
               </label>
             </div>
           {% endif %}

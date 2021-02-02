@@ -188,7 +188,7 @@ def variants(institute_id, case_name):
 @templated("variants/str-variants.html")
 def str_variants(institute_id, case_name):
     """Display a list of STR variants."""
-    page = int(request.args.get("page", 1))
+    page = int(request.form.get("page", 1))
     variant_type = request.args.get("variant_type", "clinical")
     category = "str"
 
