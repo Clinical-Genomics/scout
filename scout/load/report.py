@@ -72,7 +72,10 @@ def load_cnv_report(adapter: MongoAdapter, report_path: str, case_id: str, updat
     LOG.info("Saving report for case {} in database".format(case_obj["_id"]))
     return adapter.replace_case(case_obj)
 
-def load_coverage_qc_report(adapter: MongoAdapter, report_path: str, case_id: str, update: bool = False):
+
+def load_coverage_qc_report(
+    adapter: MongoAdapter, report_path: str, case_id: str, update: bool = False
+):
     """Load a coverage and qc report into a case in the database
 
     If the report already exists the function will exit.
@@ -102,8 +105,6 @@ def load_coverage_qc_report(adapter: MongoAdapter, report_path: str, case_id: st
 
     LOG.info("Saving report for case {} in database".format(case_obj["_id"]))
     return adapter.replace_case(case_obj)
-
-
 
 
 def _update_report_path(case_obj, report_path, report_type):
