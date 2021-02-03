@@ -70,8 +70,8 @@
                           name: "{{ custTrack.name }}",
                           type: "{{ custTrack.type }}",
                           format: "{{ custTrack.format }}",
-                          url: "{{custTrack.url}}",
-                          indexURL: "{{custTrack.indexURL}}"
+                          url: "{{ url_for('alignviewers.remote_cors', remote_url=custTrack.url) }}",
+                          indexURL: "{{ url_for('alignviewers.remote_cors', remote_url=custTrack.indexURL) }}"
                         },
                       {% endfor %}
                       {% for wtrack in rhocall_wig %}
