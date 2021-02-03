@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 {% from "utils.html" import comments_table %}
-{% from "variants/utils.html" import cell_rank, dismiss_variants_block%}
+{% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, pagination_footer, pagination_hidden_div, str_filters %}
 
 
 {% block title %}
@@ -38,6 +38,21 @@
 {% endblock %}
 
 {% block content_main %}
+<div class="container-float">
+  <form method="POST" id="filters_form" action="{{url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name)}}"
+     enctype="multipart/form-data" onsubmit="return validateForm()">
+     {{ pagination_hidden_div(page) }}
+    <div class="card panel-default" id="accordion">
+      <div class="card-header">
+        <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
+      </div>
+      <!--Expand filters form if filters were used in a previous POST request-->
+      <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
+          {{ str_filters(form, institute, case) }}
+      </div>
+    {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length) }}
+    </div>
+  </form>
   <div class="card mt-3">
     <table class="table table-bordered table-hover" style="table-layout: fixed">
       <thead>
@@ -48,8 +63,6 @@
           <th title="ALT">Estimated size</th>
           <th title="ReferenceSize">Reference size</th>
           <th title="Status">Status</th>
-          <th title="Max normal">Max normal</th>
-          <th title="Min pathologic">Min pathologic</th>
           <th title="GT">Genotype</th>
           <th title="Chromosome">Chr.</th>
           <th title="Position">Position</th>
@@ -76,13 +89,11 @@
 	            <tr>
 	        {% endif %}
             <td>{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
-            <td>{{ variant.str_repid }}</td>
-	          <td class="text-right">{{ variant.str_ru }}</td>
-            <td class="text-right">{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
+            <td>{{ str_locus_info(variant) }}</td>
+	          <td class="text-right">{{ variant.str_display_ru or variant.str_ru  }}</td>
+            <td class="text-right"><b>{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</b></td>
             <td class="text-right">{{ variant.str_ref }}</td>
-            <td>{{ variant.str_status }}</td>
-            <td>{{ variant.str_normal_max }}</td>
-            <td>{{ variant.str_pathologic_min }}</td>
+            <td>{{ str_status(variant) }}</td>
             <td>{% for sample in variant.samples %}
                   {% if sample.genotype_call != "./." %}
                     <div class="float-left">{{ sample.display_name }}</div>
@@ -117,53 +128,43 @@
       </tbody>
     </table>
   </div>
-  <br>
-  {{ footer() }}
+</div> <!-- end of class="container-float"> -->
+<div class="container-fluid">
+  {{ pagination_footer(more_variants, page) }}
+</div>
 {% endblock %}
-
-{% macro footer() %}
-<form>
-  <div class="container-fluid">
-      {% if not more_variants %}
-        <div class="row justify-content-center">
-          <i class="text-muted">No more variants to display</i>
-        </div>
-      {% endif %}
-      <div class="row justify-content-center">
-        <div class="btn-group" role="group">
-          {% if page > 1 %}
-            <div>
-              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=1, **form.data) }}">
-                First page
-              </a>
-            </div>
-          {% endif %}
-          {% if page > 2 %}
-            <div>
-              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=(page - 1), **form.data) }}">
-                Previous page
-              </a>
-            </div>
-          {% endif %}
-          {% if more_variants %}
-            <div class="col">
-              <a class="btn btn-outline-secondary mx-auto d-block" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, page=(page + 1), **form.data) }}">
-                Next page
-              </a>
-            </div>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-</form>
-{% endmacro %}
 
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+  <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
   <script>
+    var startElem = document.getElementById("start");
+    var endElem = document.getElementById("end");
+
+    var chromSel = document.getElementById("chrom");
+    chromSel.addEventListener("change", function() {
+      populateCytobands({{cytobands|safe}});
+    });
+
+    var cytoStart = document.getElementById("cytoband_start");
+    initSearchConstraints(cytoStart, startElem)
+
+    var cytoEnd = document.getElementById("cytoband_end");
+    initSearchConstraints(cytoEnd, endElem)
+
+    document.getElementById('hide_dismissed').onchange = function() {
+      document.getElementById('expand_search').value = "False";
+      var the_form = document.forms['filters_form'];
+      the_form.submit();
+    };
+
+    window.onload=function() {
+      populateCytobands({{cytobands|safe}});
+    }
+
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
       $('[data-toggle="popover"]').popover({
@@ -176,7 +177,57 @@
       $('table').stickyTableHeaders({
         fixedOffset: $(".navbar-fixed-top")
       });
-    })
+    });
 
   </script>
 {% endblock %}
+
+{% macro str_status(variant) %}
+<a class="badge badge-secondary text-white"
+  data-toggle="popover"
+  data-html="true"
+  data-trigger="hover click"
+  data-content="{% if variant.str_normal_max %}
+    <table>
+      <tr><td>Reference size</td><td>{{ variant.str_normal_max }}</td></tr>
+      <tr><td>Normal max</td><td>{{ variant.str_normal_max }}</td></tr>
+      <tr><td>Pathologic min</td><td>{{ variant.str_pathologic_min }}</td><tr>
+      <tr><td colspan=2>&nbsp;</td></tr>
+      {% if variant.str_swegen_mean %}
+        <tr><td>SweGen Z-score</td><td>
+          {{ ((variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "")|int - variant.str_swegen_mean ) / variant.str_swegen_std) | round(2) }}
+        </td></tr>
+        <tr><td>SweGen mean</td><td>{{variant.str_swegen_mean|round(2)}}</td></tr>
+        <tr><td>SweGen std</td><td>{{variant.str_swegen_std|round(2)}}</td></tr>
+      {% endif %}
+    </table>
+    {% endif %}
+    {% if not variant.str_normal_max %}
+      <div>Normal range not provided. Consider updating to a new version of Stranger.</div>
+    {% endif %}"
+  title="">{{ variant.str_status }}</a>
+{% endmacro %}
+
+{% macro str_locus_info(variant) %}
+  <a
+  href="{{ variant.str_source_link }}"
+  class="link text-black"
+  target="_blank"
+  data-toggle="popover"
+  data-html="true"
+  data-trigger="hover"
+  data-content="
+  <div class='text-left'>
+    {% if variant.str_disease %}
+      <div><strong>Disease:</strong> {{ variant.str_disease }} ({{ variant.str_inheritance_mode }})</div>
+    {% else %}
+      <div>Disease information not provided with locus. Consider updating to a new version of Stranger.</div>
+    {% endif %}
+    {% if variant.str_source is defined %}
+      <div><strong>Source:</strong> {{ variant.str_source.display }} </div>
+      <div>Click to visit {{ variant.str_source.type }}
+    {%endif%}
+  </div>"
+  title="">{{ variant.str_repid }}
+  </a>
+{% endmacro %}
