@@ -32,6 +32,13 @@ LOG = logging.getLogger(__name__)
 
 @alignviewers_bp.route("/remote/cors/<path:remote_url>", methods=["OPTIONS", "GET"])
 def remote_cors(remote_url):
+    """Proxy a remote URL.
+    Useful to e.g. eliminate CORS issues when the remote site does not
+        communicate CORS headers well, as in cloud tracks on figshare for IGV.js.
+
+    Based on code from answers to this thread:
+        https://stackoverflow.com/questions/6656363/proxying-to-another-web-service-with-flask/
+    """
     LOG.debug("Got request: %s", request)
 
     resp = requests.request(
