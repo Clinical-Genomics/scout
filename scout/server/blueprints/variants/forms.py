@@ -132,6 +132,7 @@ class FiltersForm(VariantFiltersForm):
     clinsig_confident_always_returned = BooleanField("CLINSIG Confident")
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
     local_obs = IntegerField("Local obs. (archive)")
+
     clinical_filter = SubmitField(label="Clinical filter")
 
 
@@ -149,13 +150,8 @@ class CancerFiltersForm(VariantFiltersForm):
     mvl_tag = BooleanField("In Managed Variant List")
 
 
-class StrFiltersForm(FlaskForm):
+class StrFiltersForm(VariantFiltersForm):
     """docstring for StrFiltersForm"""
-
-    variant_type = HiddenField(default="clinical")
-    chrom = TextField("Chromosome")
-    gene_panels = SelectMultipleField(choices=[])
-    repids = TagListField()
 
 
 class SvFiltersForm(VariantFiltersForm):

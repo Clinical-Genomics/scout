@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Added a page about migrating potentially breaking changes to the documentation
 - markdown_include in development requirements file
+- STR variants filter
+- Display source, Z-score, inheritance pattern for STR annotations from Stranger (>0.6.1) if available
 - Coverage and quality report to cancer view
 ### Fixed
 - ACMG classification page crashing when trying to visualize a classification that was removed
@@ -121,6 +123,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove calls to PyMongo functions marked as deprecated in backend and frontend(as of version 3.7).
 - Improved `scout update individual` command
 - Export dynamic phenotypes with ordered gene lists as PDF
+
 
 ## [4.23]
 ### Added
