@@ -6,7 +6,7 @@ from scout.commands import cli
 
 
 def test_load_coverage_qc_report(mock_app, case_obj):
-    """Testing the load delivery report cli command"""
+    """Testing the load coverage qc report cli command"""
 
     # Make sure the path to delivery report is a valid path
     assert os.path.isfile(coverage_qc_report_path)
@@ -25,7 +25,7 @@ def test_load_coverage_qc_report(mock_app, case_obj):
 
 
 def test_invalid_path_load_coverage_qc_report(mock_app, case_obj):
-    """Testing the load delivery report cli command"""
+    """Testing the load coverage qc report cli command"""
 
     runner = mock_app.test_cli_runner()
     assert runner
