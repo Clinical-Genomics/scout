@@ -6,11 +6,16 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Added a page about migrating potentially breaking changes to the documentation
 - markdown_include in development requirements file
 ### Fixed
 - ACMG classification page crashing when trying to visualize a classification that was removed
 - Pretty print HGVS on gene variants (URL-decode VEP)
 - Broken or missing link in the documentation
+- Multiple gene names in ClinVar submission form
+- Inheritance model select field in ClinVar submission
+- IGV.js >2.7.0 has an issue with the gene track zoom levels - temp freeze at 2.7.0
+- Revert CORS-anywhere and introduce a local http proxy for cloud tracks
 ### Changed
 
 ## [4.28]

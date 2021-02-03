@@ -135,14 +135,8 @@
                           {% set gene_symbols = [] %}
                           {% for gene in pinned.genes %}
                             {% do gene_symbols.append(gene.hgnc_symbol) %}
-                            {% if pinned.genes|length == 1 %}
-                              <strong>{{ pinned.genes[0].hgnc_symbol }}</strong><br>
-                            {% else %}
-                              {% for gene in pinned.genes %}
-                              <strong>{{ gene.hgnc_symbol+";" }}</strong>
-                              {% endfor %}
-                            {% endif %}
                           {% endfor %}
+                            <strong>{{gene_symbols|join(", ")}}</strong>
                             <input type="hidden" name="gene_symbol@{{pinned._id}}" value="{{ ';'.join(gene_symbols) }}">
                         </td>
                       </tr>
@@ -185,8 +179,7 @@
                             <option value="Autosomal recessive inheritance" selected>Autosomal recessive inheritance</option>
                             <option value="Autosomal dominant">Autosomal dominant inheritance</option>
                             <option value="X-linked inheritance">X-linked inheritance</option>
-                            <option value="
-                            -limited autosomal dominant">Sex-limited autosomal dominant</option>
+                            <option value="Sex-limited autosomal dominant">Sex-limited autosomal dominant</option>
                             <option value="Mitochondrial inheritance">Mitochondrial inheritance</option>
                             <option value="Y-linked inheritance">Y-linked inheritance</option>
                           {% elif 'XR' in pinned.genetic_models or 'XR_dn' in pinned.genetic_models %}
@@ -238,7 +231,7 @@
                     {% if pinned.category == 'snv'%}
                       <tr>
                         <td>var. identifier</td>
-                        <td><input type="text" id="Variation identifiers_{{pinned._id}}" name="variations_ids@{{pinned._id}}" value="{{ pinned.dbsnp_id.split(':')[0] if pinned.dbsnp_id else ''}}" size=14 pattern="rs[0-9]+"></td>
+                        <td><input type="text" id="Variation identifiers_{{pinned._id}}" name="variations_ids@{{pinned._id}}" value="{{ pinned.dbsnp_id.split(':')[0] if pinned.dbsnp_id else ''}}" size=14 pattern="rs[0-9]+" ></td>
                       </tr>
                     {% endif %}
                     <tr>
