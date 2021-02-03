@@ -15,7 +15,9 @@ def test_remote_cors(app):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
+        # WHEN the remote cors endpoint is invoked with an url
         resp = client.get(url_for("alignviewers.remote_cors", remote_url=cloud_track_url))
+        # THEN it should return success response
         assert resp.status_code == 200
 
 
