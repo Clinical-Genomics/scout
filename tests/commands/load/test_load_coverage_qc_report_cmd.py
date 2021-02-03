@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
+import pytest
+
 from unittest import mock
 
 from scout.demo import coverage_qc_report_path
