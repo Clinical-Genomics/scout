@@ -15,7 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Multiple gene names in ClinVar submission form
 - Inheritance model select field in ClinVar submission
 - IGV.js >2.7.0 has an issue with the gene track zoom levels - temp freeze at 2.7.0
-- Revert CORS-anywhere for now as the service is now demo only
+- Revert CORS-anywhere and introduce a local http proxy for cloud tracks
 ### Changed
 
 ## [4.28]
