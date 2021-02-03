@@ -8,6 +8,7 @@ from flask import (
     render_template,
     send_file,
     request,
+    Response,
     current_app,
     flash,
 )
@@ -15,6 +16,8 @@ from flask import (
 from .partial import send_file_partial
 from scout.constants import HUMAN_REFERENCE
 from . import controllers
+
+import requests
 
 alignviewers_bp = Blueprint(
     "alignviewers",
@@ -25,6 +28,37 @@ alignviewers_bp = Blueprint(
 )
 
 LOG = logging.getLogger(__name__)
+
+
+@alignviewers_bp.route("/remote/cors/<path:remote_url>", methods=["OPTIONS", "GET"])
+def remote_cors(remote_url):
+    """Proxy a remote URL.
+    Useful to e.g. eliminate CORS issues when the remote site does not
+        communicate CORS headers well, as in cloud tracks on figshare for IGV.js.
+
+    Based on code from answers to this thread:
+        https://stackoverflow.com/questions/6656363/proxying-to-another-web-service-with-flask/
+    """
+    LOG.debug("Got request: %s", request)
+
+    resp = requests.request(
+        method=request.method,
+        url=remote_url,
+        headers={key: value for (key, value) in request.headers if key != "Host"},
+        data=request.get_data(),
+        cookies=request.cookies,
+        allow_redirects=True,
+    )
+
+    excluded_headers = ["content-encoding", "content-length", "transfer-encoding", "connection"]
+    headers = [
+        (name, value)
+        for (name, value) in resp.raw.headers.items()
+        if name.lower() not in excluded_headers
+    ]
+
+    response = Response(resp.content, resp.status_code, headers)
+    return response
 
 
 @alignviewers_bp.route("/remote/static", methods=["OPTIONS", "GET"])
