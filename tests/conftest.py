@@ -976,7 +976,7 @@ def one_cancer_manta_SV_variant(request, vep_94_manta_annotated_SV_variants_file
 
 @pytest.fixture(scope="function")
 def one_cancer_variant(request, cancer_snv_file):
-    LOG.info("Return one parsed STR variant")
+    LOG.info("Return one parsed cancer variant")
     variant_parser = VCF(cancer_snv_file)
 
     variant = next(variant_parser)
@@ -1065,11 +1065,28 @@ def parsed_variant(request, one_variant, case_obj):
 
 
 @pytest.fixture(scope="function")
+def parsed_str_variant(request, one_str_variant, case_obj):
+    """Return a parsed variant"""
+    print("")
+    variant_dict = parse_variant(one_str_variant, case_obj)
+    return variant_dict
+
+
+@pytest.fixture(scope="function")
 def variant_obj(request, parsed_variant):
     """Return a variant object"""
     print("")
     institute_id = "cust000"
     variant = build_variant(parsed_variant, institute_id=institute_id)
+    return variant
+
+
+@pytest.fixture(scope="function")
+def str_variant_obj(request, parsed_str_variant):
+    """Return a variant object"""
+    print("")
+    institute_id = "cust000"
+    variant = build_variant(parsed_str_variant, institute_id=institute_id)
     return variant
 
 

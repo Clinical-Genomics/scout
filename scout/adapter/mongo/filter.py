@@ -85,6 +85,7 @@ class FilterHandler(object):
                 "sv": "variants.sv_variants",
                 "cancer": "variants.cancer_variants",
                 "snv": "variants.variants",
+                "str": "variants.str_variants",
             }
             target = variants_target_from_category.get(category)
 

@@ -108,12 +108,17 @@ def build_variant(
 
         # STR specific information
         str_repid = str, repeat id generally corresponds to gene symbol
-        str_ru = str, used e g in PanelApp naming of STRs
+        str_ru = str, Repeat Unit used e g in PanelApp naming of STRs
         str_ref = int, reference copy number
         str_len = int, number of repeats found in case
         str_status = str, this indicates the severity of the expansion level
         str_normal_max = int, max number of repeats to call an STR variant normal
         str_pathologic_min = int, min number of repeats to call an STR variant pathologic
+        str_disease = str, Associated disease name
+        str_inheritance_mode = str, STR disease mode of inheritance "AD", "XR", "AR", "-"
+        str_source = dict, STR source dict with keys {"display": str, "type": str ("PubMed", "GeneReviews"), "id": str}
+        str_swegen_mean = float, STR norm pop mean
+        str_swegen_std = float, STR norm pop stdev
 
         # Callers
         gatk = str, # choices=VARIANT_CALL, default='Not Used'
@@ -208,6 +213,25 @@ def build_variant(
 
     if "str_pathologic_min" in variant:
         variant_obj["str_pathologic_min"] = variant["str_pathologic_min"]
+
+    if "str_swegen_mean" in variant:
+        variant_obj["str_swegen_mean"] = (
+            float(variant["str_swegen_mean"]) if variant["str_swegen_mean"] else None
+        )
+
+    if "str_swegen_std" in variant:
+        variant_obj["str_swegen_std"] = (
+            float(variant["str_swegen_std"]) if variant["str_swegen_std"] else None
+        )
+
+    if "str_inheritance_mode" in variant:
+        variant_obj["str_inheritance_mode"] = variant["str_inheritance_mode"]
+
+    if "str_disease" in variant:
+        variant_obj["str_disease"] = variant["str_disease"]
+
+    if "str_source" in variant:
+        variant_obj["str_source"] = variant["str_source"]
 
     gt_types = []
     for sample in variant.get("samples", []):
