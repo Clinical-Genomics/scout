@@ -150,34 +150,8 @@ class CancerFiltersForm(VariantFiltersForm):
     mvl_tag = BooleanField("In Managed Variant List")
 
 
-class StrFiltersForm(FlaskForm):
+class StrFiltersForm(VariantFiltersForm):
     """docstring for StrFiltersForm"""
-
-    variant_type = HiddenField(default="clinical")
-
-    hgnc_symbols = TagListField("HGNC Symbols/Ids (case sensitive)")
-    gene_panels = SelectMultipleField(choices=[])
-
-    chrom = SelectField(
-        "Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS, default=""
-    )
-
-    start = IntegerField("Start position", [validators.Optional()])
-    end = IntegerField("End position", [validators.Optional()])
-    cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
-    cytoband_end = NonValidatingSelectField("Cytoband end", choices=[])
-
-    filters = NonValidatingSelectField(choices=[], validators=[validators.Optional()])
-    filter_display_name = StringField(default="")
-    save_filter = SubmitField(label="Save filter")
-    load_filter = SubmitField(label="Load filter")
-    delete_filter = SubmitField(label="Delete filter")
-
-    filter_variants = SubmitField(label="Filter variants")
-
-    hide_dismissed = BooleanField("Hide dismissed", default=False)
-    filter_variants = SubmitField(label="Filter variants")
-    export = SubmitField(label="Filter and export")
 
 
 class SvFiltersForm(VariantFiltersForm):
