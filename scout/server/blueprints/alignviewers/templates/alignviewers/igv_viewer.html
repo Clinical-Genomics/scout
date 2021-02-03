@@ -25,14 +25,12 @@
             src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
 
     <!-- IGV JS-->
-     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/igv@2.7.4/dist/igv.min.js"></script>
+     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/igv@2.7.0/dist/igv.min.js"></script>
 </head>
 
 <body>
   <div class="container-fluid" id="igvDiv" style="padding:5px; border:1px solid lightgray"></div>
 </body>
-
-{% set cors_anywhere_prefix = "https://cors-anywhere.herokuapp.com" -%}
 
 <script type="text/javascript">
   $(document).ready(function () {
@@ -72,8 +70,8 @@
                           name: "{{ custTrack.name }}",
                           type: "{{ custTrack.type }}",
                           format: "{{ custTrack.format }}",
-                          url: "{{cors_anywhere_prefix}}/{{custTrack.url}}",
-                          indexURL: "{{cors_anywhere_prefix}}/{{custTrack.indexURL}}"
+                          url: "{{ url_for('alignviewers.remote_cors', remote_url=custTrack.url) }}",
+                          indexURL: "{{ url_for('alignviewers.remote_cors', remote_url=custTrack.indexURL) }}"
                         },
                       {% endfor %}
                       {% for wtrack in rhocall_wig %}

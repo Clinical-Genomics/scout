@@ -14,3 +14,5 @@ black
 # docs
 mkdocs
 mkdocs-material
+markdown-include
+
