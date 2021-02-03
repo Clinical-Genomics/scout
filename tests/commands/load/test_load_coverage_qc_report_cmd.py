@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-from scout.demo import coverage_qc_report 
+from scout.demo import coverage_qc_report
 from scout.commands import cli
 
 
