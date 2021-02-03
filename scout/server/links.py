@@ -369,8 +369,30 @@ def get_variant_links(variant_obj, build=None):
         ucsc_link=ucsc_link(variant_obj, build),
         alamut_link=alamut_link(variant_obj, build),
         spidex_human=spidex_human(variant_obj),
+        str_source_link=str_source_link(variant_obj),
     )
     return links
+
+
+def str_source_link(variant_obj):
+    """Compose link for STR data source."""
+
+    if not variant_obj.get("str_source"):
+        return None
+
+    source = variant_obj["str_source"]
+
+    if source["id"] is None:
+        return None
+
+    if source["type"] is None:
+        url_template = "{}"
+    if source["type"] == "GeneReviews":
+        url_template = "https://www.ncbi.nlm.nih.gov/books/{}/"
+    if source["type"] == "PubMed":
+        url_template = "https://pubmed.ncbi.nlm.nih.gov/{}/"
+
+    return url_template.format(source["id"])
 
 
 def thousandg_link(variant_obj, build=None):
