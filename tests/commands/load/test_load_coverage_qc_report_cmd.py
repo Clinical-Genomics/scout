@@ -49,8 +49,12 @@ def test_exception_load_coverage_qc_report(mock_app, case_obj):
     assert runner
 
     # Test CLI function
-    with mock.patch.object(report, "load_coverage_qc_report") as mocked, pytest.raises(Exception) as raised_exception:
-        mocked.raiseError.side_effect = DataNotFoundError("Some data not found error which is very bad") 
+    with mock.patch.object(report, "load_coverage_qc_report") as mocked, pytest.raises(
+        Exception
+    ) as raised_exception:
+        mocked.raiseError.side_effect = DataNotFoundError(
+            "Some data not found error which is very bad"
+        )
         result = runner.invoke(
             cli,
             ["load", "coverage-qc-report", case_obj["_id"], "invalid-path", "-u"],
