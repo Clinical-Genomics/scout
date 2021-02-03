@@ -2,7 +2,7 @@
 import os
 import pytest
 
-from unittest import mock
+from copy import deepcopy
 
 from scout.demo import coverage_qc_report_path
 from scout.load import report
@@ -47,18 +47,18 @@ def test_invalid_path_load_coverage_qc_report(mock_app, case_obj):
 def test_exception_load_coverage_qc_report(mock_app, case_obj):
     """Testing the load coverage qc report cli command"""
 
+    test_case_obj = deepcopy(case_obj)
+    test_case_obj["_id"] = "some_very_wrong_and_nonexisting_case"
+
     runner = mock_app.test_cli_runner()
     assert runner
 
     # Test CLI function
-    with mock.patch.object(report, "load_coverage_qc_report") as mocked, pytest.raises(
+    with pytest.raises(
         Exception
     ) as raised_exception:
-        mocked.raiseError.side_effect = DataNotFoundError(
-            "Some data not found error which is very bad"
-        )
         result = runner.invoke(
             cli,
-            ["load", "coverage-qc-report", case_obj["_id"], "invalid-path", "-u"],
+            ["load", "coverage-qc-report", case_obj["_id"], coverage_qc_report_path, "-u"],
         )
         assert result.exit_code == 2
