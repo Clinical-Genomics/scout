@@ -5,8 +5,6 @@ import pytest
 from copy import deepcopy
 
 from scout.demo import coverage_qc_report_path
-from scout.load import report
-from scout.exceptions import DataNotFoundError
 from scout.commands import cli
 
 

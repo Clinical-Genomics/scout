@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
+import pytest
+
+from copy import deepcopy
 
 from scout.demo import delivery_report_path
 from scout.commands import cli
@@ -22,3 +25,21 @@ def test_load_delivery_report(mock_app, case_obj):
 
     assert "saved report to case!" in result.output
     assert result.exit_code == 0
+
+
+def test_exception_load_delivery_report(mock_app, case_obj):
+    """Testing the load delivery report cli command for exception"""
+
+    test_case_obj = deepcopy(case_obj)
+    test_case_obj["_id"] = "some_very_wrong_and_nonexisting_case"
+
+    runner = mock_app.test_cli_runner()
+    assert runner
+
+    # Test CLI function
+    with pytest.raises(Exception) as raised_exception:
+        result = runner.invoke(
+            cli,
+            ["load", "cnv-report", test_case_obj["_id"], coverage_qc_report_path, "-u"],
+        )
+        assert result.exit_code == 2
