@@ -875,6 +875,7 @@ def cnv_report(institute_id, case_name):
 @cases_bp.route("/<institute_id>/<case_name>/coverage-qc-report")
 def coverage_qc_report(institute_id, case_name):
     """Display coverage and qc report."""
+    _, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.multiqc(store, institute_id, case_name)
     if data["case"].get("coverage_qc_report") is None:
         return abort(404)
