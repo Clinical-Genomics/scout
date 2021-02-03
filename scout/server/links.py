@@ -392,7 +392,6 @@ def str_source_link(variant_obj):
     if source["type"] == "PubMed":
         url_template = "https://pubmed.ncbi.nlm.nih.gov/{}/"
 
-    pp("returns ok!")
     return url_template.format(source["id"])
 
 
