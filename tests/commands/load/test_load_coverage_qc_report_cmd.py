@@ -45,7 +45,7 @@ def test_invalid_path_load_coverage_qc_report(mock_app, case_obj):
 
 
 def test_exception_load_coverage_qc_report(mock_app, case_obj):
-    """Testing the load coverage qc report cli command"""
+    """Testing the load coverage qc report cli command for exception"""
 
     test_case_obj = deepcopy(case_obj)
     test_case_obj["_id"] = "some_very_wrong_and_nonexisting_case"
