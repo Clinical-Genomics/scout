@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<!--Report template and solution from: https://github.com/NationalGenomicsInfrastructure/ngi_reports-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Markdown">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title> Klinisk sekvensering av cancerprover -  Kvalitetsrapport</title>
+  <style type="text/css">
+  body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, Verdana, sans-serif;
+    max-width: 1000px;
+    padding: 20px;
+    margin:0 auto;
+    font-size:10pt;
+    color: #333;
+  }
+
+  /********************************************************
+  * Common Typography
+  *********************************************************/
+
+  h1 {
+    font-size:14pt;
+    margin:32px 0 12px;
+  }
+  h2 {
+    font-size:11pt;
+    margin:24px 0 8px;
+  }
+  img {
+    max-width:100%;
+  }
+  .caption {
+    display:none;
+  }
+  .floatleft {
+    float:left;
+  }
+  .floatright {
+    float:right;
+  }
+  .center {
+    text-align:center;
+  }
+
+  blockquote {
+    font-style:italic;
+    padding-left:15px;
+    margin-left:15px;
+    border-left: 3px solid #CCCCCC;
+  }
+
+  table {
+    width:100%;
+    border:1px solid #D9D9D9;
+    border-spacing: 0;
+    border-collapse: collapse;
+  }
+  table th {
+    background-color: #D9D9D9
+  }
+  table th, table td {
+    white-space: nowrap;
+    border:1px solid #D9D9D9;
+    padding:8px;
+  }
+  table p {
+    margin:0;
+  }
+
+  /* div for expanding table */
+  div.expander {
+    width: 100%;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    background-color:#D9D9D9;
+  }
+  span.expander {
+    font-size: 12px;
+    font-weight: 500;
+    border-radius:3px;
+    padding: 1px 6px;
+    cursor: pointer;
+  }
+  span.expander:hover {
+    color: #ffffff;
+    background-color: #5a5f66;
+  }
+
+  /* Nicer code - styles stolen from GitHub */
+  code {
+    white-space:pre;
+    padding:3px 0;
+    margin:0;
+    background-color:#EEEEEE;
+    border-radius:3px;
+    font: 13px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  }
+  code:before, code:after {
+    letter-spacing: -0.2em;
+    content: "\00a0";
+  }
+  pre {
+    background-color:#EEEEEE;
+    padding:8px 5px;
+    border-radius:3px;
+  }
+
+  /* Make definition lists look like nice tables */
+  dl {
+    width:50%;
+    background-color: #D9D9D9;
+  }
+  .clearfix:after, .clearfix:before, dl:after, dl:before {
+    content:" ";
+    display:table;
+  }
+  .clearfix:after, dl:after {
+    clear:both;
+  }
+  dl dt, dl dd {
+    padding: 8px;
+    border:1px solid #D9D9D9;
+    border-bottom:0;
+  }
+  dl dt:last-child, dl dd:last-child {
+    border-bottom:1px solid #D9D9D9;
+  }
+  dl dt {
+    display: block;
+    width: 200px;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    float:left;
+    clear:left;
+    font-weight:bold;
+  }
+  dl dd {
+    display: block;
+    margin-left:228px;
+    background-color:#FFFFFF;
+  }
+  dl p {
+    margin:0 0 8px;
+  }
+
+  /********************************************************
+  * Specific Elements, in order of appearance..
+  *********************************************************/
+  /* Page Header */
+  .page_header {
+    color:#999999;
+    font-size:12px;
+    text-align:center;
+    margin:15px 0;
+    padding-bottom:15px;
+    border-bottom:1px solid #999;
+  }
+
+  /* Page Title Section */
+  header {
+    border-bottom:1px solid #999;
+    margin-bottom:15px;
+    padding-bottom:15px;
+  }
+  h1.title, h1.subtitle {
+    font-weight: normal;
+    text-align: center;
+    margin:0;
+  }
+  h1.title {
+    font-size:24pt;
+  }
+  h1.subtitle {
+    font-size:18pt;
+    margin-top:10px;
+  }
+  h3.date {
+    display:block;
+  }
+
+  .swedac_logo {
+    float:right;
+    padding-left: 15px;
+  }
+
+  /* Page Footer */
+  footer {
+    border-top: 1px solid #999;
+    margin:30px 0;
+    padding-top:15px;
+    color:#999999;
+    font-size:12px;
+    text-align:right;
+  }
+  footer a {
+    color:#999999;
+    text-decoration:none;
+  }
+
+  /***** Specific Report Types ******/
+  #library-statistics dl dt, #variants dl dt {
+    width: 200px;
+  }
+  #library-statistics dl dd, #variants dl dd {
+    text-align:right;
+    margin-left:228px;
+  }
+
+</style>
+</head>
+<body>
+
+<h1 class="title">Kvalitetsrapport</h1>
+<h1 class="subtitle">Klinisk sekvensering av cancerprover</h1>
+<h3 class="date">rapportdatum: 2021-02-02 00:40</h3>
+
+<h1>Provinformation</h1>
+<dl>
+<dt>ProvID</dt>
+<dd>FS000XXX</dd>
+<dt>Analyspanel</dt>
+<dd>gmck-solid </dd>
+<dt>Analyskod</dt>
+<dd>PAN123456 </dd>
+<dt>Analysdatum</dt>
+<dd>2021-01-25 08:53</dd>
+<dt>Bioinformatiskanalys:</dt>
+<dd>BALSAMIC version 6.0.4</dd>
+</dl>
+<h1>Sammanfattning</h1>
+<table>
+<thead>
+<tr>
+<th align="center">Prov-id</th>
+<th align="center">Provtyp</th>
+<th align="center">Mediansekvensdjup [x]</th>
+<th align="center">Fold 80 base penalty</th>
+<th align="center">Fragmentlängd, medel [baspar]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">normal</td>
+<td align="center">KS656</td>
+<td align="center">597.0</td>
+<td align="center">1.47</td>
+<td align="center">125.82</td>
+</tr>
+<tr>
+<td align="center">tumor</td>
+<td align="center">KS454</td>
+<td align="center">805.0</td>
+<td align="center">1.57</td>
+<td align="center">131.28</td>
+</tr>
+</tbody>
+</table>
+<h1>Täckningsgrad för vald analyspanel</h1>
+<table>
+<thead>
+<tr>
+<th align="center">Prov-id</th>
+<th align="center">Provtyp</th>
+<th align="center">Täckningsgrad [50X]</th>
+<th align="center">Täckningsgrad [100X]</th>
+<th align="center">Täckningsgrad [200X]</th>
+<th align="center">Täckningsgrad [500X]</th>
+<th align="center">Täckningsgrad [1000X]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">normal</td>
+<td align="center">KS656</td>
+<td align="center">99.84 %</td>
+<td align="center">99.5 %</td>
+<td align="center">97.72 %</td>
+<td align="center">67.94 %</td>
+<td align="center">8.52 %</td>
+</tr>
+<tr>
+<td align="center">tumor</td>
+<td align="center">KS454</td>
+<td align="center">99.86 %</td>
+<td align="center">99.72 %</td>
+<td align="center">98.72 %</td>
+<td align="center">87.46 %</td>
+<td align="center">30.44 %</td>
+</tr>
+</tbody>
+</table>
+<h1>Förklaringar</h1>
+<p>Värdena presenterade för Mediansekvensdjup och Täckningsgrad är efter borttagning av duplikata läsningar.</p>
+<p><strong>Mediansekvensdjup</strong>: Median av sekvenseringsdjup över alla baser inkluderade i analyspanelen.</p>
+<p><strong>Fold 80 base penalty</strong>: Jämnhet av täckningsgraden över alla gener i analyspanlen. Ett värde mellan 1.0-1.8 visar god jämnhet.</p>
+<p><strong>Fragmentlängd, medel:</strong> Medelstorlek av provbiblioteken som laddats på sekvenseringsinstrument. &lt;200bp kan tyda på degraderade provmaterial (t.ex. FFPE), innan biblioteksberedning.  </p>
+<p><strong>Täckningsgrad:</strong> Andel baser som är sekvenserade med ett djup över en specificerad gräns, t.ex. 100X.</p>
+
+<footer>
+  Slut på rapporten
+</footer>
+</body>
+</html>

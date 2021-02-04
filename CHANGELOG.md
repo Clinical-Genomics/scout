@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - markdown_include in development requirements file
 - STR variants filter
 - Display source, Z-score, inheritance pattern for STR annotations from Stranger (>0.6.1) if available
+- Coverage and quality report to cancer view
 ### Fixed
 - ACMG classification page crashing when trying to visualize a classification that was removed
 - Pretty print HGVS on gene variants (URL-decode VEP)

@@ -1,5 +1,5 @@
 import pytest
-from scout.load.report import load_delivery_report, load_cnv_report
+from scout.load.report import load_delivery_report, load_cnv_report, load_coverage_qc_report
 from scout.exceptions import DataNotFoundError, IntegrityError
 
 
@@ -87,3 +87,27 @@ def test_load_cnv_report_using_case_id_with_update_success(adapter, cancer_case_
     # THEN a report should have been added to that case
     updated_case_obj = adapter.case_collection.find_one()
     assert updated_case_obj["cnv_report"] == report_path
+
+
+def test_load_coverage_qc_report_using_case_id_with_update_success(adapter, cancer_case_obj):
+
+    adapter.case_collection.insert_one(cancer_case_obj)
+    ## GIVEN a case exist, with a delivery report
+    cancer_case_obj = adapter.case_collection.find_one()
+    assert cancer_case_obj.get("coverage_qc_report")
+
+    ## WHEN trying to load a report for a case_id that does exist in the data base
+    case_id = cancer_case_obj["_id"]
+    report_path = "report_test_path"
+    update = True
+
+    load_coverage_qc_report(
+        adapter=adapter,
+        case_id=case_id,
+        report_path=report_path,
+        update=update,
+    )
+
+    # THEN a report should have been added to that case
+    updated_case_obj = adapter.case_collection.find_one()
+    assert updated_case_obj["coverage_qc_report"] == report_path
