@@ -32,6 +32,7 @@ vcf_cancer_sv: scout/demo/manta_vep_94_annotated_sv_cancer_file.vcf.gz
 
 delivery_report: scout/demo/delivery_report.html
 cnv_report: scout/demo/cancer_cnv_report.pdf
+coverage_qc_report: scout/demo/cancer_coverage_qc_report.html
 
 # meta data
 rank_model_version: '1.1'
