@@ -105,7 +105,7 @@ Let's go through each field:
 - **peddy_sex** path to a [peddy][peddy] ped sex check file
 - **multiqc** path to a [multiqc][multiqc] report with arbitrary information
 - **cnv_report** path to the CNV report file
-- **coverage_qc_report** path to the covereage and qc report file
+- **coverage_qc_report** path to static coverage and qc report file
 - **default_gene_panels** list of default gene panels. Variants from the genes in the gene panels specified will be shown when opening the case in scout
 - **gene_panels** list of gene panels. This will specify what panels the case has been run with
 - **rank model version** which rank model that was used when scoring the variants
