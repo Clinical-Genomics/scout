@@ -62,6 +62,7 @@ def parse_case_data(
     delivery_report=None,
     multiqc=None,
     cnv_report=None,
+    coverage_qc_report=None,
 ):
     """Parse all data necessary for loading a case into scout
 
@@ -82,6 +83,7 @@ def parse_case_data(
         peddy_ped(str): Path to a peddy ped
         multiqc(str): Path to dir with multiqc information
         cnv_report: Path to pdf file with CNV report
+        coverage_qc_report: Path to html file with coverage and qc report
 
     Returns:
         config_data(dict): Holds all the necessary information for loading
@@ -143,6 +145,9 @@ def parse_case_data(
     )
 
     config_data["cnv_report"] = cnv_report if cnv_report else config_data.get("cnv_report")
+    config_data["coverage_qc_report"] = (
+        coverage_qc_report if coverage_qc_report else config_data.get("coverage_qc_report")
+    )
 
     config_data["rank_model_version"] = str(config_data.get("rank_model_version", ""))
     config_data["rank_score_threshold"] = config_data.get("rank_score_threshold", 0)
@@ -519,6 +524,7 @@ def parse_case(config):
         "peddy_check": config.get("peddy_check"),
         "delivery_report": config.get("delivery_report"),
         "cnv_report": config.get("cnv_report"),
+        "coverage_qc_report": config.get("coverage_qc_report"),
         "multiqc": config.get("multiqc"),
         "track": config.get("track", "rare"),
     }
