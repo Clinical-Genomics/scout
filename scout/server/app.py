@@ -196,6 +196,7 @@ def register_filters(app):
         cursor_copy = pymongo_cursor.clone()
         return len(list(cursor_copy))
 
+
 def configure_oauth_login(app):
     """Register the Google Oauth login client using config settings"""
 
