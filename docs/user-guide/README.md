@@ -14,5 +14,5 @@ Scout is a web-based visualizer for VCF-files. It helps to manage multiple patie
 * [Genes](./genes.md)
 * [Gene Panels](./panels.md)
 * [Annotations](./annotations.md)
-* [ACMG criterias](user-guide/acmg-criterias.md)
-* [Dashboard](user-guide/dashboard.md)
+* [ACMG criterias](./acmg-criterias.md)
+* [Dashboard](./dashboard.md)

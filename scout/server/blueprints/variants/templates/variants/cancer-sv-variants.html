@@ -48,7 +48,7 @@
         <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}">
           <div class="card-body">{{ sv_filters(form, institute, case) }}</div>
         </div>
-        {{ filter_form_footer(form, result_size, total_variants) }}
+        {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length) }}
       </div>
   </div>
   <div class="card mt-3">
@@ -79,7 +79,7 @@
         {% endfor %}
       </tbody>
     </table>
-    {{ dismiss_variants_block(dismiss_variant_options) }}
+    {{ dismiss_variants_block(dismiss_variant_options, institute, case) }}
   </div>
   <div class="container-fluid">
     {{ pagination_footer(more_variants, page) }}

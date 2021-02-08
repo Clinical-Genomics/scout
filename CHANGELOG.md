@@ -6,6 +6,31 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Introduced a `reset dismiss variant` verb
+- Button to reset all dismissed variants for a case
+### Fixed
+### Changed
+- Show RefSeq transcript as HGNC primary in case general report
+
+## [4.29]
+### Added
+- Added a page about migrating potentially breaking changes to the documentation
+- markdown_include in development requirements file
+- STR variants filter
+- Display source, Z-score, inheritance pattern for STR annotations from Stranger (>0.6.1) if available
+- Coverage and quality report to cancer view
+### Fixed
+- ACMG classification page crashing when trying to visualize a classification that was removed
+- Pretty print HGVS on gene variants (URL-decode VEP)
+- Broken or missing link in the documentation
+- Multiple gene names in ClinVar submission form
+- Inheritance model select field in ClinVar submission
+- IGV.js >2.7.0 has an issue with the gene track zoom levels - temp freeze at 2.7.0
+- Revert CORS-anywhere and introduce a local http proxy for cloud tracks
+### Changed
+
+## [4.28]
+### Added
 - Chromograph integration for displaying PNGs in case-page
 - Add VAF to cancer case general report, and remove some of its unused fields
 - Variants filter compatible with genome browser location strings
@@ -27,14 +52,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bugfix: unused `chromgraph_prefix |tojson` removed
 - Freeze coloredlogs temporarily
 - Marrvel link
-- Don't show TP53 link for silent changes
+- Don't show TP53 link for silent or synonymous changes
 - OMIM gene field accepts any custom number as OMIM gene
 - Fix Pytest single quote vs double quote string
-- Bug in gene variants search when providing similar case display name
+- Bug in gene variants search by similar cases and no similar case is found
 - Delete unused file `userpanel.py`
 - Primary transcripts in variant overview and general report
 - Google OAuth2 login setup in README file
-- Redirect to 'missing file'-icon if configured file is missing
+- Redirect to 'missing file'-icon if configured Chromograph file is missing
 - Javascript error in case page
 - Fix compound matching during variant loading for hg38
 - Cancer variants view containing variants dismissed with cancer-specific reasons
@@ -46,7 +71,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Collapse/expand main HPO checkboxes in phenomodel preview
 - Replaced GQ (Genotype quality) with VAF (Variant allele frequency) in cancer variants GT table
 - Allow loading of cancer cases with no tumor_purity field
-- Show canonical transcript as hgnc primary on case report
+- Truncate cDNA and protein changes in case report if longer than 20 characters
+
+
 ## [4.27]
 ### Added
 - Exclude one or more variant categories when running variants delete command
@@ -104,6 +131,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove calls to PyMongo functions marked as deprecated in backend and frontend(as of version 3.7).
 - Improved `scout update individual` command
 - Export dynamic phenotypes with ordered gene lists as PDF
+
 
 ## [4.23]
 ### Added

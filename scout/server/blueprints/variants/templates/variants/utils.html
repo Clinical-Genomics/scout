@@ -1,7 +1,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% from "utils.html" import comments_table %}
 
-{% macro filter_form_footer(form, result_size, total_variants) %}
+{% macro filter_form_footer(form, result_size, total_variants, more_variants, page, nvars) %}
 <div class="card-footer text-center">
   <div class="row">
     <div class="col-2 d-flex align-items-baseline justify-content-start">
@@ -9,17 +9,20 @@
       {{ form.hide_dismissed }}
       {{ form.hide_dismissed.label(class="ml-3") }}
     </div>
-    <div class="col-2 offset-3 d-flex justify-content-start">
-      Showing {{result_size}} / {{ total_variants }} variants
+    <div class="col-3 offset-3 d-flex justify-content-start">
+      Filter returns {{result_size}} / {{ total_variants }} variants.
+    </div>
+    <div class="col-3 offset-1 d-flex justify-content-end">
+      Showing {%if more_variants %}page {{page}}{%else%}last page{% endif %} with {{nvars}} variants.
     </div>
   </div>
 </div>
 {% endmacro %}
 
-{% macro dismiss_variants_block(dismiss_variant_options) %}
-<div class="row d-flex align-items-center mb-3">
-  <div class="col-2 ml-3">Dismiss selected variants:</div>
-  <div class="col-5 align-items-start">
+{% macro dismiss_variants_block(dismiss_variant_options, institute, case) %}
+<div class="row d-flex align-items-center mb-3 ml-1">
+  <div class="col-2 ">Dismiss selected variants:</div>
+  <div class="col-4 align-items-start">
     <select multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-width="100%" onchange="enableDismiss();">
       {% for value, data in dismiss_variant_options.items() %}
         <option value="{{ value }}">{{ data.label }}</option>
@@ -28,6 +31,9 @@
   </div>
   <div class="col-2">
     <button type="submit" disabled name="dismiss_submit" id="dismiss_submit" class="btn btn-sm btn-primary form-control">Dismiss variants</button>
+  </div>
+  <div class="offset-2 col-2">
+      <a role="button" href='{{ url_for("variants.reset_dismissed", institute_id=institute._id, case_name=case.display_name )}}' class="btn btn-warning text-dark pull-right mr-3">Reset all dismissed variants for this case</a>
   </div>
 </div>
 {% endmacro %}
@@ -299,6 +305,72 @@
   <div class="row justify-content-between" style="margin-top:20px;">
     <div class="col-6 text-left">
       <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name,
+        variant_type=form.variant_type.data) }}"
+        class="btn btn-secondary" style="color: #ffffff !important;">
+        Reset&nbsp;filters
+      </a>
+    </div>
+    <div class="col-6">
+      {{ stash_filter_buttons(form, institute, case) }}
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro str_filters(form, institute, case) %}
+<input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
+<div class="form-group">
+  <div class="row">
+    <div class="col-2">
+      {{ form.gene_panels.label(class="control-label", data_toggle="tooltip", data_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
+      {{ form.gene_panels(class="selectpicker") }}
+    </div>
+    <div class="col-3">
+      {{ form.hgnc_symbols.label(class="control-label") }}
+      {{ form.hgnc_symbols(class="form-control") }}
+    </div>
+    <div class="col-1 align-self-end">
+      <div class="btn-group d-flex">
+        <a class="btn btn-outline-secondary btn-sm " href="{{ url_for('variants.str_variants', institute_id=institute._id,
+          case_name=case.display_name, variant_type=form.variant_type.data,
+          gene_panels=['hpo']) }}">HPO gene list</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="row">
+    <div class="col-1">
+      {{ wtf.form_field(form.chrom) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.start) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.end) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.cytoband_start) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.cytoband_end) }}
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="row" style="margin-top:20px;">
+      <div class="col-4">
+        {{ form.filter_variants(class="btn btn-primary form-control") }}
+      </div>
+      <div class="col-4">
+        {{ form.export(class="btn btn-warning form-control") }}
+      </div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="row" style="margin-top:20px;">
+    <div class="col-2 text-left">
+      <a href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name,
         variant_type=form.variant_type.data) }}"
         class="btn btn-secondary" style="color: #ffffff !important;">
         Reset&nbsp;filters
@@ -713,21 +785,21 @@
           {% if page > 1 %}
              <div>
                <label for="paginate-first" class="btn btn-outline-secondary" tabindex="0">
-                 First page
+                 First&nbsp;page
                </label>
              </div>
           {% endif %}
           {% if page > 2 %}
             <div>
               <label for="paginate-previous" class="btn btn-outline-secondary" tabindex="0">
-                Previous page
+                Previous&nbsp;page
               </label>
             </div>
           {% endif %}
           {% if more_variants %}
             <div>
               <label for="paginate-next" class="btn btn-outline-secondary" tabindex="0">
-                Next page
+                Next&nbsp;page
               </label>
             </div>
           {% endif %}

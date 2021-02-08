@@ -15,6 +15,16 @@ def test_get_variant_links(variant_obj):
     assert "thousandg_link" in links
 
 
+def test_get_str_variant_links(str_variant_obj):
+    """Test adding links to STR variant obj, in particular check source link."""
+    # GIVEN a variant object without links
+    assert "str_source_link" not in str_variant_obj
+    # WHEN fetching the variant links
+    links = get_variant_links(str_variant_obj)
+    # THEN check that links are returned
+    assert "str_source_link" in links
+
+
 def test_find_index_bai():
     """Test to find a bam index"""
     # GIVEN a case with this type of alignment files

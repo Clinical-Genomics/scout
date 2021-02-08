@@ -22,7 +22,7 @@ clinical_sv_file = "demo/643594.clinical.SV.vcf.gz"
 research_sv_file = "demo/643594.research.SV.vcf.gz"
 empty_sv_file = "demo/empty.clinical.SV.vcf.gz"
 
-clinical_str_file = "demo/643594.clinical.str.annotated.limits.vcf.gz"
+clinical_str_file = "demo/643594.clinical.str.stranger.vcf.gz"
 
 panel_path = pkg_resources.resource_filename("scout", panel_file)
 madeline_path = pkg_resources.resource_filename("scout", madeline_file)
@@ -49,3 +49,5 @@ delivery_report_path = pkg_resources.resource_filename("scout", delivery_report_
 
 cnv_report_file = "demo/cancer_cnv_report.pdf"
 cnv_report_path = pkg_resources.resource_filename("scout", cnv_report_file)
+coverage_qc_report_file = "demo/cancer_coverage_qc_report.html"
+coverage_qc_report_path = pkg_resources.resource_filename("scout", coverage_qc_report_file)

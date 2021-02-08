@@ -10,6 +10,7 @@ FUNDAMENTAL_CRITERIA = [
     "category",
     "variant_type",
     "hgnc_symbols",
+    "repids",
     "gene_panels",
     "chrom",
     "start",

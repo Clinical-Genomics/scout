@@ -31,7 +31,7 @@ from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEA
 from scout.export.variant import export_verified_variants
 from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.utils import predictions
-from scout.server.links import add_gene_links, add_tx_links, ensembl, cosmic_link
+from scout.server.links import str_source_link, ensembl, cosmic_link
 from scout.server.utils import (
     case_append_alignments,
     institute_and_case,
@@ -154,6 +154,19 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
     return {"variants": variants, "more_variants": more_variants}
 
 
+def str_variants(
+    store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
+):
+    """Pre-process list of STR variants."""
+
+    # case bam_files for quick access to alignment view.
+    case_append_alignments(case_obj)
+
+    return variants(
+        store, institute_obj, case_obj, variants_query, variant_count, page=page, per_page=per_page
+    )
+
+
 def get_manual_assessments(variant_obj):
     """Return manual assessments ready for display.
 
@@ -241,18 +254,6 @@ def get_manual_assessments(variant_obj):
     return assessments
 
 
-def str_variants(
-    store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
-):
-    """Pre-process list of STR variants."""
-
-    # Nothing unique to STRs on this level. Inheritance? yep, you will want it.
-
-    # case bam_files for quick access to alignment view.
-    case_append_alignments(case_obj)
-    return variants(store, institute_obj, case_obj, variants_query, variant_count, page, per_page)
-
-
 def parse_variant(
     store, institute_obj, case_obj, variant_obj, update=False, genome_build="37", get_compounds=True
 ):
@@ -326,7 +327,11 @@ def parse_variant(
     variant_obj["length"] = {100000000000: "inf", -1: "n.d."}.get(variant_length, variant_length)
     if not "end_chrom" in variant_obj:
         variant_obj["end_chrom"] = variant_obj["chromosome"]
+
+    # variant level links shown on variants page
     variant_obj["cosmic_link"] = cosmic_link(variant_obj)
+    variant_obj["str_source_link"] = str_source_link(variant_obj)
+
     return variant_obj
 
 
@@ -659,6 +664,8 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
                 "functional_annotations": SEVERE_SO_TERMS,
             }
         )
+    elif category == "str":
+        FiltersFormClass = StrFiltersForm
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)
@@ -860,6 +867,29 @@ def activate_case(store, institute_obj, case_obj, current_user):
         store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
 
 
+def reset_all_dimissed(store, institute_obj, case_obj):
+    """Reset all dismissed variants for a case.
+
+    Args:
+        store(adapter.MongoAdapter)
+        institute_obj(dict): an institute dictionary
+        case_obj(dict): a case dictionary
+    """
+    evaluated_vars = store.evaluated_variants(case_id=case_obj["_id"])
+    for variant in evaluated_vars:
+        if not variant.get("dismiss_variant"):  # not a dismissed variant
+            continue
+        link_page = "variant.sv_variant" if variant.get("category") == "sv" else "variant.variant"
+        link = url_for(
+            link_page,
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
+            variant_id=variant["_id"],
+        )
+        user = store.user(current_user.email)
+        store.update_dismiss_variant(institute_obj, case_obj, user, link, variant, [])
+
+
 def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_list, dismiss_reasons):
     """Dismiss a list of variants for a case
 
@@ -869,15 +899,16 @@ def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_lis
         case_obj(dict): a case dictionary
         link_page(str): "variant.variant" for snvs, "variant.sv_variant" for SVs and so on
         variants_list(list): list of variant._ids (strings)
-        dismiss_reasons(list): list of dismiss options
+        dismiss_reasons(list): list of dismiss options.
     """
     user_obj = store.user(current_user.email)
+    dismiss_reasons = [int(reason) for reason in dismiss_reasons]
     for variant_id in variants_list:
         variant_obj = store.variant(variant_id)
         if variant_obj is None:
             continue
         # create variant link
-        link = link = url_for(
+        link = url_for(
             link_page,
             institute_id=institute_obj["_id"],
             case_name=case_obj["display_name"],
