@@ -116,6 +116,17 @@
         {% set n_primary_txs.count = n_primary_txs.count + 1 %}
       {% endif %}
 
+      <!-- Capture HGNC transcript primary transcript from canonical or primary transcript id or refseq id-->
+      {% if hgnc_primary.refseq is none and transcript.is_primary %}
+        {% if transcript.transcript_id.startswith('NM_') %}
+          {% set hgnc_primary.refseq = transcript.transcript_id %}
+          {% set hgnc_primary.tx_id = transcript.transcript_id %}
+        {% elif hgnc_primary.refseq is none and transcript.refseq_id %}
+          {% set hgnc_primary.refseq = transcript.refseq_id %}
+          {% set hgnc_primary.tx_id = transcript.transcript_id %}
+        {% endif %}
+      {% endif %}
+
       <!-- show transcript info only if it's canonical, disease-associated or primary (print max 5 primary transcripts) -->
       {% if transcript.refseq_identifiers and n_primary_txs.count <= 5 or transcript.is_canonical or transcript.is_disease_associated or transcript.is_primary %}
         <li>{{transcript.transcript_id}}, RefSeq:[{{ transcript.refseq_identifiers|join(", ") or "-" }}], {{ (transcript.coding_sequence_name or '')|truncate(20, True) }},  {{ (transcript.protein_sequence_name or '')|truncate(20, True) }}
@@ -125,9 +136,10 @@
           {% if transcript.is_disease_associated %}
             <span class="badge badge-pill badge-danger" title="disease_associated">D</span>
           {% endif %}
-          {% if transcript.is_primary and transcript.refseq_id and transcript.refseq_id.startswith('NM_') %}
-            {{gene}}
-            <span class="badge badge-pill badge-primary" title="primary_ref_transcript">hgnc primary:{{ transcript.refseq_id }}</span>
+          {% if transcript.is_primary %}
+            {% if hgnc_primary.tx_id == transcript.transcript_id %}
+              <span class="badge badge-pill badge-primary" title="primary_ref_transcript">hgnc primary:{{ hgnc_primary.refseq }}</span>
+            {% endif %}
           {% endif %}
         </li>
       {% endif %}
