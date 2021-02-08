@@ -20,11 +20,8 @@
 {% endmacro %}
 
 {% macro dismiss_variants_block(dismiss_variant_options, institute, case) %}
-<div class="row d-flex align-items-center mb-3">
-  <div class="d-flex col-2 ml-3">
-    <a role="button" href='{{ url_for("variants.reset_dismissed", institute_id=institute._id, case_name=case.display_name )}}' class="btn btn-warning text-dark">Reset all dismissed variants for this case</a>
-  </div>
-  <div class="col-2 offset-1">Dismiss selected variants:</div>
+<div class="row d-flex align-items-center mb-3 ml-1">
+  <div class="col-2 ">Dismiss selected variants:</div>
   <div class="col-4 align-items-start">
     <select multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-width="100%" onchange="enableDismiss();">
       {% for value, data in dismiss_variant_options.items() %}
@@ -34,6 +31,9 @@
   </div>
   <div class="col-2">
     <button type="submit" disabled name="dismiss_submit" id="dismiss_submit" class="btn btn-sm btn-primary form-control">Dismiss variants</button>
+  </div>
+  <div class="offset-2 col-2">
+      <a role="button" href='{{ url_for("variants.reset_dismissed", institute_id=institute._id, case_name=case.display_name )}}' class="btn btn-warning text-dark pull-right mr-3">Reset all dismissed variants for this case</a>
   </div>
 </div>
 {% endmacro %}
