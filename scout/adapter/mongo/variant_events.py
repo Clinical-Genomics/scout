@@ -679,6 +679,8 @@ class VariantEventHandler(object):
             "Creating event for updating dismiss variant for "
             "variant {0}".format(variant["display_name"])
         )
+        # if the list of dismiss variant reasons has no elements it's a variant dismissed status reset
+        verb = "reset_dismiss_variant" if not dismiss_variant else "dismiss_variant"
 
         self.create_event(
             institute=institute,
@@ -686,7 +688,7 @@ class VariantEventHandler(object):
             user=user,
             link=link,
             category="variant",
-            verb="dismiss_variant",
+            verb=verb,
             variant=variant,
             subject=variant["display_name"],
         )
@@ -732,8 +734,7 @@ class VariantEventHandler(object):
 
         """
         LOG.info(
-            "Creating event for updating mosaic tags for variant %s",
-            variant["display_name"],
+            "Creating event for updating mosaic tags for variant %s", variant["display_name"],
         )
 
         self.create_event(
