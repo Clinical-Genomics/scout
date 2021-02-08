@@ -116,7 +116,7 @@
         {% set n_primary_txs.count = n_primary_txs.count + 1 %}
       {% endif %}
 
-      <!-- Capture HGNC transcript primary transcript from canonical or primary transcript id or refseq id-->
+      <!-- Capture HGNC primary transcript from primary transcript or refseq id-->
       {% if hgnc_primary.refseq is none and transcript.is_primary %}
         {% if transcript.transcript_id.startswith('NM_') %}
           {% set hgnc_primary.refseq = transcript.transcript_id %}
