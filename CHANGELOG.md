@@ -6,10 +6,19 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Introduced a `reset dismiss variant` verb
+- Button to reset all dismissed variants for a case
+### Fixed
+### Changed
+
+
+## [4.29]
+### Added
 - Added a page about migrating potentially breaking changes to the documentation
 - markdown_include in development requirements file
 - STR variants filter
 - Display source, Z-score, inheritance pattern for STR annotations from Stranger (>0.6.1) if available
+- Coverage and quality report to cancer view
 ### Fixed
 - ACMG classification page crashing when trying to visualize a classification that was removed
 - Pretty print HGVS on gene variants (URL-decode VEP)

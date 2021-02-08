@@ -44,6 +44,14 @@ variants_bp = Blueprint(
 )
 
 
+@variants_bp.route("/<institute_id>/<case_name>/reset_dismissed", methods=["GET"])
+def reset_dismissed(institute_id, case_name):
+    """Reset all dismissed variants for a case"""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    controllers.reset_all_dimissed(store, institute_obj, case_obj)
+    return redirect(request.referrer)
+
+
 @variants_bp.route("/<institute_id>/<case_name>/variants", methods=["GET", "POST"])
 @templated("variants/variants.html")
 def variants(institute_id, case_name):
@@ -59,7 +67,7 @@ def variants(institute_id, case_name):
 
     user_obj = store.user(current_user.email)
     if request.method == "POST":
-        if request.form.getlist("dismiss"):  # dismiss a list of variants
+        if "dismiss_submit" in request.form:  # dismiss a list of variants
             controllers.dismiss_variant_list(
                 store,
                 institute_obj,
@@ -272,7 +280,7 @@ def sv_variants(institute_id, case_name):
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
 
-    if request.form.getlist("dismiss"):  # dismiss a list of variants
+    if "dismiss_submit" in request.form:  # dismiss a list of variants
         controllers.dismiss_variant_list(
             store,
             institute_obj,
@@ -327,7 +335,7 @@ def cancer_variants(institute_id, case_name):
 
     user_obj = store.user(current_user.email)
     if request.method == "POST":
-        if request.form.getlist("dismiss"):  # dismiss a list of variants
+        if "dismiss_submit" in request.form:  # dismiss a list of variants
             controllers.dismiss_variant_list(
                 store,
                 institute_obj,

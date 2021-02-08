@@ -872,6 +872,41 @@ def cnv_report(institute_id, case_name):
     return send_from_directory(out_dir, filename)
 
 
+@cases_bp.route("/<institute_id>/<case_name>/coverage-qc-report")
+def coverage_qc_report(institute_id, case_name):
+    """Display coverage and qc report."""
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+    data = controllers.multiqc(store, institute_id, case_name)
+    if data["case"].get("coverage_qc_report") is None:
+        return abort(404)
+
+    coverage_qc_report = data["case"]["coverage_qc_report"]
+    report_format = request.args.get("format", "html")
+    if report_format == "pdf":
+        try:  # file could not be available
+            html_file = open(coverage_qc_report, "r")
+            source_code = html_file.read()
+            return render_pdf(
+                HTML(string=source_code),
+                download_filename=case_obj["display_name"]
+                + "_"
+                + datetime.datetime.now().strftime("%Y-%m-%d")
+                + "_coverage_qc_report.pdf",
+            )
+        except Exception as ex:
+            flash(
+                "An error occurred while downloading delivery report {} -- {}".format(
+                    coverage_qc_report, ex
+                ),
+                "warning",
+            )
+
+    out_dir = os.path.dirname(coverage_qc_report)
+    filename = os.path.basename(coverage_qc_report)
+
+    return send_from_directory(out_dir, filename)
+
+
 @cases_bp.route("/<institute_id>/<case_name>/share", methods=["POST"])
 def share(institute_id, case_name):
     """Share a case with a different institute."""

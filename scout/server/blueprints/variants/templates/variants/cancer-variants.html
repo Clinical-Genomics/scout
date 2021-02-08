@@ -41,7 +41,7 @@
       </div>
       <!--Expand filters form if filters were used in a previous POST request or the previous POST request form was not validated-->
       <div class="card-body panel-collapse collapse {{ 'show' if request.args.get('expand_search') == "True" or expand_search is sameas true }}" id="collapseFilters" >
-          {{ cancer_filters(form, institute, case) }}
+         {{ cancer_filters(form, institute, case) }}
       </div>
       {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length) }}
     </div>
@@ -100,7 +100,7 @@
         {% endfor %}
       </tbody>
     </table>
-    {{ dismiss_variants_block(dismiss_variant_options) }}
+    {{ dismiss_variants_block(dismiss_variant_options, institute, case) }}
   </div><!-- end of card-->
 </form><!--end of form containing filters and variants' table elements -->
 </div><!--end of container-float -->
