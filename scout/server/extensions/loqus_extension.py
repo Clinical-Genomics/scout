@@ -9,13 +9,14 @@ import logging
 import subprocess
 from subprocess import CalledProcessError
 from scout.exceptions.config import ConfigError
+from scout.utils.scout_requests import get_request_json as api_get
 
 LOG = logging.getLogger(__name__)
-
 
 BINARY_PATH = "binary_path"
 CONFIG_PATH = "config_path"
 VERSION = "version"
+API_URL = "api_url"
 
 
 def execute_command(cmd):
@@ -48,32 +49,34 @@ class LoqusDB:
           * in practice this is a singleton class
           * configured in `scout/server/config.py`"""
 
-    def __init__(self, loqusdb_binary=None, loqusdb_config=None, loqusdb_args=None, version=None):
+    def __init__(
+        self,
+        loqusdb_binary=None,
+        loqusdb_config=None,
+        loqusdb_args=None,
+        api_url=None,
+        version=None,
+    ):
         """Initialise from args"""
         self.loqusdb_settings = [
-            {"id": "default", "binary_path": loqusdb_binary, "config_path": loqusdb_args}
+            {
+                "id": "default",
+                "binary_path": loqusdb_binary,
+                "config_path": loqusdb_args,
+                "api_url": api_url,
+            }
         ]
-        self.version = version
-        LOG.info(
+        LOG.debug(
             "Initializing loqus extension with config: %s",
             self.loqusdb_settings,
         )
-
-    def init_app(self, app):
-        """Initialize from Flask."""
-        LOG.info("Init loqusdb app")
-        self.loqusdb_settings = self.app_config(app)
-        self.version = self.get_configured_version()
-        if not self.version:
-            self.version = self.get_version()
-        self.version_check()
-        LOG.info("Use loqusdb config file %s", self.loqusdb_settings)
 
     @staticmethod
     def app_config(app):
         """Read config.py to handle single or multiple loqusdb configurations.
 
-        Returns: loqus_db_settings(list)"""
+           Returns: loqus_db_settings(list
+        )"""
         cfg = app.config["LOQUSDB_SETTINGS"]
         if isinstance(cfg, list):
             return cfg
@@ -81,11 +84,183 @@ class LoqusDB:
         cfg["id"] = "default"
         return [cfg]
 
-    def version_check(self):
-        """Check if a compatible version is used otherwise raise an error"""
-        if not self.version >= 2.5:
+    def init_app(self, app):
+        """Initialize from Flask."""
+        LOG.info("Init and check loqusdb connection settings")
+        self.loqusdb_settings = self.app_config(app)
+        # Check that each Loqus configuration in the settings list is valid
+        for setting in self.loqusdb_settings:
+            LOG.error(f"Setting--->{setting}")
+            # Scout might connect to Loqus via an API or an executable, define which one for every instance
+            setting["instance_type"] = "api" if "api_url" in setting else "exec"
+            setting["version"] = self.get_instance_version(setting)
+
+    def get_instance_version(self, instance_settings):
+        """Returns version of a LoqusDB instance.
+        Args:
+            instance_settings(dict) : The settings of a specific loqusdb instance
+
+        Returns:
+            version (float)
+        """
+        version = None
+        if instance_settings["instance_type"] == "api":
+            version = self.get_api_loqus_version(api_url=instance_settings.get(API_URL))
+        else:
+            version = self.get_exec_loqus_version(loqusdb_id=instance_settings.get("id"))
+
+        if not version >= 2.5:
             LOG.info("Please update your loqusdb version to >=2.5")
             raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
+        return version
+
+    @staticmethod
+    def get_api_loqus_version(api_url):
+        """Get version of LoqusDB instance available from a REST API"""
+        if api_url is None:
+            return None
+        json_resp = api_get("".join([api_url, "/"]))
+        return float(json_resp.get("loqusdb_version"))
+
+    @staticmethod
+    def get_exec_loqus_version(loqusdb_id=None):
+        """Get LoqusDB version as float"""
+
+        call_str = self.get_command(loqusdb_id)
+        call_str.extend(["--version"])
+        LOG.debug("call_str: {}".format(call_str))
+        try:
+            output = execute_command(call_str)
+        except CalledProcessError:
+            LOG.warning("Something went wrong with loqus")
+            return -1.0
+
+        version = output.rstrip().split(" ")[-1]
+        LOG.debug("version: {}".format(version))
+        return float(version)
+
+    def search_loqus_instance(self, id):
+        """Search settings for a LoqusDB instance by id
+
+        Returns:
+            {'binary_path':(str), 'id': (str), 'config_path': (str), 'instance_type': 'exec'} or
+            {'api_url':(str), 'instance_type':'api', 'id': (str)}
+        """
+        for i in self.loqusdb_settings:
+            if i.get("id") == id:
+                return i
+        return None
+
+    def get_variant(self, variant_info, loqusdb_id="default"):
+        """Return information for a variant from loqusdb
+
+        SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
+        with coordinates.
+
+        Args:
+            variant_info(dict)
+            loqusdb_id(string)
+
+        Returns:
+            loqus_variant(dict)
+        Raises:
+            EnvironmentError("Only compatible with loqusdb version >= 2.5")
+        """
+        loqus_instance = self.search_loqus_instance(loqusdb_id)
+        res = None
+        if loqus_instance is None:
+            LOG.error(f"Could not find a Loqus instance with id:{loqusdb_id}")
+            return
+        if loqus_instance.get("instance_type") == "exec":
+            return self.get_exec_loqus_variant(loqus_instance, variant_info)
+        # Loqus instace is a REST API
+        res = self.get_api_loqus_variant(loqus_instance.get(API_URL), variant_info)
+
+    @staticmethod
+    def get_api_loqus_variant(api_url, variant_info):
+        """get variant data using a Loqus instance available via REST API
+
+        Args:
+            api_url(str): query url for the Loqus API
+            variant_info(dict): dictionary containing variant coordinates
+
+        Returns:
+            res(dict)
+        """
+        category = "variants" if variant_info["category"] == "snv" else "svs"
+        search_url = f"{api_url}/{category}"
+        search_data = {}
+        chrom = variant_info["chrom"]
+        end_chrom = variant_info["end_chrom"]
+        pos = variant_info["pos"]
+        end = variant_info["end"]
+
+        if category == "variants":  # SNVs
+            search_url = f"{search_url}/{variant_info['_id']}"
+        else:  # SVs
+            sv_type = variant_info["variant_type"]
+            search_url = f"{search_url}/svs?chrom={chrom}&end_chrom={end_chrom}&pos={pos}&end={end}&sv_type={sv_type}"
+
+        search_resp = api_get(search_url)
+        if search_resp.get("status_code") != 200:
+            LOG.warning(search_resp.get("detail"))
+            return {}
+        return search_resp
+
+    @staticmethod
+    def get_exec_loqus_variant(loqus_instance, variant_info):
+        """Get variant data using a local executable instance of Loqus
+
+        Args:
+            loqus_instance(dict)
+            variant_info(dict)
+
+        Returns:
+            res(dict)
+        """
+        loqus_id = variant_info["_id"]
+        cmd = self.get_command(loqus_instance.get("id"))
+        cmd.extend(["variants", "--to-json", "--variant-id", loqus_id])
+        # If sv we need some more info
+        if variant_info.get("category", "snv") in ["sv"]:
+            self.set_coordinates(variant_info)
+            cmd.extend(
+                [
+                    "-t",
+                    "sv",
+                    "-c",
+                    variant_info["chrom"],
+                    "-s",
+                    str(variant_info["pos"]),
+                    "-e",
+                    str(variant_info["end"]),
+                    "--end-chromosome",
+                    variant_info["end_chrom"],
+                    "--sv-type",
+                    variant_info["variant_type"],
+                    "--case-count",
+                ]
+            )
+        output = ""
+        try:
+            output = execute_command(cmd)
+        except CalledProcessError as err:
+            LOG.warning("Something went wrong with loqus")
+            raise err
+
+        res = {}
+        if output:
+            res = json.loads(output)
+
+        return res
+
+    def default_setting(self):
+        """Get default loqusdb configuration
+
+        Returns:
+            institute_settings(dict)
+        """
+        return self.search_setting("default")
 
     @staticmethod
     def set_coordinates(variant_info):
@@ -110,79 +285,6 @@ class LoqusDB:
             end = start + length
             LOG.info("Updating length to %s", end)
         variant_info["end"] = end
-
-    def get_variant(self, variant_info, loqusdb_id=None):
-        """Return information for a variant from loqusdb
-
-        SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
-        with coordinates.
-
-        Args:
-            variant_info(dict)
-            loqusdb_id(string)
-
-        Returns:
-            loqus_variant(dict)
-        Raises:
-            EnvironmentError("Only compatible with loqusdb version >= 2.5")
-        """
-        loqus_id = variant_info["_id"]
-        cmd = self.get_command(loqusdb_id)
-        cmd.extend(["variants", "--to-json", "--variant-id", loqus_id])
-        # If sv we need some more info
-        if variant_info.get("category", "snv") in ["sv"]:
-            self.set_coordinates(variant_info)
-            cmd.extend(
-                [
-                    "-t",
-                    "sv",
-                    "-c",
-                    variant_info["chrom"],
-                    "-s",
-                    str(variant_info["pos"]),
-                    "-e",
-                    str(variant_info["end"]),
-                    "--end-chromosome",
-                    variant_info["end_chrom"],
-                    "--sv-type",
-                    variant_info["variant_type"],
-                ]
-            )
-        if self.version > 2.4:
-            cmd.extend(["--case-count"])
-
-        output = ""
-        try:
-            output = execute_command(cmd)
-        except CalledProcessError as err:
-            LOG.warning("Something went wrong with loqus")
-            raise err
-
-        res = {}
-        if output:
-            res = json.loads(output)
-
-        if self.version < 2.5:
-            res["total"] = self.case_count()
-
-        return res
-
-    def search_setting(self, key):
-        """Search settings for 'key' and return configuration for matchin 'id'
-
-        Returns: {'binary_path':(str), 'id': (str), 'config_path': (str)}"""
-        for i in self.loqusdb_settings:
-            if i.get("id") == key:
-                return i
-        return None
-
-    def default_setting(self):
-        """Get default loqusdb configuration
-
-        Returns:
-            institute_settings(dict)
-        """
-        return self.search_setting("default")
 
     def get_bin_path(self, loqusdb_id=None):
         """Return path to `loqusdb` binary as configured per loqusdb_id or default
@@ -217,22 +319,6 @@ class LoqusDB:
         except AttributeError:
             raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
-    def get_configured_version(self, loqusdb_id=None):
-        """Return configured version
-        Args:
-            loqusdb(str)
-
-        Returns:
-            loqus_versio(str)
-        """
-        if loqusdb_id is None or loqusdb_id == "":
-            return self.default_setting().get(VERSION)
-
-        try:
-            return self.search_setting(loqusdb_id).get(VERSION)
-        except AttributeError:
-            raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
-
     def case_count(self):
         """Returns number of cases in loqus instance
 
@@ -255,24 +341,6 @@ class LoqusDB:
             pass
 
         return nr_cases
-
-    def get_version(self):
-        """Get LoqusDB version as float"""
-        if self.version:
-            return self.version
-
-        call_str = self.get_command()
-        call_str.extend(["--version"])
-        LOG.debug("call_str: {}".format(call_str))
-        try:
-            output = execute_command(call_str)
-        except CalledProcessError:
-            LOG.warning("Something went wrong with loqus")
-            return -1.0
-
-        version = output.rstrip().split(" ")[-1]
-        LOG.debug("version: {}".format(version))
-        return float(version)
 
     def __repr__(self):
         return f"LoqusDB(loqusdb_settings={self.loqusdb_settings},"

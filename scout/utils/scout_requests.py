@@ -25,7 +25,7 @@ HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
 
 
 def post_request_json(url, data, headers):
-    """Send json data via POST request and return response
+    """Send json data via POST request and return response's json data
 
     Args:
         url(str): url to send request to
@@ -43,6 +43,29 @@ def post_request_json(url, data, headers):
         json_response = resp.json()
     except Exception as ex:
         return {"message": f"An error occurred while sending a POST request to url {url} -> {ex}"}
+
+    json_response["status_code"] = resp.status_code
+    LOG.debug(f"returned response is:{json_response}")
+    return json_response
+
+
+def get_request_json(url):
+    """Send GET request and return response's json data
+
+    Args:
+        url(str): url to send request to
+
+    Returns:
+        json_response(dict)
+    """
+    resp = None
+    json_response = {}
+    try:
+        LOG.debug(f"Sending GET request to {url}")
+        resp = requests.get(url, timeout=20)
+        json_response = resp.json()
+    except Exception as ex:
+        return {"message": f"An error occurred while sending a GET request to url {url} -> {ex}"}
 
     json_response["status_code"] = resp.status_code
     LOG.debug(f"returned response is:{json_response}")
