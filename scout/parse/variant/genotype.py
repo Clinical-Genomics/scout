@@ -291,8 +291,6 @@ def parse_genotype(variant, ind, pos):
                 read_depth += alt_depth
             if ref_depth != -1:
                 read_depth += alt_depth
-        if "LC" in variant.FORMAT:
-            read_depth = int(round(variant.format("LC")[pos][0]))
 
     gt_call["read_depth"] = read_depth
 
