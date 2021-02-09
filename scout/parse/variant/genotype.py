@@ -271,6 +271,17 @@ def parse_genotype(variant, ind, pos):
 
 
 def _parse_format_entry(variant, pos, format_entry_name):
+    """Parse genotype format entry for named integer values.
+    Expects that ref/alt values could be separated by /.
+
+    Args:
+        variant(cyvcf2.Variant)
+        pos(int): individual position in VCF
+        format_entry_name: name of format entry
+    Returns:
+        (ref(int), alt(int)) tuple
+    """
+
     ref = None
     alt = None
     if format_entry_name in variant.FORMAT:
