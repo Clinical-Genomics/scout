@@ -71,6 +71,15 @@ def parse_genotype(variant, ind, pos):
     ##FORMAT=<ID=SR,Number=1,Type=Integer,
     Description="Number of split reads that support the event">
 
+    STR specific format fields:
+    ##FORMAT=<ID=LC,Number=1,Type=Float,Description="Locus coverage">
+    ##FORMAT=<ID=REPCI,Number=1,Type=String,Description="Confidence interval for REPCN">
+    ##FORMAT=<ID=REPCN,Number=1,Type=String,Description="Number of repeat units spanned by the allele">
+    ##FORMAT=<ID=SO,Number=1,Type=String,Description="Type of reads that support the allele; can be SPANNING, FLANKING, or INREPEAT meaning that the reads span, flank, or are fully contained in the repeat">
+    ##FORMAT=<ID=ADFL,Number=1,Type=String,Description="Number of flanking reads consistent with the allele">
+    ##FORMAT=<ID=ADIR,Number=1,Type=String,Description="Number of in-repeat reads consistent with the allele">
+    ##FORMAT=<ID=ADSP,Number=1,Type=String,Description="Number of spanning reads consistent with the allele">
+
     Args:
         variant(cyvcf2.Variant)
         ind_id(dict): A dictionary with individual information
@@ -94,6 +103,67 @@ def parse_genotype(variant, ind, pos):
 
         gt_call["genotype_call"] = "/".join([GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]])
 
+    # STR specific
+    str_so = []
+    if "SO" in variant.FORMAT:
+        try:
+            sos = variant.format.get("PR")[pos]
+            so_ref = str(sos[0])
+            so_alt = str(sos[1])
+            if so_ref is not None and so_ref != "-1":
+                str_so[0] = so_ref
+            if so_alt is not None and so_alt != "-1":
+                str_so[1] = so_alt
+        except ValueError as e:
+            pass
+    if str_so != []:
+        gt_call["so"] = "/".join(str_so[0], str_so[1])
+    else:
+        gt_call["so"] = None
+
+    spanning_ref = None
+    spanning_alt = None
+    if "ADSP" in variant.FORMAT:
+        try:
+            values = variant.format.get("ADSP")[pos]
+            ref_value = int(values[0])
+            alt_value = int(values[1])
+            if ref_value >= 0:
+                spanning_ref = ref_value
+            if alt_value >= 0:
+                spanning_alt = alt_value
+        except ValueError as e:
+            pass
+
+    flanking_alt = None
+    flanking_ref = None
+    if "ADFL" in variant.FORMAT:
+        try:
+            values = variant.format.get("ADFL")[pos]
+            ref_value = int(values[0])
+            alt_value = int(values[1])
+            if ref_value >= 0:
+                flanking_ref = ref_value
+            if alt_value >= 0:
+                flanking_alt = alt_value
+        except ValueError as e:
+            pass
+
+    inrepeat_alt = None
+    inrepeat_ref = None
+    if "ADIR" in variant.FORMAT:
+        try:
+            values = variant.format.get("ADIR")[pos]
+            ref_value = int(values[0])
+            alt_value = int(values[1])
+            if ref_value >= 0:
+                inrepeat_ref = ref_value
+            if alt_value >= 0:
+                inrepeat_alt = alt_value
+        except ValueError as e:
+            pass
+
+    # SV specific
     paired_end_alt = None
     paired_end_ref = None
     split_read_alt = None
@@ -178,6 +248,12 @@ def parse_genotype(variant, ind, pos):
             if split_read_alt:
                 alt_depth += split_read_alt
 
+        if spanning_alt is not None or flanking_alt is not None or inrepeat_alt is not None:
+            alt_depth = 0
+            for value in [spanning_alt, flanking_alt, inrepeat_alt]:
+                if value:
+                    alt_depth += value
+
     gt_call["alt_depth"] = alt_depth
 
     ref_depth = int(variant.gt_ref_depths[pos])
@@ -188,6 +264,12 @@ def parse_genotype(variant, ind, pos):
                 ref_depth += paired_end_ref
             if split_read_ref:
                 ref_depth += split_read_ref
+
+        if spanning_ref is not None or flanking_ref is not None or inrepeat_ref is not None:
+            ref_depth = 0
+            for value in [spanning_ref, flanking_ref, inrepeat_ref]:
+                if value:
+                    ref_depth += value
 
     gt_call["ref_depth"] = ref_depth
 
@@ -201,12 +283,16 @@ def parse_genotype(variant, ind, pos):
         # If read depth could not be parsed by cyvcf2, try to get it manually
         if "DP" in variant.FORMAT:
             read_depth = int(variant.format("DP")[pos][0])
+        elif "LC" in variant.FORMAT:
+            read_depth = int(round(variant.format("LC")[pos][0]))
         elif alt_depth != -1 or ref_depth != -1:
             read_depth = 0
             if alt_depth != -1:
                 read_depth += alt_depth
             if ref_depth != -1:
                 read_depth += alt_depth
+        if "LC" in variant.FORMAT:
+            read_depth = int(round(variant.format("LC")[pos][0]))
 
     gt_call["read_depth"] = read_depth
 
