@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Introduced a `reset dismiss variant` verb
+- Button to reset all dismissed variants for a case
 ### Fixed
 ### Changed
 
