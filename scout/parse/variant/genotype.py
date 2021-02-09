@@ -107,60 +107,20 @@ def parse_genotype(variant, ind, pos):
         gt_call["genotype_call"] = "/".join([GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]])
 
     # STR specific
-    LOG.debug("Checking for STR specific values:")
     str_so = None
     if "SO" in variant.FORMAT:
-        LOG.debug("Found SO")
         try:
             so = variant.format("SO")[pos]
             if so is not None and so != "-1":
-                str_so = so
+                str_so = str(so)
         except ValueError as e:
             pass
 
     gt_call["so"] = str_so
 
-    spanning_ref = None
-    spanning_alt = None
-    if "ADSP" in variant.FORMAT:
-        try:
-            values = variant.format("ADSP")[pos]
-            ref_value = int(values[0])
-            alt_value = int(values[1])
-            if ref_value >= 0:
-                spanning_ref = ref_value
-            if alt_value >= 0:
-                spanning_alt = alt_value
-        except ValueError as e:
-            pass
-
-    flanking_alt = None
-    flanking_ref = None
-    if "ADFL" in variant.FORMAT:
-        try:
-            values = variant.format("ADFL")[pos]
-            ref_value = int(values[0])
-            alt_value = int(values[1])
-            if ref_value >= 0:
-                flanking_ref = ref_value
-            if alt_value >= 0:
-                flanking_alt = alt_value
-        except ValueError as e:
-            pass
-
-    inrepeat_alt = None
-    inrepeat_ref = None
-    if "ADIR" in variant.FORMAT:
-        try:
-            values = variant.format("ADIR")[pos]
-            ref_value = int(values[0])
-            alt_value = int(values[1])
-            if ref_value >= 0:
-                inrepeat_ref = ref_value
-            if alt_value >= 0:
-                inrepeat_alt = alt_value
-        except ValueError as e:
-            pass
+    (spanning_ref, spanning_alt) = _parse_format_entry(variant, pos, "ADSP")
+    (flanking_ref, flanking_alt) = _parse_format_entry(variant, pos, "ADFL")
+    (inrepeat_ref, inrepeat_alt) = _parse_format_entry(variant, pos, "ADIR")
 
     # SV specific
     paired_end_alt = None
@@ -249,9 +209,12 @@ def parse_genotype(variant, ind, pos):
 
         if spanning_alt is not None or flanking_alt is not None or inrepeat_alt is not None:
             alt_depth = 0
-            for value in [spanning_alt, flanking_alt, inrepeat_alt]:
-                if value:
-                    alt_depth += value
+            if spanning_alt:
+                alt_depth += spanning_alt
+            if flanking_alt:
+                alt_depth += flanking_alt
+            if inrepeat_alt:
+                alt_depth += inrepeat_alt
 
     gt_call["alt_depth"] = alt_depth
 
@@ -266,9 +229,12 @@ def parse_genotype(variant, ind, pos):
 
         if spanning_ref is not None or flanking_ref is not None or inrepeat_ref is not None:
             ref_depth = 0
-            for value in [spanning_ref, flanking_ref, inrepeat_ref]:
-                if value:
-                    ref_depth += value
+            if spanning_ref:
+                ref_depth += spanning_ref
+            if flanking_ref:
+                ref_depth += flanking_ref
+            if inrepeat_ref:
+                ref_depth += inrepeat_ref
 
     gt_call["ref_depth"] = ref_depth
 
@@ -302,3 +268,28 @@ def parse_genotype(variant, ind, pos):
     gt_call["genotype_quality"] = int(variant.gt_quals[pos])
 
     return gt_call
+
+
+def _parse_format_entry(variant, pos, format_entry_name):
+    ref = None
+    alt = None
+    if format_entry_name in variant.FORMAT:
+        try:
+            value = variant.format(format_entry_name)[pos]
+            values = list(value.split("/"))
+
+            ref_value = None
+            alt_value = None
+
+            if len(values) > 1:
+                ref_value = int(values[0])
+                alt_value = int(values[1])
+            if len(values) == 1:
+                alt_value = int(values[0])
+            if ref_value >= 0:
+                ref = ref_value
+            if alt_value >= 0:
+                alt = alt_value
+        except (ValueError, TypeError) as e:
+            pass
+    return (ref, alt)

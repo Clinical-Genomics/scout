@@ -36,7 +36,13 @@
               <td class="text-center">{{ sample.genotype_call }}</td>
               {% if sample.allele_depths %}
                   {% for number in sample.allele_depths %}
-                    <td class="text-right">{{ number }}</td>
+                    <td class="text-right">
+                      {% if number == -1 %}
+                        <small>N/A</small>
+                      {% else %}
+                        {{ number }}
+                      {% endif %}
+                    </td>
                   {% endfor %}
               {% else %}
                   <td class="text-right"><small>N/A</small></td>
@@ -58,12 +64,12 @@
                   {% if sample.genotype_quality != "-1" %}
                     {{ sample.genotype_quality }} (VQ {{variant.quality}})
                   {% elif variant.quality != "-1" %}
-                    VQ {{ variant.quality }}
+                    <small>VQ</small> {{ variant.quality }}
                   {% else %}
-                    N/A
+                    <small>N/A</small>
                   {% endif%}
                 {% elif variant.category == "str" %}
-                    {{ sample.so }}
+                    <small>{{ sample.so }}</small>
                 {% else %}
                   {{ sample.genotype_quality }}
                 {% endif %}
