@@ -16,9 +16,9 @@
             <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
             {% if variant.category == "cancer" %}
               <th rowspan="2" colspan="1" title="Variant Allele Frequency.">Variant Allele Frequency (VAF)</th>
-            {% elif variant.category == "sv" % }
+            {% elif variant.category == "sv" %}
               <th rowspan="2" colspan="1" title="SV caller specific quality score. Note different scales for different callers.">SV quality</th>
-            {% elif variant.category == "str" % }
+            {% elif variant.category == "str" %}
               <th rowspan="2" colspan="1"></th>
             {% else %}
               <th rowspan="2" colspan="1" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
@@ -56,7 +56,7 @@
                 <td class="text-right">
                 {% if variant.category == "sv" %}
                   {% if sample.genotype_quality != "-1" %}
-                    {{ genotype.quality }} (VQ {{variant.quality}})
+                    {{ sample.genotype_quality }} (VQ {{variant.quality}})
                   {% elif variant.quality != "-1" %}
                     VQ {{ variant.quality }}
                   {% else %}
