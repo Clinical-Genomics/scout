@@ -7,8 +7,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 ### Fixed
+- Display of GQ for SV and STR
+- Parsing of AD and related info for STRs
 ### Changed
-
 
 ## [4.29]
 ### Added
