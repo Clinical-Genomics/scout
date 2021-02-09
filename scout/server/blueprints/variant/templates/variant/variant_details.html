@@ -56,14 +56,14 @@
                 <td class="text-right">
                 {% if variant.category == "sv" %}
                   {% if sample.genotype_quality != "-1" %}
-                    {{ genotype.quality (variant.quality) }}
+                    {{ genotype.quality }} (VQ {{variant.quality}})
                   {% elif variant.quality != "-1" %}
-                    {{ variant.quality }}
+                    VQ {{ variant.quality }}
                   {% else %}
                     N/A
                   {% endif%}
                 {% elif variant.category == "str" %}
-                    {{ sample.so_alt }}
+                    {{ sample.so }}
                 {% else %}
                   {{ sample.genotype_quality }}
                 {% endif %}
