@@ -17,6 +17,9 @@ Uses 'DV' to describe number of paired ends that supports the event and
 'RV' that are number of split reads that supports the event.
 
 """
+import logging
+
+LOG = logging.getLogger(__name__)
 
 GENOTYPE_MAP = {0: "0", 1: "1", -1: "."}
 
@@ -104,28 +107,24 @@ def parse_genotype(variant, ind, pos):
         gt_call["genotype_call"] = "/".join([GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]])
 
     # STR specific
-    str_so = []
+    LOG.debug("Checking for STR specific values:")
+    str_so = None
     if "SO" in variant.FORMAT:
+        LOG.debug("Found SO")
         try:
-            sos = variant.format.get("PR")[pos]
-            so_ref = str(sos[0])
-            so_alt = str(sos[1])
-            if so_ref is not None and so_ref != "-1":
-                str_so[0] = so_ref
-            if so_alt is not None and so_alt != "-1":
-                str_so[1] = so_alt
+            so = variant.format("SO")[pos]
+            if so is not None and so != "-1":
+                str_so = so
         except ValueError as e:
             pass
-    if str_so != []:
-        gt_call["so"] = "/".join(str_so[0], str_so[1])
-    else:
-        gt_call["so"] = None
+
+    gt_call["so"] = str_so
 
     spanning_ref = None
     spanning_alt = None
     if "ADSP" in variant.FORMAT:
         try:
-            values = variant.format.get("ADSP")[pos]
+            values = variant.format("ADSP")[pos]
             ref_value = int(values[0])
             alt_value = int(values[1])
             if ref_value >= 0:
@@ -139,7 +138,7 @@ def parse_genotype(variant, ind, pos):
     flanking_ref = None
     if "ADFL" in variant.FORMAT:
         try:
-            values = variant.format.get("ADFL")[pos]
+            values = variant.format("ADFL")[pos]
             ref_value = int(values[0])
             alt_value = int(values[1])
             if ref_value >= 0:
@@ -153,7 +152,7 @@ def parse_genotype(variant, ind, pos):
     inrepeat_ref = None
     if "ADIR" in variant.FORMAT:
         try:
-            values = variant.format.get("ADIR")[pos]
+            values = variant.format("ADIR")[pos]
             ref_value = int(values[0])
             alt_value = int(values[1])
             if ref_value >= 0:
@@ -284,7 +283,11 @@ def parse_genotype(variant, ind, pos):
         if "DP" in variant.FORMAT:
             read_depth = int(variant.format("DP")[pos][0])
         elif "LC" in variant.FORMAT:
-            read_depth = int(round(variant.format("LC")[pos][0]))
+            value = variant.format("LC")[pos][0]
+            try:
+                read_depth = int(round(value))
+            except ValueError as e:
+                pass
         elif alt_depth != -1 or ref_depth != -1:
             read_depth = 0
             if alt_depth != -1:
