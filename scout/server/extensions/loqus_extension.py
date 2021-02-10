@@ -151,11 +151,39 @@ class LoqusDB:
                 return i
         return None
 
-    def get_variant(self, variant_info, loqusdb_id="default"):
-        """Return information for a variant from loqusdb
+    def case_count(self, loqusdb_id="default"):
+        """Returns number of cases in loqus instance
 
-        SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
-        with coordinates.
+        Args:
+            loqusdb_id(string)
+
+        Returns:
+            nr_cases(int)
+        """
+        nr_cases = 0
+        loqus_instance = self.search_loqus_instance(loqusdb_id)
+        if loqus_instance is None:
+            LOG.error(f"Could not find a Loqus instance with id:{loqusdb_id}")
+            return nr_cases
+
+        case_call = self.get_command(loqusdb_id)
+        case_call.extend(["cases", "--count"])
+        output = ""
+        try:
+            output = execute_command(case_call)
+        except CalledProcessError:
+            LOG.warning("Something went wrong with loqus")
+            return nr_cases
+
+        try:
+            nr_cases = int(output.strip())
+        except ValueError:
+            pass
+
+        return nr_cases
+
+    def get_variant(self, variant_info, loqusdb_id="default"):
+        """Return information for a variant (SNV or SV) from loqusdb
 
         Args:
             variant_info(dict)
@@ -167,18 +195,22 @@ class LoqusDB:
             EnvironmentError("Only compatible with loqusdb version >= 2.5")
         """
         loqus_instance = self.search_loqus_instance(loqusdb_id)
-        res = None
         if loqus_instance is None:
             LOG.error(f"Could not find a Loqus instance with id:{loqusdb_id}")
             return
+
         if loqus_instance.get("instance_type") == "exec":
             return self.get_exec_loqus_variant(loqus_instance, variant_info)
+
         # Loqus instace is a REST API
-        res = self.get_api_loqus_variant(loqus_instance.get(API_URL), variant_info)
+        return self.get_api_loqus_variant(loqus_instance.get(API_URL), variant_info)
 
     @staticmethod
     def get_api_loqus_variant(api_url, variant_info):
         """get variant data using a Loqus instance available via REST API
+
+        SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
+        with coordinates.
 
         Args:
             api_url(str): query url for the Loqus API
@@ -210,6 +242,9 @@ class LoqusDB:
     @staticmethod
     def get_exec_loqus_variant(loqus_instance, variant_info):
         """Get variant data using a local executable instance of Loqus
+
+        SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
+        with coordinates.
 
         Args:
             loqus_instance(dict)
@@ -318,29 +353,6 @@ class LoqusDB:
             return self.search_setting(loqusdb_id).get(CONFIG_PATH)
         except AttributeError:
             raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
-
-    def case_count(self):
-        """Returns number of cases in loqus instance
-
-        Returns:
-            nr_cases(int)
-        """
-        nr_cases = 0
-        case_call = self.get_command()
-        case_call.extend(["cases", "--count"])
-        output = ""
-        try:
-            output = execute_command(case_call)
-        except CalledProcessError:
-            LOG.warning("Something went wrong with loqus")
-            return nr_cases
-
-        try:
-            nr_cases = int(output.strip())
-        except ValueError:
-            pass
-
-        return nr_cases
 
     def __repr__(self):
         return f"LoqusDB(loqusdb_settings={self.loqusdb_settings},"
