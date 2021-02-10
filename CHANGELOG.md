@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Introduced a `reset dismiss variant` verb
 - Button to reset all dismissed variants for a case
 ### Fixed
+- Fix DECIPHER link to work after DECIPHER migrated to GRCh38
 ### Changed
 
 

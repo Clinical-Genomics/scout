@@ -264,9 +264,12 @@
 	    {% endif %}
           </td>
 	  <td>
-	    <a class="btn btn-outline-secondary form-control" href="https://decipher.sanger.ac.uk/browser#q/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}%20/location/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target ="_blank">DECIPHER {% if case.genome_build == 38 %} (GRCh37){% endif %}</a>
-
-	  </td>
+	    {% if case.genome_build == 38 %}
+	      <a class="btn btn-outline-secondary form-control" href="https://decipher.sanger.ac.uk/browser#q/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}/location/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target ="_blank">DECIPHER</a>
+	    {% else %}
+	      <a class="btn btn-outline-secondary form-control" href="https://decipher.sanger.ac.uk/search/patients/browser?q=grch37:{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target ="_blank">DECIPHER</a>
+            {% endif %}
+          </td>
         </tr>
       </tbody>
     </table>
