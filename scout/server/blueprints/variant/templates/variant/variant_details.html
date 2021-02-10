@@ -61,12 +61,12 @@
               {% else %}
                 <td class="text-right">
                 {% if variant.category == "sv" %}
-                  {% if sample.genotype_quality not in ["None", "-1", -1] %}
+                  {% if sample.genotype_quality not in ["None", None, "-1", -1] %}
                     {{ sample.genotype_quality }}
                   {% else %}
                     <small>N/A</small>
                   {% endif %} (<small>VQ</small>
-                  {% if variant.quality not in ["None", "-1", -1] %}
+                  {% if variant.quality not in ["None", None, "-1", -1] %}
                     {{variant.quality}}
                   {% else %}
                     <small>N/A</small>
