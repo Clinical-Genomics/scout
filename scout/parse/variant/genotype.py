@@ -17,9 +17,6 @@ Uses 'DV' to describe number of paired ends that supports the event and
 'RV' that are number of split reads that supports the event.
 
 """
-import logging
-
-LOG = logging.getLogger(__name__)
 
 GENOTYPE_MAP = {0: "0", 1: "1", -1: "."}
 
@@ -44,35 +41,16 @@ def parse_genotypes(variant, individuals, individual_positions):
 def parse_genotype(variant, ind, pos):
     """Get the genotype information in the proper format
 
-    Sv specific format fields:
-
-    ##FORMAT=<ID=DV,Number=1,Type=Integer,
-    Description="Number of paired-ends that support the event">
-
-    ##FORMAT=<ID=PE,Number=1,Type=Integer,
-    Description="Number of paired-ends that support the event">
-
-    ##FORMAT=<ID=PR,Number=.,Type=Integer,
-    Description="Spanning paired-read support for the ref and alt alleles
-                in the order listed">
-
-    ##FORMAT=<ID=RC,Number=1,Type=Integer,
-    Description="Raw high-quality read counts for the SV">
-
-    ##FORMAT=<ID=RCL,Number=1,Type=Integer,
-    Description="Raw high-quality read counts for the left control region">
-
-    ##FORMAT=<ID=RCR,Number=1,Type=Integer,
-    Description="Raw high-quality read counts for the right control region">
-
-    ##FORMAT=<ID=RR,Number=1,Type=Integer,
-    Description="# high-quality reference junction reads">
-
-    ##FORMAT=<ID=RV,Number=1,Type=Integer,
-    Description="# high-quality variant junction reads">
-
-    ##FORMAT=<ID=SR,Number=1,Type=Integer,
-    Description="Number of split reads that support the event">
+    SV specific format fields:
+    ##FORMAT=<ID=DV,Number=1,Type=Integer,Description="Number of paired-ends that support the event">
+    ##FORMAT=<ID=PE,Number=1,Type=Integer,Description="Number of paired-ends that support the event">
+    ##FORMAT=<ID=PR,Number=.,Type=Integer,Description="Spanning paired-read support for the ref and alt alleles in the order listed">
+    ##FORMAT=<ID=RC,Number=1,Type=Integer,Description="Raw high-quality read counts for the SV">
+    ##FORMAT=<ID=RCL,Number=1,Type=Integer,Description="Raw high-quality read counts for the left control region">
+    ##FORMAT=<ID=RCR,Number=1,Type=Integer,Description="Raw high-quality read counts for the right control region">
+    ##FORMAT=<ID=RR,Number=1,Type=Integer,Description="# high-quality reference junction reads">
+    ##FORMAT=<ID=RV,Number=1,Type=Integer,Description="# high-quality variant junction reads">
+    ##FORMAT=<ID=SR,Number=1,Type=Integer,Description="Number of split reads that support the event">
 
     STR specific format fields:
     ##FORMAT=<ID=LC,Number=1,Type=Float,Description="Locus coverage">
@@ -200,14 +178,14 @@ def parse_genotype(variant, ind, pos):
         if "VD" in variant.FORMAT:
             alt_depth = int(variant.format("VD")[pos][0])
 
-        if paired_end_alt is not None or split_read_alt is not None:
+        if any([paired_end_alt, split_read_alt]):
             alt_depth = 0
             if paired_end_alt:
                 alt_depth += paired_end_alt
             if split_read_alt:
                 alt_depth += split_read_alt
 
-        if spanning_alt is not None or flanking_alt is not None or inrepeat_alt is not None:
+        if any([spanning_alt, flanking_alt, inrepeat_alt]):
             alt_depth = 0
             if spanning_alt:
                 alt_depth += spanning_alt
@@ -220,14 +198,14 @@ def parse_genotype(variant, ind, pos):
 
     ref_depth = int(variant.gt_ref_depths[pos])
     if ref_depth == -1:
-        if paired_end_ref is not None or split_read_ref is not None:
+        if any([paired_end_ref, split_read_ref]):
             ref_depth = 0
             if paired_end_ref:
                 ref_depth += paired_end_ref
             if split_read_ref:
                 ref_depth += split_read_ref
 
-        if spanning_ref is not None or flanking_ref is not None or inrepeat_ref is not None:
+        if any([spanning_ref, flanking_ref, inrepeat_ref]):
             ref_depth = 0
             if spanning_ref:
                 ref_depth += spanning_ref
