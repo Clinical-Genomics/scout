@@ -1,11 +1,10 @@
 """Tests for the loqusdb extension"""
 
-import subprocess
 from subprocess import CalledProcessError
 import pytest
 
-from scout.server.extensions.loqus_extension import LoqusDB
-from scout.server.extensions.loqus_extension import execute_command as execute_command
+from scout.server.app import create_app
+from scout.server.extensions import LoqusDB, loqusdb, loqus_extension
 
 
 def test_set_coordinates_no_variant_type():
@@ -72,74 +71,96 @@ def test_set_coordinates_unknown_ins():
     assert var["length"] == length
 
 
-def test_loqusdb_exe_variant(mocker, loqus_exe_extension):
+def test_loqusdb_exe_variant(loqus_exe_app, monkeypatch, loqus_exe_variant):
     """Test to fetch a variant from loqusdb executable instance"""
 
-    # GIVEN a return value from loqusdb
-    return_value = (
-        b'{"homozygote": 0, "hemizygote": 0, "observations": 1, "chrom": "1", "start": '
-        b'235918688, "end": 235918693, "ref": "CAAAAG", "alt": "C", "families": ["643594"],'
-        b' "total": 3}'
-    )
-    mocker.patch.object(subprocess, "check_output")
-    subprocess.check_output.return_value = return_value
-    # WHEN fetching the variant info
-    var_info = loqus_exe_extension.get_variant({"_id": "a variant"})
+    # GIVEN a mocked subprocess command
+    def mockcommand(*args):
+        return loqus_exe_variant
 
-    # THEN assert the info was parsed correct
-    assert var_info["total"] == 3
+    monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
+
+    with loqus_exe_app.app_context():
+        # WHEN fetching the variant info
+        var_info = loqusdb.get_variant({"_id": "a variant"})
+        # THEN assert the info was parsed correct
+        assert var_info["total"] == 3
 
 
-def test_loqusdb_exe_variant_CalledProcessError(mocker, loqus_exe_extension):
+def test_loqusdb_exe_variant_CalledProcessError(loqus_exe_app, monkeypatch):
     """Test fetching a variant from loqusdb executable that raises an exception"""
+
     # GIVEN replacing subprocess.check_output to raise CalledProcessError
-    mocker.patch.object(
-        subprocess, "check_output", side_effect=CalledProcessError(123, "case_count")
-    )
-    with pytest.raises(CalledProcessError):
-        # THEN CalledProcessError is raised and thrown
-        var_info = loqus_exe_extension.get_variant({"_id": "a variant"})
+    def mockcommand(*args):
+        raise CalledProcessError(123, "case_count")
+
+    monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
+
+    with loqus_exe_app.app_context():
+        with pytest.raises(CalledProcessError):
+            # THEN CalledProcessError is raised and thrown
+            var_info = loqusdb.get_variant({"_id": "a variant"})
 
 
-def test_loqusdb_exe_cases(mocker, loqus_exe_extension):
+def test_loqusdb_exe_cases(loqus_exe_app, monkeypatch):
     """Test the case count function in loqus executable extension"""
-    # GIVEN a return value from loqusdb
+
     nr_cases = 15
-    return_value = b"%d" % nr_cases
-    mocker.patch.object(subprocess, "check_output")
-    subprocess.check_output.return_value = return_value
-    # WHEN fetching the number of cases
-    res = loqus_exe_extension.case_count(variant_category="snv")
-    # THEN assert the output is parsed correct
-    assert res == nr_cases
+
+    # GIVEN a return value from loqusdb using a mocker
+    def mockcommand(*args):
+        return_value = b"%d" % nr_cases
+        return return_value
+
+    monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
+
+    with loqus_exe_app.app_context():
+        # WHEN fetching the number of cases
+        res = loqusdb.case_count(variant_category="snv")
+        # THEN assert the output is parsed correct
+        assert res == nr_cases
 
 
-def test_loqusdb_exe_cases_ValueError(mocker, loqus_exe_extension):
+def test_loqusdb_exe_cases_ValueError(loqus_exe_app, monkeypatch):
     """Test the case count function in loqus extension"""
     # GIVEN a return value from loqusdb which is not an int
-    mocker.patch(
-        "scout.server.extensions.loqus_extension.execute_command", return_value="non-sense"
-    )
+    def mockcommand(*args):
+        return "nonsense"
 
-    # THEN assert a value error is raised, but passed, and 0 is returned
-    assert loqus_exe_extension.case_count(variant_category="snv") == 0
+    monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
+
+    with loqus_exe_app.app_context():
+        # THEN assert a value error is raised, but passed, and 0 is returned
+        assert loqusdb.case_count(variant_category="snv") == 0
 
 
-def test_loqusdb_exe_case_count_CalledProcessError(mocker, loqus_exe_extension):
+def test_loqusdb_exe_case_count_CalledProcessError(loqus_exe_app, monkeypatch):
     """Test the case count function in loqus extension that raises an exception"""
-    # GIVEN mocking subprocess to raise CalledProcessError
-    mocker.patch.object(
-        subprocess, "check_output", side_effect=CalledProcessError(123, "case_count")
-    )
-    # THEN assert exception is caught and the value 0 is returned
-    assert 0 == loqus_exe_extension.case_count(variant_category="snv")
+    # GIVEN replacing subprocess.check_output to raise CalledProcessError
+    def mockcommand(*args):
+        raise CalledProcessError(123, "case_count")
+
+    monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
+
+    with loqus_exe_app.app_context():
+        # THEN assert exception is caught and the value 0 is returned
+        assert 0 == loqusdb.case_count(variant_category="snv")
 
 
-def test_loqusdb_exe_wrong_version(loqus_exe):
+def test_loqusdb_exe_wrong_version(monkeypatch, loqus_exe, loqus_config):
     """Test to instantiate a loqus extension whe version is to low"""
-    # GIVEN a loqusdb version < 2.5
-    loqus_exe_extension = LoqusDB(loqusdb_binary=loqus_exe, version=1.0)
+
+    # Given a mocked loqus exe instance returning a loqus version older than 2.5
+    def mockcommand(*args):
+        return "2.4"
+
+    monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
+
     # WHEN instantiating an adapter
     with pytest.raises(EnvironmentError):
-        # THEN assert a syntax error is raised since version is wrong
-        loqus_exe_extension.version_check(loqus_exe_extension.loqusdb_settings[0])
+        # Then the app should not be created because of EnvironmentError
+        app = create_app(
+            config=dict(
+                LOQUSDB_SETTINGS={"loqusdb_binary": loqus_exe, "loqusdb_config": loqus_config}
+            )
+        )

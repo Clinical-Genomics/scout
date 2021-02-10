@@ -15,8 +15,19 @@ def fixture_loqus_config():
     return "configs/loqus-config.yaml"
 
 
-@pytest.fixture(name="loqus_exe_app")
-def ffixture_loqus_exe_app(loqus_exe, loqus_config):
+@pytest.fixture
+def loqus_exe_variant():
+    """Returns a Loqus executable instance variant"""
+    variant_found = (
+        b'{"homozygote": 0, "hemizygote": 0, "observations": 1, "chrom": "1", "start": '
+        b'235918688, "end": 235918693, "ref": "CAAAAG", "alt": "C", "families": ["643594"],'
+        b' "total": 3}'
+    )
+    return variant_found
+
+
+@pytest.fixture
+def loqus_exe_app(loqus_exe, loqus_config):
     """Return an connected to LoqusDB via Loqus executable"""
 
     app = create_app(
@@ -28,8 +39,8 @@ def ffixture_loqus_exe_app(loqus_exe, loqus_config):
     return app
 
 
-@pytest.fixture(name="loqus_api_app")
-def fixture_loqus_api_app():
+@pytest.fixture
+def loqus_api_app():
     """Return an connected to LoqusDB via REST API"""
 
     app = create_app(

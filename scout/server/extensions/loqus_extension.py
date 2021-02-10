@@ -15,7 +15,6 @@ LOG = logging.getLogger(__name__)
 
 BINARY_PATH = "binary_path"
 CONFIG_PATH = "config_path"
-VERSION = "version"
 API_URL = "api_url"
 
 
@@ -47,9 +46,6 @@ class LoqusDB:
     Loqus config params should be set in Scout config file
     """
 
-    def __init__():
-        pass
-
     @staticmethod
     def app_config(app):
         """Read config.py to handle single or multiple loqusdb configurations.
@@ -78,7 +74,10 @@ class LoqusDB:
             LOG.debug(f"Found settings for a Loqus instance--->{setting}")
             # Scout might connect to Loqus via an API or an executable, define which one for every instance
             setting["instance_type"] = "api" if setting.get(API_URL) else "exec"
-            setting["version"] = self.get_instance_version(setting)
+            if app.config["TESTING"] == True:
+                setting["version"] = 2.5
+            else:
+                setting["version"] = self.get_instance_version(setting)
             self.version_check(setting)
 
     def get_instance_version(self, instance_settings):
