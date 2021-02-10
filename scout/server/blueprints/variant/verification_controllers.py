@@ -74,9 +74,7 @@ def variant_verification(
     position = variant_obj["position"]
     end_chrom = variant_obj.get("end_chrom", chromosome)
     chr_position = (
-        ":".join([chromosome, str(variant_obj["position"])])
-        if category in ["snv"]
-        else "-"
+        ":".join([chromosome, str(variant_obj["position"])]) if category in ["snv"] else "-"
     )
     breakpoint_1 = (
         ":".join([chromosome, str(variant_obj["position"])])
@@ -142,13 +140,13 @@ def variant_verification(
                     else:
                         transcript_line.append("")
                     if "strand" in tx_obj:
-                        transcript_line.append(tx_obj['strand'])
+                        transcript_line.append(tx_obj["strand"])
                     else:
-                        transcript_line.append('')
-                    if refseq_id in gene_obj['common']['primary_transcripts']:
-                        transcript_line.append('<b>primary</b>')
+                        transcript_line.append("")
+                    if refseq_id in gene_obj["common"]["primary_transcripts"]:
+                        transcript_line.append("<b>primary</b>")
                     else:
-                        transcript_line.append('')
+                        transcript_line.append("")
 
                     tx_changes.append("<li>{}</li>".format(":".join(transcript_line)))
 
@@ -172,7 +170,7 @@ def variant_verification(
         tx_changes="".join(tx_changes) or "Not available",
         name=user_obj["name"].encode("utf-8"),
         comment=comment,
-        thermo_primer_link=thermo_primer_link
+        thermo_primer_link=thermo_primer_link,
     )
 
     # build a local the link to the variant to be included in the events objects (variant and case) created in the event collection.
@@ -268,7 +266,9 @@ def verification_email_body(
     """
     thermo_primer_link_html = ""
     if thermo_primer_link:
-        thermo_primer_link_html = f"<li><a href=\"{thermo_primer_link}\">Order primers from ThermoFisher</a>"
+        thermo_primer_link_html = (
+            f'<li><a href="{thermo_primer_link}">Order primers from ThermoFisher</a>'
+        )
 
     html = """
        <ul>
@@ -304,7 +304,7 @@ def verification_email_body(
         tx_changes=tx_changes,
         name=name,
         comment=comment,
-        thermo_primer_link_html=thermo_primer_link_html
+        thermo_primer_link_html=thermo_primer_link_html,
     )
 
     return html
