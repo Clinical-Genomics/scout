@@ -72,8 +72,9 @@ def test_set_coordinates_unknown_ins():
     assert var["length"] == length
 
 
-def test_loqusdb_variant(mocker, loqus_extension):
-    """Test to fetch a variant from loqusdb"""
+def test_loqusdb_exe_variant(mocker, loqus_exe_extension):
+    """Test to fetch a variant from loqusdb executable instance"""
+
     # GIVEN a return value from loqusdb
     return_value = (
         b'{"homozygote": 0, "hemizygote": 0, "observations": 1, "chrom": "1", "start": '
@@ -83,37 +84,37 @@ def test_loqusdb_variant(mocker, loqus_extension):
     mocker.patch.object(subprocess, "check_output")
     subprocess.check_output.return_value = return_value
     # WHEN fetching the variant info
-    var_info = loqus_extension.get_variant({"_id": "a variant"})
+    var_info = loqus_exe_extension.get_variant({"_id": "a variant"})
 
     # THEN assert the info was parsed correct
     assert var_info["total"] == 3
 
 
-def test_loqusdb_variant_CalledProcessError(mocker, loqus_extension):
-    """Test to fetch a variant from loqusdb that raises an exception"""
+def test_loqusdb_exe_variant_CalledProcessError(mocker, loqus_exe_extension):
+    """Test fetching a variant from loqusdb executable that raises an exception"""
     # GIVEN replacing subprocess.check_output to raise CalledProcessError
     mocker.patch.object(
         subprocess, "check_output", side_effect=CalledProcessError(123, "case_count")
     )
     with pytest.raises(CalledProcessError):
         # THEN CalledProcessError is raised and thrown
-        var_info = loqus_extension.get_variant({"_id": "a variant"})
+        var_info = loqus_exe_extension.get_variant({"_id": "a variant"})
 
 
-def test_loqusdb_cases(mocker, loqus_extension):
-    """Test the case count function in loqus extension"""
+def test_loqusdb_exe_cases(mocker, loqus_exe_extension):
+    """Test the case count function in loqus executable extension"""
     # GIVEN a return value from loqusdb
     nr_cases = 15
     return_value = b"%d" % nr_cases
     mocker.patch.object(subprocess, "check_output")
     subprocess.check_output.return_value = return_value
     # WHEN fetching the number of cases
-    res = loqus_extension.case_count()
+    res = loqus_exe_extension.case_count(variant_category="snv")
     # THEN assert the output is parsed correct
     assert res == nr_cases
 
 
-def test_loqusdb_cases_ValueError(mocker, loqus_extension):
+def test_loqusdb_exe_cases_ValueError(mocker, loqus_exe_extension):
     """Test the case count function in loqus extension"""
     # GIVEN a return value from loqusdb which is not an int
     mocker.patch(
@@ -121,24 +122,24 @@ def test_loqusdb_cases_ValueError(mocker, loqus_extension):
     )
 
     # THEN assert a value error is raised, but passed, and 0 is returned
-    assert loqus_extension.case_count() == 0
+    assert loqus_exe_extension.case_count(variant_category="snv") == 0
 
 
-def test_loqusdb_case_count_CalledProcessError(mocker, loqus_extension):
+def test_loqusdb_exe_case_count_CalledProcessError(mocker, loqus_exe_extension):
     """Test the case count function in loqus extension that raises an exception"""
     # GIVEN mocking subprocess to raise CalledProcessError
     mocker.patch.object(
         subprocess, "check_output", side_effect=CalledProcessError(123, "case_count")
     )
     # THEN assert exception is caught and the value 0 is returned
-    assert 0 == loqus_extension.case_count()
+    assert 0 == loqus_exe_extension.case_count(variant_category="snv")
 
 
-def test_loqusdb_wrong_version(loqus_exe):
+def test_loqusdb_exe_wrong_version(loqus_exe):
     """Test to instantiate a loqus extension whe version is to low"""
     # GIVEN a loqusdb version < 2.5
-    loqus_extension = LoqusDB(loqusdb_binary=loqus_exe, version=1.0)
+    loqus_exe_extension = LoqusDB(loqusdb_binary=loqus_exe, version=1.0)
     # WHEN instantiating an adapter
     with pytest.raises(EnvironmentError):
         # THEN assert a syntax error is raised since version is wrong
-        loqus_extension.version_check()
+        loqus_exe_extension.version_check(loqus_exe_extension.loqusdb_settings[0])

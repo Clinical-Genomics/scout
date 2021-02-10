@@ -64,12 +64,20 @@ class LoqusDB:
                 "binary_path": loqusdb_binary,
                 "config_path": loqusdb_args,
                 "api_url": api_url,
+                "instance_type": "api" if api_url else "exec",
+                "version": version,
             }
         ]
         LOG.debug(
             "Initializing loqus extension with config: %s",
             self.loqusdb_settings,
         )
+
+    def version_check(self, loqusdb_settings):
+        """Check if a compatible version is used otherwise raise an error"""
+        if not loqusdb_settings["version"] >= 2.5:
+            LOG.info("Please update your loqusdb version to >=2.5")
+            raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
 
     @staticmethod
     def app_config(app):
@@ -92,8 +100,9 @@ class LoqusDB:
         for setting in self.loqusdb_settings:
             LOG.debug(f"Found settings for a Loqus instance--->{setting}")
             # Scout might connect to Loqus via an API or an executable, define which one for every instance
-            setting["instance_type"] = "api" if "api_url" in setting else "exec"
+            setting["instance_type"] = "api" if setting.get(API_URL) else "exec"
             setting["version"] = self.get_instance_version(setting)
+            self.version_check(setting)
 
     def get_instance_version(self, instance_settings):
         """Returns version of a LoqusDB instance.
@@ -109,9 +118,6 @@ class LoqusDB:
         else:
             version = self.get_exec_loqus_version(loqusdb_id=instance_settings.get("id"))
 
-        if not version >= 2.5:
-            LOG.info("Please update your loqusdb version to >=2.5")
-            raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
         return version
 
     @staticmethod

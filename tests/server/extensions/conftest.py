@@ -22,22 +22,21 @@ def fixture_loqus_config():
     return "configs/loqus-config.yaml"
 
 
-@pytest.fixture(name="app_config")
-def fixture_app_config(loqus_exe, loqus_config, loqus_version):
-    """Return a dictionary with loqus configs"""
-    _configs = {
-        "LOQUSDB_SETTINGS": {
-            "binary_path": loqus_exe,
-            "version": loqus_version,
-            "config_path": loqus_config,
-        }
-    }
-
-    return _configs
+@pytest.fixture(name="loqus_api_url")
+def fixture_loqus_api_url():
+    """Return the url to a loqus REST API instance"""
+    return "url/to/loqus/api"
 
 
-@pytest.fixture(name="loqus_extension")
-def fixture_loqus_extension(loqus_exe, loqus_config, loqus_version):
+@pytest.fixture(name="loqus_api_extension")
+def fixture_loqus_api_extension(loqus_api_url):
+    """Return a loqusdb extension"""
+    loqus_obj = LoqusDB(api_url=loqus_api_url, version=loqus_version)
+    return loqus_obj
+
+
+@pytest.fixture(name="loqus_exe_extension")
+def fixture_loqus_exe_extension(loqus_exe, loqus_config, loqus_version):
     """Return a loqusdb extension"""
     loqus_obj = LoqusDB(
         loqusdb_binary=loqus_exe, loqusdb_config=loqus_config, version=loqus_version
