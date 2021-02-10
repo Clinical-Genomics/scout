@@ -9,7 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Introduced a `reset dismiss variant` verb
 - Button to reset all dismissed variants for a case
 ### Fixed
-- Center initial igv view on variant start with SNV/indels 
+- Center initial igv view on variant start with SNV/indels
+- Cancer variants table header (pop freq etc)
 ### Changed
 
 
