@@ -74,7 +74,7 @@ class LoqusDB:
             LOG.debug(f"Found settings for a Loqus instance--->{setting}")
             # Scout might connect to Loqus via an API or an executable, define which one for every instance
             setting["instance_type"] = "api" if setting.get(API_URL) else "exec"
-            if app.config["TESTING"] == True:
+            if app.config["TESTING"] is True:
                 setting["version"] = 2.5
             else:
                 setting["version"] = self.get_instance_version(setting)
