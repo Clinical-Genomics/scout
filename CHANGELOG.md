@@ -8,10 +8,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Introduced a `reset dismiss variant` verb
 - Button to reset all dismissed variants for a case
+- Support LoqusDB REST API queries
 ### Fixed
-- Center initial igv view on variant start with SNV/indels 
+- Center initial igv view on variant start with SNV/indels
 ### Changed
-
+- Add support for
+- Count LoqusDB cases by variant type
 
 ## [4.29]
 ### Added
