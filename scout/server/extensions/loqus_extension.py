@@ -144,7 +144,7 @@ class LoqusDB:
         LOG.debug("version: {}".format(version))
         return float(version)
 
-    def search_loqus_instance(self, id):
+    def search_loqus_instance(self, key):
         """Search settings for a LoqusDB instance by id
 
         Returns:
@@ -152,7 +152,7 @@ class LoqusDB:
             {'api_url':(str), 'instance_type':'api', 'id': (str)}
         """
         for i in self.loqusdb_settings:
-            if i.get("id") == id:
+            if i.get("id") == key:
                 return i
         return None
 
