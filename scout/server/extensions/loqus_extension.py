@@ -151,7 +151,7 @@ class LoqusDB:
                 return i
         return None
 
-    def case_count(self, loqusdb_id="default"):
+    def case_count(self, variant_category, loqusdb_id="default"):
         """Returns number of cases in loqus instance
 
         Args:
@@ -166,20 +166,30 @@ class LoqusDB:
             LOG.error(f"Could not find a Loqus instance with id:{loqusdb_id}")
             return nr_cases
 
-        case_call = self.get_command(loqusdb_id)
-        case_call.extend(["cases", "--count"])
-        output = ""
-        try:
-            output = execute_command(case_call)
-        except CalledProcessError:
-            LOG.warning("Something went wrong with loqus")
-            return nr_cases
+        # loqus queried via executable
+        if loqus_instance.get("instance_type") == "exec":
+            case_call = self.get_command(loqusdb_id)
+            case_call.extend(["cases", "--count"])
+            output = ""
+            try:
+                output = execute_command(case_call)
+            except CalledProcessError:
+                LOG.warning("Something went wrong with loqus")
+                return nr_cases
+            try:
+                nr_cases = int(output.strip())
+            except ValueError:
+                pass
 
-        try:
-            nr_cases = int(output.strip())
-        except ValueError:
-            pass
-
+        else:  # loqus queried via REST API
+            search_url = f"{loqus_instance.get(API_URL)}/cases"
+            search_resp = api_get(search_url)
+            if search_resp.get("status_code") != 200:
+                return 0
+            if variant_category == "snv":
+                nr_cases = search_resp.get("nr_cases_snvs", 0)
+            elif variant_category == "sv":
+                nr_cases = search_resp.get("nr_cases_svs", 0)
         return nr_cases
 
     def get_variant(self, variant_info, loqusdb_id="default"):
