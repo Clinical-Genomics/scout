@@ -463,7 +463,7 @@
                   <input type="hidden" name="build" value="{{case.genome_build}}">
                   <input type="hidden" name="contig" value="{{variant.chromosome}}">
                   <input type="hidden" name="start" value="{{variant.position - 50}}">
-                  <input type="hidden" name="stop" value="{{variant.end_position + 50}}">
+                  <input type="hidden" name="stop" value="{{variant.position + 50}}">
                   <!-- end of general hidden form fields -->
                 {% if variant.chromosome == "MT" %}
                   {% if case.mt_bams %}
