@@ -90,7 +90,7 @@ class LoqusDB:
         self.loqusdb_settings = self.app_config(app)
         # Check that each Loqus configuration in the settings list is valid
         for setting in self.loqusdb_settings:
-            LOG.error(f"Setting--->{setting}")
+            LOG.debug(f"Found setting for a Loqus instance--->{setting}")
             # Scout might connect to Loqus via an API or an executable, define which one for every instance
             setting["instance_type"] = "api" if "api_url" in setting else "exec"
             setting["version"] = self.get_instance_version(setting)
@@ -189,6 +189,7 @@ class LoqusDB:
                 nr_cases = search_resp.get("nr_cases_snvs", 0)
             elif variant_category == "sv":
                 nr_cases = search_resp.get("nr_cases_svs", 0)
+
         return nr_cases
 
     def get_variant(self, variant_info, loqusdb_id="default"):
@@ -200,8 +201,6 @@ class LoqusDB:
 
         Returns:
             loqus_variant(dict)
-        Raises:
-            EnvironmentError("Only compatible with loqusdb version >= 2.5")
         """
         loqus_instance = self.search_loqus_instance(loqusdb_id)
         if loqus_instance is None:
