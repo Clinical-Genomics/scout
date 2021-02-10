@@ -89,7 +89,7 @@ def parse_genotype(variant, ind, pos):
     if "SO" in variant.FORMAT:
         try:
             so = variant.format("SO")[pos]
-            if so is not None and so != "-1":
+            if so not in [None, -1]:
                 str_so = str(so)
         except ValueError as e:
             pass
