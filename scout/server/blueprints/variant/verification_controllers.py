@@ -141,6 +141,14 @@ def variant_verification(
                         )
                     else:
                         transcript_line.append("")
+                    if "strand" in tx_obj:
+                        transcript_line.append(tx_obj['strand'])
+                    else:
+                        transcript_line.append('')
+                    if refseq_id in gene_obj['common']['primary_transcripts']:
+                        transcript_line.append('<b>primary</b>')
+                    else:
+                        transcript_line.append('')
 
                     tx_changes.append("<li>{}</li>".format(":".join(transcript_line)))
 
