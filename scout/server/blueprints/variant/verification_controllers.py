@@ -73,6 +73,11 @@ def variant_verification(
     chromosome = variant_obj["chromosome"]
     position = variant_obj["position"]
     end_chrom = variant_obj.get("end_chrom", chromosome)
+    chr_position = (
+        ":".join([chromosome, str(variant_obj["position"])])
+        if category in ["snv"]
+        else "-"
+    )
     breakpoint_1 = (
         ":".join([chromosome, str(variant_obj["position"])])
         if category in ["sv", "cancer_sv"]
@@ -152,6 +157,7 @@ def variant_verification(
         subcategory=variant_obj.get("sub_category").upper(),
         breakpoint_1=breakpoint_1,
         breakpoint_2=breakpoint_2,
+        chr_position=chr_position,
         hgnc_symbol=hgnc_symbol,
         panels=panels,
         gtcalls="".join(gtcalls),
@@ -217,6 +223,7 @@ def verification_email_body(
     display_name,
     category,
     subcategory,
+    chr_position,
     breakpoint_1,
     breakpoint_2,
     hgnc_symbol,
@@ -236,6 +243,7 @@ def verification_email_body(
         display_name(str): a display name for the variant
         category(str): category of the variant
         subcategory(str): sub-category of the variant
+        chr_position(str): chromosomal position for SNVs (format is 'chr:start')
         breakpoint_1(str): breakpoint 1 (format is 'chr:start')
         breakpoint_2(str): breakpoint 2 (format is 'chr:stop')
         hgnc_symbol(str): a gene or a list of genes separated by comma
@@ -260,6 +268,7 @@ def verification_email_body(
            <strong>Case {case_name}</strong>: <a href="{url}">{display_name}</a>
          </li>
          <li><strong>Variant type</strong>: {category} ({subcategory})
+         <li><strong>Chromosomal position</strong>: {chr_position}</li>
          <li><strong>Breakpoint 1</strong>: {breakpoint_1}</li>
          <li><strong>Breakpoint 2</strong>: {breakpoint_2}</li>
          <li><strong>HGNC symbols</strong>: {hgnc_symbol}</li>
@@ -278,6 +287,7 @@ def verification_email_body(
         display_name=display_name,
         category=category,
         subcategory=subcategory,
+        chr_position=chr_position,
         breakpoint_1=breakpoint_1,
         breakpoint_2=breakpoint_2,
         hgnc_symbol=hgnc_symbol,
