@@ -16,6 +16,10 @@
             <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
             {% if variant.category == "cancer" %}
               <th rowspan="2" colspan="1" title="Variant Allele Frequency.">Variant Allele Frequency (VAF)</th>
+            {% elif variant.category == "sv" %}
+              <th rowspan="2" colspan="1" title="SV caller specific quality score. Note different scales for different callers.">SV quality</th>
+            {% elif variant.category == "str" %}
+              <th rowspan="2" colspan="1">ExpansionHunter support</th>
             {% else %}
               <th rowspan="2" colspan="1" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
             {% endif %}
@@ -32,7 +36,13 @@
               <td class="text-center">{{ sample.genotype_call }}</td>
               {% if sample.allele_depths %}
                   {% for number in sample.allele_depths %}
-                    <td class="text-right">{{ number }}</td>
+                    <td class="text-right">
+                      {% if number == -1 %}
+                        <small>N/A</small>
+                      {% else %}
+                        {{ number }}
+                      {% endif %}
+                    </td>
                   {% endfor %}
               {% else %}
                   <td class="text-right"><small>N/A</small></td>
@@ -49,7 +59,24 @@
                 {% endif %}
                 <td class="text-right">{{ cancer_var.vaf }}</td>
               {% else %}
-                <td class="text-right">{{ sample.genotype_quality }}</td>
+                <td class="text-right">
+                {% if variant.category == "sv" %}
+                  {% if sample.genotype_quality not in ["None", None, "-1", -1] %}
+                    {{ sample.genotype_quality }}
+                  {% else %}
+                    <small>N/A</small>
+                  {% endif %} (<small>VQ</small>
+                  {% if variant.quality not in ["None", None, "-1", -1] %}
+                    {{variant.quality}}
+                  {% else %}
+                    <small>N/A</small>
+                  {% endif%})
+                {% elif variant.category == "str" %}
+                    <small>{{ sample.so }}</small>
+                {% else %}
+                  {{ sample.genotype_quality }}
+                {% endif %}
+                </td>
               {% endif %}
             </tr>
           {% endfor %}
