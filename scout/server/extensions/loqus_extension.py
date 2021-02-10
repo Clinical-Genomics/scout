@@ -43,41 +43,12 @@ def execute_command(cmd):
 
 class LoqusDB:
     """Interface to loqusdb from Flask
+    Initialized from server/app.py (extensions.loqusdb.init_app(app))
+    Loqus config params should be set in Scout config file
+    """
 
-    NOTE: * initialied in __init__.py called from server/extensins/__init.py__ but also
-            init_app is called from server/app.init.
-          * in practice this is a singleton class
-          * configured in `scout/server/config.py`"""
-
-    def __init__(
-        self,
-        loqusdb_binary=None,
-        loqusdb_config=None,
-        loqusdb_args=None,
-        api_url=None,
-        version=None,
-    ):
-        """Initialise from args"""
-        self.loqusdb_settings = [
-            {
-                "id": "default",
-                "binary_path": loqusdb_binary,
-                "config_path": loqusdb_args,
-                "api_url": api_url,
-                "instance_type": "api" if api_url else "exec",
-                "version": version,
-            }
-        ]
-        LOG.debug(
-            "Initializing loqus extension with config: %s",
-            self.loqusdb_settings,
-        )
-
-    def version_check(self, loqusdb_settings):
-        """Check if a compatible version is used otherwise raise an error"""
-        if not loqusdb_settings["version"] >= 2.5:
-            LOG.info("Please update your loqusdb version to >=2.5")
-            raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
+    def __init__():
+        pass
 
     @staticmethod
     def app_config(app):
@@ -91,6 +62,12 @@ class LoqusDB:
         # backwards compatible, add default id
         cfg["id"] = "default"
         return [cfg]
+
+    def version_check(self, loqusdb_settings):
+        """Check if a compatible version is used otherwise raise an error"""
+        if not loqusdb_settings["version"] >= 2.5:
+            LOG.info("Please update your loqusdb version to >=2.5")
+            raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
 
     def init_app(self, app):
         """Initialize from Flask."""
