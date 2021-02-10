@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Introduced a `reset dismiss variant` verb
 - Button to reset all dismissed variants for a case
+- Add additional information to SNV verification emails
 ### Fixed
 ### Changed
 
