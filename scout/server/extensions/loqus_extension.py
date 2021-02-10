@@ -90,7 +90,7 @@ class LoqusDB:
         self.loqusdb_settings = self.app_config(app)
         # Check that each Loqus configuration in the settings list is valid
         for setting in self.loqusdb_settings:
-            LOG.debug(f"Found setting for a Loqus instance--->{setting}")
+            LOG.debug(f"Found settings for a Loqus instance--->{setting}")
             # Scout might connect to Loqus via an API or an executable, define which one for every instance
             setting["instance_type"] = "api" if "api_url" in setting else "exec"
             setting["version"] = self.get_instance_version(setting)
@@ -229,15 +229,16 @@ class LoqusDB:
         """
         category = "variants" if variant_info["category"] == "snv" else "svs"
         search_url = f"{api_url}/{category}"
-        search_data = {}
-        chrom = variant_info["chrom"]
-        end_chrom = variant_info["end_chrom"]
-        pos = variant_info["pos"]
-        end = variant_info["end"]
 
         if category == "variants":  # SNVs
             search_url = f"{search_url}/{variant_info['_id']}"
         else:  # SVs
+            search_data = {}
+            chrom = variant_info["chrom"]
+            end_chrom = variant_info["end_chrom"]
+            pos = variant_info["pos"]
+            end = variant_info["end"]
+
             sv_type = variant_info["variant_type"]
             search_url = f"{search_url}/svs?chrom={chrom}&end_chrom={end_chrom}&pos={pos}&end={end}&sv_type={sv_type}"
 
@@ -360,9 +361,6 @@ class LoqusDB:
         except AttributeError:
             raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
-    def __repr__(self):
-        return f"LoqusDB(loqusdb_settings={self.loqusdb_settings},"
-
     def get_command(self, loqusdb_id=None):
         """Get command string, with additional arguments if configured
 
@@ -372,3 +370,6 @@ class LoqusDB:
         if args:
             path.extend(["--config", args])
         return path
+
+    def __repr__(self):
+        return f"LoqusDB(loqusdb_settings={self.loqusdb_settings},"
