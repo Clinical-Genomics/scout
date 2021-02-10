@@ -35,6 +35,23 @@ MAIL_USE_SSL = False
 # connection details for LoqusDB MongoDB database in the loqusdb config file
 #    uri=("mongodb://{}:{}@localhost:{}/loqusdb".format(MONGO_USERNAME, MONGO_PASSWORD, MONGO_PORT))
 
+# Cloud IGV tracks can be configured here to allow users to enable them on their IGV views.
+# CLOUD_IGV_TRACKS = [
+#    {
+#        "name": "custom_public_bucket",
+#        "access": "public",
+#        "tracks": [
+#            {
+#                "name": "dbVar Pathogenic or Likely Pathogenic",
+#                "type": "variant",
+#                "format": "vcf",
+#                "build": "37",
+#                "url": "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/25777457/GRCh37.variant_call.clinical.pathogenic_or_likely_pathogenic.vcf.gz",
+#                "indexURL": "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/25777460/GRCh37.variant_call.clinical.pathogenic_or_likely_pathogenic.vcf.gz.tbi",
+#            }
+#        ],
+#    },
+# ]
 
 # Chanjo-Report
 REPORT_LANGUAGE = "en"

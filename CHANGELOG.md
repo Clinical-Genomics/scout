@@ -12,8 +12,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Center initial igv view on variant start with SNV/indels
 ### Changed
-- Add support for
-- Count LoqusDB cases by variant type
+- Count cases in LoqusDB by variant type
+- Display of GQ for SV and STR
+- Parsing of AD and related info for STRs
+
 
 ## [4.29]
 ### Added

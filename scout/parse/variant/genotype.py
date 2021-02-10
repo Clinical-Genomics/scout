@@ -41,35 +41,25 @@ def parse_genotypes(variant, individuals, individual_positions):
 def parse_genotype(variant, ind, pos):
     """Get the genotype information in the proper format
 
-    Sv specific format fields:
+    SV specific format fields:
+    ##FORMAT=<ID=DV,Number=1,Type=Integer,Description="Number of paired-ends that support the event">
+    ##FORMAT=<ID=PE,Number=1,Type=Integer,Description="Number of paired-ends that support the event">
+    ##FORMAT=<ID=PR,Number=.,Type=Integer,Description="Spanning paired-read support for the ref and alt alleles in the order listed">
+    ##FORMAT=<ID=RC,Number=1,Type=Integer,Description="Raw high-quality read counts for the SV">
+    ##FORMAT=<ID=RCL,Number=1,Type=Integer,Description="Raw high-quality read counts for the left control region">
+    ##FORMAT=<ID=RCR,Number=1,Type=Integer,Description="Raw high-quality read counts for the right control region">
+    ##FORMAT=<ID=RR,Number=1,Type=Integer,Description="# high-quality reference junction reads">
+    ##FORMAT=<ID=RV,Number=1,Type=Integer,Description="# high-quality variant junction reads">
+    ##FORMAT=<ID=SR,Number=1,Type=Integer,Description="Number of split reads that support the event">
 
-    ##FORMAT=<ID=DV,Number=1,Type=Integer,
-    Description="Number of paired-ends that support the event">
-
-    ##FORMAT=<ID=PE,Number=1,Type=Integer,
-    Description="Number of paired-ends that support the event">
-
-    ##FORMAT=<ID=PR,Number=.,Type=Integer,
-    Description="Spanning paired-read support for the ref and alt alleles
-                in the order listed">
-
-    ##FORMAT=<ID=RC,Number=1,Type=Integer,
-    Description="Raw high-quality read counts for the SV">
-
-    ##FORMAT=<ID=RCL,Number=1,Type=Integer,
-    Description="Raw high-quality read counts for the left control region">
-
-    ##FORMAT=<ID=RCR,Number=1,Type=Integer,
-    Description="Raw high-quality read counts for the right control region">
-
-    ##FORMAT=<ID=RR,Number=1,Type=Integer,
-    Description="# high-quality reference junction reads">
-
-    ##FORMAT=<ID=RV,Number=1,Type=Integer,
-    Description="# high-quality variant junction reads">
-
-    ##FORMAT=<ID=SR,Number=1,Type=Integer,
-    Description="Number of split reads that support the event">
+    STR specific format fields:
+    ##FORMAT=<ID=LC,Number=1,Type=Float,Description="Locus coverage">
+    ##FORMAT=<ID=REPCI,Number=1,Type=String,Description="Confidence interval for REPCN">
+    ##FORMAT=<ID=REPCN,Number=1,Type=String,Description="Number of repeat units spanned by the allele">
+    ##FORMAT=<ID=SO,Number=1,Type=String,Description="Type of reads that support the allele; can be SPANNING, FLANKING, or INREPEAT meaning that the reads span, flank, or are fully contained in the repeat">
+    ##FORMAT=<ID=ADFL,Number=1,Type=String,Description="Number of flanking reads consistent with the allele">
+    ##FORMAT=<ID=ADIR,Number=1,Type=String,Description="Number of in-repeat reads consistent with the allele">
+    ##FORMAT=<ID=ADSP,Number=1,Type=String,Description="Number of spanning reads consistent with the allele">
 
     Args:
         variant(cyvcf2.Variant)
@@ -94,6 +84,23 @@ def parse_genotype(variant, ind, pos):
 
         gt_call["genotype_call"] = "/".join([GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]])
 
+    # STR specific
+    str_so = None
+    if "SO" in variant.FORMAT:
+        try:
+            so = variant.format("SO")[pos]
+            if so not in [None, -1]:
+                str_so = str(so)
+        except ValueError as e:
+            pass
+
+    gt_call["so"] = str_so
+
+    (spanning_ref, spanning_alt) = _parse_format_entry(variant, pos, "ADSP")
+    (flanking_ref, flanking_alt) = _parse_format_entry(variant, pos, "ADFL")
+    (inrepeat_ref, inrepeat_alt) = _parse_format_entry(variant, pos, "ADIR")
+
+    # SV specific
     paired_end_alt = None
     paired_end_ref = None
     split_read_alt = None
@@ -171,23 +178,41 @@ def parse_genotype(variant, ind, pos):
         if "VD" in variant.FORMAT:
             alt_depth = int(variant.format("VD")[pos][0])
 
-        if paired_end_alt is not None or split_read_alt is not None:
+        if any([paired_end_alt, split_read_alt]):
             alt_depth = 0
             if paired_end_alt:
                 alt_depth += paired_end_alt
             if split_read_alt:
                 alt_depth += split_read_alt
 
+        if any([spanning_alt, flanking_alt, inrepeat_alt]):
+            alt_depth = 0
+            if spanning_alt:
+                alt_depth += spanning_alt
+            if flanking_alt:
+                alt_depth += flanking_alt
+            if inrepeat_alt:
+                alt_depth += inrepeat_alt
+
     gt_call["alt_depth"] = alt_depth
 
     ref_depth = int(variant.gt_ref_depths[pos])
     if ref_depth == -1:
-        if paired_end_ref is not None or split_read_ref is not None:
+        if any([paired_end_ref, split_read_ref]):
             ref_depth = 0
             if paired_end_ref:
                 ref_depth += paired_end_ref
             if split_read_ref:
                 ref_depth += split_read_ref
+
+        if any([spanning_ref, flanking_ref, inrepeat_ref]):
+            ref_depth = 0
+            if spanning_ref:
+                ref_depth += spanning_ref
+            if flanking_ref:
+                ref_depth += flanking_ref
+            if inrepeat_ref:
+                ref_depth += inrepeat_ref
 
     gt_call["ref_depth"] = ref_depth
 
@@ -201,6 +226,12 @@ def parse_genotype(variant, ind, pos):
         # If read depth could not be parsed by cyvcf2, try to get it manually
         if "DP" in variant.FORMAT:
             read_depth = int(variant.format("DP")[pos][0])
+        elif "LC" in variant.FORMAT:
+            value = variant.format("LC")[pos][0]
+            try:
+                read_depth = int(round(value))
+            except ValueError as e:
+                pass
         elif alt_depth != -1 or ref_depth != -1:
             read_depth = 0
             if alt_depth != -1:
@@ -215,3 +246,39 @@ def parse_genotype(variant, ind, pos):
     gt_call["genotype_quality"] = int(variant.gt_quals[pos])
 
     return gt_call
+
+
+def _parse_format_entry(variant, pos, format_entry_name):
+    """Parse genotype format entry for named integer values.
+    Expects that ref/alt values could be separated by /.
+
+    Args:
+        variant(cyvcf2.Variant)
+        pos(int): individual position in VCF
+        format_entry_name: name of format entry
+    Returns:
+        (ref(int), alt(int)) tuple
+    """
+
+    ref = None
+    alt = None
+    if format_entry_name in variant.FORMAT:
+        try:
+            value = variant.format(format_entry_name)[pos]
+            values = list(value.split("/"))
+
+            ref_value = None
+            alt_value = None
+
+            if len(values) > 1:
+                ref_value = int(values[0])
+                alt_value = int(values[1])
+            if len(values) == 1:
+                alt_value = int(values[0])
+            if ref_value >= 0:
+                ref = ref_value
+            if alt_value >= 0:
+                alt = alt_value
+        except (ValueError, TypeError) as e:
+            pass
+    return (ref, alt)
