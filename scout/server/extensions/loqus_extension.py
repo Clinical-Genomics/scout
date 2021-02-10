@@ -122,8 +122,7 @@ class LoqusDB:
         json_resp = api_get("".join([api_url, "/"]))
         return float(json_resp.get("loqusdb_version"))
 
-    @staticmethod
-    def get_exec_loqus_version(loqusdb_id=None):
+    def get_exec_loqus_version(self, loqusdb_id=None):
         """Get LoqusDB version as float"""
 
         call_str = self.get_command(loqusdb_id)
@@ -249,8 +248,7 @@ class LoqusDB:
             return {}
         return search_resp
 
-    @staticmethod
-    def get_exec_loqus_variant(loqus_instance, variant_info):
+    def get_exec_loqus_variant(self, loqus_instance, variant_info):
         """Get variant data using a local executable instance of Loqus
 
         SNV/INDELS can be queried in loqus by defining a simple id. For SVs we need to call them
@@ -305,7 +303,7 @@ class LoqusDB:
         Returns:
             institute_settings(dict)
         """
-        return self.search_setting("default")
+        return self.search_loqus_instance("default")
 
     @staticmethod
     def set_coordinates(variant_info):
@@ -331,7 +329,7 @@ class LoqusDB:
             LOG.info("Updating length to %s", end)
         variant_info["end"] = end
 
-    def get_bin_path(self, loqusdb_id=None):
+    def get_bin_path(self, loqusdb_id="default"):
         """Return path to `loqusdb` binary as configured per loqusdb_id or default
 
         Args:
@@ -340,14 +338,14 @@ class LoqusDB:
         Returns:
             path_to_bin(str)
         """
-        if loqusdb_id is None or loqusdb_id == "":
+        if loqusdb_id in [None, "", "default"]:
             return self.default_setting().get(BINARY_PATH)
         try:
             return self.search_setting(loqusdb_id).get(BINARY_PATH)
         except AttributeError:
             raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
-    def get_config_path(self, loqusdb_id=None):
+    def get_config_path(self, loqusdb_id="default"):
         """Return path to `loqusdb` config arguments  as configured per loqusdb_id or default
 
         Args:
@@ -356,9 +354,8 @@ class LoqusDB:
         Returns:
             path_to_cfg(str)
         """
-        if loqusdb_id is None or loqusdb_id == "":
+        if loqusdb_id in [None, "", "default"]:
             return self.default_setting().get(CONFIG_PATH)
-
         try:
             return self.search_setting(loqusdb_id).get(CONFIG_PATH)
         except AttributeError:
