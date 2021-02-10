@@ -10,9 +10,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Button to reset all dismissed variants for a case
 ### Fixed
 - Center initial igv view on variant start with SNV/indels 
+- Display of GQ for SV and STR
+- Parsing of AD and related info for STRs
 - Fix DECIPHER link to work after DECIPHER migrated to GRCh38
 ### Changed
-
 
 ## [4.29]
 ### Added
