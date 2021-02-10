@@ -168,7 +168,7 @@ class LoqusDB:
         # loqus queried via executable
         if loqus_instance.get("instance_type") == "exec":
             case_call = self.get_command(loqusdb_id)
-            case_call.extend(["cases", "--count"])
+            case_call.extend(["cases", "--count", "-t", variant_category])
             output = ""
             try:
                 output = execute_command(case_call)
