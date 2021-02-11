@@ -14,8 +14,8 @@ def build_genotype(gt_call):
         allele_depths = list, # int
         read_depth = int,
         genotype_quality = int,
+        so = str, # STR type of reads that support allele: "a/a" where a in [SPANNING, FLANKING, INREPEAT]
     )
-
 
     """
     gt_obj = dict(
@@ -25,6 +25,7 @@ def build_genotype(gt_call):
         allele_depths=[gt_call["ref_depth"], gt_call["alt_depth"]],
         read_depth=gt_call["read_depth"],
         genotype_quality=gt_call["genotype_quality"],
+        so=gt_call["so"],
     )
 
     return gt_obj
