@@ -13,6 +13,7 @@ from wtforms import (
     Field,
 )
 from scout.constants import PHENOTYPE_GROUPS, CASE_SEARCH_TERMS
+from scout.server.extensions import loqusdb
 
 CASE_SEARCH_KEY = [(value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()]
 
@@ -72,7 +73,9 @@ class InstituteForm(FlaskForm):
         "Available patient cohorts", validators=[validators.Optional()]
     )
     institutes = NonValidatingSelectMultipleField("Institutes to share cases with", choices=[])
-    loqusdb_id = TextField("LoqusDB id", validators=[validators.Optional()])
+
+    loqus_instances = [instance["id"] for instance in loqusdb.loqusdb_settings]
+    loqusdb_id = SelectField("LoqusDB id", [validators.Optional()], choices=loqus_instances)
 
     submit_btn = SubmitField("Save settings")
 

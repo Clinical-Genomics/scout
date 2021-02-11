@@ -11,11 +11,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support LoqusDB REST API queries
 ### Fixed
 - Center initial igv view on variant start with SNV/indels
-### Changed
 - Display of GQ for SV and STR
 - Parsing of AD and related info for STRs
-- Count cases in LoqusDB by variant type
-
+- LoqusDB field in institute settings accepts only existing Loqus instances
+### Changed
+- Cancer variants table header (pop freq etc)
+- Only admin users can modify LoqusDB instance in Institute settings
 
 ## [4.29]
 ### Added
