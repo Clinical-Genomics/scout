@@ -18,26 +18,24 @@ MAIL_USE_SSL = False
 
 # connection details for LoqusDB MongoDB database
 #
-# 1. One LoqusDB
-LOQUSDB_SETTINGS = [ {
-  "binary_path":"/Users/chiararasi/miniconda3/envs/loqus/bin/loqusdb",
-  "config_path":"/Users/chiararasi/Documents/work/GITs/loqusdb/config.yaml"},
-  {"api_url": "http://127.0.0.1:9000", "id": "api_loqus"}
-]
-# # config_path=<path/to/loqus/config>
+# 1. One LoqusDB instance (Executable)
+# LOQUSDB_SETTINGS = dict(
+#  binary_path="/miniconda3/envs/loqus2.5/bin/loqusdb",
+#  config_path=<path/to/loqus/config # optional, specifics: https://github.com/moonso/loqusdb#connecting
+#  id="default"
+# )
 #
-# 2. LoqusDB configurable per Institute
+# 2. One LoqusDB instance (REST API)
+# LOQUSDB_SETTINGS = {"api_url": "http://127.0.0.1:9000", "id": "api_loqus"}
+#
+# 3. Multiple LoqusDB instances, configurable by institute
 # LOQUSDB_SETTINGS = [
 #     {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "id": "default"},
-#     {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "id": "hejhej"},
-#     {"binary_path": "/bin/yetanother/loqusdb", "id": "Mayo"},
+#     {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "id": "loqus_cancer"},
+#     {"api_url": "http://127.0.0.1:9000", "id": "api_loqus"},
 # ]
-
-# )
-# If not on localhost 27017 one needs to provide uri with
-# connection details for LoqusDB MongoDB database in the loqusdb config file
-#    uri=("mongodb://{}:{}@localhost:{}/loqusdb".format(MONGO_USERNAME, MONGO_PASSWORD, MONGO_PORT))
-
+#
+#
 # Cloud IGV tracks can be configured here to allow users to enable them on their IGV views.
 # CLOUD_IGV_TRACKS = [
 #    {
