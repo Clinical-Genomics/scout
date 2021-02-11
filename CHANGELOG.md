@@ -12,8 +12,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Center initial igv view on variant start with SNV/indels
 - Display of GQ for SV and STR
 - Parsing of AD and related info for STRs
+- LoqusDB field in institute settings accepts only existing Loqus instances
 ### Changed
-- Cancer variants table header (pop freq etc)
+- Only admin users can modify LoqusDB instance in Institute settings
 
 ## [4.29]
 ### Added
