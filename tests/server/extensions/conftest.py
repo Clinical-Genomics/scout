@@ -16,6 +16,24 @@ def fixture_loqus_config():
 
 
 @pytest.fixture
+def loqus_api_variant():
+    """Returns a Loqus executable instance variant"""
+    variant_found = {
+        "chrom": "1",
+        "observations": 1,
+        "families": ["643594"],
+        "nr_cases": 1,
+        "start": 880086,
+        "end": 880087,
+        "ref": "T",
+        "alt": "C",
+        "homozygote": 0,
+        "hemizygote": 0,
+    }
+    return variant_found
+
+
+@pytest.fixture
 def loqus_exe_variant():
     """Returns a Loqus executable instance variant"""
     variant_found = (
