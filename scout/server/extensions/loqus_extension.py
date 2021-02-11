@@ -46,6 +46,10 @@ class LoqusDB:
     Loqus config params should be set in Scout config file
     """
 
+    def __init__(self):
+        self.loqusdb_settings = []
+        self.loqus_ids = []
+
     @staticmethod
     def app_config(app):
         """Read config.py to handle single or multiple loqusdb configurations.
@@ -69,9 +73,14 @@ class LoqusDB:
         """Initialize from Flask."""
         LOG.info("Init and check loqusdb connection settings")
         self.loqusdb_settings = self.app_config(app)
+
         # Check that each Loqus configuration in the settings list is valid
         for setting in self.loqusdb_settings:
-            LOG.debug(f"Found settings for a Loqus instance--->{setting}")
+            setting["id"] = setting.get("id", "default")
+            if setting["id"] in self.loqus_ids:
+                raise EnvironmentError(f"More than one LoqusdB instance with id:{setting['id']}")
+            self.loqus_ids.append(setting["id"])
+
             # Scout might connect to Loqus via an API or an executable, define which one for every instance
             setting["instance_type"] = "api" if setting.get(API_URL) else "exec"
             if app.config["TESTING"] is True:
@@ -79,6 +88,7 @@ class LoqusDB:
             else:
                 setting["version"] = self.get_instance_version(setting)
             self.version_check(setting)
+        LOG.error(f"Loqus setup: {self.__repr__()}")
 
     def get_instance_version(self, instance_settings):
         """Returns version of a LoqusDB instance.
@@ -106,7 +116,6 @@ class LoqusDB:
 
     def get_exec_loqus_version(self, loqusdb_id=None):
         """Get LoqusDB version as float"""
-
         call_str = self.get_command(loqusdb_id)
         call_str.extend(["--version"])
         LOG.debug("call_str: {}".format(call_str))
