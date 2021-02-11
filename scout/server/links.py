@@ -367,6 +367,8 @@ def get_variant_links(variant_obj, build=None):
         cosmic_link=cosmic_link(variant_obj),
         beacon_link=beacon_link(variant_obj, build),
         ucsc_link=ucsc_link(variant_obj, build),
+        decipher_link=decipher_link(variant_obj, build),
+        ensembl_link=ensembl_link(variant_obj, build),
         alamut_link=alamut_link(variant_obj, build),
         spidex_human=spidex_human(variant_obj),
         str_source_link=str_source_link(variant_obj),
@@ -411,6 +413,26 @@ def thousandg_link(variant_obj, build=None):
         url_template = "http://www.ensembl.org/Homo_sapiens/Variation/Explore" "?v={};vdb=variation"
 
     return url_template.format(dbsnp_id)
+
+
+def ensembl_link(variant_obj, build=37):
+    """Compose (sv) variant link to ensembl"""
+
+    if build == 37:
+        url_template = "http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={this[chromosome]}:{this[position]}-{this[end]}"
+    else:
+        url_template = "http://www.ensembl.org/Homo_sapiens/Location/View?db=core;r={this[chromosome]}:{this[position]}-{this[end]}"
+    return url_template.format(this=variant_obj)
+
+
+def decipher_link(variant_obj, build=37):
+    """Compose DECIPHER SV variant links"""
+
+    if build == 37:
+        url_template = "https://decipher.sanger.ac.uk/search/patients/browser?q=grch37:{this[chromosome]}:{this[position]}-{this[end]}"
+    else:
+        url_template = "https://decipher.sanger.ac.uk/browser#q/{this[chromosome]}:{this[position]}-{this[end]}/location/{this[chromosome]}:{this[position]}-{this[end]}"
+    return url_template.format(this=variant_obj)
 
 
 def exac_link(variant_obj):
