@@ -418,21 +418,29 @@ def thousandg_link(variant_obj, build=None):
 def ensembl_link(variant_obj, build=37):
     """Compose (sv) variant link to ensembl"""
 
+    my_end = variant_obj["end"]
+    if variant_obj["chromosome"] != variant_obj["end_chrom"]:
+        my_end = variant_obj["position"]
+
     if build == 37:
-        url_template = "http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={this[chromosome]}:{this[position]}-{this[end]}"
+        url_template = "http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={this[chromosome]}:{this[position]}-{my_end}"
     else:
-        url_template = "http://www.ensembl.org/Homo_sapiens/Location/View?db=core;r={this[chromosome]}:{this[position]}-{this[end]}"
-    return url_template.format(this=variant_obj)
+        url_template = "http://www.ensembl.org/Homo_sapiens/Location/View?db=core;r={this[chromosome]}:{this[position]}-{my_end}"
+    return url_template.format(this=variant_obj, my_end=my_end)
 
 
 def decipher_link(variant_obj, build=37):
     """Compose DECIPHER SV variant links"""
 
+    my_end = variant_obj["end"]
+    if variant_obj["chromosome"] != variant_obj["end_chrom"]:
+        my_end = variant_obj["position"]
+
     if build == 37:
-        url_template = "https://decipher.sanger.ac.uk/search/patients/browser?q=grch37:{this[chromosome]}:{this[position]}-{this[end]}"
+        url_template = "https://decipher.sanger.ac.uk/search/patients/browser?q=grch37:{this[chromosome]}:{this[position]}-{my_end}"
     else:
-        url_template = "https://decipher.sanger.ac.uk/browser#q/{this[chromosome]}:{this[position]}-{this[end]}/location/{this[chromosome]}:{this[position]}-{this[end]}"
-    return url_template.format(this=variant_obj)
+        url_template = "https://decipher.sanger.ac.uk/browser#q/{this[chromosome]}:{this[position]}-{this[end]}/location/{this[chromosome]}:{this[position]}-{my_end}"
+    return url_template.format(this=variant_obj, my_end=my_end)
 
 
 def exac_link(variant_obj):
