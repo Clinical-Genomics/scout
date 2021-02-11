@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Cancer variants table header (pop freq etc)
 - Only admin users can modify LoqusDB instance in Institute settings
+- Count cases in LoqusDB by variant type
 
 ## [4.29]
 ### Added
