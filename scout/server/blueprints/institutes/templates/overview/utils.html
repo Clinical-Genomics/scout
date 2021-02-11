@@ -1,4 +1,4 @@
-{% macro institute_settings(form, institute) %}
+{% macro institute_settings(form, institute, current_user) %}
 <form action="{{ url_for('overview.institute_settings', institute_id=institute._id) }}" method="POST"
   accept-charset="utf-8" id="institute_form">
 {{ form.csrf_token }}
@@ -88,7 +88,7 @@
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-center">
-            <div class="col-md-12 align-self-center">
+            <div class="col-md-5 align-self-center">
               {{ form.institutes.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Allow case sharing only with preselected institutes.") }}
               <select multiple="multiple" class="selectpicker" name="institutes">
               {% for choice in form.institutes.choices %}
@@ -96,15 +96,16 @@
               {% endfor %}
               </select>
             </div>
-          </div>
-          <div class="form-row mt-3 d-flex justify-content-left" id="Custom_LoqusDB">
-            <div class="col-md-2 align-self-center" >
-              {{ form.loqusdb_id.label(class="control-label", data_toggle="tooltip", data_placement="top", title="LoqudDB id", placeholder="Search HPO.." ) }}
-            </div>
-            <div class="col-md-6 align-self-center" >
-              {{ form.loqusdb_id(class='form-control')}}
-            </div>
-            <div class="col-md-6 align-self-center" ></div>
+            {% if "admin" in current_user.roles %}
+              <div class="col-md-5 align-self-center offset-md-2">
+                {{ form.loqusdb_id.label(class="control-label", data_toggle="tooltip", data_placement="top", title="LoqudDB id" ) }}<br>
+                <select class="selectpicker" name="loqusdb_id">
+                  {% for choice in form.loqusdb_id.choices %}
+                    <option value="{{choice}}">{{choice}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            {% endif %}
           </div>
           <div class="form-row mt-3 d-flex justify-content-center">
               {{ form.submit_btn(class="btn-primary btn") }}
