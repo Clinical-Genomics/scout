@@ -74,7 +74,11 @@ class InstituteForm(FlaskForm):
     )
     institutes = NonValidatingSelectMultipleField("Institutes to share cases with", choices=[])
 
-    loqus_instances = [instance["id"] for instance in loqusdb.loqusdb_settings]
+    loqus_instances = (
+        [instance["id"] for instance in loqusdb.loqusdb_settings]
+        if hasattr(loqusdb, "loqusdb_settings")
+        else []
+    )
     loqusdb_id = SelectField("LoqusDB id", [validators.Optional()], choices=loqus_instances)
 
     submit_btn = SubmitField("Save settings")
