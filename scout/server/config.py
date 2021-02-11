@@ -20,8 +20,8 @@ MAIL_USE_SSL = False
 #
 # 1. One LoqusDB
 LOQUSDB_SETTINGS = dict(
-  binary_path="/Users/chiararasi/miniconda3/envs/loqus/bin/loqusdb",
-  config_path="/Users/chiararasi/Documents/work/GITs/loqusdb/config.yaml"
+    binary_path="/Users/chiararasi/miniconda3/envs/loqus/bin/loqusdb",
+    config_path="/Users/chiararasi/Documents/work/GITs/loqusdb/config.yaml",
 )
 # # config_path=<path/to/loqus/config>
 #
