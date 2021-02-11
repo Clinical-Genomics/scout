@@ -1,4 +1,4 @@
-"""Tests for the loqusdb extension"""
+"""Tests for the loqusdb executable extension"""
 
 from subprocess import CalledProcessError
 import pytest

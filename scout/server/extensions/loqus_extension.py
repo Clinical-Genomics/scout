@@ -88,7 +88,7 @@ class LoqusDB:
             else:
                 setting["version"] = self.get_instance_version(setting)
             self.version_check(setting)
-        LOG.error(f"Loqus setup: {self.__repr__()}")
+        LOG.info(f"Loqus setup: {self.__repr__()}")
 
     def get_instance_version(self, instance_settings):
         """Returns version of a LoqusDB instance.
@@ -235,7 +235,7 @@ class LoqusDB:
 
         search_resp = api_get(search_url)
         if search_resp.get("status_code") != 200:
-            LOG.warning(search_resp.get("detail"))
+            LOG.info(search_resp.get("detail"))
             return {}
         return search_resp
 
