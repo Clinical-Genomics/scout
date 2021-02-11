@@ -1,5 +1,5 @@
 {% extends "layout_bs4.html" %}
-{% from "utils.html" import comments_panel, pedigree_panel %}
+{% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variants/utils.html" import modal_causative %}
 {% from "variant/variant_details.html" import old_observations %}
 {% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, sv_alignments, pin_button, causative_button, igv_track_selection %}
@@ -126,6 +126,9 @@
 
   <div class="row">
     <div class="col-12">{{ ext_links(variant) }}</div>
+  </div>
+  <div class="row">
+    <div class="col-12">{{ activity_panel(events|reverse) }}</div>
   </div>
 
   {% if config['MAIL_USERNAME'] %}
