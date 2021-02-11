@@ -246,11 +246,8 @@ def institute_settings(institute_id):
             return redirect(request.referrer)
 
     data = controllers.institute(store, institute_id)
-    loqus_instances = (
-        [instance["id"] for instance in loqusdb.loqusdb_settings]
-        if hasattr(loqusdb, "loqusdb_settings")
-        else []
-    )
+    loqus_instances = loqusdb.loqus_ids if hasattr(loqusdb, "loqus_ids") else []
+
     default_phenotypes = controllers.populate_institute_form(form, institute_obj)
 
     return render_template(
