@@ -30,12 +30,6 @@ alignviewers_bp = Blueprint(
 LOG = logging.getLogger(__name__)
 
 
-@alignviewers_bp.route("/test_igv", methods=["GET"])
-def test_igv():
-    """Testing the igv thinghy"""
-    return render_template("alignviewers/igv_test.html")
-
-
 @alignviewers_bp.route("/remote/cors/<path:remote_url>", methods=["OPTIONS", "GET"])
 def remote_cors(remote_url):
     """Proxy a remote URL.
