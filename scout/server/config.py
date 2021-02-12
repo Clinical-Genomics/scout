@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+BEACON_URL = "http://localhost:6000/apiv1.0"
+BEACON_TOKEN = "d3bffaa4-78e5-42f4-83ae-63637e9d33bb"
+
 SECRET_KEY = "this is not secret..."
 REMEMBER_COOKIE_NAME = "scout_remember_me"
 
