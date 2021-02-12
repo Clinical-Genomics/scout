@@ -29,6 +29,7 @@ def loqus_api_variant():
         "alt": "C",
         "homozygote": 0,
         "hemizygote": 0,
+        "status_code": 200,  # Added by Scout after receiving response
     }
     return variant_found
 
