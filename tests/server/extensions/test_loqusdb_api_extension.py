@@ -28,7 +28,7 @@ def test_loqusdb_api_snv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
         assert var_info["observations"] == loqus_api_variant["observations"]
 
 
-def test_loqusdb_api_sn_variant(loqus_api_app, monkeypatch, loqus_api_variant):
+def test_loqusdb_api_sv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
     """Test fetching a SV variant info from loqusdb API"""
 
     # GIVEN a mocked loqus API
