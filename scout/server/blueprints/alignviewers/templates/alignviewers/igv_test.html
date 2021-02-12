@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="https://igv.org/web/img/favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/igv@2.7.4/dist/igv.min.js"></script>
+    <title>igv.js</title>
+</head>
+
+<body>
+
+<h1>Issue 1261</h1>
+
+<div id="igvDiv" style="padding-top: 10px;padding-bottom: 10px; border:1px solid lightgray"></div>
+
+<script type="text/javascript">
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+      var options =
+            {
+                // Example of fully specifying a reference .  We could alternatively use  "genome: 'hg19'"
+                genome: "hg19",
+                locus: "chr14:55,369,194-55,369,443",
+                tracks:
+                    [
+                        {
+                            type: 'annotation',
+                            format: 'bed',
+                            url: 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz',
+                            indexURL: 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi'
+
+                        }
+                    ]
+            };
+
+        var igvDiv = document.getElementById("igvDiv");
+
+        igv.createBrowser(igvDiv, options)
+            .then(function (browser) {
+                console.log("Created IGV browser");
+            })
+    })
+
+
+</script>
+</body>
+</html>
