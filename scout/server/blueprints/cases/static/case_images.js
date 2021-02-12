@@ -54,7 +54,7 @@ function add_image_to_individual_panel(individuals, institute, case_name){
  */
 function draw_tracks(individual, institute, case_name){
     const CYT_HEIGHT = 50 ;
-    const CYT_WIDTH = 500 ;
+    const CYT_WIDTH = 530 ;
     var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
     var svg_element = document.getElementById("svg_" + individual["individual_id"])
     clear_svg(svg_element)
@@ -252,46 +252,12 @@ function get_chromosomes(sex){
  * ends and a waist at the centromere.
  */
 function make_clipPath(chrom, x_offset, y_offset){
-    const c = 10
-    x_offset += 0   // make space for text labels
     var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     var clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
     clipPath.setAttributeNS(null, 'id', "clip-chr"+chrom.name)
     var p1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    var centromere = {x: chrom.cent_start + x_offset,
-                      y: y_offset,
-                      length: chrom.cent_length,}
-    var m = "M " + String(chrom.length + x_offset) + " " + String( 25 + y_offset) + " " // path start
-
-    var start_l = {x: chrom.cent_start + chrom.cent_length +5 +5 + x_offset,
-                   y: 0 + 25 + y_offset,
-                   length: chrom.cent_length }
-
-    var start_u = {x: chrom.cent_start + x_offset,
-                   y: y_offset,
-                   length: chrom.cent_length}
-    var r = 7
-    var cent_lower = calc_centromere_lower(start_l)
-    var b_left = "L " + " " + String( 30 + x_offset) + " " + String(y_offset + 25) + " "
-
-    // Bezier curve for left bend, format= bezier-1: x,y bezier-2: x,y, endpoint: x,y
-    var c1 = "C " + " " + String(15 - r + x_offset) + " " + String(25 + y_offset) + " "
-        + String(15 - r + x_offset) + " " + String(y_offset) + " "
-        + String(30 + x_offset) + " " + String( y_offset) + " "
-
-    var cent_upper = calc_centromere_upper(start_u)
-    var right = "L " + String(chrom.length + x_offset) + " " + String(y_offset) + " "
-
-    // Bezier curve for right bend
-    var c2 = "C " + " " + String(chrom.length+15 + r + x_offset) + " " + String(y_offset) + " "
-        + String(chrom.length +15 + r + x_offset) + " " + String(y_offset+25) + " "
-        + String(chrom.length + x_offset) + " " + String( y_offset+25)+ " "
-
     path = make_ideogram_shape(chrom, x_offset, y_offset)
-
-    // without_cent = start +  b_left + c1 + right + c2
     p1.setAttributeNS(null, 'd', path)
-    // p1.setAttributeNS(null, 'd', "M 470 25 L 60 25 C 50 25 50 0 60 0 L 470 0 C 510 0 510 25 470 25");
 
     clipPath.append(p1)
     defs.append(clipPath)
