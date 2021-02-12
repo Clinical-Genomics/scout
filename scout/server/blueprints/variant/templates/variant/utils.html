@@ -274,21 +274,21 @@
           <input type="hidden" name="contig" value="{% if zoom in ["start", "length"] %}{{ variant.chromosome }}{% elif zoom == "end" %}{{ variant.end_chrom }}{% endif %}">
           {% set initial_view = namespace(start=1, end=1) %}
 
-          {{ initial_view.start = variant.position - 500 }}
-          {{ initial_view.end = variant.end + 500 }}
+          {% set initial_view.start = variant.position - 500 %}
+          {% set initial_view.end = variant.end + 500 %}
 
           {% if zoom == "start" %}
-            {{ initial_view.end = variant.position + 500 }}
+            {% set initial_view.end = variant.position + 500 %}
           {% elif zoom == "end" %}
-            {{ initial_view.start = variant.end - 500 }}
+            {% set initial_view.start = variant.end - 500 %}
           {% endif %}
 
           {% if initial_view.start<1 %}
-            {{ initial_view.start = 1 }}
+            {% set initial_view.start = 1 %}
           {% endif %}
 
           {% if initial_view.end<1 %}
-            {{ initial_view.end = 1 }}
+            {% set initial_view.end = 1 %}
           {% endif %}
 
           <input type="hidden" name="start" value="{{ initial_view.start}}">
