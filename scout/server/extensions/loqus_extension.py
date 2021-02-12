@@ -48,20 +48,7 @@ class LoqusDB:
 
     def __init__(self):
         self.loqusdb_settings = []
-        self.loqus_ids = []
-
-    @staticmethod
-    def app_config(app):
-        """Read config.py to handle single or multiple loqusdb configurations.
-
-           Returns: loqus_db_settings(list
-        )"""
-        cfg = app.config["LOQUSDB_SETTINGS"]
-        if isinstance(cfg, list):
-            return cfg
-        # backwards compatible, add default id
-        cfg["id"] = "default"
-        return [cfg]
+        self.loqus_ids = set()
 
     def version_check(self, loqusdb_settings):
         """Check if a compatible version is used otherwise raise an error"""
@@ -72,14 +59,16 @@ class LoqusDB:
     def init_app(self, app):
         """Initialize from Flask."""
         LOG.info("Init and check loqusdb connection settings")
-        self.loqusdb_settings = self.app_config(app)
+
+        cfg = app.config["LOQUSDB_SETTINGS"]
+        if isinstance(cfg, dict):
+            cfg = [cfg]
+        self.loqusdb_settings = cfg
 
         # Check that each Loqus configuration in the settings list is valid
         for setting in self.loqusdb_settings:
             setting["id"] = setting.get("id", "default")
-            if setting["id"] in self.loqus_ids:
-                raise EnvironmentError(f"More than one LoqusdB instance with id:{setting['id']}")
-            self.loqus_ids.append(setting["id"])
+            self.loqus_ids.add(setting["id"])
 
             # Scout might connect to Loqus via an API or an executable, define which one for every instance
             setting["instance_type"] = "api" if setting.get(API_URL) else "exec"
