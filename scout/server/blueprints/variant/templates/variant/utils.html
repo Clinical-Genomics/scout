@@ -287,8 +287,8 @@
             {% set initial_view.start = 0 %}
           {% endif %}
 
-          {% if initial_view.end<0 %}
-            {% set initial_view.end = 0 %}
+          {% if initial_view.end<1 %}
+            {% set initial_view.end = 1 %}
           {% endif %}
 
           <input type="hidden" name="start" value="{{ initial_view.start}}">
