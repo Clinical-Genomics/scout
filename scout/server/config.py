@@ -42,10 +42,12 @@ MAIL_USE_SSL = False
 #    },
 # ]
 
-LOQUSDB_SETTINGS = [ {
-  "binary_path":"/Users/chiararasi/miniconda3/envs/loqus/bin/loqusdb",
-  "config_path":"/Users/chiararasi/Documents/work/GITs/loqusdb/config.yaml"},
-  {"api_url": "http://127.0.0.1:9000", "id": "api_loqus"}
+LOQUSDB_SETTINGS = [
+    {
+        "binary_path": "/Users/chiararasi/miniconda3/envs/loqus/bin/loqusdb",
+        "config_path": "/Users/chiararasi/Documents/work/GITs/loqusdb/config.yaml",
+    },
+    {"api_url": "http://127.0.0.1:9000", "id": "api_loqus"},
 ]
 
 # Chanjo-Report
