@@ -35,70 +35,20 @@
 {% endmacro %}
 
 {% macro comments_panel(institute, case, current_user, comments, variant_id=None) %}
-  <div class="card panel-default">
-    <div class="panel-heading" id="comments"><span class="fa fa-comment"></span>&nbsp;Comments</div>
-    <div class="card-body">
-      <div class="list-group" style="max-height:200px; overflow-y: scroll;">
-        {% for comment in comments %}
-          <a class="list-group-item">
-            <div class="row">
-              <div class="col-xs-12 text-break">{{ comment.content }}</div>
-            </div>
-            <div class="row">
-              <div class="d-flex justify-content-between align-items-center">
-                <form method="POST" action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, event_id=comment._id,_anchor='comments') }}">
-                  <small>
-                    <br>
-                    <strong>{{ comment.user_name }}</strong>
-                    on {{ comment.created_at.date() }}
-                    {% if comment.level == 'global' %}
-                      <span class="badge badge-info">GLOBAL</span>
-                    {% endif %}
-                    {% if comment.created_at < case.updated_at %}
-                      <span class="badge badge-warning">OLD</span>
-                    {% endif %}
-                    {% if comment.created_at < comment.updated_at %}
-                      <span class='badge badge-secondary'>edited</span>
-                    {% endif %}
-                    {% if comment.user_id == current_user.email %}
-                      <button class="btn btn-link btn-sm" type="submit" name="remove"><i class="fa fa-remove"></i></button>
-                      <button class="btn btn-link btn-sm" type="button" data-toggle="modal" data-target="#editComment_{{loop.index}}"><i class="fa fa-edit"></i></button>
-                    {% endif %}
-                  </small>
-                </form>
-              </div>
-            </div>
-          </a>
-          {{ edit_comment(institute, case, current_user, comment, loop.index) }}
-        {% else %}
-          <a class="list-group-item">No comments yet</a>
-        {% endfor %}
-      </div>
+<div class="mt-3">
+  {% set comments = comments|list %}
+  <h6 class="comments-title"><i class="fa fa-comments"></i> Comments ({{ comments|length }})</h6>
+  {% for comment in comments %}
+    <div class="row">
+      {% if loop.cycle('odd') %}
+      {% else %}
+        
+      {% endif %}
     </div>
-    <div class="card-footer">
-      <form action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id, _anchor='comments') }}" method="POST">
-        <input type="hidden" name="link" value="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) if variant_id else url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
-        <div class="form-group">
-          <textarea class="form-control" name="content" placeholder="Leave a comment"></textarea>
-        </div>
-        <div class="row">
-          {% if variant_id %}
-            <div class="col-sm-6">
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="level" value="global">
-                  Comment globally
-                </label>
-              </div>
-            </div>
-          {% endif %}
-          <div class="col-sm-{{ 6 if variant_id else 12 }}">
-            <button class="btn btn-outline-secondary form-control" type="submit">Comment</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
+  {% endfor %}
+</div>
+
+
 {% endmacro %}
 
 {% macro edit_comment(institute, case, current_user, comment, index) %}
