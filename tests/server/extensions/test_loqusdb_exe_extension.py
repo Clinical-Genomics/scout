@@ -164,3 +164,18 @@ def test_loqusdb_exe_wrong_version(monkeypatch, loqus_exe, loqus_config):
                 LOQUSDB_SETTINGS={"loqusdb_binary": loqus_exe, "loqusdb_config": loqus_config}
             )
         )
+
+
+def test_loqusdb_settings_list_to_dict():
+    """Test handling of deprecated settings: list of settings becomes a dictionary with instance ids as keys"""
+    cfg_1 = {"id": "default", "binary_path": "test_binary"}
+    cfg_2 = {"id": "test_exe", "api_url": "test_url"}
+    list_cfg = [cfg_1, cfg_2]
+
+    # GIVEN a LoqusDB extensions instantiated with deprecated param (list)
+    loqusdb.settings_list_to_dict(list_cfg)
+
+    # The instance should have settings as dict, with as many key/values as the elements of the initial list
+    assert len(loqusdb.loqusdb_settings.keys()) == 2
+    assert cfg_1["id"] in loqusdb.loqusdb_settings
+    assert cfg_2["id"] in loqusdb.loqusdb_settings
