@@ -47,29 +47,38 @@ class LoqusDB:
     """
 
     def __init__(self):
-        self.loqusdb_settings = []
-        self.loqus_ids = set()
+        self.loqusdb_settings = {}
+        self.loqus_ids = []
 
-    def version_check(self, loqusdb_settings):
-        """Check if a compatible version is used otherwise raise an error"""
-        if not loqusdb_settings["version"] >= 2.5:
-            LOG.info("Please update your loqusdb version to >=2.5")
-            raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
+    def settings_list_to_dict(self, cfg):
+        """Convert LoqusDB list of settings into dictionary settings.
+
+        Args:
+            cgf(list): list of dictionaries probably containing containing key/values "binary_path" and "config_path"
+        """
+        for setting in cfg:
+            cfg_id = setting["id"] or "default"
+            self.loqusdb_settings[cfg_id] = setting
 
     def init_app(self, app):
-        """Initialize from Flask."""
+        """Initialize LoqusDB from Flask app and check that settings are valid."""
         LOG.info("Init and check loqusdb connection settings")
-
         cfg = app.config["LOQUSDB_SETTINGS"]
-        if isinstance(cfg, dict):
-            cfg = [cfg]
-        self.loqusdb_settings = cfg
 
-        # Check that each Loqus configuration in the settings list is valid
-        for setting in self.loqusdb_settings:
-            setting["id"] = setting.get("id", "default")
-            self.loqus_ids.add(setting["id"])
+        if isinstance(cfg, list):
+            self.settings_list_to_dict(cfg)
+            LOG.warning(
+                "Deprecated settings: Scout version >=5 will no longer accept LoqusDB settings defined as a list. For additional info please check the Scout admin guide."
+            )
+        if isinstance(cfg, dict) and "default" not in cfg:
+            self.loqusdb_settings["default"] = cfg
+            LOG.warning(
+                "Deprecated settings: Scout version >=5 will no longeg accept LoqusDB settings missing the instance ID. For additional info please check the Scout admin guide."
+            )
+        else:
+            self.loqusdb_settings = cfg
 
+        for key, setting in self.loqusdb_settings.items():
             # Scout might connect to Loqus via an API or an executable, define which one for every instance
             setting["instance_type"] = "api" if setting.get(API_URL) else "exec"
             if app.config["TESTING"] is True:
@@ -77,7 +86,15 @@ class LoqusDB:
             else:
                 setting["version"] = self.get_instance_version(setting)
             self.version_check(setting)
-        LOG.info(f"Loqus setup: {self.__repr__()}")
+
+        self.loqus_ids = self.loqusdb_settings.keys()
+        LOG.info(f"LoqusDB setup: {self.__repr__()}")
+
+    def version_check(self, loqusdb_settings):
+        """Check if a compatible version is used otherwise raise an error"""
+        if not loqusdb_settings["version"] >= 2.5:
+            LOG.info("Please update your loqusdb version to >=2.5")
+            raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
 
     def get_instance_version(self, instance_settings):
         """Returns version of a LoqusDB instance.
@@ -118,18 +135,6 @@ class LoqusDB:
         LOG.debug("version: {}".format(version))
         return float(version)
 
-    def search_loqus_instance(self, key):
-        """Search settings for a LoqusDB instance by id
-
-        Returns:
-            {'binary_path':(str), 'id': (str), 'config_path': (str), 'instance_type': 'exec'} or
-            {'api_url':(str), 'instance_type':'api', 'id': (str)}
-        """
-        for i in self.loqusdb_settings:
-            if i.get("id") == key:
-                return i
-        return None
-
     def case_count(self, variant_category, loqusdb_id="default"):
         """Returns number of cases in loqus instance
 
@@ -140,7 +145,7 @@ class LoqusDB:
             nr_cases(int)
         """
         nr_cases = 0
-        loqus_instance = self.search_loqus_instance(loqusdb_id)
+        loqus_instance = self.loqusdb_settings.get(loqusdb_id)
         if loqus_instance is None:
             LOG.error(f"Could not find a Loqus instance with id:{loqusdb_id}")
             return nr_cases
@@ -182,7 +187,7 @@ class LoqusDB:
         Returns:
             loqus_variant(dict)
         """
-        loqus_instance = self.search_loqus_instance(loqusdb_id)
+        loqus_instance = self.loqusdb_settings.get(loqusdb_id)
         if loqus_instance is None:
             LOG.error(f"Could not find a Loqus instance with id:{loqusdb_id}")
             return
@@ -277,14 +282,6 @@ class LoqusDB:
 
         return res
 
-    def default_setting(self):
-        """Get default loqusdb configuration
-
-        Returns:
-            institute_settings(dict)
-        """
-        return self.search_loqus_instance("default")
-
     @staticmethod
     def set_coordinates(variant_info):
         """Update coordinates depending on variant type
@@ -319,9 +316,9 @@ class LoqusDB:
             path_to_bin(str)
         """
         if loqusdb_id in [None, "", "default"]:
-            return self.default_setting().get(BINARY_PATH)
+            return self.loqusdb_settings["default"].get(BINARY_PATH)
         try:
-            return self.search_setting(loqusdb_id).get(BINARY_PATH)
+            return self.loqusdb_settings.get(loqusdb_id).get(BINARY_PATH)
         except AttributeError:
             raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
@@ -335,9 +332,9 @@ class LoqusDB:
             path_to_cfg(str)
         """
         if loqusdb_id in [None, "", "default"]:
-            return self.default_setting().get(CONFIG_PATH)
+            return self.loqusdb_settings["default"].get(CONFIG_PATH)
         try:
-            return self.search_setting(loqusdb_id).get(CONFIG_PATH)
+            return self.loqusdb_settings.get(loqusdb_id).get(CONFIG_PATH)
         except AttributeError:
             raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
@@ -352,4 +349,4 @@ class LoqusDB:
         return path
 
     def __repr__(self):
-        return f"LoqusDB(loqusdb_settings={self.loqusdb_settings},"
+        return f"LoqusDB(loqusdb_settings={self.loqusdb_settings}."
