@@ -17,7 +17,7 @@ MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 
 # connection details for LoqusDB MongoDB database
-# Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API.
+# Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API
 # When multiple instances are available, admin users can modify which one is in use for a given institute from the admin settings page
 # LOQUSDB_SETTINGS = {
 #    "default" : {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "config_path": "/home/user/settings/loqus_default.yaml"},
@@ -41,12 +41,6 @@ MAIL_USE_SSL = False
 #        ],
 #    },
 # ]
-
-LOQUSDB_SETTINGS = [ {
-  "binary_path":"/Users/chiararasi/miniconda3/envs/loqus/bin/loqusdb",
-  "config_path":"/Users/chiararasi/Documents/work/GITs/loqusdb/config.yaml"},
-  {"api_url": "http://127.0.0.1:9000", "id": "api_loqus"}
-]
 
 # Chanjo-Report
 REPORT_LANGUAGE = "en"
