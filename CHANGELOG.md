@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Introduced a `reset dismiss variant` verb
 - Button to reset all dismissed variants for a case
+- Show ClinVar annotations on variantS page
 ### Fixed
 - Center initial igv view on variant start with SNV/indels
 - Display of GQ for SV and STR
