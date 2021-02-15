@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cancer variants table header (pop freq etc)
 - Only admin users can modify LoqusDB instance in Institute settings
 - Switched to igv.js 2.4.7
+- Style of case synopsis and variants and case comments
 
 ## [4.29]
 ### Added
