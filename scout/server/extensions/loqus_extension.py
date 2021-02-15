@@ -57,7 +57,7 @@ class LoqusDB:
             cgf(list): list of dictionaries probably containing containing key/values "binary_path" and "config_path"
         """
         for setting in cfg:
-            cfg_id = setting["id"] or "default"
+            cfg_id = setting.get("id") or "default"
             self.loqusdb_settings[cfg_id] = setting
 
     def init_app(self, app):
@@ -70,7 +70,7 @@ class LoqusDB:
             LOG.warning(
                 "Deprecated settings: Scout version >=5 will no longer accept LoqusDB settings defined as a list. For additional info please check the Scout admin guide."
             )
-        if isinstance(cfg, dict) and "default" not in cfg:
+        elif isinstance(cfg, dict) and "default" not in cfg:
             self.loqusdb_settings["default"] = cfg
             LOG.warning(
                 "Deprecated settings: Scout version >=5 will no longeg accept LoqusDB settings missing the instance ID. For additional info please check the Scout admin guide."
