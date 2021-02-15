@@ -102,6 +102,11 @@ def test_loqusdb_api_cases(loqus_api_app, monkeypatch):
         # THEN the API should parse the returned info correctly
         assert n_cases == nr_snvs
 
+        # WHEN fetching the nr_cases with SV variants
+        n_cases = loqusdb.case_count("sv", "default")
+        # THEN the API should parse the returned info correctly
+        assert n_cases == nr_svs
+
 
 def test_loqusdb_api_cases_not_found(loqus_api_app, monkeypatch):
     """Test fetching info on number of cases from loqusdb API when the API is not funct"""

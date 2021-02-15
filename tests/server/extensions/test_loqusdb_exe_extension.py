@@ -148,7 +148,7 @@ def test_loqusdb_exe_case_count_CalledProcessError(loqus_exe_app, monkeypatch):
 
 
 def test_loqusdb_exe_wrong_version(monkeypatch, loqus_exe, loqus_config):
-    """Test to instantiate a loqus extension whe version is to low"""
+    """Test creating a loqus extension when loqusDB version is too old."""
 
     # Given a mocked loqus exe instance returning a loqus version older than 2.5
     def mockcommand(*args):
@@ -164,6 +164,46 @@ def test_loqusdb_exe_wrong_version(monkeypatch, loqus_exe, loqus_config):
                 LOQUSDB_SETTINGS={"loqusdb_binary": loqus_exe, "loqusdb_config": loqus_config}
             )
         )
+
+
+def test_init_app_loqus_list(monkeypatch, loqus_exe, loqus_config):
+    """Test creating a Loqus extension from a list of config params"""
+
+    # GIVEN a mocked loqus exe instance returning a supported loqus version
+    def mockcommand(*args):
+        return "2.5"
+
+    monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
+
+    # The app shold be created by providing LoqusDB params as a list
+    app = create_app(
+        config=dict(
+            LOQUSDB_SETTINGS=[{"loqusdb_binary": loqus_exe, "loqusdb_config": loqus_config}]
+        )
+    )
+    assert app
+
+
+def test_init_app_loqus_dict(monkeypatch, loqus_exe, loqus_config):
+    """Test creating a Loqus extension from dictionary settings"""
+
+    # GIVEN a mocked loqus exe instance returning a supported loqus version
+    def mockcommand(*args):
+        return "2.5"
+
+    monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
+
+    # The app shold be created by providing LoqusDB params as a dictionary
+    app = create_app(
+        config=dict(
+            LOQUSDB_SETTINGS={
+                "id": "default",
+                "loqusdb_binary": loqus_exe,
+                "loqusdb_config": loqus_config,
+            }
+        )
+    )
+    assert app
 
 
 def test_loqusdb_settings_list_to_dict():
