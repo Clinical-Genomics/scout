@@ -10,6 +10,32 @@ import responses
 from scout.utils import scout_requests
 
 
+class MockResponse:
+    def __init__(self):
+        self.status_code = 200
+
+    @staticmethod
+    def json():
+        return {"mock_key": "mock_response"}
+
+
+def test_get_request_json(monkeypatch):
+    """Test Scout function that sends GET requests and returns json data from responses"""
+
+    def mock_get(*args, **kwargs):
+        return MockResponse()
+
+    monkeypatch.setattr(requests, "get", mock_get)
+
+    # WHEN Scout sends get requests via the get_request_json
+    url = "http://test"
+    json_resp = scout_requests.get_request_json(url)
+
+    # THEN the function should return a valid dictionary
+    assert json_resp["status_code"] == 200
+    assert json_resp["mock_key"] == "mock_response"
+
+
 def test_post_request_json_bad_url():
     """Test function that sends a POST request to an url with headers and json data"""
 
