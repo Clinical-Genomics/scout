@@ -4,11 +4,28 @@ from scout.server.extensions import loqusdb, loqus_extension
 
 
 def test_loqusdb_api_settings(loqus_api_app):
-    """test that the app is initialized with the correct Loqus API settings"""
+    """Test that the app is initialized with the correct Loqus API settings"""
 
     with loqus_api_app.app_context():
         assert "default" in loqusdb.__dict__["loqus_ids"]
         assert isinstance(loqusdb.loqusdb_settings, dict)
+
+
+def test_get_api_loqus_version(loqus_api_app, monkeypatch):
+    """Test function that returns the version of the LoqusDB API instance"""
+
+    # GIVEN a mocked loqus API
+    def mockapi(*args):
+        return {"message": "Welcome to the loqusdbapi", "loqusdb_version": "2.5"}
+
+    monkeypatch.setattr(loqus_extension, "api_get", mockapi)
+
+    with loqus_api_app.app_context():
+        # WHEN fetching the Loqus version
+        version = loqusdb.get_api_loqus_version("test_url")
+
+        # THEN the returned version should be a double
+        assert version == 2.5
 
 
 def test_loqusdb_api_snv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
