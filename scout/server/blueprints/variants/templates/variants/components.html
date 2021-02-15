@@ -85,12 +85,21 @@
       {% if variant.cosmic_ids %}
       <strong>COSMIC</strong>: {{variant.cosmic_ids|count}} obs
       {% endif %}
+      {% if variant.clinsig_human %}
+        <strong>ClinVar</strong>:
+          {% for clinsig in variant.clinsig_human %}
+            <strong>{{clinsig.human}}</strong> {{ clinsig.revstat }} {{ clinsig.accession }}<br>
+          {% endfor %}
+      {% endif %}
     </div>
   ">
     {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency else '~' }}
   </div>
+  {% if variant.clinsig_human %}
+    <span class="badge badge-dark">ClinVar</span>
+  {% endif%}
   {% if variant.cosmic_ids %}
-  <span  class="badge badge-dark" target="_blank">COSMIC</span>
-  <br>
+    <span class="badge badge-dark" target="_blank">COSMIC</span>
+    <br>
   {% endif %}
 {% endmacro %}
