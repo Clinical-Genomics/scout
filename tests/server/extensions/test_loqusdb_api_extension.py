@@ -8,7 +8,7 @@ def test_loqusdb_api_settings(loqus_api_app):
 
     with loqus_api_app.app_context():
         assert "default" in loqusdb.__dict__["loqus_ids"]
-        assert isinstance(loqusdb.__dict__.get("loqusdb_settings"), list)
+        assert isinstance(loqusdb.loqusdb_settings, dict)
 
 
 def test_loqusdb_api_snv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
@@ -28,7 +28,7 @@ def test_loqusdb_api_snv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
         assert var_info["observations"] == loqus_api_variant["observations"]
 
 
-def test_loqusdb_api_sv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
+def test_loqusdb_api_sn_variant(loqus_api_app, monkeypatch, loqus_api_variant):
     """Test fetching a SV variant info from loqusdb API"""
 
     # GIVEN a mocked loqus API
@@ -63,7 +63,6 @@ def test_loqusdb_api_cases(loqus_api_app, monkeypatch):
         return {"nr_cases_snvs": nr_snvs, "nr_cases_svs": nr_svs, "status_code": 200}
 
     monkeypatch.setattr(loqus_extension, "api_get", mockapi)
-
     with loqus_api_app.app_context():
         # WHEN fetching the nr_cases with SNV variants
         n_cases = loqusdb.case_count("snv", "default")
