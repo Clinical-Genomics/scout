@@ -21,7 +21,7 @@ MAIL_USE_SSL = False
 # When multiple instances are available, admin users can modify which one is in use for a given institute from the admin settings page
 # LOQUSDB_SETTINGS = {
 #    "default" : {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "config_path": "/home/user/settings/loqus_default.yaml"},
-#    "loqus_api" : {"api_url": "http://127.0.0.1:9000",
+#    "loqus_api" : {"api_url": "http://127.0.0.1:9000"},
 # }
 #
 # Cloud IGV tracks can be configured here to allow users to enable them on their IGV views.
