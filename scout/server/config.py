@@ -17,24 +17,12 @@ MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 
 # connection details for LoqusDB MongoDB database
-#
-# 1. One LoqusDB instance (Executable)
-# LOQUSDB_SETTINGS = dict(
-#  binary_path="/miniconda3/envs/loqus2.5/bin/loqusdb",
-#  config_path=<path/to/loqus/config # optional, specifics: https://github.com/moonso/loqusdb#connecting
-#  id="default"
-# )
-#
-# 2. One LoqusDB instance (REST API)
-# LOQUSDB_SETTINGS = {"api_url": "http://127.0.0.1:9000", "id": "api_loqus"}
-#
-# 3. Multiple LoqusDB instances, configurable by institute
-# LOQUSDB_SETTINGS = [
-#     {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "id": "default"},
-#     {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "id": "loqus_cancer"},
-#     {"api_url": "http://127.0.0.1:9000", "id": "api_loqus"},
-# ]
-#
+# Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API.
+# When multiple instances are available, admin users can modify which one is in use for a given institute from the admin settings page
+# LOQUSDB_SETTINGS = {
+#    "default" : {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "config_path": "/home/user/settings/loqus_default.yaml"},
+#    "loqus_api" : {"api_url": "http://127.0.0.1:9000",
+# }
 #
 # Cloud IGV tracks can be configured here to allow users to enable them on their IGV views.
 # CLOUD_IGV_TRACKS = [
@@ -53,6 +41,12 @@ MAIL_USE_SSL = False
 #        ],
 #    },
 # ]
+
+LOQUSDB_SETTINGS = [ {
+  "binary_path":"/Users/chiararasi/miniconda3/envs/loqus/bin/loqusdb",
+  "config_path":"/Users/chiararasi/Documents/work/GITs/loqusdb/config.yaml"},
+  {"api_url": "http://127.0.0.1:9000", "id": "api_loqus"}
+]
 
 # Chanjo-Report
 REPORT_LANGUAGE = "en"
