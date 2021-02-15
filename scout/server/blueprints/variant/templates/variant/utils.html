@@ -272,17 +272,27 @@
           <input type="hidden" name="build" value="{{case.genome_build}}">
 
           <input type="hidden" name="contig" value="{% if zoom in ["start", "length"] %}{{ variant.chromosome }}{% elif zoom == "end" %}{{ variant.end_chrom }}{% endif %}">
+          {% set initial_view = namespace(start=0, end=1) %}
+
+          {% set initial_view.start = variant.position - 500 %}
+          {% set initial_view.end = variant.end + 500 %}
+
           {% if zoom == "start" %}
-            <input type="hidden" name="start" value="{{variant.position - 500}}">
-            <input type="hidden" name="stop" value="{{variant.position + 500}}">
-            <!--<input type="hidden" name="now" values="{{now}}"-->
+            {% set initial_view.end = variant.position + 500 %}
           {% elif zoom == "end" %}
-            <input type="hidden" name="start" value="{{variant.end - 500}}">
-            <input type="hidden" name="stop" value="{{variant.end + 500}}">
-          {% elif zoom == "length" %}
-            <input type="hidden" name="start" value="{{variant.position - 500}}">
-            <input type="hidden" name="stop" value="{{variant.end + 500}}">
+            {% set initial_view.start = variant.end - 500 %}
           {% endif %}
+
+          {% if initial_view.start<0 %}
+            {% set initial_view.start = 0 %}
+          {% endif %}
+
+          {% if initial_view.end<1 %}
+            {% set initial_view.end = 1 %}
+          {% endif %}
+
+          <input type="hidden" name="start" value="{{ initial_view.start}}">
+          <input type="hidden" name="stop" value="{{ initial_view.end }}">
         {% endif %}
 
         {% if variant.chromosome == "MT" and case.mt_bams %}
