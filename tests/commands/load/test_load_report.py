@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-import click
 import tempfile
 
 from scout.commands import cli
