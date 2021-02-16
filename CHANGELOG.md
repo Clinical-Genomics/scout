@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Introduced a `reset dismiss variant` verb
 - Button to reset all dismissed variants for a case
+- Load/update gene fusion reports generated with Arriba
 ### Fixed
 - Center initial igv view on variant start with SNV/indels
 - Don't set initial igv view to negative coordinates
