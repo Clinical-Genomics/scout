@@ -89,6 +89,7 @@ def build_case(case_data, adapter):
 
         cnv_report = str, # path to file with cnv report
         coverage_qc_report = str, # path to file with coverage and qc report
+        gene_fusion_report = str, # path to the .tsv gene fusions file
 
         vcf_files = dict, # A dictionary with vcf files
 
@@ -138,7 +139,6 @@ def build_case(case_data, adapter):
     # sort the samples to put the affected individual first
     sorted_inds = sorted(ind_objs, key=lambda ind: -ind["phenotype"])
     case_obj["individuals"] = sorted_inds
-
 
     now = datetime.now()
     case_obj["created_at"] = now
@@ -259,6 +259,9 @@ def build_case(case_data, adapter):
         case_obj["cnv_report"] = case_data.get("cnv_report")
     if "coverage_qc_report" in case_data:
         case_obj["coverage_qc_report"] = case_data.get("coverage_qc_report")
+    if "gene_fusion_report" in case_data:
+        case_obj["gene_fusion_report"] = case_data.get("gene_fusion_report")
+
     case_obj["vcf_files"] = case_data.get("vcf_files", {})
     case_obj["delivery_report"] = case_data.get("delivery_report")
 
