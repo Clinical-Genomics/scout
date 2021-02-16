@@ -1,13 +1,10 @@
 """Tests for execute commands function"""
 import os
 import subprocess
-
 import pytest
 
 from scout.server.extensions.loqus_extension import execute_command
-
-TRAVIS = os.getenv("TRAVIS")
-GITHUB = True if os.getenv("CI") else False
+from scout.server.extensions import loqusdb
 
 
 def test_execute_command():
@@ -21,11 +18,16 @@ def test_execute_command():
     assert res.strip() == output
 
 
-def test_execute_command_error(loqus_exe_app):
+def test_execute_command_error(loqus_exe_app, monkeypatch):
     """Test triggering an error while executing a command in the LoqusDB module"""
 
-    # GIVEN that LoqusDB binary file is not properly configured
+    # GIVEN a mocked subprocess that gives error
+    def mocksubprocess(*args, **kwargs):
+        raise subprocess.CalledProcessError(None, None)
+
+    monkeypatch.setattr(subprocess, "check_output", mocksubprocess)
+
     with loqus_exe_app.app_context():
-        # executing a command will trigger error
-        with pytest.raises(Exception):
+        # Executing a command that starts the subprocess will trigger the same error
+        with pytest.raises(subprocess.CalledProcessError):
             var_info = loqusdb.get_variant({"_id": "a variant"})
