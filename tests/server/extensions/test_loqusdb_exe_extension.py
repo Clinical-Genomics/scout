@@ -1,6 +1,6 @@
 """Tests for the loqusdb executable extension"""
 
-from subprocess import CalledProcessError
+import subprocess
 import pytest
 
 from scout.server.app import create_app
@@ -71,6 +71,21 @@ def test_set_coordinates_unknown_ins():
     assert var["length"] == length
 
 
+def test_get_exec_loqus_version_CalledProcessError(loqus_exe_app, monkeypatch):
+    """Test the error triggered when retrieving the version of a LoqusDB instance not properly configured"""
+
+    # GIVEN a mocked subprocess that gives error
+    def mocksubprocess(*args, **kwargs):
+        raise subprocess.CalledProcessError(None, None)
+
+    monkeypatch.setattr(subprocess, "check_output", mocksubprocess)
+
+    # When the get_exec_loqus_version function is invoked
+    with loqus_exe_app.app_context():
+        # It will trigger the same error and return -1
+        assert loqusdb.get_exec_loqus_version("default") == -1
+
+
 def test_loqusdb_exe_variant(loqus_exe_app, monkeypatch, loqus_exe_variant):
     """Test to fetch a variant from loqusdb executable instance"""
 
@@ -92,12 +107,12 @@ def test_loqusdb_exe_variant_CalledProcessError(loqus_exe_app, monkeypatch):
 
     # GIVEN replacing subprocess.check_output to raise CalledProcessError
     def mockcommand(*args):
-        raise CalledProcessError(123, "case_count")
+        raise subprocess.CalledProcessError(123, "case_count")
 
     monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
 
     with loqus_exe_app.app_context():
-        with pytest.raises(CalledProcessError):
+        with pytest.raises(subprocess.CalledProcessError):
             # THEN CalledProcessError is raised and thrown
             var_info = loqusdb.get_variant({"_id": "a variant"})
 
@@ -138,7 +153,7 @@ def test_loqusdb_exe_case_count_CalledProcessError(loqus_exe_app, monkeypatch):
     """Test the case count function in loqus extension that raises an exception"""
     # GIVEN replacing subprocess.check_output to raise CalledProcessError
     def mockcommand(*args):
-        raise CalledProcessError(123, "case_count")
+        raise subprocess.CalledProcessError(123, "case_count")
 
     monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
 
