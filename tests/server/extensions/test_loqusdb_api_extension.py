@@ -22,7 +22,7 @@ def test_get_api_loqus_version(loqus_api_app, monkeypatch):
 
     with loqus_api_app.app_context():
         # WHEN fetching the Loqus version
-        version = loqusdb.get_api_loqus_version("test_url")
+        version = loqusdb.get_instance_version(loqusdb.loqusdb_settings["default"])
 
         # THEN the returned version should be a double
         assert version == 2.5
