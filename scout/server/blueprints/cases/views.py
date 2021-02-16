@@ -874,7 +874,7 @@ def cnv_report(institute_id, case_name):
 
 @cases_bp.route("/<institute_id>/<case_name>/gene-fusion-report")
 def gene_fusion_report(institute_id, case_name):
-    """Display CNV report."""
+    """Download gene fusion tsv report"""
     _, case_obj = institute_and_case(store, institute_id, case_name)
     report_path = case_obj.get("gene_fusion_report")
     if report_path is None:
