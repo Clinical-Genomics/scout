@@ -110,7 +110,6 @@ function draw_tracks(individual, institute, case_name){
         var border_path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         border_path.setAttributeNS(null, 'd', path_ideo)
         border_path.setAttributeNS(null, 'style', "stroke:black;stroke-width:1")
-        border_path.setAttributeNS(null, 'fill', "green")
         border_path.setAttributeNS(null, 'fill-opacity', '0.0')
 
         g.appendChild(ideo_image);
@@ -172,7 +171,7 @@ function set_svg_size(svg_element, number_of_columns){
           svg_element.setAttribute('height', 1700)
       }
     if(number_of_columns == 3){
-          svg_element.setAttribute('width', 1500)
+          svg_element.setAttribute('width', 1550)
           svg_element.setAttribute('height', 1100)
     }
 }

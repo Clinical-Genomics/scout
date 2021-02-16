@@ -1,0 +1,4 @@
+Review of #2282
+================
+
+* 'Add variant to Beacon', not 'Add variant to beacon'
