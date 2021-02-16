@@ -6,7 +6,7 @@ from scout.commands import cli
 from scout.server.extensions import store
 
 
-def test_load_gene_fusion_report_command(mock_app):
+def test_load_gene_fusion_report(mock_app):
     """Test command line function that updated the gene fusion report for an existing case"""
     # GIVEN a database with an existing case
     case_obj = store.case_collection.find_one()
