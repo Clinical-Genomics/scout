@@ -104,6 +104,9 @@
     {% if case.cnv_report %}
       {{ cnv_report(institute._id, case) }}
     {% endif %}
+    {% if case.gene_fusion_report %}
+      {{ gene_fusion_report(institute._id, case) }}
+    {% endif %}
     {% if case.coverage_qc_report %}
       {{ coverage_qc_report(institute._id, case) }}
     {% endif %}
@@ -465,6 +468,16 @@
     <span class="menu-collapsed ml-2">CNV report
       <a href="{{ url_for('cases.cnv_report', institute_id=institute,
                         case_name=case.display_name, format='pdf') }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro gene_fusion_report(institute, case) %}
+<div href="#" class="bg-dark list-group-item text-white">
+  <div class="d-flex flex-row flex-fill bd-highlight"></span>
+    <span class="menu-collapsed ml-2">Gene Fusion report
+      <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
+                        case_name=case.display_name, format='pdf') }}" target="_blank"><i class="fa fa-link"></i></a>
   </div>
 </div>
 {% endmacro %}

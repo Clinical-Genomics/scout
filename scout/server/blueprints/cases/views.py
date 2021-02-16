@@ -872,6 +872,18 @@ def cnv_report(institute_id, case_name):
     return send_from_directory(out_dir, filename)
 
 
+@cases_bp.route("/<institute_id>/<case_name>/gene-fusion-report")
+def gene_fusion_report(institute_id, case_name):
+    """Display CNV report."""
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+    report_path = case_obj.get("gene_fusion_report")
+    if report_path is None:
+        return abort(404)
+    out_dir = os.path.abspath(os.path.dirname(report_path))
+    filename = os.path.basename(report_path)
+    return send_from_directory(out_dir, filename)
+
+
 @cases_bp.route("/<institute_id>/<case_name>/coverage-qc-report")
 def coverage_qc_report(institute_id, case_name):
     """Display coverage and qc report."""
