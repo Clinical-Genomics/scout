@@ -10,7 +10,7 @@ TRAVIS = os.getenv("TRAVIS")
 GITHUB = True if os.getenv("CI") else False
 
 
-def test_run_execute_command():
+def test_execute_command():
     """Test run echo with execute command"""
     # GIVEN a command to run in the shell
     output = "hello world"
@@ -21,26 +21,11 @@ def test_run_execute_command():
     assert res.strip() == output
 
 
-@pytest.mark.skipif(TRAVIS, reason="Unknown problems on travis")
-@pytest.mark.skipif(GITHUB, reason="Unknown problems on github actions")
-def test_run_failing_command():
-    """Test run a failing command with execute command"""
-    # GIVEN a command that will fail when run in the shell
-    cmd = ["cd", "nonexistingdirectory"]
-    exception = subprocess.CalledProcessError
-    # WHEN running it with execute command
-    with pytest.raises(exception):
-        # THEN assert that an exception is raised
-        execute_command(cmd)
+def test_execute_command_error(loqus_exe_app):
+    """Test triggering an error while executing a command in the LoqusDB module"""
 
-
-@pytest.mark.skipif(TRAVIS, reason="Unknown problems on travis")
-@pytest.mark.skipif(GITHUB, reason="Unknown problems on github actions")
-def test_run_command_no_output():
-    """Test run a command without output"""
-    # GIVEN a command that returns no output
-    cmd = ["cd", "./"]
-    # WHEN running it with execute command
-    res = execute_command(cmd)
-    # THEN assert that the empty string is returned
-    assert res == ""
+    # GIVEN that LoqusDB binary file is not properly configured
+    with loqus_exe_app.app_context():
+        # executing a command will trigger error
+        with pytest.raises(Exception):
+            var_info = loqusdb.get_variant({"_id": "a variant"})

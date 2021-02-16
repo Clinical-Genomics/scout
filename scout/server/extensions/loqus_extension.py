@@ -339,7 +339,7 @@ class LoqusDB:
         except AttributeError:
             raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
-    def get_command(self, loqusdb_id=None):
+    def get_command(self, loqusdb_id="default"):
         """Get command string, with additional arguments if configured
 
         Returns: path(str)"""

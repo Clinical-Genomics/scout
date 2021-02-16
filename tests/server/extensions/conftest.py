@@ -53,8 +53,8 @@ def loqus_exe_app(loqus_exe, loqus_config):
         config=dict(
             TESTING=True,
             LOQUSDB_SETTINGS={
-                "loqusdb_binary": loqus_exe,
-                "loqusdb_config": loqus_config,
+                "binary_path": loqus_exe,
+                "config_path": loqus_config,
             },
         )
     )
