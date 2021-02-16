@@ -1,5 +1,5 @@
 {% extends "layout_bs4.html" %}
-{% from "utils.html" import comments_panel, pedigree_panel %}
+{% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variants/utils.html" import modal_causative %}
 {% from "variant/variant_details.html" import old_observations %}
 {% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, sv_alignments, pin_button, causative_button, igv_track_selection %}
@@ -126,6 +126,9 @@
 
   <div class="row">
     <div class="col-12">{{ ext_links(variant) }}</div>
+  </div>
+  <div class="row">
+    <div class="col-12">{{ activity_panel(events|reverse) }}</div>
   </div>
 
   {% if config['MAIL_USERNAME'] %}
@@ -257,16 +260,11 @@
       <tbody>
         <tr>
           <td>
-	    {% if case.genome_build == 38 %}
-              <a class="btn btn-outline-secondary form-control" href="http://www.ensembl.org/Homo_sapiens/Location/View?db=core;r={{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target="_blank">Ensembl</a>
-	    {% else %}
-	      <a class="btn btn-outline-secondary form-control" href="http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target="_blank">Ensembl</a>
-	    {% endif %}
+            <a class="btn btn-outline-secondary form-control" href="{{variant.ensembl_link}}"" target="_blank">Ensembl</a>
           </td>
-	  <td>
-	    <a class="btn btn-outline-secondary form-control" href="https://decipher.sanger.ac.uk/browser#q/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}%20/location/{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}" target ="_blank">DECIPHER {% if case.genome_build == 38 %} (GRCh37){% endif %}</a>
-
-	  </td>
+	        <td>
+	          <a class="btn btn-outline-secondary form-control" href="{{variant.decipher_link}}" target="_blank">DECIPHER</a>
+          </td>
         </tr>
       </tbody>
     </table>
