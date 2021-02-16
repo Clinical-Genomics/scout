@@ -116,27 +116,3 @@ def test_load_coverage_qc_report_using_case_id_with_update_success(adapter, canc
     # THEN a report should have been added to that case
     updated_case_obj = adapter.case_collection.find_one()
     assert updated_case_obj["coverage_qc_report"] == report_path
-
-
-def test_load_gene_fusion_report_using_case_id_with_update_success(adapter, case_obj):
-
-    adapter.case_collection.insert_one(case_obj)
-    ## GIVEN a case exist, with a delivery report
-    case_obj = adapter.case_collection.find_one()
-    assert case_obj.get("gene_fusion_report")
-
-    ## WHEN trying to load a report for a case_id that does exist in the data base
-    case_id = case_obj["_id"]
-    report_path = "report_test_path"
-    update = True
-
-    load_gene_fusion_report(
-        adapter=adapter,
-        case_id=case_id,
-        report_path=report_path,
-        update=update,
-    )
-
-    # THEN a report should have been added to that case
-    updated_case_obj = adapter.case_collection.find_one()
-    assert updated_case_obj["gene_fusion_report"] == report_path
