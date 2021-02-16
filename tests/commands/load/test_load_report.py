@@ -19,7 +19,7 @@ def test_load_gene_fusion_report(mock_app):
     runner = mock_app.test_cli_runner()
 
     # WHEN the update_gene_fusion command is executed provifing a new gene fusion report
-    with tempfile.NamedTemporaryFile(suffix=".tsv", prefix=os.path.basename(__file__)) as tf:
+    with tempfile.NamedTemporaryFile(suffix=".tsv") as tf:
 
         new_report_path = os.path.dirname(tf.name)
         result = runner.invoke(
