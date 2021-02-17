@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Introduced a `reset dismiss variant` verb
 - Button to reset all dismissed variants for a case
+- Add black border to ideograms
+- Show ClinVar annotations on variantS page
 - Load/update gene fusion reports generated with Arriba
 ### Fixed
 - Center initial igv view on variant start with SNV/indels
@@ -20,7 +22,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Cancer variants table header (pop freq etc)
 - Only admin users can modify LoqusDB instance in Institute settings
-- Switched to igv.js 2.4.7
+- Style of case synopsis and variants and case comments
+- Switched to igv.js 2.7.5
 
 ## [4.29]
 ### Added
