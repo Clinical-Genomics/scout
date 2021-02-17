@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-
 import os
 import pytest
-import shutil
 import tempfile
 from scout.demo import load_path, ped_path
 
@@ -67,15 +65,21 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj):
     # Make sure the scout config file is available
     assert os.path.exists(load_path)
     temp_conf = os.path.join(tempfile.gettempdir(), "temp.conf")
-    shutil.copy2(load_path, temp_conf)
-    sed_change = "sed -i -e 's/sample_id/SAMPLE_ID/g' "
-    os.system(sed_change + temp_conf)
+
+    content = []
+    with open(load_path) as f:
+        content = f.readlines()
+
+    # Remove a mandatory key value from config value content
+    content.remove("family: 'internal_id'\n")
+
+    with open(temp_conf, mode="wt") as f:
+        f.write("".join(content))
 
     # WHEN: config is loaded
     result = runner.invoke(cli, ["load", "case", temp_conf])
     # THEN KeyError is caught and exit value is non-zero
     assert result.exit_code != 0
-    os.remove(temp_conf)  # clean up
 
 
 def test_load_case_NoConf(mock_app, institute_obj, case_obj):
