@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Introduced a `reset dismiss variant` verb
 - Button to reset all dismissed variants for a case
+- Add black border to ideograms
+- Show ClinVar annotations on variantS page
 - Support LoqusDB REST API queries
 ### Fixed
 - Center initial igv view on variant start with SNV/indels
@@ -20,9 +22,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Cancer variants table header (pop freq etc)
 - Only admin users can modify LoqusDB instance in Institute settings
+- Style of case synopsis and variants and case comments
+- Switched to igv.js 2.7.5
 - Switched to igv.js 2.4.7
 - Count cases in LoqusDB by variant type
 - Introduce deprecation warning for Loqus configs that are not dictionaries
+
 
 ## [4.29]
 ### Added

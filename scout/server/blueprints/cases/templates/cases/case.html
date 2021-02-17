@@ -221,12 +221,16 @@
   <div class="card panel-default">
     <div data-toggle='tooltip' class="panel-heading" title="Free text field. Write a summary about the case! Markdown format"><i class="fa fa-id-card-o"></i>&nbsp;Synopsis</div>
       <div class="card-body">
-        {{ case.synopsis|markdown if case.synopsis else 'Nothing written yet...' }}
-      </div>
-      <div class="card-footer">
-        <button type="button" class="btn btn-outline-secondary form-control" data-toggle="modal" data-target="#edit-synopsis">
-          Edit
-        </button>
+        <div class="row">
+          <div class="col-10">
+           {{ case.synopsis|markdown if case.synopsis else 'Nothing written yet...' }}
+          </div>
+          <div class="col-2">
+            <button type="button" class="btn btn-outline-secondary form-control" data-toggle="modal" data-target="#edit-synopsis">
+              Edit
+            </button>
+          </div>
+        </div>
       </div>
   </div>
 {% endmacro %}
