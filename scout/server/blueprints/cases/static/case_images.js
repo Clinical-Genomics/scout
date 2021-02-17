@@ -54,7 +54,7 @@ function add_image_to_individual_panel(individuals, institute, case_name){
  */
 function draw_tracks(individual, institute, case_name){
     const CYT_HEIGHT = 50 ;
-    const CYT_WIDTH = 500 ;
+    const CYT_WIDTH = 530 ;
     var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
     var svg_element = document.getElementById("svg_" + individual["individual_id"])
     clear_svg(svg_element)
@@ -104,15 +104,23 @@ function draw_tracks(individual, institute, case_name){
 
         var t = chromosome_text(CHROMOSOMES[i], x_pos, y_pos);
         var clipPath = make_clipPath(CHROMSPECS_LIST[i], x_pos, y_pos)
+        path_ideo = make_ideogram_shape(CHROMSPECS_LIST[i], x_pos, y_pos)
         ideo_image.setAttributeNS(null, 'clip-path', "url(#clip-chr"+CHROMSPECS_LIST[i].name +")")
+        // add polygon to outline ideogram
+        var border_path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        border_path.setAttributeNS(null, 'd', path_ideo)
+        border_path.setAttributeNS(null, 'style', "stroke:black;stroke-width:1")
+        border_path.setAttributeNS(null, 'fill-opacity', '0.0')
+
 
         g.appendChild(ideo_image);
         g.appendChild(clipPath);
         g.appendChild(t);
+        g.appendChild(border_path)
 	if(individual.chromograph_images.upd_regions){
             var upd_regions_image = make_svgimage(upd_regions_imgPath + upd_regions_images[i],
                                           x_pos+15,
-                                          y_pos + 30,
+                                          y_pos + 90,
                                           "25px", "500px", );
             g.appendChild(upd_regions_image);
         }
@@ -120,7 +128,7 @@ function draw_tracks(individual, institute, case_name){
         if(individual.chromograph_images.autozygous){
             var autozygous_image = make_svgimage(autozygous_imgPath + autozygous_images[i],
                                           x_pos + 0+15,  //
-                                          y_pos + 60 , // place below UPD
+                                          y_pos + 30 , // place below UPD
                                           "25px", "500px", );
             g.appendChild(autozygous_image);
         }
@@ -128,7 +136,7 @@ function draw_tracks(individual, institute, case_name){
         if(individual.chromograph_images.coverage){
             var coverage_image = make_svgimage(coverage_imgPath + coverage_images[i],
                                           x_pos + 0+15, //
-                                          y_pos + 90 , // place below UPD
+                                          y_pos + 60 , // place below UPD
                                           "25px", "500px", );
             g.appendChild(coverage_image);
         }
@@ -159,7 +167,7 @@ function set_svg_size(svg_element, number_of_columns){
           svg_element.setAttribute('height', 1700)
       }
     if(number_of_columns == 3){
-          svg_element.setAttribute('width', 1500)
+          svg_element.setAttribute('width', 1550)
           svg_element.setAttribute('height', 1100)
     }
 }
@@ -239,12 +247,23 @@ function get_chromosomes(sex){
  * ends and a waist at the centromere.
  */
 function make_clipPath(chrom, x_offset, y_offset){
-    const c = 10
-    x_offset += 0   // make space for text labels
     var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     var clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
     clipPath.setAttributeNS(null, 'id', "clip-chr"+chrom.name)
     var p1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path = make_ideogram_shape(chrom, x_offset, y_offset)
+    p1.setAttributeNS(null, 'd', path)
+
+    clipPath.append(p1)
+    defs.append(clipPath)
+    return clipPath
+}
+
+
+// Return polygon path for ideogram, with optional offset
+function make_ideogram_shape(chrom, x_offset, y_offset){
+    const c = 10
+    x_offset += 0   // make space for text labels
     var centromere = {x: chrom.cent_start + x_offset,
                       y: y_offset,
                       length: chrom.cent_length,}
@@ -275,15 +294,10 @@ function make_clipPath(chrom, x_offset, y_offset){
         + String(chrom.length + x_offset) + " " + String( y_offset+25)+ " "
 
     path = m + cent_lower + b_left + c1 + cent_upper + right + c2
-
-    // without_cent = start +  b_left + c1 + right + c2
-    p1.setAttributeNS(null, 'd', path)
-    // p1.setAttributeNS(null, 'd', "M 470 25 L 60 25 C 50 25 50 0 60 0 L 470 0 C 510 0 510 25 470 25");
-
-    clipPath.append(p1)
-    defs.append(clipPath)
-    return clipPath
+    return path
 }
+
+
 
 
 
