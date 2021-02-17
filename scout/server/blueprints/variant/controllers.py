@@ -20,7 +20,12 @@ from scout.constants import (
 )
 from scout.parse.variant.ids import parse_document_id
 from scout.server.links import ensembl, get_variant_links
-from scout.server.utils import institute_and_case, user_institutes, variant_case
+from scout.server.utils import (
+    institute_and_case,
+    user_institutes,
+    variant_case,
+    get_gens_information,
+)
 from scout.utils.scout_requests import fetch_refseq_version
 from scout.server.extensions import cloud_tracks
 
@@ -105,6 +110,7 @@ def variant(
             'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
             'ACMG_OPTIONS': ACMG_OPTIONS,
             'igv_tracks': IGV_TRACKS,
+            'gens_info': <dict>,
             'evaluations': <list(evaluations)>,
         }
 
@@ -243,6 +249,7 @@ def variant(
         "mosaic_variant_options": MOSAICISM_OPTIONS,
         "ACMG_OPTIONS": ACMG_OPTIONS,
         "igv_tracks": get_igv_tracks(genome_build),
+        "gens_info": get_gens_information(genome_build),
         "evaluations": evaluations,
     }
 

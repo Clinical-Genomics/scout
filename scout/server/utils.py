@@ -4,7 +4,7 @@ import os
 import time
 from functools import wraps
 
-from flask import abort, flash, render_template, request
+from flask import abort, flash, render_template, request, current_app
 from flask_login import current_user
 
 LOG = logging.getLogger(__name__)
@@ -191,3 +191,25 @@ def find_index(align_file):
         if not os.path.exists(index_file):
             index_file = "{}.bai".format(align_file)
     return index_file
+
+
+def get_gens_information(build="37"):
+    """Return information on where GENS is hosted.
+
+    Args:
+        build(str): "37" or "38"
+
+    Returns:
+        gens_info(dict): A dictionary containing information on where Gens if hosted.
+    """
+    host = current_app.config.get("GENS_HOST")
+    port = current_app.config.get("GENS_PORT")
+    if host:
+        gens_info = {
+            "host": f"{host}:{port}" if host and port else host,
+            "genome_build": build,
+            "display_gens": True,
+        }
+    else:
+        gens_info = {"display_gens": False}
+    return gens_info

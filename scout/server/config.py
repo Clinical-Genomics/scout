@@ -17,8 +17,8 @@ MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 
 # Configure gens service
-#GENS_HOST = "gens"
-#GENS_PORT = 5000
+# GENS_HOST = "gens"
+# GENS_PORT = 5000
 
 # connection details for LoqusDB MongoDB database
 #

@@ -31,7 +31,7 @@ from werkzeug.datastructures import Headers
 
 from scout.constants import SAMPLE_SOURCE
 from scout.server.extensions import mail, store
-from scout.server.utils import institute_and_case, templated, user_institutes
+from scout.server.utils import institute_and_case, templated, user_institutes, get_gens_information
 
 from . import controllers
 
@@ -74,6 +74,7 @@ def case(institute_id, case_name):
         case=case_obj,
         mme_nodes=current_app.mme_nodes,
         tissue_types=SAMPLE_SOURCE,
+        gens_info=get_gens_information(case_obj["genome_build"]),
         **data,
     )
 

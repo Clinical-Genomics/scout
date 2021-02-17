@@ -192,6 +192,16 @@
             </div>
           </div>
         </li>
+        {% if gens_info.display_gens %}
+        <li class="list-group-item">
+          Copy number profile
+          <div class="float-right">
+            {% for sample in variant.samples %}
+              <a class="btn btn-outline-dark" target="_blank" href="http://{{gens_info.host}}/{{sample.display_name}}?region={{variant.chromosome}}:{{variant.position-2000}}-{{variant.end+2000}}&variant={{variant._id}}&hg_type={{gens_info.genome_build}}", {{variant.chromosome}})>Gens {{ sample.display_name }}</a>
+            {% endfor %}
+          </div>
+        </li>
+        {% endif %}
         <li class="list-group-item">
           <div class="row d-flex justify-content-between">
             <div>Breakpoint 1</div>
