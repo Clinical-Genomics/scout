@@ -4,13 +4,35 @@ import os
 import pytest
 import shutil
 import tempfile
-from scout.demo import load_path
+from scout.demo import load_path, ped_path
 
 from scout.commands import cli
 from scout.server.extensions import store
 
 
-def test_load_case(mock_app, institute_obj, case_obj):
+def test_load_case_from_ped(mock_app, institute_obj, case_obj):
+    """Test loading a case into scout from a ped file. It requires providing case genome build in the prompt."""
+
+    # GIVEN a database with no cases
+    store.delete_case(case_id=case_obj["_id"])
+    assert store.case_collection.find_one() is None
+
+    case_owner = institute_obj["_id"]
+
+    # WHEN load case command is run providing a ped file a genome build
+    runner = mock_app.test_cli_runner()
+    result = runner.invoke(
+        cli, ["load", "case", "--owner", case_owner, "--ped", ped_path], input="37"
+    )
+
+    # THEN case should be saved correctly
+    assert result.exit_code == 0
+    case_obj = store.case_collection.find_one()
+    # WITH the expected genome build
+    assert case_obj["genome_build"] == 37
+
+
+def test_load_case_from_yaml(mock_app, institute_obj, case_obj):
     """Testing the scout load case command"""
 
     runner = mock_app.test_cli_runner()
