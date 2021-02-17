@@ -83,12 +83,8 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj):
     with open(load_path) as f:
         content = f.readlines()
 
-    appo = len(content)
-
     # Remove a mandatory key value from config value content
     content.remove("family: 'internal_id'\n")
-
-    assert appo > len(content)
 
     with open(temp_conf, mode="wt") as f:
         f.write("".join(content))
@@ -97,7 +93,6 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj):
     result = runner.invoke(cli, ["load", "case", temp_conf])
     # THEN KeyError is caught and exit value is non-zero
     assert result.exit_code != 0
-    assert "KeyError('family')" in result.output
 
 
 def test_load_case_NoConf(mock_app, institute_obj, case_obj):
