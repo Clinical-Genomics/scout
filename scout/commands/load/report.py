@@ -90,7 +90,7 @@ def coverage_qc_report(case_id, report_path, update):
 @click.option("-u", "--update", is_flag=True, help="update .tsv gene fusion report for a case")
 @with_appcontext
 def gene_fusion_report(case_id, report_path, update):
-    """Add or update the .tsv gene fusion report for a case."""
+    """Add or update the gene fusion report for a case."""
 
     adapter = store
 
