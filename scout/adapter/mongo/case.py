@@ -703,7 +703,7 @@ class CaseHandler(object):
             - vcf_files: paths to the new files
             - cnv_report: path to the CNV report file
             - coverage_qc_report: path to the static coverage and qc report file
-            - gene_fusion_report: path to the .tsv gene fusions file
+            - gene_fusion_report: path to the gene fusions report
             - has_svvariants: If there are new svvariants
             - has_strvariants: If there are new strvariants
             - multiqc: If there's an updated multiqc report location

@@ -474,7 +474,7 @@ def test_pdf_case_report(app, institute_obj, case_obj):
 
 
 def test_gene_fusion_report(app, institute_obj, case_obj):
-    """Test the endpoint that allows users to download the .tsv file containing the gene fusion report."""
+    """Test the endpoint that allows users to download the PDF file containing the gene fusion report."""
     # GIVEN an initialized app and a valid user and institute
     with app.test_client() as client:
         # GIVEN that the user could be logged in
@@ -491,8 +491,8 @@ def test_gene_fusion_report(app, institute_obj, case_obj):
         )
         # a successful response should be returned
         assert resp.status_code == 200
-        # And the downloaded file should be a .tsv file
-        assert resp.mimetype == "text/tab-separated-values"
+        # And the downloaded file should be a PDF file
+        assert resp.mimetype == "application/pdf"
 
 
 def test_mt_report(app, institute_obj, case_obj):

@@ -85,7 +85,7 @@ def parse_case_data(
         multiqc(str): Path to dir with multiqc information
         cnv_report: Path to pdf file with CNV report
         coverage_qc_report: Path to html file with coverage and qc report
-        gene_fusion_report: Path to the .tsv gene fusions file
+        gene_fusion_report: Path to the gene fusions report
 
     Returns:
         config_data(dict): Holds all the necessary information for loading

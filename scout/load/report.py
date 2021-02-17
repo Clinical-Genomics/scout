@@ -110,7 +110,7 @@ def load_coverage_qc_report(
 def load_gene_fusion_report(
     adapter: MongoAdapter, report_path: str, case_id: str, update: bool = False
 ):
-    """Load a .tsv gene fusion report into a case in the database
+    """Load a gene fusion report into a case in the database
 
     If the report already exists the function will exit.
     If the user want to load a report that is already in the database

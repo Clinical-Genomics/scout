@@ -89,7 +89,7 @@ def build_case(case_data, adapter):
 
         cnv_report = str, # path to file with cnv report
         coverage_qc_report = str, # path to file with coverage and qc report
-        gene_fusion_report = str, # path to the .tsv gene fusions file
+        gene_fusion_report = str, # path to the gene fusions report
 
         vcf_files = dict, # A dictionary with vcf files
 
