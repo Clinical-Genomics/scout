@@ -8,6 +8,19 @@ from scout.commands import cli
 from scout.server.extensions import store
 
 
+def test_load_case_no_yaml_no_ped(mock_app, institute_obj):
+    """Test loading a case into scout without any config file"""
+
+    case_owner = institute_obj["_id"]
+
+    # WHEN case is loaded without any config file
+    runner = mock_app.test_cli_runner()
+    result = runner.invoke(cli, ["load", "case", "--owner", case_owner])
+    # THEN it should return error
+    assert result.exit_code != 0
+    assert "Please provide either scout config or ped" in result.output
+
+
 def test_load_case_from_ped(mock_app, institute_obj, case_obj):
     """Test loading a case into scout from a ped file. It requires providing case genome build in the prompt."""
 
@@ -70,8 +83,12 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj):
     with open(load_path) as f:
         content = f.readlines()
 
+    appo = len(content)
+
     # Remove a mandatory key value from config value content
     content.remove("family: 'internal_id'\n")
+
+    assert appo > len(content)
 
     with open(temp_conf, mode="wt") as f:
         f.write("".join(content))
@@ -80,6 +97,7 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj):
     result = runner.invoke(cli, ["load", "case", temp_conf])
     # THEN KeyError is caught and exit value is non-zero
     assert result.exit_code != 0
+    assert "KeyError('family')" in result.output
 
 
 def test_load_case_NoConf(mock_app, institute_obj, case_obj):
