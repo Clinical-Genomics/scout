@@ -19,7 +19,7 @@ def test_load_case_from_ped(mock_app, institute_obj, case_obj):
 
     case_owner = institute_obj["_id"]
 
-    # WHEN load case command is run providing a ped file a genome build
+    # WHEN case is loaded using a ped file it will also require a genome build
     runner = mock_app.test_cli_runner()
     result = runner.invoke(
         cli, ["load", "case", "--owner", case_owner, "--ped", ped_path], input="37"
