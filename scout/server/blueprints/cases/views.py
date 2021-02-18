@@ -77,6 +77,7 @@ def case(institute_id, case_name):
         case=case_obj,
         mme_nodes=current_app.mme_nodes,
         tissue_types=SAMPLE_SOURCE,
+        display_rerunner="RERUNNER_HOST" in current_app.config,
         **data,
     )
 

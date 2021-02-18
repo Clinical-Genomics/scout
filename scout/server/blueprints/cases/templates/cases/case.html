@@ -100,7 +100,7 @@
         {% if case.track == 'cancer' %}
           <div class="col-xs-12 col-md-12">{{ cancer_individuals_table(case, institute, tissue_types) }}</div>
         {% else %}
-          <div class="col-xs-12 col-md-12">{{ individuals_table(case, institute, tissue_types) }}</div>
+          <div class="col-xs-12 col-md-12">{{ individuals_table(case, institute, tissue_types, display_rerunner) }}</div>
         {% endif %}
       </div>
 
