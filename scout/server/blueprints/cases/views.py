@@ -10,6 +10,7 @@ import zipfile
 from operator import itemgetter
 import requests
 from requests.auth import HTTPBasicAuth
+from requests.exceptions import ReadTimeout
 import json
 
 import pymongo
@@ -78,6 +79,7 @@ def case(institute_id, case_name):
         mme_nodes=current_app.mme_nodes,
         tissue_types=SAMPLE_SOURCE,
         display_rerunner="RERUNNER_HOST" in current_app.config,
+        display=True,
         **data,
     )
 
@@ -959,22 +961,27 @@ def reanalysis(institute_id, case_name):
     url = f"http://{current_app.config['RERUNNER_HOST']}:{current_app.config['RERUNNER_PORT']}/v1.0/rerun"
     auth = HTTPBasicAuth(current_user.email, current_app.config["RERUNNER_API_KEY"])
     LOG.info(f"Sending request -- {url}; params={payload}")
-    resp = requests.post(
-        url,
-        params=payload,
-        json=edited_metadata,
-        timeout=current_app.config["RERUNNER_TIMEOUT"],
-        headers={"Content-Type": "application/json"},
-        auth=auth,
-    )
-
-    if resp.status_code == requests.codes.ok:
-        LOG.info(f"Reanalysis was successfully started; case: {case_name}")
-        flash(f"Reanalysis was successfully started; case: {case_name}", "info")
-    else:
-        msg = f"Error processing request: {resp.text}, {resp.status_code}"
+    try:
+        resp = requests.post(
+            url,
+            params=payload,
+            json=edited_metadata,
+            timeout=current_app.config["RERUNNER_TIMEOUT"],
+            headers={"Content-Type": "application/json"},
+            auth=auth,
+        )
+        if resp.status_code == requests.codes.ok:
+            LOG.info(f"Reanalysis was successfully started; case: {case_name}")
+            flash(f"Reanalysis was successfully started; case: {case_name}", "info")
+        else:
+            msg = f"Error processing request: {resp.text}, {resp.status_code}"
+            LOG.error(msg)
+            flash(msg, "error")
+    except ReadTimeout as err:
+        msg = f"Error processing request: {err.__class__.__name__}"
         LOG.error(msg)
         flash(msg, "error")
+
     return redirect(request.referrer)
 
 
