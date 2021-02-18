@@ -8,6 +8,9 @@ import re
 import shutil
 import zipfile
 from operator import itemgetter
+import requests
+from requests.auth import HTTPBasicAuth
+import json
 
 import pymongo
 from flask import (
@@ -345,6 +348,12 @@ def update_individual(institute_id, case_name):
         age=age,
         tissue=tissue,
     )
+    return redirect(request.referrer)
+
+
+@cases_bp.route("/<institute_id>/<case_name>/edit_individuals", methods=["POST"])
+def edit_individual(institute_id, case_name):
+    """Update individual data (age and/or Tissue type) for a case"""
     return redirect(request.referrer)
 
 
@@ -934,6 +943,38 @@ def rerun(institute_id, case_name):
     recipient = current_app.config.get("TICKET_SYSTEM_EMAIL")
 
     controllers.rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
+    return redirect(request.referrer)
+
+
+@cases_bp.route("/<institute_id>/<case_name>/reanalysis", methods=["POST"])
+def reanalysis(institute_id, case_name):
+    """Toggle a rerun by making a call to RERUNNER service."""
+    LOG.info("Building query for reanalysis")
+    # TODO make this better
+    edited_metadata = json.loads(request.form["sample_metadata"])
+
+    # define the data to be passed
+    payload = {"case_id": case_name, "sample_ids": [s["sample_id"] for s in edited_metadata]}
+
+    url = f"http://{current_app.config['RERUNNER_HOST']}:{current_app.config['RERUNNER_PORT']}/v1.0/rerun"
+    auth = HTTPBasicAuth(current_user.email, current_app.config["RERUNNER_API_KEY"])
+    LOG.info(f"Sending request -- {url}; params={payload}")
+    resp = requests.post(
+        url,
+        params=payload,
+        json=edited_metadata,
+        timeout=current_app.config["RERUNNER_TIMEOUT"],
+        headers={"Content-Type": "application/json"},
+        auth=auth,
+    )
+
+    if resp.status_code == requests.codes.ok:
+        LOG.info(f"Reanalysis was successfully started; case: {case_name}")
+        flash(f"Reanalysis was successfully started; case: {case_name}", "info")
+    else:
+        msg = f"Error processing request: {resp.text}, {resp.status_code}"
+        LOG.error(msg)
+        flash(msg, "error")
     return redirect(request.referrer)
 
 
