@@ -4,11 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [x.x.x]
+## [hotfix 4.29a]
 ### Added
 ### Fixed
+- Always load STR variants regardless of RankScore threshold
 ### Changed
-
 
 ## [4.29]
 ### Added
