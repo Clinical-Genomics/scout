@@ -950,7 +950,6 @@ def rerun(institute_id, case_name):
 def reanalysis(institute_id, case_name):
     """Toggle a rerun by making a call to RERUNNER service."""
     LOG.info("Building query for reanalysis")
-    # TODO make this better
     edited_metadata = json.loads(request.form["sample_metadata"])
 
     # define the data to be passed
