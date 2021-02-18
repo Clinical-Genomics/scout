@@ -71,7 +71,7 @@ SV_RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-file
 SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
 
 # Connection details for communicating with a rerunner service
-#RERUNNER_HOST = "127.0.0.1"
-#RERUNNER_PORT = 5000
-#RERUNNER_TIMEOUT = 10
-#RERUNNER_API_KEY = "this is not secret..."
+# RERUNNER_HOST = "127.0.0.1"
+# RERUNNER_PORT = 5000
+# RERUNNER_TIMEOUT = 10
+# RERUNNER_API_KEY = "this is not secret..."
