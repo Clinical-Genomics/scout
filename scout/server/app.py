@@ -111,6 +111,10 @@ def configure_extensions(app):
         # setup LoqusDB
         extensions.loqusdb.init_app(app)
 
+    if app.config.get("GENS_HOST"):
+        LOG.info("Gens enabled")
+        extensions.gens.init_app(app)
+
     if app.config.get("LDAP_HOST"):
         LOG.info("LDAP login enabled")
         # setup connection to server
