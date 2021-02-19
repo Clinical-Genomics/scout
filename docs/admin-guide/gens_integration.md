@@ -1,11 +1,10 @@
 # Gens integration
 
-[Gens][gens] is a interactive webbased tool to visualize copy number profiles in wgs data. It display the normalized read depth and alternative allele frequency in relation to transcripts, variants and previously annoated marker pannels.
+[Gens][gens] is a interactive web-based tool to visualize copy number profiles using wgs data. It display the normalized read depth and alternative allele frequency in relation to transcripts, variants and previously annotated marker panels.
 
 ## Setup
 
-To avoid dependency conflicts Gens should be installed in an environment separate from scout.
-Install Gens according to the instructions on the [tool homepage][gens]. This can be done using the same environment or a virtual environment.
+To avoid dependency conflicts Gens should be installed in an environment separate from scout. Install Gens according to the instructions on the [tool homepage][gens].
 
 ### Config Parameters
 
@@ -14,10 +13,10 @@ Install Gens according to the instructions on the [tool homepage][gens]. This ca
 
 ### Configure Gens integration
 
-In the config `config.py` give the connection information like:
+In the scout config `config.py` provide the connection settings like:
 
 ```python
-GENS_HOST = 127.0.0.1
+GENS_HOST = "127.0.0.1"
 GENS_PORT = 5001
 ```
 
