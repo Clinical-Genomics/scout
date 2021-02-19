@@ -6,7 +6,8 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-class GensViewer():
+
+class GensViewer:
     """Interface to Gens."""
 
     def __init__(self):
@@ -15,9 +16,9 @@ class GensViewer():
 
     def init_app(self, app):
         """Setup Gens config."""
-        LOG.info('Init Gens app')
-        self.host = app.config.get('GENS_HOST')
-        self.port = app.config.get('GENS_PORT')
+        LOG.info("Init Gens app")
+        self.host = app.config.get("GENS_HOST")
+        self.port = app.config.get("GENS_PORT")
 
     def connection_settings(self, genome_build="37"):
         """Return information on where GENS is hosted.
@@ -34,4 +35,4 @@ class GensViewer():
                 "host": f"{self.host}:{self.port}" if self.host and self.port else self.host,
                 "genome_build": genome_build,
             }
-        return {'display': bool(settings), **settings}
+        return {"display": bool(settings), **settings}
