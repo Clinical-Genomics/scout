@@ -74,7 +74,7 @@ def case(institute_id, case_name):
         case=case_obj,
         mme_nodes=current_app.mme_nodes,
         tissue_types=SAMPLE_SOURCE,
-        gens_info=get_gens_information(case_obj["genome_build"]),
+        gens_info=get_gens_information(case_obj.get("genome_build")),
         **data,
     )
 
