@@ -34,7 +34,7 @@ from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 
 from scout.constants import SAMPLE_SOURCE
-from scout.server.extensions import mail, store
+from scout.server.extensions import mail, store, rerunner
 from scout.server.utils import institute_and_case, templated, user_institutes
 
 from . import controllers
@@ -78,7 +78,7 @@ def case(institute_id, case_name):
         case=case_obj,
         mme_nodes=current_app.mme_nodes,
         tissue_types=SAMPLE_SOURCE,
-        display_rerunner="RERUNNER_HOST" in current_app.config,
+        display_rerunner=rerunner.connection_settings.get('display', False),
         display=True,
         **data,
     )
@@ -958,15 +958,16 @@ def reanalysis(institute_id, case_name):
     # define the data to be passed
     payload = {"case_id": case_name, "sample_ids": [s["sample_id"] for s in edited_metadata]}
 
-    url = f"http://{current_app.config['RERUNNER_HOST']}:{current_app.config['RERUNNER_PORT']}/v1.0/rerun"
-    auth = HTTPBasicAuth(current_user.email, current_app.config["RERUNNER_API_KEY"])
+    cnf = rerunner.connection_settings
+    url = f"http://{cnf.get('host')}/v1.0/rerun"
+    auth = HTTPBasicAuth(current_user.email, cnf.get('api_key'))
     LOG.info(f"Sending request -- {url}; params={payload}")
     try:
         resp = requests.post(
             url,
             params=payload,
             json=edited_metadata,
-            timeout=current_app.config["RERUNNER_TIMEOUT"],
+            timeout=rerunner.timeout,
             headers={"Content-Type": "application/json"},
             auth=auth,
         )

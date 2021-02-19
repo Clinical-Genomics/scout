@@ -12,6 +12,7 @@ from scout.utils.cloud_resources import AlignTrackHandler
 
 from .loqus_extension import LoqusDB
 from .mongo_extension import MongoDB
+from .rerunner_extension import RerunnerService
 
 
 toolbar = DebugToolbarExtension()
@@ -23,4 +24,5 @@ oauth_client = OAuth()
 mail = Mail()
 loqusdb = LoqusDB()
 mongo = MongoDB()
+rerunner = RerunnerService()
 cloud_tracks = AlignTrackHandler()
