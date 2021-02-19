@@ -43,11 +43,6 @@ function toggleEditMetadata(){
 
 
 //
-// toggle a reanalysis with an updated pedigree
-function togglePedigreeReanalysis(apiUrl) {
-}
-
-//
 // get edited pedigree data
 function getEditedPedigreeData() {
 	console.log('Get pedigree data')
