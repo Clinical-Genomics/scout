@@ -25,6 +25,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Style of case synopsis and variants and case comments
 - Switched to igv.js 2.7.5
 
+## [4.29.1]
+### Added
+### Fixed
+- Always load STR variants regardless of RankScore threshold (hotfix)
+### Changed
+
 ## [4.29]
 ### Added
 - Added a page about migrating potentially breaking changes to the documentation
