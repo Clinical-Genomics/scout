@@ -113,6 +113,12 @@ Scout may be configured to visualize local variant frequencies monitored by [Loq
 Instructions on how to enable this feature can be found in the document
 [loqusdb integration][loqusdb-scout].
 
+## Integration with Gens for displaying copy number profiles for variants
+
+Scout may be configured to link to a local [Gens][gens] installation.
+Instructions on how to enable this feature can be found in the document
+[Gens integration][gens-scout].
+
 ## Server setup
 
 Scout needs a server config to know which databases to connect to etc. Depending on which
@@ -239,6 +245,8 @@ be found in [CONTRIBUTING](CONTRIBUTING.md).
 [chanjo-scout]: docs/admin-guide/chanjo_coverage_integration.md
 [loqusdb]: https://github.com/moonso/loqusdb
 [loqusdb-scout]: docs/admin-guide/loqusdb_integration.md
+[gens]: https://github.com/Clinical-Genomics-Lund/gens
+[gens-scout]: docs/admin-guide/gens_integration.md
 [matchmaker-pub]: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6016856/
 [matchmaker-scout]: docs/admin-guide/matchmaker_exchange_integration.md
 [matchmaker-scout-sharing]: docs/user-guide/cases.md#matchmaker-exchange-integration
