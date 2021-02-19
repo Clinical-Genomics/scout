@@ -18,12 +18,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - LoqusDB field in institute settings accepts only existing Loqus instances
 - Fix DECIPHER link to work after DECIPHER migrated to GRCh38
 - Removed visibility window param from igv.js genes track
-- Always load STR variants regardless of RankScore threshold
 ### Changed
 - Cancer variants table header (pop freq etc)
 - Only admin users can modify LoqusDB instance in Institute settings
 - Style of case synopsis and variants and case comments
 - Switched to igv.js 2.7.5
+
+## [4.29.1]
+### Added
+### Fixed
+- Always load STR variants regardless of RankScore threshold (hotfix)
+### Changed
 
 ## [4.29]
 ### Added
