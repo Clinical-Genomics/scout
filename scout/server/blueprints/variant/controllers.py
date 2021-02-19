@@ -24,10 +24,9 @@ from scout.server.utils import (
     institute_and_case,
     user_institutes,
     variant_case,
-    get_gens_information,
 )
 from scout.utils.scout_requests import fetch_refseq_version
-from scout.server.extensions import cloud_tracks
+from scout.server.extensions import cloud_tracks, gens
 
 from .utils import (
     add_gene_info,
@@ -249,7 +248,7 @@ def variant(
         "mosaic_variant_options": MOSAICISM_OPTIONS,
         "ACMG_OPTIONS": ACMG_OPTIONS,
         "igv_tracks": get_igv_tracks(genome_build),
-        "gens_info": get_gens_information(genome_build),
+        "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
     }
 
