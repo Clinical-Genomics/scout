@@ -11,7 +11,7 @@ One of the hard problem when dealing with whole genome data is the huge amount v
 In this section all the different annotation keys and suggestions of tools that can be used to annotate them are listed.
 If nothing else is stated Scout will search in the INFO field to locate the key value pair.
 
-### Frequencies 
+### Frequencies
 
 #### 1000G ####
 
@@ -35,12 +35,12 @@ The frequency from the [ExAC][exac] population database.
 
 - Key: `EXACAF`
 - Value: `Float`
-- Tools: [VEP][vep], [SnpEff][snpeff], [genmod][genmod], [vcfanno][vcfanno] 
+- Tools: [VEP][vep], [SnpEff][snpeff], [genmod][genmod], [vcfanno][vcfanno]
 
 
 #### ExAC_MAX_AF ####
 
-The maximum allele frequency of all populations [ExAC][exac] population database. 
+The maximum allele frequency of all populations [ExAC][exac] population database.
 
 - Key: `EXAC_MAX_AF`
 - Value: `Float`
@@ -54,11 +54,11 @@ The Combined Annotation Dependent Depletion([CADD][cadd]) score. A prediction of
 
 - Key: `CADD` or `cadd` in VEP `CSQ` field
 - Value: `Float`
-- Tools: [VEP][vep], [SnpEff][snpeff], [genmod][genmod], [vcfanno][vcfanno] 
+- Tools: [VEP][vep], [SnpEff][snpeff], [genmod][genmod], [vcfanno][vcfanno]
 
 #### SIFT ####
 
-The [SIFT][sift]) prediction for how a variation affects the protein.
+The [SIFT][sift] prediction for how a variation affects the protein.
 
 - Key: `CSQ`-`SIFT`
 - Value: `String`
@@ -66,12 +66,15 @@ The [SIFT][sift]) prediction for how a variation affects the protein.
 
 #### PolyPhen ####
 
-The [PolyPhen][polyphen]) prediction for how a variation affects the protein.
+The [PolyPhen][polyphen] prediction for how a variation affects the protein.
 
 - Key: `CSQ`-`PolyPhen`
 - Value: `String`
 - Tools: [VEP][vep]
 
+#### SpliceAI ####
+The [SpliceAI][spliceai] prediction for how a variant affects splicing.
+- Key `CSQ` - `SpliceAI_pred_DS_AG`, `SpliceAI_pred_DP_AG`, `` `SpliceAI_pred_DP_AL`
 
 #### Rank score ####
 
@@ -139,6 +142,6 @@ What variants is this variant in Autosomal Recessive Compound with?
 [phylop]: http://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg19&g=cons100way
 [sift]: http://sift.jcvi.org
 [polyphen]: http://genetics.bwh.harvard.edu/pph2/dokuwiki/
-[polyphen]: http://genetics.bwh.harvard.edu/pph2/dokuwiki/
+[spliceai]: https://github.com/Illumina/SpliceAI
 
 [rank_score_test]: https://github.com/Clinical-Genomics/scout/blob/master/tests/parse/test_parse_rank_score.py
