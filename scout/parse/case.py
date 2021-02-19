@@ -95,7 +95,7 @@ def parse_case_data(
         config_data(dict): Holds all the necessary information for loading
                            Scout
     """
-    LOG.debug('*** IS CALLED WITH `$ scout load case` ***')
+    LOG.debug("*** IS CALLED WITH `$ scout load case` ***")
     config_data = copy.deepcopy(config) or {}
     # Default the analysis date to now if not specified in load config
 
@@ -483,10 +483,10 @@ def parse_case(config):
         dict: parsed case data
     """
 
-    LOG.debug('***IS THIS CALLED?  parse_case()***')
+    LOG.debug("***IS THIS CALLED?  parse_case()***")
 
-    configObj = ScoutLoadConfig(**config)   # create a config object based on pydantic
-    vcf_files = VcfFiles(**config)          # vcf_files ...
+    configObj = ScoutLoadConfig(**config)  # create a config object based on pydantic
+    vcf_files = VcfFiles(**config)  # vcf_files ...
     configObj.vcf_files = vcf_files
     case_data = configObj.dict()  # translate object to legacy dict
 
