@@ -425,6 +425,7 @@ class VariantLoader(object):
                 or mt_variant
                 or pathogenic
                 or managed
+                or category in ["str"]
             ):
                 nr_inserted += 1
                 # Parse the vcf variant
