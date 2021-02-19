@@ -16,6 +16,10 @@ MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 
+# Configure gens service
+# GENS_HOST = "127.0.0.1"
+# GENS_PORT = 5000
+
 # connection details for LoqusDB MongoDB database
 # Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API
 # When multiple instances are available, admin users can modify which one is in use for a given institute from the admin settings page

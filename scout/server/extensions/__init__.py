@@ -12,6 +12,7 @@ from scout.utils.cloud_resources import AlignTrackHandler
 
 from .loqus_extension import LoqusDB
 from .mongo_extension import MongoDB
+from .gens_extension import GensViewer
 
 
 toolbar = DebugToolbarExtension()
@@ -23,4 +24,5 @@ oauth_client = OAuth()
 mail = Mail()
 loqusdb = LoqusDB()
 mongo = MongoDB()
+gens = GensViewer()
 cloud_tracks = AlignTrackHandler()

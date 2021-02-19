@@ -72,3 +72,11 @@ def loqus_api_app():
         )
     )
     return app
+
+
+@pytest.fixture
+def gens_app():
+    """Return an app containing the Gens extension"""
+
+    app = create_app(config=dict(TESTING=True, GENS_HOST="127.0.0.1", GENS_PORT=5000))
+    return app
