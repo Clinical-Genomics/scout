@@ -200,7 +200,7 @@
     {% if case.vcf_files.vcf_cancer_sv %}
       <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical structural variants</a>
     {% endif %}
-    {% if gens_info.display_gens %}
+    {% if gens_info.display %}
       <a class="btn btn-outline-dark" target="_blank" href="http://{{gens_info.host}}/{{case.display_name}}?&hg_type={{case.genome_build}}">View CN profile</a>
     {% endif %}
   </div>
