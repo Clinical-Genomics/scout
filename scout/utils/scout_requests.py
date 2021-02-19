@@ -13,14 +13,7 @@ from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
 
 LOG = logging.getLogger(__name__)
 
-HPO_URL = (
-    "http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/"
-    "artifact/util/annotation/{0}"
-)
-HPO_URL = (
-    "http://compbio.charite.de/jenkins/job/hpo.annotations/lastSuccessfulBuild"
-    "/artifact/util/annotation/{}"
-)
+HPO_URL = "http://purl.obolibrary.org/obo/hp/hpoa/{}"
 HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
 
 
