@@ -5,6 +5,7 @@ import tempfile
 from scout.demo import load_path, ped_path
 
 from scout.commands import cli
+from scout.parse import case
 from scout.server.extensions import store
 
 
@@ -64,7 +65,31 @@ def test_load_case_from_yaml(mock_app, institute_obj, case_obj):
     assert sum(1 for i in store.case_collection.find()) == 1
 
 
-def test_load_case_KeyError(mock_app, institute_obj, case_obj):
+def test_load_case_KeyError(mock_app, institute_obj, case_obj, monkeypatch):
+    """Test loading a case with a config file that will trigger keyError"""
+
+    runner = mock_app.test_cli_runner()
+
+    # GIVEN a patched scout add_smn_info function that will raise KeyError
+    def mock_smn_info(*args):
+        raise KeyError
+
+    monkeypatch.setattr(case, "add_smn_info", mock_smn_info)
+
+    # GIVEN a database with no cases
+    store.delete_case(case_id=case_obj["_id"])
+    assert store.case_collection.find_one() is None
+
+    # WHEN case is loaded using a a yaml file
+    runner = mock_app.test_cli_runner()
+    result = runner.invoke(cli, ["load", "case", load_path])
+
+    # THEN it should trigger KeyError
+    assert result.exit_code == 1
+    assert "KEYERROR" in result.output
+
+
+def test_load_case_KeyMissing(mock_app, institute_obj, case_obj):
     # GIVEN a config setup with 'sample_id' missing
     runner = mock_app.test_cli_runner()
     assert runner
