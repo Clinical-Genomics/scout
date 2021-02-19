@@ -19,7 +19,7 @@ def test_download_hpo_cmd(mocker, empty_mock_app):
         the_dir = pathlib.Path(dir_name)
         # WHEN running the command
         result = runner.invoke(hpo_cmd, ["-o", the_dir])
-        assert "Download HPO" in result.output
 
         # THEN check it exits without problems
         assert result.exit_code == 0
+        assert "Download HPO" in result.output
