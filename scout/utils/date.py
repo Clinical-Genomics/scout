@@ -64,6 +64,7 @@ def get_date(date, date_format=None):
                 LOG.debug("return: {}".format(date_obj))
             else:
                 LOG.debug("RAISE")
-                raise ValueError("Date %s is invalid" % date)
+                return  datetime.datetime.now()
+                # raise ValueError("Date %s is invalid" % date)
     LOG.debug("return: {}".format(date_obj))
     return date_obj

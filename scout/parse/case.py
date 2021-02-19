@@ -32,7 +32,11 @@ def get_correct_date(date_info):
     Returns:
         correct_date(datetime.datetime)
     """
+    LOG.debug(date_info)
+    if isinstance(date_info, str):
+        LOG.debug("STRINIGNIGGNIGNDIREKT")
     if isinstance(date_info, datetime.datetime):
+        LOG.debug("CORRECT DIREKT")
         return date_info
 
     if isinstance(date_info, str):
@@ -94,7 +98,8 @@ def parse_case_data(
     LOG.debug('*** IS CALLED WITH `$ scout load case` ***')
     config_data = copy.deepcopy(config) or {}
     # Default the analysis date to now if not specified in load config
-    config_data["analysis_date"] = get_correct_date(config_data.get("analysis_date"))
+
+    # config_data["analysis_date"] = get_correct_date(config_data.get("analysis_date"))
 
     # If the family information is in a ped file we nned to parse that
     if ped:
