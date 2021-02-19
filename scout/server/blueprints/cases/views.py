@@ -78,7 +78,7 @@ def case(institute_id, case_name):
         case=case_obj,
         mme_nodes=current_app.mme_nodes,
         tissue_types=SAMPLE_SOURCE,
-        display_rerunner=rerunner.connection_settings.get('display', False),
+        display_rerunner=rerunner.connection_settings.get("display", False),
         display=True,
         **data,
     )
@@ -960,7 +960,7 @@ def reanalysis(institute_id, case_name):
 
     cnf = rerunner.connection_settings
     url = f"http://{cnf.get('host')}/v1.0/rerun"
-    auth = HTTPBasicAuth(current_user.email, cnf.get('api_key'))
+    auth = HTTPBasicAuth(current_user.email, cnf.get("api_key"))
     LOG.info(f"Sending request -- {url}; params={payload}")
     try:
         resp = requests.post(
