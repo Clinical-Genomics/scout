@@ -1,5 +1,7 @@
 import re
 import datetime
+import logging
+LOG = logging.getLogger(__name__)
 
 
 def match_date(date):
@@ -31,22 +33,37 @@ def get_date(date, date_format=None):
     Returns:
         date_obj(datetime.datetime)
     """
+
+    # if isinstance(date, datetime.datetime):
+    #     print("OK to begin")
+    #     return date
+    
     date_obj = datetime.datetime.now()
+    LOG.debug("AS")
     if date:
         if date_format:
+            LOG.debug("ASsdf")
             date_obj = datetime.datetime.strptime(date, date_format)
         else:
+            import pdb; pdb.set_trace()
+            LOG.debug("2322")
             if match_date(date):
                 if len(date.split("-")) == 3:
+                    LOG.debug("split -")
                     date = date.split("-")
                 elif len(date.split(" ")) == 3:
+                    LOG.debug("split ' '")
                     date = date.split(" ")
                 elif len(date.split(".")) == 3:
+                    LOG.debug("split .")
                     date = date.split(".")
                 else:
+                    LOG.debug("split /")
                     date = date.split("/")
                 date_obj = datetime.datetime(*(int(number) for number in date))
+                LOG.debug("return: {}".format(date_obj))
             else:
+                LOG.debug("RAISE")
                 raise ValueError("Date %s is invalid" % date)
-
+    LOG.debug("return: {}".format(date_obj))
     return date_obj

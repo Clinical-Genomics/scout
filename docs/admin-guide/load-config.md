@@ -10,61 +10,63 @@ The basic structure of a load config looks like:
 owner: str(mandatory)
 
 family: str(mandatory)
+family_name: str(optional)
+lims_id:
+synopsis:
+phenotype_terms:
+cohots: list
 samples:
   - analysis_type: str(optional), [wgs,wes,panel,external]
-    sample_id: str(mandatory)
+    bam_path: str(optional) # path to bam file
     capture_kit: str(optional)
+    chromograph_images:
+    expected_coverage: int(mandatory)
     father: str(mandatory)
     mother: str(mandatory)
-    sample_name: str(mandatory)
+    msi: str(optional) # Microsatellite instability [0,60]
+    mt_bam: str(optional) # path to bam
     phenotype: str(mandatory), [affected, unaffected, unknown]
-    sex: str(mandatory), [male, female, unknown]
-    expected_coverage: int(mandatory)
-    vcf2cytosure: str(optional) # path to CGH file
-    bam_path: str(optional) # path to bam file
     rhocall_bed: str(optional) # path to bed file
     rhocall_wig: str(optional) # path to wig file
+    sample_id: str(mandatory)
+    sample_name: str(mandatory)
+    sex: str(mandatory), [male, female, unknown]
+    tiddit_coverage_wig: str(optional) # path to wig file
+    tissue_type: str(optional)
+    tmb: str(optional) # Tumor mutational burder [0,1000]
+    tumor_purity: float # [0.1,1]
+    tumor_type: str(optional)
     upd_regions_bed: str(optional) # path to bed file
     upd_sites_bed: str(optional) # path to bed file
-    tiddit_coverage_wig: str(optional) # path to wig file
+    vcf2cytosure: str(optional) # path to CGH file
 
-    tissue_type: str(optional)
-    tumor_type: str(optional)
-    tmb: str(optional) # Tumor mutational burder [0,1000]
-    msi: str(optional) # Microsatellite instability [0,60]
-    tumor_purity: float # [0.1,1]
-
-vcf_snv: str(optional)
-vcf_sv: str(optional)
-vcf_cancer: str(optional)
-vcf_cancer_sv: str(optional)
-vcf_cancer_sv_research: str(optional)
-vcf_snv_research: str(optional)
-vcf_sv_research: str(optional)
-vcf_cancer_research: str(optional)
-
-madeline: str(optional)
-
-peddy_ped: str(optional)
-peddy_check: str(optional)
-peddy_sex: str(optional)
-
-multiqc: str(optional)
 cnv_report: str(optional)
 coverage_qc_report: str(optional)
-
 default_gene_panels: list[str](optional)
 gene_panels: list[str](optional)
+madeline: str(optional)
+multiqc: str(optional)
+peddy_check: str(optional)
+peddy_ped: str(optional)
+peddy_sex: str(optional)
+vcf_cancer: str(optional)
+vcf_cancer_research: str(optional)
+vcf_cancer_sv: str(optional)
+vcf_cancer_sv_research: str(optional)
+vcf_snv: str(optional)
+vcf_snv_research: str(optional)
+vcf_sv: str(optional)
+vcf_sv_research: str(optional)
 
 # ATM rare or cancer
 track: list[str][optional]
 
 # meta data
-rank_model_version: str(optional)
-sv_rank_model_version: str(optional)
-rank_score_threshold: float(optional)
 analysis_date: datetime(optional)
 human_genome_build: str(optional)
+rank_model_version: str(optional)
+rank_score_threshold: float(optional)
+sv_rank_model_version: str(optional)
 ```
 
 Let's go through each field:

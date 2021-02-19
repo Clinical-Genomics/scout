@@ -573,6 +573,7 @@ class CaseHandler(object):
             case_obj(dict)
         """
         # Check that the owner exists in the database
+        LOG.debug("*** WHEN IS MONGO-LOAD CALLED ***")
         institute_obj = self.institute(config_data["owner"])
         if not institute_obj:
             raise IntegrityError("Institute '%s' does not exist in database" % config_data["owner"])

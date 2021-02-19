@@ -18,6 +18,8 @@ from scout.parse.peddy import (
 from scout.parse.smn import parse_smn_file
 from scout.utils.date import get_date
 
+from scout.parse.config_base import ScoutLoadConfig, ScoutIndividual, VcfFiles
+
 LOG = logging.getLogger(__name__)
 
 
@@ -89,6 +91,7 @@ def parse_case_data(
         config_data(dict): Holds all the necessary information for loading
                            Scout
     """
+    LOG.debug('*** IS CALLED WITH `$ scout load case` ***')
     config_data = copy.deepcopy(config) or {}
     # Default the analysis date to now if not specified in load config
     config_data["analysis_date"] = get_correct_date(config_data.get("analysis_date"))
@@ -474,60 +477,13 @@ def parse_case(config):
     Returns:
         dict: parsed case data
     """
-    if "owner" not in config:
-        raise ConfigError("A case has to have a owner")
 
-    if "family" not in config:
-        raise ConfigError("A case has to have a 'family'")
+    LOG.debug('***IS THIS CALLED?  parse_case()***')
 
-    individuals = parse_individuals(config["samples"])
-    synopsis = None
-    if config.get("synopsis"):
-        synopsis = (
-            ". ".join(config["synopsis"])
-            if isinstance(config["synopsis"], list)
-            else config["synopsis"]
-        )
-
-    case_data = {
-        "owner": config["owner"],
-        "collaborators": [config["owner"]],
-        "case_id": config["family"],
-        "display_name": config.get("family_name", config["family"]),
-        "synopsis": synopsis,
-        "phenotype_terms": config.get("phenotype_terms"),
-        "cohorts": config.get("cohorts"),
-        "genome_build": config.get("human_genome_build"),
-        "lims_id": config.get("lims_id"),
-        "rank_model_version": str(config.get("rank_model_version", "")),
-        "rank_score_threshold": config.get("rank_score_threshold", 0),
-        "sv_rank_model_version": str(config.get("sv_rank_model_version", "")),
-        "analysis_date": config.get("analysis_date"),
-        "individuals": individuals,
-        "vcf_files": {
-            "vcf_snv": config.get("vcf_snv"),
-            "vcf_sv": config.get("vcf_sv"),
-            "vcf_str": config.get("vcf_str"),
-            "vcf_cancer": config.get("vcf_cancer"),
-            "vcf_cancer_sv": config.get("vcf_cancer_sv"),
-            "vcf_snv_research": config.get("vcf_snv_research"),
-            "vcf_sv_research": config.get("vcf_sv_research"),
-            "vcf_cancer_research": config.get("vcf_cancer_research"),
-            "vcf_cancer_sv_research": config.get("vcf_cancer_sv_research"),
-        },
-        "smn_tsv": config.get("smn_tsv"),
-        "default_panels": config.get("default_gene_panels", []),
-        "gene_panels": config.get("gene_panels", []),
-        "assignee": config.get("assignee"),
-        "peddy_ped": config.get("peddy_ped"),
-        "peddy_sex": config.get("peddy_sex"),
-        "peddy_check": config.get("peddy_check"),
-        "delivery_report": config.get("delivery_report"),
-        "cnv_report": config.get("cnv_report"),
-        "coverage_qc_report": config.get("coverage_qc_report"),
-        "multiqc": config.get("multiqc"),
-        "track": config.get("track", "rare"),
-    }
+    configObj = ScoutLoadConfig(**config)   # create a config object based on pydantic
+    vcf_files = VcfFiles(**config)          # vcf_files ...
+    configObj.vcf_files = vcf_files
+    case_data = configObj.dict()  # translate object to legacy dict
 
     # add SMN info
     LOG.debug("Checking for SMN TSV..")
@@ -535,25 +491,9 @@ def parse_case(config):
         LOG.info("Adding SMN info from {}.".format(case_data["smn_tsv"]))
         add_smn_info_case(case_data)
 
-    # add the pedigree figure, this is a xml file which is dumped in the db
-    if "madeline" in config:
-        mad_path = Path(config["madeline"])
-        if not mad_path.exists():
-            raise ValueError("madeline path not found: {}".format(mad_path))
-        with mad_path.open("r") as in_handle:
-            case_data["madeline_info"] = in_handle.read()
-
-    if (
-        case_data["vcf_files"]["vcf_cancer"]
-        or case_data["vcf_files"]["vcf_cancer_research"]
-        or case_data["vcf_files"]["vcf_cancer_sv"]
-        or case_data["vcf_files"]["vcf_cancer_sv_research"]
-    ):
-        case_data["track"] = "cancer"
-
-    case_data["analysis_date"] = get_correct_date(case_data.get("analysis_date"))
-
-    return case_data
+    # TODO: parse_ped()
+    LOG.debug("new object: {}".format(configObj.dict()))
+    return removeNoneValues(configObj.dict())
 
 
 def parse_ped(ped_stream, family_type="ped"):
