@@ -104,6 +104,12 @@ CANCER_TIER_OPTIONS = {
 }
 
 MANUAL_RANK_OPTIONS = {
+    9: {
+        "label": "VUS",
+        "name": "Unknown Significance",
+        "description": "Variant of unknown significance",
+        "label_class": "default",
+    },
     8: {
         "label": "KP",
         "name": "Known pathogenic",
