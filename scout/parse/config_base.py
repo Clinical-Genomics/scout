@@ -11,6 +11,7 @@ from scout.utils.date import get_date
 
 
 import logging
+
 LOG = logging.getLogger(__name__)
 
 
@@ -21,7 +22,6 @@ class ChromographImages(BaseModel):
     upd_sites: Optional[str] = None
 
 
-    
 # TODO: handle bam_path_options
 class ScoutIndividual(BaseModel):
     alignment_path: Optional[str] = None
@@ -34,7 +34,7 @@ class ScoutIndividual(BaseModel):
     confirmed_sex: Optional[bool] = None
     display_name: Optional[str] = None
     father: Optional[str] = None
-    individual_id: str = Field(... , alias = 'sample_id')
+    individual_id: str = Field(..., alias="sample_id")
     is_sma: Optional[str] = None
     is_sma_carrier: Optional[str] = None
     mother: Optional[str] = None
@@ -44,14 +44,14 @@ class ScoutIndividual(BaseModel):
     predicted_ancestry: str = None  ## ??
     rhocall_bed: Optional[str] = None
     rhocall_wig: Optional[str] = None
-    sample_id: str = Field("", alias = 'sample_id')
+    sample_id: str = Field("", alias="sample_id")
     sample_name: Optional[str] = None
     sex: Literal["male", "female", "unknown"] = None
     smn1_cn: int = None
     smn2_cn: int = None
     smn2delta78_cn: int = None
     smn_27134_cn: int = None
-    tiddit_coverage_wig : Optional[str] = None
+    tiddit_coverage_wig: Optional[str] = None
     tissue_type: Optional[str] = None
     tmb: Optional[str] = None
     tumor_purity: float = 0.0
@@ -65,19 +65,18 @@ class ScoutIndividual(BaseModel):
     #     LOG.debug("asdfgsadfdsafds: {}".format())
     #     return self.bam_path or self.alignment_path or self.bam_file
 
-    
     @validator("sample_id", "sex", "phenotype")
     def mandatory_sample_id(cls, value):
         if value is None:
             raise PedigreeError("Sample, config error: '{}'".format(value))
         return value
 
-    @validator('display_name')
+    @validator("display_name")
     def fallback_display_name(cls, vlaue):
         # TODO: set to 1. sample_name 2. sample_id
         return value
 
-    @validator('tumor_purity')
+    @validator("tumor_purity")
     def cast_to_float(cls, value):
         if isinstance(value, str):
             return float(Fraction(value))
@@ -87,7 +86,7 @@ class ScoutIndividual(BaseModel):
     def update_track(cls, values):
         LOG.debug("================================== {}".format(values.get("bam_file")))
         if values.get("alignment_path"):
-            values.update({'bam_file': values.get("alignment_path")})
+            values.update({"bam_file": values.get("alignment_path")})
             LOG.debug("update BAM   : {}".format(type(values)))
             return values
         elif values.get("bam_file"):
@@ -95,14 +94,14 @@ class ScoutIndividual(BaseModel):
             LOG.debug("BAM {}".format(values.get("bam_file")))
             return values
         elif values.get("bam_path"):
-            values.update({'bam_file': values.get("bam_path")})
+            values.update({"bam_file": values.get("bam_path")})
             LOG.debug("update BAM   : {}".format(type(values)))
             return values
 
         else:
             return values
-        
-    
+
+
 class VcfFiles(BaseModel):
     vcf_cancer: Optional[str] = None
     vcf_cancer_research: Optional[str] = None
@@ -114,7 +113,7 @@ class VcfFiles(BaseModel):
     vcf_sv: Optional[str] = None
     vcf_sv_research: Optional[str] = None
 
-    
+
 # TODO: handle arguments used as alternative input
 # TODO: validator to set track="cancer" if vcf_cancer||vcf_cancer_sv
 # TODO: parse_ped seems to work on yet another file with pedigree info
@@ -125,24 +124,24 @@ class VcfFiles(BaseModel):
 # XXX: why is madeline stored as a file_object?
 class ScoutLoadConfig(BaseModel):
     analysis_date: Any = datetime.datetime.now()
-    assignee: str = None      ## ??
-    case_id: str = Field([], alias = 'family')       ## ??
-  #  chromograph_image_files: Optional[List[str]]
+    assignee: str = None  ## ??
+    case_id: str = Field([], alias="family")  ## ??
+    #  chromograph_image_files: Optional[List[str]]
     cnv_report: Optional[str] = None
     cohorts: Optional[List[str]] = None
     collaborators: Optional[List[str]] = None
-    coverage_qc_report:  str = None      ## ??
-    default_panels: Optional[List[str]] = Field([], alias = 'default_gene_panels')
+    coverage_qc_report: str = None  ## ??
+    default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
-    display_name: str = None       ## ?? config.get("family_name", config["family"]),
+    display_name: str = None  ## ?? config.get("family_name", config["family"]),
     family: str = None
     family_name: Optional[str] = None
     gene_panels: Optional[List[str]] = []
-    genome_build: str = None       ## ?? config.get("human_genome_build"),
+    genome_build: str = None  ## ?? config.get("human_genome_build"),
     human_genome_build: str = None
-    individuals: List[ScoutIndividual] = Field([], alias = 'samples')        ## we also have samples ??
+    individuals: List[ScoutIndividual] = Field([], alias="samples")  ## we also have samples ??
     lims_id: Optional[str] = None
-    madeline_info: Optional[str] = Field("", alias = 'madeline')
+    madeline_info: Optional[str] = Field("", alias="madeline")
     multiqc: Optional[str] = None
     owner: str = None
     peddy_check: Optional[str] = None
@@ -158,7 +157,7 @@ class ScoutLoadConfig(BaseModel):
     track: Literal["rare", "cancer"] = "rare"
     vcf_files: Optional[VcfFiles] = None
 
-    @validator('analysis_date')
+    @validator("analysis_date")
     def check_analysis_date(cls, dt):
         LOG.debug("GOT DATE: {}".format(dt))
         if isinstance(dt, datetime.datetime):
@@ -169,45 +168,43 @@ class ScoutLoadConfig(BaseModel):
         LOG.debug("returning {}".format(correct_date))
         return correct_date
 
-    
-    @validator('owner')
+    @validator("owner")
     def mandatory_check_owner(cls, value):
         if value is None:
             raise ConfigError("A case has to have a owner")
         return value
-    
-    @validator('family')
+
+    @validator("family")
     def mandatory_check_family(cls, value):
         if value is None:
             raise ConfigError("A case has to have a 'family'")
         return value
 
-
     @root_validator
     def update_track(cls, values):
         # Handle special circumstances
-        vcfs = values.get('vcf_files')
+        vcfs = values.get("vcf_files")
         LOG.debug("VCFS: {}".format(vcfs))
         try:
             vcf_dict = vcfs.dict()
-            if (vcf_dict['vcf_cancer']
+            if (
+                vcf_dict["vcf_cancer"]
                 or vcf_dict["vcf_cancer_research"]
                 or vcf_dict["vcf_cancer_sv"]
                 or vcf_dict["vcf_cancer_sv_research"]
             ):
-                values.update({'track': 'cancer'})        
+                values.update({"track": "cancer"})
         except Exception as error:
             LOG.debug("exception in vcf_s?! {}".format(error))
-            
+
         LOG.debug("OK")
         # Update collaborators to [owner] if not set
-        if values.get('collaborators') is None:
+        if values.get("collaborators") is None:
             LOG.debug("UPDATE COLLAB")
-            owner = values.get('owner')
-            values.update({'collaborators': [owner]})
+            owner = values.get("owner")
+            values.update({"collaborators": [owner]})
         LOG.debug("RETURN")
         return values
-
 
     @validator("madeline_info")
     def check_if_madelie_exists(cls, path):
@@ -218,14 +215,13 @@ class ScoutLoadConfig(BaseModel):
         with mad_path.open("r") as in_handle:
             return in_handle.read()
 
-    
     @validator("track")
     def field_not_none(cls, v):
         if v is None:
             raise ValueError("Owner and family can not be None")
         return v
 
-    @validator('synopsis')
+    @validator("synopsis")
     def synopsis_pre(cls, my_synopsis):
         if isinstance(my_synopsis, list):
             return ". ".join(my_synopsis)
@@ -233,6 +229,3 @@ class ScoutLoadConfig(BaseModel):
 
     class Config:
         validate_assignment = True
-
-
-
