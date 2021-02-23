@@ -26,14 +26,21 @@ def upload_research_variants(
         rank_threshold=rank_treshold,
     )
 
-def get_case_and_institute(adapter: MongoAdapter, case_id: str, institute: Optional[str]) -> (str, str):
+
+def get_case_and_institute(
+    adapter: MongoAdapter, case_id: str, institute: Optional[str]
+) -> (str, str):
+    """Fetch the case_id and institute_id
+
+    There was an old way to create case ids so we need a special case to handle this.
+    For old case_id we assume institute-case combo
+    We check if first part of the case_id is institute, then we know it is the old format
+    """
     if institute:
         return case_id, institute
-    # There was an old way to create case ids so we need a special case to handle this
-    # Assume institute-case combo
     split_case = case_id.split("-")
     institute_id = None
-    # Check if first part is institute, then we know it is the old format
+
     if len(split_case) > 1:
         institute_id = split_case[0]
         institute_obj = adapter.institute(institute_id)
@@ -61,7 +68,9 @@ def research(case_id, institute, force):
     adapter = store
 
     if case_id:
-        case_id, institute_id = get_case_and_institute(adapter=adapter, case_id=case_id, institute=institute)
+        case_id, institute_id = get_case_and_institute(
+            adapter=adapter, case_id=case_id, institute=institute
+        )
         case_obj = adapter.case(institute_id=institute, case_id=case_id)
         if case_obj is None:
             LOG.warning("No matching case found")
