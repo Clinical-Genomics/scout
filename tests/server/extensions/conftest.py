@@ -1,6 +1,6 @@
 """Fixtures for extenstions"""
 import pytest
-
+from scout.server.app import create_app
 from scout.server.extensions.loqus_extension import LoqusDB
 
 
@@ -43,3 +43,11 @@ def fixture_loqus_extension(loqus_exe, loqus_config, loqus_version):
         loqusdb_binary=loqus_exe, loqusdb_config=loqus_config, version=loqus_version
     )
     return loqus_obj
+
+
+@pytest.fixture
+def gens_app():
+    """Return an app containing the Gens extension"""
+
+    app = create_app(config=dict(TESTING=True, GENS_HOST="127.0.0.1", GENS_PORT=5000))
+    return app

@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Button to reset all dismissed variants for a case
 - Add black border to ideograms
 - Show ClinVar annotations on variantS page
+- Added integration with GENS, copy number visualization tool
 - Added integration to a rerunner service for toggling reanalysis with updated pedigree information
 ### Fixed
 - Center initial igv view on variant start with SNV/indels

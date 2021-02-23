@@ -34,7 +34,8 @@ from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 
 from scout.constants import SAMPLE_SOURCE
-from scout.server.extensions import mail, store, rerunner
+
+from scout.server.extensions import mail, store, gens, rerunner
 from scout.server.utils import institute_and_case, templated, user_institutes
 
 from . import controllers
@@ -78,8 +79,8 @@ def case(institute_id, case_name):
         case=case_obj,
         mme_nodes=current_app.mme_nodes,
         tissue_types=SAMPLE_SOURCE,
+        gens_info=gens.connection_settings(case_obj.get("genome_build")),
         display_rerunner=rerunner.connection_settings.get("display", False),
-        display=True,
         **data,
     )
 

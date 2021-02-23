@@ -111,6 +111,10 @@ def configure_extensions(app):
         # setup LoqusDB
         extensions.loqusdb.init_app(app)
 
+    if app.config.get("GENS_HOST"):
+        LOG.info("Gens enabled")
+        extensions.gens.init_app(app)
+        
     if app.config.get("RERUNNER_HOST"):
         LOG.info("Rerunner service enabled")
         # setup LoqusDB
@@ -120,6 +124,7 @@ def configure_extensions(app):
         LOG.info("LDAP login enabled")
         # setup connection to server
         extensions.ldap_manager.init_app(app)
+        
     if app.config.get("GOOGLE"):
         LOG.info("Google login enabled")
         # setup connection to google oauth2
