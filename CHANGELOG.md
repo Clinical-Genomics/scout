@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Only admin users can modify LoqusDB instance in Institute settings
 - Style of case synopsis and variants and case comments
 - Switched to igv.js 2.7.5
+- Temp freeze github actions ubuntu version to avoid rollout warnings
 
 ## [4.29.1]
 ### Added
