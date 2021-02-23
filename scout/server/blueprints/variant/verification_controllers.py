@@ -267,9 +267,7 @@ def verification_email_body(
     """
     external_primer_link_html = ""
     if external_primer_link:
-        external_primer_link_html = (
-            f'<li><a href="{external_primer_link}">Order primers</a>'
-        )
+        external_primer_link_html = f'<li><a href="{external_primer_link}">Order primers</a>'
 
     html = """
        <ul>
