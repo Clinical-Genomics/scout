@@ -168,15 +168,19 @@ class ScoutLoadConfig(BaseModel):
         LOG.debug("returning {}".format(correct_date))
         return correct_date
 
-    @validator("owner")
+    @validator("owner", pre=True, always=True)
     def mandatory_check_owner(cls, value):
+        LOG.debug("OWNER: {}".format(value))
         if value is None:
+            LOG.debug(" CHECK owner ConfigError owner")
             raise ConfigError("A case has to have a owner")
         return value
 
-    @validator("family")
+    @validator("family", pre=True, always=True)
     def mandatory_check_family(cls, value):
+        LOG.debug("FAMILY: {}".format(value))
         if value is None:
+            LOG.debug("RAISE ConfigError family")
             raise ConfigError("A case has to have a 'family'")
         return value
 
