@@ -1,3 +1,4 @@
+from flask import current_app
 from pprint import pprint as pp
 
 from scout.constants import SPIDEX_HUMAN
@@ -607,3 +608,16 @@ def spidex_human(variant_obj):
         return "medium"
 
     return "high"
+
+
+def external_primer_order_link(variant_obj, build=None):
+    build = build or 37
+
+    url_template = ""
+
+    if build == 38:
+        url_template = current_app.config.get("EXTERNAL_PRIMER_ORDER_LINK_38", "")
+    elif build == 37:
+        url_template = current_app.config.get("EXTERNAL_PRIMER_ORDER_LINK_37", "")
+
+    return url_template.format(chromosome=variant_obj.get("chromosome"), position=variant_obj.get("position"))

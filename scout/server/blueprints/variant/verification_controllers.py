@@ -8,6 +8,8 @@ from flask_mail import Message
 
 from scout.server.extensions import mail as ex_mail
 
+from scout.server.links import external_primer_order_link
+
 from .controllers import variant as variant_controller
 
 LOG = logging.getLogger(__name__)
@@ -103,14 +105,13 @@ def variant_verification(
         for sample_obj in variant_obj["samples"]
     ]
     tx_changes = []
-    thermo_primer_link = ""
+    external_primer_link = ""
 
     if category == "snv":  # SNV
         view_type = "variant.variant"
         tx_changes = []
 
-        if case_obj["genome_build"] == 38:
-            thermo_primer_link = f"https://www.thermofisher.com/order/genome-database/searchResults?searchMode=keyword&CID=&ICID=&productTypeSelect=ceprimer&targetTypeSelect=ceprimer_all&alternateTargetTypeSelect=&alternateProductTypeSelect=&originalCount=0&species=Homo+sapiens&otherSpecies=&additionalFilter=ceprimer-human-exome&keyword=&sequenceInput=&selectedInputType=&chromosome={chromosome}&chromStart={position}&chromStop={position}&vcfUpload=&multiChromoSome=&batchText=&batchUpload=&sequenceUpload=&multiSequence=&multiSequenceNames=&priorSearchTerms=%28NR%29"
+        external_primer_link = external_primer_order_link(variant_obj, case_obj["genome_build"])
 
         for gene_obj in variant_obj.get("genes", []):
             for tx_obj in gene_obj["transcripts"]:
@@ -170,7 +171,7 @@ def variant_verification(
         tx_changes="".join(tx_changes) or "Not available",
         name=user_obj["name"].encode("utf-8"),
         comment=comment,
-        thermo_primer_link=thermo_primer_link,
+        external_primer_link=external_primer_link,
     )
 
     # build a local the link to the variant to be included in the events objects (variant and case) created in the event collection.
@@ -238,7 +239,7 @@ def verification_email_body(
     tx_changes,
     name,
     comment,
-    thermo_primer_link,
+    external_primer_link,
 ):
     """
     Builds the html code for the variant verification emails (order verification and cancel verification)
@@ -258,16 +259,16 @@ def verification_email_body(
         tx_changes(str): amino acid changes caused by the variant, only for snvs otherwise 'Not available'
         name(str): user_obj['name'], uft-8 encoded
         comment(str): sender's comment from form
-        thermo_primer_link(str): optional URL to thermofisher's primer ordering page
+        external_primer_link(str): optional URL to an external primer ordering page
 
     Returns:
         html(str): the html body of the variant verification email
 
     """
-    thermo_primer_link_html = ""
-    if thermo_primer_link:
-        thermo_primer_link_html = (
-            f'<li><a href="{thermo_primer_link}">Order primers from ThermoFisher</a>'
+    external_primer_link_html = ""
+    if external_primer_link:
+        external_primer_link_html = (
+            f'<li><a href="{external_primer_link}">Order primers</a>'
         )
 
     html = """
@@ -285,7 +286,7 @@ def verification_email_body(
          {gtcalls}
          <li><strong>Amino acid changes</strong></li>
          {tx_changes}
-         {thermo_primer_link_html}
+         {external_primer_link_html}
          <li><strong>Comment</strong>: {comment}</li>
          <li><strong>Ordered by</strong>: {name}</li>
        </ul>
@@ -304,7 +305,7 @@ def verification_email_body(
         tx_changes=tx_changes,
         name=name,
         comment=comment,
-        thermo_primer_link_html=thermo_primer_link_html,
+        external_primer_link_html=external_primer_link_html,
     )
 
     return html
