@@ -10,11 +10,12 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
-def upload_research_variants(adapter: MongoAdapter, case_obj: dict, variant_type: str, category: str, rank_treshold: int):
+
+def upload_research_variants(
+    adapter: MongoAdapter, case_obj: dict, variant_type: str, category: str, rank_treshold: int
+):
     """Delete existing variants and upload new variants"""
-    adapter.delete_variants(
-        case_id=case_obj["_id"], variant_type=variant_type, category=category
-    )
+    adapter.delete_variants(case_id=case_obj["_id"], variant_type=variant_type, category=category)
 
     LOG.info("Load %s %s for: %s", variant_type, category.upper(), case_obj["_id"])
     adapter.load_variants(
@@ -23,6 +24,7 @@ def upload_research_variants(adapter: MongoAdapter, case_obj: dict, variant_type
         category=category,
         rank_threshold=rank_treshold,
     )
+
 
 @click.command(short_help="Upload research variants")
 @click.option("-c", "--case-id", help="family or case id")
@@ -70,19 +72,35 @@ def research(case_id, institute, force):
         # Test to upload research snvs
         if case_obj["vcf_files"].get("vcf_snv_research"):
             files = True
-            upload_research_variants(adapter=adapter, case_obj=case_obj, variant_type="research", category="snv", rank_treshold=default_threshold)
+            upload_research_variants(
+                adapter=adapter,
+                case_obj=case_obj,
+                variant_type="research",
+                category="snv",
+                rank_treshold=default_threshold,
+            )
 
             # Test to upload research svs
         if case_obj["vcf_files"].get("vcf_sv_research"):
             files = True
-            upload_research_variants(adapter=adapter, case_obj=case_obj, variant_type="research", category="sv",
-                                     rank_treshold=default_threshold)
+            upload_research_variants(
+                adapter=adapter,
+                case_obj=case_obj,
+                variant_type="research",
+                category="sv",
+                rank_treshold=default_threshold,
+            )
 
             # Test to upload research cancer variants
         if case_obj["vcf_files"].get("vcf_cancer_research"):
             files = True
-            upload_research_variants(adapter=adapter, case_obj=case_obj, variant_type="research", category="cancer",
-                                     rank_treshold=default_threshold)
+            upload_research_variants(
+                adapter=adapter,
+                case_obj=case_obj,
+                variant_type="research",
+                category="cancer",
+                rank_treshold=default_threshold,
+            )
 
         if not files:
             LOG.warning("No research files found for case %s", case_id)
