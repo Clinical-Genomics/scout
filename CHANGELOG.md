@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Only admin users can modify LoqusDB instance in Institute settings
 - Style of case synopsis and variants and case comments
 - Switched to igv.js 2.7.5
+- Do not choke if case is missing research variants when reserch requested
 
 ## [4.29.1]
 ### Added
