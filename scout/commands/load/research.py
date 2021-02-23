@@ -5,10 +5,24 @@ import logging
 import click
 from flask.cli import with_appcontext
 
+from scout.adapter import MongoAdapter
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
+def upload_research_variants(adapter: MongoAdapter, case_obj: dict, variant_type: str, category: str, rank_treshold: int):
+    """Delete existing variants and upload new variants"""
+    adapter.delete_variants(
+        case_id=case_obj["_id"], variant_type=variant_type, category=category
+    )
+
+    LOG.info("Load %s %s for: %s", variant_type, category.upper(), case_obj["_id"])
+    adapter.load_variants(
+        case_obj=case_obj,
+        variant_type=variant_type,
+        category=category,
+        rank_threshold=rank_treshold,
+    )
 
 @click.command(short_help="Upload research variants")
 @click.option("-c", "--case-id", help="family or case id")
@@ -50,55 +64,29 @@ def research(case_id, institute, force):
     default_threshold = 8
     files = False
     for case_obj in case_objs:
-        if force or case_obj["research_requested"]:
-            # Test to upload research snvs
-            if case_obj["vcf_files"].get("vcf_snv_research"):
-                files = True
-                adapter.delete_variants(
-                    case_id=case_obj["_id"], variant_type="research", category="snv"
-                )
-
-                LOG.info("Load research SNV for: %s", case_obj["_id"])
-                adapter.load_variants(
-                    case_obj=case_obj,
-                    variant_type="research",
-                    category="snv",
-                    rank_threshold=default_threshold,
-                )
+        if not (force or case_obj["research_requested"]):
+            LOG.warning("research not requested, use '--force'")
+            continue
+        # Test to upload research snvs
+        if case_obj["vcf_files"].get("vcf_snv_research"):
+            files = True
+            upload_research_variants(adapter=adapter, case_obj=case_obj, variant_type="research", category="snv", rank_treshold=default_threshold)
 
             # Test to upload research svs
-            if case_obj["vcf_files"].get("vcf_sv_research"):
-                files = True
-                adapter.delete_variants(
-                    case_id=case_obj["_id"], variant_type="research", category="sv"
-                )
-                LOG.info("Load research SV for: %s", case_obj["_id"])
-                adapter.load_variants(
-                    case_obj=case_obj,
-                    variant_type="research",
-                    category="sv",
-                    rank_threshold=default_threshold,
-                )
+        if case_obj["vcf_files"].get("vcf_sv_research"):
+            files = True
+            upload_research_variants(adapter=adapter, case_obj=case_obj, variant_type="research", category="sv",
+                                     rank_treshold=default_threshold)
 
             # Test to upload research cancer variants
-            if case_obj["vcf_files"].get("vcf_cancer_research"):
-                files = True
-                adapter.delete_variants(
-                    case_id=case_obj["_id"], variant_type="research", category="cancer"
-                )
+        if case_obj["vcf_files"].get("vcf_cancer_research"):
+            files = True
+            upload_research_variants(adapter=adapter, case_obj=case_obj, variant_type="research", category="cancer",
+                                     rank_treshold=default_threshold)
 
-                LOG.info("Load research cancer for: %s", case_obj["_id"])
-                adapter.load_variants(
-                    case_obj=case_obj,
-                    variant_type="research",
-                    category="cancer",
-                    rank_threshold=default_threshold,
-                )
-            if not files:
-                LOG.warning("No research files found for case %s", case_id)
-                raise click.Abort()
-            case_obj["is_research"] = True
-            case_obj["research_requested"] = False
-            adapter.update_case(case_obj, keep_date=True)
-        else:
-            LOG.warning("research not requested, use '--force'")
+        if not files:
+            LOG.warning("No research files found for case %s", case_id)
+            continue
+        case_obj["is_research"] = True
+        case_obj["research_requested"] = False
+        adapter.update_case(case_obj, keep_date=True)
