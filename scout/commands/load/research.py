@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from functools import partial
 import logging
+from typing import Optional
 
 import click
 from flask.cli import with_appcontext
@@ -25,6 +26,22 @@ def upload_research_variants(
         rank_threshold=rank_treshold,
     )
 
+def get_case_and_institute(adapter: MongoAdapter, case_id: str, institute: Optional[str]) -> (str, str):
+    if institute:
+        return case_id, institute
+    # There was an old way to create case ids so we need a special case to handle this
+    # Assume institute-case combo
+    split_case = case_id.split("-")
+    institute_id = None
+    # Check if first part is institute, then we know it is the old format
+    if len(split_case) > 1:
+        institute_id = split_case[0]
+        institute_obj = adapter.institute(institute_id)
+        if institute_obj:
+            institute_id = institute_obj["_id"]
+            case_id = split_case[1]
+    return case_id, institute_id
+
 
 @click.command(short_help="Upload research variants")
 @click.option("-c", "--case-id", help="family or case id")
@@ -44,16 +61,7 @@ def research(case_id, institute, force):
     adapter = store
 
     if case_id:
-        if not institute:
-            # There was an old way to create case ids so we need a special case to handle this
-            # Assume institute-case combo
-            splitted_case = case_id.split("-")
-            # Check if first part is institute, then we know it is the old format
-            if len(splitted_case) > 1:
-                institute_obj = adapter.institute(splitted_case[0])
-                if institute_obj:
-                    institute = institute_obj["_id"]
-                    case_id = splitted_case[1]
+        case_id, institute_id = get_case_and_institute(adapter=adapter, case_id=case_id, institute=institute)
         case_obj = adapter.case(institute_id=institute, case_id=case_id)
         if case_obj is None:
             LOG.warning("No matching case found")
@@ -69,7 +77,6 @@ def research(case_id, institute, force):
         if not (force or case_obj["research_requested"]):
             LOG.warning("research not requested, use '--force'")
             continue
-        # Test to upload research snvs
         if case_obj["vcf_files"].get("vcf_snv_research"):
             files = True
             upload_research_variants(
@@ -80,7 +87,6 @@ def research(case_id, institute, force):
                 rank_treshold=default_threshold,
             )
 
-            # Test to upload research svs
         if case_obj["vcf_files"].get("vcf_sv_research"):
             files = True
             upload_research_variants(
@@ -91,7 +97,6 @@ def research(case_id, institute, force):
                 rank_treshold=default_threshold,
             )
 
-            # Test to upload research cancer variants
         if case_obj["vcf_files"].get("vcf_cancer_research"):
             files = True
             upload_research_variants(
