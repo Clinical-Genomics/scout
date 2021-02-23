@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix DECIPHER link to work after DECIPHER migrated to GRCh38
 - Removed visibility window param from igv.js genes track
 - Updated HPO download URL
+- Patch HPO download test correctly
 ### Changed
 - Cancer variants table header (pop freq etc)
 - Only admin users can modify LoqusDB instance in Institute settings
