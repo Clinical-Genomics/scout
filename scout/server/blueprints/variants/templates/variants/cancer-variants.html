@@ -51,12 +51,14 @@
       <thead>
             <tr>
               <th style="width:3%"></th>
-              <th title="Rank position">Rank</th>
-              <th title="Variant description" style="width:20%">Gene:Transcript:Exon:HGVS</th>
+              <th title="Rank position" style="width: 5%">Rank</th>
+              <th title="Gene">Gene</th>
+              <th title="Transcript" style="width:12%">Transcript</th>
+              <th title="Exon">Exon</th>
+              <th title="Seqauence variant" style="width:8%">HGVS</th>
               <th title="Assessments including variant tier">Tier</th>
               <th title="Rank score">Score</th>
-              <th title="Gene">Gene</th>
-              <th title="Chromosome and genomic coordinate">Chr pos</th>
+              <th title="Chromosome and genomic coordinate" style="width:8%">Chr pos</th>
               <th style="width:6%" title="Poulation frequency">Pop Freq</th>
               <th title="Variant type">Type</th>
               <th title="Functional consequence annotation" style="width:18%">Consequence</th>
@@ -75,17 +77,33 @@
           {% endif %}
             <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
             <td class="text-left">{{cell_rank(variant, institute, case, form, manual_rank_options)}}</td>
+            <td>{{ gene_cell(variant) }}</td>
+            <td>
+              {% for gene in variant.genes %}
+                {% if gene.canonical_transcript %}
+                  <div>{{ gene.canonical_transcript }}</div>
+                {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for gene in variant.genes %}
+                {% if gene.exon %}
+                  <div>{{ gene.exon }}</div>
+                {% endif %}
+              {% endfor %}
+            </td>
             <td>
               <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
                                   variant_id=variant._id, cancer='yes') }}">
-              {% for annotation in variant.canonical_transcripts %}
-                <div>{{ annotation }}</div>
-              {% endfor %}
+                {% for gene in variant.genes %}
+                  {% if gene.hgvs_identifier %}
+                    <div>{{ gene.hgvs_identifier }}</div>
+                  {% endif %}
+                {% endfor %}
               </a>
             </td>
             <td>{{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}</td>
             <td>{{ score_cell(variant) }}</td>
-            <td>{{ gene_cell(variant) }}</td>
             <td>{{ position_cell(variant) }}</td>
             <td class="text-right">{{ frequency_cell(variant) }}</td>
             <td>{{ variant.sub_category }}</td>
