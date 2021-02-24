@@ -625,4 +625,6 @@ def external_primer_order_link(variant_obj, build=None):
     elif build == 37:
         url_template = current_app.config.get("EXTERNAL_PRIMER_ORDER_LINK_37", "")
 
-    return url_template.format(chromosome=variant_obj.get("chromosome"), position=variant_obj.get("position"))
+    return url_template.format(
+        chromosome=variant_obj.get("chromosome"), position=variant_obj.get("position")
+    )
