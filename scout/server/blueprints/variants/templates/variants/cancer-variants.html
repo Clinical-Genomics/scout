@@ -80,11 +80,16 @@
             <td>{{ gene_cell(variant) }}</td>
             <td>
               {% for gene in variant.genes %}
-                {% if gene.canonical_transcript %}
-                  <div>{{ gene.canonical_transcript }}</div>
-                {% endif %}
+                {% for transc in gene.transcripts %}
+                  {% if transc.is_canonical %}
+                    <a href="http://grch{{ case.genome_build }}.ensembl.org/Homo_sapiens/Gene/Summary?t={{ transc.transcript_id }}" target="_blank">
+                        {{ transc.transcript_id }}
+                    </a>
+                  {% endif %}
+                {% endfor %}
               {% endfor %}
             </td>
+
             <td>
               {% for gene in variant.genes %}
                 {% if gene.exon %}
