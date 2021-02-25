@@ -140,9 +140,7 @@ class ScoutLoadConfig(BaseModel):
     coverage_qc_report: str = None  ## ??
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
-    # display_name: str = None  ## ?? config.get("family_name", config["family"]),
-    family: str = None
-    family_name: Optional[str] = None
+    display_name: str = Field([], alias="family")
     gene_panels: Optional[List[str]] = []
     genome_build: str = None  ## ?? config.get("human_genome_build"),
     human_genome_build: str = None
