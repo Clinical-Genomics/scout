@@ -60,11 +60,6 @@ class ScoutIndividual(BaseModel):
     upd_sites_bed: Optional[str] = None
     vcf2cytosure: Optional[str] = None
 
-    # @property
-    # def bam_file(self):
-    #     LOG.debug("asdfgsadfdsafds: {}".format())
-    #     return self.bam_path or self.alignment_path or self.bam_file
-
     @validator("sample_id", "sex", "phenotype")
     def mandatory_sample_id(cls, value):
         if value is None:
@@ -84,24 +79,36 @@ class ScoutIndividual(BaseModel):
 
     @root_validator
     def update_track(cls, values):
-        LOG.debug("================================== {}".format(values.get("bam_file")))
+        # bam files have different aliases
         if values.get("alignment_path"):
             values.update({"bam_file": values.get("alignment_path")})
-            LOG.debug("update BAM   : {}".format(type(values)))
             return values
         elif values.get("bam_file"):
             # Dont't touch anything
-            LOG.debug("BAM {}".format(values.get("bam_file")))
             return values
         elif values.get("bam_path"):
             values.update({"bam_file": values.get("bam_path")})
-            LOG.debug("update BAM   : {}".format(type(values)))
+            return values
+        else:
             return values
 
+    @root_validator
+    def update_track_sample_id(cls, values):
+        # bam files have different aliases
+        if values.get("alignment_path"):
+            values.update({"bam_file": values.get("alignment_path")})
+            return values
+        elif values.get("bam_file"):
+            # Dont't touch anything
+            return values
+        elif values.get("bam_path"):
+            values.update({"bam_file": values.get("bam_path")})
+            return values
         else:
             return values
 
 
+# VCF Files
 class VcfFiles(BaseModel):
     vcf_cancer: Optional[str] = None
     vcf_cancer_research: Optional[str] = None
@@ -133,7 +140,7 @@ class ScoutLoadConfig(BaseModel):
     coverage_qc_report: str = None  ## ??
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
-    display_name: str = None  ## ?? config.get("family_name", config["family"]),
+    # display_name: str = None  ## ?? config.get("family_name", config["family"]),
     family: str = None
     family_name: Optional[str] = None
     gene_panels: Optional[List[str]] = []
