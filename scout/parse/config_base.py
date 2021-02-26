@@ -28,7 +28,7 @@ class ScoutIndividual(BaseModel):
     analysis_type: Literal["wgs", "wes", "mixed", "unknown", "panel", "external"] = None
     bam_file: Optional[str] = ""
     bam_path: Optional[str] = None
-    capture_kit: Optional[str] = []
+    capture_kits: Optional[str] =  Field([], alias="capture_kit")
     chromograph_images: ChromographImages = ChromographImages()
     confirmed_parent: Optional[bool] = None
     confirmed_sex: Optional[bool] = None
@@ -44,7 +44,7 @@ class ScoutIndividual(BaseModel):
     predicted_ancestry: str = None  ## ??
     rhocall_bed: Optional[str] = None
     rhocall_wig: Optional[str] = None
-    sample_id: str = Field("", alias="sample_id")
+    sample_id: str = None
     sample_name: Optional[str] = None
     sex: Literal["male", "female", "unknown"] = None
     smn1_cn: int = None
@@ -67,8 +67,9 @@ class ScoutIndividual(BaseModel):
         return value
 
     @validator("display_name")
-    def fallback_display_name(cls, vlaue):
+    def fallback_display_name(cls, value):
         # TODO: set to 1. sample_name 2. sample_id
+        LOG.debug("individual display_name: {}".format(value))
         return value
 
     @validator("tumor_purity")
@@ -76,6 +77,13 @@ class ScoutIndividual(BaseModel):
         if isinstance(value, str):
             return float(Fraction(value))
         return value
+
+    @validator("capture_kits")
+    def cast_to_string(cls, value):
+        if isinstance(value, str):
+            return [value]
+        return value
+
 
     @root_validator
     def update_track(cls, values):
@@ -94,15 +102,14 @@ class ScoutIndividual(BaseModel):
 
     @root_validator
     def update_track_sample_id(cls, values):
-        # bam files have different aliases
-        if values.get("alignment_path"):
-            values.update({"bam_file": values.get("alignment_path")})
+        # set display_name to 1. sample_name
+        #                     2. sample_id
+        if values.get("sample_name"):
+            values.update({"display_name": values.get("sample_name")})
             return values
-        elif values.get("bam_file"):
+        elif values.get("sample_id"):
             # Dont't touch anything
-            return values
-        elif values.get("bam_path"):
-            values.update({"bam_file": values.get("bam_path")})
+            values.update({"display_name": values.get("sample_id")})
             return values
         else:
             return values
@@ -140,9 +147,10 @@ class ScoutLoadConfig(BaseModel):
     coverage_qc_report: str = None  ## ??
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
-    display_name: str = Field([], alias="family")
+    display_name: str = Field([], alias="family_name")
+    family: str = None
     gene_panels: Optional[List[str]] = []
-    genome_build: str = None  ## ?? config.get("human_genome_build"),
+    genome_build: str = Field([], alias="human_genome_build")
     human_genome_build: str = None
     individuals: List[ScoutIndividual] = Field([], alias="samples")  ## we also have samples ??
     lims_id: Optional[str] = None
