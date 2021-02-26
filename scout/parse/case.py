@@ -98,8 +98,7 @@ def parse_case_data(
     LOG.debug("*** IS CALLED WITH `$ scout load case` ***")
     config_data = copy.deepcopy(config) or {}
     # Default the analysis date to now if not specified in load config
-
-    # config_data["analysis_date"] = get_correct_date(config_data.get("analysis_date"))
+    config_data["analysis_date"] = get_correct_date(config_data.get("analysis_date"))
 
     # If the family information is in a ped file we nned to parse that
     if ped:
