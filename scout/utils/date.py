@@ -46,10 +46,6 @@ def get_date(date, date_format=None):
             LOG.debug("ASsdf")
             date_obj = datetime.datetime.strptime(date, date_format)
         else:
-            import pdb
-
-            pdb.set_trace()
-            LOG.debug("2322")
             if match_date(date):
                 if len(date.split("-")) == 3:
                     LOG.debug("split -")
@@ -67,7 +63,6 @@ def get_date(date, date_format=None):
                 LOG.debug("return: {}".format(date_obj))
             else:
                 LOG.debug("RAISE")
-                return datetime.datetime.now()
-                # raise ValueError("Date %s is invalid" % date)
+                raise ValueError("Date %s is invalid" % date)
     LOG.debug("return: {}".format(date_obj))
     return date_obj
