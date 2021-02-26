@@ -581,11 +581,8 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
 
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
-    variants_list = []
-
-    for variant in variant_res:
-        elem = parse_variant(store, institute_obj, case_obj, variant, update=True)
-        variants_list.append(elem)
+    variants_list = [parse_variant(store, institute_obj, case_obj, variant, update=True)
+                     for variant in variant_res]
 
     data = dict(
         page=page,

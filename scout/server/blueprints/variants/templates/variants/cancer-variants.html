@@ -51,15 +51,13 @@
       <thead>
             <tr>
               <th style="width:3%"></th>
-              <th title="Rank position" style="width: 5%">Rank</th>
               <th title="Gene">Gene</th>
-              <th title="Transcript" style="width:12%">Transcript</th>
               <th title="Exon">Exon</th>
-              <th title="Seqauence variant" style="width:8%">HGVS</th>
+              <th title="Seqauence variant" style="width:8%">HGVS[c/p]</th>
               <th title="Assessments including variant tier">Tier</th>
               <th title="Rank score">Score</th>
-              <th title="Chromosome and genomic coordinate" style="width:8%">Chr pos</th>
-              <th style="width:6%" title="Poulation frequency">Pop Freq</th>
+              <th title="Chromosome and genomic coordinate" style="width:10%">Chr pos</th>
+              <th title="Poulation frequency">Pop Freq</th>
               <th title="Variant type">Type</th>
               <th title="Functional consequence annotation" style="width:18%">Consequence</th>
               <th data-toggle="tooltip" data-placement="top" title="Tumor alt. AF. &#013; Alt. allele count | Ref. allele count">Tumor</th>
@@ -76,20 +74,7 @@
             <tr>
           {% endif %}
             <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
-            <td class="text-left">{{cell_rank(variant, institute, case, form, manual_rank_options)}}</td>
             <td>{{ gene_cell(variant) }}</td>
-            <td>
-              {% for gene in variant.genes %}
-                {% for transc in gene.transcripts %}
-                  {% if transc.is_canonical %}
-                    <a href="http://grch{{ case.genome_build }}.ensembl.org/Homo_sapiens/Gene/Summary?t={{ transc.transcript_id }}" target="_blank">
-                        {{ transc.transcript_id }}
-                    </a>
-                  {% endif %}
-                {% endfor %}
-              {% endfor %}
-            </td>
-
             <td>
               {% for gene in variant.genes %}
                 {% if gene.exon %}
