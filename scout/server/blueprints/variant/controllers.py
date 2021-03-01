@@ -21,6 +21,7 @@ from scout.constants import (
 from scout.parse.variant.ids import parse_document_id
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import (
+    case_append_alignments,
     institute_and_case,
     user_institutes,
     variant_case,
@@ -142,6 +143,19 @@ def variant(
     if add_case:
         variant_case(store, case_obj, variant_obj)
 
+    # Fetch ids for grouped cases and prepare alignment dispay
+    case_groups = {}
+    case_group_label = {}
+    if case_obj.get("group"):
+        for group in case_obj.get("group"):
+            case_groups[group] = list(store.cases(group=group))
+            case_group_label[group] = store.case_group_label(group)
+            LOG.debug("Populate aligments for entire case group {}:".format(group))
+            for grouped_case in case_groups[group]:
+                LOG.debug("Populate case {}".format(grouped_case))
+                case_append_alignments(grouped_case)
+                LOG.debug("Ok: {}".format(grouped_case))
+
     # Collect all the events for the variant
     events = list(store.events(institute_obj, case=case_obj, variant_id=variant_id))
     for event in events:
@@ -236,6 +250,8 @@ def variant(
     return {
         "institute": institute_obj,
         "case": case_obj,
+        "case_groups": case_groups,
+        "case_group_label": case_group_label,
         "variant": variant_obj,
         variant_category: True,
         "causatives": other_causatives,
