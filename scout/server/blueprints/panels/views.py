@@ -42,7 +42,7 @@ def panels():
                 store=store,
                 institute_id=request.form["institute"],
                 panel_name=new_panel_name,
-                display_name=request.form["display_name"],
+                display_name=request.form["display_name"] or new_panel_name,
                 csv_lines=lines,
                 maintainer=[current_user._id],
                 description=request.form["description"],
