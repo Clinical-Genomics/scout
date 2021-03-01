@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show ClinVar annotations on variantS page
 - Added integration with GENS, copy number visualization tool
 - Add additional information to SNV verification emails
+- Tooltips documenting manual annotations from default panels
 - Added integration to a rerunner service for toggling reanalysis with updated pedigree information
 ### Fixed
 - Center initial igv view on variant start with SNV/indels
