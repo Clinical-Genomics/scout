@@ -17,6 +17,13 @@ lib
 lib64
 dist/
 
+# Environments
+
+venv/
+
+# Pycharm
+.idea/
+
 # Installer logs
 pip-log.txt
 
