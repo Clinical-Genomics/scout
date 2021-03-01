@@ -8,6 +8,8 @@ from flask_mail import Message
 
 from scout.server.extensions import mail as ex_mail
 
+from scout.server.links import external_primer_order_link
+
 from .controllers import variant as variant_controller
 
 LOG = logging.getLogger(__name__)
@@ -71,7 +73,11 @@ def variant_verification(
     category = variant_obj.get("category", "snv")
     display_name = variant_obj.get("display_name")
     chromosome = variant_obj["chromosome"]
+    position = variant_obj["position"]
     end_chrom = variant_obj.get("end_chrom", chromosome)
+    chr_position = (
+        ":".join([chromosome, str(variant_obj["position"])]) if category in ["snv"] else "-"
+    )
     breakpoint_1 = (
         ":".join([chromosome, str(variant_obj["position"])])
         if category in ["sv", "cancer_sv"]
@@ -99,10 +105,13 @@ def variant_verification(
         for sample_obj in variant_obj["samples"]
     ]
     tx_changes = []
+    external_primer_link = ""
 
     if category == "snv":  # SNV
         view_type = "variant.variant"
         tx_changes = []
+
+        external_primer_link = external_primer_order_link(variant_obj, case_obj["genome_build"])
 
         for gene_obj in variant_obj.get("genes", []):
             for tx_obj in gene_obj["transcripts"]:
@@ -131,6 +140,14 @@ def variant_verification(
                         )
                     else:
                         transcript_line.append("")
+                    if "strand" in tx_obj:
+                        transcript_line.append(tx_obj["strand"])
+                    else:
+                        transcript_line.append("")
+                    if refseq_id in gene_obj["common"]["primary_transcripts"]:
+                        transcript_line.append("<b>primary</b>")
+                    else:
+                        transcript_line.append("")
 
                     tx_changes.append("<li>{}</li>".format(":".join(transcript_line)))
 
@@ -147,12 +164,14 @@ def variant_verification(
         subcategory=variant_obj.get("sub_category").upper(),
         breakpoint_1=breakpoint_1,
         breakpoint_2=breakpoint_2,
+        chr_position=chr_position,
         hgnc_symbol=hgnc_symbol,
         panels=panels,
         gtcalls="".join(gtcalls),
         tx_changes="".join(tx_changes) or "Not available",
         name=user_obj["name"].encode("utf-8"),
         comment=comment,
+        external_primer_link=external_primer_link,
     )
 
     # build a local the link to the variant to be included in the events objects (variant and case) created in the event collection.
@@ -211,6 +230,7 @@ def verification_email_body(
     display_name,
     category,
     subcategory,
+    chr_position,
     breakpoint_1,
     breakpoint_2,
     hgnc_symbol,
@@ -219,6 +239,7 @@ def verification_email_body(
     tx_changes,
     name,
     comment,
+    external_primer_link,
 ):
     """
     Builds the html code for the variant verification emails (order verification and cancel verification)
@@ -229,6 +250,7 @@ def verification_email_body(
         display_name(str): a display name for the variant
         category(str): category of the variant
         subcategory(str): sub-category of the variant
+        chr_position(str): chromosomal position for SNVs (format is 'chr:start')
         breakpoint_1(str): breakpoint 1 (format is 'chr:start')
         breakpoint_2(str): breakpoint 2 (format is 'chr:stop')
         hgnc_symbol(str): a gene or a list of genes separated by comma
@@ -237,17 +259,23 @@ def verification_email_body(
         tx_changes(str): amino acid changes caused by the variant, only for snvs otherwise 'Not available'
         name(str): user_obj['name'], uft-8 encoded
         comment(str): sender's comment from form
+        external_primer_link(str): optional URL to an external primer ordering page
 
     Returns:
         html(str): the html body of the variant verification email
 
     """
+    external_primer_link_html = ""
+    if external_primer_link:
+        external_primer_link_html = f'<li><a href="{external_primer_link}">Order primers</a>'
+
     html = """
        <ul>
          <li>
            <strong>Case {case_name}</strong>: <a href="{url}">{display_name}</a>
          </li>
          <li><strong>Variant type</strong>: {category} ({subcategory})
+         <li><strong>Chromosomal position</strong>: {chr_position}</li>
          <li><strong>Breakpoint 1</strong>: {breakpoint_1}</li>
          <li><strong>Breakpoint 2</strong>: {breakpoint_2}</li>
          <li><strong>HGNC symbols</strong>: {hgnc_symbol}</li>
@@ -256,6 +284,7 @@ def verification_email_body(
          {gtcalls}
          <li><strong>Amino acid changes</strong></li>
          {tx_changes}
+         {external_primer_link_html}
          <li><strong>Comment</strong>: {comment}</li>
          <li><strong>Ordered by</strong>: {name}</li>
        </ul>
@@ -265,6 +294,7 @@ def verification_email_body(
         display_name=display_name,
         category=category,
         subcategory=subcategory,
+        chr_position=chr_position,
         breakpoint_1=breakpoint_1,
         breakpoint_2=breakpoint_2,
         hgnc_symbol=hgnc_symbol,
@@ -273,6 +303,7 @@ def verification_email_body(
         tx_changes=tx_changes,
         name=name,
         comment=comment,
+        external_primer_link_html=external_primer_link_html,
     )
 
     return html
