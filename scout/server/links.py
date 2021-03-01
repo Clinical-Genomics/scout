@@ -1,3 +1,4 @@
+from flask import current_app
 from pprint import pprint as pp
 
 from scout.constants import SPIDEX_HUMAN
@@ -540,6 +541,7 @@ def ucsc_link(variant_obj, build=None):
 
 
 def mycancergenome(hgnc_symbol, protein_sequence_name):
+    """Compose link to variant in mycancergenome"""
     link = "https://www.mycancergenome.org/content/alteration/{}-{}"
 
     if not hgnc_symbol:
@@ -556,6 +558,7 @@ def mycancergenome(hgnc_symbol, protein_sequence_name):
 
 
 def cbioportal(hgnc_symbol, protein_sequence_name):
+    """Compose link to variant in cbioportal"""
     link = "https://www.cbioportal.org/ln?q={}:MUT%20%3D{}"
 
     if not hgnc_symbol:
@@ -572,6 +575,7 @@ def cbioportal(hgnc_symbol, protein_sequence_name):
 
 
 def mutantp53(hgnc_id, protein_variant):
+    """Compose link to variant in mutantp53"""
     if hgnc_id != 11998:
         return None
     if not protein_variant or protein_variant.endswith("=") or protein_variant.endswith("%3D"):
@@ -583,6 +587,7 @@ def mutantp53(hgnc_id, protein_variant):
 
 
 def alamut_link(variant_obj, build=None):
+    """Compose a link which open up variants in the Alamut software"""
     build = build or 37
 
     build_str = ""
@@ -607,3 +612,19 @@ def spidex_human(variant_obj):
         return "medium"
 
     return "high"
+
+
+def external_primer_order_link(variant_obj, build=None):
+    """Compose link for primers orders based on the configuration paramaters EXTERNAL_PRIMER_ORDER_LINK_(37|38)"""
+    build = build or 37
+
+    url_template = ""
+
+    if build == 38:
+        url_template = current_app.config.get("EXTERNAL_PRIMER_ORDER_LINK_38", "")
+    elif build == 37:
+        url_template = current_app.config.get("EXTERNAL_PRIMER_ORDER_LINK_37", "")
+
+    return url_template.format(
+        chromosome=variant_obj.get("chromosome"), position=variant_obj.get("position")
+    )
