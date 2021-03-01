@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add black border to ideograms
 - Show ClinVar annotations on variantS page
 - Added integration with GENS, copy number visualization tool
+- Added a VUS label to the manual classification variant tags 
 - Add additional information to SNV verification emails
 - Tooltips documenting manual annotations from default panels
 ### Fixed
