@@ -11,9 +11,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add black border to ideograms
 - Show ClinVar annotations on variantS page
 - Added integration with GENS, copy number visualization tool
-- Added a VUS label to the manual classification variant tags 
+- Added a VUS label to the manual classification variant tags
 - Add additional information to SNV verification emails
 - Tooltips documenting manual annotations from default panels
+- Case groups now show bam files from all cases on align view
 ### Fixed
 - Center initial igv view on variant start with SNV/indels
 - Don't set initial igv view to negative coordinates
