@@ -11,7 +11,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add black border to ideograms
 - Show ClinVar annotations on variantS page
 - Added integration with GENS, copy number visualization tool
+- Added a VUS label to the manual classification variant tags 
 - Add additional information to SNV verification emails
+- Tooltips documenting manual annotations from default panels
 ### Fixed
 - Center initial igv view on variant start with SNV/indels
 - Don't set initial igv view to negative coordinates
@@ -22,12 +24,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed visibility window param from igv.js genes track
 - Updated HPO download URL
 - Patch HPO download test correctly
+- Reference size on STR hover not needed (also wrong)
 ### Changed
 - Cancer variants table header (pop freq etc)
 - Only admin users can modify LoqusDB instance in Institute settings
 - Style of case synopsis and variants and case comments
 - Switched to igv.js 2.7.5
-- Do not choke if case is missing research variants when reserch requested
+- Do not choke if case is missing research variants when research requested
+- Improve create new gene panel form validation
 
 ## [4.29.1]
 ### Added
