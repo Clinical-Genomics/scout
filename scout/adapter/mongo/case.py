@@ -213,9 +213,8 @@ class CaseHandler(object):
         if query_field == "user":
             LOG.debug(f"Search for cases with assignee '{query_term}'.")
             query_terms = query_term.split(" ")
-            users = self.user_collection.find(
-                {"$or": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]}
-            )
+            query = {"$or": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]}
+            users = self.user_collection.find(query)
             nr_users = sum(
                 1
                 for i in self.user_collection.find(
@@ -223,6 +222,7 @@ class CaseHandler(object):
                 )
             )
             query["assignees"] = {"$in": [user["email"] for user in users]}
+            LOG.error(query["assignees"])
 
         return order
 
