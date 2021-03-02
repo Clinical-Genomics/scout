@@ -362,7 +362,7 @@ class CaseHandler(object):
         if yield_query:
             return query
 
-        LOG.error(f"Get cases with query {query}")
+        LOG.info(f"Get cases with query {query}")
         if order:
             return self.case_collection.find(query)
 
