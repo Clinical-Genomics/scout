@@ -213,16 +213,11 @@ class CaseHandler(object):
         if query_field == "user":
             LOG.debug(f"Search for cases with assignee '{query_term}'.")
             query_terms = query_term.split(" ")
-            query = {"$or": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]}
-            users = self.user_collection.find(query)
-            nr_users = sum(
-                1
-                for i in self.user_collection.find(
-                    {"name": {"$regex": query_term, "$options": "i"}}
-                )
-            )
+            user_query = {
+                "$or": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]
+            }
+            users = self.user_collection.find(user_query)
             query["assignees"] = {"$in": [user["email"] for user in users]}
-            LOG.error(query["assignees"])
 
         return order
 
@@ -367,7 +362,7 @@ class CaseHandler(object):
         if yield_query:
             return query
 
-        LOG.info(f"Get cases with query {query}")
+        LOG.error(f"Get cases with query {query}")
         if order:
             return self.case_collection.find(query)
 
