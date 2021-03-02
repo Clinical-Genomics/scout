@@ -214,7 +214,7 @@ class CaseHandler(object):
             LOG.debug(f"Search for cases with assignee '{query_term}'.")
             query_terms = query_term.split(" ")
             user_query = {
-                "$or": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]
+                "$and": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]
             }
             users = self.user_collection.find(user_query)
             query["assignees"] = {"$in": [user["email"] for user in users]}
