@@ -13,7 +13,7 @@ samples:
     phenotype: affected
     sex: male
     expected_coverage: 90
-    mt_bam: ~/tmp/19050-I-2A.mt.bam
+    mt_bam: scout/demo/reduced_mt.bam
     tmb: 7
     msi: 15
     tumor_purity: 1
