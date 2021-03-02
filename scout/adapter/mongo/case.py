@@ -156,7 +156,7 @@ class CaseHandler(object):
         """
         order = None
         query_field = name_query.split(":")[0]  # example:status
-        query_term = name_query[name_query.index(":") + 1 :].replace(" ", "")  # example:active
+        query_term = name_query[name_query.index(":") + 1 :].strip()
 
         if query_field == "case" and query_term != "":
             LOG.debug("Case display name query")
@@ -212,7 +212,10 @@ class CaseHandler(object):
 
         if query_field == "user":
             LOG.debug(f"Search for cases with assignee '{query_term}'.")
-            users = self.user_collection.find({"name": {"$regex": query_term, "$options": "i"}})
+            query_terms = query_term.split(" ")
+            query = {"$or": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]}
+            LOG.error(query)
+            users = self.user_collection.find(query)
             nr_users = sum(
                 1
                 for i in self.user_collection.find(
