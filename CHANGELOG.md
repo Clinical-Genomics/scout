@@ -11,7 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add black border to ideograms
 - Show ClinVar annotations on variantS page
 - Added integration with GENS, copy number visualization tool
-- Added a VUS label to the manual classification variant tags 
+- Added a VUS label to the manual classification variant tags
 - Add additional information to SNV verification emails
 - Tooltips documenting manual annotations from default panels
 ### Fixed
@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Patch HPO download test correctly
 - Reference size on STR hover not needed (also wrong)
 - Introduced genome build check (allowed values: 37 or 38) on case load
+- Improve case searching by assignee full name
 ### Changed
 - Cancer variants table header (pop freq etc)
 - Only admin users can modify LoqusDB instance in Institute settings
