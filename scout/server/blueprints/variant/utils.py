@@ -117,12 +117,13 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
 
 
 def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
-    """Adds information to variant genes from hgnc genes and gene panels.
+    """Adds information to variant genes from hgnc genes and selected gene panels.
 
     Variants are annotated with gene and transcript information from VEP. In Scout the database
     keeps updated and extended information about genes and transcript. This function will compliment
      the VEP information with the updated database information.
     Also there is sometimes additional information that are manually curated in the gene panels.
+    Only the selected panels passed to this function (typically default) are used.
     This information needs to be added to the variant before sending it to the template.
 
     This function will loop over all genes and add that extra information.
