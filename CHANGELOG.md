@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated HPO download URL
 - Patch HPO download test correctly
 - Reference size on STR hover not needed (also wrong)
+- Introduced genome build check (allowed values: 37 or 38) on case load
 ### Changed
 - Cancer variants table header (pop freq etc)
 - Only admin users can modify LoqusDB instance in Institute settings

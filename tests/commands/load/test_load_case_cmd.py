@@ -1,16 +1,50 @@
 # -*- coding: utf-8 -*-
-
 import os
 import pytest
-import shutil
 import tempfile
-from scout.demo import load_path
+from scout.demo import load_path, ped_path
 
 from scout.commands import cli
+from scout.parse import case
 from scout.server.extensions import store
 
 
-def test_load_case(mock_app, institute_obj, case_obj):
+def test_load_case_no_yaml_no_ped(mock_app, institute_obj):
+    """Test loading a case into scout without any config file"""
+
+    case_owner = institute_obj["_id"]
+
+    # WHEN case is loaded without any config file
+    runner = mock_app.test_cli_runner()
+    result = runner.invoke(cli, ["load", "case", "--owner", case_owner])
+    # THEN it should return error
+    assert result.exit_code != 0
+    assert "Please provide either scout config or ped" in result.output
+
+
+def test_load_case_from_ped(mock_app, institute_obj, case_obj):
+    """Test loading a case into scout from a ped file. It requires providing case genome build in the prompt."""
+
+    # GIVEN a database with no cases
+    store.delete_case(case_id=case_obj["_id"])
+    assert store.case_collection.find_one() is None
+
+    case_owner = institute_obj["_id"]
+
+    # WHEN case is loaded using a ped file it will also require a genome build
+    runner = mock_app.test_cli_runner()
+    result = runner.invoke(
+        cli, ["load", "case", "--owner", case_owner, "--ped", ped_path], input="37"
+    )
+
+    # THEN case should be saved correctly
+    assert result.exit_code == 0
+    case_obj = store.case_collection.find_one()
+    # WITH the expected genome build
+    assert case_obj["genome_build"] == 37
+
+
+def test_load_case_from_yaml(mock_app, institute_obj, case_obj):
     """Testing the scout load case command"""
 
     runner = mock_app.test_cli_runner()
@@ -31,7 +65,31 @@ def test_load_case(mock_app, institute_obj, case_obj):
     assert sum(1 for i in store.case_collection.find()) == 1
 
 
-def test_load_case_KeyError(mock_app, institute_obj, case_obj):
+def test_load_case_KeyError(mock_app, institute_obj, case_obj, monkeypatch):
+    """Test loading a case with a config file that will trigger keyError"""
+
+    runner = mock_app.test_cli_runner()
+
+    # GIVEN a patched scout add_smn_info function that will raise KeyError
+    def mock_smn_info(*args):
+        raise KeyError
+
+    monkeypatch.setattr(case, "add_smn_info", mock_smn_info)
+
+    # GIVEN a database with no cases
+    store.delete_case(case_id=case_obj["_id"])
+    assert store.case_collection.find_one() is None
+
+    # WHEN case is loaded using a a yaml file
+    runner = mock_app.test_cli_runner()
+    result = runner.invoke(cli, ["load", "case", load_path])
+
+    # THEN it should trigger KeyError
+    assert result.exit_code == 1
+    assert "KEYERROR" in result.output
+
+
+def test_load_case_KeyMissing(mock_app, institute_obj, case_obj):
     # GIVEN a config setup with 'sample_id' missing
     runner = mock_app.test_cli_runner()
     assert runner
@@ -45,15 +103,21 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj):
     # Make sure the scout config file is available
     assert os.path.exists(load_path)
     temp_conf = os.path.join(tempfile.gettempdir(), "temp.conf")
-    shutil.copy2(load_path, temp_conf)
-    sed_change = "sed -i -e 's/sample_id/SAMPLE_ID/g' "
-    os.system(sed_change + temp_conf)
+
+    content = []
+    with open(load_path) as f:
+        content = f.readlines()
+
+    # Remove a mandatory key value from config value content
+    content.remove("family: 'internal_id'\n")
+
+    with open(temp_conf, mode="wt") as f:
+        f.write("".join(content))
 
     # WHEN: config is loaded
     result = runner.invoke(cli, ["load", "case", temp_conf])
     # THEN KeyError is caught and exit value is non-zero
     assert result.exit_code != 0
-    os.remove(temp_conf)  # clean up
 
 
 def test_load_case_NoConf(mock_app, institute_obj, case_obj):
