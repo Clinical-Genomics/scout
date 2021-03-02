@@ -51,7 +51,14 @@
                       {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                     </a>
                   </td> <!-- end of gene symbol col-->
-                  <td>{{ transcript.refseq_identifiers|join(", ") }}</td> <!-- Refseq IDs -->
+                  <td>
+                    {% set refseq_identifiers = [] %}
+                    {% for tr_id in transcript.refseq_identifiers %}
+                      {% if not (tr_id.startswith('XM') and transcript.refseq_id != tr_id) %}
+                        {{ refseq_identifiers.append(tr_id)|default("", true) }}
+                      {% endif %}
+                    {% endfor %}
+                    {{ refseq_identifiers|join(", ")}}</td> <!-- Refseq IDs -->
                   <td class="d-flex align-items-center">
                     <div> <!-- ID col-->
                       <span class="text"> {{ transcript.transcript_id }}</span>
