@@ -16,7 +16,7 @@ from scout.constants import (
     ACMG_MAP,
 )
 from scout.constants import CASE_SEARCH_TERMS
-from scout.server.extensions import store
+from scout.server.extensions import store, loqusdb
 from scout.server.utils import user_institutes, templated, institute_and_case
 from .forms import InstituteForm, GeneVariantFiltersForm, PhenoModelForm, PhenoSubPanelForm
 
@@ -246,12 +246,14 @@ def institute_settings(institute_id):
             return redirect(request.referrer)
 
     data = controllers.institute(store, institute_id)
+    loqus_instances = loqusdb.loqus_ids if hasattr(loqusdb, "loqus_ids") else []
     default_phenotypes = controllers.populate_institute_form(form, institute_obj)
 
     return render_template(
         "/overview/institute_settings.html",
         form=form,
         default_phenotypes=default_phenotypes,
+        loqus_instances=loqus_instances,
         panel=1,
         **data,
     )
