@@ -162,6 +162,8 @@ def str_variants(
     return_view_data = {}
 
     # case bam_files for quick access to alignment view.
+    case_append_alignments(case_obj)
+
     # Fetch ids for grouped cases and prepare alignment display
     case_groups = {}
     if case_obj.get("group"):
@@ -170,8 +172,6 @@ def str_variants(
             for grouped_case in case_groups[group]:
                 case_append_alignments(grouped_case)
         return_view_data["case_groups"] = case_groups
-    else:
-        case_append_alignments(case_obj)
 
     return_view_data.update(
         variants(
