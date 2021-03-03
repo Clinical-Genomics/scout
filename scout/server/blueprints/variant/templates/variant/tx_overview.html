@@ -53,9 +53,9 @@
                   </td> <!-- end of gene symbol col-->
                   <td>
                     {% set refseq_identifiers = [] %}
-                    {% for tr_id in transcript.refseq_identifiers %}
-                      {% if not (tr_id.startswith('XM') and transcript.refseq_id != tr_id) %}
-                        {{ refseq_identifiers.append(tr_id)|default("", true) }}
+                    {% for tx_id in transcript.refseq_identifiers %}
+                      {% if not (tx_id.startswith('XM') and transcript.refseq_id != tx_id) %}
+                        {{ refseq_identifiers.append(tx_id)|default("", true) }}
                       {% endif %}
                     {% endfor %}
                     {{ refseq_identifiers|join(", ")}}</td> <!-- Refseq IDs -->
