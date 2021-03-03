@@ -34,7 +34,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Switched to igv.js 2.7.5
 - Do not choke if case is missing research variants when research requested
 - Improve create new gene panel form validation
-- Hide XM- transcript not overlapping with transcript refseq_id in variant's page
+- Hide XM- transcripts not overlapping with transcript refseq_id in variant's page
 
 ## [4.29.1]
 ### Added
