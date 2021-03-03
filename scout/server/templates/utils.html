@@ -39,7 +39,7 @@
   {% set comments = comments|list %}
   <h6 class="comments-title"></i><i class="far fa-comments"></i> Comments ({{ comments|length }})</h6>
   <div class="list-group" style="max-height:200px; overflow-y: scroll;">
-    <style>.even { background-color: #fdf5ca }</style>
+    <style>.even { background-color: #f6f6f6 }</style>
     <style>.odd { background-color: #d5e8f0 }</style>
     {% for comment in comments %}
       <div class="row ml-1 alert {% if loop.index0 % 2 %}even{% else %}odd{% endif %}">
