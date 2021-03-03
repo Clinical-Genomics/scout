@@ -160,7 +160,15 @@ def str_variants(
     """Pre-process list of STR variants."""
 
     # case bam_files for quick access to alignment view.
-    case_append_alignments(case_obj)
+    # Fetch ids for grouped cases and prepare alignment display
+    case_groups = {}
+    if case_obj.get("group"):
+        for group in case_obj.get("group"):
+            case_groups[group] = list(store.cases(group=group))
+            for grouped_case in case_groups[group]:
+                case_append_alignments(grouped_case)
+    else:
+        case_append_alignments(case_obj)
 
     return variants(
         store, institute_obj, case_obj, variants_query, variant_count, page=page, per_page=per_page
