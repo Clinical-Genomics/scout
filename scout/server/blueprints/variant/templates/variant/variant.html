@@ -5,7 +5,7 @@
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, severity_list, conservations, mappability %}
-{% from "variant/buttons.html" import variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button %}
+{% from "variant/buttons.html" import igv_button, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -457,43 +457,7 @@
           <tbody>
             <tr>
               <td style="width:20%;">
-                <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
-                  <!-- general hidden fields required to submit POST request to IGV viewer -->
-                  <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
-                  <input type="hidden" name="build" value="{{case.genome_build}}">
-                  <input type="hidden" name="contig" value="{{variant.chromosome}}">
-                  <input type="hidden" name="start" value="{{variant.position - 50}}">
-                  <input type="hidden" name="stop" value="{{variant.position + 50}}">
-                  <!-- end of general hidden form fields -->
-                {% if variant.chromosome == "MT" %}
-                  {% if case.mt_bams %}
-                    <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
-                    <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
-                    <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV viewer</button>
-                  {% else %}
-                    <span class="text-muted">MT BAM file(s) missing</span>
-                  {% endif %}
-                {% elif case.bam_files %}
-                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
-                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
-                  {% if case.rhocall_beds %}
-                    <input type="hidden" name="rhocall_bed" value="{{case.rhocall_beds|join(',')}}">
-                    <input type="hidden" name="rhocall_wig" value="{{case.rhocall_wigs|join(',')}}">
-                  {% endif %}
-                  {% if case.tiddit_coverage_wigs %}
-                    <input type="hidden" name="tiddit_coverage_wig" value="{{case.tiddit_coverage_wigs|join(',')}}">
-                  {% endif %}
-                  {% if case.upd_regions_beds %}
-                    <input type="hidden" name="upd_regions_bed" value="{{case.upd_regions_beds|join(',')}}">
-                  {% endif %}
-                  {% if case.upd_sites_beds %}
-                    <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
-                  {% endif %}
-                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
-                {% else %}
-                  <span class="text-muted">BAM file(s) missing</span>
-                {% endif %}
-              </form>
+                {{ igv_button(case, variant, case_groups) }}
               </td>
               {% if case.mt_bams or case.bam_files %}
               <td style="width:50%;">
@@ -536,6 +500,7 @@
     </div> <!-- end of card body -->
   </div> <!--  end of card div -->
 {% endmacro %}
+
 
 {% macro compounds_panel() %}
   <div class="card panel-default">
