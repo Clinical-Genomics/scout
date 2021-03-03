@@ -40,6 +40,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Introduce deprecation warning for Loqus configs that are not dictionaries
 - Improve create new gene panel form validation
 - Make XM- transcripts less visible if they don't overlap with transcript refseq_id in variant page
+- Color of gene panels and comments panels on cases and variant pages
 
 ## [4.29.1]
 ### Added
