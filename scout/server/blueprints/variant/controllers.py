@@ -145,18 +145,13 @@ def variant(
     if add_case:
         variant_case(store, case_obj, variant_obj)
 
-    # Fetch ids for grouped cases and prepare alignment dispay
+    # Fetch ids for grouped cases and prepare alignment display
     case_groups = {}
-    case_group_label = {}
     if case_obj.get("group"):
         for group in case_obj.get("group"):
             case_groups[group] = list(store.cases(group=group))
-            case_group_label[group] = store.case_group_label(group)
-            LOG.debug("Populate aligments for entire case group {}:".format(group))
             for grouped_case in case_groups[group]:
-                LOG.debug("Populate case {}".format(grouped_case))
                 case_append_alignments(grouped_case)
-                LOG.debug("Ok: {}".format(grouped_case))
 
     # Collect all the events for the variant
     events = list(store.events(institute_obj, case=case_obj, variant_id=variant_id))
@@ -253,7 +248,6 @@ def variant(
         "institute": institute_obj,
         "case": case_obj,
         "case_groups": case_groups,
-        "case_group_label": case_group_label,
         "variant": variant_obj,
         variant_category: True,
         "causatives": other_causatives,
