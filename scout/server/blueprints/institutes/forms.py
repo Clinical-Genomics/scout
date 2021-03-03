@@ -18,6 +18,13 @@ from scout.server.extensions import loqusdb
 CASE_SEARCH_KEY = [(value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()]
 
 
+class NonValidatingSelectField(SelectField):
+    """Necessary to skip validation of dynamic selects in form"""
+
+    def pre_validate(self, form):
+        pass
+
+
 class NonValidatingSelectMultipleField(SelectMultipleField):
     """Necessary to skip validation of dynamic multiple selects in form"""
 
@@ -74,8 +81,7 @@ class InstituteForm(FlaskForm):
     )
     institutes = NonValidatingSelectMultipleField("Institutes to share cases with", choices=[])
 
-    loqus_instances = [instance["id"] for instance in loqusdb.loqusdb_settings]
-    loqusdb_id = SelectField("LoqusDB id", [validators.Optional()], choices=loqus_instances)
+    loqusdb_id = NonValidatingSelectField("LoqusDB id", choices=[])
 
     submit_btn = SubmitField("Save settings")
 
