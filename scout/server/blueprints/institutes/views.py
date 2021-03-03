@@ -247,7 +247,6 @@ def institute_settings(institute_id):
 
     data = controllers.institute(store, institute_id)
     loqus_instances = loqusdb.loqus_ids if hasattr(loqusdb, "loqus_ids") else []
-
     default_phenotypes = controllers.populate_institute_form(form, institute_obj)
 
     return render_template(

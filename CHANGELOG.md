@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added a VUS label to the manual classification variant tags
 - Add additional information to SNV verification emails
 - Tooltips documenting manual annotations from default panels
+- Case groups now show bam files from all cases on align view
 - Support LoqusDB REST API queries
 ### Fixed
 - Center initial igv view on variant start with SNV/indels
@@ -28,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Reference size on STR hover not needed (also wrong)
 - Introduced genome build check (allowed values: 37 or 38) on case load
 - Improve case searching by assignee full name
+- Populating the LoqusDB select in institute settings
 ### Changed
 - Cancer variants table header (pop freq etc)
 - Only admin users can modify LoqusDB instance in Institute settings
@@ -37,6 +39,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Count cases in LoqusDB by variant type
 - Introduce deprecation warning for Loqus configs that are not dictionaries
 - Improve create new gene panel form validation
+- Make XM- transcripts less visible if they don't overlap with transcript refseq_id in variant page
 
 ## [4.29.1]
 ### Added
