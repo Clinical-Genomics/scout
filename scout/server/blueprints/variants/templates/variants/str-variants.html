@@ -2,7 +2,7 @@
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 {% from "utils.html" import comments_table %}
 {% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, pagination_footer, pagination_hidden_div, str_filters %}
-
+{% from "variant/buttons.html" import igv_button %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - STR variants
@@ -104,19 +104,8 @@
             <td>{{ variant.chromosome }}</td>
             <td>
               {{ variant.position }}
-              {% if case.bam_files %}
-                <form name="form_{{variant._id}}" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
-                  <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
-                  <input type="hidden" name="build" value="{{case.genome_build}}">
-                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
-                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
-                  <input type="hidden" name="contig" value="{{variant.chromosome}}">
-                  <input type="hidden" name="start" value="{{variant.position - 50}}">
-                  <input type="hidden" name="stop" value="{{variant.position + 50}}">
-                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
-                </form>
-              {% endif %}
-            </td>
+              {{ igv_button(case,variant,case_groups) }}
+              </td>
         </tr>
         {% else %}
           <tr>
