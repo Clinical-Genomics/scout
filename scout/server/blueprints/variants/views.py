@@ -252,7 +252,6 @@ def str_variants(institute_id, case_name):
     return dict(
         institute=institute_obj,
         case=case_obj,
-        case_groups=case_groups,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         variant_type=variant_type,
         manual_rank_options=MANUAL_RANK_OPTIONS,
