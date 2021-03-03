@@ -53,6 +53,7 @@ class LoqusDB:
         self.loqusdb_settings = [
             {"id": "default", "binary_path": loqusdb_binary, "config_path": loqusdb_args}
         ]
+        self.loqus_ids = []
         self.version = version
         LOG.info(
             "Initializing loqus extension with config: %s",
@@ -63,6 +64,7 @@ class LoqusDB:
         """Initialize from Flask."""
         LOG.info("Init loqusdb app")
         self.loqusdb_settings = self.app_config(app)
+        self.loqus_ids = [setting.get("id", "default") for setting in self.loqusdb_settings]
         self.version = self.get_configured_version()
         if not self.version:
             self.version = self.get_version()
