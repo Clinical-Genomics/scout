@@ -6,9 +6,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+### Changed
+
+## [4.30]
+### Added
 - Introduced a `reset dismiss variant` verb
 - Button to reset all dismissed variants for a case
-- Add black border to ideograms
+- Add black border to Chromograph ideograms
 - Show ClinVar annotations on variantS page
 - Added integration with GENS, copy number visualization tool
 - Added a VUS label to the manual classification variant tags
@@ -26,13 +31,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated HPO download URL
 - Patch HPO download test correctly
 - Reference size on STR hover not needed (also wrong)
-- Introduced genome build check (allowed values: 37 or 38) on case load
+- Introduced genome build check (allowed values: 37, 38, "37", "38") on case load
 - Improve case searching by assignee full name
 - Populating the LoqusDB select in institute settings
 ### Changed
 - Cancer variants table header (pop freq etc)
 - Only admin users can modify LoqusDB instance in Institute settings
-- Style of case synopsis and variants and case comments
+- Style of case synopsis, variants and case comments
 - Switched to igv.js 2.7.5
 - Do not choke if case is missing research variants when research requested
 - Improve create new gene panel form validation
