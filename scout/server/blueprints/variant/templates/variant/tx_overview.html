@@ -54,13 +54,16 @@
                   <td>
                     {% set decorated_txs = [] %}
                     {% for tx_id in transcript.refseq_identifiers %}
-                      {% if tx_id.startswith('XM') and transcript.refseq_id != tx_id %}
+                      {% if tx_id.startswith('XM') and transcript.refseq_id != tx_id %} <!-- tx of minor importance -->
                         {% set decorated_tx = '<font class="text-muted font-italic">' + tx_id + '</font>' %}
                       {% else %}
-                        {% set decorated_tx = tx_id %}
+                        {% set decorated_tx = tx_id %} <!-- tx with refseq ID -->
                       {% endif %}
                       {{ decorated_txs.append(decorated_tx)|default("", true) }}
                     {% endfor %}
+                    {% if transcript.transcript_id.startswith('NM') and not decorated_txs %} <!-- VEP RefSeq annotation, use tx id as refseq ID -->
+                      {{ decorated_txs.append(transcript.transcript_id)|default("", true) }}
+                    {% endif %}
                     {{ decorated_txs|join(", ")|safe or '<font class="text-muted font-italic">Check complete list of transcripts</font>'|safe }}
                   </td> <!-- Refseq IDs -->
                   <td class="d-flex align-items-center">

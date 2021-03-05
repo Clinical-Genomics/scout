@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [X.X.X]
 ### Added
 ### Fixed
+- Use VEP RefSeq ID if list if available in RefSeq transcripts overview
 ### Changed
 
 ## [4.30.1]
