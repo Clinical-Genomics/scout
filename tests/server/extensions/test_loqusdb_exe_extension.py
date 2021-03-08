@@ -5,6 +5,7 @@ import pytest
 
 from scout.server.app import create_app
 from scout.server.extensions import LoqusDB, loqusdb, loqus_extension
+from scout.exceptions.config import ConfigError
 
 
 def test_set_coordinates_no_variant_type():
@@ -72,14 +73,23 @@ def test_set_coordinates_unknown_ins():
 
 
 def test_get_bin_path_wrong_instance(loqus_exe_app):
-    """Get collecting the path to the binary file when the instance is not available"""
+    """Test get_bin_path when the instance is not available"""
 
     # When the get_bin_path function is invoked for a non-existing loqus instance
     with loqus_exe_app.app_context():
-        with pytest.raises(subprocess.CalledProcessError):
-            loqusdb.get_exec_loqus_version("wrong_instance") == -1
+        # THEN it should raise ConfigError
+        with pytest.raises(ConfigError):
+            assert loqusdb.get_bin_path(loqusdb_id="FOO")
 
 
+def test_get_config_path_wrong_instance(loqus_exe_app):
+    """Test get_config_path when the instance is not available"""
+
+    # When the get_config_path function is invoked for a non-existing loqus instance
+    with loqus_exe_app.app_context():
+        # THEN it should raise ConfigError
+        with pytest.raises(ConfigError):
+            assert loqusdb.get_config_path(loqusdb_id="FOO")
 
 
 def test_get_exec_loqus_version_CalledProcessError(loqus_exe_app, monkeypatch):
