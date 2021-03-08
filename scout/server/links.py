@@ -420,7 +420,7 @@ def ensembl_link(variant_obj, build=37):
     """Compose (sv) variant link to ensembl"""
 
     my_end = variant_obj["end"]
-    if variant_obj["chromosome"] != variant_obj["end_chrom"]:
+    if variant_obj["chromosome"] != variant_obj.get("end_chrom"):
         my_end = variant_obj["position"]
 
     if build == 37:
@@ -434,7 +434,7 @@ def decipher_link(variant_obj, build=37):
     """Compose DECIPHER SV variant links"""
 
     my_end = variant_obj["end"]
-    if variant_obj["chromosome"] != variant_obj["end_chrom"]:
+    if variant_obj["chromosome"] != variant_obj.get("end_chrom"):
         my_end = variant_obj["position"]
 
     if build == 37:
