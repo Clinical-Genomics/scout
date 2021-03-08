@@ -7,7 +7,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [X.X.X]
 ### Added
 ### Fixed
+### Changed
+
+## [4.30.2]
+### Added
+### Fixed
 - Use VEP RefSeq ID if RefSeq list is empty in RefSeq transcripts overview
+- Bug creating variant links for variants with no end_chrom
 ### Changed
 
 ## [4.30.1]
