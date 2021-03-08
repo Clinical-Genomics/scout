@@ -38,7 +38,7 @@ def test_loqus_api_variant_no_instance(loqus_api_app):
         )
 
         # THEN the API info should return None
-        assert var_info == None
+        assert var_info is None
 
 
 def test_loqusdb_api_snv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
