@@ -28,6 +28,19 @@ def test_get_api_loqus_version(loqus_api_app, monkeypatch):
         assert version == 2.5
 
 
+def test_loqus_api_variant_no_instance(loqus_api_app):
+    """Test fetching info on a variant from loqusdb API when the instance is not available"""
+
+    with loqus_api_app.app_context():
+        # WHEN fetching the variant info
+        var_info = loqusdb.get_variant(
+            {"_id": "a variant", "category": "snv"}, "non_valid_instance"
+        )
+
+        # THEN the API info should return None
+        assert var_info == None
+
+
 def test_loqusdb_api_snv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
     """Test fetching a SNV variant info from loqusdb API"""
 
@@ -84,6 +97,17 @@ def test_loqusdb_api_sv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
 
         # THEN assert the info was retrieved correctly
         assert var_info["observations"] == loqus_api_variant["observations"]
+
+
+def test_loqus_api_cases_no_instance(loqus_api_app):
+    """Test fetching info on number of cases from loqusdb API when the instance is not available"""
+
+    with loqus_api_app.app_context():
+        # WHEN fetching the nr_cases with SNV variants from an instance not available
+        n_cases = loqusdb.case_count("snv", "default")
+
+        # THEN the API shoud return 0 cases
+        assert n_cases == 0
 
 
 def test_loqusdb_api_cases(loqus_api_app, monkeypatch):
