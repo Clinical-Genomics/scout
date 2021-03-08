@@ -71,6 +71,17 @@ def test_set_coordinates_unknown_ins():
     assert var["length"] == length
 
 
+def test_get_bin_path_wrong_instance(loqus_exe_app):
+    """Get collecting the path to the binary file when the instance is not available"""
+
+    # When the get_bin_path function is invoked for a non-existing loqus instance
+    with loqus_exe_app.app_context():
+        with pytest.raises(subprocess.CalledProcessError):
+            loqusdb.get_exec_loqus_version("wrong_instance") == -1
+
+
+
+
 def test_get_exec_loqus_version_CalledProcessError(loqus_exe_app, monkeypatch):
     """Test the error triggered when retrieving the version of a LoqusDB instance not properly configured"""
 
