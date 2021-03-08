@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [X.X.X]
 ### Added
 ### Fixed
@@ -13,7 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 - Use VEP RefSeq ID if RefSeq list is empty in RefSeq transcripts overview
-- Bug when creating variant links for variants with no end_chrom
+- Bug creating variant links for variants with no end_chrom
 ### Changed
 
 ## [4.30.1]
