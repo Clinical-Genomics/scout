@@ -44,6 +44,8 @@ from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
 
+EVALUATION_VERBS = ["acmg", "manual_rank", "cancer_tier", "dismiss_variant", "mosaic_tags"]
+
 
 def variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
     """Pre-process list of variants."""
@@ -116,15 +118,15 @@ def _get_group_assessments(store, case_obj, variant_obj):
                 continue
 
             # check events to see if variant received assessments in the other case
-            event_query = {
-                "case": group_case_id,
-                "subject": "_".join([variant_obj["simple_id"], variant_obj["variant_type"]]),
-                "verb": {
-                    "$in": ["acmg", "manual_rank", "cancer_tier", "dismiss_variant", "mosaic_tags"]
-                },
-            }
-            variant_assessments = store.event_collection.find_one(event_query)
-            if variant_assessments is None:
+            assessment_events = list(
+                store.evaluation_events(
+                    group_case_id,
+                    variant_obj["simple_id"],
+                    variant_obj["variant_type"],
+                    EVALUATION_VERBS,
+                )
+            )
+            if not assessment_events:
                 continue
             cohort_var_obj = store.variant(
                 case_id=group_case_id,

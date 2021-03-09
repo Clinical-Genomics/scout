@@ -188,6 +188,28 @@ class VariantEventHandler(object):
         )
         return updated_variant
 
+    def evaluation_events(self, case_id, simple_id, variant_type, verbs=[]):
+        """Get all events for a variant of a case evaluated with one of more verbs
+
+        Args:
+            case_id (str): id of a case
+            simple_id (str): a variant object
+            variant_type (str): type of variant ("clinical", "research")
+            verbs (list): list of verbs used to evaluate the variant
+
+        Returns:
+            evaluation_events (list)
+        """
+        # check events to see if variant received assessments in the other case
+        event_query = {
+            "case": case_id,
+            "subject": "_".join([simple_id, variant_type]),
+        }
+        if verbs:
+            event_query["verb"] = {"$in": verbs}
+        evaluation_events = self.event_collection.find(event_query)
+        return evaluation_events
+
     def sanger_ordered(self, institute_id=None, user_id=None, case_id=None):
         """Get all variants with validations ever ordered.
 
