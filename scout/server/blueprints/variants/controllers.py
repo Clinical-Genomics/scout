@@ -47,7 +47,6 @@ LOG = logging.getLogger(__name__)
 
 def variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
     """Pre-process list of variants."""
-
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = variants_query.skip(skip_count).limit(per_page)
@@ -107,7 +106,6 @@ def _get_group_assessments(store, case_obj, variant_obj):
         group_assessments(list(dict))
     """
     group_assessments = []
-
     group_case_ids = set()
     for group_id in case_obj.get("group"):
         group_case_ids.update(store.case_ids_from_group_id(group_id))
@@ -117,12 +115,22 @@ def _get_group_assessments(store, case_obj, variant_obj):
             if group_case_id == case_obj["_id"]:
                 continue
 
-            cohort_var_obj = store.variant(
-                case_id=group_case_id,
-                simple_id=variant_obj["simple_id"],
-                variant_type=variant_obj["variant_type"],
-            )
-            group_assessments.extend(get_manual_assessments(cohort_var_obj))
+            # check events to see if variant received assessments in the other case
+            event_query = {
+                "case": group_case_id,
+                "subject": variant_obj["simple_id"],
+                "verb": {
+                    "$in": ["acmg", "manual_rank", "cancer_tier", "dismiss_variant", "mosaic_tags"]
+                },
+            }
+            variant_assessment_events = store.event_collection.find(event_query)
+            for res in variant_assessment_events:
+                cohort_var_obj = store.variant(
+                    case_id=group_case_id,
+                    simple_id=variant_obj["simple_id"],
+                    variant_type=variant_obj["variant_type"],
+                )
+                group_assessments.extend(get_manual_assessments(cohort_var_obj))
 
     return group_assessments
 
