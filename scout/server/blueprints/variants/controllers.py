@@ -118,15 +118,20 @@ def _get_group_assessments(store, case_obj, variant_obj):
             # check events to see if variant received assessments in the other case
             event_query = {
                 "case": group_case_id,
-                "subject": variant_obj["simple_id"],
+                "subject": "_".join([variant_obj["simple_id"], variant_obj["variant_type"]]),
                 "verb": {
                     "$in": ["acmg", "manual_rank", "cancer_tier", "dismiss_variant", "mosaic_tags"]
                 },
             }
-            variant_assessment_events = store.event_collection.find(event_query)
-            for res in variant_assessment_events:
-                cohort_var_obj = store.variant(case_id=group_case_id, document_id=res["variant_id"])
-                group_assessments.extend(get_manual_assessments(cohort_var_obj))
+            variant_assessments = store.event_collection.find_one(event_query)
+            if variant_assessments is None:
+                continue
+            cohort_var_obj = store.variant(
+                case_id=group_case_id,
+                simple_id=variant_obj["simple_id"],
+                variant_type=variant_obj["variant_type"],
+            )
+            group_assessments.extend(get_manual_assessments(cohort_var_obj))
 
     return group_assessments
 
