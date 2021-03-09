@@ -125,11 +125,7 @@ def _get_group_assessments(store, case_obj, variant_obj):
             }
             variant_assessment_events = store.event_collection.find(event_query)
             for res in variant_assessment_events:
-                cohort_var_obj = store.variant(
-                    case_id=group_case_id,
-                    simple_id=variant_obj["simple_id"],
-                    variant_type=variant_obj["variant_type"],
-                )
+                cohort_var_obj = store.variant(case_id=group_case_id, document_id=res["variant_id"])
                 group_assessments.extend(get_manual_assessments(cohort_var_obj))
 
     return group_assessments
