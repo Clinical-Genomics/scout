@@ -265,15 +265,15 @@
 
           <div class="col-12">
             {% for grouped_case in case_group %}
-              <div class="mb-2">
+              <span class="badge badge-pill badge-light">
                 <a href="{{ url_for('cases.case', institute_id=grouped_case.owner, case_name=grouped_case.display_name) }}"">{{ grouped_case.display_name }}</a>
-                    <span class="pull-right">
-                      <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=grouped_case.display_name, case_group=group_id) }}" class="btn btn-link btn-sm">
+                  <span>
+                    <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=grouped_case.display_name, case_group=group_id) }}" class="btn btn-link btn-sm">
                         <span class="fa fa-remove"></span></a>
-                    </span>
-              </div>
+                  </span>
+              </span>
             {% endfor %}
-            <hr style="height:1px;">
+            <hr style="height:2px;">
           </div>
 
 
