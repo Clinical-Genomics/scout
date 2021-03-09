@@ -239,7 +239,10 @@
 
 {% macro group_panel() %}
   <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Group cases to share user variant assessments like comments, classification and dismissal. A case can be in multiple groups."><span class="fa fa-users"></span>&nbsp;Group connected cases</div>
+    <div data-toggle='tooltip' class="panel-heading" title="Group cases to share user variant assessments like comments, classification and dismissal. A case can be in multiple groups.">
+      <span class="fa fa-users"></span>&nbsp;Group connected cases
+      <span class="float-sm-right"><a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="text-white"><span class="fas fa-plus text-white mr-3"></span>new group</a></span>
+    </div>
     <div class="card-body">
       {% if case_groups %}
         {% for group_id, case_group in case_groups.items() %}
@@ -280,7 +283,6 @@
           </div>
         {% endfor %}
       {% endif %}
-      <a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="btn btn-primary btn-xs text-white"><span class="fa fa-user-plus text-white mr-3"></span>Create new group</a>
     </div>
   </div>
 {% endmacro %}
