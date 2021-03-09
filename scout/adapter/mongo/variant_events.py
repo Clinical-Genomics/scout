@@ -200,7 +200,6 @@ class VariantEventHandler(object):
         Returns:
             evaluation_events (list)
         """
-        # check events to see if variant received assessments in the other case
         event_query = {
             "case": case_id,
             "subject": "_".join([simple_id, variant_type]),
