@@ -241,7 +241,7 @@
   <div class="card panel-default" id="case_groups">
     <div class="panel-heading">
       <span data-toggle='tooltip' title="Group cases to share user variant assessments like comments, classification and dismissal. A case can be in multiple groups.">
-        <i class="fa fa-users mr-1"></i>Group connected cases ({{case_groups|length}})
+        <i class="fa fa-users mr-1"></i>Group connected cases ({{case_groups|length}} groups)
       </span>
       <span class="float-sm-right"><a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="text-white"><span class="fas fa-plus text-white mr-1"></span>new group</a></span>
     </div>
