@@ -1,5 +1,5 @@
 <p align="center">
-	<a href="http://www.clinicalgenomics.se/scout">
+	<a href="https://clinical-genomics.github.io/scout">
 		<img height="165" width="637" src="img/logo-display.png">
 	</a>
 	<h3 align="center">Analyze VCFs and collaborate on solving rare diseases quicker</h3>
