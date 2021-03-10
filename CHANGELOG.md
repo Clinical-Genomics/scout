@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - gnomAD annotation field in admin guide
 ### Fixed
+- Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
 ### Changed
 - A more compact case groups panel
 
