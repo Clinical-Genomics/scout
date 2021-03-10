@@ -51,7 +51,7 @@ The maximum allele frequency of all populations in [ExAC][exac] population datab
 The maximum allele frequency of all populations in [gnomAD][gnomad] population database.
 
 
-- Key: `gnomAD_AF` in [VEP `CSQ` field](https://github.com/Clinical-Genomics/scout/blob/master/tests/parse/conftest.py#L161)
+- Key: `gnomAD_AF` in VEP `CSQ` field
 - Value: `Float`
 - Tools: [VEP][vep]
 
@@ -69,7 +69,7 @@ The Combined Annotation Dependent Depletion([CADD][cadd]) score. A prediction of
 
 The [SIFT][sift]) prediction for how a variation affects the protein.
 
-- Key: `SIFT` in [VEP `CSQ` field](https://github.com/Clinical-Genomics/scout/blob/master/tests/parse/conftest.py#L161)
+- Key: `SIFT` in VEP `CSQ` field
 - Value: `String`
 - Tools: [VEP][vep]
 
@@ -77,7 +77,7 @@ The [SIFT][sift]) prediction for how a variation affects the protein.
 
 The [PolyPhen][polyphen]) prediction for how a variation affects the protein.
 
-- Key: `PolyPhen` in [VEP `CSQ` field](https://github.com/Clinical-Genomics/scout/blob/master/tests/parse/conftest.py#L161)
+- Key: `PolyPhen` in VEP `CSQ` field
 - Value: `String`
 - Tools: [VEP][vep]
 
