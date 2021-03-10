@@ -95,20 +95,23 @@ def test_parse_vep_freq_thousand_g_alt():
 
 
 def test_parse_vep_freq_gnomad():
-    """Test extracting the Gnomad AF from the CSQ field"""
-    ## GIVEN a transcript with the gnomAD_AF
-    freq = 0.3428
+    """Test extracting the gnomAD AF (gnomAD_AF) from the CSQ field"""
+    ## GIVEN a transcript with the gnomAD_AF key/value
+
     header = [word.upper() for word in csq_build_38_header.split("|")]
     raw_transcripts = [
         dict(zip(header, entry.split("|"))) for entry in csq_build_38_entry.split(",")
     ]
+
+    gnomad_maf = float(raw_transcripts[0]["GNOMAD_AF"])
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
 
     ## THEN assert that the gnomAD_AF annotation is parsed correctly
     for transcript in transcripts:
-        assert transcript["gnomad_maf"] == freq
+        assert transcript["gnomad_maf"] == gnomad_maf
+        assert transcript["gnomad_max"]
 
 
 def test_parse_vep_freq_exac():
