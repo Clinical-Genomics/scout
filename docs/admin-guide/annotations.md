@@ -11,7 +11,7 @@ One of the hard problem when dealing with whole genome data is the huge amount v
 In this section all the different annotation keys and suggestions of tools that can be used to annotate them are listed.
 If nothing else is stated Scout will search in the INFO field to locate the key value pair.
 
-### Frequencies 
+### Frequencies
 
 #### 1000G ####
 
@@ -35,16 +35,25 @@ The frequency from the [ExAC][exac] population database.
 
 - Key: `EXACAF`
 - Value: `Float`
-- Tools: [VEP][vep], [SnpEff][snpeff], [genmod][genmod], [vcfanno][vcfanno] 
+- Tools: [VEP][vep], [SnpEff][snpeff], [genmod][genmod], [vcfanno][vcfanno]
 
 
 #### ExAC_MAX_AF ####
 
-The maximum allele frequency of all populations [ExAC][exac] population database. 
+The maximum allele frequency of all populations in [ExAC][exac] population database.
 
 - Key: `EXAC_MAX_AF`
 - Value: `Float`
 - Tools: custom made, we have modified the exac file and use [genmod][genmod]
+
+#### GnomAD ####
+
+The maximum allele frequency of all populations in [gnomAD][gnomad] population database.
+
+
+- Key: `gnomAD_AF` in VEP `CSQ` field
+- Value: `Float`
+- Tools: [VEP][vep]
 
 ### Severity ###
 
@@ -54,13 +63,13 @@ The Combined Annotation Dependent Depletion([CADD][cadd]) score. A prediction of
 
 - Key: `CADD` or `cadd` in VEP `CSQ` field
 - Value: `Float`
-- Tools: [VEP][vep], [SnpEff][snpeff], [genmod][genmod], [vcfanno][vcfanno] 
+- Tools: [VEP][vep], [SnpEff][snpeff], [genmod][genmod], [vcfanno][vcfanno]
 
 #### SIFT ####
 
 The [SIFT][sift]) prediction for how a variation affects the protein.
 
-- Key: `CSQ`-`SIFT`
+- Key: `SIFT` in VEP `CSQ` field
 - Value: `String`
 - Tools: [VEP][vep]
 
@@ -68,7 +77,7 @@ The [SIFT][sift]) prediction for how a variation affects the protein.
 
 The [PolyPhen][polyphen]) prediction for how a variation affects the protein.
 
-- Key: `CSQ`-`PolyPhen`
+- Key: `PolyPhen` in VEP `CSQ` field
 - Value: `String`
 - Tools: [VEP][vep]
 
@@ -133,6 +142,7 @@ What variants is this variant in Autosomal Recessive Compound with?
 
 [1000g]: http://www.1000genomes.org/
 [exac]: http://exac.broadinstitute.org
+[gnomad]: https://gnomad.broadinstitute.org/
 [cadd]: http://cadd.gs.washington.edu
 [gerp]: http://mendel.stanford.edu/SidowLab/downloads/gerp/index.html
 [phastcons]: http://compgen.cshl.edu/phast/
