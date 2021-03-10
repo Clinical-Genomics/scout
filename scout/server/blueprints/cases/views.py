@@ -993,7 +993,7 @@ def add_case_group(institute_id, case_name):
 
     controllers.add_case_group(store, current_user, institute_id, case_name, group_id)
 
-    return redirect(request.referrer)
+    return redirect(request.referrer + "#case_groups")
 
 
 @cases_bp.route("/<institute_id>/<case_name>/<case_group>/remove_case_group", methods=["GET"])
@@ -1001,7 +1001,7 @@ def remove_case_group(institute_id, case_name, case_group):
     """Unbind a case group from a case. Remove the group if it is no longer in use."""
     controllers.remove_case_group(store, current_user, institute_id, case_name, case_group)
 
-    return redirect(request.referrer)
+    return redirect(request.referrer + "#case_groups")
 
 
 @cases_bp.route("/<case_group>/case_group_update_label", methods=["POST"])
@@ -1011,7 +1011,7 @@ def case_group_update_label(case_group):
 
     controllers.case_group_update_label(store, case_group, label)
 
-    return redirect(request.referrer)
+    return redirect(request.referrer + "#case_groups")
 
 
 @cases_bp.route("/<institute_id>/<case_name>/download-hpo-genes", methods=["GET"])
