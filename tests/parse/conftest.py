@@ -153,3 +153,19 @@ def mim2gene_lines():
     ]
 
     return lines
+
+
+@pytest.fixture
+def vep_csq_header():
+    """Returns the CSQ description from the header of a VEP-annotated VCF file - Has the same fields as vep_csq"""
+    csq_header = """Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|VARIANT_CLASS|SYMBOL_SOURCE|HGNC_ID|CANONICAL|MANE|TSL|APPRIS|CCDS|ENSP|SWISSPROT|TREMBL|UNIPARC|REFSEQ_MATCH|SOURCE|GIVEN_REF|USED_REF|BAM_EDIT|GENE_PHENO|SIFT|PolyPhen|DOMAINS|miRNA|HGVS_OFFSET|AF|AFR_AF|AMR_AF|EAS_AF|EUR_AF|SAS_AF|AA_AF|EA_AF|gnomAD_AF|gnomAD_AFR_AF|gnomAD_AMR_AF|gnomAD_ASJ_AF|gnomAD_EAS_AF|gnomAD_FIN_AF|gnomAD_NFE_AF|gnomAD_OTH_AF|gnomAD_SAS_AF|MAX_AF|MAX_AF_POPS|CLIN_SIG|SOMATIC|PHENO|PUBMED|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|MOTIF_SCORE_CHANGE|CADD_PHRED|CADD_RAW|LoFtool|MES-NCSS_downstream_acceptor|MES-NCSS_downstream_donor|MES-NCSS_upstream_acceptor|MES-NCSS_upstream_donor|MES-SWA_acceptor_alt|MES-SWA_acceptor_diff|MES-SWA_acceptor_ref|MES-SWA_acceptor_ref_comp|MES-SWA_donor_alt|MES-SWA_donor_diff|MES-SWA_donor_ref|MES-SWA_donor_ref_comp|MaxEntScan_alt|MaxEntScan_diff|MaxEntScan_ref|gnomADe|gnomADe_AF_popmax|gnomADe_AF|gnomADe_popmax|gnomADg|gnomADg_AF_popmax|gnomADg_AF|gnomADg_popmax|phyloP100way|phastCons"""
+
+    return csq_header
+
+
+@pytest.fixture
+def vep_csq():
+    """Returns the CSQ entry of a VEP-annotated variant - Has the same fields as vep_csq_header"""
+    csq_entry = """T|synonymous_variant|LOW|AGRN|ENSG00000188157|Transcript|ENST00000379370|protein_coding|1/36||ENST00000379370.7:c.45G>T|ENSP00000368678.2:p.Pro15%3D|98|45|15|P|ccG/ccT|rs115173026||1||SNV|HGNC|HGNC:329|YES|NM_198576.4|1|P1|CCDS30551.1|ENSP00000368678|O00468||UPI00001D7C8B||Ensembl|G|G||1|||PROSITE_profiles:PS51257&Low_complexity_(Seg):seg&Cleavage_site_(Signalp):SignalP-noTM|||0.2825|0.3132|0.2334|0.1667|0.3489|0.3272|||0.3428|0.3172|0.2569|0.3322|0.2351|0.4483|0.3665|0.3535|0.3367|0.4483|gnomAD_FIN|benign||1|25741868|||||12.50|1.033266|0.421|7.162|9.046|||-0.089|-2.289|-2.272|-2.378|-7.286|-0.134|-7.419|-7.419||||rs115173026|0.366464|0.342849|nfe|rs115173026|0.359315|0.327412|nfe|0.852999985218048|0.619000017642975"""
+
+    return csq_entry
