@@ -334,13 +334,21 @@ def test_add_case_group(app, case_obj, institute_obj):
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
 
+        # Given a page referrer (request to add case group starts from case page)
+        referer = url_for(
+            "cases.case",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+        )
+
         # WHEN we invoke the add group endpoint with GET
         resp = client.get(
             url_for(
                 "cases.add_case_group",
                 institute_id=institute_obj["_id"],
                 case_name=case_obj["display_name"],
-            )
+            ),
+            headers={"referer": referer},
         )
 
         # THEN the response should be a redirect
@@ -360,6 +368,13 @@ def test_remove_case_group(app, case_obj, institute_obj):
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
 
+        # Given a page referrer (request to remove case group starts from case page)
+        referer = url_for(
+            "cases.case",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+        )
+
         # WHEN we invoke the add group endpoint with GET
         resp = client.get(
             url_for(
@@ -367,7 +382,8 @@ def test_remove_case_group(app, case_obj, institute_obj):
                 institute_id=institute_obj["_id"],
                 case_name=case_obj["display_name"],
                 case_group=group_id,
-            )
+            ),
+            headers={"referer": referer},
         )
 
         # THEN the response should be a redirect
