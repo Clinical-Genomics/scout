@@ -23,7 +23,7 @@
 
 ## Documentation
 
-This README only gives a brief overview of Scout, for a more complete reference, please check out our docs: [www.clinicalgenomics.se/scout](http://www.clinicalgenomics.se/scout/).
+This README only gives a brief overview of Scout, for a more complete reference, please check out our docs: https://clinical-genomics.github.io/scout .
 
 ## Runnable demo image - does not require installing of software and database
 
