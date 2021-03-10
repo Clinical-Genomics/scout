@@ -2,7 +2,7 @@ FROM python:3.8-alpine3.12
 
 LABEL base_image="python:3.8-alpine3.12"
 LABEL about.home="https://github.com/Clinical-Genomics/scout"
-LABEL about.documentation="http://www.clinicalgenomics.se/scout"
+LABEL about.documentation="https://clinical-genomics.github.io/scout"
 LABEL about.tags="WGS,WES,Rare diseases,VCF,variants,SNP,Next generation sequencing"
 LABEL about.license="MIT License (MIT)"
 
