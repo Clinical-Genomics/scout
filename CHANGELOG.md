@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [X.X.X]
 ### Added
+- gnomAD annotation field in admin guide
 ### Fixed
 ### Changed
 - A more compact case groups panel
