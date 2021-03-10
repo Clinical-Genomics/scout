@@ -238,12 +238,12 @@
 {% endmacro %}
 
 {% macro group_panel() %}
-  <div class="card panel-default" id="case_groups">
+  <div class="card panel-default" id="case_groups" data-toggle='tooltip' title="Group cases to share user variant assessments like comments, classification and dismissal. A case can be in multiple groups."">
     <div class="panel-heading">
-      <span data-toggle='tooltip' title="Group cases to share user variant assessments like comments, classification and dismissal. A case can be in multiple groups.">
+      <span>
         <i class="fa fa-users mr-1"></i>Group connected cases ({{case_groups|length}} groups)
       </span>
-      <span class="float-sm-right"><a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="text-white"><span class="fas fa-plus text-white mr-1"></span>New group</a></span>
+      <span class="float-sm-right" data-toggle='tooltip' title="Create a new group containing case {{case.display_name}}"><a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="text-white"><span class="fas fa-plus text-white mr-1"></span>New group</a></span>
     </div>
     <div class="card-body">
       <div class="list-group" style="max-height:200px; overflow-y: scroll;">
@@ -278,8 +278,8 @@
 
 
         {% endfor %}
-        </div> <!-- end of <div class="list-group" style="max-height:200px; overflow-y: scroll;" -->
       {% endif %}
+      </div> <!-- end of <div class="list-group" style="max-height:200px; overflow-y: scroll;" -->
     </div>
   </div>
 {% endmacro %}
