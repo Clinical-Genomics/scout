@@ -238,49 +238,50 @@
 {% endmacro %}
 
 {% macro group_panel() %}
-  <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Group cases to share user variant assessments like comments, classification and dismissal. A case can be in multiple groups."><span class="fa fa-users"></span>&nbsp;Group connected cases</div>
+  <div class="card panel-default" id="case_groups" data-toggle='tooltip' title="Group cases to share user variant assessments like comments, classification and dismissal. A case can be in multiple groups."">
+    <div class="panel-heading">
+      <span>
+        <i class="fa fa-users mr-1"></i>Group connected cases ({{case_groups|length}} groups)
+      </span>
+      <span class="float-sm-right" data-toggle='tooltip' data-placement="right" title="Create a new group containing case {{case.display_name}}"><a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="text-white"><span class="fas fa-plus text-white mr-1"></span>New group</a></span>
+    </div>
     <div class="card-body">
+      <div class="list-group" style="max-height:200px; overflow-y: scroll;">
       {% if case_groups %}
         {% for group_id, case_group in case_groups.items() %}
-          {{ modal_add_to_group(group_id, case_group, case_group_label[group_id]) }}
-          <div class="row" >
-            <div class="col">
-              <form action="{{ url_for('cases.case_group_update_label', case_group=group_id)}}" method="POST">
-                <div class="input-group">
-                  <div class="input-group-prepend"><span class="fa fa-users input-group-text"></span></div>
+          {% if loop.index > 1 %}
+            <span><hr style="height:10px;"></span>
+          {% endif %}
 
-                  <input type="text" class="form-control" name="label" id="case_group_label-{{group_id}}" placeholder="{{ case_group_label[group_id] }}">
-                    <button type="submit" class="input-group-append btn btn-outline-secondary text-secondary form-control">Label</button>
-                </div>
-              </form>
-            </div>
-            <div class="col text-right">
-              <div class="btn-group">
-                <button type="button" class="btn btn-outline-secondary form-control" data-toggle="modal" data-target="#add-case-group-{{group_id}}">
-                  <span class="fa fa-plus-square-o"></span>&nbsp;Bind other case
-                </button>
+          {{ modal_add_to_group(group_id, case_group, case_group_label[group_id]) }}
+          <form class="form-inline" action="{{ url_for('cases.case_group_update_label', case_group=group_id)}}" method="POST">
+            <div class="input-group mb-2 mr-sm-2">
+              <div class="input-group-prepend">
+                <div class="input-group-text"><i class="fa fa-users"></i></div>
               </div>
+              <input type="text" class="form-control" name="label" id="case_group_label-{{group_id}}" placeholder="{{ case_group_label[group_id] }}">
             </div>
-          </div>
-          <div class="row mb-4">
-            <div class="col-12">
-              <ul class="list-group">
-              {% for grouped_case in case_group %}
-                <li class="list-group-item">
-                    <a href="{{ url_for('cases.case', institute_id=grouped_case.owner, case_name=grouped_case.display_name) }}"">{{ grouped_case.display_name }}</a>
-                    <span class="pull-right">
-                      <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=grouped_case.display_name, case_group=group_id) }}" class="btn btn-link btn-sm">
+            <button type="submit" class="btn btn-secondary btn-sm mb-2">Save label</button>
+            <button type="button" class="btn btn-secondary btn-sm mb-2 ml-3 text-right" data-toggle="modal" data-target="#add-case-group-{{group_id}}">
+              <i class="fas fa-user-plus" data-toggle='tooltip' title="Add other case to this group"></i>
+            </button>
+          </form>
+
+          <div class="col-12">
+            {% for grouped_case in case_group %}
+              <span class="badge badge-pill badge-light">
+                <a href="{{ url_for('cases.case', institute_id=grouped_case.owner, case_name=grouped_case.display_name) }}"">{{ grouped_case.display_name }}</a>
+                  <span>
+                    <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=grouped_case.display_name, case_group=group_id) }}" class="btn btn-link btn-sm">
                         <span class="fa fa-remove"></span></a>
-                    </span>
-                </li>
-              {% endfor %}
-              </ul>
-            </div>
+                  </span>
+              </span>
+            {% endfor %}
           </div>
+
         {% endfor %}
       {% endif %}
-      <a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="btn btn-primary btn-xs text-white"><span class="fa fa-user-plus text-white mr-3"></span>Create new group</a>
+      </div> <!-- end of <div class="list-group" style="max-height:200px; overflow-y: scroll;" -->
     </div>
   </div>
 {% endmacro %}
