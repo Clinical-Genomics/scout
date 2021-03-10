@@ -50,7 +50,8 @@ The maximum allele frequency of all populations in [ExAC][exac] population datab
 
 The maximum allele frequency of all populations in [gnomAD][gnomad] population database.
 
-- Key: `gnomAD_AF` in VEP `CSQ` field
+
+- Key: `gnomAD_AF` in [VEP `CSQ` field](https://github.com/Clinical-Genomics/scout/blob/master/tests/parse/conftest.py#L159)
 - Value: `Float`
 - Tools: [VEP][vep]
 
