@@ -40,7 +40,7 @@ The frequency from the [ExAC][exac] population database.
 
 #### ExAC_MAX_AF ####
 
-The maximum allele frequency of all populations [ExAC][exac] population database.
+The maximum allele frequency of all populations in [ExAC][exac] population database.
 
 - Key: `EXAC_MAX_AF`
 - Value: `Float`
@@ -48,7 +48,7 @@ The maximum allele frequency of all populations [ExAC][exac] population database
 
 #### GnomAD ####
 
-The maximum allele frequency of all populations [gnomAD][gnomad] population database.
+The maximum allele frequency of all populations in [gnomAD][gnomad] population database.
 
 - Key: `gnomAD_AF`
 - Value: `Float`
