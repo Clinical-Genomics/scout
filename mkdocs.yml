@@ -1,6 +1,6 @@
 ---
 site_name: Scout Docs
-site_url: http://www.clinicalgenomics.se/scout/
+site_url: https://clinical-genomics.github.io/scout
 repo_url: https://github.com/Clinical-Genomics/scout
 dev_addr: "0.0.0.0:4000"
 site_author: Clinical Genomics bioinfo team
