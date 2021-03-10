@@ -249,8 +249,12 @@
       <div class="list-group" style="max-height:200px; overflow-y: scroll;">
       {% if case_groups %}
         {% for group_id, case_group in case_groups.items() %}
+          {% if loop.index > 1 %}
+            <span><hr style="height:10px;"></span>
+          {% endif %}
+
           {{ modal_add_to_group(group_id, case_group, case_group_label[group_id]) }}
-          <form class="form-inline mt-2" action="{{ url_for('cases.case_group_update_label', case_group=group_id)}}" method="POST">
+          <form class="form-inline" action="{{ url_for('cases.case_group_update_label', case_group=group_id)}}" method="POST">
             <div class="input-group mb-2 mr-sm-2">
               <div class="input-group-prepend">
                 <div class="input-group-text"><i class="fa fa-users"></i></div>
@@ -273,9 +277,7 @@
                   </span>
               </span>
             {% endfor %}
-            <hr style="height:2px;">
           </div>
-
 
         {% endfor %}
       {% endif %}
