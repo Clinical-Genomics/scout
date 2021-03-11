@@ -6,7 +6,7 @@ EXPORT_HEADER = [
     "Position_Change",
     "HGNC_id",
     "Gene_name",
-    "Canonical_transcript | HGVS |protein_change",
+    "Canonical_transcript | HGVS | protein_change",
     "Primary_transcript | HGVS | protein_change",
 ]
 

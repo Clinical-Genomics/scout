@@ -29,7 +29,6 @@ from scout.constants import (
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
-from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.utils import predictions, clinsig_human
 from scout.server.links import str_source_link, ensembl, cosmic_link
 from scout.server.utils import (
