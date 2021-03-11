@@ -382,7 +382,7 @@ def download_variants(store, case_obj, variant_objs):
     headers.add(
         "Content-Disposition",
         "attachment",
-        filename=str(case_obj["display_name"]) + "-filtered_sv-variants.csv",
+        filename=str(case_obj["display_name"]) + "-filtered-variants.csv",
     )
     # return a csv with the exported variants
     return Response(
