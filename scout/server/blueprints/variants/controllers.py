@@ -467,32 +467,32 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
         if decorated_gene is None:
             continue
         gene_names.append(decorated_gene.get("hgnc_symbol"))
-        # collect only primary of refseq trancripts
-        filtered_decorated_genes_txs = [
+        # collect only primary of refseq trancripts from decorated gene
+        filtered_gene_txs = [
             tx
             for tx in decorated_gene.get("transcripts", [])
             if tx.get("refseq_identifiers") or tx.get("is_primary")
         ]
+        variant_txs_dict = {tx["transcript_id"]: tx for tx in gene_obj.get("transcripts", [])}
 
-        for tx in filtered_decorated_genes_txs:
+        for tx in filtered_gene_txs:
             tx_id = tx["ensembl_transcript_id"]
 
-            # collect specific info (hgvs and pt_change) from the variant gene transcript
-            for var_tx in gene_obj.get("transcripts", []):
+            var_tx = variant_txs_dict.get(tx_id)
+            if var_tx is None:
+                continue
 
-                if var_tx["transcript_id"] != tx_id:
-                    continue
-                tx_refseq = tx.get("refseq_id")
-                hgvs = var_tx.get("coding_sequence_name") or "-"
-                pt_change = var_tx.get("protein_sequence_name") or "-"
+            tx_refseq = tx.get("refseq_id")
+            hgvs = var_tx.get("coding_sequence_name") or "-"
+            pt_change = var_tx.get("protein_sequence_name") or "-"
 
-                # collect info from primary transcripts
-                if tx_refseq in decorated_gene.get("primary_transcripts"):
-                    primary_txs.append("|".join([tx_refseq or tx_id, hgvs, pt_change]))
+            # collect info from primary transcripts
+            if tx_refseq in decorated_gene.get("primary_transcripts"):
+                primary_txs.append("|".join([tx_refseq or tx_id, hgvs, pt_change]))
 
-                # collect info from canonical transcript
-                if tx_id == gene_obj.get("canonical_transcript"):
-                    canonical_txs.append("|".join([tx_refseq or tx_id, hgvs, pt_change]))
+            # collect info from canonical transcript
+            if tx_id == gene_obj.get("canonical_transcript"):
+                canonical_txs.append("|".join([tx_refseq or tx_id, hgvs, pt_change]))
 
     for item in [gene_ids, gene_names, canonical_txs, primary_txs]:
         gene_info.append(";".join(str(x) for x in item))
