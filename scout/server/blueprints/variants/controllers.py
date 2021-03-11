@@ -419,7 +419,7 @@ def variant_export_lines(store, case_obj, variants_query):
 
         # if variant is in genes
         if gene_list is not None and len(gene_list) > 0:
-            gene_info = variant_export_genes_info(store, gene_list)
+            gene_info = variant_export_genes_info(store, gene_list, case_obj.get("genome_build"))
             variant_line += gene_info
         else:
             empty_col = 0
@@ -445,11 +445,12 @@ def variant_export_lines(store, case_obj, variants_query):
     return export_variants
 
 
-def variant_export_genes_info(store, gene_list):
+def variant_export_genes_info(store, gene_list, genome_build="37"):
     """Adds gene info to a list of fields corresponding to a variant to be exported.
 
     Args:
-        gene_list(list) A list of gene objects contained in the variant
+        gene_list(list) A list of gene objects (with limited info) contained in the variant
+        genome_build(str): genome build to export gene list to
 
     Returns:
         gene_info(list) A list of gene-relates string info
@@ -457,34 +458,39 @@ def variant_export_genes_info(store, gene_list):
     gene_ids = []
     gene_names = []
     canonical_txs = []
-    hgvs_c = []
-    pt_c = []
+    primary_txs = []
 
     gene_info = []
 
     for gene_obj in gene_list:
         hgnc_id = gene_obj["hgnc_id"]
-        gene_name = gene(store, hgnc_id)["symbol"]
-
         gene_ids.append(hgnc_id)
-        gene_names.append(gene_name)
+        decorated_gene = store.hgnc_gene(hgnc_id, genome_build)
+        gene_names.append(decorated_gene["hgnc_symbol"])
 
-        if gene_obj.get("canonical_transcript"):
-            canonical_txs.append(gene_obj.get("canonical_transcript"))
+        for tx in decorated_gene.get("transcripts"):
+            # collect only primary of refseq trancripts
+            if not tx.get("refseq_identifiers") and tx.get("is_primary") is False:
+                continue
+            tx_id = tx["ensembl_transcript_id"]
 
-        hgvs_nucleotide = "-"
-        protein_change = "-"
-        # gather HGVS info from gene transcripts
+            # collect specific info (hgvs and pt_change) for the transcript
+            for var_tx in gene_obj.get("transcripts"):
+                if var_tx["transcript_id"] != tx_id:
+                    continue
+                tx_refseq = tx.get("refseq_id")
+                hgvs = var_tx.get("coding_sequence_name") or "-"
+                pt_change = var_tx.get("protein_sequence_name") or "-"
 
-        transcripts_list = gene_obj.get("transcripts")
-        for transcript_obj in transcripts_list:
-            if transcript_obj["transcript_id"] == gene_obj.get("canonical_transcript"):
-                hgvs_nucleotide = transcript_obj.get("coding_sequence_name") or "-"
-                protein_change = transcript_obj.get("protein_sequence_name") or "-"
-        hgvs_c.append(hgvs_nucleotide)
-        pt_c.append(protein_change)
+                # collect info from primary transcripts
+                if tx_refseq in decorated_gene.get("primary_transcripts"):
+                    primary_txs.append(" | ".join([tx_refseq or tx_id, hgvs, pt_change]))
 
-    for item in [gene_ids, gene_names, canonical_txs, hgvs_c, pt_c]:
+                # collect info from canonical transcript
+                if tx_id == gene_obj.get("canonical_transcript"):
+                    canonical_txs.append(" | ".join([tx_refseq or tx_id, hgvs, pt_change]))
+
+    for item in [gene_ids, gene_names, canonical_txs, primary_txs]:
         gene_info.append(";".join(str(x) for x in item))
 
     return gene_info
@@ -498,8 +504,7 @@ def variants_export_header(case_obj):
         header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
                 + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
     """
-    header = []
-    header = header + EXPORT_HEADER
+    header = EXPORT_HEADER
     # Add fields specific for case samples
     for individual in case_obj["individuals"]:
         display_name = str(individual["display_name"])
