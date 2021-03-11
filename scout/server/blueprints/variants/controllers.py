@@ -120,8 +120,6 @@ def case_group_evaluated_vars(store, case_obj):
                 continue
             # Retrieve the list of evaluated vars in other case
             case_evaluated = store.evaluated_variants(case_id)
-            if not case_evaluated:
-                continue
             for evaluated in case_evaluated:
                 simple_id = evaluated["simple_id"]
                 # Add each of these variants to the dictionary of evaluated vars
