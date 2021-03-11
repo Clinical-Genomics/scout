@@ -444,14 +444,13 @@ def variant_export_lines(store, case_obj, variants_query):
     return export_variants
 
 
-def _match_gene_txs_variant_txs(variant_gene, decorated_gene, variant_txs_dict):
+def match_gene_txs_variant_txs(variant_gene, hgnc_gene):
     """Match gene transcript with variant transcript to extract primary and canonical tx info
 
     Args:
         variant_gene(dict): A gene dictionary with limited info present in variant.genes.
                         contains info on which transcript is canonical, hgvs and protein changes
-        decorated_gene(dict): A gene object obtained from the database containing a complete list of transcripts.
-        variant_txs_dict(dict): dictionary with all transcripts obtained from the variant gene, with tx IDs as keys
+        hgnc_gene(dict): A gene object obtained from the database containing a complete list of transcripts.
 
     Returns:
         canonical_txs, primary_txs(tuple): columns containing canonical and primary transcript info
@@ -459,28 +458,28 @@ def _match_gene_txs_variant_txs(variant_gene, decorated_gene, variant_txs_dict):
     canonical_txs = []
     primary_txs = []
 
-    for tx in decorated_gene.get("transcripts", []):
+    for tx in hgnc_gene.get("transcripts", []):
         tx_id = tx["ensembl_transcript_id"]
 
-        # collect only primary of refseq trancripts from decorated gene
+        # collect only primary of refseq trancripts from hgnc_gene gene
         if not tx.get("refseq_identifiers") and tx.get("is_primary") is False:
             continue
 
-        var_tx = variant_txs_dict.get(tx_id) or {}
-        if var_tx is None:
-            continue
+        for var_tx in variant_gene.get("transcripts", []):
+            if var_tx["transcript_id"] != tx_id:
+                continue
 
-        tx_refseq = tx.get("refseq_id")
-        hgvs = var_tx.get("coding_sequence_name") or "-"
-        pt_change = var_tx.get("protein_sequence_name") or "-"
+            tx_refseq = tx.get("refseq_id")
+            hgvs = var_tx.get("coding_sequence_name") or "-"
+            pt_change = var_tx.get("protein_sequence_name") or "-"
 
-        # collect info from primary transcripts
-        if tx_refseq in decorated_gene.get("primary_transcripts"):
-            primary_txs.append("|".join([tx_refseq or tx_id, hgvs, pt_change]))
+            # collect info from primary transcripts
+            if tx_refseq in hgnc_gene.get("primary_transcripts"):
+                primary_txs.append("|".join([tx_refseq or tx_id, hgvs, pt_change]))
 
-        # collect info from canonical transcript
-        if tx_id == variant_gene.get("canonical_transcript"):
-            canonical_txs.append("|".join([tx_refseq or tx_id, hgvs, pt_change]))
+            # collect info from canonical transcript
+            if tx_id == variant_gene.get("canonical_transcript"):
+                canonical_txs.append("|".join([tx_refseq or tx_id, hgvs, pt_change]))
 
     return canonical_txs, primary_txs
 
@@ -504,15 +503,12 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
     for gene_obj in gene_list:
         hgnc_id = gene_obj["hgnc_id"]
         gene_ids.append(hgnc_id)
-        decorated_gene = store.hgnc_gene(hgnc_id, genome_build)
-        if decorated_gene is None:
+        hgnc_gene = store.hgnc_gene(hgnc_id, genome_build)
+        if hgnc_gene is None:
             continue
-        gene_names.append(decorated_gene.get("hgnc_symbol"))
-        variant_txs_dict = {tx["transcript_id"]: tx for tx in gene_obj.get("transcripts", [])}
+        gene_names.append(hgnc_gene.get("hgnc_symbol"))
 
-        gene_canonical_txs, gene_primary_txs = _match_gene_txs_variant_txs(
-            gene_obj, decorated_gene, variant_txs_dict
-        )
+        gene_canonical_txs, gene_primary_txs = match_gene_txs_variant_txs(gene_obj, hgnc_gene)
 
         canonical_txs += gene_canonical_txs
         primary_txs += gene_primary_txs

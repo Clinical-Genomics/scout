@@ -7,6 +7,7 @@ from scout.server.blueprints.variants.controllers import (
     variant_export_lines,
     variants,
     sv_variants,
+    match_gene_txs_variant_txs,
 )
 
 from bson.objectid import ObjectId
@@ -231,6 +232,48 @@ def test_sv_variants_research_shadow_clinical_assessments(
 
     # THEN previous annotations are reported back for the reseach case.
     assert any([variant.get("clinical_assessments") for variant in res_variants])
+
+
+def test_match_gene_txs_variant_txs():
+    """Test function matching gene and variant transcripts to export variants to file"""
+
+    variant_gene = {
+        "hgnc_id": 17284,
+        "canonical_transcript": "ENST00000357628",
+        "transcripts": [
+            {
+                "transcript_id": "ENST00000357628",  # canonical
+                "coding_sequence_name": "c.903G>T",
+                "protein_sequence_name": "p.Gln301His",
+            },
+            {
+                "transcript_id": "ENST00000393329",  # primary
+                "coding_sequence_name": "c.510G>T",
+                "protein_sequence_name": "p.Gln170His",
+            },
+        ],
+    }
+    hgnc_gene = {
+        "hgnc_id": 17284,
+        "primary_transcripts": ["NM_001042594"],
+        "transcripts": [
+            {
+                "ensembl_transcript_id": "ENST00000357628",  # canonical
+                "refseq_identifiers": ["NM_015450"],
+                "refseq_id": "NM_015450",
+            },
+            {
+                "ensembl_transcript_id": "ENST00000393329",  # primary
+                "is_primary": True,
+                "refseq_identifiers": ["NM_001042594"],
+                "refseq_id": "NM_001042594",
+            },
+        ],
+    }
+
+    canonical_txs, primary_txs = match_gene_txs_variant_txs(variant_gene, hgnc_gene)
+    assert canonical_txs == ["NM_015450|c.903G>T|p.Gln301His"]
+    assert primary_txs == ["NM_001042594|c.510G>T|p.Gln170His"]
 
 
 def test_variant_csv_export(real_variant_database, case_obj):
