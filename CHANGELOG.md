@@ -12,7 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
 ### Changed
 - A more compact case groups panel
-- Query events first when collecting variant assessments from other cases in case group
+- Pre-collect all case-group evaluated before creating variant assessments from other cases in case group
 
 ## [4.30.2]
 ### Added
