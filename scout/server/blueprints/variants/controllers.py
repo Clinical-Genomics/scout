@@ -467,15 +467,19 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
         if decorated_gene is None:
             continue
         gene_names.append(decorated_gene.get("hgnc_symbol"))
+        # collect only primary of refseq trancripts
+        filtered_decorated_genes_txs = [
+            tx
+            for tx in decorated_gene.get("transcripts", [])
+            if tx.get("refseq_identifiers") or tx.get("is_primary")
+        ]
 
-        for tx in decorated_gene.get("transcripts", []):
-            # collect only primary of refseq trancripts
-            if not tx.get("refseq_identifiers") and tx.get("is_primary") is False:
-                continue
+        for tx in filtered_decorated_genes_txs:
             tx_id = tx["ensembl_transcript_id"]
 
-            # collect specific info (hgvs and pt_change) for the transcript
+            # collect specific info (hgvs and pt_change) from the variant gene transcript
             for var_tx in gene_obj.get("transcripts", []):
+
                 if var_tx["transcript_id"] != tx_id:
                     continue
                 tx_refseq = tx.get("refseq_id")
