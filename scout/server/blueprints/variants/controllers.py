@@ -458,23 +458,24 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
     gene_names = []
     canonical_txs = []
     primary_txs = []
-
     gene_info = []
 
     for gene_obj in gene_list:
         hgnc_id = gene_obj["hgnc_id"]
         gene_ids.append(hgnc_id)
         decorated_gene = store.hgnc_gene(hgnc_id, genome_build)
-        gene_names.append(decorated_gene["hgnc_symbol"])
+        if decorated_gene is None:
+            continue
+        gene_names.append(decorated_gene.get("hgnc_symbol"))
 
-        for tx in decorated_gene.get("transcripts"):
+        for tx in decorated_gene.get("transcripts", []):
             # collect only primary of refseq trancripts
             if not tx.get("refseq_identifiers") and tx.get("is_primary") is False:
                 continue
             tx_id = tx["ensembl_transcript_id"]
 
             # collect specific info (hgvs and pt_change) for the transcript
-            for var_tx in gene_obj.get("transcripts"):
+            for var_tx in gene_obj.get("transcripts", []):
                 if var_tx["transcript_id"] != tx_id:
                     continue
                 tx_refseq = tx.get("refseq_id")
@@ -483,11 +484,11 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
 
                 # collect info from primary transcripts
                 if tx_refseq in decorated_gene.get("primary_transcripts"):
-                    primary_txs.append(" | ".join([tx_refseq or tx_id, hgvs, pt_change]))
+                    primary_txs.append("|".join([tx_refseq or tx_id, hgvs, pt_change]))
 
                 # collect info from canonical transcript
                 if tx_id == gene_obj.get("canonical_transcript"):
-                    canonical_txs.append(" | ".join([tx_refseq or tx_id, hgvs, pt_change]))
+                    canonical_txs.append("|".join([tx_refseq or tx_id, hgvs, pt_change]))
 
     for item in [gene_ids, gene_names, canonical_txs, primary_txs]:
         gene_info.append(";".join(str(x) for x in item))
@@ -503,7 +504,8 @@ def variants_export_header(case_obj):
         header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
                 + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
     """
-    header = EXPORT_HEADER
+    header = []
+    header = header + EXPORT_HEADER
     # Add fields specific for case samples
     for individual in case_obj["individuals"]:
         display_name = str(individual["display_name"])
