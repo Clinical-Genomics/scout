@@ -93,8 +93,6 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
                 variant_obj, case_group_evaluated
             )
 
-        flash(variant_obj["group_assessments"])
-
         variants.append(
             parse_variant(
                 store, institute_obj, case_obj, variant_obj, update=True, genome_build=genome_build
@@ -115,7 +113,7 @@ def case_group_evaluated_vars(store, case_obj):
     """
     # Retrieve case ID from cases in case group
     case_group_evaluated = {}
-    for group_id in case_obj.get("group"):
+    for group_id in case_obj.get("group", []):
         case_ids = store.case_ids_from_group_id(group_id)
         for case_id in case_ids:
             if case_id == case_obj["_id"]:
