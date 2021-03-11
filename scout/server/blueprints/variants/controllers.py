@@ -15,7 +15,6 @@ from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
     ACMG_OPTIONS,
-    ASSESSMENT_VERBS,
     CALLERS,
     CANCER_TIER_OPTIONS,
     CLINSIG_MAP,
@@ -45,8 +44,6 @@ from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
 
-ASSESSMENT_VERBS = ["acmg", "manual_rank", "cancer_tier", "dismiss_variant", "mosaic_tags"]
-
 
 def variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
     """Pre-process list of variants."""
@@ -57,6 +54,9 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
     genome_build = str(case_obj.get("genome_build", "37"))
     if genome_build not in ["37", "38"]:
         genome_build = "37"
+
+    # Retrieve all variants with any evaluation from the other cases of the group
+    case_group_evaluated = case_group_evaluated_vars(store, case_obj)
 
     variants = []
     for variant_obj in variant_res:
@@ -89,7 +89,11 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
         variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
         if case_obj.get("group"):
-            variant_obj["group_assessments"] = _get_group_assessments(store, case_obj, variant_obj)
+            variant_obj["group_assessments"] = _get_group_assessments(
+                variant_obj, case_group_evaluated
+            )
+
+        flash(variant_obj["group_assessments"])
 
         variants.append(
             parse_variant(
@@ -100,42 +104,51 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
     return {"variants": variants, "more_variants": more_variants}
 
 
-def _get_group_assessments(store, case_obj, variant_obj):
+def case_group_evaluated_vars(store, case_obj):
+    """
+    Args:
+        store(scout.adapter.MongoAdapter)
+        case_obj(scout.models.Case)
+    Returns:
+        case_group_evaluated(dict): a dict with variant simple_ids as keys and a list
+                              of case group variants with that simple_ids as values
+    """
+    # Retrieve case ID from cases in case group
+    case_group_evaluated = {}
+    for group_id in case_obj.get("group"):
+        case_ids = store.case_ids_from_group_id(group_id)
+        for case_id in case_ids:
+            if case_id == case_obj["_id"]:
+                continue
+            # Retrieve the list of evaluated vars in other case
+            case_evaluated = store.evaluated_variants(case_id)
+            if not case_evaluated:
+                continue
+            for evaluated in case_evaluated:
+                simple_id = evaluated["simple_id"]
+                # Add each of these variants to the dictionary of evaluated vars
+                if simple_id not in case_group_evaluated:
+                    case_group_evaluated[simple_id] = [evaluated]
+                else:
+                    case_group_evaluated[simple_id].append(evaluated)
+    return case_group_evaluated
+
+
+def _get_group_assessments(variant_obj, case_group_evaluated):
     """Return manual variant assessments for other cases grouped with this one.
 
     Args:
-        case_obj
+        variant_obj(variant): variant from the original case
+        case_group_evaluated(dict): a dict with variant simple_ids as keys and a list
+                              of case group variants with that simple_ids as values
     Returns:
         group_assessments(list(dict))
     """
     group_assessments = []
-    group_case_ids = set()
-    for group_id in case_obj.get("group"):
-        group_case_ids.update(store.case_ids_from_group_id(group_id))
-
-        for group_case_id in group_case_ids:
-            # Returning an extra assessment for variants from the same case is pointless
-            if group_case_id == case_obj["_id"]:
-                continue
-
-            # check events to see if variant received assessments in the other case
-            assessment_events = list(
-                store.evaluation_events(
-                    group_case_id,
-                    variant_obj["simple_id"],
-                    variant_obj["variant_type"],
-                    ASSESSMENT_VERBS,
-                )
-            )
-            if not assessment_events:
-                continue
-            cohort_var_obj = store.variant(
-                case_id=group_case_id,
-                simple_id=variant_obj["simple_id"],
-                variant_type=variant_obj["variant_type"],
-            )
-            group_assessments.extend(get_manual_assessments(cohort_var_obj))
-
+    for evaluated_var in case_group_evaluated.get(variant_obj["simple_id"], []):
+        if variant_obj["variant_type"] != evaluated_var["variant_type"]:
+            continue
+        group_assessments.extend(get_manual_assessments(evaluated_var))
     return group_assessments
 
 
