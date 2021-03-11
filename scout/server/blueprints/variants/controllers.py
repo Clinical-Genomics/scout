@@ -478,9 +478,7 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
         for tx in filtered_gene_txs:
             tx_id = tx["ensembl_transcript_id"]
 
-            var_tx = variant_txs_dict.get(tx_id)
-            if var_tx is None:
-                continue
+            var_tx = variant_txs_dict.get(tx_id) or {}
 
             tx_refseq = tx.get("refseq_id")
             hgvs = var_tx.get("coding_sequence_name") or "-"
