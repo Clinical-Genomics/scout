@@ -1,3 +1,5 @@
+ASSESSMENT_VERBS = ["acmg", "manual_rank", "cancer_tier", "dismiss_variant", "mosaic_tags"]
+
 CONSEQUENCE = (
     "deleterious",
     "deleterious_low_confidence",

@@ -15,6 +15,7 @@ from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
     ACMG_OPTIONS,
+    ASSESSMENT_VERBS,
     CALLERS,
     CANCER_TIER_OPTIONS,
     CLINSIG_MAP,
@@ -44,7 +45,7 @@ from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
 
-EVALUATION_VERBS = ["acmg", "manual_rank", "cancer_tier", "dismiss_variant", "mosaic_tags"]
+ASSESSMENT_VERBS = ["acmg", "manual_rank", "cancer_tier", "dismiss_variant", "mosaic_tags"]
 
 
 def variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
@@ -123,7 +124,7 @@ def _get_group_assessments(store, case_obj, variant_obj):
                     group_case_id,
                     variant_obj["simple_id"],
                     variant_obj["variant_type"],
-                    EVALUATION_VERBS,
+                    ASSESSMENT_VERBS,
                 )
             )
             if not assessment_events:

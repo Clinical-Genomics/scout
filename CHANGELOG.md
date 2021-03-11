@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
 ### Changed
 - A more compact case groups panel
+- Query events first when collecting variant assessments from other cases in case group
 
 ## [4.30.2]
 ### Added
@@ -19,7 +20,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Use VEP RefSeq ID if RefSeq list is empty in RefSeq transcripts overview
 - Bug creating variant links for variants with no end_chrom
 ### Changed
-- Query events first when collecting variant assessments from other cases in case group
 
 ## [4.30.1]
 ### Added
