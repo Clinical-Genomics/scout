@@ -203,6 +203,7 @@ class VariantEventHandler(object):
         event_query = {
             "case": case_id,
             "subject": "_".join([simple_id, variant_type]),
+            "category": "variant",
         }
         if verbs:
             event_query["verb"] = {"$in": verbs}
