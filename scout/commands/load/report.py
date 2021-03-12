@@ -87,11 +87,11 @@ def coverage_qc_report(case_id, report_path, update):
 @click.command("gene-fusion-report")
 @click.argument("case-id", required=True)
 @click.argument("report-path", type=click.Path(exists=True), required=True)
-@click.option("-r", "--research", is_flag=True, help="Gene fusion report is a research report")
+@click.option("-r", "--research", is_flag=True, help="Update research gene fusion report")
 @click.option("-u", "--update", is_flag=True, help="Update a gene fusion report for a case")
 @with_appcontext
 def gene_fusion_report(case_id, report_path, research, update):
-    """Add or update the gene fusion report for a case."""
+    """Add or update a gene fusion report (clinical or research) for a case."""
 
     adapter = store
 
