@@ -108,7 +108,11 @@ def load_coverage_qc_report(
 
 
 def load_gene_fusion_report(
-    adapter: MongoAdapter, report_path: str, case_id: str, update: bool = False
+    adapter: MongoAdapter,
+    report_path: str,
+    case_id: str,
+    research: bool = False,
+    update: bool = False,
 ):
     """Load a gene fusion report into a case in the database
 
