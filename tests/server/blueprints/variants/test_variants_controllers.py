@@ -272,8 +272,8 @@ def test_match_gene_txs_variant_txs():
     }
 
     canonical_txs, primary_txs = match_gene_txs_variant_txs(variant_gene, hgnc_gene)
-    assert canonical_txs == ["NM_015450|c.903G>T|p.Gln301His"]
-    assert primary_txs == ["NM_001042594|c.510G>T|p.Gln170His"]
+    assert canonical_txs == ["NM_015450/c.903G>T/p.Gln301His"]
+    assert primary_txs == ["NM_001042594/c.510G>T/p.Gln170His"]
 
 
 def test_variant_csv_export(real_variant_database, case_obj):
