@@ -514,7 +514,7 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
         primary_txs += gene_primary_txs
 
     for item in [gene_ids, gene_names, canonical_txs, primary_txs]:
-        gene_info.append(";".join(str(x) for x in item))
+        gene_info.append("-".join(str(x) for x in item))
 
     return gene_info
 
