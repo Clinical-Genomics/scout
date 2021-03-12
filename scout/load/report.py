@@ -136,7 +136,7 @@ def load_gene_fusion_report(
     if case_obj is None:
         raise DataNotFoundError("no case found")
 
-    if research and any(update or case_obj.get("gene_fusion_report_research") is None):
+    if research and any([update, case_obj.get("gene_fusion_report_research") is None]):
         _update_report_path(case_obj, report_path, "gene_fusion_report_research")
     elif update or case_obj.get("gene_fusion_report") is None:
         _update_report_path(case_obj, report_path, "gene_fusion_report")
