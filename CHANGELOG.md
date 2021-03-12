@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [X.X.X]
 ### Added
 - gnomAD annotation field in admin guide
+- Load/update PDF gene fusion reports (clinical and research) generated with Arriba
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
 ### Changed
@@ -37,7 +38,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add additional information to SNV verification emails
 - Tooltips documenting manual annotations from default panels
 - Case groups now show bam files from all cases on align view
-- Load/update gene fusion reports generated with Arriba
 ### Fixed
 - Center initial igv view on variant start with SNV/indels
 - Don't set initial igv view to negative coordinates

@@ -84,6 +84,7 @@ case = dict(
     cnv_report=str,  # CNV report is a path to pdf file
     coverage_qc_report=str,  # Covearge and qc report is a path to a html file
     gene_fusion_report=str,  # Path to the gene fusions report file
+    gene_fusion_report_research=str,  # Path to the gene fusions research report file
     vcf_files=dict,  # A dictionary with vcf files
     smn_tsv=str,  # path to an SMN TSV file
     diagnosis_phenotypes=list,  # List of references to diseases

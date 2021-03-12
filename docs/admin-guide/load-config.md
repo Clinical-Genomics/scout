@@ -53,6 +53,7 @@ multiqc: str(optional)
 cnv_report: str(optional)
 coverage_qc_report: str(optional)
 gene_fusion_report: str(optional)
+gene_fusion_report_research: str(optional)
 
 default_gene_panels: list[str](optional)
 gene_panels: list[str](optional)
@@ -107,7 +108,8 @@ Let's go through each field:
 - **multiqc** path to a [multiqc][multiqc] report with arbitrary information
 - **cnv_report** path to the CNV report file
 - **coverage_qc_report** path to static coverage and qc report file
-- **gene_fusion_report** path to a static file containing a gene fusion report produced by [Arriba][arriba]
+- **gene_fusion_report** path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from default clinical data.
+- **gene_fusion_report_research** path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from research data.
 - **default_gene_panels** list of default gene panels. Variants from the genes in the gene panels specified will be shown when opening the case in scout
 - **gene_panels** list of gene panels. This will specify what panels the case has been run with
 - **rank model version** which rank model that was used when scoring the variants
@@ -147,4 +149,4 @@ analysis tools. See [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure/blo
 
 [peddy]: https://github.com/brentp/peddy
 [multiqc]: https://github.com/ewels/multiqc
-[arriba]: https://arriba.readthedocs.io/en/latest/output-files/
+[arriba]: https://arriba.readthedocs.io/en/latest/

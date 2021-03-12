@@ -64,6 +64,7 @@ def parse_case_data(
     cnv_report=None,
     coverage_qc_report=None,
     gene_fusion_report=None,
+    gene_fusion_report_research=None,
 ):
     """Parse all data necessary for loading a case into scout
 
@@ -86,6 +87,7 @@ def parse_case_data(
         cnv_report: Path to pdf file with CNV report
         coverage_qc_report: Path to html file with coverage and qc report
         gene_fusion_report: Path to the gene fusions report
+        gene_fusion_report_research: Path to the gene fusions research report
 
     Returns:
         config_data(dict): Holds all the necessary information for loading
@@ -152,6 +154,11 @@ def parse_case_data(
     )
     config_data["gene_fusion_report"] = (
         gene_fusion_report if gene_fusion_report else config_data.get("gene_fusion_report")
+    )
+    config_data["gene_fusion_report_research"] = (
+        gene_fusion_report_research
+        if gene_fusion_report_research
+        else config_data.get("gene_fusion_report_research")
     )
 
     config_data["rank_model_version"] = str(config_data.get("rank_model_version", ""))
@@ -531,6 +538,7 @@ def parse_case(config):
         "cnv_report": config.get("cnv_report"),
         "coverage_qc_report": config.get("coverage_qc_report"),
         "gene_fusion_report": config.get("gene_fusion_report"),
+        "gene_fusion_report_research": config.get("gene_fusion_report_research"),
         "multiqc": config.get("multiqc"),
         "track": config.get("track", "rare"),
     }

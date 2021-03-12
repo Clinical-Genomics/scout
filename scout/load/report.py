@@ -120,6 +120,7 @@ def load_gene_fusion_report(
         adapter     (MongoAdapter): Connection to the database
         report_path (string):       Path to gene fusion report
         case_id     (string):       Optional case identifier
+        research    (bool):         If report contains research data
         update      (bool):         If an existing report should be replaced
 
     Returns:
@@ -131,7 +132,9 @@ def load_gene_fusion_report(
     if case_obj is None:
         raise DataNotFoundError("no case found")
 
-    if update or case_obj.get("gene_fusion_report") is None:
+    if research and any(update or case_obj.get("gene_fusion_report_research") is None):
+        _update_report_path(case_obj, report_path, "gene_fusion_report_research")
+    elif update or case_obj.get("gene_fusion_report") is None:
         _update_report_path(case_obj, report_path, "gene_fusion_report")
     else:
         raise IntegrityError("Existing report found, use update = True to " "overwrite")
