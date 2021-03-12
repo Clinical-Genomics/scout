@@ -503,6 +503,7 @@ def test_gene_fusion_report(app, institute_obj, case_obj):
                 "cases.gene_fusion_report",
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
+                report_type="gene_fusion_report",
             )
         )
         # a successful response should be returned
