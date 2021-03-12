@@ -239,12 +239,12 @@ def test_match_gene_txs_variant_txs():
 
     variant_gene = {
         "hgnc_id": 17284,
-        "canonical_transcript": "ENST00000357628",
         "transcripts": [
             {
                 "transcript_id": "ENST00000357628",  # canonical
                 "coding_sequence_name": "c.903G>T",
                 "protein_sequence_name": "p.Gln301His",
+                "is_canonical": True,
             },
             {
                 "transcript_id": "ENST00000393329",  # primary
