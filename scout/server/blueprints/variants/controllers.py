@@ -475,11 +475,11 @@ def match_gene_txs_variant_txs(variant_gene, hgnc_gene):
 
             # collect info from primary transcripts
             if tx_refseq in hgnc_gene.get("primary_transcripts"):
-                primary_txs.append("|".join([tx_refseq or tx_id, hgvs, pt_change]))
+                primary_txs.append("/".join([tx_refseq or tx_id, hgvs, pt_change]))
 
             # collect info from canonical transcript
-            if tx_id == variant_gene.get("canonical_transcript"):
-                canonical_txs.append("|".join([tx_refseq or tx_id, hgvs, pt_change]))
+            if var_tx.get("is_canonical") is True:
+                canonical_txs.append("/".join([tx_refseq or tx_id, hgvs, pt_change]))
 
     return canonical_txs, primary_txs
 
@@ -514,7 +514,7 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
         primary_txs += gene_primary_txs
 
     for item in [gene_ids, gene_names, canonical_txs, primary_txs]:
-        gene_info.append("-".join(str(x) for x in item))
+        gene_info.append(" | ".join(str(x) for x in item))
 
     return gene_info
 
