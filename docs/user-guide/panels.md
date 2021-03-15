@@ -9,9 +9,9 @@ A case can then be associated with one or several gene panels.
 
 ### File format
 
-The gene panel is a tab separated text file with a header that describes the columns and one line for each gene entry.
+The gene panel is semicolon (;) or tab-separated text file with an optional header that describes the columns and one line for each gene entry.
 
-The columns that will be used by scout is the following:
+The columns that will be used by scout are the following. **Please note that the order of the columns can't be changed**
 
 - **hgnc_id(int)** This identifies the gene. *Mandatory*
 - **hgnc_symbol(str)** This is used for sanity check when humans look at the file. *Optional*
@@ -21,9 +21,9 @@ The columns that will be used by scout is the following:
 - **reduced_penetrance(str)** If a gene is known to have reduced penetrance this is annotated. *Optional*
 - **database_entry_version(str)** The database entry version is a way to track when a a gene was added or modified. *Optional*
 
-Each gene in a gene panel have to be identified with a hgnc id
+Each gene in a gene panel have to be identified with a [HGNC](https://www.genenames.org/) id.
 
-### File format 2
+### Optional header
 
 There is also an option to include all information about a panel in the header of the file. This could make uploading easier, just a matter of taste. In this case include a header with metadata, each of these lines are key-value separated by `=`. The meta data lines should start with `##`
 
@@ -44,20 +44,22 @@ Example:
 
 ### Notes on entries
 
-- **hgnc_id**: This one have to be a valid hgnc id that exists in scout
-- **genetic_disease_models** can be anyone in [AR,AD,XR,XD,MT,X,Y]
+- **hgnc_id**: has valid HGNC id. **Please check that a gene with the give HGNC ID exists in Scout in the available genome build**. If for instance Scout is using genome build GRCh37 and a user tries to save a gene only available in genome build GRCh38 the upload of the panel will fail.
+- **genetic_disease_models** Any of the following values: [AR,AD,XR,XD,MT,X,Y]
 - **mosaicism** Any entry here will be interpreted as true
 - **reduced_penetrance** Any entry here will be interpreted as true
 - **database_entry_version** This should refer to a earlier version of the panel
 
 ## Uploading a new gene panel version
 
-You can upload a text file in Scout to update an existing gene panel. It should follow the format specified in this file: [panel-example](../static/scout-3-panel-file-example.csv). The file is `;` (semi-colon) separated, could also be tab separated.
+You can upload a text file in Scout to update an existing gene panel. It should follow the format specified in this file: [panel-example](../static/scout-3-panel-file-example.csv). This file is `;` (semicolon) separated. Tab is also an accepted file separator.
 
 You can also use this example [Excel template](../static/scout-3-panel-file-example.xlsx) as a starting point. When you are ready to update the gene panel simply:
 
 1. choose **"Save as..."** in Excel and select **"Comma Separated Values (.csv)"** as the format
 2. fill out the form in Scout and upload the "*.csv" file to update your gene panel
+
+**When creating a new panel it is very important that id doesn't contain blank lines.**
 
 ### Upload from interface
 

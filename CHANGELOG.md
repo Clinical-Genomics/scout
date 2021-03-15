@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
 ### Changed
 - A more compact case groups panel
+- Improve user documentation to create and save new gene panels
 
 ## [4.30.2]
 ### Added
