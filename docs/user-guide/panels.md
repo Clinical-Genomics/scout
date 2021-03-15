@@ -59,7 +59,7 @@ You can also use this example [Excel template](../static/scout-3-panel-file-exam
 1. choose **"Save as..."** in Excel and select **"Comma Separated Values (.csv)"** as the format
 2. fill out the form in Scout and upload the "*.csv" file to update your gene panel
 
-**When creating a new panel it is very important that id doesn't contain blank lines.**
+**When creating a new panel it is very important that it does not contain blank lines.**
 
 ### Upload from interface
 
