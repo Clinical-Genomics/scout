@@ -630,7 +630,7 @@ def phenotypes_genes(store, case_obj):
     # Loop over the dynamic phenotypes of a case
     for hpo_id in case_obj.get("dynamic_panel_phenotypes", []):
         hpo_term = store.hpo_term(hpo_id)
-        # Check that HPO term exists in dat§abase
+        # Check that HPO term exists in database
         if hpo_term is None:
             LOG.warning(f"Could not find HPO term with ID '{hpo_id}' in database")
             continue
