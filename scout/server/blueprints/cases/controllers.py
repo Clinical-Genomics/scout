@@ -626,10 +626,11 @@ def phenotypes_genes(store, case_obj):
     by_phenotype = True  # display genes by phenotype
     unique_genes = set()
     hpo_genes = {}
+
     # Loop over the dynamic phenotypes of a case
     for hpo_id in case_obj.get("dynamic_panel_phenotypes", []):
         hpo_term = store.hpo_term(hpo_id)
-        # Check that HPO term exists in database
+        # Check that HPO term exists in dat§abase
         if hpo_term is None:
             LOG.warning(f"Could not find HPO term with ID '{hpo_id}' in database")
             continue
@@ -649,6 +650,15 @@ def phenotypes_genes(store, case_obj):
 
         hpo_genes[hpo_id] = {
             "description": hpo_term.get("description"),
+            "genes": ", ".join(sorted(gene_list)),
+        }
+
+    if case_obj.get("dynamic_gene_list"):
+        gene_list = [
+            gene.get("hgnc_symbol") or gene["hgnc_id"] for gene in case_obj["dynamic_gene_list"]
+        ]
+        hpo_genes["Case dynamic gene list"] = {
+            "description": "custom",
             "genes": ", ".join(sorted(gene_list)),
         }
 
