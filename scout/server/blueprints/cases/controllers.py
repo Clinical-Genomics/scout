@@ -655,6 +655,7 @@ def phenotypes_genes(store, case_obj):
             "genes": ", ".join(sorted(gene_list)),
         }
 
+    # Case where dynamic_panel_phenotypes is empty, perhaps because user has added custom genes to HPO panel
     if not hpo_gene_list and case_obj.get("dynamic_gene_list"):
         gene_list = [
             gene.get("hgnc_symbol") or str(gene["hgnc_id"])
