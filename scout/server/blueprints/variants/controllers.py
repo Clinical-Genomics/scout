@@ -899,6 +899,14 @@ def reset_all_dimissed(store, institute_obj, case_obj):
         case_obj(dict): a case dictionary
     """
     evaluated_vars = store.evaluated_variants(case_id=case_obj["_id"])
+    user_obj = store.user(current_user.email)
+    # Create an associated case-level event
+    link = url_for(
+        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+    )
+    store.order_dismissed_variants_reset(institute_obj, case_obj, user_obj, link)
+
+    # Reset dismissed for each single dismissed variant
     for variant in evaluated_vars:
         if not variant.get("dismiss_variant"):  # not a dismissed variant
             continue
@@ -909,8 +917,7 @@ def reset_all_dimissed(store, institute_obj, case_obj):
             case_name=case_obj["display_name"],
             variant_id=variant["_id"],
         )
-        user = store.user(current_user.email)
-        store.update_dismiss_variant(institute_obj, case_obj, user, link, variant, [])
+        store.update_dismiss_variant(institute_obj, case_obj, user_obj, link, variant, [])
 
 
 def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_list, dismiss_reasons):

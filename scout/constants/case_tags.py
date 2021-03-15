@@ -53,6 +53,7 @@ VERBS_MAP = {
     "acmg": "updated ACMG classification for",
     "dismiss_variant": "dismissed variant for",
     "reset_dismiss_variant": "reset dismissed variant status for",
+    "reset_dismiss_all_variants": "reset all dismissed variants for",
     "mosaic_tags": "updated mosaic tags for",
     "update_default_panels": "updated default panels for",
     "update_clinical_filter_hpo": "updated clinical filter HPO status for",
