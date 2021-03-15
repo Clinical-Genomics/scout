@@ -655,7 +655,8 @@ def phenotypes_genes(store, case_obj):
 
     if case_obj.get("dynamic_gene_list"):
         gene_list = [
-            gene.get("hgnc_symbol") or gene["hgnc_id"] for gene in case_obj["dynamic_gene_list"]
+            gene.get("hgnc_symbol") or str(gene["hgnc_id"])
+            for gene in case_obj["dynamic_gene_list"]
         ]
         hpo_genes["Case dynamic gene list"] = {
             "description": "custom",
