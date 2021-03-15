@@ -141,7 +141,7 @@
   <div class="card panel-default">
     <div class="panel-heading"><span class="fa fa-book"></span>&nbsp;Activity</div>
     <ul class="list-group" style="max-height:400px; overflow-y: scroll;">
-      {% for event in events %}
+      {% for event in events|sort(attribute="created_at", reverse=True) %}
         <li class="list-group-item">
           <strong>{{ event.user_name }}</strong>
           {{ event.verb }}
