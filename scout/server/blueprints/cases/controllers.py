@@ -660,6 +660,7 @@ def phenotypes_genes(store, case_obj):
             gene.get("hgnc_symbol") or str(gene["hgnc_id"])
             for gene in case_obj["dynamic_gene_list"]
         ]
+        unique_genes = set(gene_list)
         by_phenotype = False
 
     if by_phenotype is False:
