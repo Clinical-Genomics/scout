@@ -11,7 +11,7 @@ A case can then be associated with one or several gene panels.
 
 The gene panel is semicolon (;) or tab-separated text file with an optional header that describes the columns and one line for each gene entry.
 
-The columns that will be used by scout are the following. **Please note that the order of the columns can't be changed**
+The columns that will be used by scout are the following. **Please note that if you do not include a header, the order of the columns can't be changed**
 
 - **hgnc_id(int)** This identifies the gene. *Mandatory*
 - **hgnc_symbol(str)** This is used for sanity check when humans look at the file. *Optional*
