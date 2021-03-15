@@ -488,7 +488,8 @@ class CaseHandler(object):
             {
                 "$set": {
                     "dynamic_gene_list": dynamic_gene_list,
-                    "dynamic_panel_phenotypes": phenotype_ids or [],
+                    "dynamic_panel_phenotypes": phenotype_ids
+                    or case.get("dynamic_panel_phenotypes", []),
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER,
