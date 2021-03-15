@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [X.X.X]
 ### Added
 - gnomAD annotation field in admin guide
+- Export also dynamic panel genes not associated to an HPO term when downloading the HPO panel
 - Display on case activity the event of a user resetting all dismissed variants
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout

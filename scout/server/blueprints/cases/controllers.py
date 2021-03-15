@@ -626,8 +626,11 @@ def phenotypes_genes(store, case_obj):
     by_phenotype = True  # display genes by phenotype
     unique_genes = set()
     hpo_genes = {}
+
+    hpo_gene_list = case_obj.get("dynamic_panel_phenotypes", [])
+
     # Loop over the dynamic phenotypes of a case
-    for hpo_id in case_obj.get("dynamic_panel_phenotypes", []):
+    for hpo_id in hpo_gene_list:
         hpo_term = store.hpo_term(hpo_id)
         # Check that HPO term exists in database
         if hpo_term is None:
@@ -651,6 +654,15 @@ def phenotypes_genes(store, case_obj):
             "description": hpo_term.get("description"),
             "genes": ", ".join(sorted(gene_list)),
         }
+
+    # Case where dynamic_panel_phenotypes is empty, perhaps because user has added custom genes to HPO panel
+    if not hpo_gene_list and case_obj.get("dynamic_gene_list"):
+        gene_list = [
+            gene.get("hgnc_symbol") or str(gene["hgnc_id"])
+            for gene in case_obj["dynamic_gene_list"]
+        ]
+        unique_genes = set(gene_list)
+        by_phenotype = False
 
     if by_phenotype is False:
         hpo_genes = {}
