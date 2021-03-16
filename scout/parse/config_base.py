@@ -197,7 +197,7 @@ class ScoutLoadConfig(BaseModel):
         return value
 
     @validator("madeline_info")
-    def check_if_madelie_exists(cls, path):
+    def check_if_madeline_exists(cls, path):
         """Add the pedigree figure, this is a xml file which is dumped in the db"""
         mad_path = Path(path)
         if not mad_path.exists():
