@@ -51,6 +51,7 @@ def get_correct_date(date_info):
     LOG.info("Setting analysis date to todays date")
     return datetime.datetime.now()
 
+
 def parse_case_data(**kwargs):
     """Parse all data necessary for loading a case into scout
 
@@ -59,19 +60,19 @@ def parse_case_data(**kwargs):
     Please see Scout documentation for further instructions.
 
     Possible keyword args:
+        cnv_report: Path to pdf file with CNV report
         config(dict): A yaml formatted config file
-        ped(iterable(str)): A ped formatted family file
+        coverage_qc_report: Path to html file with coverage and qc report
+        multiqc(str): Path to dir with multiqc information
         owner(str): The institute that owns a case
+        ped(iterable(str)): A ped formatted family file
+        peddy_ped(str): Path to a peddy ped
+        smn_tsv(str): Path to an SMN tsv file
+        vcf_cancer(str): Path to a vcf file
+        vcf_cancer_sv(str): Path to a vcf file
         vcf_snv(str): Path to a vcf file
         vcf_str(str): Path to a VCF file
         vcf_sv(str): Path to a vcf file
-        vcf_cancer(str): Path to a vcf file
-        vcf_cancer_sv(str): Path to a vcf file
-        smn_tsv(str): Path to an SMN tsv file
-        peddy_ped(str): Path to a peddy ped
-        multiqc(str): Path to dir with multiqc information
-        cnv_report: Path to pdf file with CNV report
-        coverage_qc_report: Path to html file with coverage and qc report
 
     Returns:
         config_data(dict): Holds all the necessary information for loading
@@ -91,7 +92,8 @@ def parse_case_data(**kwargs):
     # Except for 'owner', prededence config file over arguments
     LOG.debug("KWARGS: {}".format(kwargs))
     if 'owner' in config:
-        kwargs.pop('owner')
+        print(kwargs)
+        kwargs.pop('owner', None) # dont crash if 'owner' is missing
     for key in kwargs:
         if kwargs[key] is not None:
             config[key] = kwargs[key]
@@ -109,10 +111,10 @@ def parse_case_data(**kwargs):
     config["analysis_date"] = get_correct_date(config.get("analysis_date"))
 
     # If the family information is in a ped file we nned to parse that
-    if kwargs['ped']:
+    if 'ped' in kwargs:
         family_id, samples = parse_ped(ped)
-        config_data["family"] = family_id
-        config_data["samples"] = samples
+        config["family"] = family_id
+        config["samples"] = samples
 
 
     try:
@@ -500,6 +502,7 @@ def parse_ped(ped_stream, family_type="ped"):
         for ind_id, individual in family.individuals.items()
     ]
 
+    LOG.debug("return (parse_ped): {}".format(family_id))
     return family_id, samples
 
 
