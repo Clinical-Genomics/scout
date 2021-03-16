@@ -5,29 +5,17 @@ from datetime import datetime
 from scout.utils.date import get_date
 from scout.utils.handle import get_file_handle
 from scout.utils.link import get_correct_ids
-from scout.constants import PANEL_GENE_INFO_TRANSCRIPTS, PANEL_GENE_INFO_MODELS
+from scout.constants import (
+    PANEL_GENE_INFO_TRANSCRIPTS,
+    PANEL_GENE_INFO_MODELS,
+    VALID_MODELS,
+    INCOMPLETE_PENETRANCE_MAP,
+    MODELS_MAP,
+)
 
 from .omim import get_mim_genes
 
 LOG = logging.getLogger(__name__)
-
-VALID_MODELS = ("AR", "AD", "MT", "XD", "XR", "X", "Y")
-
-MODELS_MAP = {
-    "monoallelic_not_imprinted": ["AD"],
-    "monoallelic_maternally_imprinted": ["AD"],
-    "monoallelic_paternally_imprinted": ["AD"],
-    "monoallelic": ["AD"],
-    "biallelic": ["AR"],
-    "monoallelic_and_biallelic": ["AD", "AR"],
-    "monoallelic_and_more_severe_biallelic": ["AD", "AR"],
-    "xlinked_biallelic": ["XR"],
-    "xlinked_monoallelic": ["XD"],
-    "mitochondrial": ["MT"],
-    "unknown": [],
-}
-
-INCOMPLETE_PENETRANCE_MAP = {"unknown": None, "Complete": None, "Incomplete": True}
 
 
 def get_panel_info(panel_lines=None, panel_id=None, institute=None, **kwargs):
@@ -148,6 +136,7 @@ def parse_gene(gene_info):
         if field not in gene_info:
             continue
         models = gene_info[field].strip().strip('"')
+
     gene["inheritance_models"] = [
         model.strip() for model in models.split(",") if model.strip() in VALID_MODELS
     ]
@@ -161,6 +150,8 @@ def parse_gene(gene_info):
     # The database entry version is a way to track when a a gene was added or
     # modified, optional
     gene["database_entry_version"] = gene_info.get("database_entry_version")
+
+    LOG.error(gene)
 
     return gene
 

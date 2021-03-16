@@ -15,6 +15,24 @@ GENE_CUSTOM_INHERITANCE_MODELS = (
     ("other", "Other"),
 )
 
+VALID_MODELS = ("AR", "AD", "MT", "XD", "XR", "X", "Y")
+
+INCOMPLETE_PENETRANCE_MAP = {"unknown": None, "Complete": None, "Incomplete": True}
+
+MODELS_MAP = {
+    "monoallelic_not_imprinted": ["AD"],
+    "monoallelic_maternally_imprinted": ["AD"],
+    "monoallelic_paternally_imprinted": ["AD"],
+    "monoallelic": ["AD"],
+    "biallelic": ["AR"],
+    "monoallelic_and_biallelic": ["AD", "AR"],
+    "monoallelic_and_more_severe_biallelic": ["AD", "AR"],
+    "xlinked_biallelic": ["XR"],
+    "xlinked_monoallelic": ["XD"],
+    "mitochondrial": ["MT"],
+    "unknown": [],
+}
+
 PANEL_GENE_INFO_TRANSCRIPTS = [
     "disease_associated_transcripts",
     "disease_associated_transcript",

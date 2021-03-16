@@ -16,6 +16,9 @@ from .gene_tags import (
     GENE_CUSTOM_INHERITANCE_MODELS,
     PANEL_GENE_INFO_TRANSCRIPTS,
     PANEL_GENE_INFO_MODELS,
+    VALID_MODELS,
+    INCOMPLETE_PENETRANCE_MAP,
+    MODELS_MAP,
 )
 from .variant_tags import (
     CONSEQUENCE,
