@@ -150,9 +150,6 @@ def parse_gene(gene_info):
     # The database entry version is a way to track when a a gene was added or
     # modified, optional
     gene["database_entry_version"] = gene_info.get("database_entry_version")
-
-    LOG.error(gene)
-
     return gene
 
 
