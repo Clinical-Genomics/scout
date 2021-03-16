@@ -14,3 +14,16 @@ GENE_CUSTOM_INHERITANCE_MODELS = (
     ("AEI", "Allelic expression imbalance"),
     ("other", "Other"),
 )
+
+PANEL_GENE_INFO_TRANSCRIPTS = [
+    "disease_associated_transcripts",
+    "disease_associated_transcript",
+    "transcripts",
+]
+
+PANEL_GENE_INFO_MODELS = [
+    "genetic_disease_models",
+    "genetic_disease_model",
+    "inheritance_models",
+    "genetic_inheritance_models",
+]

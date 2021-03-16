@@ -5,6 +5,7 @@ from datetime import datetime
 from scout.utils.date import get_date
 from scout.utils.handle import get_file_handle
 from scout.utils.link import get_correct_ids
+from scout.constants import PANEL_GENE_INFO_TRANSCRIPTS, PANEL_GENE_INFO_MODELS
 
 from .omim import get_mim_genes
 
@@ -131,31 +132,24 @@ def parse_gene(gene_info):
     # Disease associated transcripts is a ','-separated list of
     # manually curated transcripts
     transcripts = ""
-    if "disease_associated_transcripts" in gene_info:
-        transcripts = gene_info["disease_associated_transcripts"]
-    elif "disease_associated_transcript" in gene_info:
-        transcripts = gene_info["disease_associated_transcript"]
-    elif "transcripts" in gene_info:
-        transcripts = gene_info["transcripts"]
+    for field in PANEL_GENE_INFO_TRANSCRIPTS:
+        if field not in gene_info:
+            continue
+        transcripts = gene_info[field]
 
     gene["transcripts"] = [
-        transcript.strip() for transcript in transcripts.split(",") if transcript
+        transcript.strip().strip('"') for transcript in transcripts.split(",") if transcript
     ]
 
     # Genetic disease models is a ','-separated list of manually curated
     # inheritance patterns that are followed for a gene
     models = ""
-    if "genetic_disease_models" in gene_info:
-        models = gene_info["genetic_disease_models"]
-    elif "genetic_disease_model" in gene_info:
-        models = gene_info["genetic_disease_model"]
-    elif "inheritance_models" in gene_info:
-        models = gene_info["inheritance_models"]
-    elif "genetic_inheritance_models" in gene_info:
-        models = gene_info["genetic_inheritance_models"]
-
+    for field in PANEL_GENE_INFO_MODELS:
+        if field not in gene_info:
+            continue
+        models = gene_info[field].strip('"')
     gene["inheritance_models"] = [
-        model.strip() for model in models.split(",") if model.strip() in VALID_MODELS
+        model.strip().strip('"') for model in models.split(",") if model.strip() in VALID_MODELS
     ]
 
     # If a gene is known to be associated with mosaicism this is annotated

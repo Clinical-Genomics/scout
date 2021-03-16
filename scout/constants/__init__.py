@@ -12,7 +12,11 @@ from .indexes import INDEXES
 
 from .acmg import ACMG_COMPLETE_MAP, ACMG_OPTIONS, ACMG_CRITERIA, ACMG_MAP, REV_ACMG_MAP
 from .so_terms import SO_TERMS, SO_TERM_KEYS, SEVERE_SO_TERMS
-from .gene_tags import GENE_CUSTOM_INHERITANCE_MODELS
+from .gene_tags import (
+    GENE_CUSTOM_INHERITANCE_MODELS,
+    PANEL_GENE_INFO_TRANSCRIPTS,
+    PANEL_GENE_INFO_MODELS,
+)
 from .variant_tags import (
     CONSEQUENCE,
     CONSERVATION,
