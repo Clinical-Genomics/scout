@@ -1,7 +1,7 @@
 """Class to hold information about scout load config"""
 
 import datetime
-from typing import List, Optional, Any
+from typing import Any, List, Optional, Union
 from pydantic import BaseModel, validator, Field, root_validator
 from typing_extensions import Literal
 from fractions import Fraction
@@ -66,11 +66,6 @@ class ScoutIndividual(BaseModel):
             raise PedigreeError("Sample, config error: '{}'".format(value))
         return value
 
-    @validator("display_name")
-    def fallback_display_name(cls, value):
-        # TODO: set to 1. sample_name 2. sample_id
-        LOG.debug("individual display_name: {}".format(value))
-        return value
 
     @validator("tumor_purity")
     def cast_to_float(cls, value):
@@ -128,6 +123,7 @@ class VcfFiles(BaseModel):
     vcf_sv_research: Optional[str] = None
 
 
+
 # TODO: handle arguments used as alternative input
 # TODO: validator to set track="cancer" if vcf_cancer||vcf_cancer_sv
 # TODO: parse_ped seems to work on yet another file with pedigree info
@@ -137,6 +133,7 @@ class VcfFiles(BaseModel):
 # TODO: vcf_files as class/dict
 # XXX: why is madeline stored as a file_object?
 class ScoutLoadConfig(BaseModel):
+    LOG.debug("HELLO")
     analysis_date: Any = datetime.datetime.now()
     assignee: str = None  ## ??
     case_id: str = Field([], alias="family")  ## ??
@@ -166,7 +163,7 @@ class ScoutLoadConfig(BaseModel):
     samples: List[ScoutIndividual] = []
     smn_tsv: Optional[str] = None
     sv_rank_model_version: Optional[str] = ""
-    synopsis: List[str] = None
+    synopsis:Union[List[str], str] = None
     track: Literal["rare", "cancer"] = "rare"
     vcf_files: Optional[VcfFiles] = None
 
@@ -181,6 +178,8 @@ class ScoutLoadConfig(BaseModel):
         LOG.debug("returning {}".format(correct_date))
         return correct_date
 
+    # Each case has to have a owner. If not provided in config file it needs to be given as a
+    # argument
     @validator("owner", pre=True, always=True)
     def mandatory_check_owner(cls, value):
         LOG.debug("OWNER: {}".format(value))
@@ -196,6 +195,30 @@ class ScoutLoadConfig(BaseModel):
             LOG.debug("RAISE ConfigError family")
             raise ConfigError("A case has to have a 'family'")
         return value
+
+    @validator("madeline_info")
+    def check_if_madelie_exists(cls, path):
+        """Add the pedigree figure, this is a xml file which is dumped in the db"""
+        mad_path = Path(path)
+        if not mad_path.exists():
+            raise ValueError("madeline path not found: {}".format(mad_path))
+        with mad_path.open("r") as in_handle:
+            return in_handle.read()
+
+    @validator("track")
+    def field_not_none(cls, v):
+        if v is None:
+            raise ValueError("Owner and family can not be None")
+        return v
+
+    # TODO: give better variable names in all controll funs
+    @validator("synopsis")
+    def synopsis_pre(cls, my_synopsis):
+        LOG.debug("SYNOPSIS: {}".format(my_synopsis))
+        if isinstance(my_synopsis, list):
+            LOG.debug("SYNOPSIS is a list, join")
+            return ". ".join(my_synopsis)
+        return my_synopsis
 
     @root_validator
     def update_track(cls, values):
@@ -223,26 +246,16 @@ class ScoutLoadConfig(BaseModel):
         LOG.debug("RETURN")
         return values
 
-    @validator("madeline_info")
-    def check_if_madelie_exists(cls, path):
-        """Add the pedigree figure, this is a xml file which is dumped in the db"""
-        mad_path = Path(path)
-        if not mad_path.exists():
-            raise ValueError("madeline path not found: {}".format(mad_path))
-        with mad_path.open("r") as in_handle:
-            return in_handle.read()
 
-    @validator("track")
-    def field_not_none(cls, v):
-        if v is None:
-            raise ValueError("Owner and family can not be None")
-        return v
+    @root_validator
+    def set_display_name(cls, values):
+        # set toplevel 'display_name' to 1. family_name  2. family
+        if values.get("family_name"):
+            values.update({"display_name": values.get("family_name")})
+        else:
+            values.update({"display_name": values.get("family")})
+        return values
 
-    @validator("synopsis")
-    def synopsis_pre(cls, my_synopsis):
-        if isinstance(my_synopsis, list):
-            return ". ".join(my_synopsis)
-        return my_synopsis
-
+    
     class Config:
         validate_assignment = True
