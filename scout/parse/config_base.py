@@ -133,6 +133,9 @@ class VcfFiles(BaseModel):
 # TODO: vcf_files as class/dict
 # TODO: `samples` and `individuals` are the same, why both?
 # XXX: why is madeline stored as a file_object?
+
+# `family` and `family_name` must exists, otherwise test_adapter_variant_caseid.py
+# will fail
 class ScoutLoadConfig(BaseModel):
     LOG.debug("HELLO")
     analysis_date: Any = datetime.datetime.now()
@@ -148,6 +151,7 @@ class ScoutLoadConfig(BaseModel):
     # display_name: str = Field([], alias="family_name")
     display_name: str = None
     family: str = None
+    family_name: Optional[str] = None
     gene_panels: Optional[List[str]] = []
     genome_build: str = Field([], alias="human_genome_build")
     human_genome_build: str = None
@@ -192,7 +196,7 @@ class ScoutLoadConfig(BaseModel):
 
     @validator("family", pre=True, always=True)
     def mandatory_check_family(cls, value):
-        LOG.debug("FAMILY: {}".format(value))
+        LOG.debug("FAMILY(mandatory_check_family): {}".format(value))
         if value is None:
             LOG.debug("RAISE ConfigError family")
             raise ConfigError("A case has to have a 'family'")
@@ -207,6 +211,17 @@ class ScoutLoadConfig(BaseModel):
         with mad_path.open("r") as in_handle:
             return in_handle.read()
 
+    @validator("family")
+    def print_f(cls, v):
+        LOG.debug("Family: ".format(v))
+        return v
+
+
+    @validator("display_name")
+    def print_f2(cls, v):
+        LOG.debug("display_name: ".format(v))
+        return v
+        
     @validator("track")
     def field_not_none(cls, v):
         if v is None:
@@ -256,7 +271,7 @@ class ScoutLoadConfig(BaseModel):
             LOG.debug("DISPLAYNAME1: {}".format(values.get("family_name")))
             values.update({"display_name": values.get("family_name")})
         else:
-            LOG.debug("DISPLAYNAME2: {}".format(values.get("family")))
+            LOG.debug("DISPLAYNAME2: {}/{}".format(values.get("display_name"), values.get("family")))
             values.update({"display_name": values.get("family")})
         return values
 
