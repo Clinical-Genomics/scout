@@ -111,6 +111,6 @@ def case(
     try:
         adapter.load_case(config_data, update, keep_actions)
     except Exception as err:
-        LOG.error("Something went wrong during loading")
-        LOG.warning(err)
+        LOG.error("Error during loading: {}".format(err))
+        LOG.debug("Stack trace: {}".format(traceback.format_exc()))
         raise click.Abort()

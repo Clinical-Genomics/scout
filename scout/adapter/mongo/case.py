@@ -582,6 +582,8 @@ class CaseHandler(object):
         # Build the case object
         case_obj = build_case(parsed_case, self)
         # Check if case exists with old case id
+        LOG.debug("owner: {}".format(case_obj["owner"]))
+        LOG.debug("display_name: {}".format(case_obj["display_name"]))
         old_caseid = "-".join([case_obj["owner"], case_obj["display_name"]])
         old_case = self.case(old_caseid)
         # This is to keep sanger order and validation status

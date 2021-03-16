@@ -131,6 +131,7 @@ class VcfFiles(BaseModel):
 # TODO: synopsis kan vara både string och lista av strings som konkateneras med '.'
 # TODO: collaborators ska vara lista
 # TODO: vcf_files as class/dict
+# TODO: `samples` and `individuals` are the same, why both?
 # XXX: why is madeline stored as a file_object?
 class ScoutLoadConfig(BaseModel):
     LOG.debug("HELLO")
@@ -144,7 +145,8 @@ class ScoutLoadConfig(BaseModel):
     coverage_qc_report: str = None  ## ??
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
-    display_name: str = Field([], alias="family_name")
+    # display_name: str = Field([], alias="family_name")
+    display_name: str = None
     family: str = None
     gene_panels: Optional[List[str]] = []
     genome_build: str = Field([], alias="human_genome_build")
@@ -251,8 +253,10 @@ class ScoutLoadConfig(BaseModel):
     def set_display_name(cls, values):
         # set toplevel 'display_name' to 1. family_name  2. family
         if values.get("family_name"):
+            LOG.debug("DISPLAYNAME1: {}".format(values.get("family_name")))
             values.update({"display_name": values.get("family_name")})
         else:
+            LOG.debug("DISPLAYNAME2: {}".format(values.get("family")))
             values.update({"display_name": values.get("family")})
         return values
 
