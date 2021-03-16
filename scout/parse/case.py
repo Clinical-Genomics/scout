@@ -51,32 +51,14 @@ def get_correct_date(date_info):
     LOG.info("Setting analysis date to todays date")
     return datetime.datetime.now()
 
-
-def parse_case_data(
-    config=None,
-    ped=None,
-    owner=None,
-    vcf_snv=None,
-    vcf_sv=None,
-    vcf_cancer=None,
-    vcf_cancer_sv=None,
-    vcf_str=None,
-    smn_tsv=None,
-    peddy_ped=None,
-    peddy_sex=None,
-    peddy_check=None,
-    delivery_report=None,
-    multiqc=None,
-    cnv_report=None,
-    coverage_qc_report=None,
-):
+def parse_case_data(**kwargs):
     """Parse all data necessary for loading a case into scout
 
     This can be done either by providing a VCF file and other information
     on the command line. Or all the information can be specified in a config file.
     Please see Scout documentation for further instructions.
 
-    Args:
+    Possible keyword args:
         config(dict): A yaml formatted config file
         ped(iterable(str)): A ped formatted family file
         owner(str): The institute that owns a case
@@ -95,77 +77,64 @@ def parse_case_data(
         config_data(dict): Holds all the necessary information for loading
                            Scout
     """
-    LOG.debug("*** IS CALLED WITH `$ scout load case` ***")
-    config_data = copy.deepcopy(config) or {}
+    config = kwargs.pop('config')
+
+    # populate configuration according to Pydantic defined classes
+    LOG.debug("1st SCOUTLOADCONFIG")
+    config = ScoutLoadConfig(**config)
+
+
+    # convert to dict
+    config = config.dict()
+    
+    # Give passed keyword arguments precedence over file configuration
+    # Except for 'owner', prededence config file over arguments
+    LOG.debug("KWARGS: {}".format(kwargs))
+    if 'owner' in config:
+        kwargs.pop('owner')
+    for key in kwargs:
+        if kwargs[key] is not None:
+            config[key] = kwargs[key]
+        else:
+            try:
+                config[key] = config[key]
+            except KeyError:
+                config[key] = None
+
+    synopsis = ( ". ".join(config["synopsis"])  if isinstance(config["synopsis"], list) else config["synopsis"]
+        )
+
+                
     # Default the analysis date to now if not specified in load config
-    config_data["analysis_date"] = get_correct_date(config_data.get("analysis_date"))
+    config["analysis_date"] = get_correct_date(config.get("analysis_date"))
 
     # If the family information is in a ped file we nned to parse that
-    if ped:
+    if kwargs['ped']:
         family_id, samples = parse_ped(ped)
         config_data["family"] = family_id
         config_data["samples"] = samples
 
-    # Each case has to have a owner. If not provided in config file it needs to be given as a
-    # argument
-    if "owner" not in config_data:
-        if not owner:
-            raise SyntaxError("Case has no owner")
 
-        config_data["owner"] = owner
-
-    if "gene_panels" in config_data:
+    try:
         # handle whitespace in gene panel names
-        config_data["gene_panels"] = [panel.strip() for panel in config_data["gene_panels"]]
-        config_data["default_gene_panels"] = [
-            panel.strip() for panel in config_data["default_gene_panels"]
+        config["gene_panels"] = [panel.strip() for panel in config["gene_panels"]]
+        config["default_gene_panels"] = [
+            panel.strip() for panel in config["default_gene_panels"]
         ]
-
-    ##################### Add information from peddy if existing #####################
-    config_data["peddy_ped"] = peddy_ped or config_data.get("peddy_ped")
-    config_data["peddy_sex_check"] = peddy_sex or config_data.get("peddy_sex")
-    config_data["peddy_ped_check"] = peddy_check or config_data.get("peddy_check")
+    except:
+        pass
 
     # This will add information from peddy to the individuals
-    add_peddy_information(config_data)
+    add_peddy_information(config)
 
     ##################### Add multiqc information #####################
-    config_data["multiqc"] = multiqc or config_data.get("multiqc")
-
-    config_data["vcf_snv"] = vcf_snv if vcf_snv else config_data.get("vcf_snv")
-    config_data["vcf_sv"] = vcf_sv if vcf_sv else config_data.get("vcf_sv")
-    config_data["vcf_str"] = vcf_str if vcf_str else config_data.get("vcf_str")
-    config_data["smn_tsv"] = smn_tsv if smn_tsv else config_data.get("smn_tsv")
-
     LOG.debug("Checking for SMN TSV..")
-    if config_data["smn_tsv"]:
-        LOG.info("Adding SMN info from {}.".format(config_data["smn_tsv"]))
-        add_smn_info(config_data)
+    if config["smn_tsv"]:
+        LOG.info("Adding SMN info from {}.".format(config["smn_tsv"]))
+        add_smn_info(config)
 
-    config_data["vcf_cancer"] = vcf_cancer if vcf_cancer else config_data.get("vcf_cancer")
-    config_data["vcf_cancer_sv"] = (
-        vcf_cancer_sv if vcf_cancer_sv else config_data.get("vcf_cancer_sv")
-    )
-
-    config_data["delivery_report"] = (
-        delivery_report if delivery_report else config_data.get("delivery_report")
-    )
-
-    config_data["cnv_report"] = cnv_report if cnv_report else config_data.get("cnv_report")
-    config_data["coverage_qc_report"] = (
-        coverage_qc_report if coverage_qc_report else config_data.get("coverage_qc_report")
-    )
-
-    config_data["rank_model_version"] = str(config_data.get("rank_model_version", ""))
-    config_data["rank_score_threshold"] = config_data.get("rank_score_threshold", 0)
-
-    config_data["sv_rank_model_version"] = str(config_data.get("sv_rank_model_version", ""))
-
-    config_data["track"] = config_data.get("track", "rare")
-    if config_data["vcf_cancer"] or config_data["vcf_cancer_sv"]:
-        config_data["track"] = "cancer"
-
-    return config_data
+    LOG.debug("RETURN: {}".format(config))
+    return config
 
 
 def add_smn_info(config_data):
@@ -483,8 +452,9 @@ def parse_case(config):
     """
 
     LOG.debug("***IS THIS CALLED?  parse_case()***")
-
+    LOG.debug("2nd SCOUTLOADCONFIG")
     configObj = ScoutLoadConfig(**config)  # create a config object based on pydantic
+    LOG.debug("/2nd SCOUTLOADCONFIG")
     vcf_files = VcfFiles(**config)  # vcf_files ...
     configObj.vcf_files = vcf_files
     case_data = configObj.dict()  # translate object to legacy dict
