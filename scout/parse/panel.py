@@ -135,10 +135,10 @@ def parse_gene(gene_info):
     for field in PANEL_GENE_INFO_TRANSCRIPTS:
         if field not in gene_info:
             continue
-        transcripts = gene_info[field]
+        transcripts = gene_info[field].strip('"')
 
     gene["transcripts"] = [
-        transcript.strip().strip('"') for transcript in transcripts.split(",") if transcript
+        transcript.strip() for transcript in transcripts.split(",") if transcript
     ]
 
     # Genetic disease models is a ','-separated list of manually curated
@@ -147,9 +147,9 @@ def parse_gene(gene_info):
     for field in PANEL_GENE_INFO_MODELS:
         if field not in gene_info:
             continue
-        models = gene_info[field].strip('"')
+        models = gene_info[field].strip().strip('"')
     gene["inheritance_models"] = [
-        model.strip().strip('"') for model in models.split(",") if model.strip() in VALID_MODELS
+        model.strip() for model in models.split(",") if model.strip() in VALID_MODELS
     ]
 
     # If a gene is known to be associated with mosaicism this is annotated
