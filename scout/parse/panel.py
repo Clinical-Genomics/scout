@@ -173,7 +173,7 @@ def parse_gene(gene_info):
 
 def get_delimiter(line):
     """Try to find out what delimiter to use"""
-    delimiters = ["\t", " ", ";"]
+    delimiters = ["\t", ";"]
     line_length = 0
     delimiter = None
 
