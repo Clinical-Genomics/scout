@@ -19,7 +19,9 @@ def test_load_case(mock_app, institute_obj, case_obj):
     # remove case from real populated database using adapter
     store.delete_case(case_id=case_obj["_id"])
     assert store.case_collection.find_one() is None
-    res = store.institute_collection.find({"_id": "cust000"})
+    print("***********************")
+    print(store.institute_collection.find({}))
+    res = store.institute_collection.find({"_id": "internal_id"})
     assert sum(1 for i in res) == 1
 
     # Make sure the scout config file is available
