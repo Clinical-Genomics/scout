@@ -9,7 +9,6 @@ def test_update_caseid(real_oldcase_database, scout_config):
     ## THEN assert that the case has the old style id
     assert old_caseid == "-".join([old_case["owner"], old_case["display_name"]])
 
-
     ## THEN assert that the case has old id as case_id
     assert isinstance(adapter.case(old_caseid), dict)
     ## THEN assert that grabbing the case with disaply name does not work

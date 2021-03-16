@@ -66,7 +66,6 @@ class ScoutIndividual(BaseModel):
             raise PedigreeError("Sample, config error: '{}'".format(value))
         return value
 
-
     @validator("tumor_purity")
     def cast_to_float(cls, value):
         if isinstance(value, str):
@@ -122,7 +121,6 @@ class VcfFiles(BaseModel):
     vcf_sv_research: Optional[str] = None
 
 
-
 # TODO: handle arguments used as alternative input
 # TODO: validator to set track="cancer" if vcf_cancer||vcf_cancer_sv
 # TODO: parse_ped seems to work on yet another file with pedigree info
@@ -168,7 +166,7 @@ class ScoutLoadConfig(BaseModel):
     samples: List[ScoutIndividual] = []
     smn_tsv: Optional[str] = None
     sv_rank_model_version: Optional[str] = ""
-    synopsis:Union[List[str], str] = None
+    synopsis: Union[List[str], str] = None
     track: Literal["rare", "cancer"] = "rare"
     vcf_files: Optional[VcfFiles] = None
 
@@ -215,12 +213,11 @@ class ScoutLoadConfig(BaseModel):
         LOG.debug("Family: ".format(v))
         return v
 
-
     @validator("display_name")
     def print_f2(cls, v):
         LOG.debug("display_name: ".format(v))
         return v
-        
+
     @validator("track")
     def field_not_none(cls, v):
         if v is None:
@@ -262,7 +259,6 @@ class ScoutLoadConfig(BaseModel):
         LOG.debug("RETURN")
         return values
 
-
     @root_validator
     def set_display_name(cls, values):
         # set toplevel 'display_name' to 1. family_name  2. family
@@ -270,10 +266,11 @@ class ScoutLoadConfig(BaseModel):
             LOG.debug("DISPLAYNAME1: {}".format(values.get("family_name")))
             values.update({"display_name": values.get("family_name")})
         else:
-            LOG.debug("DISPLAYNAME2: {}/{}".format(values.get("display_name"), values.get("family")))
+            LOG.debug(
+                "DISPLAYNAME2: {}/{}".format(values.get("display_name"), values.get("family"))
+            )
             values.update({"display_name": values.get("family")})
         return values
 
-    
     class Config:
         validate_assignment = True
