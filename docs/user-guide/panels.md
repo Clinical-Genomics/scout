@@ -45,7 +45,7 @@ Example:
 ### Notes on entries
 
 - **hgnc_id**: has valid HGNC id. **Please check that a gene with the give HGNC ID exists in Scout in the available genome build**. If for instance Scout is using genome build GRCh37 and a user tries to save a gene only available in genome build GRCh38 the upload of the panel will fail.
-- **genetic_disease_models** Any of the following values: [AR,AD,XR,XD,MT,X,Y]
+- **genetic_disease_models** A comma-separated list of inheritance models. Any standard model (AR,AD,XR,XD,MT,X,Y) will be saved under `inheritance_models`. Models different from standard models will be saved as `custom_inheritance_models`.
 - **mosaicism** Any entry here will be interpreted as true
 - **reduced_penetrance** Any entry here will be interpreted as true
 - **database_entry_version** This should refer to a earlier version of the panel

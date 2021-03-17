@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show variant quality (QUAL field from vcf) in the variant summary
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
+- Missing inheritance models and custom inheritance models on newly created gene panels
 ### Changed
 - A more compact case groups panel
 - Improve user documentation to create and save new gene panels
