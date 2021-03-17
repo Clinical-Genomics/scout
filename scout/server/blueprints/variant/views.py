@@ -95,8 +95,6 @@ def str_variant(institute_id, case_name, variant_id):
         return redirect(
             url_for("variants.str_variants", institute_id=institute_id, case_name=case_name)
         )
-        return redirect(request.referrer)
-
     return data
 
 
