@@ -4,6 +4,7 @@ import logging
 from datetime import datetime as datetime
 
 from scout.exceptions import IntegrityError
+from scout.constants import VALID_MODELS
 
 LOG = logging.getLogger(__name__)
 
@@ -77,21 +78,13 @@ def build_gene(gene_info, adapter):
         gene_obj["database_entry_version"] = gene_info["database_entry_version"]
 
     if gene_info.get("inheritance_models"):
+        gene_obj["custom_inheritance_models"] = []
         for model in gene_info["inheritance_models"]:
-            if model == "AR":
-                gene_obj["ar"] = True
-            if model == "AD":
-                gene_obj["ad"] = True
-            if model == "MT":
-                gene_obj["mt"] = True
-            if model == "XR":
-                gene_obj["xr"] = True
-            if model == "XD":
-                gene_obj["xd"] = True
-            if model == "X":
-                gene_obj["x"] = True
-            if model == "Y":
-                gene_obj["y"] = True
+            if model not in VALID_MODELS:
+                continue
+            gene_obj["custom_inheritance_models"].append(model)
+            lc_model = model.lower()  # example ad = True
+            gene_obj[lc_model] = True
 
     return gene_obj
 
