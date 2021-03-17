@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show variant quality (QUAL field from vcf) in the variant summary
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
+- Page crashing looking for LoqusDB observation when variant doesn't exist
 ### Changed
 - A more compact case groups panel
 
