@@ -392,6 +392,16 @@
                 {% endif %}
               </strong></span>
             </td>
+            <td>
+              QUAL
+              <span><strong>
+                {% if variant.quality %}
+                  {{ variant.quality|int }}
+                {% else %}
+                  -
+                {% endif %}
+              </strong></span>
+            </td>
           </tr>
         </tbody>
       </table>

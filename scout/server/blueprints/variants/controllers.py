@@ -29,7 +29,6 @@ from scout.constants import (
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
-from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.utils import predictions, clinsig_human
 from scout.server.links import str_source_link, ensembl, cosmic_link
 from scout.server.utils import (
@@ -404,7 +403,7 @@ def download_variants(store, case_obj, variant_objs):
     headers.add(
         "Content-Disposition",
         "attachment",
-        filename=str(case_obj["display_name"]) + "-filtered_sv-variants.csv",
+        filename=str(case_obj["display_name"]) + "-filtered-variants.csv",
     )
     # return a csv with the exported variants
     return Response(
@@ -440,7 +439,7 @@ def variant_export_lines(store, case_obj, variants_query):
 
         # if variant is in genes
         if gene_list is not None and len(gene_list) > 0:
-            gene_info = variant_export_genes_info(store, gene_list)
+            gene_info = variant_export_genes_info(store, gene_list, case_obj.get("genome_build"))
             variant_line += gene_info
         else:
             empty_col = 0
@@ -466,11 +465,52 @@ def variant_export_lines(store, case_obj, variants_query):
     return export_variants
 
 
-def variant_export_genes_info(store, gene_list):
+def match_gene_txs_variant_txs(variant_gene, hgnc_gene):
+    """Match gene transcript with variant transcript to extract primary and canonical tx info
+
+    Args:
+        variant_gene(dict): A gene dictionary with limited info present in variant.genes.
+                        contains info on which transcript is canonical, hgvs and protein changes
+        hgnc_gene(dict): A gene object obtained from the database containing a complete list of transcripts.
+
+    Returns:
+        canonical_txs, primary_txs(tuple): columns containing canonical and primary transcript info
+    """
+    canonical_txs = []
+    primary_txs = []
+
+    for tx in hgnc_gene.get("transcripts", []):
+        tx_id = tx["ensembl_transcript_id"]
+
+        # collect only primary of refseq trancripts from hgnc_gene gene
+        if not tx.get("refseq_identifiers") and tx.get("is_primary") is False:
+            continue
+
+        for var_tx in variant_gene.get("transcripts", []):
+            if var_tx["transcript_id"] != tx_id:
+                continue
+
+            tx_refseq = tx.get("refseq_id")
+            hgvs = var_tx.get("coding_sequence_name") or "-"
+            pt_change = var_tx.get("protein_sequence_name") or "-"
+
+            # collect info from primary transcripts
+            if tx_refseq in hgnc_gene.get("primary_transcripts"):
+                primary_txs.append("/".join([tx_refseq or tx_id, hgvs, pt_change]))
+
+            # collect info from canonical transcript
+            if var_tx.get("is_canonical") is True:
+                canonical_txs.append("/".join([tx_refseq or tx_id, hgvs, pt_change]))
+
+    return canonical_txs, primary_txs
+
+
+def variant_export_genes_info(store, gene_list, genome_build="37"):
     """Adds gene info to a list of fields corresponding to a variant to be exported.
 
     Args:
-        gene_list(list) A list of gene objects contained in the variant
+        gene_list(list) A list of gene objects (with limited info) contained in the variant
+        genome_build(str): genome build to export gene list to
 
     Returns:
         gene_info(list) A list of gene-relates string info
@@ -478,35 +518,24 @@ def variant_export_genes_info(store, gene_list):
     gene_ids = []
     gene_names = []
     canonical_txs = []
-    hgvs_c = []
-    pt_c = []
-
+    primary_txs = []
     gene_info = []
 
     for gene_obj in gene_list:
         hgnc_id = gene_obj["hgnc_id"]
-        gene_name = gene(store, hgnc_id)["symbol"]
-
         gene_ids.append(hgnc_id)
-        gene_names.append(gene_name)
+        hgnc_gene = store.hgnc_gene(hgnc_id, genome_build)
+        if hgnc_gene is None:
+            continue
+        gene_names.append(hgnc_gene.get("hgnc_symbol"))
 
-        if gene_obj.get("canonical_transcript"):
-            canonical_txs.append(gene_obj.get("canonical_transcript"))
+        gene_canonical_txs, gene_primary_txs = match_gene_txs_variant_txs(gene_obj, hgnc_gene)
 
-        hgvs_nucleotide = "-"
-        protein_change = "-"
-        # gather HGVS info from gene transcripts
+        canonical_txs += gene_canonical_txs
+        primary_txs += gene_primary_txs
 
-        transcripts_list = gene_obj.get("transcripts")
-        for transcript_obj in transcripts_list:
-            if transcript_obj["transcript_id"] == gene_obj.get("canonical_transcript"):
-                hgvs_nucleotide = transcript_obj.get("coding_sequence_name") or "-"
-                protein_change = transcript_obj.get("protein_sequence_name") or "-"
-        hgvs_c.append(hgvs_nucleotide)
-        pt_c.append(protein_change)
-
-    for item in [gene_ids, gene_names, canonical_txs, hgvs_c, pt_c]:
-        gene_info.append(";".join(str(x) for x in item))
+    for item in [gene_ids, gene_names, canonical_txs, primary_txs]:
+        gene_info.append(" | ".join(str(x) for x in item))
 
     return gene_info
 
