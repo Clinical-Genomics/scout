@@ -129,7 +129,7 @@
                   {{ gene.symbol }}
                 </a>
               </td>
-              <td>{{ gene }}</td>
+              <td>{{ gene.hgnc_id }}</td>
 
               <td>{{ gene.disease_associated_transcripts|join(', ') }}</td>
               <td>{{ 'Yes' if gene.reduced_penetrance }}</td>
