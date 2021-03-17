@@ -8,7 +8,6 @@ from scout.utils.link import get_correct_ids
 from scout.constants import (
     PANEL_GENE_INFO_TRANSCRIPTS,
     PANEL_GENE_INFO_MODELS,
-    VALID_MODELS,
     INCOMPLETE_PENETRANCE_MAP,
     MODELS_MAP,
 )
@@ -137,9 +136,9 @@ def parse_gene(gene_info):
             continue
         models = gene_info[field].strip().strip('"')
 
-    gene["inheritance_models"] = [
-        model.strip() for model in models.split(",") if model.strip() in VALID_MODELS
-    ]
+    # Collect whichever model provided by the user.
+    # Then populate inheritance_models and custom_inheritance_models on gene build step
+    gene["inheritance_models"] = [model.strip() for model in models.split(",")]
 
     # If a gene is known to be associated with mosaicism this is annotated
     gene["mosaicism"] = bool(gene_info.get("mosaicism"))
