@@ -30,6 +30,7 @@ from .variant_tags import (
 )
 from .case_tags import (
     ANALYSIS_TYPES,
+    CUSTOM_CASE_REPORTS,
     SEX_MAP,
     REV_SEX_MAP,
     PHENOTYPE_MAP,

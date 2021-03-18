@@ -489,6 +489,29 @@ def test_pdf_case_report(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
+def test_gene_fusion_report(app, institute_obj, case_obj):
+    """Test the endpoint that allows users to download the PDF file containing the gene fusion report."""
+    # GIVEN an initialized app and a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # When clicking on gene fusion report link button on the sidebar
+        resp = client.get(
+            url_for(
+                "cases.gene_fusion_report",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+                report_type="gene_fusion_report",
+            )
+        )
+        # a successful response should be returned
+        assert resp.status_code == 200
+        # And the downloaded file should be a PDF file
+        assert resp.mimetype == "application/pdf"
+
+
 def test_mt_report(app, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute

@@ -1,9 +1,8 @@
 import logging
-
 from datetime import datetime
 
+from scout.constants import CUSTOM_CASE_REPORTS
 from scout.exceptions import PedigreeError, ConfigError, IntegrityError
-
 from . import build_individual
 
 LOG = logging.getLogger(__name__)
@@ -89,6 +88,8 @@ def build_case(case_data, adapter):
 
         cnv_report = str, # path to file with cnv report
         coverage_qc_report = str, # path to file with coverage and qc report
+        gene_fusion_report = str, # path to the gene fusions report
+        gene_fusion_report_research = str, # path to the research gene fusions report
 
         vcf_files = dict, # A dictionary with vcf files
 
@@ -138,7 +139,6 @@ def build_case(case_data, adapter):
     # sort the samples to put the affected individual first
     sorted_inds = sorted(ind_objs, key=lambda ind: -ind["phenotype"])
     case_obj["individuals"] = sorted_inds
-
 
     now = datetime.now()
     case_obj["created_at"] = now
@@ -253,12 +253,10 @@ def build_case(case_data, adapter):
     case_obj["chromograph_image_files"] = case_data.get("chromograph_image_files")
     case_obj["chromograph_prefixes"] = case_data.get("chromograph_prefixes")
 
-    if "multiqc" in case_data:
-        case_obj["multiqc"] = case_data.get("multiqc")
-    if "cnv_report" in case_data:
-        case_obj["cnv_report"] = case_data.get("cnv_report")
-    if "coverage_qc_report" in case_data:
-        case_obj["coverage_qc_report"] = case_data.get("coverage_qc_report")
+    for custom_report in CUSTOM_CASE_REPORTS:
+        if custom_report in case_data:
+            case_obj[custom_report] = case_data.get(custom_report)
+
     case_obj["vcf_files"] = case_data.get("vcf_files", {})
     case_obj["delivery_report"] = case_data.get("delivery_report")
 
