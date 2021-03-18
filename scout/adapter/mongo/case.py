@@ -701,6 +701,8 @@ class CaseHandler(object):
             - vcf_files: paths to the new files
             - cnv_report: path to the CNV report file
             - coverage_qc_report: path to the static coverage and qc report file
+            - gene_fusion_report: path to the gene fusions report
+            - gene_fusion_report_research: path to the research gene fusions report
             - has_svvariants: If there are new svvariants
             - has_strvariants: If there are new strvariants
             - multiqc: If there's an updated multiqc report location
@@ -751,6 +753,8 @@ class CaseHandler(object):
                     "delivery_report": case_obj.get("delivery_report"),
                     "cnv_report": case_obj.get("cnv_report"),
                     "coverage_qc_report": case_obj.get("coverage_qc_report"),
+                    "gene_fusion_report": case_obj.get("gene_fusion_report"),
+                    "gene_fusion_report_research": case_obj.get("gene_fusion_report_research"),
                     "individuals": case_obj["individuals"],
                     "updated_at": updated_at,
                     "rerun_requested": case_obj.get("rerun_requested", False),
