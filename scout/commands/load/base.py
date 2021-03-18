@@ -15,6 +15,7 @@ from .user import user as user_command
 from .report import delivery_report as delivery_report_command
 from .report import cnv_report as cnv_report_command
 from .report import coverage_qc_report as coverage_qc_report_command
+from .report import gene_fusion_report as gene_fusion_report_command
 from .exons import exons as exons_command
 
 LOG = logging.getLogger(__name__)
@@ -37,4 +38,5 @@ load.add_command(variants_command)
 load.add_command(delivery_report_command)
 load.add_command(cnv_report_command)
 load.add_command(coverage_qc_report_command)
+load.add_command(gene_fusion_report_command)
 load.add_command(exons_command)

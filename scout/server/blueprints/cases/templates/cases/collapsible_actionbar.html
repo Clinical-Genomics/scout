@@ -64,13 +64,17 @@
 <div id='submenu1' class="collapse sidebar-submenu">
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row flex-fill bd-highlight">
-        <span class="menu-collapsed ml-2">General</span>
-        <a href="{{ url_for('cases.case_report', institute_id=institute._id,
-                              case_name=case.display_name) }}" target="_blank">
-                            <i class="fa fa-link"></i></a>
-        <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id,
-                              case_name=case.display_name) }}">
-                            <i class="fa fa-file-pdf-o"></i></a>
+        <div>
+          <span class="menu-collapsed ml-2">General</span>
+        </div>
+        <div>
+          <a href="{{ url_for('cases.case_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
+                <i class="fa fa-link"></i></a>
+        </div>
+        <div>
+          <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}">
+                <i class="fa fa-file-pdf-o"></i></a>
+        </div>
       </div>
     </div>
     {% if case.multiqc %}
@@ -97,12 +101,19 @@
     {% endif %}
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row flex-fill bd-highlight">
-        <span class="menu-collapsed ml-2">mtDNA report</span>
+        <div>
+          <span class="menu-collapsed ml-2">mtDNA report</span>
+        </div>
+        <div>
           <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-file-excel-o"></i></a>
+        </div>
       </div>
     </div>
     {% if case.cnv_report %}
       {{ cnv_report(institute._id, case) }}
+    {% endif %}
+    {% if case.gene_fusion_report or case.gene_fusion_report_research %}
+      {{ gene_fusion_reports(institute._id, case) }}
     {% endif %}
     {% if case.coverage_qc_report %}
       {{ coverage_qc_report(institute._id, case) }}
@@ -449,34 +460,69 @@
 
 {% macro delivery_report(institute, case, date=None) %}
 <div href="#" class="bg-dark list-group-item text-white">
-  <div class="d-flex flex-row flex-fill bd-highlight"></span>
-    <span class="menu-collapsed ml-2">Delivery ({{date or case.analysis_date.date() }})
+  <div class="d-flex flex-row flex-fill bd-highlight">
+    <div>
+      <span class="menu-collapsed ml-2">Delivery ({{date or case.analysis_date.date() }})</span>
+    </div>
+    <div>
       <a href="{{ url_for('cases.delivery_report', institute_id=institute,
                         case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
+    </div>
+    <div>
       <a href="{{ url_for('cases.delivery_report', institute_id=institute,
                         case_name=case.display_name, date=date, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
+    </div>
   </div>
 </div>
 {% endmacro %}
 
 {% macro cnv_report(institute, case) %}
 <div href="#" class="bg-dark list-group-item text-white">
-  <div class="d-flex flex-row flex-fill bd-highlight"></span>
-    <span class="menu-collapsed ml-2">CNV report
+  <div class="d-flex flex-row flex-fill bd-highlight">
+    <div>
+      <span class="menu-collapsed ml-2">CNV report</span>
+    </div>
+    <div>
       <a href="{{ url_for('cases.cnv_report', institute_id=institute,
                         case_name=case.display_name, format='pdf') }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+    </div>
   </div>
 </div>
 {% endmacro %}
 
+{% macro gene_fusion_reports(institute, case) %}
+{% set fusion_reports = ["gene_fusion_report", "gene_fusion_report_research"] %}
+{% for report_type in fusion_reports %}
+  {% if case[report_type] %}
+    <div href="#" class="bg-dark list-group-item text-white">
+      <div class="d-flex flex-row flex-fill bd-highlight">
+        <div class="text-nowrap">
+          <span class="menu-collapsed ml-2">{{ report_type|replace("_report","")|replace("_"," ")|capitalize }}</span>
+        </div>
+        <div>
+          <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
+                            case_name=case.display_name, report_type=report_type) }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}
+{% endmacro %}
+
 {% macro coverage_qc_report(institute, case) %}
 <div href="#" class="bg-dark list-group-item text-white">
-  <div class="d-flex flex-row flex-fill bd-highlight"></span>
-    <span class="menu-collapsed ml-2">Coverage and QC report
+  <div class="d-flex flex-row flex-fill bd-highlight">
+    <div>
+      <span class="menu-collapsed ml-2">Coverage and QC report</span>
+    </div>
+    <div>
       <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
                         case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
+    </div>
+    <div>
       <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
                         case_name=case.display_name, date=date, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
+    </div>
   </div>
 </div>
 {% endmacro %}
