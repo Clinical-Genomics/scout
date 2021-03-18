@@ -51,3 +51,5 @@ cnv_report_file = "demo/cancer_cnv_report.pdf"
 cnv_report_path = pkg_resources.resource_filename("scout", cnv_report_file)
 coverage_qc_report_file = "demo/cancer_coverage_qc_report.html"
 coverage_qc_report_path = pkg_resources.resource_filename("scout", coverage_qc_report_file)
+gene_fusion_report_file = "demo/draw-fusions-example.pdf"
+gene_fusion_report_path = pkg_resources.resource_filename("scout", gene_fusion_report_file)
