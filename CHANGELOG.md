@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Load/update PDF gene fusion reports (clinical and research) generated with Arriba
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
+- Page formatting issues whenever case and variant comments contain extremely long strings with no spaces
 ### Changed
 - A more compact case groups panel
 - Pre-collect all case-group evaluated before creating variant assessments from other cases in case group
