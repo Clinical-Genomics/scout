@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
 - Page formatting issues whenever case and variant comments contain extremely long strings with no spaces
+- Chromograph images can be one column and have scrollbar. Removed legacy code.
 ### Changed
 - A more compact case groups panel
 - Added landscape orientation CSS style to cancer coverage and QC demo report
