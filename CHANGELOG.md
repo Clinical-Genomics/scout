@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display on case activity the event of a user resetting all dismissed variants
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
+- Page formatting issues whenever case and variant comments contain extremely long strings with no spaces
 ### Changed
 - A more compact case groups panel
 
