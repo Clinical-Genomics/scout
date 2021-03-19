@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - gnomAD annotation field in admin guide
 - Export also dynamic panel genes not associated to an HPO term when downloading the HPO panel
 - Primary HGNC transcript info in variant export files
+- Support new MANE annotations from VEP (both MANE Select and MANE Plus Clinical)
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
 ### Changed
