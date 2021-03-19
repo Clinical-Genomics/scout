@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Page crashing looking for LoqusDB observation when variant doesn't exist
 ### Changed
 - A more compact case groups panel
+- Added landscape orientation CSS style to cancer coverage and QC demo report
 
 ## [4.30.2]
 ### Added
