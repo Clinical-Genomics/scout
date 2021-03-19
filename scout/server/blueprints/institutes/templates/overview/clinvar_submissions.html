@@ -197,7 +197,7 @@
           </thead>
           <tbody>
             {% for case in subm_obj.case_data %}
-              <tr class="text-center">
+              <tr>
                 <td>{{loop.index}}</td>
                 <form id="rename_cd_{{subm_obj._id}}" action="{{ url_for('overview.clinvar_rename_casedata', submission=subm_obj._id, case=case.case_id, old_name=case.individual_id) }}" method="POST">
                 <td>
