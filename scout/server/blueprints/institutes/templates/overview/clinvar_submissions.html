@@ -20,7 +20,7 @@
 
 {% macro submissions_macro(submissions) %}
 <div class="container-float">
-  <h3>Clinvar submissions page<h5></h3><a data-target="#howto" href="#" data-toggle="modal">howto</a></h5><br>
+  <h3>ClinVar submissions page<h5></h3><a data-target="#howto" href="#" data-toggle="modal">howto</a></h5><br>
   <!-- Modal -->
   <div class="modal fade w-100" role="dialog" id="howto" aria-hidden="true" tabindex="-1">
     <div class="modal-dialog" role="document">
@@ -28,8 +28,8 @@
         <div class="modal-body">
           <h5>Requirements</h5>
           <p>
-            Make sure to <strong>register a user</strong> to the <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/submission_portal/" target="_blank">clinVar submission portal.</a><br>
-                        If your organization is not already present in clinVar you should follow the instructions to <strong>register a submitting organization</strong> to the same portal.
+            Make sure to <strong>register a user</strong> to the <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/submission_portal/" target="_blank">ClinVar submission portal.</a><br>
+                        If your organization is not already present in ClinVar you should follow the instructions to <strong>register a submitting organization</strong> to the same portal.
                         The first time an organization is registered in the ClinVar Submission Portal, the content will be reviewed, so it will take some time before getting approved in order to start a variant submission.
           </p><br>
           <h5>Obtain a submission ID</h5>
@@ -43,7 +43,7 @@
           </p><br>
           <h5>Download the files</h5>
           <p>
-            You'll need to register the <strong>Submission Name</strong> obtained from Clinvar portal in order to download variants and casedata submission files.
+            You'll need to register the <strong>Submission Name</strong> obtained from the ClinVar portal in order to download variants and casedata submission files.
           </p><br>
           <h5>Upload the files to Clinvar</h5>
           <p>
@@ -66,7 +66,7 @@
     {% endfor %}
     </div>
   {% else %}
-  <p>No clinvar submission was found. You can create one by clicking on "Submit to Clinvar" from the page of a pinned variant.</p>
+  <p>No ClinVar submission was found. You can create one by clicking on "Submit to ClinVar" from the page of a pinned variant.</p>
   {% endif %}
 </div>
 {% endmacro %}
@@ -187,7 +187,6 @@
             <tr>
               <th></th>
               <th>Individual ID</th>
-              <th></th>
               <th></th>
               <th>Case ID</th>
               <th>Clinical features</th>
