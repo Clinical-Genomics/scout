@@ -164,17 +164,19 @@ function clear_svg(svg_element){
  *
  */
 function set_svg_size(svg_element, number_of_columns){
-		if(number_of_columns == 1){
-          svg_element.setAttribute('width', 600)
-          svg_element.setAttribute('height', 3350)
-      }
-    if(number_of_columns == 2){
-          svg_element.setAttribute('width', 1200)
-          svg_element.setAttribute('height', 1700)
-      }
-    if(number_of_columns == 3){
-          svg_element.setAttribute('width', 1550)
-          svg_element.setAttribute('height', 1100)
+		switch(number_of_columns){
+			case 1:
+				svg_element.setAttribute('width', 600)
+				svg_element.setAttribute('height', 3350)
+				break;
+			case 2:
+				svg_element.setAttribute('width', 1200)
+				svg_element.setAttribute('height', 1700)
+				break;
+			case 3:
+				svg_element.setAttribute('width', 1550)
+				svg_element.setAttribute('height', 1100)
+				break;
     }
 }
 
