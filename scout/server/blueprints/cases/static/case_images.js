@@ -1,4 +1,5 @@
 const WIDTH_BREAKPOINT = 1955  // less will remove one column
+const SINGLE_COL_WIDTH_BREAKPOINT = 1555
 const X_OFFSET = 55 // leftside offset whitespace in the PNGs
 const Y_OFFSET = 5  // make room for arrows pointing at the cytoban
 const OFFSET_X = 60;
@@ -6,6 +7,10 @@ const OFFSET_Y = 30;
 const CHROMOSOMES = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
                      '11', '12', '13', '14', '15', '16', '17', '18',
                      '19', '20', '21', '22', 'X', 'Y'];
+
+console.log("window: "+$(window).width())
+console.log("breakpoint: "+WIDTH_BREAKPOINT)
+console.log("single col breakpoint: "+SINGLE_COL_WIDTH_BREAKPOINT)
 
 // Ideogram measurements used for cropping to a nice picture
 const CHROMSPECS_LIST =
@@ -56,6 +61,9 @@ function draw_tracks(individual, institute, case_name){
     const CYT_HEIGHT = 50 ;
     const CYT_WIDTH = 530 ;
     var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
+		if( $(window).width() < SINGLE_COL_WIDTH_BREAKPOINT){
+				number_of_columns = 1
+		}
     var svg_element = document.getElementById("svg_" + individual["individual_id"])
     clear_svg(svg_element)
     svg_element = document.getElementById("svg_" + individual["individual_id"]) // get svg_element again, now clean
@@ -162,6 +170,10 @@ function clear_svg(svg_element){
  *
  */
 function set_svg_size(svg_element, number_of_columns){
+		if(number_of_columns == 1){
+          svg_element.setAttribute('width', 600)
+          svg_element.setAttribute('height', 3350)
+      }
     if(number_of_columns == 2){
           svg_element.setAttribute('width', 1200)
           svg_element.setAttribute('height', 1700)
