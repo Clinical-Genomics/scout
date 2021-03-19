@@ -31,7 +31,7 @@ from scout.constants.variant_tags import (
     MANUAL_RANK_OPTIONS,
 )
 from scout.export.variant import export_mt_variants
-from scout.server.extensions import store
+from scout.server.extensions import store, matchmaker
 from scout.parse.matchmaker import (
     genomic_features,
     hpo_terms,
@@ -40,7 +40,6 @@ from scout.parse.matchmaker import (
 )
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.utils import institute_and_case
-from scout.utils.matchmaker import matchmaker_request
 from scout.utils.scout_requests import post_request_json
 
 LOG = logging.getLogger(__name__)
@@ -957,18 +956,7 @@ def beacon_add(form):
     return
 
 
-def mme_add(
-    store,
-    user_obj,
-    case_obj,
-    add_gender,
-    add_features,
-    add_disorders,
-    genes_only,
-    mme_base_url,
-    mme_accepts,
-    mme_token,
-):
+def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, genes_only):
     """Add a patient to MatchMaker server
 
     Args:
@@ -979,17 +967,11 @@ def mme_add(
         add_features(bool) if True HPO features will be included in matchmaker
         add_disorders(bool) if True OMIM diagnoses will be included in matchmaker
         genes_only(bool) if True only genes and not variants will be shared
-        mme_base_url(str) base url of the MME server
-        mme_accepts(str) request content accepted by MME server
-        mme_token(str) auth token of the MME server
 
     Returns:
         submitted_info(dict) info submitted to MatchMaker and its responses
     """
-
-    if not mme_base_url or not mme_accepts or not mme_token:
-        return "Please check that Matchmaker connection parameters are valid"
-    url = "".join([mme_base_url, "/patient/add"])
+    url = "".join([matchmaker.host, "/patient/add"])
     features = []  # this is the list of HPO terms
     disorders = []  # this is the list of OMIM diagnoses
     g_features = []
@@ -1046,11 +1028,9 @@ def mme_add(
             patient["genomicFeatures"] = g_features
 
         # send add request to server and capture response
-        resp = matchmaker_request(
+        resp = matchmaker.request(
             url=url,
-            token=mme_token,
             method="POST",
-            content_type=mme_accepts,
             accept="application/json",
             data={"patient": patient},
         )
@@ -1093,7 +1073,7 @@ def mme_delete(case_obj, mme_base_url, mme_token):
         # send delete request to server and capture server's response
         patient_id = patient["id"]
         url = "".join([mme_base_url, "/patient/delete/", patient_id])
-        resp = matchmaker_request(url=url, token=mme_token, method="DELETE")
+        resp = matchmaker.request(url=url, token=mme_token, method="DELETE")
 
         server_responses.append(
             {
@@ -1128,7 +1108,7 @@ def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
         patient_id = patient["id"]
         matches[patient_id] = None
         url = "".join([mme_base_url, "/matches/", patient_id])
-        server_resp = matchmaker_request(url=url, token=mme_token, method="GET")
+        server_resp = matchmaker.request(url=url, token=mme_token, method="GET")
         if "status_code" in server_resp:  # the server returned a valid response
             # and this will be a list of match objects sorted by desc date
             pat_matches = []
@@ -1165,7 +1145,7 @@ def mme_match(case_obj, match_type, mme_base_url, mme_token, nodes=None, mme_acc
     if match_type == "internal":
         url = "".join([mme_base_url, "/match"])
         for patient in query_patients:
-            json_resp = matchmaker_request(
+            json_resp = matchmaker.request(
                 url=url,
                 token=mme_token,
                 method="POST",
@@ -1193,7 +1173,7 @@ def mme_match(case_obj, match_type, mme_base_url, mme_token, nodes=None, mme_acc
             # Against every node
             for node in node_ids:
                 url = "".join([mme_base_url, "/match/external/", patient, "?node=", node])
-                json_resp = matchmaker_request(url=url, token=mme_token, method="POST")
+                json_resp = matchmaker.request(url=url, token=mme_token, method="POST")
                 resp_obj = {
                     "server": node,
                     "patient_id": patient,

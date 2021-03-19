@@ -13,6 +13,7 @@ from scout.utils.cloud_resources import AlignTrackHandler
 from .loqus_extension import LoqusDB
 from .mongo_extension import MongoDB
 from .gens_extension import GensViewer
+from .matchmaker_extension import MatchMaker
 
 
 toolbar = DebugToolbarExtension()
@@ -25,4 +26,5 @@ mail = Mail()
 loqusdb = LoqusDB()
 mongo = MongoDB()
 gens = GensViewer()
+matchmaker = MatchMaker()
 cloud_tracks = AlignTrackHandler()

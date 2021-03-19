@@ -17,6 +17,30 @@ HPO_URL = "http://purl.obolibrary.org/obo/hp/hpoa/{}"
 HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
 
 
+def get_request_json(url, headers=None):
+    """Send GET request and return response's json data
+    Args:
+        url(str): url to send request to
+    Returns:
+        json_response(dict)
+    """
+    resp = None
+    json_response = {}
+    try:
+        LOG.debug(f"Sending GET request to {url}")
+        if headers:
+            resp = requests.get(url, timeout=20, headers=headers)
+        else:
+            resp = requests.get(url, timeout=20)
+        json_response = resp.json()
+    except Exception as ex:
+        return {"message": f"An error occurred while sending a GET request to url {url} -> {ex}"}
+
+    json_response["status_code"] = resp.status_code
+    LOG.debug(f"returned response is:{json_response}")
+    return json_response
+
+
 def post_request_json(url, data, headers):
     """Send json data via POST request and return response
 

@@ -30,7 +30,7 @@ from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 
 from scout.constants import SAMPLE_SOURCE, CUSTOM_CASE_REPORTS
-from scout.server.extensions import mail, store, gens
+from scout.server.extensions import mail, store, gens, matchmaker
 from scout.server.utils import institute_and_case, templated, user_institutes
 
 from . import controllers
@@ -72,7 +72,7 @@ def case(institute_id, case_name):
     return dict(
         institute=institute_obj,
         case=case_obj,
-        mme_nodes=current_app.mme_nodes,
+        mme_nodes=matchmaker.nodes(),
         tissue_types=SAMPLE_SOURCE,
         gens_info=gens.connection_settings(case_obj.get("genome_build")),
         **data,
@@ -116,17 +116,15 @@ def matchmaker_matches(institute_id, case_name):
     if "mme_submitter" not in user_obj["roles"]:
         flash("unauthorized request", "warning")
         return redirect(request.referrer)
-    # Required params for getting matches from MME server:
-    mme_base_url = current_app.config.get("MME_URL")
-    mme_token = current_app.config.get("MME_TOKEN")
-    if not mme_base_url or not mme_token:
+
+    if not all([matchmaker.host, matchmaker.token]):
         flash(
             "An error occurred reading matchmaker connection parameters. Please check config file!",
             "danger",
         )
         return redirect(request.referrer)
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.mme_matches(case_obj, institute_obj, mme_base_url, mme_token)
+    data = controllers.mme_matches(case_obj, institute_obj, matchmaker.host, matchmaker.token)
     data["panel"] = panel
     if data and data.get("server_errors"):
         flash("MatchMaker server returned error:{}".format(data["server_errors"]), "danger")
@@ -147,13 +145,7 @@ def matchmaker_match(institute_id, case_name, target):
         flash("unauthorized request", "warning")
         return redirect(request.referrer)
 
-    # Required params for sending an add request to MME:
-    mme_base_url = current_app.config.get("MME_URL")
-    mme_accepts = current_app.config.get("MME_ACCEPTS")
-    mme_token = current_app.config.get("MME_TOKEN")
-    nodes = current_app.mme_nodes
-
-    if not mme_base_url or not mme_token or not mme_accepts:
+    if not all([matchmaker.host, matchmaker.accept, matchmaker.token]):
         flash(
             "An error occurred reading matchmaker connection parameters. Please check config file!",
             "danger",
@@ -161,7 +153,7 @@ def matchmaker_match(institute_id, case_name, target):
         return redirect(request.referrer)
 
     match_results = controllers.mme_match(
-        case_obj, target, mme_base_url, mme_token, nodes, mme_accepts
+        case_obj, target, matchmaker.host, matchmaker.token, nodes, matchmaker.accept
     )
     ok_responses = 0
     for match_results in match_results:
@@ -223,12 +215,7 @@ def matchmaker_add(institute_id, case_name):
 
     user_obj = store.user(current_user.email)
 
-    # Required params for sending an add request to MME:
-    mme_base_url = current_app.config.get("MME_URL")
-    mme_accepts = current_app.config.get("MME_ACCEPTS")
-    mme_token = current_app.config.get("MME_TOKEN")
-
-    if not mme_base_url or not mme_accepts or not mme_token:
+    if not all([matchmaker.host, matchmaker.accept, matchmaker.token]):
         flash(
             "An error occurred reading matchmaker connection parameters. Please check config file!",
             "danger",
@@ -243,9 +230,6 @@ def matchmaker_add(institute_id, case_name):
         add_features=mme_save_options[1],
         add_disorders=mme_save_options[2],
         genes_only=genes_only,
-        mme_base_url=mme_base_url,
-        mme_accepts=mme_accepts,
-        mme_token=mme_token,
     )
 
     # flash MME responses (one for each patient posted)
