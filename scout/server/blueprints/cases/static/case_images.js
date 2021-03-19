@@ -1,4 +1,5 @@
 const WIDTH_BREAKPOINT = 1955  // less will remove one column
+const SINGLE_COL_WIDTH_BREAKPOINT = 1555
 const X_OFFSET = 55 // leftside offset whitespace in the PNGs
 const Y_OFFSET = 5  // make room for arrows pointing at the cytoban
 const OFFSET_X = 60;
@@ -56,12 +57,13 @@ function draw_tracks(individual, institute, case_name){
     const CYT_HEIGHT = 50 ;
     const CYT_WIDTH = 530 ;
     var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
+		if( $(window).width() < SINGLE_COL_WIDTH_BREAKPOINT){
+				number_of_columns = 1
+		}
     var svg_element = document.getElementById("svg_" + individual["individual_id"])
     clear_svg(svg_element)
     svg_element = document.getElementById("svg_" + individual["individual_id"]) // get svg_element again, now clean
     set_svg_size(svg_element, number_of_columns)
-    console.log(individual.chromograph_images)
-
 
 
     if (individual.chromograph_images.autozygous != undefined){
@@ -162,13 +164,19 @@ function clear_svg(svg_element){
  *
  */
 function set_svg_size(svg_element, number_of_columns){
-    if(number_of_columns == 2){
-          svg_element.setAttribute('width', 1200)
-          svg_element.setAttribute('height', 1700)
-      }
-    if(number_of_columns == 3){
-          svg_element.setAttribute('width', 1550)
-          svg_element.setAttribute('height', 1100)
+		switch(number_of_columns){
+			case 1:
+				svg_element.setAttribute('width', 600)
+				svg_element.setAttribute('height', 3350)
+				break;
+			case 2:
+				svg_element.setAttribute('width', 1200)
+				svg_element.setAttribute('height', 1700)
+				break;
+			case 3:
+				svg_element.setAttribute('width', 1550)
+				svg_element.setAttribute('height', 1100)
+				break;
     }
 }
 
@@ -314,7 +322,6 @@ function calc_centromere_upper(pos){
     var l2 = "L " + String(pos['x']+5) + " " + String(pos['y']+3) + " ";
     var l3 = "L " + String(pos['x']+5+pos.length) + " " + String(pos['y']+3) + " ";
     var l4 = "L " + String(pos['x']+5+pos.length+5) + " " + String(pos['y']) + " ";
-    // console.log("upper centromere: %s ", l1 + l2 + l3 + l4);
     return l1 + l2 + l3 + l4
 }
 
@@ -332,7 +339,6 @@ function calc_centromere_lower(pos){
     var l2 = "L " + String(pos['x']-5) + " " + String(pos['y']-3) + " ";
     var l3 = "L " + String(pos['x']-5-pos.length) + " " + String(pos['y']-3) + " ";
     var l4 = "L " + String(pos['x']-5-pos.length-5) + " " + String(pos['y']) + " ";
-    // console.log("lower centromere: %s ", l1 + l2 + l3 + l4);
     return l1 + l2 + l3 + l4
 }
 

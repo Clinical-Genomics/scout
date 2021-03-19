@@ -1,5 +1,13 @@
 ANALYSIS_TYPES = ("wgs", "wes", "mixed", "unknown", "panel", "external")
 
+CUSTOM_CASE_REPORTS = [
+    "multiqc",
+    "cnv_report",
+    "coverage_qc_report",
+    "gene_fusion_report",
+    "gene_fusion_report_research",
+]
+
 SEX_MAP = {
     1: "male",
     2: "female",

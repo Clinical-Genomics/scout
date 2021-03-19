@@ -11,10 +11,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export also dynamic panel genes not associated to an HPO term when downloading the HPO panel
 - Primary HGNC transcript info in variant export files
 - Show variant quality (QUAL field from vcf) in the variant summary
+- Load/update PDF gene fusion reports (clinical and research) generated with Arriba
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
+- Page formatting issues whenever case and variant comments contain extremely long strings with no spaces
+- Chromograph images can be one column and have scrollbar. Removed legacy code.
 ### Changed
 - A more compact case groups panel
+- Added landscape orientation CSS style to cancer coverage and QC demo report
 
 ## [4.30.2]
 ### Added
