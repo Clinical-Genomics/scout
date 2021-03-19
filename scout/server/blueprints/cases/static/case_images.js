@@ -8,10 +8,6 @@ const CHROMOSOMES = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
                      '11', '12', '13', '14', '15', '16', '17', '18',
                      '19', '20', '21', '22', 'X', 'Y'];
 
-console.log("window: "+$(window).width())
-console.log("breakpoint: "+WIDTH_BREAKPOINT)
-console.log("single col breakpoint: "+SINGLE_COL_WIDTH_BREAKPOINT)
-
 // Ideogram measurements used for cropping to a nice picture
 const CHROMSPECS_LIST =
       [{name: '1', length: 500, cent_start: 255, cent_length: 13 },
@@ -68,8 +64,6 @@ function draw_tracks(individual, institute, case_name){
     clear_svg(svg_element)
     svg_element = document.getElementById("svg_" + individual["individual_id"]) // get svg_element again, now clean
     set_svg_size(svg_element, number_of_columns)
-    console.log(individual.chromograph_images)
-
 
 
     if (individual.chromograph_images.autozygous != undefined){
@@ -326,7 +320,6 @@ function calc_centromere_upper(pos){
     var l2 = "L " + String(pos['x']+5) + " " + String(pos['y']+3) + " ";
     var l3 = "L " + String(pos['x']+5+pos.length) + " " + String(pos['y']+3) + " ";
     var l4 = "L " + String(pos['x']+5+pos.length+5) + " " + String(pos['y']) + " ";
-    // console.log("upper centromere: %s ", l1 + l2 + l3 + l4);
     return l1 + l2 + l3 + l4
 }
 
@@ -344,7 +337,6 @@ function calc_centromere_lower(pos){
     var l2 = "L " + String(pos['x']-5) + " " + String(pos['y']-3) + " ";
     var l3 = "L " + String(pos['x']-5-pos.length) + " " + String(pos['y']-3) + " ";
     var l4 = "L " + String(pos['x']-5-pos.length-5) + " " + String(pos['y']) + " ";
-    // console.log("lower centromere: %s ", l1 + l2 + l3 + l4);
     return l1 + l2 + l3 + l4
 }
 
