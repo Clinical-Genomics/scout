@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Page formatting issues whenever case and variant comments contain extremely long strings with no spaces
 ### Changed
 - A more compact case groups panel
+- Added landscape orientation CSS style to cancer coverage and QC demo report
 - Pre-collect all case-group evaluated before creating variant assessments from other cases in case group
 
 ## [4.30.2]
