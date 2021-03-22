@@ -32,7 +32,8 @@ def get_request_json(url, headers=None):
             resp = requests.get(url, timeout=20, headers=headers)
         else:
             resp = requests.get(url, timeout=20)
-        json_response = resp.json()
+        json_response["content"] = resp.json()
+
     except Exception as ex:
         return {"message": f"An error occurred while sending a GET request to url {url} -> {ex}"}
 

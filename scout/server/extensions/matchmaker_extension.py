@@ -22,6 +22,7 @@ class MatchMaker:
         self.host = app.config.get("MME_URL")
         self.accept = app.config.get("MME_ACCEPTS")
         self.token = app.config.get("MME_TOKEN")
+        self.nodes = self.nodes()
 
     def request(self, url, method, content_type=None, accept=None, data=None):
         """Send a request to MatchMaker and return its response
@@ -61,5 +62,7 @@ class MatchMaker:
         """
         nodes = []
         url = url = "".join([self.host, "/nodes"])
-        nodels = self.request(url=url, method="GET")
+        mme_response = self.request(url=url, method="GET", accept="application/json")
+        nodes = mme_response.get("content") or []
+        LOG.error(nodes)
         return nodes
