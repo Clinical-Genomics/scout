@@ -22,7 +22,9 @@ class MatchMaker:
         self.host = app.config.get("MME_URL")
         self.accept = app.config.get("MME_ACCEPTS")
         self.token = app.config.get("MME_TOKEN")
-        self.nodes = self.nodes()
+        self.connected_nodes = (
+            self.nodes()
+        )  # external MatchMaker nodes connected to default MME instance
 
     def request(self, url, method, content_type=None, accept=None, data=None):
         """Send a request to MatchMaker and return its response
@@ -30,6 +32,8 @@ class MatchMaker:
         Args:
             url(str): url to send request to
             method(str): 'GET', 'POST' or 'DELETE'
+            content_type(str): example application/json
+            accept(str): application/vnd.ga4gh.matchmaker.v1.0+json or application/json
             data(dict): eventual data to send in request
 
         Returns:
@@ -64,5 +68,4 @@ class MatchMaker:
         url = url = "".join([self.host, "/nodes"])
         mme_response = self.request(url=url, method="GET", accept="application/json")
         nodes = mme_response.get("content") or []
-        LOG.error(nodes)
         return nodes

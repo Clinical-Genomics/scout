@@ -51,3 +51,17 @@ def gens_app():
 
     app = create_app(config=dict(TESTING=True, GENS_HOST="127.0.0.1", GENS_PORT=5000))
     return app
+
+
+@pytest.fixture
+def matchmaker_app():
+    """Return an app containing the MatchMaker Exchange extension"""
+    app = create_app(
+        config=dict(
+            TESTING=True,
+            MME_URL="localhost",
+            MME_ACCEPTS="application/vnd.ga4gh.matchmaker.v1.0+json",
+            MME_TOKEN="test_token",
+        )
+    )
+    return app
