@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Primary HGNC transcript info in variant export files
 - Show variant quality (QUAL field from vcf) in the variant summary
 - Load/update PDF gene fusion reports (clinical and research) generated with Arriba
+- Display on case activity the event of a user resetting all dismissed variants
 - Allow saved filter lock and unlock
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
