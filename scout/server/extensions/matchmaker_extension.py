@@ -71,8 +71,8 @@ class MatchMaker:
         """
         nodes = []
         url = "".join([self.host, "/nodes"])
-        mme_response = self.request(url=url, method="GET", accept="application/json")
-        nodes = mme_response.get("content") or []
+        resp = self.request(url=url, method="GET", accept="application/json")
+        nodes = resp.get("content") or []
         return nodes
 
     def patient_delete(self, patient_id):
@@ -103,4 +103,17 @@ class MatchMaker:
             content_type="application/json",
             data={"patient": patient_obj},
         )
+        return resp
+
+    def patient_matches(self, patient_id):
+        """Return all matches for a given patient ID
+
+        Args:
+            patient_id(str): ID of a patient
+
+        Returns:
+            resp(dict)
+        """
+        url = "".join([self.host, "/matches/", patient_id])
+        resp = self.request(url=url, method="GET", accept="application/json")
         return resp

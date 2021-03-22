@@ -108,29 +108,8 @@ def beacon_remove(case_id):
 @templated("cases/matchmaker.html")
 def matchmaker_matches(institute_id, case_name):
     """Show all MatchMaker matches for a given case"""
-    # check that only authorized users can access MME patients matches
-    panel = 1
-    if request.method == "POST":
-        panel = request.form.get("pane_id")
-    user_obj = store.user(current_user.email)
-    if "mme_submitter" not in user_obj["roles"]:
-        flash("unauthorized request", "warning")
-        return redirect(request.referrer)
 
-    if not all([matchmaker.host, matchmaker.token]):
-        flash(
-            "An error occurred reading matchmaker connection parameters. Please check config file!",
-            "danger",
-        )
-        return redirect(request.referrer)
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.mme_matches(case_obj, institute_obj, matchmaker.host, matchmaker.token)
-    data["panel"] = panel
-    if data and data.get("server_errors"):
-        flash("MatchMaker server returned error:{}".format(data["server_errors"]), "danger")
-        return redirect(request.referrer)
-    if not data:
-        data = {"institute": institute_obj, "case": case_obj, "panel": panel}
+    data = controllers.matchmaker_matches(request, institute_id, case_name)
     return data
 
 

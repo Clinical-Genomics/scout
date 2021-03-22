@@ -1114,39 +1114,40 @@ def matchmaker_delete(request, institute_id, case_name):
         flash(f"An error occurred while deleting patient from MatchMaker", "danger")
 
 
-def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
+def matchmaker_matches(request, institute_id, case_name):
     """Show Matchmaker submission data for a sample and eventual matches.
 
     Args:
-        case_obj(dict): a scout case object
-        institute_obj(dict): an institute object
-        mme_base_url(str) base url of the MME server
-        mme_token(str) auth token of the MME server
+        request(werkzeug.local.LocalProxy)
+        institute_id(str): _id of an institute
+        case_name(str): display name of a case
 
     Returns:
         data(dict): data to display in the html template
     """
-    data = {"institute": institute_obj, "case": case_obj, "server_errors": []}
-    matches = {}
-    # loop over the submitted samples and get matches from the MatchMaker server
-    if not case_obj.get("mme_submission"):
-        return None
+    # Check that general MME request requirements are fulfilled
+    mme_check_requirements(request)
 
-    for patient in case_obj["mme_submission"]["patients"]:
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = {
+        "institute": institute_obj,
+        "case": case_obj,
+        "server_errors": [],
+        "panel": request.form.get("panel_id") if request.method == "POST" else 1,
+    }
+    matches = {}
+    for patient in case_obj.get("mme_submission", {}).get("patients", []):
         patient_id = patient["id"]
         matches[patient_id] = None
-        url = "".join([mme_base_url, "/matches/", patient_id])
-        server_resp = matchmaker.request(url=url, token=mme_token, method="GET")
-        if "status_code" in server_resp:  # the server returned a valid response
-            # and this will be a list of match objects sorted by desc date
-            pat_matches = []
-            if server_resp.get("matches"):
-                pat_matches = parse_matches(patient_id, server_resp["matches"])
-            matches[patient_id] = pat_matches
-        else:
-            LOG.warning("Server returned error message: {}".format(server_resp["message"]))
-            data["server_errors"].append(server_resp["message"])
-
+        server_resp = matchmaker.patient_matches(patient_id)
+        if server_resp.get("status_code") != 200:  # server returned error
+            flash("MatchMaker server returned error:{}".format(data["server_errors"]), "danger")
+            return redirect(request.referrer)
+        # server returned a valid response
+        pat_matches = []
+        if server_resp.get("matches"):
+            pat_matches = parse_matches(patient_id, server_resp["matches"])
+        matches[patient_id] = pat_matches
     data["matches"] = matches
 
     return data
