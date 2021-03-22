@@ -72,7 +72,7 @@ def case(institute_id, case_name):
     return dict(
         institute=institute_obj,
         case=case_obj,
-        mme_nodes=matchmaker.nodes(),
+        mme_nodes=matchmaker.connected_nodes,
         tissue_types=SAMPLE_SOURCE,
         gens_info=gens.connection_settings(case_obj.get("genome_build")),
         **data,
@@ -170,105 +170,14 @@ def matchmaker_match(institute_id, case_name, target):
 @cases_bp.route("/<institute_id>/<case_name>/mme_add", methods=["POST"])
 def matchmaker_add(institute_id, case_name):
     """Add or update a case in MatchMaker"""
-
-    # Call matchmaker_add controller to add patient specified in request
-    controllers.matchmaker_add(store, request, institute_id, case_name)
-    flash("been in matchmaker_add")
+    # Call matchmaker_delete controller to add a patient to MatchMaker
+    controllers.matchmaker_add(request, institute_id, case_name)
     return redirect(request.referrer)
-
-    """
-
-
-
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    causatives = False
-    features = False
-    if case_obj.get("suspects") and len(case_obj.get("suspects")) > 3:
-        flash(
-            "At the moment it is not possible to save to MatchMaker more than 3 pinned variants",
-            "warning",
-        )
-        return redirect(request.referrer)
-    if case_obj.get("suspects"):
-        causatives = True
-    if case_obj.get("phenotype_terms"):
-        features = True
-
-    mme_save_options = ["sex", "features", "disorders"]
-    for index, item in enumerate(mme_save_options):
-        if item in request.form:
-            LOG.info("item {} is in request form".format(item))
-            mme_save_options[index] = True
-        else:
-            mme_save_options[index] = False
-    genomic_features = request.form.get("genomicfeatures")
-    genes_only = True  # upload to matchmaker only gene names
-    if genomic_features == "variants":
-        genes_only = False  # upload to matchmaker both variants and gene names
-
-    # If there are no genomic features nor HPO terms to share for this case, abort
-    if (not case_obj.get("suspects") and not mme_save_options[1]) or (
-        causatives is False and features is False
-    ):
-        flash(
-            "In order to upload a case to MatchMaker you need to pin a variant or at least assign a phenotype (HPO term)",
-            "danger",
-        )
-        return redirect(request.referrer)
-
-    user_obj = store.user(current_user.email)
-
-
-
-    add_result = controllers.mme_add(
-        store=store,
-        user_obj=user_obj,
-        case_obj=case_obj,
-        add_gender=mme_save_options[0],
-        add_features=mme_save_options[1],
-        add_disorders=mme_save_options[2],
-        genes_only=genes_only,
-    )
-
-    # flash MME responses (one for each patient posted)
-    n_succes_response = 0
-    n_inserted = 0
-    n_updated = 0
-    category = "warning"
-
-    for resp in add_result["server_responses"]:
-        message = resp.get("message")
-        if resp.get("status_code") == 200:
-            n_succes_response += 1
-        else:
-            flash(
-                "an error occurred while adding patient to matchmaker: {}".format(message),
-                "warning",
-            )
-        if message == "Patient was successfully updated.":
-            n_updated += 1
-        if message == "Patient was successfully inserted into database.":
-            n_inserted += 1
-
-    # if at least one patient was inserted or updated into matchmaker, save submission at the case level:
-    if n_inserted or n_updated:
-        category = "success"
-        store.case_mme_update(case_obj=case_obj, user_obj=user_obj, mme_subm_obj=add_result)
-    flash(
-        "Number of new patients in matchmaker:{0}, number of updated records:{1}, number of failed requests:{2}".format(
-            n_inserted, n_updated, len(add_result.get("server_responses")) - n_succes_response
-        ),
-        category,
-    )
-
-
-    """
 
 
 @cases_bp.route("/<institute_id>/<case_name>/mme_delete", methods=["POST"])
 def matchmaker_delete(institute_id, case_name):
     """Remove a case from MatchMaker"""
-
     # Call matchmaker_delete controller to delete a patient from MatchMaker
     controllers.matchmaker_delete(request, institute_id, case_name)
     return redirect(request.referrer)

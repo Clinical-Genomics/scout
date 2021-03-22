@@ -980,61 +980,59 @@ def mme_check_requirements(request):
 
 
 def matchmaker_add(request, institute_id, case_name):
-    """Checking requirements and adding a new patient to MatchMaker Exchange
+    """Add all affected individuals from a case to a MatchMaker server
 
     Args:
-        store(adapter.MongoAdapter)
-        request()
-
+        request(werkzeug.local.LocalProxy)
+        institute_id(str): _id of an institute
+        case_name(str): display name of a case
     """
     # Check that general MME request requirements are fulfilled
-    mme_check_requirements()
-    return
+    mme_check_requirements(request)
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+    candidate_vars = case_obj.get("suspects") or []
+    if len(candidate_vars) > 3:
+        flash(
+            "At the moment it is not possible to save to MatchMaker more than 3 pinned variants",
+            "warning",
+        )
+        return redirect(request.referrer)
 
+    save_gender = "sex" in request.form
+    features = (
+        hpo_terms(case_obj)
+        if "features" in request.form and case_obj.get("phenotype_terms")
+        else []
+    )
+    disorders = omim_terms(case_obj) if "disorders" in request.form else []
+    genes_only = request.form["genomicfeatures"] == "genes"
 
-def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, genes_only):
-    """Add a patient to MatchMaker server
-
-    Args:
-        store(adapter.MongoAdapter)
-        user_obj(dict) a scout user object (to be added as matchmaker contact)
-        case_obj(dict) a scout case object
-        add_gender(bool) if True case gender will be included in matchmaker
-        add_features(bool) if True HPO features will be included in matchmaker
-        add_disorders(bool) if True OMIM diagnoses will be included in matchmaker
-        genes_only(bool) if True only genes and not variants will be shared
-
-    Returns:
-        submitted_info(dict) info submitted to MatchMaker and its responses
-    """
-    url = "".join([matchmaker.host, "/patient/add"])
-    features = []  # this is the list of HPO terms
-    disorders = []  # this is the list of OMIM diagnoses
-    g_features = []
+    if not features and not candidate_vars:
+        flash(
+            "In order to upload a case to MatchMaker you need to pin a variant or at least assign a phenotype (HPO term)",
+            "danger",
+        )
+        return redirect(request.referrer)
 
     # create contact dictionary
+    user_obj = store.user(current_user.email)
     contact_info = {
         "name": user_obj["name"],
         "href": "".join(["mailto:", user_obj["email"]]),
         "institution": "Scout software user, Science For Life Laboratory, Stockholm, Sweden",
     }
-    if add_features:  # create features dictionaries
-        features = hpo_terms(case_obj)
-
-    if add_disorders:  # create OMIM disorders dictionaries
-        disorders = omim_terms(case_obj)
-
-    # send a POST request and collect response for each affected individual in case
-    server_responses = []
 
     submitted_info = {
         "contact": contact_info,
-        "sex": add_gender,
+        "sex": save_gender,
         "features": features,
         "disorders": disorders,
         "genes_only": genes_only,
         "patient_id": [],
+        "server_responses": [],
     }
+    server_responses = []
+    n_updated = 0
     for individual in case_obj.get("individuals"):
         if not individual["phenotype"] in [
             2,
@@ -1051,35 +1049,38 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
             "features": features,
             "disorders": disorders,
         }
-        if add_gender:
+        if save_gender:
             if individual["sex"] == "1":
                 patient["sex"] = "MALE"
             else:
                 patient["sex"] = "FEMALE"
 
-        if case_obj.get("suspects"):
+        if candidate_vars:
             g_features = genomic_features(
                 store, case_obj, individual.get("display_name"), genes_only
             )
             patient["genomicFeatures"] = g_features
-
-        # send add request to server and capture response
-        resp = matchmaker.request(
-            url=url,
-            method="POST",
-            accept="application/json",
-            data={"patient": patient},
-        )
-
-        server_responses.append(
+        resp = matchmaker.patient_submit(patient)
+        submitted_info["server_responses"].append(
             {
                 "patient": patient,
                 "message": resp.get("message"),
                 "status_code": resp.get("status_code"),
             }
         )
-    submitted_info["server_responses"] = server_responses
-    return submitted_info
+        if resp.get("status_code") != 200:
+            flash(
+                "an error occurred while adding patient to matchmaker: {}".format(
+                    resp.get("message")
+                ),
+                "warning",
+            )
+            continue
+        flash(f"Patient {individual.get('display_name')} saved to MatchMaker", "success")
+        n_updated += 1
+
+    if n_updated > 0:
+        store.case_mme_update(case_obj=case_obj, user_obj=user_obj, mme_subm_obj=submitted_info)
 
 
 def matchmaker_delete(request, institute_id, case_name):
@@ -1089,7 +1090,6 @@ def matchmaker_delete(request, institute_id, case_name):
         request(werkzeug.local.LocalProxy)
         institute_id(str): _id of an institute
         case_name(str): display name of a case
-
     """
     # Check that general MME request requirements are fulfilled
     mme_check_requirements(request)
@@ -1099,7 +1099,7 @@ def matchmaker_delete(request, institute_id, case_name):
     for patient in case_obj.get("mme_submission", {}).get("patients", []):
         # Send delete request to server and capture server's response
         patient_id = patient["id"]
-        resp = matchmaker.delete_patient(patient_id)
+        resp = matchmaker.patient_delete(patient_id)
         category = "warning"
         if resp["status_code"] == 200:
             category = "success"
@@ -1108,9 +1108,10 @@ def matchmaker_delete(request, institute_id, case_name):
             user_obj = store.user(current_user.email)
             store.case_mme_delete(case_obj=case_obj, user_obj=user_obj)
 
-        flash(
-            f"Delete patient '{patient_id}', case '{case_name}' from MatchMaker, result:{resp.get('message')}"
-        )
+            flash(f"Deleted patient '{patient_id}', case '{case_name}' from MatchMaker", "success")
+            continue
+
+        flash(f"An error occurred while deleting patient from MatchMaker", "danger")
 
 
 def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):

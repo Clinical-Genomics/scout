@@ -1,6 +1,7 @@
 """Code for MatchMaker Exchange integration
    Tested with PatientMatcher: https://github.com/Clinical-Genomics/patientMatcher
 """
+import json
 import logging
 import datetime
 from scout.utils import scout_requests
@@ -43,9 +44,9 @@ class MatchMaker:
         headers = {"X-Auth-Token": self.token}
 
         if content_type:
-            headers["Content-Type"] = content_type or self.accept
+            headers["Content-Type"] = content_type
         if accept:
-            headers["Accept"] = accept or self.accept
+            headers["Accept"] = accept
 
         # sending data anyway so response will not be cached
         req_data = data or {"timestamp": datetime.datetime.now().timestamp()}
@@ -74,7 +75,7 @@ class MatchMaker:
         nodes = mme_response.get("content") or []
         return nodes
 
-    def delete_patient(self, patient_id):
+    def patient_delete(self, patient_id):
         """Send a DELETE request to MatchMaker server to delete a patient.
 
         Args:
@@ -85,5 +86,21 @@ class MatchMaker:
         """
         url = "".join([self.host, "/patient/delete/", patient_id])
         resp = self.request(url=url, method="DELETE")
-        LOG.error(resp)
+        return resp
+
+    def patient_submit(self, patient_obj):
+        """Send a POST request with a patient to the MatchMaker add endpoint
+
+        Args:
+            patient_obj(dict): a dictionary corresponding to a patient object to save/update
+
+        """
+        url = "".join([self.host, "/patient/add"])
+        resp = self.request(
+            url=url,
+            method="POST",
+            accept="application/json",
+            content_type="application/json",
+            data={"patient": patient_obj},
+        )
         return resp

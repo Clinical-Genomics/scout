@@ -65,7 +65,6 @@ def delete_request_json(url, headers=None):
         return {"message": f"An error occurred while sending a DELETE request to url {url} -> {ex}"}
 
     json_response["status_code"] = resp.status_code
-    LOG.debug(f"returned response is:{json_response}")
     return json_response
 
 
