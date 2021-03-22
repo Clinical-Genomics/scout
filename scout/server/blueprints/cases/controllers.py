@@ -1149,66 +1149,48 @@ def matchmaker_matches(request, institute_id, case_name):
             pat_matches = parse_matches(patient_id, server_resp["matches"])
         matches[patient_id] = pat_matches
     data["matches"] = matches
-
     return data
 
 
-def mme_match(case_obj, match_type, mme_base_url, mme_token, nodes=None, mme_accepts=None):
+def matchmaker_match(request, match_type, institute_id, case_name):
     """Initiate a MatchMaker match against either other Scout patients or external nodes
 
     Args:
-        case_obj(dict): a scout case object already submitted to MME
+        request(werkzeug.local.LocalProxy)
         match_type(str): 'internal' or 'external'
-        mme_base_url(str): base url of the MME server
-        mme_token(str): auth token of the MME server
-        mme_accepts(str): request content accepted by MME server (only for internal matches)
-
-    Returns:
-        matches(list): a list of eventual matches
+        institute_id(str): _id of an institute
+        case_name(str): display name of a case
     """
-    query_patients = []
-    server_responses = []
-    url = None
-    # list of patient dictionaries is required for internal matching
-    query_patients = case_obj["mme_submission"]["patients"]
-    if match_type == "internal":
-        url = "".join([mme_base_url, "/match"])
-        for patient in query_patients:
-            json_resp = matchmaker.request(
-                url=url,
-                token=mme_token,
-                method="POST",
-                content_type=mme_accepts,
-                accept=mme_accepts,
-                data={"patient": patient},
-            )
-            resp_obj = {
-                "server": "Local MatchMaker node",
-                "patient_id": patient["id"],
-                "results": json_resp.get("results"),
-                "status_code": json_resp.get("status_code"),
-                "message": json_resp.get("message"),  # None if request was successful
-            }
-            server_responses.append(resp_obj)
-    else:  # external matching
-        # external matching requires only patient ID
-        query_patients = [patient["id"] for patient in query_patients]
-        node_ids = [node["id"] for node in nodes]
-        if match_type in node_ids:  # match is against a specific external node
-            node_ids = [match_type]
+    # Check that general MME request requirements are fulfilled
+    mme_check_requirements(request)
 
-        # Match every affected patient
-        for patient in query_patients:
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    query_patients = case_obj.get("mme_submission", {}).get("patients", [])
+    ok_responses = 0
+    for patient in query_patients:
+        json_resp = None
+        if match_type == "internal":  # Interal match against other patients on the MME server
+            json_resp = matchmaker.match_internal(patient)
+            if json_resp.get("status") != 200:
+                flash(
+                    f"An error occurred while matching patient against other patients of MatchMaker:{json_resp.get('message')}",
+                    "danger",
+                )
+                continue
+            ok_responses += 1
+        else:  # external matches
+            # Match every affected patient
+            patient_id = patient["id"]
             # Against every node
-            for node in node_ids:
-                url = "".join([mme_base_url, "/match/external/", patient, "?node=", node])
-                json_resp = matchmaker.request(url=url, token=mme_token, method="POST")
-                resp_obj = {
-                    "server": node,
-                    "patient_id": patient,
-                    "results": json_resp.get("results"),
-                    "status_code": json_resp.get("status_code"),
-                    "message": json_resp.get("message"),  # None if request was successful
-                }
-                server_responses.append(resp_obj)
-    return server_responses
+            nodes = [node["id"] for node in matchmaker.connected_nodes]
+            for node in nodes:
+                json_resp = matchmaker.match_external(patient_id, node)
+                if json_resp.get("status") != 200:
+                    flash(
+                        f"An error occurred while matching patient against external node: '{node}' : {json_resp.get('message')}",
+                        "danger",
+                    )
+                    continue
+                ok_responses += 1
+    if ok_responses > 0:
+        flash("Match request sent. Look for eventual matches in 'Matches' page.", "info")

@@ -94,6 +94,8 @@ class MatchMaker:
         Args:
             patient_obj(dict): a dictionary corresponding to a patient object to save/update
 
+        Return:
+            resp(dict): Response from server converted to dictionary
         """
         url = "".join([self.host, "/patient/add"])
         resp = self.request(
@@ -116,4 +118,28 @@ class MatchMaker:
         """
         url = "".join([self.host, "/matches/", patient_id])
         resp = self.request(url=url, method="GET", accept="application/json")
+        return resp
+
+    def match_internal(self, patient_obj):
+        """Match a patient dictionary againt all patients on the server
+
+        Args:
+            patient_obj(dict): a dictionary corresponding to a patient object to match
+
+        """
+        url = "".join([self.host, "/match"])
+        resp = self.request(
+            url=url, method="POST", accept=self.accept, content_type=self.accept, data=patient_obj
+        )
+        return resp
+
+    def match_external(self, patient_id, node_id):
+        """Match a patient dictionary agaist one external node
+
+        Args:
+            patient_id(str): ID string of a patient already on the server
+            node_id(str): ID string of a connected node
+        """
+        url = "".join([self.host, "/match/external/", patient, "?node=", node])
+        resp = self.request(url=url, method="POST")
         return resp

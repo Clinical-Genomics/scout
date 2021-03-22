@@ -118,31 +118,7 @@ def matchmaker_match(institute_id, case_name, target):
     """Starts an internal match or a match against one or all MME external nodes"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
-    # check that only authorized users can run matches
-    user_obj = store.user(current_user.email)
-    if "mme_submitter" not in user_obj["roles"]:
-        flash("unauthorized request", "warning")
-        return redirect(request.referrer)
-
-    if not all([matchmaker.host, matchmaker.accept, matchmaker.token]):
-        flash(
-            "An error occurred reading matchmaker connection parameters. Please check config file!",
-            "danger",
-        )
-        return redirect(request.referrer)
-
-    match_results = controllers.mme_match(
-        case_obj, target, matchmaker.host, matchmaker.token, nodes, matchmaker.accept
-    )
-    ok_responses = 0
-    for match_results in match_results:
-        if match_results["status_code"] == 200:
-            ok_responses += 1
-    if ok_responses:
-        flash("Match request sent. Look for eventual matches in 'Matches' page.", "info")
-    else:
-        flash("An error occurred while sending match request.", "danger")
-
+    match_results = controllers.matchmaker_match(request, target, institute_id, case_name)
     return redirect(request.referrer)
 
 
