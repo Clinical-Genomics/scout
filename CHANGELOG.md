@@ -15,6 +15,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
 - Page formatting issues whenever case and variant comments contain extremely long strings with no spaces
+- Chromograph images can be one column and have scrollbar. Removed legacy code.
+- Column labels for ClinVar case submission
 - Missing inheritance models and custom inheritance models on newly created gene panels
 ### Changed
 - A more compact case groups panel
@@ -22,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improve user documentation to create and save new gene panels
 - Removed option to use space as separator when uploading gene panels
 - separating the columns of standard and custom inheritance models in gene panels
+
 
 ## [4.30.2]
 ### Added

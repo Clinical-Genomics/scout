@@ -333,15 +333,15 @@
 
 {% macro add_collapsable_panel(id_tag, display_name) %}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
       <div id={{"collapse_" + id_tag}}>
 	<div class="card panel-default">
 	  <div class="panel-heading" >
       <div class="panel-heading" href={{"#collapsing_" + id_tag}} data-toggle="collapse" datatarget={{"#collapsing_" + id_tag}} aria-expanded="true" aria-controls={{"collapsing_" + id_tag}} data-parent={{"#collapse_" + id_tag}}>Images {{display_name}} &gt	<span class="pull-right clickable"><span class="glyphicon glyphicon-chevron-up"></span></span></div>
           </div>
-          <div id={{"collapsing_" + id_tag}} class="collapse" data-parent={{"#collapse_" + id_tag}}>
-            <div class="card-body">
-              <svg id={{"svg_"+id_tag}} width="1200" height="1700"> </svg>
+          <div id={{"collapsing_" + id_tag}} style="width:100%" class="collapse" data-parent={{"#collapse_" + id_tag}}>
+            <div class="card-body" style="max-height: 80vh; overflow-y: scroll;">
+              <svg id={{"svg_"+id_tag}} class="img-fluid" width="1200" height="1700"></svg>
 	          </div>
           </div>
         </div>
@@ -378,7 +378,7 @@
 
 {% macro clinvar_panel() %}
   <div class="card panel-default">
-    <div class="panel-heading">Variants in Clinvar submissions</div>
+    <div class="panel-heading">Variants in ClinVar submissions</div>
     <div class="card-body">
       <ul>
         {% for var_id, submission_data in case.clinvar_variants.items() %}
