@@ -131,8 +131,11 @@ def test_bulk_reset_dismiss_variants(app, institute_obj, case_obj):
         updated_variant = store.variant_collection.find_one({"_id": variant["_id"]})
         assert updated_variant.get("dismiss_variant") is None
 
-        # And 2 relative events should be found in the database
-        assert sum(1 for i in store.event_collection.find()) == 2
+        # 2 variant-relative events should be found in the database
+        assert sum(1 for i in store.event_collection.find({"category": "variant"})) == 2
+
+        # And one case-specifuc event should also be created
+        assert sum(1 for i in store.event_collection.find({"category": "case"})) == 1
 
 
 def test_variants_research(app, institute_obj, case_obj):
