@@ -956,6 +956,42 @@ def beacon_add(form):
     return
 
 
+def mme_check_requirements(request):
+    """Make sure requirements are fulfilled before submitting any request to MatchMaker Exchange
+
+    Args:
+        request(werkzeug.local.LocalProxy)
+    Returns:
+        None, if requirements are fulfilled, otherwise redirects to previous page with error message
+    """
+    # Make sure all MME connection parameters are available in scout instance
+    if not all([matchmaker.host, matchmaker.accept, matchmaker.token]):
+        flash(
+            "An error occurred reading matchmaker connection parameters. Please check config file!",
+            "danger",
+        )
+        return redirect(request.referrer)
+
+    # Check that request comes from an authorized user (mme_submitter role)
+    user_obj = store.user(current_user.email)
+    if "mme_submitter" not in user_obj.get("roles", []):
+        flash("unauthorized request", "warning")
+        return redirect(request.referrer)
+
+
+def matchmaker_add(request, institute_id, case_name):
+    """Checking requirements and adding a new patient to MatchMaker Exchange
+
+    Args:
+        store(adapter.MongoAdapter)
+        request()
+
+    """
+    # Check that general MME request requirements are fulfilled
+    mme_check_requirements()
+    return
+
+
 def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, genes_only):
     """Add a patient to MatchMaker server
 
@@ -1046,44 +1082,35 @@ def mme_add(store, user_obj, case_obj, add_gender, add_features, add_disorders, 
     return submitted_info
 
 
-def mme_delete(case_obj, mme_base_url, mme_token):
+def matchmaker_delete(request, institute_id, case_name):
     """Delete all affected samples for a case from MatchMaker
 
     Args:
-        case_obj(dict) a scout case object
-        mme_base_url(str) base url of the MME server
-        mme_token(str) auth token of the MME server
+        request(werkzeug.local.LocalProxy)
+        institute_id(str): _id of an institute
+        case_name(str): display name of a case
 
-    Returns:
-         server_responses(list): a list of object of this type:
-                    {
-                        'patient_id': patient_id
-                        'message': server_message,
-                        'status_code': server_status_code
-                    }
     """
-    server_responses = []
+    # Check that general MME request requirements are fulfilled
+    mme_check_requirements(request)
 
-    if not mme_base_url or not mme_token:
-        return "Please check that Matchmaker connection parameters are valid"
-
-    # for each patient of the case in matchmaker
-    for patient in case_obj["mme_submission"]["patients"]:
-
-        # send delete request to server and capture server's response
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+    # Delete each patient submitted for this case
+    for patient in case_obj.get("mme_submission", {}).get("patients", []):
+        # Send delete request to server and capture server's response
         patient_id = patient["id"]
-        url = "".join([mme_base_url, "/patient/delete/", patient_id])
-        resp = matchmaker.request(url=url, token=mme_token, method="DELETE")
+        resp = matchmaker.delete_patient(patient_id)
+        category = "warning"
+        if resp["status_code"] == 200:
+            category = "success"
+            # update case by removing mme submission
+            # and create events for patients deletion from MME
+            user_obj = store.user(current_user.email)
+            store.case_mme_delete(case_obj=case_obj, user_obj=user_obj)
 
-        server_responses.append(
-            {
-                "patient_id": patient_id,
-                "message": resp.get("message"),
-                "status_code": resp.get("status_code"),
-            }
+        flash(
+            f"Delete patient '{patient_id}', case '{case_name}' from MatchMaker, result:{resp.get('message')}"
         )
-
-    return server_responses
 
 
 def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):

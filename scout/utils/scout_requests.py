@@ -21,6 +21,7 @@ def get_request_json(url, headers=None):
     """Send GET request and return response's json data
     Args:
         url(str): url to send request to
+        headers(dict): eventual request HEADERS to use in request
     Returns:
         json_response(dict)
     """
@@ -36,6 +37,32 @@ def get_request_json(url, headers=None):
 
     except Exception as ex:
         return {"message": f"An error occurred while sending a GET request to url {url} -> {ex}"}
+
+    json_response["status_code"] = resp.status_code
+    LOG.debug(f"returned response is:{json_response}")
+    return json_response
+
+
+def delete_request_json(url, headers=None):
+    """Send a DELETE request to a remote API and return its response
+    Args:
+        url(str): url to send request to
+        headers(dict): eventual request HEADERS to use in request
+    Returns:
+        json_response(dict)
+    """
+    resp = None
+    json_response = {}
+    try:
+        LOG.debug(f"Sending DELETE request to {url}")
+        if headers:
+            resp = requests.delete(url, headers=headers)
+        else:
+            resp = requests.delete(url)
+        json_response["content"] = resp.json()
+
+    except Exception as ex:
+        return {"message": f"An error occurred while sending a DELETE request to url {url} -> {ex}"}
 
     json_response["status_code"] = resp.status_code
     LOG.debug(f"returned response is:{json_response}")

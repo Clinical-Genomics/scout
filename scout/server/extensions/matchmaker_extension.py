@@ -3,7 +3,7 @@
 """
 import logging
 import datetime
-from scout.utils.scout_requests import get_request_json, post_request_json
+from scout.utils import scout_requests
 from werkzeug.datastructures import Headers
 
 LOG = logging.getLogger(__name__)
@@ -52,9 +52,13 @@ class MatchMaker:
         json_response = None
 
         if method == "GET":
-            json_response = get_request_json(url=url, headers=headers)
+            json_response = scout_requests.get_request_json(url=url, headers=headers)
+        elif method == "DELETE":
+            json_response = scout_requests.delete_request_json(url=url, headers=headers)
         elif method == "POST":
-            json_response = post_request_json(url=url, headers=headers, data=req_data)
+            json_response = scout_requests.post_request_json(
+                url=url, headers=headers, data=req_data
+            )
 
         return json_response
 
@@ -65,7 +69,21 @@ class MatchMaker:
             nodes(list): a list of node disctionaries
         """
         nodes = []
-        url = url = "".join([self.host, "/nodes"])
+        url = "".join([self.host, "/nodes"])
         mme_response = self.request(url=url, method="GET", accept="application/json")
         nodes = mme_response.get("content") or []
         return nodes
+
+    def delete_patient(self, patient_id):
+        """Send a DELETE request to MatchMaker server to delete a patient.
+
+        Args:
+            patient_id(str): ID of patient to remove from MatchMaker
+
+        Returns:
+            server_resp(dict): json-formatted response from server
+        """
+        url = "".join([self.host, "/patient/delete/", patient_id])
+        resp = self.request(url=url, method="DELETE")
+        LOG.error(resp)
+        return resp

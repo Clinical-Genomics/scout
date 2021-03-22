@@ -171,11 +171,14 @@ def matchmaker_match(institute_id, case_name, target):
 def matchmaker_add(institute_id, case_name):
     """Add or update a case in MatchMaker"""
 
-    # check that only authorized users can add patients to MME
-    user_obj = store.user(current_user.email)
-    if "mme_submitter" not in user_obj["roles"]:
-        flash("unauthorized request", "warning")
-        return redirect(request.referrer)
+    # Call matchmaker_add controller to add patient specified in request
+    controllers.matchmaker_add(store, request, institute_id, case_name)
+    flash("been in matchmaker_add")
+    return redirect(request.referrer)
+
+    """
+
+
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     causatives = False
@@ -215,12 +218,7 @@ def matchmaker_add(institute_id, case_name):
 
     user_obj = store.user(current_user.email)
 
-    if not all([matchmaker.host, matchmaker.accept, matchmaker.token]):
-        flash(
-            "An error occurred reading matchmaker connection parameters. Please check config file!",
-            "danger",
-        )
-        return redirect(request.referrer)
+
 
     add_result = controllers.mme_add(
         store=store,
@@ -263,52 +261,16 @@ def matchmaker_add(institute_id, case_name):
         category,
     )
 
-    return redirect(request.referrer)
+
+    """
 
 
 @cases_bp.route("/<institute_id>/<case_name>/mme_delete", methods=["POST"])
 def matchmaker_delete(institute_id, case_name):
     """Remove a case from MatchMaker"""
 
-    # check that only authorized users can delete patients from MME
-    user_obj = store.user(current_user.email)
-    if "mme_submitter" not in user_obj["roles"]:
-        flash("unauthorized request", "warning")
-        return redirect(request.referrer)
-
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    # Required params for sending a delete request to MME:
-    mme_base_url = current_app.config.get("MME_URL")
-    mme_token = current_app.config.get("MME_TOKEN")
-    if not mme_base_url or not mme_token:
-        flash(
-            "An error occurred reading matchmaker connection parameters. Please check config file!",
-            "danger",
-        )
-        return redirect(request.referrer)
-
-    delete_result = controllers.mme_delete(case_obj, mme_base_url, mme_token)
-
-    n_deleted = 0
-    category = "warning"
-
-    for resp in delete_result:
-        if resp["status_code"] == 200:
-            n_deleted += 1
-        else:
-            flash(resp["message"], category)
-    if n_deleted:
-        category = "success"
-        # update case by removing mme submission
-        # and create events for patients deletion from MME
-        user_obj = store.user(current_user.email)
-        store.case_mme_delete(case_obj=case_obj, user_obj=user_obj)
-    flash(
-        "Number of patients deleted from Matchmaker: {} out of {}".format(
-            n_deleted, len(delete_result)
-        ),
-        category,
-    )
+    # Call matchmaker_delete controller to delete a patient from MatchMaker
+    controllers.matchmaker_delete(request, institute_id, case_name)
     return redirect(request.referrer)
 
 
