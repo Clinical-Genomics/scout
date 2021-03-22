@@ -16,10 +16,10 @@ from scout.constants import (
     ACMG_MAP,
     ACMG_OPTIONS,
     CALLERS,
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CLINSIG_MAP,
     DISMISS_VARIANT_OPTIONS,
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     SEVERE_SO_TERMS,
@@ -29,8 +29,8 @@ from scout.constants import (
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
-from scout.server.blueprints.variant.utils import predictions, clinsig_human
-from scout.server.links import str_source_link, ensembl, cosmic_link
+from scout.server.blueprints.variant.utils import clinsig_human, predictions
+from scout.server.links import cosmic_link, ensembl, str_source_link
 from scout.server.utils import (
     case_append_alignments,
     institute_and_case,
@@ -721,6 +721,22 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)
+    elif bool(request_form.get("lock_filter")):
+        filter_id = request_form.get("filters")
+        institute_id = institute_obj.get("_id")
+        filter_obj = store.lock_filter(filter_id, institute_obj, case_obj, user_obj, category)
+        if filter_obj is not None:
+            form = FiltersFormClass(MultiDict(filter_obj))
+        else:
+            flash("Requested filter could not be locked", "warning")
+    elif bool(request_form.get("unlock_filter")):
+        filter_id = request_form.get("filters")
+        institute_id = institute_obj.get("_id")
+        filter_obj = store.unlock_filter(filter_id, institute_obj, case_obj, user_obj, category)
+        if filter_obj is not None:
+            form = FiltersFormClass(MultiDict(filter_obj))
+        else:
+            flash("Requested filter could not be unlocked.", "warning")
     elif bool(request_form.get("save_filter")):
         # The form should be applied and remain set the page after saving
         form = FiltersFormClass(request_form)

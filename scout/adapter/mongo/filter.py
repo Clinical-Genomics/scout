@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
-from bson.objectid import ObjectId
-from flask import url_for
 
 import pymongo
+from bson.objectid import ObjectId
+from flask import url_for
 
 LOG = logging.getLogger(__name__)
 
@@ -106,6 +106,54 @@ class FilterHandler(object):
 
         return filter_id
 
+    def lock_filter(self, filter_id: str, institute_id: str, user_id: str):
+        """Lock a filter
+
+        Args:
+            filter_id: str
+            institute_id: str
+            user_id: str
+
+        Returns:
+            result: ReturnDocument
+        """
+        filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
+
+        if filter_obj.get("lock"):
+            # Filter already locked
+            return
+
+        return_doc = self.filter_collection.find_one_and_update(
+            {"_id": ObjectId(filter_id)}, {"lock": True, "owner": user_id}
+        )
+        return return_doc
+
+    def unlock_filter(self, filter_id: str, institute_id: str, user_id: str):
+        """Unlock a filter
+
+        Args:
+            filter_id: str
+            institute_id: str
+            user_id: str
+
+        Returns:
+            result: ReturnDocument
+        """
+        filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
+
+        if filter_obj is None or not filter_obj.get("lock"):
+            # Filter does not exist, or is not locked
+            return
+
+        if filter_obj.get("owner") != user_id:
+            return
+
+        filter_obj["lock"] = False
+        return_doc = self.filter_collection.find_one_and_update(
+            {"_id": ObjectId(filter_id)}, {"lock": False}
+        )
+        return return_doc
+
     def delete_filter(self, filter_id, institute_id, user_id):
         """Delete a filter.
 
@@ -119,6 +167,9 @@ class FilterHandler(object):
         """
         filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
         if filter_obj is None:
+            return
+
+        if filter_obj.get("lock"):
             return
 
         LOG.info(
