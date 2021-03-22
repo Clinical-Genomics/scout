@@ -737,6 +737,13 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
             form = FiltersFormClass(MultiDict(filter_obj))
         else:
             flash("Requested filter could not be unlocked.", "warning")
+    elif bool(request_form.get("audit_filter")):
+        filter_id = request_form.get("filters")
+        form = store.audit_filter(filter_id, institute_obj, case_obj, user_obj, category)
+        if filter_obj is not None:
+            form = FiltersFormClass(MultiDict(filter_obj))
+        else:
+            flash("Requested filter could not be audited.", "warning")
     elif bool(request_form.get("save_filter")):
         # The form should be applied and remain set the page after saving
         form = FiltersFormClass(request_form)

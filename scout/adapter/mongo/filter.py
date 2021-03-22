@@ -106,6 +106,56 @@ class FilterHandler(object):
 
         return filter_id
 
+    def audit_filter(
+        self, filter_obj, institute_obj, case_obj, user_obj, category="snv", link=None
+    ):
+        """Mark audit of filter for case in events.
+
+        Arguments:
+            filter_id(MultiDict)
+            institute_obj(dict)
+            user_obj(dict)
+            case_obj(dict)
+            category(str): in ['cancer', 'snv', 'str', 'sv']
+
+        Returns:
+            filter_obj(ReturnDocument)
+        """
+        filter_obj = None
+        LOG.debug("Retrieve filter {}".format(filter_id))
+        filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
+        if filter_obj is None:
+            return
+
+        # link e.g. to the variants view where filter was created
+        if link is None:
+            variants_target_from_category = {
+                "sv": "variants.sv_variants",
+                "cancer": "variants.cancer_variants",
+                "snv": "variants.variants",
+                "str": "variants.str_variants",
+            }
+            target = variants_target_from_category.get(category)
+
+            case_name = case_obj.get("display_name")
+            # filter dict already contains institute_id=institute_id,
+            link = url_for(target, case_name=case_name, **filter_dict)
+
+        subject = filter_obj["display_name"]
+
+        self.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=link,
+            category="case",
+            verb="filter_audit",
+            subject=subject,
+            level="global",
+        )
+
+        return filter_obj
+
     def lock_filter(self, filter_id: str, institute_id: str, user_id: str):
         """Lock a filter
 
