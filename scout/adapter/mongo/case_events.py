@@ -281,6 +281,30 @@ class CaseEventHandler(object):
         LOG.debug("Case updated")
         return updated_case
 
+    def order_dismissed_variants_reset(self, institute, case, user, link):
+        """Register the event associated to a user resetting all dismissed variants.
+
+        Args:
+            institute (dict): A Institute object
+            case (dict): Case object
+            user (dict): A User object
+            link (str): The url to be used in the event
+
+        Return:
+            updated_case
+        """
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category="case",
+            verb="reset_dismiss_all_variants",
+            subject=case["display_name"],
+        )
+
+        return self.case_collection.find_one({"_id": case["_id"]})
+
     def request_rerun(self, institute, case, user, link):
         """Request a case to be re-analyzed.
 

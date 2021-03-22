@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show variant quality (QUAL field from vcf) in the variant summary
 - Load/update PDF gene fusion reports (clinical and research) generated with Arriba
 - Support new MANE annotations from VEP (both MANE Select and MANE Plus Clinical)
+- Display on case activity the event of a user resetting all dismissed variants
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
 - Page formatting issues whenever case and variant comments contain extremely long strings with no spaces
