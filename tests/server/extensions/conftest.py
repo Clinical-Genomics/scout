@@ -1,5 +1,6 @@
 """Fixtures for extenstions"""
 import pytest
+import uuid
 from scout.server.app import create_app
 from scout.server.extensions.loqus_extension import LoqusDB
 
@@ -61,7 +62,7 @@ def matchmaker_app():
             TESTING=True,
             MME_URL="localhost",
             MME_ACCEPTS="application/vnd.ga4gh.matchmaker.v1.0+json",
-            MME_TOKEN="test_token",
+            MME_TOKEN=str(uuid.uuid4()),
         )
     )
     return app

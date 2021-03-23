@@ -3,6 +3,7 @@ import logging
 
 import pytest
 import pymongo
+import uuid
 from flask import request
 from flask_login import login_user, logout_user
 
@@ -11,8 +12,6 @@ from scout.server.app import create_app
 from scout.adapter import MongoAdapter
 from scout.load.hgnc_gene import load_hgnc_genes
 from scout.load.hpo import load_hpo
-
-log = logging.getLogger(__name__)
 
 
 class LoqusdbMock:
@@ -83,13 +82,12 @@ def app(real_database_name, real_variant_database, user_obj):
             WTF_CSRF_ENABLED=False,
             MME_URL="localhost",
             MME_ACCEPTS="application/vnd.ga4gh.matchmaker.v1.0+json",
-            MME_TOKEN="test_token",
+            MME_TOKEN=str(uuid.uuid4()),
         )
     )
 
     @app.route("/auto_login")
     def auto_login():
-        log.debug("Got request for auto login for {}".format(user_obj))
         user_inst = LoginUser(user_obj)
         assert login_user(user_inst, remember=True)
         return "ok"
