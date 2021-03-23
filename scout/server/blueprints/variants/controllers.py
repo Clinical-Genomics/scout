@@ -664,7 +664,20 @@ def gene_panel_choices(institute_obj, case_obj):
 
 
 def populate_filters_form(store, institute_obj, case_obj, user_obj, category, request_form):
-    # Update filter settings if Clinical Filter was requested
+    """Update filter settings if Clinical Filter was requested.
+        Ensure that persistent actions get acted on.
+
+    Args:
+        store: scout.adapter.MongoAdapter
+        institute_obj: scout.models.Institute dict
+        case_obj: scout.models.Case dict
+        user_obj: scout.models.Users
+        category: str
+        request_form: FiltersForm
+
+    Returns:
+        form: FiltersForm
+    """
     form = None
     clinical_filter_panels = []
 
@@ -673,7 +686,6 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
         if panel.get("is_default"):
             default_panels.append(panel["panel_name"])
 
-    # The clinical filter button will only
     if case_obj.get("hpo_clinical_filter"):
         clinical_filter_panels = ["hpo"]
     else:
@@ -721,7 +733,34 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)
-    elif bool(request_form.get("lock_filter")):
+
+    form = persistent_filter_actions(
+        store, institute_obj, case_obj, user_obj, category, request_form, FiltersFormClass
+    )
+
+    if form is None:
+        form = FiltersFormClass(request_form)
+
+    return form
+
+
+def persistent_filter_actions(
+    store, institute_obj, case_obj, user_obj, category, request_form, FiltersFormClass
+):
+    """Act on persistent filter action requests.
+        Check request form for what action, call corresponding adapter function and then update Form.
+
+    Args:
+        store:
+        institute_obj:
+
+    Returns:
+
+    """
+
+    form = None
+
+    if bool(request_form.get("lock_filter")):
         filter_id = request_form.get("filters")
         institute_id = institute_obj.get("_id")
         filter_obj = store.lock_filter(filter_id, institute_obj, case_obj, user_obj, category)
@@ -729,7 +768,8 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
             form = FiltersFormClass(MultiDict(filter_obj))
         else:
             flash("Requested filter could not be locked", "warning")
-    elif bool(request_form.get("unlock_filter")):
+
+    if bool(request_form.get("unlock_filter")):
         filter_id = request_form.get("filters")
         institute_id = institute_obj.get("_id")
         filter_obj = store.unlock_filter(filter_id, institute_obj, case_obj, user_obj, category)
@@ -737,27 +777,31 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
             form = FiltersFormClass(MultiDict(filter_obj))
         else:
             flash("Requested filter could not be unlocked.", "warning")
-    elif bool(request_form.get("audit_filter")):
+
+    if bool(request_form.get("audit_filter")):
         filter_id = request_form.get("filters")
         form = store.audit_filter(filter_id, institute_obj, case_obj, user_obj, category)
         if filter_obj is not None:
             form = FiltersFormClass(MultiDict(filter_obj))
         else:
             flash("Requested filter could not be audited.", "warning")
-    elif bool(request_form.get("save_filter")):
+
+    if bool(request_form.get("save_filter")):
         # The form should be applied and remain set the page after saving
         form = FiltersFormClass(request_form)
         # Stash the filter to db to make available for this institute
         filter_obj = request_form
         store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category)
-    elif bool(request_form.get("load_filter")):
+
+    if bool(request_form.get("load_filter")):
         filter_id = request_form.get("filters")
         filter_obj = store.retrieve_filter(filter_id)
         if filter_obj is not None:
             form = FiltersFormClass(MultiDict(filter_obj))
         else:
             flash("Requested filter was not found", "warning")
-    elif bool(request_form.get("delete_filter")):
+
+    if bool(request_form.get("delete_filter")):
         filter_id = request_form.get("filters")
         institute_id = institute_obj.get("_id")
         filter_obj = store.delete_filter(filter_id, institute_id, current_user.email)
@@ -765,8 +809,6 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
             form = FiltersFormClass(request_form)
         else:
             flash("Requested filter was not found", "warning")
-    if form is None:
-        form = FiltersFormClass(request_form)
 
     return form
 
