@@ -715,7 +715,6 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
                 "thousand_genomes_frequency": str(institute_obj["frequency_cutoff"]),
                 "clingen_ngi": 10,
                 "swegen": 10,
-                "size": 100,
                 "gene_panels": clinical_filter_panels,
             }
         )
@@ -750,12 +749,17 @@ def persistent_filter_actions(
     """Act on persistent filter action requests.
         Check request form for what action, call corresponding adapter function and then update Form.
 
-    Args:
-        store:
-        institute_obj:
+    Args
+        store: scout.adapter.MongoAdapter
+        institute_obj: scout.models.Institute dict
+        case_obj: scout.models.Case dict
+        user_obj: scout.models.Users
+        category: str
+        request_form: FiltersForm
+        FiltersFormClass: FiltersFormClass
 
     Returns:
-
+        form: FiltersForm
     """
 
     form = None

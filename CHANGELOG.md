@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - A more compact case groups panel
 - Added landscape orientation CSS style to cancer coverage and QC demo report
+- SV clinical filter no longer filters out sub 100 nt variants
 
 
 ## [4.30.2]
