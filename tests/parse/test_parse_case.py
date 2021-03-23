@@ -224,7 +224,7 @@ def test_parse_case_ped_file(ped_file):
     # GIVEN a pedigree with three samples
     with open(ped_file, "r") as case_lines:
         # WHEN parsing out relevant sample info
-        config_data = parse_case_data(ped=case_lines, owner="cust000")
+        config_data = parse_case_data(ped=case_lines, owner="cust000", config = {'family': "643594",'owner':'cust000'})
     # THEN it should return correct family id
     assert config_data["family"] == "643594"
     # THEN it should return correct number of individuals

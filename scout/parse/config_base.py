@@ -136,10 +136,9 @@ class VcfFiles(BaseModel):
 # `family` and `family_name` must exists, otherwise test_adapter_variant_caseid.py
 # will fail
 class ScoutLoadConfig(BaseModel):
-    LOG.debug("HELLO")
     analysis_date: Any = datetime.datetime.now()
     assignee: str = None  ## ??
-    case_id: str = Field([], alias="family")  ## ??
+    case_id: str = Field(..., alias="family")
     #  chromograph_image_files: Optional[List[str]]
     cnv_report: Optional[str] = None
     cohorts: Optional[List[str]] = None
@@ -147,7 +146,6 @@ class ScoutLoadConfig(BaseModel):
     coverage_qc_report: str = None  ## ??
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
-    # display_name: str = Field([], alias="family_name")
     display_name: str = None
     family: str = None
     family_name: Optional[str] = None
