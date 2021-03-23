@@ -1145,9 +1145,10 @@ def matchmaker_matches(request, institute_id, case_name):
             return redirect(request.referrer)
         # server returned a valid response
         pat_matches = []
-        if server_resp.get("matches"):
-            pat_matches = parse_matches(patient_id, server_resp["matches"])
+        if server_resp.get("content", {}).get("matches"):
+            pat_matches = parse_matches(patient_id, server_resp["content"]["matches"])
         matches[patient_id] = pat_matches
+
     data["matches"] = matches
     return data
 

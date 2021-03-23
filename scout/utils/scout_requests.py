@@ -39,7 +39,6 @@ def get_request_json(url, headers=None):
         return {"message": f"An error occurred while sending a GET request to url {url} -> {ex}"}
 
     json_response["status_code"] = resp.status_code
-    LOG.debug(f"returned response is:{json_response}")
     return json_response
 
 
@@ -90,7 +89,6 @@ def post_request_json(url, data, headers):
         return {"message": f"An error occurred while sending a POST request to url {url} -> {ex}"}
 
     json_response["status_code"] = resp.status_code
-    LOG.debug(f"returned response is:{json_response}")
     return json_response
 
 
