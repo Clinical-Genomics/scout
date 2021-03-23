@@ -47,11 +47,10 @@ def variant(institute_id, case_name, variant_id):
 
     data = variant_controller(store, institute_id, case_name, variant_id=variant_id)
     if data is None:
-        LOG.warning(
-            "An error occurred: variants view requesting data for variant {}".format(variant_id)
-        )
         flash("An error occurred while retrieving variant object", "danger")
-        return redirect(request.referrer)
+        return redirect(
+            url_for("variants.variants", institute_id=institute_id, case_name=case_name)
+        )
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
@@ -65,6 +64,12 @@ def variant(institute_id, case_name, variant_id):
 def sv_variant(institute_id, case_name, variant_id):
     """Display a specific structural variant."""
     data = variant_controller(store, institute_id, case_name, variant_id, add_other=False)
+
+    if data is None:
+        flash("An error occurred while retrieving variant object", "danger")
+        return redirect(
+            url_for("variants.sv_variants", institute_id=institute_id, case_name=case_name)
+        )
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
@@ -85,7 +90,11 @@ def str_variant(institute_id, case_name, variant_id):
         add_other=False,
         get_overlapping=False,
     )
-
+    if data is None:
+        flash("An error occurred while retrieving variant object", "danger")
+        return redirect(
+            url_for("variants.str_variants", institute_id=institute_id, case_name=case_name)
+        )
     return data
 
 
