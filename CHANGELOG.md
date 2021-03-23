@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - A more compact case groups panel
 - Added landscape orientation CSS style to cancer coverage and QC demo report
+- Refactored the MatchMaker integration as an extension
 
 
 ## [4.30.2]
