@@ -107,6 +107,46 @@ def load_coverage_qc_report(
     return adapter.replace_case(case_obj)
 
 
+def load_gene_fusion_report(
+    adapter: MongoAdapter,
+    report_path: str,
+    case_id: str,
+    research: bool = False,
+    update: bool = False,
+):
+    """Load a gene fusion report into a case in the database
+
+    If the report already exists the function will exit.
+    If the user want to load a report that is already in the database
+    'update' has to be 'True'
+
+    Args:
+        adapter     (MongoAdapter): Connection to the database
+        report_path (string):       Path to gene fusion report
+        case_id     (string):       Optional case identifier
+        research    (bool):         If report contains research data
+        update      (bool):         If an existing report should be replaced
+
+    Returns:
+        updated_case(dict)
+
+    """
+    case_obj = adapter.case(case_id=case_id)
+
+    if case_obj is None:
+        raise DataNotFoundError("no case found")
+
+    if research and any([update, case_obj.get("gene_fusion_report_research") is None]):
+        _update_report_path(case_obj, report_path, "gene_fusion_report_research")
+    elif update or case_obj.get("gene_fusion_report") is None:
+        _update_report_path(case_obj, report_path, "gene_fusion_report")
+    else:
+        raise IntegrityError("Existing report found, use update = True to " "overwrite")
+
+    LOG.info("Saving report for case {} in database".format(case_obj["_id"]))
+    return adapter.replace_case(case_obj)
+
+
 def _update_report_path(case_obj, report_path, report_type):
     """Updates the report path
 

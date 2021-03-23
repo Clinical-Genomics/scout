@@ -33,11 +33,9 @@ from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 
-from scout.constants import SAMPLE_SOURCE
-
+from scout.constants import SAMPLE_SOURCE, CUSTOM_CASE_REPORTS
 from scout.server.extensions import mail, store, gens, rerunner
 from scout.server.utils import institute_and_case, templated, user_institutes
-
 from . import controllers
 
 LOG = logging.getLogger(__name__)
@@ -882,6 +880,18 @@ def cnv_report(institute_id, case_name):
         return abort(404)
     out_dir = os.path.abspath(os.path.dirname(data["case"]["cnv_report"]))
     filename = os.path.basename(data["case"]["cnv_report"])
+    return send_from_directory(out_dir, filename)
+
+
+@cases_bp.route("/<institute_id>/<case_name>/gene-fusion-report/<report_type>")
+def gene_fusion_report(institute_id, case_name, report_type):
+    """Download gene fusion report"""
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+    report_path = case_obj.get(report_type)
+    if report_path is None or report_type not in CUSTOM_CASE_REPORTS:
+        return abort(404)
+    out_dir = os.path.abspath(os.path.dirname(report_path))
+    filename = os.path.basename(report_path)
     return send_from_directory(out_dir, filename)
 
 

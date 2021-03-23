@@ -1,5 +1,13 @@
 ANALYSIS_TYPES = ("wgs", "wes", "mixed", "unknown", "panel", "external")
 
+CUSTOM_CASE_REPORTS = [
+    "multiqc",
+    "cnv_report",
+    "coverage_qc_report",
+    "gene_fusion_report",
+    "gene_fusion_report_research",
+]
+
 SEX_MAP = {
     1: "male",
     2: "female",
@@ -53,6 +61,7 @@ VERBS_MAP = {
     "acmg": "updated ACMG classification for",
     "dismiss_variant": "dismissed variant for",
     "reset_dismiss_variant": "reset dismissed variant status for",
+    "reset_dismiss_all_variants": "reset all dismissed variants for",
     "mosaic_tags": "updated mosaic tags for",
     "update_default_panels": "updated default panels for",
     "update_clinical_filter_hpo": "updated clinical filter HPO status for",
