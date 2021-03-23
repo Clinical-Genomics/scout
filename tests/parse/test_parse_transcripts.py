@@ -47,7 +47,7 @@ def test_parse_optional_hgnc_annotation(vep_csq_header, vep_csq):
     ## THEN assert that the hgnc annotation is parsed correctly
     for transcript in transcripts:
         assert transcript["functional_annotations"] == ["synonymous_variant"]
-        assert transcript["hgnc_id"] == 329
+        assert transcript["hgnc_id"] == 10593
 
 
 def test_parse_vep_freq_thousand_g():
@@ -71,7 +71,7 @@ def test_parse_vep_freq_thousand_g():
 def test_parse_vep_freq_thousand_g_alt(vep_csq_header, vep_csq):
     """Test extracting the 1000G allele frequency (AF) from the CSQ entry"""
     ## GIVEN a transcript with the 1000G frequency
-    freq = 0.2825
+    freq = 0.9242
     header = [word.upper() for word in vep_csq_header.split("|")]
 
     raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")]
@@ -169,4 +169,5 @@ def test_parse_hg38_mane_transcripts(vep_csq_header, vep_csq):
 
     ## THEN assert that the MANE annotation is parsed correctly
     for transcript in transcripts:
-        assert transcript["mane_transcript"] == "NM_198576.4"
+        assert transcript["mane_select_transcript"] == "NM_000335.5"
+        assert transcript["mane_plus_clinical_transcript"] == "NM_001099404.2"
