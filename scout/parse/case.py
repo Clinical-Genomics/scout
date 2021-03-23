@@ -78,7 +78,7 @@ def parse_case_data(**kwargs):
         config_data(dict): Holds all the necessary information for loading
                            Scout
     """
-    config = kwargs.pop('config', None)
+    config = kwargs.pop("config", None)
 
     # populate configuration according to Pydantic defined classes
     LOG.debug("1st SCOUTLOADCONFIG")
@@ -112,8 +112,8 @@ def parse_case_data(**kwargs):
     config["analysis_date"] = get_correct_date(config.get("analysis_date"))
 
     # If the family information is in a ped file we nned to parse that
-    if 'ped' in kwargs and kwargs['ped'] is not None:
-        family_id, samples = parse_ped(kwargs['ped'])
+    if "ped" in kwargs and kwargs["ped"] is not None:
+        family_id, samples = parse_ped(kwargs["ped"])
         config["family"] = family_id
         config["samples"] = samples
 
