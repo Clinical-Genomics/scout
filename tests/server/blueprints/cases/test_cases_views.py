@@ -544,13 +544,15 @@ def test_matchmaker_add(app, institute_obj, case_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
+        data = {"genomicfeatures": True, "sex": True, "features": True}
         # WHEN accessing the case page
         resp = client.post(
             url_for(
                 "cases.matchmaker_add",
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
-            )
+            ),
+            data=data,
         )
         # page redirects in the views anyway, so it will return a 302 code
         assert resp.status_code == 302
