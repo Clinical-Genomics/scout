@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Primary HGNC transcript info in variant export files
 - Show variant quality (QUAL field from vcf) in the variant summary
 - Load/update PDF gene fusion reports (clinical and research) generated with Arriba
+- Support new MANE annotations from VEP (both MANE Select and MANE Plus Clinical)
 - Display on case activity the event of a user resetting all dismissed variants
 - Allow saved filter lock and unlock
 ### Fixed
@@ -19,9 +20,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Page formatting issues whenever case and variant comments contain extremely long strings with no spaces
 - Chromograph images can be one column and have scrollbar. Removed legacy code.
 - Column labels for ClinVar case submission
+- Page crashing looking for LoqusDB observation when variant doesn't exist
+- Missing inheritance models and custom inheritance models on newly created gene panels
 ### Changed
 - A more compact case groups panel
 - Added landscape orientation CSS style to cancer coverage and QC demo report
+- Improve user documentation to create and save new gene panels
+- Removed option to use space as separator when uploading gene panels
+- Separating the columns of standard and custom inheritance models in gene panels
 
 
 ## [4.30.2]
