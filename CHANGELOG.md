@@ -26,7 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added landscape orientation CSS style to cancer coverage and QC demo report
 - Improve user documentation to create and save new gene panels
 - Removed option to use space as separator when uploading gene panels
-- separating the columns of standard and custom inheritance models in gene panels
+- Separating the columns of standard and custom inheritance models in gene panels
 
 
 ## [4.30.2]
