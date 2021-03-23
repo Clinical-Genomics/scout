@@ -85,6 +85,7 @@ def post_request_json(url, data, headers):
         LOG.debug(f"Sending POST request with json data to {url}")
         resp = requests.post(url, headers=headers, json=data)
         json_response = resp.json()
+
     except Exception as ex:
         return {"message": f"An error occurred while sending a POST request to url {url} -> {ex}"}
 

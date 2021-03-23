@@ -129,7 +129,11 @@ class MatchMaker:
         """
         url = "".join([self.host, "/match"])
         resp = self.request(
-            url=url, method="POST", accept=self.accept, content_type=self.accept, data=patient_obj
+            url=url,
+            method="POST",
+            accept=self.accept,
+            content_type=self.accept,
+            data={"patient": patient_obj},
         )
         return resp
 
@@ -140,6 +144,6 @@ class MatchMaker:
             patient_id(str): ID string of a patient already on the server
             node_id(str): ID string of a connected node
         """
-        url = "".join([self.host, "/match/external/", patient, "?node=", node])
+        url = "".join([self.host, "/match/external/", patient_id, "?node=", node_id])
         resp = self.request(url=url, method="POST")
         return resp

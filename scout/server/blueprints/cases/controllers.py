@@ -1171,7 +1171,7 @@ def matchmaker_match(request, match_type, institute_id, case_name):
         json_resp = None
         if match_type == "internal":  # Interal match against other patients on the MME server
             json_resp = matchmaker.match_internal(patient)
-            if json_resp.get("status") != 200:
+            if json_resp.get("status_code") != 200:
                 flash(
                     f"An error occurred while matching patient against other patients of MatchMaker:{json_resp.get('message')}",
                     "danger",
@@ -1193,4 +1193,4 @@ def matchmaker_match(request, match_type, institute_id, case_name):
                     continue
                 ok_responses += 1
     if ok_responses > 0:
-        flash("Match request sent. Look for eventual matches in 'Matches' page.", "info")
+        flash("Matching request sent. Look for eventual matches in 'Matches' page.", "info")
