@@ -84,16 +84,15 @@ def parse_case_data(**kwargs):
     LOG.debug("1st SCOUTLOADCONFIG")
     config = ScoutLoadConfig(**config)
 
-
     # convert to dict
     config = config.dict()
-    
+
     # Give passed keyword arguments precedence over file configuration
     # Except for 'owner', prededence config file over arguments
     LOG.debug("KWARGS: {}".format(kwargs))
-    if 'owner' in config:
+    if "owner" in config:
         print(kwargs)
-        kwargs.pop('owner', None) # dont crash if 'owner' is missing
+        kwargs.pop("owner", None)  # dont crash if 'owner' is missing
     for key in kwargs:
         if kwargs[key] is not None:
             config[key] = kwargs[key]
@@ -103,10 +102,12 @@ def parse_case_data(**kwargs):
             except KeyError:
                 config[key] = None
 
-    synopsis = ( ". ".join(config["synopsis"])  if isinstance(config["synopsis"], list) else config["synopsis"]
-        )
+    synopsis = (
+        ". ".join(config["synopsis"])
+        if isinstance(config["synopsis"], list)
+        else config["synopsis"]
+    )
 
-                
     # Default the analysis date to now if not specified in load config
     config["analysis_date"] = get_correct_date(config.get("analysis_date"))
 
@@ -116,13 +117,10 @@ def parse_case_data(**kwargs):
         config["family"] = family_id
         config["samples"] = samples
 
-
     try:
         # handle whitespace in gene panel names
         config["gene_panels"] = [panel.strip() for panel in config["gene_panels"]]
-        config["default_gene_panels"] = [
-            panel.strip() for panel in config["default_gene_panels"]
-        ]
+        config["default_gene_panels"] = [panel.strip() for panel in config["default_gene_panels"]]
     except:
         pass
 
