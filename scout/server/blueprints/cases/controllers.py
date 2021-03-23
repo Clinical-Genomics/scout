@@ -1129,12 +1129,7 @@ def matchmaker_matches(request, institute_id, case_name):
     mme_check_requirements(request)
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = {
-        "institute": institute_obj,
-        "case": case_obj,
-        "server_errors": [],
-        "panel": request.form.get("panel_id") if request.method == "POST" else 1,
-    }
+    data = {"institute": institute_obj, "case": case_obj, "server_errors": [], "panel": 1}
     matches = {}
     for patient in case_obj.get("mme_submission", {}).get("patients", []):
         patient_id = patient["id"]

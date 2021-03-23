@@ -556,6 +556,8 @@ def test_matchmaker_add(app, institute_obj, case_obj):
         )
         # page redirects in the views anyway, so it will return a 302 code
         assert resp.status_code == 302
+        updated_case = store.case_collection.find_one()
+        assert updated_case["mme_submission"]
 
 
 def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission, user_obj, monkeypatch):
@@ -571,7 +573,7 @@ def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission, user_o
     def mock_matches(*args, **kwargs):
         return {"institute": institute_obj, "case": case_obj, "matches": {}}
 
-    monkeypatch.setattr(controllers, "mme_matches", mock_matches)
+    monkeypatch.setattr(controllers, "matchmaker_matches", mock_matches)
 
     # GIVEN an initialized app
     # GIVEN a valid institute and a user with mme_submitter role
@@ -584,17 +586,15 @@ def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission, user_o
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        # Given mock MME connection parameters
-        current_app.config["MME_URL"] = "http://fakey_mme_url:fakey_port"
-        current_app.config["MME_TOKEN"] = TEST_TOKEN
-
+        data = {"panel_id": 2}
         # WHEN accessing the case page
-        resp = client.get(
+        resp = client.post(
             url_for(
                 "cases.matchmaker_matches",
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
-            )
+            ),
+            data=data,
         )
 
         # Then a successful response should be generated
@@ -614,7 +614,7 @@ def test_matchmaker_match(app, institute_obj, case_obj, mme_submission, user_obj
     def mock_match(*args, **kwargs):
         return [{"status_code": 200}]
 
-    monkeypatch.setattr(controllers, "mme_match", mock_match)
+    monkeypatch.setattr(controllers, "matchmaker_match", mock_match)
 
     # GIVEN an initialized app
     # GIVEN a valid institute and a user with mme_submitter role
@@ -625,10 +625,6 @@ def test_matchmaker_match(app, institute_obj, case_obj, mme_submission, user_obj
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
-
-        # Given mock MME connection parameters
-        current_app.config["MME_URL"] = "http://fakey_mme_url:fakey_port"
-        current_app.config["MME_TOKEN"] = TEST_TOKEN
 
         # WHEN sending a POST request to match a patient
         resp = client.post(

@@ -72,7 +72,7 @@ def loqusdb():
 
 @pytest.fixture
 def app(real_database_name, real_variant_database, user_obj):
-
+    """A test app containing the endpoints of the real app"""
     app = create_app(
         config=dict(
             TESTING=True,
@@ -81,29 +81,9 @@ def app(real_database_name, real_variant_database, user_obj):
             DEBUG_TB_ENABLED=False,
             LOGIN_DISABLED=True,
             WTF_CSRF_ENABLED=False,
-        )
-    )
-
-    @app.route("/auto_login")
-    def auto_login():
-        log.debug("Got request for auto login for {}".format(user_obj))
-        user_inst = LoginUser(user_obj)
-        assert login_user(user_inst, remember=True)
-        return "ok"
-
-    return app
-
-
-@pytest.fixture
-def minimal_app(real_database_name, real_populated_database, user_obj):
-    "An app without data"
-    app = create_app(
-        config=dict(
-            TESTING=True,
-            DEBUG=True,
-            MONGO_DBNAME=real_database_name,
-            DEBUG_TB_ENABLED=False,
-            LOGIN_DISABLED=True,
+            MME_URL="localhost",
+            MME_ACCEPTS="application/vnd.ga4gh.matchmaker.v1.0+json",
+            MME_TOKEN="test_token",
         )
     )
 
