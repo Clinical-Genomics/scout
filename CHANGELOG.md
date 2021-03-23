@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Page formatting issues whenever case and variant comments contain extremely long strings with no spaces
 - Chromograph images can be one column and have scrollbar. Removed legacy code.
 - Column labels for ClinVar case submission
+- Page crashing looking for LoqusDB observation when variant doesn't exist
 ### Changed
 - A more compact case groups panel
 - Added landscape orientation CSS style to cancer coverage and QC demo report
