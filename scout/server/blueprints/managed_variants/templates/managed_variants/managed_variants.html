@@ -234,10 +234,10 @@
         {{ wtf.form_field(filters_form.chromosome) }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.position) }}
+        {{ wtf.form_field(filters_form.position, type="number") }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.end) }}
+        {{ wtf.form_field(filters_form.end, type="number") }}
       </div>
       <div class="col-2">
         {{ wtf.form_field(filters_form.cytoband_start) }}
