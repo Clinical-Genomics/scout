@@ -217,6 +217,7 @@
 {% endmacro %}
 
 {% macro filter_variants_form() %}
+    {{ filters_form.csrf_token }}
     <div class="row">
       <div class="col-2">
         {{ wtf.form_field(filters_form.category)}}
@@ -233,10 +234,10 @@
         {{ wtf.form_field(filters_form.chromosome) }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.position, type="number") }}
+        {{ wtf.form_field(filters_form.position) }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.end, type="number") }}
+        {{ wtf.form_field(filters_form.end) }}
       </div>
       <div class="col-2">
         {{ wtf.form_field(filters_form.cytoband_start) }}
