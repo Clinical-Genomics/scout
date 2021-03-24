@@ -20,11 +20,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Chromograph images can be one column and have scrollbar. Removed legacy code.
 - Column labels for ClinVar case submission
 - Page crashing looking for LoqusDB observation when variant doesn't exist
+- Missing inheritance models and custom inheritance models on newly created gene panels
 ### Changed
 - A more compact case groups panel
 - Added landscape orientation CSS style to cancer coverage and QC demo report
+- Improve user documentation to create and save new gene panels
+- Removed option to use space as separator when uploading gene panels
+- Separating the columns of standard and custom inheritance models in gene panels
 - Refactored the MatchMaker integration as an extension
-
 
 ## [4.30.2]
 ### Added
