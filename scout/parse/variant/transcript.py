@@ -154,6 +154,12 @@ def parse_transcripts(raw_transcripts, allele=None):
                 float(fractmatch) for fractmatch in superdups_fractmatch.split("&")
             ]
 
+        # Get mitochondrial gnomAD frequencies
+        if entry.get("GNOMAD_MT_AF_HOM", "") != "":
+            transcript["gnomad_mt_homoplasmic"] = float(entry.get("GNOMAD_MT_AF_HOM"))
+        if entry.get("GNOMAD_MT_AF_HET", "") != "":
+            transcript["gnomad_mt_heteroplasmic"] = float(entry.get("GNOMAD_MT_AF_HET"))
+
         # Check frequencies
         # There are different keys for different versions of VEP
         # We only support version 90+
