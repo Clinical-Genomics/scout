@@ -67,7 +67,7 @@ def delete_request_json(url, headers=None):
     return json_response
 
 
-def post_request_json(url, data, headers):
+def post_request_json(url, data, headers=None):
     """Send json data via POST request and return response
 
     Args:
@@ -82,8 +82,11 @@ def post_request_json(url, data, headers):
     json_response = {}
     try:
         LOG.debug(f"Sending POST request with json data to {url}")
-        resp = requests.post(url, headers=headers, json=data)
-        json_response = resp.json()
+        if headers:
+            resp = requests.post(url, headers=headers, json=data)
+        else:
+            resp = requests.post(url, json=data)
+        json_response["content"] = resp.json()
 
     except Exception as ex:
         return {"message": f"An error occurred while sending a POST request to url {url} -> {ex}"}
