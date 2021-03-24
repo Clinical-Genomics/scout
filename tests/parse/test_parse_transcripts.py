@@ -102,6 +102,25 @@ def test_parse_vep_freq_gnomad(vep_csq_header, vep_csq):
         assert transcript["gnomad_max"]
 
 
+def test_parse_vep_freq_mtgnomad(vep_csq_header, vep_csq):
+    """Test extracting the mitochondrial gnomAD AF (gnomAD_mt_AF_hom/het) from the CSQ field"""
+    ## GIVEN a transcript with the gnomAD_AF key/value
+
+    header = [word.upper() for word in vep_csq_header.split("|")]
+    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")]
+
+    gnomad_mt_hom = float(raw_transcripts[0]["GNOMAD_MT_AF_HOM"])
+    gnomad_mt_het = float(raw_transcripts[0]["GNOMAD_MT_AF_HET"])
+
+    ## WHEN parsing the transcripts
+    transcripts = parse_transcripts(raw_transcripts)
+
+    ## THEN assert that the gnomAD_AF annotation is parsed correctly
+    for transcript in transcripts:
+        assert transcript["gnomad_mt_homoplasmic"] == gnomad_mt_hom
+        assert transcript["gnomad_mt_heteroplasmic"] == gnomad_mt_het
+
+
 def test_parse_vep_freq_exac():
     """Test extracting the EXAC MAX AF from the CSQ field"""
     ## GIVEN a transcript with the 1000G frequency
