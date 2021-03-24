@@ -876,10 +876,12 @@ def beacon_remove(case_id):
     resp = post_request_json("/".join([request_url, "delete"]), data, req_headers)
     flash_color = "success"
     if resp.get("status_code") == 200:
+        message = resp.get("content", {}).get("message")
         store.case_collection.update({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})
     else:
+        message = resp.get("message")
         flash_color = "warning"
-    flash(f"Beacon responded:{resp['message']}", flash_color)
+    flash(f"Beacon responded:{message}", flash_color)
 
 
 def beacon_add(form):

@@ -15,6 +15,17 @@ class MockNodesResponse(object):
         ]
 
 
+class MockDeleteResponse(object):
+    def __init__():
+        self.status_code = 200
+
+    def json(self):
+        return [
+            {"id": "node1", "description": "This is node 1"},
+            {"id": "node2", "description": "This is node 2"},
+        ]
+
+
 def test_matchmaker_config_settings(matchmaker_app):
     """Test that the app is initialized with the correct MatchMaker Exchange settings"""
     # WHEN the app is initialized, it should contain the default MME parameters
@@ -25,7 +36,7 @@ def test_matchmaker_config_settings(matchmaker_app):
         assert matchmaker.connected_nodes == []
 
 
-def test_request_nodes(monkeypatch):
+def test_nodes(monkeypatch):
     """Test the function that retrieves MME nodes connected to default MME instance"""
 
     # GIVEN a patched MatchMaker server
@@ -35,3 +46,11 @@ def test_request_nodes(monkeypatch):
     monkeypatch.setattr(requests, "get", mock_get)
     # Calling the "nodes" endpoint should return a list of nodes
     assert isinstance(matchmaker.nodes(), list)
+
+
+def test_patient_delete():
+    """Test the function that deletes a patient from the default MME instance"""
+
+    # GIVEN a patched MatchMaker server
+    def mock_delete(*args, **kwargs):
+        return MockNodesResponse()
