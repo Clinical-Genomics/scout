@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Column labels for ClinVar case submission
 - Page crashing looking for LoqusDB observation when variant doesn't exist
 - Missing inheritance models and custom inheritance models on newly created gene panels
+- Accept only numbers in managed variants filter as position and end coordinates
 ### Changed
 - A more compact case groups panel
 - Added landscape orientation CSS style to cancer coverage and QC demo report
