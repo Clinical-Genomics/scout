@@ -22,6 +22,7 @@ def parse_frequencies(variant, transcripts):
     # Gnomad have both snv and sv frequencies
     gnomad_keys = ["GNOMADAF", "GNOMAD_AF", "gnomad_svAF"]
     gnomad_max_keys = ["GNOMADAF_popmax", "GNOMADAF_POPMAX", "GNOMADAF_MAX"]
+    gnomad_mt_keys = ["GNOMAD_MT_AF_HOM", "GNOMAD_MT_AF_HET"]
 
     for test_key in thousand_genomes_keys:
         thousand_g = parse_frequency(variant, test_key)
@@ -59,6 +60,15 @@ def parse_frequencies(variant, transcripts):
             frequencies["gnomad_max"] = gnomad_max
             break
 
+    # For mitochondrial variants, keep both "hom" and "het" freqs
+    gnomad_mt_hom = parse_frequency(variant, "GNOMAD_MT_AF_HOM")
+    if gnomad_mt_hom is not None:
+        frequencies["gnomad_mt_homoplasmic"] = gnomad_mt_hom
+
+    gnomad_mt_het = parse_frequency(variant, "GNOMAD_MT_AF_HET")
+    if gnomad_mt_het is not None:
+        frequencies["gnomad_mt_heteroplasmic"] = gnomad_mt_het
+
     # Search transcripts if not found in VCF
     if not frequencies:
         for transcript in transcripts:
@@ -70,6 +80,10 @@ def parse_frequencies(variant, transcripts):
 
             gnomad = transcript.get("gnomad_maf")
             gnomad_max = transcript.get("gnomad_max")
+
+            gnomad_mt_hom = transcript.get("gnomad_mt_homoplasmic")
+            gnomad_mt_het = transcript.get("gnomad_mt_heteroplasmic")
+
             if exac:
                 frequencies["exac"] = exac
             if exac_max:
@@ -82,6 +96,10 @@ def parse_frequencies(variant, transcripts):
                 frequencies["gnomad"] = gnomad
             if gnomad_max:
                 frequencies["gnomad_max"] = gnomad_max
+            if gnomad_mt_hom:
+                frequencies["gnomad_mt_homoplasmic"] = gnomad_mt_hom
+            if gnomad_mt_het:
+                frequencies["gnomad_mt_heteroplasmic"] = gnomad_mt_het
 
     # These are SV-specific frequencies
     thousand_g_left = parse_frequency(variant, "left_1000GAF")
