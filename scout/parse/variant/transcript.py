@@ -157,7 +157,7 @@ def parse_transcripts(raw_transcripts, allele=None):
         # Get mitochondrial gnomAD frequencies
         if entry.get("GNOMAD_MT_AF_HOM", "") != "":
             transcript["gnomad_mt_homoplasmic"] = float(entry.get("GNOMAD_MT_AF_HOM"))
-        if "GNOMAD_MT_AF_HET" in entry and entry.get("GNOMAD_MT_AF_HET") != "":
+        if entry.get("GNOMAD_MT_AF_HET", "") != "":
             transcript["gnomad_mt_heteroplasmic"] = float(entry.get("GNOMAD_MT_AF_HET"))
 
         # Check frequencies
