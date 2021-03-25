@@ -17,6 +17,7 @@ class MatchMaker:
         self.host = None
         self.accept = None
         self.token = None
+        self.connected_nodes = None
 
     def init_app(self, app):
         """Initialize the MatchMaker extension and make its parametars available to the app."""
