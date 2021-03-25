@@ -449,7 +449,7 @@
             <th>Coordinates</th>
             <th>Cytoband</th>
             <th>nucl. change</th>
-            <th>dbsnp id</th>
+            <th>SNP ids</th>
             <th>Gene panels</th>
           </tr>
         </thead>
@@ -464,7 +464,18 @@
             <td style="word-break: break-all;">{{variant.reference}} → {{variant.alternative}}</td>
             <td>
               {% if variant.dbsnp_id %}
-                {{variant.dbsnp_id}}
+                {% set dbsnp_ids = variant.dbsnp_id.split(';') %}
+                {% for snp in dbsnp_ids %}
+                  {% if "rs" in snp %}
+                    <a target="_blank" href="{{variant.snp_links[snp]}}">
+                      dbSNP:{{ snp }}
+                    </a>
+                  {% else %}
+                    <a target="_blank" href="{{variant.snp_links[snp]}}">
+                      ClinVar:{{ snp }}
+                    </a>
+                  {% endif %}
+                {% endfor %}
               {% else %}
                 -
               {% endif %}
