@@ -820,6 +820,8 @@ def test_rename_clinvar_samples(app, institute_obj, clinvar_variant, clinvar_cas
             new_name="new_sample_name",
         )
 
+        referer = url_for("overview.clinvar_submissions", institute_id=institute_obj["internal_id"])
+
         # WHEN the sample name is edited from the submission page (POST request)
         resp = client.post(
             url_for(
@@ -829,6 +831,7 @@ def test_rename_clinvar_samples(app, institute_obj, clinvar_variant, clinvar_cas
                 old_name=old_name,
             ),
             data=form_data,
+            headers={"referer": referer},
         )
         # a successful response should be redirect to the submssions page
         assert resp.status_code == 302

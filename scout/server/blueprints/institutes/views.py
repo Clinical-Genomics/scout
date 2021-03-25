@@ -276,7 +276,7 @@ def clinvar_rename_casedata(submission, case, old_name):
 
     new_name = request.form.get("new_name")
     controllers.update_clinvar_sample_names(store, submission, case, old_name, new_name)
-    return redirect(request.referrer)
+    return redirect(request.referrer + f"#cdata_{submission}")
 
 
 @blueprint.route("/<institute_id>/<submission>/update_status", methods=["POST"])
