@@ -30,6 +30,14 @@ def test_omim_terms(case_obj):
         assert disorder["id"] == f"MIM:{omim_ids[nr]}"
 
 
+def test_genomic_features(adapter, case_obj, variant_obj):
+    """Test function that parses pinned variants from a case and returns them as MatchMaker genomic features"""
+
+    # GIVEN a case with a pinned variant that is in the database
+    adapter.variant_collection.insert_one(variant_obj)
+    case_obj["suspects"] = [variant_obj["_id"]]
+
+
 def test_parse_matches(case_obj, match_objs):
     """tests that a list of MatchMaker matches returned by the server is interpreted
     as it should
