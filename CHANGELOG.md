@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Missing inheritance models and custom inheritance models on newly created gene panels
 - Accept only numbers in managed variants filter as position and end coordinates
 - SNP id format and links in Variant page, ClinVar submission form and general report
+- Case groups tooltip triggered only when mouse is on the panel header
 ### Changed
 - A more compact case groups panel
 - Added landscape orientation CSS style to cancer coverage and QC demo report
