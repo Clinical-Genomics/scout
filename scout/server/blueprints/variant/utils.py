@@ -242,6 +242,8 @@ def frequencies(variant_obj):
     Returns:
         frequencies(list(tuple)): A list of frequencies to display
     """
+    is_mitochondrial_variant = variant_obj.get("chromosome") == "MT"
+
     if variant_obj["category"] == "sv":
         freqs = {
             "gnomad_frequency": {"display_name": "GnomAD", "link": None},
@@ -289,6 +291,14 @@ def frequencies(variant_obj):
                 "display_name": "ExAC(max)",
                 "link": variant_obj.get("exac_link"),
             },
+            "gnomad_mt_homoplasmic_frequency": {
+                "display_name": "GnomAD MT, homoplasmic",
+                "link": variant_obj.get("gnomad_link"),
+            },
+            "gnomad_mt_heteroplasmic_frequency": {
+                "display_name": "GnomAD MT, heteroplasmic",
+                "link": variant_obj.get("gnomad_link"),
+            },
         }
 
     frequency_list = []
@@ -296,14 +306,19 @@ def frequencies(variant_obj):
         display_name = freqs[freq_key]["display_name"]
         value = variant_obj.get(freq_key)
         link = freqs[freq_key]["link"]
-        # Allways add gnomad
+        # Always add gnomad for non-mitochondrial variants
         if freq_key == "gnomad_frequency":
+            if is_mitochondrial_variant:
+                continue
             # If gnomad not found search for exac
             if not value:
                 value = variant_obj.get("exac_frequency")
             value = value or "NA"
-            frequency_list.append((display_name, value, link))
-            continue
+
+        # Always add gnomad MT frequencies for mitochondrial variants
+        elif freq_key.startswith("gnomad_mt_") and is_mitochondrial_variant:
+            value = value or "NA"
+
         if value:
             frequency_list.append((display_name, value, link))
 
@@ -325,6 +340,7 @@ def frequency(variant_obj):
         variant_obj.get("thousand_genomes_frequency") or 0,
         variant_obj.get("exac_frequency") or 0,
         variant_obj.get("gnomad_frequency") or 0,
+        variant_obj.get("gnomad_mt_homoplasmic_frequency") or 0,
     )
 
     if most_common_frequency > 0.05:
