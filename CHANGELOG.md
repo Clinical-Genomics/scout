@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Load/update PDF gene fusion reports (clinical and research) generated with Arriba
 - Support new MANE annotations from VEP (both MANE Select and MANE Plus Clinical)
 - Display on case activity the event of a user resetting all dismissed variants
+- Support gnomAD population frequencies for mitochondrial variants
 - Allow saved filter lock and unlock
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
@@ -22,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Column labels for ClinVar case submission
 - Page crashing looking for LoqusDB observation when variant doesn't exist
 - Missing inheritance models and custom inheritance models on newly created gene panels
+- Accept only numbers in managed variants filter as position and end coordinates
 ### Changed
 - A more compact case groups panel
 - Added landscape orientation CSS style to cancer coverage and QC demo report
