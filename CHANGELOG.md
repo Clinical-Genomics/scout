@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support new MANE annotations from VEP (both MANE Select and MANE Plus Clinical)
 - Display on case activity the event of a user resetting all dismissed variants
 - Support gnomAD population frequencies for mitochondrial variants
+- Anchor links in Casedata ClinVar panels to redirect after renaming individuals
 - Allow saved filter lock and unlock
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
@@ -30,8 +31,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improve user documentation to create and save new gene panels
 - Removed option to use space as separator when uploading gene panels
 - Separating the columns of standard and custom inheritance models in gene panels
+- Improved ClinVar instructions for users using non-English Excel
 - SV clinical filter no longer filters out sub 100 nt variants
-
 
 ## [4.30.2]
 ### Added
