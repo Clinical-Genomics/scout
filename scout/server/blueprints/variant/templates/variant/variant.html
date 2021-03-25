@@ -453,13 +453,21 @@
       {% endif %}
       <ul class="list-group">
         {% if variant.dbsnp_id %}
-          {% set dbsnp_id = variant.dbsnp_id|replace(';',':') %}
+          {% set dbsnp_ids = variant.dbsnp_id.split(';') %}
           <li class="list-group-item">
-            SNPedia
+            SNP info
             <span class="float-right">
-              <a target="_blank" href="http://snpedia.com/index.php/{{ dbsnp_id.split(':')[0] }}">
-                {{ dbsnp_id.split(':')[0] }}
-              </a>
+              {% for snp in dbsnp_ids %}
+                {% if "rs" in snp %}
+                <a target="_blank" href="https://www.ncbi.nlm.nih.gov/snp/{{ snp }}" data-toggle="tooltip" data-placement="top" title="NCBI dbSNP ID">
+                  {{ snp }}
+                </a>
+                {% else %}
+                <a target="_blank" href="https://www.ncbi.nlm.nih.gov/clinvar/variation/{{ snp }}" data-toggle="tooltip" data-placement="top" title="ClinVar variation ID">
+                  {{ snp }}
+                </a>
+                {% endif %}
+              {% endfor %}
             </span>
           </li>
         {% endif %}
