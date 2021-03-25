@@ -229,9 +229,10 @@
                       </td>
                     </tr>
                     {% if pinned.category == 'snv'%}
+                    {% set split_snp_id = pinned.dbsnp_id|replace(';',':') %}
                       <tr>
                         <td>var. identifier</td>
-                        <td><input type="text" id="Variation identifiers_{{pinned._id}}" name="variations_ids@{{pinned._id}}" value="{{ pinned.dbsnp_id.split(':')[0] if pinned.dbsnp_id else ''}}" size=14 pattern="rs[0-9]+" ></td>
+                        <td><input type="text" id="Variation identifiers_{{pinned._id}}" name="variations_ids@{{pinned._id}}" value="{{ split_snp_ids.split(':')[0] if pinned.dbsnp_id else ''}}" size=14 pattern="rs[0-9]+" ></td>
                       </tr>
                     {% endif %}
                     <tr>
