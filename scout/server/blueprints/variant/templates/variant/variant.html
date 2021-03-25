@@ -453,11 +453,12 @@
       {% endif %}
       <ul class="list-group">
         {% if variant.dbsnp_id %}
+          {% set dbsnp_id = variant.dbsnp_id|replace(';',':') %}
           <li class="list-group-item">
             SNPedia
             <span class="float-right">
-              <a target="_blank" href="http://snpedia.com/index.php/{{ variant.dbsnp_id }}">
-                {{ variant.dbsnp_id }}
+              <a target="_blank" href="http://snpedia.com/index.php/{{ dbsnp_id.split(':')[0] }}">
+                {{ dbsnp_id.split(':')[0] }}
               </a>
             </span>
           </li>

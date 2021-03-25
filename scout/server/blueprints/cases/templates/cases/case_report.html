@@ -449,7 +449,7 @@
             <th>Coordinates</th>
             <th>Cytoband</th>
             <th>nucl. change</th>
-            <th>dbsnp id</th>
+            <th>dbSNP id</th>
             <th>Gene panels</th>
           </tr>
         </thead>
@@ -464,7 +464,8 @@
             <td style="word-break: break-all;">{{variant.reference}} → {{variant.alternative}}</td>
             <td>
               {% if variant.dbsnp_id %}
-                {{variant.dbsnp_id}}
+                {% set dbsnp_id = variant.dbsnp_id|replace(';',':') %}
+                {{ dbsnp_id.split(':')[0] }}
               {% else %}
                 -
               {% endif %}
