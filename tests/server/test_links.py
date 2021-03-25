@@ -1,6 +1,6 @@
 """Tests for scout server links"""
 
-from scout.server.links import add_gene_links, cbioportal, mycancergenome
+from scout.server.links import add_gene_links, cbioportal, mycancergenome, snp_links
 
 
 def test_add_gene_links():
@@ -53,3 +53,19 @@ def test_mycancergenome_link():
 
     link = mycancergenome(hgnc_symbol, protein_change)
     assert link is not None
+
+
+def test_snp_links():
+    """Test building the links for the SNP ids of a variant"""
+    # GIVEN a variant with multiple SNP IDs
+    variant_obj = {"dbsnp_id": "rs150429680;431849"}
+
+    links = snp_links(variant_obj)
+
+    # THEN the links should point to the right database
+    snp_ids = variant_obj["dbsnp_id"].split(";")
+    for snp in snp_ids:
+        if "rs" in snp:  # dbSNP
+            assert links[snp] == f"https://www.ncbi.nlm.nih.gov/snp/{snp}"
+        else:  # ClinVar variation
+            assert links[snp] == f"https://www.ncbi.nlm.nih.gov/clinvar/variation/{snp}"
