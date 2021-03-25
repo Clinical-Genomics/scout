@@ -453,12 +453,15 @@
       {% endif %}
       <ul class="list-group">
         {% if variant.dbsnp_id %}
+          {% set dbsnp_ids = variant.dbsnp_id.split(';') %}
           <li class="list-group-item">
-            SNPedia
+            SNP info
             <span class="float-right">
-              <a target="_blank" href="http://snpedia.com/index.php/{{ variant.dbsnp_id }}">
-                {{ variant.dbsnp_id }}
-              </a>
+              {% for snp in dbsnp_ids %}
+                <a target="_blank" href="{{variant.snp_links[snp]}}">
+                  {{ snp }}
+                </a>
+              {% endfor %}
             </span>
           </li>
         {% endif %}
