@@ -4,8 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-
 ## [X.X.X]
+### Added
+
+## [4.31]
 ### Added
 - gnomAD annotation field in admin guide
 - Export also dynamic panel genes not associated to an HPO term when downloading the HPO panel
@@ -32,7 +34,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed option to use space as separator when uploading gene panels
 - Separating the columns of standard and custom inheritance models in gene panels
 - Improved ClinVar instructions for users using non-English Excel
-
 
 ## [4.30.2]
 ### Added
