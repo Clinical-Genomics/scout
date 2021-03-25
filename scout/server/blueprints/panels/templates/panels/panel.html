@@ -116,7 +116,8 @@
             <th>Reduced penetrance</th>
             <th>Mosaicism</th>
             <th>Entry version</th>
-            <th>Inheritance models</th>
+            <th>Standard inheritance models</th>
+            <th>Custom inheritance models</th>
             <th>Comment</th>
             <th>Action</th>
           </tr>
@@ -130,15 +131,13 @@
                 </a>
               </td>
               <td>{{ gene.hgnc_id }}</td>
+
               <td>{{ gene.disease_associated_transcripts|join(', ') }}</td>
               <td>{{ 'Yes' if gene.reduced_penetrance }}</td>
               <td>{{ 'Yes' if gene.mosaicism }}</td>
               <td>{{ gene.database_entry_version }}</td>
-              {% if gene.custom_inheritance_models|list != [''] %}
-                <td>{{ (gene.inheritance_models|list + gene.custom_inheritance_models|list)|join(', ') }}</td>
-              {% else %}
-                <td>{{ gene.inheritance_models|list }}</td>
-              {% endif %}
+              <td>{{ gene.inheritance_models|join(', ') }}</td>
+              <td>{{ gene.custom_inheritance_models|join(', ') }}</td>
               <td>{{ gene.comment }}</td>
               <td>
                 {% if not panel.is_archived %}
