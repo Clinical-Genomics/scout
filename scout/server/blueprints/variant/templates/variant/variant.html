@@ -458,15 +458,9 @@
             SNP info
             <span class="float-right">
               {% for snp in dbsnp_ids %}
-                {% if "rs" in snp %}
-                <a target="_blank" href="https://www.ncbi.nlm.nih.gov/snp/{{ snp }}" data-toggle="tooltip" data-placement="top" title="NCBI dbSNP ID">
+                <a target="_blank" href="{{variant.snp_links[snp]}}">
                   {{ snp }}
                 </a>
-                {% else %}
-                <a target="_blank" href="https://www.ncbi.nlm.nih.gov/clinvar/variation/{{ snp }}" data-toggle="tooltip" data-placement="top" title="ClinVar variation ID">
-                  {{ snp }}
-                </a>
-                {% endif %}
               {% endfor %}
             </span>
           </li>

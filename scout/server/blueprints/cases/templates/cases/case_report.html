@@ -467,12 +467,12 @@
                 {% set dbsnp_ids = variant.dbsnp_id.split(';') %}
                 {% for snp in dbsnp_ids %}
                   {% if "rs" in snp %}
-                    <a target="_blank" href="https://www.ncbi.nlm.nih.gov/snp/{{ snp }}">
+                    <a target="_blank" href="{{variant.snp_links[snp]}}">
                       dbSNP:{{ snp }}
                     </a>
                   {% else %}
-                    <a target="_blank" href="https://www.ncbi.nlm.nih.gov/clinvar/variation/{{ snp }}">
-                      clinVar:{{ snp }}
+                    <a target="_blank" href="{{variant.snp_links[snp]}}">
+                      ClinVar:{{ snp }}
                     </a>
                   {% endif %}
                 {% endfor %}
