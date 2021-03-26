@@ -24,6 +24,7 @@ def build_genotype(gt_call):
         genotype_call=gt_call.get("genotype_call"),
         allele_depths=[gt_call["ref_depth"], gt_call["alt_depth"]],
         read_depth=gt_call["read_depth"],
+        alt_frequency=gt_call["alt_frequency"] or -1,
         genotype_quality=gt_call["genotype_quality"],
         so=gt_call["so"],
     )
