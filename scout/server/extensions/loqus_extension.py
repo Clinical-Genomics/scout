@@ -121,9 +121,7 @@ class LoqusDB:
         json_resp = api_get("".join([api_url, "/"]))
         if json_resp.get("loqusdb_version") is None:
             raise ConfigError(f"LoqusDB API url '{api_url}' did not return a valid response.")
-            raise RuntimeError(
-                "Could not retrieve a response from the Loqus API, please check connection"
-            )
+
         return float(json_resp.get("loqusdb_version"))
 
     def get_exec_loqus_version(self, loqusdb_id=None):
