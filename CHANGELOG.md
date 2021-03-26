@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [X.X.X]
 ### Added
+- Display gene splice junctions data in sashimi plots
 ### Changed
 - Remove mitochondrial and coverage report from cancer cases sidebar
 

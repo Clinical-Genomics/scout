@@ -58,7 +58,6 @@ def has_rna_tracks(case_obj):
         # Track contains 2 files and they should both be present
         if all([ind.get("splice_junctions_bed"), ind.get("rna_coverage_bigwig")]):
             return True
-            break
     return False
 
 
