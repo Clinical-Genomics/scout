@@ -466,14 +466,17 @@
           </li>
         {% endif %}
       </ul>
-        <table class="table table-bordered table-fixed table-sm">
+        <table class="table table-fixed table-sm mt-3">
           <tbody>
             <tr>
-              <td style="width:20%;">
+              <td style="width:15%;">
                 {{ igv_button(case, variant, case_groups) }}
+                {% if splice_junctions_tracks %}
+                  <a class="btn btn-secondary text-white mt-1" href="{{url_for('alignviewers.sashimi_igv', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id)}}" target"_blank">Gene splicing</a>
+                {% endif %}
               </td>
               {% if case.mt_bams or case.bam_files %}
-              <td style="width:50%;">
+              <td>
                 {{ igv_track_selection(igv_tracks, current_user) }}
               </td>
               {% endif %}

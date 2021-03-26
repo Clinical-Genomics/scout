@@ -3,13 +3,27 @@ import logging
 from flask_login import current_user
 from scout.server.extensions import store, cloud_tracks
 from scout.constants import IGV_TRACKS, CASE_SPECIFIC_TRACKS
+from scout.server.utils import institute_and_case
 
 LOG = logging.getLogger(__name__)
 CUSTOM_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
 
 
+def get_sashimi_tracks(institute_id, case_name, variant_id, build="38"):
+    """Create a dictionary containing the required tracks for a splice junction plot
+
+    Accepts:
+        institute_id(str): institute _id
+        case_name(str): case display name
+        variant_id(str) _id of a variant
+    Returns:
+        locus, display_obj(dict): a tuple consisting of gene coordinates and igv tracks dictionary
+    """
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+
 def make_igv_tracks(name, file_list):
-    """ Return a dict according to IGV track format. """
+    """Return a dict according to IGV track format. """
     track_list = []
     for track in file_list:
         track_list.append({"name": name, "url": track, "min": 0.0, "max": 30.0})

@@ -82,6 +82,18 @@ def unindexed_remote_static():
     return resp
 
 
+@alignviewers_bp.route(
+    "/igv-splice-junctions/<institute_id>/<case_name>/<variant_id>", methods=["GET"]
+)
+def sashimi_igv(institute_id, case_name, variant_id):
+    """Visualize splice junctions on igv.js sashimi-like viewer for one or more individuals of a case.
+    wiki: https://github.com/igvteam/igv.js/wiki/Splice-Junctions
+    """
+    locus, display_obj = controllers.get_sashimi_tracks(institute_id, case_name, variant_id)
+    return str(display_obj)
+    # return render_template("alignviewers/sashimi_viewer.html", locus=locus, **display_obj)
+
+
 @alignviewers_bp.route("/igv", methods=["POST"])
 def igv():
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)"""
