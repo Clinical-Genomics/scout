@@ -451,7 +451,7 @@
           </tbody>
         </table>
       {% endif %}
-      {% if variant.mitomap_associated_diseases %}
+      {% if variant.mitomap_associated_diseases and variant.mitomap_associated_diseases != "." %}
         <table class="table table-bordered table-fixed table-sm">
           <tbody>
             <tr>
