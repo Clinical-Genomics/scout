@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [X.X.X]
 ### Added
+### Changed
+- Remove mitochondrial and coverage report from cancer cases sidebar
 
 ## [4.31]
 ### Added
