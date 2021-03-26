@@ -1,6 +1,6 @@
 import copy
 import logging
-from scout.constants import EXPORT_HEADER
+from scout.constants import EXPORT_HEADER, CHROMOSOMES_38
 from scout.server.blueprints.variants.controllers import (
     gene_panel_choices,
     variants_export_header,
@@ -8,11 +8,34 @@ from scout.server.blueprints.variants.controllers import (
     variants,
     sv_variants,
     match_gene_txs_variant_txs,
+    populate_chrom_choices,
 )
-
+from flask_wtf import FlaskForm
+from wtforms import SelectField
 from bson.objectid import ObjectId
 
 LOG = logging.getLogger(__name__)
+
+
+def test_populate_chrom_choices(app):
+    """Test the function that populates the choices of the chromosome select in variants filters"""
+
+    # GIVEN a variants filter form
+    with app.test_client() as client:
+
+        class TestForm(FlaskForm):
+            chrom = SelectField("Chromosome", choices=[], default="")
+
+        form = TestForm()
+
+    # IF the case build is 38
+    case = {"genome_build": "38"}
+    # THEN chromosome choices should correspond to genomw build 38 chromosomes
+    populate_chrom_choices(form, case)
+    choices = form.chrom.choices
+
+    for nr, choice in enumerate(choices[1:]):  # first choice is not a chromosome, but all chroms
+        assert choice[0] == CHROMOSOMES_38[nr]
 
 
 def test_gene_panel_choices(institute_obj, case_obj):
