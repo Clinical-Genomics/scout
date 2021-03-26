@@ -1,5 +1,5 @@
 {% extends "layout_bs4.html" %}
-{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer %}
+{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, mark_heteroplasmic_mt %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 
 {% block title %}
@@ -80,7 +80,12 @@
                 <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
                 <td class="text-left">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
                 <td class="text-right">{{ variant.rank_score|int }}</td>
-                <td>{{ variant.chromosome }}</td>
+                <td>
+                  {{ variant.chromosome }}
+                  {% if variant.chromosome == "MT" %}
+                    {{ mark_heteroplasmic_mt(case.individuals, variant.samples) }}
+                  {% endif %}
+		</td>
                 <td>{{ gene_cell(variant) }}</td>
                 <td class="text-right">{{ frequency_cell(variant) }}</td>
                 <td class="text-right">{{ cell_cadd(variant) }}</td>
