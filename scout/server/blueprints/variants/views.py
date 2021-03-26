@@ -22,8 +22,6 @@ from flask_login import current_user
 
 from scout.constants import (
     CANCER_TIER_OPTIONS,
-    CHROMOSOMES,
-    CHROMOSOMES_38,
     MANUAL_RANK_OPTIONS,
     SEVERE_SO_TERMS,
     DISMISS_VARIANT_OPTIONS,
