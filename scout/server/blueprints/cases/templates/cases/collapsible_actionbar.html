@@ -87,7 +87,7 @@
         </div>
       </div>
     {% endif %}
-    {% if config.SQLALCHEMY_DATABASE_URI %}
+    {% if config.SQLALCHEMY_DATABASE_URI and case.track == "rare" %}
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed ml-2">Coverage</span>
@@ -99,6 +99,7 @@
         </div>
       </div>
     {% endif %}
+    {% if case.track == "rare" %}
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row flex-fill bd-highlight">
         <div>
@@ -109,6 +110,7 @@
         </div>
       </div>
     </div>
+    {% endif %}
     {% if case.cnv_report %}
       {{ cnv_report(institute._id, case) }}
     {% endif %}
