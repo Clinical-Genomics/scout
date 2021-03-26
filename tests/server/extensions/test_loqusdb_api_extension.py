@@ -150,7 +150,7 @@ def test_loqusdb_api_cases_not_found(loqus_api_app, monkeypatch):
     """Test fetching info on number of cases from loqusdb API when the API is not funct"""
 
     def mockapi(*args):
-        return {"content": {"details": "not found"}, "status_code": 200}
+        return {"message": {"details": "not found"}}
 
     monkeypatch.setattr(loqus_extension, "api_get", mockapi)
 
