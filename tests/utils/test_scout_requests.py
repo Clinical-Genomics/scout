@@ -33,7 +33,7 @@ def test_get_request_json(monkeypatch):
 
     # THEN the function should return a valid dictionary
     assert json_resp["status_code"] == 200
-    assert json_resp["mock_key"] == "mock_response"
+    assert json_resp["content"]["mock_key"] == "mock_response"
 
 
 def test_post_request_json_bad_url():

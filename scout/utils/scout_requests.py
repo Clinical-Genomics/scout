@@ -26,7 +26,7 @@ def post_request_json(url, data, headers):
         headers(dict): request headers
 
     Returns:
-        json_response(dict)
+        json_response(dict), example {"status_code":200, "content":{original json content}}
     """
     resp = None
     json_response = {}
@@ -43,26 +43,28 @@ def post_request_json(url, data, headers):
     return json_response
 
 
-def get_request_json(url):
-    """Send GET request and return response's json data
-
+def get_request_json(url, headers=None):
+    """Send GET request and return response as json data
     Args:
         url(str): url to send request to
-
+        headers(dict): eventual request HEADERS to use in request
     Returns:
-        json_response(dict)
+        json_response(dict), example {"status_code":200, "content":{original json content}}
     """
     resp = None
     json_response = {}
     try:
         LOG.debug(f"Sending GET request to {url}")
-        resp = requests.get(url, timeout=20)
-        json_response = resp.json()
+        if headers:
+            resp = requests.get(url, timeout=20, headers=headers)
+        else:
+            resp = requests.get(url, timeout=20)
+        json_response["content"] = resp.json()
+
     except Exception as ex:
         return {"message": f"An error occurred while sending a GET request to url {url} -> {ex}"}
 
     json_response["status_code"] = resp.status_code
-    LOG.debug(f"returned response is:{json_response}")
     return json_response
 
 

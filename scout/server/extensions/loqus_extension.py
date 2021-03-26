@@ -119,10 +119,12 @@ class LoqusDB:
         if api_url is None:
             return None
         json_resp = api_get("".join([api_url, "/"]))
-        if json_resp.get("loqusdb_version") is None:
+        LOG.error(json_resp)
+        version = json_resp.get("content", {}).get("loqusdb_version")
+        if version is None:
             raise ConfigError(f"LoqusDB API url '{api_url}' did not return a valid response.")
 
-        return float(json_resp.get("loqusdb_version"))
+        return float(version)
 
     def get_exec_loqus_version(self, loqusdb_id=None):
         """Get LoqusDB version as float"""
@@ -175,9 +177,9 @@ class LoqusDB:
             if search_resp.get("status_code") != 200:
                 return 0
             if variant_category == "snv":
-                nr_cases = search_resp.get("nr_cases_snvs", 0)
+                nr_cases = search_resp.get("content", {}).get("nr_cases_snvs", 0)
             elif variant_category == "sv":
-                nr_cases = search_resp.get("nr_cases_svs", 0)
+                nr_cases = search_resp.get("content", {}).get("nr_cases_svs", 0)
 
         return nr_cases
 
