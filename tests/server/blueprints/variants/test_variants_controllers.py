@@ -30,7 +30,7 @@ def test_populate_chrom_choices(app):
 
     # IF the case build is 38
     case = {"genome_build": "38"}
-    # THEN chromosome choices should correspond to genomw build 38 chromosomes
+    # THEN chromosome choices should correspond to genome build 38 chromosomes
     populate_chrom_choices(form, case)
     choices = form.chrom.choices
 

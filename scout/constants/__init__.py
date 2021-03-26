@@ -89,7 +89,7 @@ CHROMOSOMES = AUTOSOMES + [
     "X",
     "Y",
     "MT",
-]  # Default is 37. I don't dare to change this CHROMOSOMES_37 yet since it's used all over the place. It needs major refactoring
+]  # Chromosomes of build 37 would be default. I don't dare to change this yet since it's used all over the place. It needs major refactoring
 CHROMOSOMES_38 = AUTOSOMES + ["X", "Y", "M"]
 
 # Maps chromosomes to integers
