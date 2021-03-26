@@ -371,7 +371,9 @@ def build_variant(
         variant_obj["gnomad_mt_homoplasmic_frequency"] = float(frequencies["gnomad_mt_homoplasmic"])
 
     if frequencies.get("gnomad_mt_heteroplasmic"):
-        variant_obj["gnomad_mt_heteroplasmic_frequency"] = float(frequencies["gnomad_mt_heteroplasmic"])
+        variant_obj["gnomad_mt_heteroplasmic_frequency"] = float(
+            frequencies["gnomad_mt_heteroplasmic"]
+        )
 
     if frequencies.get("thousand_g_left"):
         variant_obj["thousand_genomes_frequency_left"] = float(frequencies["thousand_g_left"])
