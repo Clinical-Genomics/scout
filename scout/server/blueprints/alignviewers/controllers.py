@@ -36,9 +36,9 @@ def get_sashimi_tracks(institute_id, case_name, variant_id, build="38"):
     locus_start = min(locus_start_coords)
     locus_end = max(locus_end_coords)
     locus = f"{variant_obj['chromosome']}:{locus_start}-{locus_end}"  # Locus will span all genes the variant falls into
+    display_obj = {"locus": locus, "tracks": [], "genes": gene_symbols}
 
     # Populate tracks for each individual with splice junction track data
-    display_obj = {"locus": locus, "tracks": [], "genes": gene_symbols}
     _, case_obj = institute_and_case(store, institute_id, case_name)
     for ind in case_obj.get("individuals", []):
         if not all([ind.get("splice_junctions_bed"), ind.get("rna_coverage_bigwig")]):
