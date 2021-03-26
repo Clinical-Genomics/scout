@@ -371,6 +371,7 @@ def get_variant_links(variant_obj, build=None):
         decipher_link=decipher_link(variant_obj, build),
         ensembl_link=ensembl_link(variant_obj, build),
         alamut_link=alamut_link(variant_obj, build),
+        mitomap_link=mitomap_link(variant_obj),
         spidex_human=spidex_human(variant_obj),
         str_source_link=str_source_link(variant_obj),
         snp_links=snp_links(variant_obj),
@@ -620,7 +621,12 @@ def alamut_link(variant_obj, build=None):
 
     return url_template.format(this=variant_obj, build_str=build_str)
 
-
+def mitomap_link(variant_obj):
+    """Compose a link to a variant in mitomap"""
+    url_template = "https://mitomap.org/cgi-bin/search_allele?variant={this[position]}{this[reference]}%3E{this[alternative]}"
+    return url_template.format(this=variant_obj)
+    
+    
 def spidex_human(variant_obj):
     """Translate SPIDEX annotation to human readable string."""
     if variant_obj.get("spidex") is None:
