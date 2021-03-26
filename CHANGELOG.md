@@ -6,9 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [X.X.X]
 ### Added
-### Fixed
 - HPO gene list download now has option for clinical and non-clinical genes
+### Fixed
 - HPO gene search button triggers any warnings for clinical / non-existing genes also on first search
+### Changed
+- Remove mitochondrial and coverage report from cancer cases sidebar
 
 ## [4.31]
 ### Added
