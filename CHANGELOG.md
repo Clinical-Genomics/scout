@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [X.X.X]
 ### Added
+### Fixed
+- Filtering variants by mitochondrial chromosome for cases with genome build=38
 
 ## [4.31]
 ### Added
