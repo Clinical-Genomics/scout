@@ -31,14 +31,15 @@ def post_request_json(url, data, headers):
     resp = None
     json_response = {}
     try:
-        LOG.debug(f"Sending POST request with json data to {url}")
-        resp = requests.post(url, headers=headers, json=data)
-        json_response = resp.json()
+        if headers:
+            resp = requests.post(url, headers=headers, json=data)
+        else:
+            resp = requests.post(url, json=data)
+        json_response["content"] = resp.json()
     except Exception as ex:
         return {"message": f"An error occurred while sending a POST request to url {url} -> {ex}"}
 
     json_response["status_code"] = resp.status_code
-    LOG.debug(f"returned response is:{json_response}")
     return json_response
 
 
