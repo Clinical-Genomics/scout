@@ -237,7 +237,7 @@ class LoqusDB:
         if search_resp.get("status_code") != 200:
             LOG.info(search_resp.get("detail"))
             return {}
-        return search_resp
+        return search_resp.get("content")
 
     def get_exec_loqus_variant(self, loqus_instance, variant_info):
         """Get variant data using a local executable instance of Loqus

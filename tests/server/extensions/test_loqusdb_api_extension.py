@@ -27,7 +27,10 @@ def test_get_api_loqus_version(loqus_api_app, monkeypatch):
 
     # GIVEN a mocked loqus API
     def mockapi(*args):
-        return {"message": "Welcome to the loqusdbapi", "loqusdb_version": "2.5"}
+        return {
+            "content": {"message": "Welcome to the loqusdbapi", "loqusdb_version": "2.5"},
+            "status_code": 200,
+        }
 
     monkeypatch.setattr(loqus_extension, "api_get", mockapi)
 
@@ -57,7 +60,7 @@ def test_loqusdb_api_snv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
 
     # GIVEN a mocked loqus API
     def mockapi(*args):
-        return loqus_api_variant
+        return {"content": loqus_api_variant, "status_code": 200}
 
     monkeypatch.setattr(loqus_extension, "api_get", mockapi)
 
@@ -72,7 +75,7 @@ def test_loqusdb_api_snv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
 def test_loqus_api_snv_variant_not_found(loqus_api_app, monkeypatch, loqus_api_variant):
     # GIVEN a mocked loqus API that doesn't return usable info
     def mockapi(*args):
-        return {"details": "not found"}
+        return {"message": {"details": "not found"}}
 
     monkeypatch.setattr(loqus_extension, "api_get", mockapi)
 
@@ -89,7 +92,7 @@ def test_loqusdb_api_sv_variant(loqus_api_app, monkeypatch, loqus_api_variant):
 
     # GIVEN a mocked loqus API
     def mockapi(*args):
-        return loqus_api_variant
+        return {"content": loqus_api_variant, "status_code": 200}
 
     monkeypatch.setattr(loqus_extension, "api_get", mockapi)
 
@@ -127,7 +130,7 @@ def test_loqusdb_api_cases(loqus_api_app, monkeypatch):
     nr_svs = 12
     # GIVEN a mocked loqus API
     def mockapi(*args):
-        return {"nr_cases_snvs": nr_snvs, "nr_cases_svs": nr_svs, "status_code": 200}
+        return {"content": {"nr_cases_snvs": nr_snvs, "nr_cases_svs": nr_svs}, "status_code": 200}
 
     monkeypatch.setattr(loqus_extension, "api_get", mockapi)
 
@@ -147,7 +150,7 @@ def test_loqusdb_api_cases_not_found(loqus_api_app, monkeypatch):
     """Test fetching info on number of cases from loqusdb API when the API is not funct"""
 
     def mockapi(*args):
-        return {"details": "not found"}
+        return {"content": {"details": "not found"}, "status_code": 200}
 
     monkeypatch.setattr(loqus_extension, "api_get", mockapi)
 
