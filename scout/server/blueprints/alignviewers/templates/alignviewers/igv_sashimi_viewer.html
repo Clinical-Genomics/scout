@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="Jim Robinson" name="author">
+    <link href=img/favicon.ico rel="shortcut icon">
+    <title>igv.js</title>
+
+    <!-- IGV JS -->
+    <script src="https://cdn.jsdelivr.net/npm/igv@2.7.5/dist/igv.min.js"></script>
+</head>
+
+<body>
+
+<h1>{{case}}: Splice junctions view over genes: {{genes|join(", ")}}</h1>
+
+<div id="igvDiv" style="padding-top: 10px;padding-bottom: 10px; border:1px solid lightgray"></div>
+
+<script type="text/javascript">
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var options =
+            {
+                // Example of fully specifying a reference .  We could alternatively use  "genome: 'hg19'"
+                reference:
+                    {
+                        id: "GRCh38",
+                        fastaURL: "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa",
+                        cytobandURL: "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa.fai"
+                    },
+                locus: '{{ locus}}',
+                tracks:
+                    [
+                        {
+                            name: "Genes",
+                            type: "annotation",
+                            format: "gtf",
+                            url: "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz",
+                            indexURL: "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi",
+                            order: Number.MAX_VALUE,
+                            visibilityWindow: 300000000,
+                            displayMode: "EXPANDED"
+                        },
+                        {% for track in tracks %} // sample tracks
+                          {
+                              type: 'merged',
+                              name: '{{ track.name }}',
+                              height: 150,
+                              tracks: [
+                                {
+                                  type: 'wig',
+                                  format: "bigwig",
+                                  url: "{{ url_for('alignviewers.unindexed_remote_static', file=track.coverage_wig) }}",
+                                },
+                                {
+                                  type: 'spliceJunctions',
+                                  format: 'bed',
+                                  url: "{{ url_for('alignviewers.unindexed_remote_static', file=track.splicej_bed) }}",
+                                  //indexURL: "{{ url_for('alignviewers.unindexed_remote_static', file=track.splicej_bed_index) }}",
+                                  minUniquelyMappedReads: 1
+                                }
+                            ]
+                          }, // end of sashimi track with data from igv.js
+                        {% endfor %}
+                    ] // end of tracks
+            };
+        var igvDiv = document.getElementById("igvDiv");
+
+        igv.createBrowser(igvDiv, options)
+            .then(function (browser) {
+                console.log("Created IGV browser");
+            })
+    })
+</script>
+</body>
+</html>

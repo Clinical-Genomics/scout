@@ -89,9 +89,8 @@ def sashimi_igv(institute_id, case_name, variant_id):
     """Visualize splice junctions on igv.js sashimi-like viewer for one or more individuals of a case.
     wiki: https://github.com/igvteam/igv.js/wiki/Splice-Junctions
     """
-    locus, display_obj = controllers.get_sashimi_tracks(institute_id, case_name, variant_id)
-    return str(display_obj)
-    # return render_template("alignviewers/sashimi_viewer.html", locus=locus, **display_obj)
+    display_obj = controllers.get_sashimi_tracks(institute_id, case_name, variant_id)
+    return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
 
 
 @alignviewers_bp.route("/igv", methods=["POST"])

@@ -19,7 +19,44 @@ def get_sashimi_tracks(institute_id, case_name, variant_id, build="38"):
     Returns:
         locus, display_obj(dict): a tuple consisting of gene coordinates and igv tracks dictionary
     """
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    # Collect locus coordinates. Take into account that variant can hit multiple genes
+    variant_obj = store.variant(document_id=variant_id)
+    variant_genes_ids = [gene["hgnc_id"] for gene in variant_obj.get("genes", [])]
+    locus_start_coords = []
+    locus_end_coords = []
+    gene_symbols = []
+    for gene_id in variant_genes_ids:
+        gene_obj = store.hgnc_gene(hgnc_identifier=gene_id, build=build)
+        if gene_obj is None:
+            continue
+        gene_symbols.append(gene_obj.get("hgnc_symbol") or gene_obj["hgnc_id"])
+        locus_start_coords.append(gene_obj["start"])
+        locus_end_coords.append(gene_obj["end"])
+
+    locus_start = min(locus_start_coords)
+    locus_end = max(locus_end_coords)
+    locus = f"{variant_obj['chromosome']}:{locus_start}-{locus_end}"  # Locus will span all genes the variant falls into
+
+    # Populate tracks for each individual with splice junction track data
+    display_obj = {"locus": locus, "tracks": [], "genes": gene_symbols}
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+    for ind in case_obj.get("individuals", []):
+        if not all([ind.get("splice_junctions_bed"), ind.get("rna_coverage_bigwig")]):
+            continue
+
+        coverage_wig = ind["rna_coverage_bigwig"]
+        splicej_bed = ind["splice_junctions_bed"]
+        track = {
+            "name": ind["display_name"],
+            "coverage_wig": coverage_wig,
+            "splicej_bed": splicej_bed,
+            "splicej_bed_index": f"{splicej_bed}.tbi",
+        }
+        display_obj["tracks"].append(track)
+
+    display_obj["case"] = case_obj["display_name"]
+
+    return display_obj
 
 
 def make_igv_tracks(name, file_list):
