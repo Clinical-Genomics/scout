@@ -1,5 +1,6 @@
 """Tests for the loqusdb REST API extension"""
-
+import pytest
+from scout.exceptions.config import ConfigError
 from scout.server.extensions import loqusdb, loqus_extension
 
 
@@ -9,6 +10,16 @@ def test_loqusdb_api_settings(loqus_api_app):
     with loqus_api_app.app_context():
         assert "default" in loqusdb.__dict__["loqus_ids"]
         assert isinstance(loqusdb.loqusdb_settings, dict)
+
+
+def test_get_api_loqus_version_no_connection(loqus_api_app):
+    """Test function that returns the version of the LoqusDB API when the API is not available"""
+
+    # When the get_api_loqus_version function is invoked for a non-reachable API
+    # THEN it should raise ConfigError
+    with loqus_api_app.app_context():
+        with pytest.raises(ConfigError):
+            assert loqusdb.get_api_loqus_version(api_url="test_url")
 
 
 def test_get_api_loqus_version(loqus_api_app, monkeypatch):

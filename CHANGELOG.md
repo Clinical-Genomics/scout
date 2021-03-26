@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [X.X.X]
 ### Added
+- Support LoqusDB REST API queries
 
 ## [4.31]
 ### Added
@@ -60,7 +61,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add additional information to SNV verification emails
 - Tooltips documenting manual annotations from default panels
 - Case groups now show bam files from all cases on align view
-- Support LoqusDB REST API queries
 ### Fixed
 - Center initial igv view on variant start with SNV/indels
 - Don't set initial igv view to negative coordinates
