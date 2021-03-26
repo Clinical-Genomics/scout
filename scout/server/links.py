@@ -373,6 +373,7 @@ def get_variant_links(variant_obj, build=None):
         alamut_link=alamut_link(variant_obj, build),
         spidex_human=spidex_human(variant_obj),
         str_source_link=str_source_link(variant_obj),
+        snp_links=snp_links(variant_obj),
     )
     return links
 
@@ -520,6 +521,24 @@ def beacon_link(variant_obj, build=None):
     #                     "ref={this[reference]}&rs=GRCh38")
 
     return url_template.format(this=variant_obj)
+
+
+def snp_links(variant_obj):
+    """Compose links to dbSNP and ClinVar variation"""
+
+    if variant_obj.get("dbsnp_id") is None:
+        return
+    snp_links = {}
+    snp_ids = variant_obj["dbsnp_id"].split(";")
+    for snp in snp_ids:
+        if "rs" in snp:
+            snp_links[snp] = f"https://www.ncbi.nlm.nih.gov/snp/{snp}"  # dbSNP
+        elif snp.isnumeric():
+            snp_links[
+                snp
+            ] = f"https://www.ncbi.nlm.nih.gov/clinvar/variation/{snp}"  # ClinVar variation
+
+    return snp_links
 
 
 def ucsc_link(variant_obj, build=None):

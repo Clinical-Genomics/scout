@@ -240,8 +240,8 @@
 {% endmacro %}
 
 {% macro group_panel() %}
-  <div class="card panel-default" id="case_groups" data-toggle='tooltip' title="Group cases to share user variant assessments like comments, classification and dismissal. A case can be in multiple groups."">
-    <div class="panel-heading">
+  <div class="card panel-default" id="case_groups">
+    <div class="panel-heading" data-toggle='tooltip' title="Group cases to share user variant assessments like comments, classification and dismissal. A case can be in multiple groups.">
       <span>
         <i class="fa fa-users mr-1"></i>Group connected cases ({{case_groups|length}} groups)
       </span>
