@@ -12,6 +12,7 @@ from operator import itemgetter
 import pymongo
 from flask import (
     Blueprint,
+    Response,
     abort,
     current_app,
     flash,
@@ -21,16 +22,14 @@ from flask import (
     request,
     send_file,
     send_from_directory,
-    Response,
     url_for,
 )
-
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 
-from scout.constants import SAMPLE_SOURCE, CUSTOM_CASE_REPORTS
-from scout.server.extensions import mail, store, gens
+from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
+from scout.server.extensions import gens, mail, store
 from scout.server.utils import institute_and_case, templated, user_institutes
 
 from . import controllers
@@ -1026,13 +1025,17 @@ def case_group_update_label(case_group):
     return redirect(request.referrer + "#case_groups")
 
 
-@cases_bp.route("/<institute_id>/<case_name>/download-hpo-genes", methods=["GET"])
-def download_hpo_genes(institute_id, case_name):
-    """Download the genes contained in a case dynamic gene list"""
+@cases_bp.route("/<institute_id>/<case_name>/download-hpo-genes/<category>", methods=["GET"])
+def download_hpo_genes(institute_id, case_name, category):
+    """Download the genes contained in a case dynamic gene list
+
+    category: str - "clinical" or "research"
+    """
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     # Create export object consisting of dynamic phenotypes with associated genes as a dictionary
-    phenotype_terms_with_genes = controllers.phenotypes_genes(store, case_obj)
+    is_clinical = category != "research"
+    phenotype_terms_with_genes = controllers.phenotypes_genes(store, case_obj, is_clinical)
     html_content = ""
     for term_id, term in phenotype_terms_with_genes.items():
         html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br>{term.get('genes')}<br>"
@@ -1041,6 +1044,7 @@ def download_hpo_genes(institute_id, case_name):
         download_filename=case_obj["display_name"]
         + "_"
         + datetime.datetime.now().strftime("%Y-%m-%d")
+        + category
         + "_dynamic_phenotypes.pdf",
     )
 

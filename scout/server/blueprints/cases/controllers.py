@@ -7,17 +7,17 @@ import os
 
 import query_phenomizer
 import requests
-from bson.objectid import ObjectId
 from bs4 import BeautifulSoup
-from flask import current_app, url_for, flash
+from bson.objectid import ObjectId
+from flask import current_app, flash, url_for
 from flask_login import current_user
 from flask_mail import Message
 from xlsxwriter import Workbook
 
 from scout.constants import (
     CANCER_PHENOTYPE_MAP,
-    MT_EXPORT_HEADER,
     MT_COV_STATS_HEADER,
+    MT_EXPORT_HEADER,
     PHENOTYPE_GROUPS,
     PHENOTYPE_MAP,
     SEX_MAP,
@@ -31,14 +31,9 @@ from scout.constants.variant_tags import (
     MANUAL_RANK_OPTIONS,
 )
 from scout.export.variant import export_mt_variants
-from scout.server.extensions import store
-from scout.parse.matchmaker import (
-    genomic_features,
-    hpo_terms,
-    omim_terms,
-    parse_matches,
-)
+from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
+from scout.server.extensions import store
 from scout.server.utils import institute_and_case
 from scout.utils.matchmaker import matchmaker_request
 from scout.utils.scout_requests import post_request_json
@@ -606,7 +601,7 @@ def update_cancer_samples(
     )
 
 
-def phenotypes_genes(store, case_obj):
+def phenotypes_genes(store, case_obj, is_clinical=True):
     """Generate a dictionary consisting of phenotype terms with associated genes from the case HPO panel
 
     Args:
@@ -629,6 +624,7 @@ def phenotypes_genes(store, case_obj):
 
     hpo_gene_list = case_obj.get("dynamic_panel_phenotypes", [])
 
+    clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
     # Loop over the dynamic phenotypes of a case
     for hpo_id in hpo_gene_list:
         hpo_term = store.hpo_term(hpo_id)
@@ -647,6 +643,8 @@ def phenotypes_genes(store, case_obj):
                 by_phenotype = False  # do not display genes by phenotype
                 continue
             add_symbol = gene_obj.get("hgnc_symbol", f"hgnc:{gene_id}")
+            if is_clinical and (add_symbol not in clinical_symbols):
+                continue
             gene_list.append(add_symbol)
             unique_genes.add(add_symbol)
 
@@ -660,6 +658,7 @@ def phenotypes_genes(store, case_obj):
         gene_list = [
             gene.get("hgnc_symbol") or str(gene["hgnc_id"])
             for gene in case_obj["dynamic_gene_list"]
+            if not is_clinical or gene in clinical_symbols
         ]
         unique_genes = set(gene_list)
         by_phenotype = False
