@@ -81,9 +81,7 @@
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed ml-2">MultiQC</span>
-          <a href="{{ url_for('cases.multiqc', institute_id=institute._id,
-                              case_name=case.display_name) }}" target="_blank">
-                              <i class="fa fa-link"></i></a>
+          <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
         </div>
       </div>
     {% endif %}
