@@ -79,7 +79,7 @@ def parse_case_data(**kwargs):
                            Scout
     """
     config = kwargs.pop("config", {})
-    
+
     # If ped file  provided we need to parse that first
     if "ped" in kwargs and kwargs["ped"] is not None:
         family_id, samples = parse_ped(kwargs["ped"])
@@ -119,9 +119,7 @@ def parse_case_data(**kwargs):
     # handle whitespace in gene panel names
     try:
         config["gene_panels"] = [panel.strip() for panel in config["gene_panels"]]
-        config["default_gene_panels"] = [
-            panel.strip() for panel in config["default_gene_panels"]
-        ]
+        config["default_gene_panels"] = [panel.strip() for panel in config["default_gene_panels"]]
     except:
         pass
 
@@ -166,9 +164,7 @@ def add_smn_info(config_data):
             ]:
                 ind[key] = smn_info[ind_id][key]
         except KeyError as e:
-            LOG.warning(
-                "Individual {} has no SMN info to update: {}.".format(ind_id, e)
-            )
+            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
 
 
 def add_smn_info_case(case_data):
@@ -200,9 +196,7 @@ def add_smn_info_case(case_data):
             ]:
                 ind[key] = smn_info[ind_id][key]
         except KeyError as e:
-            LOG.warning(
-                "Individual {} has no SMN info to update: {}.".format(ind_id, e)
-            )
+            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
 
 
 def add_peddy_information(config_data):
@@ -243,9 +237,7 @@ def add_peddy_information(config_data):
         ind = analysis_inds[ind_id]
         # Check if peddy has inferred the ancestry
         if ind_id in ped_info:
-            ind["predicted_ancestry"] = ped_info[ind_id].get(
-                "ancestry-prediction", "UNKNOWN"
-            )
+            ind["predicted_ancestry"] = ped_info[ind_id].get("ancestry-prediction", "UNKNOWN")
         # Check if peddy has inferred the sex
         if ind_id in sex_check:
             if sex_check[ind_id]["error"]:
@@ -375,9 +367,7 @@ def parse_individual(sample):
     ind_info["tiddit_coverage_wig"] = sample.get(
         "tiddit_coverage_wig", sample.get("tiddit_coverage_wig")
     )
-    ind_info["upd_regions_bed"] = sample.get(
-        "upd_regions_bed", sample.get("upd_regions_bed")
-    )
+    ind_info["upd_regions_bed"] = sample.get("upd_regions_bed", sample.get("upd_regions_bed"))
     ind_info["upd_sites_bed"] = sample.get("upd_sites_bed", sample.get("upd_sites_bed"))
     ind_info["mt_bam"] = sample.get("mt_bam")
     ind_info["analysis_type"] = sample.get("analysis_type")
@@ -393,9 +383,7 @@ def parse_individual(sample):
     ind_info["smn2delta78_cn"] = sample.get("smn2delta78_cn", None)
     ind_info["smn_27134_cn"] = sample.get("smn_27134_cn", None)
 
-    ind_info["capture_kits"] = (
-        [sample.get("capture_kit")] if "capture_kit" in sample else []
-    )
+    ind_info["capture_kits"] = [sample.get("capture_kit")] if "capture_kit" in sample else []
 
     # Cancer specific values
     ind_info["tumor_type"] = sample.get("tumor_type")
@@ -535,7 +523,15 @@ def removeNoneRecursive_aux(dictionary, new_dict):
         if (
             isinstance(value, list)
             and len(value) > 0
-                and key not in ["collaborators", "cohorts", "default_panels", "gene_panels", "capture_kits", "phenotype_terms"]
+            and key
+            not in [
+                "collaborators",
+                "cohorts",
+                "default_panels",
+                "gene_panels",
+                "capture_kits",
+                "phenotype_terms",
+            ]
         ):
             new_list = [removeNoneRecursive_aux(item, {}) for item in value]
             new_dict.update({key: new_list})
