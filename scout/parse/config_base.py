@@ -121,18 +121,6 @@ class VcfFiles(BaseModel):
     vcf_sv_research: Optional[str] = None
 
 
-# TODO: handle arguments used as alternative input
-# TODO: validator to set track="cancer" if vcf_cancer||vcf_cancer_sv
-# TODO: parse_ped seems to work on yet another file with pedigree info
-# TODO: raise ConfigError
-# TODO: synopsis kan vara både string och lista av strings som konkateneras med '.'
-# TODO: collaborators ska vara lista
-# TODO: vcf_files as class/dict
-# TODO: `samples` and `individuals` are the same, why both?
-# XXX: why is madeline stored as a file_object?
-
-# `family` and `family_name` must exists, otherwise test_adapter_variant_caseid.py
-# will fail
 class ScoutLoadConfig(BaseModel):
     analysis_date: Any = datetime.datetime.now()
     assignee: str = None  ## ??

@@ -78,9 +78,9 @@ def parse_case_data(**kwargs):
         config_data(dict): Holds all the necessary information for loading
                            Scout
     """
-    LOG.debug("***PARSE_CASE_DATA()***")
-    # If ped file  provided we need to parse that first
     config = kwargs.pop("config", {})
+    
+    # If ped file  provided we need to parse that first
     if "ped" in kwargs and kwargs["ped"] is not None:
         family_id, samples = parse_ped(kwargs["ped"])
         config["family"] = family_id
@@ -116,9 +116,8 @@ def parse_case_data(**kwargs):
 
     # Default the analysis date to now if not specified in load config
     config["analysis_date"] = get_correct_date(config.get("analysis_date"))
-
+    # handle whitespace in gene panel names
     try:
-        # handle whitespace in gene panel names
         config["gene_panels"] = [panel.strip() for panel in config["gene_panels"]]
         config["default_gene_panels"] = [
             panel.strip() for panel in config["default_gene_panels"]
@@ -134,8 +133,6 @@ def parse_case_data(**kwargs):
     if config["smn_tsv"]:
         LOG.info("Adding SMN info from {}.".format(config["smn_tsv"]))
         add_smn_info(config)
-
-    LOG.debug("***PARSE_CASE_DATA return: {}***".format(removeNoneRecursive(config)))
 
     return removeNoneRecursive(config)
 
@@ -463,12 +460,11 @@ def parse_case(config):
     Returns:
         dict: parsed case data
     """
-
-    LOG.debug("***PARSE_CASE()***")
-    configObj = ScoutLoadConfig(**config)  # create a config object based on pydantic
-    vcf_files = VcfFiles(**config)  # vcf_files ...
+    # create a config object based on pydantic rules
+    configObj = ScoutLoadConfig(**config)
+    vcf_files = VcfFiles(**config)  # vcf_files parsed separetly
     configObj.vcf_files = vcf_files
-    case_data = configObj.dict()  # translate object to legacy dict
+    case_data = configObj.dict()  # translate object to dict
 
     # add SMN info
     LOG.debug("Checking for SMN TSV..")
@@ -476,10 +472,6 @@ def parse_case(config):
         LOG.info("Adding SMN info from {}.".format(case_data["smn_tsv"]))
         add_smn_info_case(case_data)
 
-    # TODO: parse_ped()
-    LOG.debug(
-        "***PARSE_CASE Return: {}***".format(removeNoneRecursive(configObj.dict()))
-    )
     return removeNoneRecursive(configObj.dict())
 
 
