@@ -621,12 +621,13 @@ def alamut_link(variant_obj, build=None):
 
     return url_template.format(this=variant_obj, build_str=build_str)
 
+
 def mitomap_link(variant_obj):
     """Compose a link to a variant in mitomap"""
     url_template = "https://mitomap.org/cgi-bin/search_allele?variant={this[position]}{this[reference]}%3E{this[alternative]}"
     return url_template.format(this=variant_obj)
-    
-    
+
+
 def spidex_human(variant_obj):
     """Translate SPIDEX annotation to human readable string."""
     if variant_obj.get("spidex") is None:
