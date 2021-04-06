@@ -865,9 +865,12 @@ def update_form_hgnc_symbols(store, case_obj, form):
             updated_hgnc_symbols.append(hgnc_symbol)
 
     errors = {
-        non_clinical_symbols: {alert: "Gene not included in clinical list", gene_list: []},
-        not_found_symbols: {alert: "HGNC symbol not found", gene_list: []},
-        not_found_ids: {alert: "HGNC id not found", gene_list: []},
+        "non_clinical_symbols": {
+            "alert": "Gene not included in clinical list",
+            "gene_list": non_clinical_symbols,
+        },
+        "not_found_symbols": {"alert": "HGNC symbol not found", "gene_list": not_found_symbols},
+        "not_found_ids": {"alert": "HGNC id not found", "gene_list": not_found_ids},
     }
 
     # warn user
