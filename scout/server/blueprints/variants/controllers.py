@@ -830,7 +830,7 @@ def update_form_hgnc_symbols(store, case_obj, form):
     updated_hgnc_symbols = []
 
     # retrieve current symbols from form
-    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
+    if form.hgnc_symbols.data:
         # if symbols are numeric HGNC id, translate to current symbols
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
@@ -864,18 +864,18 @@ def update_form_hgnc_symbols(store, case_obj, form):
         else:
             updated_hgnc_symbols.append(hgnc_symbol)
 
-    # warn user
-    if not_found_ids:
-        flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
-    if not_found_symbols:
-        flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning")
-    if non_clinical_symbols:
-        flash(
-            "Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)),
-            "warning",
-        )
+    errors = {
+        non_clinical_symbols: {alert: "Gene not included in clinical list", gene_list: []},
+        not_found_symbols: {alert: "HGNC symbol not found", gene_list: []},
+        not_found_ids: {alert: "HGNC id not found", gene_list: []},
+    }
 
-    form.hgnc_symbols.data = hgnc_symbols
+    # warn user
+    for error, item in errors.items():
+        if item["gene_list"]:
+            flash(f"{item['alert']}: {item['gene_list']}", "warning")
+
+    form.hgnc_symbols.data = updated_hgnc_symbols
 
     return form
 

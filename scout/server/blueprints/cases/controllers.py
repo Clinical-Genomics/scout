@@ -607,6 +607,7 @@ def phenotypes_genes(store, case_obj, is_clinical=True):
     Args:
         store(adapter.MongoAdapter)
         case_obj(dict): models.Case
+        is_clinical(bool): if True, only list genes from HPO that are among the case clinical_symbols
 
     Returns:
         hpo_genes(dict): a dictionary with HPO term IDs as keys and HPO terms and genes as values

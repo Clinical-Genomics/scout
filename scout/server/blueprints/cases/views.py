@@ -1029,7 +1029,12 @@ def case_group_update_label(case_group):
 def download_hpo_genes(institute_id, case_name, category):
     """Download the genes contained in a case dynamic gene list
 
-    category: str - "clinical" or "research"
+    Args:
+        institute_id(str):  id for current institute
+        case_name(str):     name for current case
+        category(str):      variant category - "clinical" or "research"
+                            "research" retrieves all gene symbols for each HPO term on the dynamic phenotype panel
+                            "clinical" limits dynamic phenotype panel retrieval to genes present on case clinical genes
     """
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
