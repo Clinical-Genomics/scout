@@ -392,7 +392,6 @@ def test_parse_optional_igv_param(scout_config):
         sample["upd_regions_bed"] = "path/to/up"
         sample["upd_sites_bed"] = "path/to/us"
         sample["tiddit_coverage_wig"] = "path/to/tc"
-        sample["chromograph_images"] = "path/to/ci"
     scout_config["samples"] = samples
 
     # THEN parsing the config will add those to case data
@@ -406,8 +405,7 @@ def test_parse_optional_igv_param(scout_config):
                 individual["rhocall_bed"],
                 individual["upd_regions_bed"],
                 individual["upd_sites_bed"],
-                individual["tiddit_coverage_wig"],
-                individual["chromograph_images"],
+                individual["tiddit_coverage_wig"]
             )
         )
 
@@ -418,8 +416,7 @@ def test_parse_optional_igv_param(scout_config):
                 sample["rhocall_bed"],
                 sample["upd_regions_bed"],
                 sample["upd_sites_bed"],
-                sample["tiddit_coverage_wig"],
-                sample["chromograph_images"],
+                sample["tiddit_coverage_wig"]
             )
         )
 
