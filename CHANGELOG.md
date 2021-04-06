@@ -10,7 +10,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - HPO gene search button triggers any warnings for clinical / non-existing genes also on first search
 ### Changed
+### Fixed
+
+## [4.31.1]
+### Added
+### Changed
 - Remove mitochondrial and coverage report from cancer cases sidebar
+### Fixed
+- ClinVar page when dbSNP id is None
 
 ## [4.31]
 ### Added
