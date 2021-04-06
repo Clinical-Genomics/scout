@@ -9,6 +9,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Filtering variants by mitochondrial chromosome for cases with genome build=38
 ### Changed
+### Fixed
+
+## [4.31.1]
+### Added
+### Changed
 - Remove mitochondrial and coverage report from cancer cases sidebar
 ### Fixed
 - ClinVar page when dbSNP id is None
