@@ -7,8 +7,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [X.X.X]
 ### Added
 - Support LoqusDB REST API queries
-### Changed
 ### Fixed
+- Show other causative once, even if several events point to it
+### Changed
 
 ## [4.31.1]
 ### Added
