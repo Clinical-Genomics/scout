@@ -8,7 +8,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Display gene splice junctions data in sashimi plots
 ### Changed
+### Fixed
+
+## [4.31.1]
+### Added
+### Changed
 - Remove mitochondrial and coverage report from cancer cases sidebar
+### Fixed
+- ClinVar page when dbSNP id is None
 
 ## [4.31]
 ### Added
