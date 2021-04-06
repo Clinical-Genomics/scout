@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, jsonify
 
 from scout.server.extensions import store
 from scout.server.utils import public_endpoint, templated
