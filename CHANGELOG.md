@@ -6,6 +6,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [X.X.X]
 ### Added
+### Fixed
+- Show other causative once, even if several events point to it
+### Changed
+### Fixed
+
+## [4.31.1]
+### Added
+### Changed
+- Remove mitochondrial and coverage report from cancer cases sidebar
+### Fixed
+- ClinVar page when dbSNP id is None
 
 ## [4.31]
 ### Added
