@@ -405,7 +405,7 @@ def test_parse_optional_igv_param(scout_config):
                 individual["rhocall_bed"],
                 individual["upd_regions_bed"],
                 individual["upd_sites_bed"],
-                individual["tiddit_coverage_wig"]
+                individual["tiddit_coverage_wig"],
             )
         )
 
@@ -416,7 +416,7 @@ def test_parse_optional_igv_param(scout_config):
                 sample["rhocall_bed"],
                 sample["upd_regions_bed"],
                 sample["upd_sites_bed"],
-                sample["tiddit_coverage_wig"]
+                sample["tiddit_coverage_wig"],
             )
         )
 
