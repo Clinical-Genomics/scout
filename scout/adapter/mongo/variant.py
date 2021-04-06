@@ -555,6 +555,9 @@ class VariantHandler(VariantLoader):
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant marked causative in other cases.
 
+        Should not yield the same variant multiple times if a variant has been marked causative multiple times, and still
+        is causative for the case.
+
         Args:
             case_obj(dict)
             variant_obj(dict)
@@ -575,6 +578,7 @@ class VariantHandler(VariantLoader):
             }
         )
 
+        yielded_other_causative_ids = []
         for var_event in var_causative_events:
             if var_event["case"] == case_obj["_id"]:
                 # This is the variant the search started from, do not collect it
@@ -599,6 +603,8 @@ class VariantHandler(VariantLoader):
                     "case_id": other_case["_id"],
                     "case_display_name": other_case["display_name"],
                 }
+            if other_causative_id not in yielded_other_causative_ids:
+                yielded_other_causative_ids.append(other_causative_id)
                 yield other_causative
 
     def delete_variants(self, case_id, variant_type, category=None):
