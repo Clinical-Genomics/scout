@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [X.X.X]
 ### Added
+- Extend "public" json API with diseases (OMIM) and phenotypes (HPO)
 ### Fixed
 - Show other causative once, even if several events point to it
 ### Changed
