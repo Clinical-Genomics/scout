@@ -611,7 +611,8 @@ def phenotypes_genes(store, case_obj, is_clinical=True):
 
     Returns:
         hpo_genes(dict): a dictionary with HPO term IDs as keys and HPO terms and genes as values
-                      If the dynamic phenotype panel is empty, or
+                      If the dynamic phenotype panel is empty, or has been intersected to some level,
+                      use dynamic gene list directly instead.
     """
     build = case_obj["genome_build"]
     # Make sure build is either "37" or "38"
@@ -620,15 +621,18 @@ def phenotypes_genes(store, case_obj, is_clinical=True):
     else:
         build = "37"
     dynamic_gene_list = [gene["hgnc_id"] for gene in case_obj.get("dynamic_gene_list", [])]
+
     by_phenotype = True  # display genes by phenotype
-    unique_genes = set()
+
     hpo_genes = {}
 
     clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
 
+    unique_genes = hpo_genes_from_dynamic_gene_list(case_obj, is_clinical, clinical_symbols)
+
     hpo_gene_list = case_obj.get("dynamic_panel_phenotypes", [])
+
     if not hpo_gene_list and case_obj.get("dynamic_gene_list"):
-        unique_genes = hpo_genes_from_dynamic_gene_list(case_obj, is_clinical, clinical_symbols)
         by_phenotype = False
 
     # Loop over the dynamic phenotypes of a case
@@ -675,17 +679,18 @@ def hpo_genes_from_dynamic_gene_list(case_obj, is_clinical, clinical_symbols):
     Args:
         case_obj(dict): models.Case)
         is_clinical(bool): if True, only list genes from HPO that are among the case clinical_symbols
-        clinical_symbols: set of clinical symbols
+        clinical_symbols(set): set of clinical symbols
     Returns:
-        hpo_genes(dict):
+        hpo_genes(set):
     """
 
     gene_list = [
-        gene.get("hgnc_symbol") or str(gene["hgnc_id"])
-        for gene in case_obj["dynamic_gene_list"]
-        if not is_clinical or gene in clinical_symbols
+        gene.get("hgnc_symbol") or str(gene["hgnc_id"]) for gene in case_obj["dynamic_gene_list"]
     ]
+
     unique_genes = set(gene_list)
+    if is_clinical:
+        unique_genes = unique_genes.intersection(set(clinical_symbols))
 
     return unique_genes
 
