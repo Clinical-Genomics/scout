@@ -7,8 +7,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [X.X.X]
 ### Added
 ### Changed
-- Remove mitochondrial and coverage report from cancer cases sidebar
 - Pre-collect all case-group evaluated before creating variant assessments from other cases in case group
+### Fixed
+
+## [4.31.1]
+### Added
+### Changed
+- Remove mitochondrial and coverage report from cancer cases sidebar
+### Fixed
+- ClinVar page when dbSNP id is None
 
 ## [4.31]
 ### Added
