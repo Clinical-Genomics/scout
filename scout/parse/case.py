@@ -120,7 +120,7 @@ def parse_case_data(**kwargs):
     try:
         config["gene_panels"] = [panel.strip() for panel in config["gene_panels"]]
         config["default_gene_panels"] = [panel.strip() for panel in config["default_gene_panels"]]
-    except:
+    except KeyError:
         pass
 
     # This will add information from peddy to the individuals
