@@ -445,7 +445,7 @@ class CaseHandler(object):
             case (dict): The case that should be updated
             hgnc_symbols (iterable): A list of hgnc_symbols
             hgnc_ids (iterable): A list of hgnc_ids
-            phenotype_id(list): optionally add phenotype_ids used to generate list
+            phenotype_ids(list): optionally add phenotype_ids used to generate list
             add_only(bool): set by eg ADDGENE to add genes, and NOT reset previous dynamic_gene_list
 
         Returns:
@@ -488,7 +488,8 @@ class CaseHandler(object):
             {
                 "$set": {
                     "dynamic_gene_list": dynamic_gene_list,
-                    "dynamic_panel_phenotypes": phenotype_ids or [],
+                    "dynamic_panel_phenotypes": phenotype_ids
+                    or case.get("dynamic_panel_phenotypes", []),
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER,
