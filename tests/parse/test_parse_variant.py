@@ -92,3 +92,14 @@ def test_parse_customannotation(one_variant_customannotation, case_obj):
     """Test parsing of custom annotations"""
     parsed_variant = parse_variant(one_variant_customannotation, case_obj)
     assert parsed_variant["custom"] == [["key1", "val1"], ["key2", "val2"]]
+
+
+def test_parse_mitomapassociateddiseases(variants, case_obj):
+    # GIVEN some parsed variant dicts
+    for variant in variants:
+        # WHEN "mitomap associated diseases" is present
+        if variant.INFO.get("MitomapAssociatedDiseases"):
+            mitomap_associated_diseases = variant.INFO["MitomapAssociatedDiseases"]
+            parsed_variant = parse_variant(variant, case_obj)
+            # THEN make sure that it is parsed correct
+            assert parsed_variant["mitomap_associated_diseases"] == mitomap_associated_diseases
