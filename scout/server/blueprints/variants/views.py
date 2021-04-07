@@ -1,5 +1,5 @@
 """Views for the variants"""
-
+import datetime
 import io
 import logging
 import os.path
@@ -490,6 +490,7 @@ def download_verified():
         # remove temp folder with excel files in it
         shutil.rmtree(temp_excel_dir)
 
+        today = datetime.datetime.now().strftime("%Y-%m-%d")
         return send_file(
             data,
             mimetype="application/zip",

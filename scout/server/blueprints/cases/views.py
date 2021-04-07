@@ -6,7 +6,6 @@ import re
 import shutil
 from operator import itemgetter
 
-import pymongo
 from flask import (
     Blueprint,
     Response,
@@ -432,6 +431,7 @@ def mt_report(institute_id, case_name):
 
         shutil.rmtree(temp_excel_dir)
 
+        today = datetime.datetime.now().strftime("%Y-%m-%d")
         return send_file(
             data,
             mimetype="application/zip",

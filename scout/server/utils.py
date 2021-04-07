@@ -210,7 +210,6 @@ def zip_dir_to_obj(path):
     Returns:
         data(io.BytesIO): zipped data object
     """
-    today = datetime.datetime.now().strftime("%Y-%m-%d")
 
     data = io.BytesIO()
     with zipfile.ZipFile(data, mode="w") as z:
