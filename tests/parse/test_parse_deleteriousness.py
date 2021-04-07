@@ -11,7 +11,7 @@ def test_parse_cadd_info(cyvcf2_variant, case_obj):
     variant.INFO["CADD"] = 23
     cadd_score = parse_cadd(variant, [])
 
-    # THEN the parse cadd should return a floating point number
+    # THEN the parse cadd function should return the expected value
     assert cadd_score == float(variant.INFO["CADD"])
 
 
@@ -24,4 +24,6 @@ def test_parse_cadd_transcripts(cyvcf2_variant, transcript_info):
     transcript_info["cadd"] = 23.0
 
     cadd_score = parse_cadd(cyvcf2_variant, [transcript_info])
+
+    # THEN the parse cadd function should return the expected value
     assert cadd_score == transcript_info["cadd"]
