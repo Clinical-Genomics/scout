@@ -233,6 +233,10 @@ def build_variant(
     if "str_source" in variant:
         variant_obj["str_source"] = variant["str_source"]
 
+    # Mitochondria specific
+    if "mitomap_associated_diseases" in variant:
+        variant_obj["mitomap_associated_diseases"] = variant["mitomap_associated_diseases"]
+
     gt_types = []
     for sample in variant.get("samples", []):
         gt_call = build_genotype(sample)
