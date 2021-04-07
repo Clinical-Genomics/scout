@@ -21,7 +21,7 @@
             {% elif variant.category == "str" %}
               <th rowspan="2" colspan="1">ExpansionHunter support</th>
             {% else %}
-	      {% if variant.chromosome == "MT" %}
+	      {% if variant.chromosome in ["MT","M"] %}
                 <th rowspan="2" colspan="1" title="Variant Allele Frequency.">Variant Allele Frequency (VAF)</th>
 	      {% endif %}
               <th rowspan="2" colspan="1" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
@@ -52,7 +52,7 @@
                   <td class="text-right"><small>N/A</small></td>
               {% endif %}
 
-              {% if variant.category == "snv" and variant.chromosome == "MT" %}
+              {% if variant.category == "snv" and variant.chromosome in ["MT","M"] %}
                 <td>
                   {% if sample.alt_frequency and sample.alt_frequency != -1 %}
                     {{ (100*sample.alt_frequency)|round(2) }}%

@@ -22,7 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display on case activity the event of a user resetting all dismissed variants
 - Support gnomAD population frequencies for mitochondrial variants
 - Anchor links in Casedata ClinVar panels to redirect after renaming individuals
-- Load and show MITOMAP associated diseases from VCF (INFO field: MitomapAssociatedDiseases)
+- Load and show MITOMAP associated diseases from VCF (INFO field: MitomapAssociatedDiseases, via HmtNote)
 - Show variant allele frequencies for mitochondrial variants
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout

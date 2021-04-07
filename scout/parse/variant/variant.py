@@ -250,7 +250,7 @@ def parse_variant(
 
     ################# Add mitomap info #################
     mitomap_associated_diseases = variant.INFO.get("MitomapAssociatedDiseases")
-    if mitomap_associated_diseases:
+    if mitomap_associated_diseases and mitomap_associated_diseases != ".":
         parsed_variant["mitomap_associated_diseases"] = str(mitomap_associated_diseases.replace("_", " "))
 
     ################# Add custom info ##################

@@ -82,7 +82,7 @@
                 <td class="text-right">{{ variant.rank_score|int }}</td>
                 <td>
                   {{ variant.chromosome }}
-                  {% if variant.chromosome == "MT" %}
+                  {% if variant.chromosome in ["MT","M"] %}
                     {{ mark_heteroplasmic_mt(case.individuals, variant.samples) }}
                   {% endif %}
 		</td>
