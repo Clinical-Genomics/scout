@@ -527,7 +527,7 @@ def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
         store.update_synopsis(institute_obj, case_obj, user_obj, link, content=new_synopsis)
 
 
-def _update_case(store, case_obj, user_obj, verb):
+def _update_case(store, case_obj, user_obj, institute_obj, verb):
     """ Update case with new sample data, and create an associated event """
     store.update_case(case_obj, keep_date=True)
 
@@ -564,7 +564,7 @@ def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissu
     case_obj["individuals"] = case_individuals
 
     verb = "update_individual"
-    _update_case(store, case_obj, user_obj, verb)
+    _update_case(store, case_obj, user_obj, institute_obj, verb)
 
 
 def update_cancer_samples(
@@ -589,7 +589,7 @@ def update_cancer_samples(
     case_obj["individuals"] = case_samples
 
     verb = "update_sample"
-    _update_case(store, case_obj, user_obj, verb)
+    _update_case(store, case_obj, user_obj, institute_obj, verb)
 
 
 def phenotypes_genes(store, case_obj, is_clinical=True):
