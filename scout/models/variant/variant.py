@@ -56,6 +56,8 @@ variant = dict(
     str_pathologic_min=int,
     str_swegen_mean=float,
     str_swegen_std=float,
+    # mitochondrial variants
+    mitomap_associated_diseases=str,
     # Gene ids:
     hgnc_ids=list,  # list of hgnc ids (int)
     hgnc_symbols=list,  # list of hgnc symbols (str)
