@@ -86,6 +86,8 @@ def variants(institute_id, case_name):
     form.filters.choices = [
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
+    # Populate chromosome select choices
+    controllers.populate_chrom_choices(form, case_obj)
 
     # populate available panel choices
     form.gene_panels.choices = controllers.gene_panel_choices(institute_obj, case_obj)
@@ -176,6 +178,9 @@ def str_variants(institute_id, case_name):
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
 
+    # Populate chromosome select choices
+    controllers.populate_chrom_choices(form, case_obj)
+
     # populate available panel choices
     form.gene_panels.choices = controllers.gene_panel_choices(institute_obj, case_obj)
 
@@ -243,6 +248,10 @@ def sv_variants(institute_id, case_name):
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
+
+    # Populate chromosome select choices
+    controllers.populate_chrom_choices(form, case_obj)
+
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
@@ -333,6 +342,9 @@ def cancer_variants(institute_id, case_name):
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
 
+    # Populate chromosome select choices
+    controllers.populate_chrom_choices(form, case_obj)
+
     form.gene_panels.choices = controllers.gene_panel_choices(institute_obj, case_obj)
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
@@ -389,6 +401,10 @@ def cancer_sv_variants(institute_id, case_name):
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
+
+    # Populate chromosome select choices
+    controllers.populate_chrom_choices(form, case_obj)
+
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
 
