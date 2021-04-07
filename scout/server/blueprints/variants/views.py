@@ -1,11 +1,9 @@
 """Views for the variants"""
-import datetime
+
 import io
 import logging
 import os.path
-import pathlib
 import shutil
-import zipfile
 
 import pymongo
 from flask import Blueprint, abort, current_app, flash, redirect, request, send_file, url_for

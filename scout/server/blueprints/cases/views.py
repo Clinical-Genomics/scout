@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
-import io
 import logging
 import os.path
-import pathlib
 import re
 import shutil
-import zipfile
 from operator import itemgetter
 
 import pymongo
