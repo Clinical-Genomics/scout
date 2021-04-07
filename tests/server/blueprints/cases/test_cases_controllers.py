@@ -1,16 +1,17 @@
 """Tests for the cases controllers"""
-from flask import Flask, url_for, Blueprint
-from scout.server.extensions import store
 import requests  # import requests for the purposes of monkeypatching
+from flask import Blueprint, Flask, url_for
+
 from scout.server.blueprints.cases.controllers import (
     case,
     case_report_content,
     mt_coverage_stats,
     phenotypes_genes,
 )
+from scout.server.extensions import store
 
 
-def test_phenotypes_genes(gene_database, case_obj, hpo_term, gene_list):
+def test_phenotypes_genes_research(gene_database, case_obj, hpo_term, gene_list):
     """Test function that creates phenotype terms dictionaries with gene symbol info"""
     adapter = gene_database
     # Given a database with one phenotype term containing genes
@@ -21,7 +22,7 @@ def test_phenotypes_genes(gene_database, case_obj, hpo_term, gene_list):
     case_obj["dynamic_gene_list"] = [{"hgnc_id": gene_id} for gene_id in gene_list]
 
     # WHEN the phenotypes_genes is invoked providing test case
-    pheno_dict = phenotypes_genes(adapter, case_obj)
+    pheno_dict = phenotypes_genes(adapter, case_obj, is_clinical=False)
 
     # THEN it should return a dictionary
     # Containing the expected term
@@ -30,6 +31,37 @@ def test_phenotypes_genes(gene_database, case_obj, hpo_term, gene_list):
     assert pheno_dict["HP:0001250"]["genes"]
     # Coresponding of all HPO term genes
     assert len(pheno_dict["HP:0001250"]["genes"].split(", ")) == len(hpo_term["genes"])
+
+
+def test_phenotypes_genes_clinical(gene_database, dummy_case, hpo_term, panel, gene_list):
+    """Test function that creates phenotype terms dictionaries with gene symbol info"""
+    adapter = gene_database
+    # Given a database with one phenotype term containing genes
+    assert adapter.hpo_term_collection.insert_one(hpo_term)
+
+    # given a gene panel with one of the genes from the phenotypes
+    insert_panel = adapter.panel_collection.insert_one(panel)
+    assert insert_panel
+
+    # And a case with that dynamic phenotype and gene list
+    dummy_case["dynamic_panel_phenotypes"] = ["HP:0001250"]
+    dummy_case["dynamic_gene_list"] = [{"hgnc_id": gene_id} for gene_id in gene_list]
+    # and the same panel registered for the case
+    dummy_case["panels"][0]["panel_id"] = insert_panel.inserted_id
+
+    ## GIVEN a variant db with the same case
+    adapter.case_collection.insert_one(dummy_case)
+
+    # WHEN the phenotypes_genes is invoked providing test case
+    pheno_dict = phenotypes_genes(adapter, dummy_case, is_clinical=True)
+
+    # THEN it should return a dictionary
+    # Containing the expected term
+    assert pheno_dict["HP:0001250"]["description"] == hpo_term["description"]
+    # And the expected genes
+    assert pheno_dict["HP:0001250"]["genes"]
+    # One and only one clinical gene is now returned
+    assert len(pheno_dict["HP:0001250"]["genes"].split(", ")) == 1
 
 
 def test_phenotype_genes_matching_phenotypes(gene_database, case_obj, hpo_term, gene_list):
@@ -43,15 +75,15 @@ def test_phenotype_genes_matching_phenotypes(gene_database, case_obj, hpo_term, 
         "_id": "HP:0001298",
         "hpo_id": "HP:0001298",
         "description": "Encephalopathy",
-        "genes": gene_list[2:],  # this term has last 3 genes overlapping with term 1
+        "genes": gene_list[:3],  # this term has last 3 genes overlapping with term 1
     }
     assert adapter.hpo_term_collection.insert([hpo_term, hpo_term2])
     # And a case with that dynamic phenotype and gene list
     case_obj["dynamic_panel_phenotypes"] = ["HP:0001250", "HP:0001298"]
-    case_obj["dynamic_gene_list"] = [{"hgnc_id": gene_id} for gene_id in gene_list[2:]]
+    case_obj["dynamic_gene_list"] = [{"hgnc_id": gene_id} for gene_id in gene_list[:3]]
 
     # WHEN the phenotypes_genes is invoked providing test case
-    pheno_dict = phenotypes_genes(adapter, case_obj)
+    pheno_dict = phenotypes_genes(adapter, case_obj, is_clinical=False)
 
     # THEN it should return a dictionary containing the 3 genes without associated HPO terms
     assert len(pheno_dict["Analysed genes"]["genes"].split(", ")) == 3
