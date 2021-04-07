@@ -1,3 +1,7 @@
+{% macro splice_junctions_button(institute_id, case_name, variant_id) %}
+  <a class="btn btn-secondary text-white mt-1" href="{{url_for('alignviewers.sashimi_igv', institute_id=institute_id, case_name=case_name, variant_id=variant_id)}}" target="_blank"
+    data-toggle="tooltip" data-placement="top" title="Gene splicing is only available in build GRCh38">Gene splicing</a>
+{% endmacro %}
 
 {% macro variant_tag_button(variant, institute, case, manual_rank_options) %}
   <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
@@ -90,7 +94,7 @@
     <input type="hidden" name="stop" value="{{variant.position + 50}}">
     <!-- end of general hidden form fields -->
     {% set aln = namespace(sample_names=[],mt_bams=[], mt_bais=[], bam_files=[], bai_files=[]) %}
-    {% if variant.chromosome == "MT" %}
+    {% if variant.chromosome in ["MT","M"] %}
       {% if case_groups %}
         {% for group_id, case_group in case_groups.items() %}
             {% for grouped_case in case_group %}
