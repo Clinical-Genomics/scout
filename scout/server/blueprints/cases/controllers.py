@@ -647,7 +647,7 @@ def phenotypes_genes(store, case_obj, is_clinical=True):
             if gene_obj is None:
                 continue
             if gene_id not in dynamic_gene_list:
-                # gene was filtered out because min matching phenotypes > 1
+                # gene was filtered out because min matching phenotypes > 1 (or the panel was generated with older genotype-phenotype mapping)
                 by_phenotype = False  # do not display genes by phenotype
                 continue
             add_symbol = gene_obj.get("hgnc_symbol", f"hgnc:{gene_id}")
