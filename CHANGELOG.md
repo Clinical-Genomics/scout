@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show other causative once, even if several events point to it
 - Filtering variants by mitochondrial chromosome for cases with genome build=38
 ### Changed
+- Tests for CADD score parsing function
 ### Fixed
 
 ## [4.31.1]
