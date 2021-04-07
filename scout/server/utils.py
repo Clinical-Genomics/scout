@@ -195,3 +195,24 @@ def find_index(align_file):
         if not os.path.exists(index_file):
             index_file = "{}.bai".format(align_file)
     return index_file
+
+
+def zip_dir_to_obj(path):
+    """
+    Zip the temp files in a directory on the fly and serve the archive to the user
+
+    Args:
+        path: path
+
+    Returns:
+        data(io.BytesIO): zipped data object
+    """
+    today = datetime.datetime.now().strftime("%Y-%m-%d")
+
+    data = io.BytesIO()
+    with zipfile.ZipFile(data, mode="w") as z:
+        for f_name in pathlib.Path(path).iterdir():
+            z.write(f_name, os.path.basename(f_name))
+    data.seek(0)
+
+    return data

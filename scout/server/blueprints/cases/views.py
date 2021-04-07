@@ -30,7 +30,7 @@ from werkzeug.datastructures import Headers
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
 from scout.server.extensions import gens, mail, store
-from scout.server.utils import institute_and_case, templated, user_institutes
+from scout.server.utils import institute_and_case, templated, user_institutes, zip_dir_to_obj
 
 from . import controllers
 
@@ -430,19 +430,9 @@ def mt_report(institute_id, case_name):
     temp_excel_dir = os.path.join(cases_bp.static_folder, "_".join([case_name, "mt_reports"]))
     os.makedirs(temp_excel_dir, exist_ok=True)
 
-    # create mt excel files, one for each sample
-    n_files = controllers.mt_excel_files(store, case_obj, temp_excel_dir)
+    if controllers.mt_excel_files(store, case_obj, temp_excel_dir):
+        data = zip_dir_to_obj(temp_excel_dir)
 
-    if n_files:
-        today = datetime.datetime.now().strftime("%Y-%m-%d")
-        # zip the files on the fly and serve the archive to the user
-        data = io.BytesIO()
-        with zipfile.ZipFile(data, mode="w") as z:
-            for f_name in pathlib.Path(temp_excel_dir).iterdir():
-                z.write(f_name, os.path.basename(f_name))
-        data.seek(0)
-
-        # remove temp folder with excel files in it
         shutil.rmtree(temp_excel_dir)
 
         return send_file(
@@ -452,6 +442,8 @@ def mt_report(institute_id, case_name):
             attachment_filename="_".join(["scout", case_name, "MT_report", today]) + ".zip",
             cache_timeout=0,
         )
+
+    shutil.rmtree(temp_excel_dir)
 
     flash("No MT report excel file could be exported for this sample", "warning")
     return redirect(request.referrer)

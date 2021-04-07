@@ -449,7 +449,8 @@ def mt_coverage_stats(individuals, ref_chrom="14"):
 
 def mt_excel_files(store, case_obj, temp_excel_dir):
     """Collect MT variants and format line of a MT variant report
-    to be exported in excel format
+    to be exported in excel format. Create mt excel files, one for each sample,
+    in a temporary directory.
 
     Args:
         store(adapter.MongoAdapter)

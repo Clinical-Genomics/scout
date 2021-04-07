@@ -19,7 +19,7 @@ from scout.constants import (
     SEVERE_SO_TERMS,
 )
 from scout.server.extensions import store
-from scout.server.utils import institute_and_case, templated
+from scout.server.utils import institute_and_case, templated, zip_dir_to_obj
 
 from . import controllers
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
@@ -486,15 +486,8 @@ def download_verified():
     temp_excel_dir = os.path.join(variants_bp.static_folder, "verified_folder")
     os.makedirs(temp_excel_dir, exist_ok=True)
 
-    written_files = controllers.verified_excel_file(store, user_institutes, temp_excel_dir)
-    if written_files:
-        today = datetime.datetime.now().strftime("%Y-%m-%d")
-        # zip the files on the fly and serve the archive to the user
-        data = io.BytesIO()
-        with zipfile.ZipFile(data, mode="w") as z:
-            for f_name in pathlib.Path(temp_excel_dir).iterdir():
-                z.write(f_name, os.path.basename(f_name))
-        data.seek(0)
+    if controllers.verified_excel_file(store, user_institutes, temp_excel_dir):
+        data = zip_dir_to_obj(temp_excel_dir)
 
         # remove temp folder with excel files in it
         shutil.rmtree(temp_excel_dir)
@@ -506,5 +499,9 @@ def download_verified():
             attachment_filename="_".join(["scout", "verified_variants", today]) + ".zip",
             cache_timeout=0,
         )
+
+    # remove temp folder with excel files in it
+    shutil.rmtree(temp_excel_dir)
+
     flash("No verified variants could be exported for user's institutes", "warning")
     return redirect(request.referrer)
