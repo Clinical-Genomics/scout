@@ -17,6 +17,8 @@ from scout.constants import (
     ACMG_OPTIONS,
     CALLERS,
     CANCER_TIER_OPTIONS,
+    CHROMOSOMES,
+    CHROMOSOMES_38,
     CLINSIG_MAP,
     DISMISS_VARIANT_OPTIONS,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
@@ -42,6 +44,13 @@ from scout.utils.scout_requests import fetch_refseq_version
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
 LOG = logging.getLogger(__name__)
+
+
+def populate_chrom_choices(form, case_obj):
+    """Populate the option of the chromosome select accordig to the case genome build"""
+    # Populate chromosome choices
+    chromosomes = CHROMOSOMES if str(case_obj.get("genome_build")) == "37" else CHROMOSOMES_38
+    form.chrom.choices = [("", "All")] + [(chrom, chrom) for chrom in chromosomes]
 
 
 def variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
