@@ -22,8 +22,6 @@ def hpo_terms():
 def api_hpo_terms():
     """Public API for HPO phenotype terms: retrieve all HPO terms
 
-    Args:
-        store(adapter.MongoAdapter):  an adapter to the scout database
     Returns:
         data(dict): dict with key "phenotypes" set to an array of all phenotype terms
     """
