@@ -6,6 +6,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [X.X.X]
 ### Added
+### Fixed
+- Show other causative once, even if several events point to it
+- Filtering variants by mitochondrial chromosome for cases with genome build=38
 ### Changed
 ### Fixed
 
