@@ -878,7 +878,7 @@ def update_form_hgnc_symbols(store, case_obj, form):
         if item["gene_list"]:
             flash(f"{item['alert']}: {item['gene_list']}", "warning")
 
-    form.hgnc_symbols.data = updated_hgnc_symbols
+    form.hgnc_symbols.data = sorted(updated_hgnc_symbols)
 
     return form
 
