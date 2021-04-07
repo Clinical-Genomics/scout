@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import pytest
+
 from scout.exceptions import IntegrityError
 
 
@@ -24,7 +25,7 @@ def test_add_disease_term(adapter):
     assert len([term for term in res]) == 1
 
 
-def test_add_disease_term(adapter):
+def test_add_disease_term_twice(adapter):
     ## GIVEN a empty adapter
     assert len([term for term in adapter.disease_terms()]) == 0
 

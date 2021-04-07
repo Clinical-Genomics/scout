@@ -6,6 +6,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [X.X.X]
 ### Added
+- Load and show MITOMAP associated diseases from VCF (INFO field: MitomapAssociatedDiseases, via HmtNote)
+- Show variant allele frequencies for mitochondrial variants
+- Extend "public" json API with diseases (OMIM) and phenotypes (HPO)
 - Display gene splice junctions data in sashimi plots
 ### Fixed
 - Show other causative once, even if several events point to it
