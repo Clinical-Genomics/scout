@@ -187,7 +187,7 @@ def test_parse_cadd(vep_csq_header, vep_csq):
     ## WHEN parsing the transcripts
     transcripts = list(parse_transcripts(raw_transcripts))
 
-    # CADD score should be parsed correctlt
+    # CADD score should be parsed correctly
     assert isinstance(transcripts[0]["cadd"], float)
 
 
