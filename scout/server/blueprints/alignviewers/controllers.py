@@ -10,7 +10,7 @@ LOG = logging.getLogger(__name__)
 CUSTOM_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
 
 
-def get_sashimi_tracks(institute_id, case_name, variant_id, build="38"):
+def make_sashimi_tracks(institute_id, case_name, variant_id, build="38"):
     """Create a dictionary containing the required tracks for a splice junction plot
 
     Accepts:
@@ -18,7 +18,7 @@ def get_sashimi_tracks(institute_id, case_name, variant_id, build="38"):
         case_name(str): case display name
         variant_id(str) _id of a variant
     Returns:
-        locus, display_obj(dict): a tuple consisting of gene coordinates and igv tracks dictionary
+        display_obj(dict): A display object containing case name, list of genes, lucus and tracks
     """
     # Collect locus coordinates. Take into account that variant can hit multiple genes
     variant_obj = store.variant(document_id=variant_id)
