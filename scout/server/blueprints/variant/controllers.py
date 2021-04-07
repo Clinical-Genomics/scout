@@ -13,12 +13,13 @@ from scout.constants import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
+    IGV_TRACKS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     VERBS_MAP,
-    IGV_TRACKS,
 )
 from scout.parse.variant.ids import parse_document_id
+from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import (
     case_append_alignments,
@@ -27,7 +28,6 @@ from scout.server.utils import (
     variant_case,
 )
 from scout.utils.scout_requests import fetch_refseq_version
-from scout.server.extensions import cloud_tracks, gens
 
 from .utils import (
     add_gene_info,
