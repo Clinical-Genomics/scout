@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import os.path
 from flask_login import current_user
 from scout.server.extensions import store, cloud_tracks
 from scout.constants import IGV_TRACKS, CASE_SPECIFIC_TRACKS
@@ -46,11 +47,13 @@ def get_sashimi_tracks(institute_id, case_name, variant_id, build="38"):
 
         coverage_wig = ind["rna_coverage_bigwig"]
         splicej_bed = ind["splice_junctions_bed"]
+        splicej_bed_index = f"{splicej_bed}.tbi" if os.path.isfile(f"{splicej_bed}.tbi") else None
+
         track = {
             "name": ind["display_name"],
             "coverage_wig": coverage_wig,
             "splicej_bed": splicej_bed,
-            "splicej_bed_index": f"{splicej_bed}.tbi",
+            "splicej_bed_index": splicej_bed_index,
         }
         display_obj["tracks"].append(track)
 

@@ -57,7 +57,9 @@
                                   type: 'spliceJunctions',
                                   format: 'bed',
                                   url: "{{ url_for('alignviewers.unindexed_remote_static', file=track.splicej_bed) }}",
-                                  //indexURL: "{{ url_for('alignviewers.unindexed_remote_static', file=track.splicej_bed_index) }}",
+                                  {% if track.splicej_bed_index %} // this file should be present but you never know. The track loads more slowly if index is missing
+                                    indexURL: "{{ url_for('alignviewers.unindexed_remote_static', file=track.splicej_bed_index) }}",
+                                  {% endif %}
                                   minUniquelyMappedReads: 1
                                 }
                             ]
