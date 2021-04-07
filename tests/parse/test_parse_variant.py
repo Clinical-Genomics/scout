@@ -70,21 +70,6 @@ def test_parse_many_strs(str_variants, case_obj):
         assert parsed_variant["chromosome"] == variant.CHROM
 
 
-def test_parse_cadd_info(one_variant, case_obj):
-    """Test parsing a variant that has CADD score in the info field"""
-
-    for variant in variants:
-        # WHEN score is present
-        if "CADD" in variant.INFO:
-            assert "meh" == "blah"
-            """
-            cadd_score = float(variant.INFO["CADD"])
-            parsed_variant = parse_variant(variant, case_obj)
-            # THEN make sure that the cadd score is parsed correct
-            assert parsed_variant["cadd_score"] == cadd_score
-            """
-
-
 def test_parse_revel(cyvcf2_variant, case_obj):
     ## GIVEN a variant with REVEL score in the CSQ entry
     csq_header = "ALLELE|CONSEQUENCE|REVEL_rankscore"
