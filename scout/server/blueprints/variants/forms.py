@@ -26,11 +26,9 @@ from scout.constants import (
     SO_TERMS,
     SPIDEX_LEVELS,
     SV_TYPES,
-    CHROMOSOMES,
 )
 
 LOG = logging.getLogger(__name__)
-CHROMOSOME_OPTIONS = [("", "All")] + [(chrom, chrom) for chrom in CHROMOSOMES]
 
 CLINSIG_OPTIONS = list(CLINSIG_MAP.items())
 FUNC_ANNOTATIONS = [(term, term.replace("_", " ")) for term in SO_TERMS]
@@ -111,9 +109,7 @@ class VariantFiltersForm(FlaskForm):
         render_kw={"placeholder": "<chr>:<start pos>-<end pos>[optional +/-<span>]"},
     )
 
-    chrom = SelectField(
-        "Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS, default=""
-    )
+    chrom = SelectField("Chromosome", [validators.Optional()], choices=[], default="")
     start = IntegerField("Start position", [validators.Optional()])
     end = IntegerField("End position", [validators.Optional()])
     cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
