@@ -73,7 +73,6 @@ def test_parse_many_strs(str_variants, case_obj):
 def test_parse_cadd_info(one_variant, case_obj):
     """Test parsing a variant that has CADD score in the info field"""
 
-    
     for variant in variants:
         # WHEN score is present
         if "CADD" in variant.INFO:
