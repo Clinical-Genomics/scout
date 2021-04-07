@@ -6,6 +6,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [X.X.X]
 ### Added
+- Load and show MITOMAP associated diseases from VCF (INFO field: MitomapAssociatedDiseases, via HmtNote)
+- Show variant allele frequencies for mitochondrial variants
+### Fixed
+- Show other causative once, even if several events point to it
+### Changed
+### Fixed
+
+## [4.31.1]
+### Added
 ### Changed
 - Remove mitochondrial and coverage report from cancer cases sidebar
 ### Fixed
@@ -22,8 +31,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display on case activity the event of a user resetting all dismissed variants
 - Support gnomAD population frequencies for mitochondrial variants
 - Anchor links in Casedata ClinVar panels to redirect after renaming individuals
-- Load and show MITOMAP associated diseases from VCF (INFO field: MitomapAssociatedDiseases, via HmtNote)
-- Show variant allele frequencies for mitochondrial variants
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
 - Page formatting issues whenever case and variant comments contain extremely long strings with no spaces
