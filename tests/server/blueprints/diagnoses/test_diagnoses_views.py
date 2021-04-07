@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import url_for
+
+from scout.server.blueprints.diagnoses.views import api_diagnoses
 from scout.server.extensions import store
 
 
@@ -17,3 +19,16 @@ def test_omim_diagnosis(app, test_omim_term):
 
         # THEN it should return a page
         assert resp.status_code == 200
+
+
+def test_omim_diagnosis_api(app, test_omim_term):
+    """Test page that displays an OMIM diagnosis info"""
+
+    store.load_disease_term(test_omim_term)
+
+    with app.test_client() as client:
+        # WHEN asking for a list of all disorders
+        response = client.get(url_for("diagnoses.api_diagnoses"))
+
+        # THEN a json response is returned
+        assert response.content_type == "application/json"
