@@ -14,7 +14,6 @@ from flask import (
 )
 
 from .partial import send_file_partial
-from scout.constants import HUMAN_REFERENCE
 from . import controllers
 
 import requests
@@ -115,12 +114,8 @@ def igv():
 
     display_obj = {}  # Initialize the dictionary containing all tracks info
 
-    # Set up IGV tracks that are common for all cases:
-    display_obj["reference_track"] = HUMAN_REFERENCE[
-        chromosome_build
-    ]  # Human reference is always present
     # General tracks (Genes, Clinvar and ClinVar SNVs are shown according to user preferences)
-    controllers.set_common_tracks(display_obj, chromosome_build, request.form)
+    controllers.set_common_tracks(display_obj, chromosome_build)
 
     # Set up bam/cram alignments for case samples:
     controllers.set_sample_tracks(display_obj, request.form)

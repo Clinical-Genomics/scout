@@ -24,7 +24,7 @@
 
 <body>
 
-<h1>{{case}}: Splice junctions</h1>
+<h3>{{case}}: Splice junctions</h3>
 
 <div id="igvDiv" style="padding-top: 10px;padding-bottom: 10px; border:1px solid lightgray"></div>
 
@@ -38,22 +38,27 @@
                 reference:
                     {
                         id: "GRCh38",
-                        fastaURL: "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa",
-                        cytobandURL: "https://s3.amazonaws.com/igv.broadinstitute.org/genomes/seq/hg38/hg38.fa.fai"
+                        fastaURL: "{{ reference_track.fastaURL }}",
+                        indexURL: "{{ reference_track.indexURL }}",
+                        cytobandURL: "{{ reference_track.cytobandURL }}"
                     },
-                locus: '{{ locus}}',
+                locus: '{{ locus }}',
                 tracks:
                     [
-                        {
-                            name: "Genes",
-                            type: "annotation",
-                            format: "gtf",
-                            url: "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz",
-                            indexURL: "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg38/genes/Homo_sapiens.GRCh38.80.sorted.gtf.gz.tbi",
+                      {% for custTrack in custom_tracks %}
+                        {% if custTrack.name == "Genes" %}
+                          {
+                            name: "{{ custTrack.name }}",
+                            type: "{{ custTrack.type }}",
+                            format: "{{ custTrack.format }}",
+                            sourceType: "{{ custTrack.sourceType }}",
+                            url: "{{ custTrack.url|replace('%2F','/') }}",
+                            indexURL: "{{ custTrack.indexURL|replace('%2F','/') }}",
+                            displayMode: "{{ custTrack.displayMode }}",
                             order: Number.MAX_VALUE,
-                            visibilityWindow: 300000000,
-                            displayMode: "EXPANDED"
-                        },
+                          },
+                        {% endif %}
+                      {% endfor %}
                         {% for track in tracks %} // sample tracks
                           {
                               type: 'merged',

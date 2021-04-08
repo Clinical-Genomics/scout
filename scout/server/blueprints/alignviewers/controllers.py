@@ -4,7 +4,7 @@ import os.path
 from flask import flash
 from flask_login import current_user
 from scout.server.extensions import store, cloud_tracks
-from scout.constants import IGV_TRACKS, CASE_SPECIFIC_TRACKS
+from scout.constants import IGV_TRACKS, CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE
 from scout.server.utils import institute_and_case
 
 LOG = logging.getLogger(__name__)
@@ -21,6 +21,7 @@ def make_sashimi_tracks(institute_id, case_name, variant_id, build="38"):
     Returns:
         display_obj(dict): A display object containing case name, list of genes, lucus and tracks
     """
+
     # Collect locus coordinates. Take into account that variant can hit multiple genes
     variant_obj = store.variant(document_id=variant_id)
     variant_genes_ids = [gene["hgnc_id"] for gene in variant_obj.get("genes", [])]
@@ -40,6 +41,9 @@ def make_sashimi_tracks(institute_id, case_name, variant_id, build="38"):
     locus_end = max(locus_end_coords)
     locus = f"{variant_obj['chromosome']}:{locus_start}-{locus_end}"  # Locus will span all genes the variant falls into
     display_obj = {"locus": locus, "tracks": [], "genes": gene_symbols}
+
+    # Add Genes and reference tracks to display object
+    set_common_tracks(display_obj, build)
 
     # Populate tracks for each individual with splice junction track data
     _, case_obj = institute_and_case(store, institute_id, case_name)
@@ -74,15 +78,18 @@ def make_igv_tracks(name, file_list):
     return track_list
 
 
-def set_common_tracks(display_obj, build, form):
+def set_common_tracks(display_obj, build):
     """Set up tracks common to all cases (Genes, ClinVar ClinVar CNVs) according to user preferences
 
     Args:
         display_obj(dict) dictionary containing all tracks info
         build(string) "37" or "38"
-        form(dict) flask request form dictionary
     """
     user_obj = store.user(email=current_user.email)
+
+    # Set up IGV tracks that are common for all cases:
+    display_obj["reference_track"] = HUMAN_REFERENCE[build]  # Human reference is always present
+
     # if user settings for igv tracks exist -> use these settings, otherwise display all tracks
     custom_tracks_names = user_obj.get("igv_tracks") or CUSTOM_TRACK_NAMES
 
