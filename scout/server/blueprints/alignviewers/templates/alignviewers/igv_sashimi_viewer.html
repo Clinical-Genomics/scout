@@ -2,12 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta content="Jim Robinson" name="author">
     <link rel="shortcut icon" href="//igv.org/web/img/favicon.ico">
     <title>igv.js</title>
 
     <!-- IGV JS -->
     <script src="https://cdn.jsdelivr.net/npm/igv@2.7.5/dist/igv.min.js"></script>
+
+    <!-- Flash eventual messages due to errors when creating the tracks -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-danger alert-dismissible" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 </head>
 
 <body>

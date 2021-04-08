@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import os.path
+from flask import flash
 from flask_login import current_user
 from scout.server.extensions import store, cloud_tracks
 from scout.constants import IGV_TRACKS, CASE_SPECIFIC_TRACKS
@@ -23,8 +24,9 @@ def make_sashimi_tracks(institute_id, case_name, variant_id, build="38"):
     # Collect locus coordinates. Take into account that variant can hit multiple genes
     variant_obj = store.variant(document_id=variant_id)
     variant_genes_ids = [gene["hgnc_id"] for gene in variant_obj.get("genes", [])]
-    locus_start_coords = []
-    locus_end_coords = []
+    # Initialize locus coordinates it with variant coordinates so it won't crash if variant gene(s) no longer exist in database
+    locus_start_coords = [variant_obj.get("position")]
+    locus_end_coords = [variant_obj.get("end")]
     gene_symbols = []
     for gene_id in variant_genes_ids:
         gene_obj = store.hgnc_gene(hgnc_identifier=gene_id, build=build)
@@ -48,6 +50,8 @@ def make_sashimi_tracks(institute_id, case_name, variant_id, build="38"):
         coverage_wig = ind["rna_coverage_bigwig"]
         splicej_bed = ind["splice_junctions_bed"]
         splicej_bed_index = f"{splicej_bed}.tbi" if os.path.isfile(f"{splicej_bed}.tbi") else None
+        if splicej_bed_index is None:
+            flash(f"Missing bed file index for individual {ind['display_name']}")
 
         track = {
             "name": ind["display_name"],
