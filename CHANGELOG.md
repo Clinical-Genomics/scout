@@ -4,8 +4,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-
 ## [X.X.X]
+### Added
+- Load and show MITOMAP associated diseases from VCF (INFO field: MitomapAssociatedDiseases, via HmtNote)
+- Show variant allele frequencies for mitochondrial variants
+- Extend "public" json API with diseases (OMIM) and phenotypes (HPO)
+### Fixed
+- Show other causative once, even if several events point to it
+- Filtering variants by mitochondrial chromosome for cases with genome build=38
+### Changed
+- Refactored the MatchMaker integration as an extension
+### Fixed
+
+## [4.31.1]
+### Added
+### Changed
+- Remove mitochondrial and coverage report from cancer cases sidebar
+### Fixed
+- ClinVar page when dbSNP id is None
+
+## [4.31]
 ### Added
 - gnomAD annotation field in admin guide
 - Export also dynamic panel genes not associated to an HPO term when downloading the HPO panel
@@ -25,6 +43,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Missing inheritance models and custom inheritance models on newly created gene panels
 - Accept only numbers in managed variants filter as position and end coordinates
 - SNP id format and links in Variant page, ClinVar submission form and general report
+- Case groups tooltip triggered only when mouse is on the panel header
 ### Changed
 - A more compact case groups panel
 - Added landscape orientation CSS style to cancer coverage and QC demo report
@@ -32,7 +51,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed option to use space as separator when uploading gene panels
 - Separating the columns of standard and custom inheritance models in gene panels
 - Improved ClinVar instructions for users using non-English Excel
-- Refactored the MatchMaker integration as an extension
 
 ## [4.30.2]
 ### Added
