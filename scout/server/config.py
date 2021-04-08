@@ -21,9 +21,9 @@ MAIL_USE_SSL = False
 # GENS_PORT = 5000
 
 # Configure MatchMaker Exchange service
-MME_ACCEPTS = 'application/vnd.ga4gh.matchmaker.v1.0+json'
-MME_URL = 'http://localhost:9020'
-MME_TOKEN = 'matchmaker_token'
+MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
+MME_URL = "http://localhost:9020"
+MME_TOKEN = "matchmaker_token"
 
 # connection details for LoqusDB MongoDB database
 #
