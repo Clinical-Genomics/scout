@@ -4,13 +4,31 @@ import logging
 from pprint import pprint as pp
 
 from scout.constants import IGV_TRACKS
-from scout.server.blueprints.variant.controllers import variant, observations, get_igv_tracks
+from scout.server.blueprints.variant.controllers import (
+    variant,
+    observations,
+    get_igv_tracks,
+    has_rna_tracks,
+)
 from scout.server.extensions import store, loqusdb, cloud_tracks
 
 from flask import url_for, current_app
 from flask_login import current_user
 
 LOG = logging.getLogger(__name__)
+
+
+def test_has_rna_tracks(case_obj):
+    """Test the function that returns True if any individual of a case has RNA tracks available"""
+
+    # GIVEN a case with an individual with RNA tracks:
+    for ind in case_obj["individuals"]:
+        if ind["phenotype"] == 1:  # Lets's assume only the affected individuals has RNA data
+            continue
+        ind["splice_junctions_bed"] = "test.bed"
+        ind["rna_coverage_bigwig"] = "test.BigWig"
+
+    assert has_rna_tracks(case_obj) is True
 
 
 def test_get_igv_tracks():

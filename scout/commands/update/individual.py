@@ -13,6 +13,8 @@ UPDATE_KEYS = [
     "tiddit_coverage_wig",
     "upd_regions_bed",
     "upd_sites_bed",
+    "splice_junctions_bed",  # An indexed junctions .bed.gz file obtained from STAR v2 aligner *.SJ.out.tab file.
+    "rna_coverage_bigwig",  # Coverage islands generated from bam or cram files (RNA-seq analysis)
 ]
 
 
