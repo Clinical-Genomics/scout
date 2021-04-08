@@ -18,6 +18,20 @@ def test_phenotypes(app, institute_obj):
         assert resp.status_code == 200
 
 
+def test_phenotypes_api(app, real_adapter, hpo_term):
+
+    adapter = real_adapter
+    # GIVEN a database with an HPO term
+    adapter.load_hpo_term(hpo_term)
+
+    with app.test_client() as client:
+        # WHEN retrieving json for all HPO terms
+        resp = client.get(url_for("phenotypes.api_hpo_terms"))
+
+        # THEN the response should be JSON
+        assert resp.content_type == "application/json"
+
+
 # Needs a populated hpo db..
 # def test_search_phenotypes(app, real_variant_database):
 # GIVEN an initialized app

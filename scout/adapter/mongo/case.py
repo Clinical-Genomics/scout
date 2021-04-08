@@ -445,7 +445,7 @@ class CaseHandler(object):
             case (dict): The case that should be updated
             hgnc_symbols (iterable): A list of hgnc_symbols
             hgnc_ids (iterable): A list of hgnc_ids
-            phenotype_id(list): optionally add phenotype_ids used to generate list
+            phenotype_ids(list): optionally add phenotype_ids used to generate list
             add_only(bool): set by eg ADDGENE to add genes, and NOT reset previous dynamic_gene_list
 
         Returns:
@@ -488,7 +488,8 @@ class CaseHandler(object):
             {
                 "$set": {
                     "dynamic_gene_list": dynamic_gene_list,
-                    "dynamic_panel_phenotypes": phenotype_ids or [],
+                    "dynamic_panel_phenotypes": phenotype_ids
+                    or case.get("dynamic_panel_phenotypes", []),
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER,
@@ -716,8 +717,6 @@ class CaseHandler(object):
             Returns:
                 updated_case(dict): The updated case information
         """
-        # Todo: rename to match the intended purpose
-
         LOG.info("Updating case {0}".format(case_obj["_id"]))
         old_case = self.case_collection.find_one({"_id": case_obj["_id"]})
 
@@ -795,8 +794,6 @@ class CaseHandler(object):
         Returns:
             updated_case(dict)
         """
-        # Todo: Figure out and describe when this method destroys a case if invoked instead of
-        # update_case
         LOG.info("Saving case %s", case_obj["_id"])
         # update updated_at of case to "today"
 

@@ -1,6 +1,17 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% from "utils.html" import comments_table %}
 
+{% macro mark_heteroplasmic_mt(individuals, samples) %}
+  {% for ind in individuals if ind.phenotype == 2 %}
+    {% for gt in samples|selectattr("sample_id", "equalto", ind.individual_id) %}
+      {% if gt.alt_frequency and gt.alt_frequency < 0.9 and gt.alt_frequency != -1 %}
+        <a data-toggle="tooltip" data-html="true" title="<div>Heteroplasmy: {{ (100*gt.alt_frequency)|round(3) }}%</div>">
+        <span class="badge badge-warning">{{ (100*gt.alt_frequency)|round(1) }}%</span>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+{% endmacro %}
+
 {% macro filter_form_footer(form, result_size, total_variants, more_variants, page, nvars) %}
 <div class="card-footer text-center">
   <div class="row">
