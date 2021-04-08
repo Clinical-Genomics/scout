@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filtering variants by mitochondrial chromosome for cases with genome build=38
 - HPO gene search button triggers any warnings for clinical / non-existing genes also on first search
 - Fixed a bug in variants pages caused by MT variants without alt_frequency
+- Tests for CADD score parsing function
 ### Changed
 - Refactored the MatchMaker integration as an extension
 
