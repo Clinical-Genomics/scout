@@ -1,12 +1,13 @@
+{% from "alignviewers/utils.html" import igv_script %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <link rel="shortcut icon" href="//igv.org/web/img/favicon.ico">
-    <title>igv.js</title>
+    <title>Scout: Splice junctions viewer</title>
 
-    <!-- IGV JS -->
-    <script src="https://cdn.jsdelivr.net/npm/igv@2.7.5/dist/igv.min.js"></script>
+    {{ igv_script() }}
 
     <!-- Flash eventual messages due to errors when creating the tracks -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
