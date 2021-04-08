@@ -26,18 +26,3 @@ def bam_path():
     """Return the path to a small existing bam file"""
     _path = pathlib.Path("tests/fixtures/bams/reduced_mt.bam")
     return _path
-
-
-@pytest.fixture(scope="function")
-def empty_mock_app(real_adapter):
-    """Return the path to a mocked app object without any data"""
-    _mock_app = create_app(
-        config=dict(
-            TESTING=True,
-            DEBUG=True,
-            MONGO_DBNAME=REAL_DATABASE,
-            DEBUG_TB_ENABLED=False,
-            LOGIN_DISABLED=True,
-        )
-    )
-    return _mock_app

@@ -1,9 +1,9 @@
+from pprint import pprint as pp
+
 import pytest
 
-from scout.parse.variant import parse_variant
 from scout.build import build_variant
-
-from pprint import pprint as pp
+from scout.parse.variant import parse_variant
 
 INSTITUTE_ID = "test"
 
@@ -18,22 +18,9 @@ def test_build_empty():
         build_variant(variant, INSTITUTE_ID)
 
 
-def test_build_minimal(case_obj):
+def test_build_minimal(case_obj, cyvcf2_variant):
     ## GIVEN a variant with minimal information
-    class Cyvcf2Variant(object):
-        def __init__(self):
-            self.CHROM = "1"
-            self.REF = "A"
-            self.ALT = ["C"]
-            self.POS = 10
-            self.end = 11
-            self.FILTER = None
-            self.ID = "."
-            self.QUAL = None
-            self.var_type = "snp"
-            self.INFO = {}
-
-    variant = Cyvcf2Variant()
+    variant = cyvcf2_variant
 
     parsed_variant = parse_variant(variant, case_obj)
     assert "ids" in parsed_variant
@@ -138,9 +125,7 @@ def test_build_with_hgnc_info(parsed_variant):
 
     hgncid_to_gene = {5134: hgnc_gene}
 
-    variant_obj = build_variant(
-        parsed_variant, INSTITUTE_ID, hgncid_to_gene=hgncid_to_gene
-    )
+    variant_obj = build_variant(parsed_variant, INSTITUTE_ID, hgncid_to_gene=hgncid_to_gene)
 
     ## THEN assert the information is added
     assert variant_obj["institute"] == INSTITUTE_ID

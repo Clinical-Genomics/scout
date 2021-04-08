@@ -1,21 +1,18 @@
 # -*- coding: utf-8 -*-
 import datetime
-import io
 import logging
 import os.path
-import pathlib
 import re
 import shutil
-import zipfile
 from operator import itemgetter
 import requests
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import ReadTimeout
 import json
 
-import pymongo
 from flask import (
     Blueprint,
+    Response,
     abort,
     current_app,
     flash,
@@ -25,17 +22,16 @@ from flask import (
     request,
     send_file,
     send_from_directory,
-    Response,
     url_for,
 )
-
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 
-from scout.constants import SAMPLE_SOURCE, CUSTOM_CASE_REPORTS
-from scout.server.extensions import mail, store, gens, rerunner
-from scout.server.utils import institute_and_case, templated, user_institutes
+from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
+from scout.server.extensions import gens, mail, store, rerunner
+from scout.server.utils import institute_and_case, templated, user_institutes, zip_dir_to_obj
+
 from . import controllers
 
 LOG = logging.getLogger(__name__)
@@ -441,21 +437,12 @@ def mt_report(institute_id, case_name):
     temp_excel_dir = os.path.join(cases_bp.static_folder, "_".join([case_name, "mt_reports"]))
     os.makedirs(temp_excel_dir, exist_ok=True)
 
-    # create mt excel files, one for each sample
-    n_files = controllers.mt_excel_files(store, case_obj, temp_excel_dir)
+    if controllers.mt_excel_files(store, case_obj, temp_excel_dir):
+        data = zip_dir_to_obj(temp_excel_dir)
 
-    if n_files:
-        today = datetime.datetime.now().strftime("%Y-%m-%d")
-        # zip the files on the fly and serve the archive to the user
-        data = io.BytesIO()
-        with zipfile.ZipFile(data, mode="w") as z:
-            for f_name in pathlib.Path(temp_excel_dir).iterdir():
-                z.write(f_name, os.path.basename(f_name))
-        data.seek(0)
-
-        # remove temp folder with excel files in it
         shutil.rmtree(temp_excel_dir)
 
+        today = datetime.datetime.now().strftime("%Y-%m-%d")
         return send_file(
             data,
             mimetype="application/zip",
@@ -463,6 +450,8 @@ def mt_report(institute_id, case_name):
             attachment_filename="_".join(["scout", case_name, "MT_report", today]) + ".zip",
             cache_timeout=0,
         )
+
+    shutil.rmtree(temp_excel_dir)
 
     flash("No MT report excel file could be exported for this sample", "warning")
     return redirect(request.referrer)
@@ -1073,13 +1062,22 @@ def case_group_update_label(case_group):
     return redirect(request.referrer + "#case_groups")
 
 
-@cases_bp.route("/<institute_id>/<case_name>/download-hpo-genes", methods=["GET"])
-def download_hpo_genes(institute_id, case_name):
-    """Download the genes contained in a case dynamic gene list"""
+@cases_bp.route("/<institute_id>/<case_name>/download-hpo-genes/<category>", methods=["GET"])
+def download_hpo_genes(institute_id, case_name, category):
+    """Download the genes contained in a case dynamic gene list
+
+    Args:
+        institute_id(str):  id for current institute
+        case_name(str):     name for current case
+        category(str):      variant category - "clinical" or "research"
+                            "research" retrieves all gene symbols for each HPO term on the dynamic phenotype panel
+                            "clinical" limits dynamic phenotype panel retrieval to genes present on case clinical genes
+    """
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     # Create export object consisting of dynamic phenotypes with associated genes as a dictionary
-    phenotype_terms_with_genes = controllers.phenotypes_genes(store, case_obj)
+    is_clinical = category != "research"
+    phenotype_terms_with_genes = controllers.phenotypes_genes(store, case_obj, is_clinical)
     html_content = ""
     for term_id, term in phenotype_terms_with_genes.items():
         html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br>{term.get('genes')}<br>"
@@ -1088,6 +1086,7 @@ def download_hpo_genes(institute_id, case_name):
         download_filename=case_obj["display_name"]
         + "_"
         + datetime.datetime.now().strftime("%Y-%m-%d")
+        + category
         + "_dynamic_phenotypes.pdf",
     )
 

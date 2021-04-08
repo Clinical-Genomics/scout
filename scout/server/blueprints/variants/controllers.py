@@ -16,10 +16,12 @@ from scout.constants import (
     ACMG_MAP,
     ACMG_OPTIONS,
     CALLERS,
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
+    CHROMOSOMES,
+    CHROMOSOMES_38,
     CLINSIG_MAP,
     DISMISS_VARIANT_OPTIONS,
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     SEVERE_SO_TERMS,
@@ -29,8 +31,8 @@ from scout.constants import (
 from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
-from scout.server.blueprints.variant.utils import predictions, clinsig_human
-from scout.server.links import str_source_link, ensembl, cosmic_link
+from scout.server.blueprints.variant.utils import clinsig_human, predictions
+from scout.server.links import cosmic_link, ensembl, str_source_link
 from scout.server.utils import (
     case_append_alignments,
     institute_and_case,
@@ -42,6 +44,13 @@ from scout.utils.scout_requests import fetch_refseq_version
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
 LOG = logging.getLogger(__name__)
+
+
+def populate_chrom_choices(form, case_obj):
+    """Populate the option of the chromosome select accordig to the case genome build"""
+    # Populate chromosome choices
+    chromosomes = CHROMOSOMES if str(case_obj.get("genome_build")) == "37" else CHROMOSOMES_38
+    form.chrom.choices = [("", "All")] + [(chrom, chrom) for chrom in chromosomes]
 
 
 def variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
@@ -805,14 +814,33 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     # populate available panel choices
     form.gene_panels.choices = gene_panel_choices(institute_obj, case_obj)
 
-    # check if supplied gene symbols exist
+    form = update_form_hgnc_symbols(store, case_obj, form)
+
+    return form
+
+
+def update_form_hgnc_symbols(store, case_obj, form):
+    """Update variants filter form with HGNC symbols from HPO, and check if any non-clinical genes for the case were
+    requested. If so, flash a warning to the user.
+
+    Accepts:
+        store(adapter.MongoAdapter)
+        case_obj(dict)
+        form(FiltersForm)
+
+    Returns:
+        form(FiltersForm)
+    """
+
     hgnc_symbols = []
     non_clinical_symbols = []
     not_found_symbols = []
     not_found_ids = []
-    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
-        is_clinical = form.data.get("variant_type", "clinical") == "clinical"
-        clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+    updated_hgnc_symbols = []
+
+    # retrieve current symbols from form
+    if form.hgnc_symbols.data:
+        # if symbols are numeric HGNC id, translate to current symbols
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
                 hgnc_gene = store.hgnc_gene(int(hgnc_symbol), case_obj["genome_build"])
@@ -820,25 +848,10 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
                     not_found_ids.append(hgnc_symbol)
                 else:
                     hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
-            elif sum(1 for i in store.hgnc_genes(hgnc_symbol)) == 0:
-                not_found_symbols.append(hgnc_symbol)
-            elif is_clinical and (hgnc_symbol not in clinical_symbols):
-                non_clinical_symbols.append(hgnc_symbol)
             else:
                 hgnc_symbols.append(hgnc_symbol)
 
-    if not_found_ids:
-        flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
-    if not_found_symbols:
-        flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning")
-    if non_clinical_symbols:
-        flash(
-            "Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)),
-            "warning",
-        )
-    form.hgnc_symbols.data = hgnc_symbols
-
-    # handle HPO gene list separately
+    # add HPO genes to list, if they were missing
     if "hpo" in form.data["gene_panels"]:
         hpo_symbols = list(
             set(term_obj["hgnc_symbol"] for term_obj in case_obj["dynamic_gene_list"])
@@ -846,7 +859,35 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
 
         current_symbols = set(hgnc_symbols)
         current_symbols.update(hpo_symbols)
-        form.hgnc_symbols.data = list(current_symbols)
+
+        hgnc_symbols = list(current_symbols)
+
+    # check if supplied gene symbols exist and are clinical
+    is_clinical = form.data.get("variant_type", "clinical") == "clinical"
+    clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+    for hgnc_symbol in hgnc_symbols:
+        if sum(1 for i in store.hgnc_genes(hgnc_symbol)) == 0:
+            not_found_symbols.append(hgnc_symbol)
+        elif is_clinical and (hgnc_symbol not in clinical_symbols):
+            non_clinical_symbols.append(hgnc_symbol)
+        else:
+            updated_hgnc_symbols.append(hgnc_symbol)
+
+    errors = {
+        "non_clinical_symbols": {
+            "alert": "Gene not included in clinical list",
+            "gene_list": non_clinical_symbols,
+        },
+        "not_found_symbols": {"alert": "HGNC symbol not found", "gene_list": not_found_symbols},
+        "not_found_ids": {"alert": "HGNC id not found", "gene_list": not_found_ids},
+    }
+
+    # warn user
+    for error, item in errors.items():
+        if item["gene_list"]:
+            flash(f"{item['alert']}: {item['gene_list']}", "warning")
+
+    form.hgnc_symbols.data = sorted(updated_hgnc_symbols)
 
     return form
 

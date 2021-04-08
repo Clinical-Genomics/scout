@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
 import logging
+
 import pymongo
 from bson import ObjectId
-
-from flask import Blueprint, render_template, flash, redirect, request, Response, url_for
+from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
-from . import controllers
 from scout.constants import (
-    PHENOTYPE_GROUPS,
-    CASEDATA_HEADER,
-    CLINVAR_HEADER,
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
+    CASE_SEARCH_TERMS,
+    CASEDATA_HEADER,
+    CLINVAR_HEADER,
+    PHENOTYPE_GROUPS,
 )
-from scout.constants import CASE_SEARCH_TERMS
-from scout.server.extensions import store, loqusdb
-from scout.server.utils import user_institutes, templated, institute_and_case
-from .forms import InstituteForm, GeneVariantFiltersForm, PhenoModelForm, PhenoSubPanelForm
+from scout.server.extensions import loqusdb, store
+from scout.server.utils import institute_and_case, templated, user_institutes
+
+from . import controllers
+from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
 
 LOG = logging.getLogger(__name__)
 
@@ -177,13 +178,10 @@ def gene_variants(institute_id):
 
     # check if supplied gene symbols exist
     hgnc_symbols = []
-    non_clinical_symbols = []
     not_found_symbols = []
     not_found_ids = []
     data = {}
     if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
-        is_clinical = form.data.get("variant_type", "clinical") == "clinical"
-        # clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
                 hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
@@ -201,11 +199,6 @@ def gene_variants(institute_id):
             flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
         if not_found_symbols:
             flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning")
-        if non_clinical_symbols:
-            flash(
-                "Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)),
-                "warning",
-            )
 
         if hgnc_symbols == []:
             # If there are not genes to search, return to previous page with a warning
