@@ -184,11 +184,14 @@ def test_parse_cadd(vep_csq_header, vep_csq):
     header = [word.upper() for word in vep_csq_header.split("|")]
     raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")]
 
+    tx_cadd = float(raw_transcripts[0].get("CADD_PHRED"))
+
     ## WHEN parsing the transcripts
     transcripts = list(parse_transcripts(raw_transcripts))
 
     # CADD score should be parsed correctly
     assert isinstance(transcripts[0]["cadd"], float)
+    assert transcripts[0]["cadd"] == tx_cadd
 
 
 def test_parse_hg38_mane_transcripts(vep_csq_header, vep_csq):
