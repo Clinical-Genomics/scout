@@ -5,7 +5,6 @@ def test_parse_cadd_info(cyvcf2_variant, case_obj):
     """Test parsing a variant that has CADD score in the info field"""
 
     variant = cyvcf2_variant
-    assert "CADD" not in variant.INFO
 
     # GIVEN a variant with CADD INFO field
     variant.INFO["CADD"] = 23
@@ -17,8 +16,6 @@ def test_parse_cadd_info(cyvcf2_variant, case_obj):
 
 def test_parse_cadd_transcripts(cyvcf2_variant, transcript_info):
     """Test parsing a variant that has CADD score in the transcript dictionary"""
-
-    assert "cadd" not in transcript_info
 
     # GIVEN a variant with CADD score in transcript info
     transcript_info["cadd"] = 23.0
