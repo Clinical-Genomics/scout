@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed a bug in variants pages caused by MT variants without alt_frequency
 - Tests for CADD score parsing function
 ### Changed
+- Refactor according to CodeFactor - mostly reuse of duplicated code
 
 ## [4.31.1]
 ### Added
