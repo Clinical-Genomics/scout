@@ -7,17 +7,17 @@ import os
 
 import query_phenomizer
 import requests
-from bson.objectid import ObjectId
 from bs4 import BeautifulSoup
-from flask import current_app, url_for, flash, redirect
+from bson.objectid import ObjectId
+from flask import current_app, flash, redirect, url_for
 from flask_login import current_user
 from flask_mail import Message
 from xlsxwriter import Workbook
 
 from scout.constants import (
     CANCER_PHENOTYPE_MAP,
-    MT_EXPORT_HEADER,
     MT_COV_STATS_HEADER,
+    MT_EXPORT_HEADER,
     PHENOTYPE_GROUPS,
     PHENOTYPE_MAP,
     SEX_MAP,
@@ -31,14 +31,9 @@ from scout.constants.variant_tags import (
     MANUAL_RANK_OPTIONS,
 )
 from scout.export.variant import export_mt_variants
-from scout.server.extensions import store, matchmaker
-from scout.parse.matchmaker import (
-    genomic_features,
-    hpo_terms,
-    omim_terms,
-    parse_matches,
-)
+from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
+from scout.server.extensions import store, matchmaker
 from scout.server.utils import institute_and_case
 from scout.utils.scout_requests import post_request_json
 
@@ -605,15 +600,18 @@ def update_cancer_samples(
     )
 
 
-def phenotypes_genes(store, case_obj):
+def phenotypes_genes(store, case_obj, is_clinical=True):
     """Generate a dictionary consisting of phenotype terms with associated genes from the case HPO panel
 
     Args:
         store(adapter.MongoAdapter)
         case_obj(dict): models.Case
+        is_clinical(bool): if True, only list genes from HPO that are among the case clinical_symbols
 
     Returns:
         hpo_genes(dict): a dictionary with HPO term IDs as keys and HPO terms and genes as values
+                      If the dynamic phenotype panel is empty, or has been intersected to some level,
+                      use dynamic gene list directly instead.
     """
     build = case_obj["genome_build"]
     # Make sure build is either "37" or "38"
@@ -622,12 +620,18 @@ def phenotypes_genes(store, case_obj):
     else:
         build = "37"
     dynamic_gene_list = [gene["hgnc_id"] for gene in case_obj.get("dynamic_gene_list", [])]
-    by_phenotype = True  # display genes by phenotype
-    unique_genes = set()
+
     hpo_genes = {}
 
-    hpo_gene_list = case_obj.get("dynamic_panel_phenotypes", [])
+    clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+    unique_genes = hpo_genes_from_dynamic_gene_list(case_obj, is_clinical, clinical_symbols)
 
+    by_phenotype = True  # display genes by phenotype
+    hpo_gene_list = case_obj.get("dynamic_panel_phenotypes", [])
+    if not hpo_gene_list and dynamic_gene_list:
+        by_phenotype = False
+
+    all_hpo_gene_list_genes = set()
     # Loop over the dynamic phenotypes of a case
     for hpo_id in hpo_gene_list:
         hpo_term = store.hpo_term(hpo_id)
@@ -642,26 +646,28 @@ def phenotypes_genes(store, case_obj):
             if gene_obj is None:
                 continue
             if gene_id not in dynamic_gene_list:
-                # gene was filtered out because min matching phenotypes > 1
+                # gene was filtered out because min matching phenotypes > 1 (or the panel was generated with older genotype-phenotype mapping)
                 by_phenotype = False  # do not display genes by phenotype
                 continue
             add_symbol = gene_obj.get("hgnc_symbol", f"hgnc:{gene_id}")
+            if is_clinical and (add_symbol not in clinical_symbols):
+                continue
             gene_list.append(add_symbol)
-            unique_genes.add(add_symbol)
+            all_hpo_gene_list_genes.add(add_symbol)
 
         hpo_genes[hpo_id] = {
             "description": hpo_term.get("description"),
             "genes": ", ".join(sorted(gene_list)),
         }
 
-    # Case where dynamic_panel_phenotypes is empty, perhaps because user has added custom genes to HPO panel
-    if not hpo_gene_list and case_obj.get("dynamic_gene_list"):
-        gene_list = [
-            gene.get("hgnc_symbol") or str(gene["hgnc_id"])
-            for gene in case_obj["dynamic_gene_list"]
-        ]
-        unique_genes = set(gene_list)
-        by_phenotype = False
+    if by_phenotype is True:
+        # if some gene was manually added (or is left on dynamic panel for other reasons)
+        non_hpo_genes = unique_genes - all_hpo_gene_list_genes
+        if len(non_hpo_genes) > 0:
+            hpo_genes["Analysed genes"] = {
+                "description": "Non HPO panel genes",
+                "genes": ", ".join(sorted(non_hpo_genes)),
+            }
 
     if by_phenotype is False:
         hpo_genes = {}
@@ -669,7 +675,31 @@ def phenotypes_genes(store, case_obj):
             "description": "HPO panel",
             "genes": ", ".join(sorted(unique_genes)),
         }
+
     return hpo_genes
+
+
+def hpo_genes_from_dynamic_gene_list(case_obj, is_clinical, clinical_symbols):
+    """
+    Case where dynamic_panel_phenotypes is empty, perhaps because user has added custom genes to HPO panel
+
+    Args:
+        case_obj(dict): models.Case)
+        is_clinical(bool): if True, only list genes from HPO that are among the case clinical_symbols
+        clinical_symbols(set): set of clinical symbols
+    Returns:
+        hpo_genes(set):
+    """
+
+    gene_list = [
+        gene.get("hgnc_symbol") or str(gene["hgnc_id"]) for gene in case_obj["dynamic_gene_list"]
+    ]
+
+    unique_genes = set(gene_list)
+    if is_clinical:
+        unique_genes = unique_genes.intersection(set(clinical_symbols))
+
+    return unique_genes
 
 
 def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
