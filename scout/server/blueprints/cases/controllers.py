@@ -449,7 +449,8 @@ def mt_coverage_stats(individuals, ref_chrom="14"):
 
 def mt_excel_files(store, case_obj, temp_excel_dir):
     """Collect MT variants and format line of a MT variant report
-    to be exported in excel format
+    to be exported in excel format. Create mt excel files, one for each sample,
+    in a temporary directory.
 
     Args:
         store(adapter.MongoAdapter)
@@ -526,6 +527,27 @@ def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
         store.update_synopsis(institute_obj, case_obj, user_obj, link, content=new_synopsis)
 
 
+def _update_case(store, case_obj, user_obj, institute_obj, verb):
+    """ Update case with new sample data, and create an associated event """
+    store.update_case(case_obj, keep_date=True)
+
+    link = url_for(
+        "cases.case",
+        institute_id=institute_obj["_id"],
+        case_name=case_obj["display_name"],
+    )
+
+    store.create_event(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        category="case",
+        verb=verb,
+        subject=case_obj["display_name"],
+    )
+
+
 def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissue):
     """Handle update of individual data (age and/or Tissue type) for a case"""
 
@@ -540,24 +562,9 @@ def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissu
                 subject["tissue_type"] = tissue
 
     case_obj["individuals"] = case_individuals
-    # update case with new individual data
-    store.update_case(case_obj, keep_date=True)
 
-    # create an associated event
-    link = url_for(
-        "cases.case",
-        institute_id=institute_obj["_id"],
-        case_name=case_obj["display_name"],
-    )
-    store.create_event(
-        institute=institute_obj,
-        case=case_obj,
-        user=user_obj,
-        link=link,
-        category="case",
-        verb="update_individual",
-        subject=case_obj["display_name"],
-    )
+    verb = "update_individual"
+    _update_case(store, case_obj, user_obj, institute_obj, verb)
 
 
 def update_cancer_samples(
@@ -580,25 +587,9 @@ def update_cancer_samples(
                 sample["tumor_purity"] = None
 
     case_obj["individuals"] = case_samples
-    # update case with new sample data
-    store.update_case(case_obj, keep_date=True)
 
-    # create an associated event
-    link = url_for(
-        "cases.case",
-        institute_id=institute_obj["_id"],
-        case_name=case_obj["display_name"],
-    )
-
-    store.create_event(
-        institute=institute_obj,
-        case=case_obj,
-        user=user_obj,
-        link=link,
-        category="case",
-        verb="update_sample",
-        subject=case_obj["display_name"],
-    )
+    verb = "update_sample"
+    _update_case(store, case_obj, user_obj, institute_obj, verb)
 
 
 def phenotypes_genes(store, case_obj, is_clinical=True):

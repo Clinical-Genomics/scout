@@ -717,8 +717,6 @@ class CaseHandler(object):
             Returns:
                 updated_case(dict): The updated case information
         """
-        # Todo: rename to match the intended purpose
-
         LOG.info("Updating case {0}".format(case_obj["_id"]))
         old_case = self.case_collection.find_one({"_id": case_obj["_id"]})
 
@@ -796,8 +794,6 @@ class CaseHandler(object):
         Returns:
             updated_case(dict)
         """
-        # Todo: Figure out and describe when this method destroys a case if invoked instead of
-        # update_case
         LOG.info("Saving case %s", case_obj["_id"])
         # update updated_at of case to "today"
 

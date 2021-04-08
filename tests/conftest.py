@@ -20,8 +20,8 @@ from scout.build.user import build_user
 from scout.build.variant import build_variant
 from scout.demo import (
     cancer_load_path,
-    cancer_sv_path,
     cancer_snv_path,
+    cancer_sv_path,
     clinical_snv_path,
     clinical_str_path,
     clinical_sv_path,
@@ -43,13 +43,13 @@ from scout.demo.resources import (
     genemap2_reduced_path,
     genes37_reduced_path,
     genes38_reduced_path,
+    genes_to_phenotype_reduced_path,
     hgnc_reduced_path,
+    hpoterms_reduced_path,
     mim2gene_reduced_path,
+    phenotype_to_genes_reduced_path,
     transcripts37_reduced_path,
     transcripts38_reduced_path,
-    genes_to_phenotype_reduced_path,
-    hpoterms_reduced_path,
-    phenotype_to_genes_reduced_path,
 )
 from scout.load import load_hgnc_genes
 from scout.load.hpo import load_hpo
@@ -57,18 +57,14 @@ from scout.load.transcript import load_transcripts
 from scout.log import init_log
 from scout.models.hgnc_map import HgncGene
 from scout.parse.case import parse_case
-from scout.parse.ensembl import (
-    parse_ensembl_exons,
-    parse_ensembl_transcripts,
-    parse_transcripts,
-)
+from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_transcripts, parse_transcripts
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hgnc import parse_hgnc_genes
 from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
 from scout.parse.variant.headers import parse_rank_results_header
-from scout.server.blueprints.login.models import LoginUser
 from scout.server.app import create_app
+from scout.server.blueprints.login.models import LoginUser
 from scout.utils.handle import get_file_handle
 from scout.utils.link import link_genes
 
@@ -79,10 +75,10 @@ REAL_DATABASE = "realtestdb"
 # init_log(root_logger, loglevel='INFO')
 LOG = logging.getLogger(__name__)
 
+##################### App fixtures #####################
 
-@pytest.fixture
-def mock_app(real_populated_database):
-    """Return the path to a mocked app object with data"""
+
+def _mock_an_app():
     _mock_app = create_app(
         config=dict(
             TESTING=True,
@@ -93,6 +89,18 @@ def mock_app(real_populated_database):
         )
     )
     return _mock_app
+
+
+@pytest.fixture
+def mock_app(real_populated_database):
+    """Return the path to a mocked app object with data"""
+    return _mock_an_app()
+
+
+@pytest.fixture(scope="function")
+def empty_mock_app(real_adapter):
+    """Return the path to a mocked app object without any data"""
+    return _mock_an_app()
 
 
 ##################### Gene fixtures #####################
@@ -785,11 +793,10 @@ def real_populated_database(request, real_panel_database, parsed_case):
     return adapter
 
 
-@pytest.fixture(scope="function")
-def variant_database(request, populated_database):
+def _load_variants(database):
     """Returns an adapter to a database populated with user, institute, case
     and variants"""
-    adapter = populated_database
+    adapter = database
     # Load variants
     case_obj = adapter.case_collection.find_one()
 
@@ -800,27 +807,23 @@ def variant_database(request, populated_database):
         rank_threshold=-10,
         build="37",
     )
-
     return adapter
 
 
 @pytest.fixture(scope="function")
-def real_variant_database(request, real_populated_database):
+def variant_database(populated_database):
     """Returns an adapter to a database populated with user, institute, case
     and variants"""
-    adapter = real_populated_database
 
-    case_obj = adapter.case_collection.find_one()
-    # Load variants
-    adapter.load_variants(
-        case_obj,
-        variant_type="clinical",
-        category="snv",
-        rank_threshold=-10,
-        build="37",
-    )
+    return _load_variants(populated_database)
 
-    return adapter
+
+@pytest.fixture(scope="function")
+def real_variant_database(real_populated_database):
+    """Returns an adapter to a real database populated with user, institute, case
+    and variants"""
+
+    return _load_variants(real_populated_database)
 
 
 @pytest.fixture(scope="function")
