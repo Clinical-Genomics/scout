@@ -28,7 +28,7 @@ flask_ldap3_login
 flask_login
 
 # Parsing
-cyvcf2<0.10.0
+cyvcf2
 PyYaml>=5.1
 ped_parser
 
