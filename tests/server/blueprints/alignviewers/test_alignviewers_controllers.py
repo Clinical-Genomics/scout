@@ -55,6 +55,8 @@ def test_make_sashimi_tracks(app, case_obj):
         assert display_obj["tracks"][0]["coverage_wig"] == "test.bigWig"
         assert display_obj["tracks"][0]["splicej_bed"] == "test.bed"
         assert display_obj["tracks"][0]["splicej_bed_index"] is None
+        assert display_obj["reference_track"]  # Reference genome track
+        assert display_obj["custom_tracks"]  # Custom tracks include gene track in the right build
 
 
 def test_set_cloud_public_tracks(app):
