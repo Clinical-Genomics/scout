@@ -1,6 +1,6 @@
 {% macro splice_junctions_button(institute_id, case_name, variant_id) %}
-  <a class="btn btn-secondary text-white mt-1" href="{{url_for('alignviewers.sashimi_igv', institute_id=institute_id, case_name=case_name, variant_id=variant_id)}}" target="_blank"
-    data-toggle="tooltip" data-placement="top" title="Gene splicing is only available in build GRCh38">Gene splicing</a>
+  <a class="btn btn-secondary btn-sm text-white mt-1" href="{{url_for('alignviewers.sashimi_igv', institute_id=institute_id, case_name=case_name, variant_id=variant_id)}}" target="_blank"
+    data-toggle="tooltip" data-placement="top" title="Only available in build GRCh38">RNA splicing</a>
 {% endmacro %}
 
 {% macro variant_tag_button(variant, institute, case, manual_rank_options) %}
@@ -114,7 +114,7 @@
         <input type="hidden" name="sample" value="{{aln.sample_names|join(',')}}">
         <input type="hidden" name="mt_bam" value="{{aln.mt_bams|join(',')}}">
         <input type="hidden" name="mt_bai" value="{{aln.mt_bais|join(',')}}">
-        <button class="btn btn-secondary" name="align" value="mt_bam" type=submit>IGV viewer</button>
+        <button class="btn btn-sm btn-secondary" name="align" value="mt_bam" type=submit>IGV viewer</button>
       {% else %}
         <span class="text-muted">MT BAM file(s) missing</span>
       {% endif %}

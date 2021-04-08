@@ -480,14 +480,8 @@
             <tr>
               <td style="width:15%;">
                 {{ igv_button(case, variant, case_groups) }}
-                {% if splice_junctions_tracks %}
-                  {{ splice_junctions_button(institute._id, case.display_name, variant._id) }}
-                {% endif %}
               </td>
               {% if case.mt_bams or case.bam_files %}
-              <td>
-                {{ igv_track_selection(igv_tracks, current_user) }}
-              </td>
               {% endif %}
               {% if config.SQLALCHEMY_DATABASE_URI %}
                 {% for gene in variant.genes %}
@@ -499,6 +493,16 @@
                 {% endfor %}
               {% endif %}
             </tr>
+            <tr>
+              <td>
+                {{ igv_track_selection(igv_tracks, current_user) }}
+              </td>
+            </tr>
+            {% if splice_junctions_tracks %}
+              <tr>
+                <td>{{ splice_junctions_button(institute._id, case.display_name, variant._id) }}</td>
+              <tr>
+            {% endif %}
           </tbody>
         </table>
       {% if variant.custom %}
