@@ -1,5 +1,4 @@
 """Common utilities for the server code"""
-import datetime
 import io
 import logging
 import os
