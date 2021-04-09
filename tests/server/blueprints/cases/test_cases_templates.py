@@ -104,7 +104,6 @@ def test_sidebar_macro(app, institute_obj, case_obj, user_obj):
         assert "Research list" in html
         assert "Reruns" in html
         assert "Share case" in html
-        assert "Share to Beacon" in html
 
 
 def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj, user_obj):
