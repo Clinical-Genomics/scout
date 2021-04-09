@@ -93,14 +93,15 @@
               </div>
               <div>
                 <br>
-                <button class="btn btn-outline-secondary mx-auto d-block" data-toggle="modal" type="submit">
+                <button class="btn btn-secondary mx-auto d-block" data-toggle="modal" type="submit">
                   {% if case.mme_submission %}
-                    Update case in MatchMaker
+                    Update case
                   {% else %}
                     Share to MatchMaker
                   {% endif %}</button>
               </div>
             </div>
+            <br>
           </form>
           {% if case.mme_submission %}
             {{ modal_mme_delete(institute, case) }}
