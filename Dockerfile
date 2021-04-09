@@ -13,8 +13,8 @@ RUN apk --no-cache add make automake gcc g++ linux-headers libffi-dev zlib-dev \
    autoconf musl-dev perl bzip2-dev xz-dev curl-dev
 RUN pip install numpy Cython
 
-# Install cyvcf2
-RUN apk add git
+# Install cyvcf2-master
+RUN apk --no-cache add git
 WORKDIR /tmp
 RUN git clone --recursive https://github.com/brentp/cyvcf2
 WORKDIR /tmp/cyvcf2/htslib
