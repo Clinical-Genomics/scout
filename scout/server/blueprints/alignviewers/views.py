@@ -14,7 +14,6 @@ from flask import (
 )
 
 from .partial import send_file_partial
-from scout.constants import HUMAN_REFERENCE
 from . import controllers
 
 import requests
@@ -82,6 +81,17 @@ def unindexed_remote_static():
     return resp
 
 
+@alignviewers_bp.route(
+    "/igv-splice-junctions/<institute_id>/<case_name>/<variant_id>", methods=["GET"]
+)
+def sashimi_igv(institute_id, case_name, variant_id):
+    """Visualize splice junctions on igv.js sashimi-like viewer for one or more individuals of a case.
+    wiki: https://github.com/igvteam/igv.js/wiki/Splice-Junctions
+    """
+    display_obj = controllers.make_sashimi_tracks(institute_id, case_name, variant_id)
+    return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
+
+
 @alignviewers_bp.route("/igv", methods=["POST"])
 def igv():
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)"""
@@ -104,12 +114,8 @@ def igv():
 
     display_obj = {}  # Initialize the dictionary containing all tracks info
 
-    # Set up IGV tracks that are common for all cases:
-    display_obj["reference_track"] = HUMAN_REFERENCE[
-        chromosome_build
-    ]  # Human reference is always present
     # General tracks (Genes, Clinvar and ClinVar SNVs are shown according to user preferences)
-    controllers.set_common_tracks(display_obj, chromosome_build, request.form)
+    controllers.set_common_tracks(display_obj, chromosome_build)
 
     # Set up bam/cram alignments for case samples:
     controllers.set_sample_tracks(display_obj, request.form)
