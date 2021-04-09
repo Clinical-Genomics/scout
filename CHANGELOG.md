@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - HPO gene list download now has option for clinical and non-clinical genes
 - Display gene splice junctions data in sashimi plots
 - Update case individuals with splice junctions tracks
+- Simple Docker compose for development with local build
 ### Fixed
 - Show other causative once, even if several events point to it
 - Filtering variants by mitochondrial chromosome for cases with genome build=38
@@ -20,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tests for CADD score parsing function
 ### Changed
 - Refactor according to CodeFactor - mostly reuse of duplicated code
+
 
 ## [4.31.1]
 ### Added
