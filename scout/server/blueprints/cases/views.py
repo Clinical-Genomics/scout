@@ -887,7 +887,6 @@ def multiqc(institute_id, case_name):
 )
 def host_upd_regions_image(institute_id, case_name, individual, image):
     """Generate UPD REGIONS image file paths"""
-    LOG.debug("REGIONS")
     return host_image_aux(institute_id, case_name, individual, image, "upd_regions")
 
 
