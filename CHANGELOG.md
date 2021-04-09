@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Refactor according to CodeFactor - mostly reuse of duplicated code
 - Use current cyvcf2 library
+- Updated Dockerfile with new cyvcf2 install
 
 ## [4.31.1]
 ### Added
