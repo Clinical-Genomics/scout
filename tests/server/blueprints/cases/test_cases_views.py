@@ -415,6 +415,7 @@ def test_download_hpo_genes(app, case_obj, institute_obj):
                 "cases.download_hpo_genes",
                 institute_id=institute_obj["_id"],
                 case_name=case_obj["display_name"],
+                category="research",
             )
         )
         # THEN the response should be successful

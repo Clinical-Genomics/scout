@@ -5,7 +5,7 @@
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, severity_list, conservations, mappability %}
-{% from "variant/buttons.html" import igv_button, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button %}
+{% from "variant/buttons.html" import igv_button, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -451,6 +451,15 @@
           </tbody>
         </table>
       {% endif %}
+      {% if variant.mitomap_associated_diseases %}
+        <table class="table table-bordered table-fixed table-sm">
+          <tbody>
+            <tr>
+              <td><strong>MITOMAP associated diseases</strong></td>
+              <td>{{ variant.mitomap_associated_diseases.split('/')|join('<br>')|safe }}</td>
+            </tr>
+        </table>
+      {% endif %}
       <ul class="list-group">
         {% if variant.dbsnp_id %}
           {% set dbsnp_ids = variant.dbsnp_id.split(';') %}
@@ -466,16 +475,13 @@
           </li>
         {% endif %}
       </ul>
-        <table class="table table-bordered table-fixed table-sm">
+        <table class="table table-fixed table-sm mt-3">
           <tbody>
             <tr>
-              <td style="width:20%;">
+              <td style="width:15%;">
                 {{ igv_button(case, variant, case_groups) }}
               </td>
               {% if case.mt_bams or case.bam_files %}
-              <td style="width:50%;">
-                {{ igv_track_selection(igv_tracks, current_user) }}
-              </td>
               {% endif %}
               {% if config.SQLALCHEMY_DATABASE_URI %}
                 {% for gene in variant.genes %}
@@ -487,6 +493,16 @@
                 {% endfor %}
               {% endif %}
             </tr>
+            <tr>
+              <td>
+                {{ igv_track_selection(igv_tracks, current_user) }}
+              </td>
+            </tr>
+            {% if splice_junctions_tracks %}
+              <tr>
+                <td>{{ splice_junctions_button(institute._id, case.display_name, variant._id) }}</td>
+              <tr>
+            {% endif %}
           </tbody>
         </table>
       {% if variant.custom %}
@@ -599,7 +615,7 @@
           {% endif %}
           <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
           {% if variant.chromosome == 'MT' %}
-            <a href="https://www.mitomap.org/foswiki/bin/view////Main/SearchAllele" target="_blank">MitoMap</a>
+            <a href="{{ variant.mitomap_link }}" class="btn btn-outline-secondary" target="_blank">MitoMap</a>
           {% endif %}
           {% if gene.tp53_link %}
             <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>

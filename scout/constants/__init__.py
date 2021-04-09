@@ -84,34 +84,13 @@ BUILDS = ["37", "38", "GRCh38"]
 CYTOBANDS_37 = parse_cytoband(cytobands_37_handle)
 CYTOBANDS_38 = parse_cytoband(cytobands_38_handle)
 
-
-CHROMOSOMES = (
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "11",
-    "12",
-    "13",
-    "14",
-    "15",
-    "16",
-    "17",
-    "18",
-    "19",
-    "20",
-    "21",
-    "22",
+AUTOSOMES = [str(nr) for nr in range(1, 23)]
+CHROMOSOMES = AUTOSOMES + [
     "X",
     "Y",
     "MT",
-)
+]  # Chromosomes of build 37 would be default. I don't dare to change this yet since it's used all over the place. It needs major refactoring
+CHROMOSOMES_38 = AUTOSOMES + ["X", "Y", "M"]
 
 # Maps chromosomes to integers
 CHROMOSOME_INTEGERS = {chrom: i + 1 for i, chrom in enumerate(CHROMOSOMES)}

@@ -13,12 +13,13 @@ from scout.constants import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
+    IGV_TRACKS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     VERBS_MAP,
-    IGV_TRACKS,
 )
 from scout.parse.variant.ids import parse_document_id
+from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import (
     case_append_alignments,
@@ -27,7 +28,6 @@ from scout.server.utils import (
     variant_case,
 )
 from scout.utils.scout_requests import fetch_refseq_version
-from scout.server.extensions import cloud_tracks, gens
 
 from .utils import (
     add_gene_info,
@@ -43,6 +43,22 @@ from .utils import (
 )
 
 LOG = logging.getLogger(__name__)
+
+
+def has_rna_tracks(case_obj):
+    """Returns True if one of more individuals of the case contain RNA-seq data
+
+    Args:
+        case_obj(dict)
+    Returns
+        True or False (bool)
+    """
+    # Display junctions track if available for any of the individuals
+    for ind in case_obj.get("individuals", []):
+        # Track contains 2 files and they should both be present
+        if all([ind.get("splice_junctions_bed"), ind.get("rna_coverage_bigwig")]):
+            return True
+    return False
 
 
 def get_igv_tracks(build="37"):
@@ -260,6 +276,7 @@ def variant(
         "mosaic_variant_options": MOSAICISM_OPTIONS,
         "ACMG_OPTIONS": ACMG_OPTIONS,
         "igv_tracks": get_igv_tracks(genome_build),
+        "splice_junctions_tracks": has_rna_tracks(case_obj),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
     }
