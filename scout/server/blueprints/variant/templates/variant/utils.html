@@ -1,23 +1,27 @@
 {% macro igv_track_selection(igv_tracks, current_user) %}
 <div id="accordion">
-  <a data-toggle="collapse" data-parent="#accordion" href="#track_settings">Settings</a>
-  <div id="track_settings" class="collapse">
-    <form action="{{url_for('variant.update_tracks_settings')}}" method="POST">
-      <div class="row d-flex align-items-center">
-          <div class="col-3">Show tracks:</div>
-          <div class="col-6">
-            <select name="user_tracks" class="selectpicker" data-width="80%" multiple>
-              {% for track in igv_tracks %}
-                <!--pre-select option if user has saved it in preferences or select all options if user has no preferences yet-->
-                <option value="{{ track }}" {{ "selected" if track in current_user.igv_tracks or current_user.igv_tracks is not defined }}>{{ track }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-3">
-            <button type="submit" class="btn btn-sm btn-outline-secondary">Save</button>
-          </div>
-      </div>
-    </form>
+  <div class="row">
+    <div class="col-4">
+     <p><a data-toggle="collapse" data-parent="#accordion" href="#track_settings" class="text-secondary">Settings DNA <i class="fas fa-cogs text-secondary"></i></a></p>
+    </div>
+    <div id="track_settings" class="col-8 collapse">
+      <form action="{{url_for('variant.update_tracks_settings')}}" method="POST">
+        <div class="row d-flex align-items-center">
+            <div class="col-3">Show tracks:</div>
+            <div class="col-6">
+              <select name="user_tracks" class="selectpicker" data-width="90%" multiple>
+                {% for track in igv_tracks %}
+                  <!--pre-select option if user has saved it in preferences or select all options if user has no preferences yet-->
+                  <option value="{{ track }}" {{ "selected" if track in current_user.igv_tracks or current_user.igv_tracks is not defined }}>{{ track }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-3">
+              <button type="submit" class="btn btn-sm btn-outline-secondary">Save</button>
+            </div>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 {% endmacro %}
