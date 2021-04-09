@@ -136,6 +136,8 @@ class ScoutLoadConfig(BaseModel):
     family: str = None
     family_name: Optional[str] = None
     gene_panels: Optional[List[str]] = []
+    gene_fusion_report: Optional[str] = None
+    gene_fusion_report_research: Optional[str] = None
     genome_build: int = Field([], alias="human_genome_build")
     human_genome_build: str = None
     individuals: List[ScoutIndividual] = Field([], alias="samples")  ## we also have samples ??
