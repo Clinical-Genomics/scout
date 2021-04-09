@@ -1,3 +1,7 @@
+{% macro splice_junctions_button(institute_id, case_name, variant_id) %}
+  <a class="btn btn-secondary btn-sm text-white mt-1" href="{{url_for('alignviewers.sashimi_igv', institute_id=institute_id, case_name=case_name, variant_id=variant_id)}}" target="_blank"
+    data-toggle="tooltip" data-placement="top" title="Only available in build GRCh38">RNA splicing</a>
+{% endmacro %}
 
 {% macro variant_tag_button(variant, institute, case, manual_rank_options) %}
   <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
@@ -90,7 +94,7 @@
     <input type="hidden" name="stop" value="{{variant.position + 50}}">
     <!-- end of general hidden form fields -->
     {% set aln = namespace(sample_names=[],mt_bams=[], mt_bais=[], bam_files=[], bai_files=[]) %}
-    {% if variant.chromosome == "MT" %}
+    {% if variant.chromosome in ["MT","M"] %}
       {% if case_groups %}
         {% for group_id, case_group in case_groups.items() %}
             {% for grouped_case in case_group %}
@@ -110,7 +114,7 @@
         <input type="hidden" name="sample" value="{{aln.sample_names|join(',')}}">
         <input type="hidden" name="mt_bam" value="{{aln.mt_bams|join(',')}}">
         <input type="hidden" name="mt_bai" value="{{aln.mt_bais|join(',')}}">
-        <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV viewer</button>
+        <button class="btn btn-sm btn-secondary" name="align" value="mt_bam" type=submit>IGV viewer</button>
       {% else %}
         <span class="text-muted">MT BAM file(s) missing</span>
       {% endif %}
@@ -146,7 +150,7 @@
       {% if case.upd_sites_beds %}
         <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
       {% endif %}
-      <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
+      <button class="btn btn-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
     {% else %}
       <span class="text-muted">BAM file(s) missing</span>
     {% endif %}
