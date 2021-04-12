@@ -979,7 +979,7 @@ def beacon_add(form):
     return
 
 
-def mme_check_requirements(request):
+def matchmaker_check_requirements(request):
     """Make sure requirements are fulfilled before submitting any request to MatchMaker Exchange
 
     Args:
@@ -1011,7 +1011,7 @@ def matchmaker_add(request, institute_id, case_name):
         case_name(str): display name of a case
     """
     # Check that general MME request requirements are fulfilled
-    mme_check_requirements(request)
+    matchmaker_check_requirements(request)
     _, case_obj = institute_and_case(store, institute_id, case_name)
     candidate_vars = case_obj.get("suspects") or []
     if len(candidate_vars) > 3:
@@ -1115,7 +1115,7 @@ def matchmaker_delete(request, institute_id, case_name):
         case_name(str): display name of a case
     """
     # Check that general MME request requirements are fulfilled
-    mme_check_requirements(request)
+    matchmaker_check_requirements(request)
 
     _, case_obj = institute_and_case(store, institute_id, case_name)
     # Delete each patient submitted for this case
@@ -1149,7 +1149,7 @@ def matchmaker_matches(request, institute_id, case_name):
         data(dict): data to display in the html template
     """
     # Check that general MME request requirements are fulfilled
-    mme_check_requirements(request)
+    matchmaker_check_requirements(request)
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = {"institute": institute_obj, "case": case_obj, "server_errors": [], "panel": 1}
@@ -1181,7 +1181,7 @@ def matchmaker_match(request, match_type, institute_id, case_name):
         case_name(str): display name of a case
     """
     # Check that general MME request requirements are fulfilled
-    mme_check_requirements(request)
+    matchmaker_check_requirements(request)
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     query_patients = case_obj.get("mme_submission", {}).get("patients", [])
