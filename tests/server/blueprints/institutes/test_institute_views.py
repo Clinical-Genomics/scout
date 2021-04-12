@@ -188,7 +188,7 @@ def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
         resp = client.get(url_for("auto_login"))
 
         form_data = dict(
-            title="Subpanel title",
+            title="Phenotype Subpanel title",
             subtitle="Subpanel subtitle",
             add_subpanel="save subpanel",
         )

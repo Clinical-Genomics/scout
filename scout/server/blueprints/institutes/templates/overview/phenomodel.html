@@ -47,10 +47,10 @@
           {{ pheno_form.model_desc(class="form-control", placeholder="Description (optional)") }}
         </div>
         <div class="col-1">
-          <button type="submit" value="update" name="update_model" class="btn btn-primary" {{ "disabled" if disable}}>update</button
+          <button type="submit" value="update" name="update_model" class="btn btn-primary" {{ "disabled" if disable}}>Update</button
         </div>
       </div>
-      <h6 class="text-muted ml-3 mt-3">created: {{phenomodel.created.strftime('%Y-%m-%d')}} - updated: {{phenomodel.updated.strftime('%Y-%m-%d')}}</h6>
+      <h6 class="text-muted ml-3 mt-3">Created: {{phenomodel.created.strftime('%Y-%m-%d')}} - Updated: {{phenomodel.updated.strftime('%Y-%m-%d')}}</h6>
     </form>
   </div>
 </div>
@@ -60,8 +60,8 @@
   <div class="d-flex justify-content-center">
     <div class="btn-group btn-group-toggle" data-toggle="buttons" >
       <button class="btn-secondary btn-sm" aria-hidden="true" data-toggle="modal" data-target="#preview">Preview</button>
-      <button class="btn btn-primary btn-sm" onclick="showDiv('new_subpanel','add_terms')" {{ "disabled" if disable }}>Create a new subpanel</button>
-      <button class="btn btn-primary btn-sm" onclick="showDiv('add_terms','new_subpanel')" {{ "disabled" if disable or not phenomodel.subpanels  }} }}>Add terms to an existing subpanel</button>
+      <button class="btn btn-primary btn-sm" onclick="showDiv('new_subpanel','add_terms')" {{ "disabled" if disable }}>Create a new phenotype subpanel</button>
+      <button class="btn btn-primary btn-sm" onclick="showDiv('add_terms','new_subpanel')" {{ "disabled" if disable or not phenomodel.subpanels  }} }}>Add terms to an existing phenotype subpanel</button>
     </div>
   </div>
   <div class="panel-collapse collapse mt-3" id="new_subpanel">
@@ -137,7 +137,7 @@
     </div>
     <div class="form-group col-2">
       <input type="checkbox" class="form-check-input" id="includeChildren" name="includeChildren">
-      <label class="form-check-label" for="includeChildren">Include term children</label>
+      <label class="form-check-label" for="includeChildren">Include HPO term children</label>
     </div>
     <div class="form-group col-2">
       <button type="submit" name="add_hpo" class="btn btn-secondary btn-sm">Add HPO term</button>
@@ -150,7 +150,7 @@
     <div class="form-group col-4">
     {% if phenomodel.subpanels %}
       <select name="{{term_type}}_subpanel_id" class="form-control" required>
-        <option value="" disabled selected>Select panel</option>
+        <option value="" disabled selected>Select phenotype panel</option>
         {% for subpanel_id, subpanel in phenomodel.subpanels.items() %}
         <option value="{{subpanel_id}}">{{subpanel.title}}</option>
         {% endfor %}
@@ -159,7 +159,7 @@
     </div>
     <div class="form-group col-2">
       <input type="checkbox" id="{{term_type}}HasTitle" name="{{term_type}}HasTitle">
-      <label class="form-check-label" for="{{term_type}}HasTitle">term has a title</label>
+      <label class="form-check-label" for="{{term_type}}HasTitle">Term has a title</label>
     </div>
     <div class="form-group col-5">
       <input type="text" class="form-control" name="{{term_type}}TermTitle" id="{{term_type}}TermTitle" placeholder="Term title" disabled>
