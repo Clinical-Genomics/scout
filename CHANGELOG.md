@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tests for CADD score parsing function
 ### Changed
 - Refactor according to CodeFactor - mostly reuse of duplicated code
+- gnomAD link points to gnomAD v.3 (build GRCh38) for mitochondrial variants.
 
 
 ## [4.31.1]
