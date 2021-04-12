@@ -457,20 +457,16 @@ def exac_link(variant_obj):
 
 
 def gnomad_link(variant_obj, build=37):
-    """Compose link to gnomAD website."""
+    """Compose link to gnomAD website for a variant."""
+    url_template = (
+        "http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
+        "{this[position]}-{this[reference]}-{this[alternative]}"
+    ).format(this=variant_obj)
 
     if build == 38 or variant_obj["chromosome"] in ["M", "MT"]:
-        url_template = (
-            "http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
-            "{this[position]}-{this[reference]}-{this[alternative]}?dataset=gnomad_r3"
-        )
-    else:
-        url_template = (
-            "http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
-            "{this[position]}-{this[reference]}-{this[alternative]}"
-        )
+        url_template += "?dataset=gnomad_r3"
 
-    return url_template.format(this=variant_obj)
+    return url_template
 
 
 def swegen_link(variant_obj):
