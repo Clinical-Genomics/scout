@@ -701,11 +701,11 @@
 {% if variant.category in ("sv", "cancer_sv") %}
   <a class="variants-row-item flex-small layout"
       href="{{ url_for('variant.sv_variant', institute_id=institute._id,
-                       case_name=case.display_name, variant_id=variant._id) }}" target="_blank">
+                       case_name=case.display_name, variant_id=variant._id) }}" target='_blank'>
 {% else %}
   <a class="variants-row-item flex-small layout"
      href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
-                      variant_id=variant._id) }}" target="_blank">
+                      variant_id=variant._id) }}" target='_blank'>
 {% endif %}
   {{ variant.variant_rank }}&nbsp;</a>
 
