@@ -23,7 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactor according to CodeFactor - mostly reuse of duplicated code
 - Phenomodels language adjustment
 - Open variants in a new window (from variants page)
-- Open overlapping and compund variants in a new window (from variant page)
+- Open overlapping and compound variants in a new window (from variant page)
 
 ## [4.31.1]
 ### Added
