@@ -11,6 +11,11 @@ from scout.server.blueprints.cases.controllers import (
 from scout.server.extensions import store
 
 
+def test_matchmaker_add(matchmaker_app):
+    """Test case controller performing the action of adding a case to MatchMaker"""
+    pass
+
+
 def test_phenotypes_genes_research(gene_database, case_obj, hpo_term, gene_list):
     """Test function that creates phenotype terms dictionaries with gene symbol info"""
     adapter = gene_database
