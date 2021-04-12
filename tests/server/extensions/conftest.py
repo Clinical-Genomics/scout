@@ -60,7 +60,7 @@ def matchmaker_app():
     app = create_app(
         config=dict(
             TESTING=True,
-            MME_URL="localhost",
+            MME_URL="test_matchmaker.com",
             MME_ACCEPTS="application/vnd.ga4gh.matchmaker.v1.0+json",
             MME_TOKEN=str(uuid.uuid4()),
         )
