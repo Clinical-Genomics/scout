@@ -459,7 +459,7 @@ def exac_link(variant_obj):
 def gnomad_link(variant_obj, build=37):
     """Compose link to gnomAD website."""
 
-    if build == 38:
+    if build == 38 or variant_obj["chromosome"] in ["M", "MT"]:
         url_template = (
             "http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
             "{this[position]}-{this[reference]}-{this[alternative]}?dataset=gnomad_r3"
