@@ -21,13 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tests for CADD score parsing function
 ### Changed
 - Refactor according to CodeFactor - mostly reuse of duplicated code
-
-
-## [4.31.2]
-### Added
-### Changed
 - Phenomodels language adjustment
-### Fixed
 
 ## [4.31.1]
 ### Added
