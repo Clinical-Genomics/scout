@@ -188,9 +188,9 @@ def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
         resp = client.get(url_for("auto_login"))
 
         form_data = dict(
-            title="Phenotype Subpanel title",
-            subtitle="Subpanel subtitle",
-            add_subpanel="save subpanel",
+            title="Phenotype subpanel title",
+            subtitle="Phenotype subpanel subtitle",
+            add_subpanel="Save phenotype subpanel",
         )
         # WHEN the user creates subpanel in phenotype model via POST request
         resp = client.post(
@@ -204,8 +204,8 @@ def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
         # Then the subpanel dictionary should be added to model subpanels
         updated_model = store.phenomodel_collection.find_one()
         subpanel_id = list(updated_model["subpanels"].keys())[0]
-        assert updated_model["subpanels"][subpanel_id]["title"] == "Subpanel title"
-        assert updated_model["subpanels"][subpanel_id]["subtitle"] == "Subpanel subtitle"
+        assert updated_model["subpanels"][subpanel_id]["title"] == "Phenotype subpanel title"
+        assert updated_model["subpanels"][subpanel_id]["subtitle"] == "Phenotype subpanel subtitle"
 
         # WHEN the user sends a POST request to remove the subpanel
         form_data = dict(subpanel_delete=subpanel_id)
