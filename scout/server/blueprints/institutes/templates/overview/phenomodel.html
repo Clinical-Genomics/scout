@@ -172,9 +172,12 @@
     {% for subpanel_id, subpanel in phenomodel.subpanels.items()%}
       <div class="card">
         <div class="card-header">
-          <strong>{{subpanel.title}}</strong>&nbsp;&nbsp;<text class="text-muted">{{subpanel.subtitle}}</text>
+          <a href="#" onclick="toggleDiv('{{subpanel_id}}')">
+            <strong>{{subpanel.title}}</strong>
+          </a>
+          &nbsp;&nbsp;<text class="text-muted">{{subpanel.subtitle}}</text>
         </div>
-        <div class="card-body">
+        <div class="card-body" id="{{ subpanel_id }}">
 
           <div class="row">
             {% if "checkboxes" in subpanel %}
