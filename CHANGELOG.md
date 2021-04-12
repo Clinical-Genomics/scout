@@ -22,7 +22,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Refactor according to CodeFactor - mostly reuse of duplicated code
 - Phenomodels language adjustment
-- Open variants in a new window from variants list
+- Open variants in a new window (from variants page)
+- Open overlapping and compund variants in a new window (from variant page)
 
 ## [4.31.1]
 ### Added
