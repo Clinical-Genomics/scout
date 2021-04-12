@@ -1,4 +1,4 @@
-from scout.parse.matchmaker import hpo_terms, parse_matches, omim_terms
+from scout.parse.matchmaker import hpo_terms, parse_matches, omim_terms, genomic_features
 
 
 def test_parse_hpo_terms(case_obj, test_hpo_terms):
@@ -30,12 +30,25 @@ def test_omim_terms(case_obj):
         assert disorder["id"] == f"MIM:{omim_ids[nr]}"
 
 
-def test_genomic_features(adapter, case_obj, variant_obj):
+def test_genomic_features(real_variant_database, case_obj):
     """Test function that parses pinned variants from a case and returns them as MatchMaker genomic features"""
 
     # GIVEN a case with a pinned variant that is in the database
-    adapter.variant_collection.insert_one(variant_obj)
-    case_obj["suspects"] = [variant_obj["_id"]]
+    adapter = real_variant_database
+    test_variant = adapter.variant_collection.find_one({"hgnc_symbols": ["POT1"]})
+    case_obj["suspects"] = test_variant["_id"]
+    sample_name = "NA12882"
+    """
+    adapter.case_collection.find_one_and_update(
+        {"_id" : case_obj["_id"]},
+        {"$set":{"suspects":[]}}
+    )
+
+
+    # WHEN the parse genomic_features is used to parse genotype features
+    g_features = genomic_features(adapter, case_obj, sample_name, False)
+    assert g_features
+    """
 
 
 def test_parse_matches(case_obj, match_objs):
