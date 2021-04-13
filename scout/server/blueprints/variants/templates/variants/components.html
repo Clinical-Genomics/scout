@@ -36,24 +36,7 @@
   </div>
 {% endmacro %}
 
-{% macro frequency_cell_general(variant) %}
-  <div data-toggle="tooltip" data-placement="left" data-html="true" title="
-      <div class='text-left'>
-        {% for freq_name, value, link in variant.frequencies %}
-          <div>
-            <strong>freq_name</strong>: {{ value|human_decimal}}
-          </div>
-        {% endfor %}
-        <div>
-          <strong>Local (arch.)</strong>: {{ variant.local_obs_old or 0 }} obs.
-        </div>
-      </div>
-    ">
-    {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency else '~' }}
-  </div>
-{% endmacro %}
-
-{% macro frequency_cell(variant) %}
+{% macro observed_cell_general(variant) %}
   <div data-toggle="tooltip" data-placement="left" data-html="true" title="
     <div class='text-left'>
       {% if 'gnomad_mt_homoplasmic_frequency' in variant %}
@@ -97,12 +80,19 @@
       {% endif %}
       {% if variant.cosmic_ids %}
       <strong>COSMIC</strong>: {{variant.cosmic_ids|count}} obs
+      <br>
       {% endif %}
       {% if variant.clinsig_human %}
         <strong>ClinVar</strong>:
+          <ul>
           {% for clinsig in variant.clinsig_human %}
-            <strong>{{clinsig.human}}</strong> {{ clinsig.revstat }} {{ clinsig.accession }}<br>
+            <li>
+              <strong>{{clinsig.human}}</strong>
+              {% if clinsig.revstat %}{{ clinsig.revstat }} {% endif %}
+              {% if clinsig.accession %}{{ clinsig.accession }}{% else %}no accnr{% endif %}
+            </li>
           {% endfor %}
+          </ul>
       {% endif %}
     </div>
   ">
@@ -118,10 +108,13 @@
     <span class="badge badge-dark">MITOMAP</span>
     <br>
   {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro frequency_cell(variant) %}
   {% if variant.chromosome != "MT" %}
     {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency else '~' }}
   {% else %}
     {{ variant.gnomad_mt_homoplasmic_frequency|human_decimal if variant.gnomad_mt_homoplasmic_frequency else '~' }}
   {% endif %}
-  </div>
 {% endmacro %}
