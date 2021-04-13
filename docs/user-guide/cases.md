@@ -22,12 +22,26 @@ It can be visualized by clicking on the 'Visualize report' link on the left side
 ### Pinned variants
 There's a list of "Strong candidates" on the page. This list is curated by the collaborators and consists of "pinned" variants from the variants list. This feature can be used to mark variants of particular interest that you might want to highlight to other users. Pinned variants for cases with at least one assigned HPO phenotype can be used to produce Clinvar submission files (See more under "Variant").
 
+### Matching causatives
+The case page shows a list of matching causative variants from other cases in a foldable tab. By default only the number of matches is displayed. The user can click to open the tab and expose links to the variant in the case where it has been marked causative.
+
+### Managed variants
+The case page shows a list of matching managed variants from other cases in a foldable tab. By default only the number of matches is displayed. The user can click to open the tab and expose a list of managed variants found in the case.
+
 ### Misc.
-The case page also displays a simple wiki-style synopsis on the current case that can be used to communicate information on the case to collaborators.
+The case page also displays a simple wiki-style synopsis on the current case that can be used to communicate information on the case to collaborators. The synopsis and other fields on the case page can be populated directly on load - see the admin section.
 
 Rank model version shows which rank model that has been used to rank the variants in the case
 
 The "Activity" feed is a reverse chronological list of events and comments related to the case. Examples of events include comments, status updates, assignments, Sanger sequencing orders etc.
+
+### Cytogenomics
+The case page contains three (admin configuration optional) cytogenomics applications: [Gens](https://github.com/Clinical-Genomics-Lund/gens), [Chromograph](https://github.com/mikaell/chromograph) and [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure).
+Gens integration is available via the "View CN profile" button on the case page as well as the "Copy number profile" links under SV variant summary on each SV variant page.
+Chromograph integration can be found under the Images cards on the case page. Chromograph will display ideograms, genome coverage from [TIDDIT](https://github.com/SciLifeLab/TIDDIT) (orange graph), autozygosity from [rhocall][rhocall] (gray bars) and UPD calls from [UPD.py](https://github.com/bjhall/upd). UPD calls are colored deep red for maternal UPD candidate regions,
+light pink for maternal heterodisomy calls, deep blue for paternal UPD, light blue for paternal heterodisomy and beige for unspecific isodisomy or deletion calls.
+<p align="center"><img height="252" width="460" src="../img/Chromograph_color_legend.png"></p>
+Vcf2cytosure files can be accessed from the individuals table, where a download link arrow appears in the CGH column if it is available.
 
 ### Actions
 There are a few actions you can take on this page.
@@ -42,7 +56,7 @@ The case can be moved to "Research" which means all variants will be made visibl
 
 ### MatchMaker Exchange integration
 
-Starting with release 4.4, Scout offers integration for patient data sharing via MatchMaker Exchange. General info about MatchMaker and patient matching could be found in [this paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6016856/).  
+Starting with release 4.4, Scout offers integration for patient data sharing via MatchMaker Exchange. General info about MatchMaker and patient matching could be found in [this paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6016856/).
 
 Authorized users (contact Scout admins if you wish to start sharing cases using this network!) will have access to a MatchMaker submission form present on the case page:
  <p align="center"><img height="300" src="../img/mme_subm_form.png"></p>
@@ -71,11 +85,5 @@ By clicking on 'Matches', users can review the submitted data for a case (**Pati
 Matches will be ordered by date and each single match object will display matching patients by score, from the highest (most similar to the case) to the lowest(least similar to the case).
 
 
-
-
-
-
-
-
-
 ----------
+[rhocall]: https://github.com/dnil/rhocall
