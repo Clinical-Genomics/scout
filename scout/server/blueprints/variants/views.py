@@ -354,9 +354,22 @@ def cancer_variants(institute_id, case_name):
         return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.cancer_variants(
-        store, institute_id, case_name, variants_query, result_size, form, page=page
+        store,
+        case_obj,
+        institute_id,
+        case_name,
+        variants_query,
+        result_size,
+        form,
+        page=page,
     )
-    expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
+    expand_search = request.method == "POST" and request.form.get("expand_search") in [
+        "True",
+        "",
+    ]
+    LOG.warning("=== panels data ===")
+    LOG.warning(form.gene_panels.data)
+    LOG.warning("===             ===")
     return dict(
         variant_type=variant_type,
         cytobands=cytobands,

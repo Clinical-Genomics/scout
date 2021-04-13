@@ -22,6 +22,11 @@
       {% endif %}
       href="{{ url_for('genes.gene', hgnc_id=variant.primary_gene.hgnc_id) }}">
       {{ variant.primary_gene.hgnc_symbol or variant.primary_gene.hgnc_id }}
+      {% if variant.secondary_gene %}
+        <span class="text-muted">
+          ({{ variant.secondary_gene.hgnc_symbol or variant.secondary_gene.hgnc_id }})
+        </span>
+      {% endif %}
     </a>
     {% if variant.panels|count > 0 %}
         <a

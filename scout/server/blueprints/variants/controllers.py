@@ -40,9 +40,16 @@ from scout.server.utils import (
     user_institutes,
     variant_case,
 )
+from scout.adapter.mongo.panel import PanelHandler
 from scout.utils.scout_requests import fetch_refseq_version
 
-from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
+from .forms import (
+    CancerFiltersForm,
+    FiltersForm,
+    StrFiltersForm,
+    SvFiltersForm,
+    VariantFiltersForm,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -366,10 +373,16 @@ def parse_variant(
         clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
     )
     # Assign primary gene
-    LOG.warning(variant_genes[0])
-    variant_obj["primary_gene"] = max(
-        variant_genes, key=lambda gn: SO_TERMS[gn["functional_annotation"]]['rank']
+    primary_gene = max(
+        variant_genes, key=lambda gn: SO_TERMS[gn["functional_annotation"]]["rank"]
     )
+    # get HGVNp identifier from the canonical transcript
+    hgvsp_identifier = None
+    for tc in primary_gene["transcripts"]:
+        if tc["is_canonical"]:
+            hgvsp_identifier = tc.get("protein_sequence_name")
+    primary_gene["hgvsp_identifier"] = hgvsp_identifier
+    variant_obj["primary_gene"] = primary_gene
 
     return variant_obj
 
@@ -589,8 +602,27 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
 
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
-    variants_list = [parse_variant(store, institute_obj, case_obj, variant, update=True)
-                     for variant in variant_res]
+    # get gene panel lookup table
+    gene_panels = PanelHandler()
+    gene_panel_lookup = gene_panels.gene_to_panels(case_obj)
+
+    # build variant object
+    variants_list = []
+    for variant in variant_res:
+        variant_obj = parse_variant(
+            store, institute_obj, case_obj, variant, update=True
+        )
+        # get which gene is used in the panel
+        secondary_gene = None
+        if variant_obj["primary_gene"]["hgnc_id"] not in gene_panel_lookup:
+            for gene in variant_obj["genes"]:
+                in_panels = set(gene_panel_lookup.get(gene["hgnc_id"], []))
+                # if gene is in one of the panles used
+                if len(in_panels & set(form.gene_panels.data)) > 0:
+                    secondary_gene = gene
+        # store as secondary
+        variant_obj["secondary_gene"] = secondary_gene
+        variants_list.append(variant_obj)
 
     data = dict(
         page=page,
