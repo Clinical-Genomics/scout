@@ -41,6 +41,8 @@ Gens integration is available via the "View CN profile" button on the case page 
 Chromograph integration can be found under the Images cards on the case page. Chromograph will display ideograms, genome coverage from [TIDDIT](https://github.com/SciLifeLab/TIDDIT) (orange graph), autozygosity from [rhocall][rhocall] (gray bars) and UPD calls from [UPD.py](https://github.com/bjhall/upd). UPD calls are colored deep red for maternal UPD candidate regions,
 light pink for maternal heterodisomy calls, deep blue for paternal UPD, light blue for paternal heterodisomy and beige for unspecific isodisomy or deletion calls.
 <p align="center"><img height="252" width="460" src="../img/Chromograph_color_legend.png"></p>
+Image by Mikael Laaksonen, 2021.
+
 Vcf2cytosure files can be accessed from the individuals table, where a download link arrow appears in the CGH column if it is available.
 
 ### Actions
