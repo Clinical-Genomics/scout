@@ -748,15 +748,16 @@
               <td width="5%">#{{loop.index}}</td>
               {% if variant.category == 'snv' %}
                 <td width="25%"><a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a></td>
-              {% else %}
+                <td width="25%">
+    	             {% for gene in variant.genes %}
+                    <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}</a><br>
+                    <span class="badge badge-secondary">{{gene.region_annotation}}</span>
+                   {% endfor %}
+                </td>
+              {% else %} <!-- SVs -->
                 <td width="25%"><a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a></td>
+                <td width="25%">{{ variant.genes|length }}</td>
               {% endif %}
-  	          <td width="25%">
-  	             {% for gene in variant.genes %}
-                  <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}</a><br>
-                  <span class="badge badge-secondary">{{gene.region_annotation}}</span>
-                 {% endfor %}
-              </td>
           <td>
             <ul>
               {% for reason in variant.dismiss_variant if not reason == "Select a tag"  %}
