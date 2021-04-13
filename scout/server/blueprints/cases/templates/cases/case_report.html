@@ -727,15 +727,16 @@
   </div>
   {% endmacro %}
 
-{% macro dismissed_gene_list(gene_list) %}
-  {% if gene_list|length > 3%}
-    {{ gene_list|length }}&nbsp;genes
+{% macro dismissed_gene_list(variant) %}
+  {% if variant.genes|length > 3%}
+    {{ variant.genes|length }}&nbsp;genes
   {% else %}
-    {% for gene in gene_list %}
+    {% for gene in variant.genes %}
      <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}&nbsp;<span class="badge badge-secondary">{{gene.region_annotation}}</span></a><br>
+    {% else %} <!-- 0 genes. strs for instance -->
+      <span class="badge badge-secondary">-</span>
     {% endfor %}
   {% endif %}
-
 {% endmacro %}
 
 {% macro dismissed_panel() %}
@@ -764,12 +765,12 @@
                 {% elif variant.category == 'sv' %}
                   <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
                 {% else %} <!--strs -->
-                  <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.str_display_ru or variant.str_ru}}</strong></a>
+                  <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>rep. {{variant.str_repid}}</strong></a>
                 {% endif %}
               </td>
               <td width="5%">{{variant.category}}</td>
               <td width="15%">
-                {{ dismissed_gene_list(variant.genes) }}
+                {{ dismissed_gene_list(variant) }}
               </td>
 
               <td>
