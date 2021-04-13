@@ -750,8 +750,7 @@
                 <td width="25%"><a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a></td>
                 <td width="25%">
     	             {% for gene in variant.genes %}
-                    <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}</a><br>
-                    <span class="badge badge-secondary">{{gene.region_annotation}}</span>
+                    <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}<span class="badge badge-secondary">{{gene.region_annotation}}&nbsp;</span></a><br>
                    {% endfor %}
                 </td>
               {% else %} <!-- SVs -->
