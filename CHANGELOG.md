@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display gene splice junctions data in sashimi plots
 - Update case individuals with splice junctions tracks
 - Simple Docker compose for development with local build
+- Make Phenomodels subpanels collapsible
 ### Fixed
 - Show other causative once, even if several events point to it
 - Filtering variants by mitochondrial chromosome for cases with genome build=38
@@ -24,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Phenomodels language adjustment
 - Open variants in a new window (from variants page)
 - Open overlapping and compound variants in a new window (from variant page)
+- gnomAD link points to gnomAD v.3 (build GRCh38) for mitochondrial variants.
 - Pre-collect all case-group evaluated before creating variant assessments from other cases in case group
 
 ## [4.31.1]
