@@ -1,29 +1,28 @@
 {% macro gene_cell(variant) %}
   <div class="align-items-center">
-    {% for gene in variant.genes %}
-      <a data-toggle="tooltip" data-html="true" title="
+    <a data-toggle="tooltip" data-html="true" title="
       <div>
         <div>
-          <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
+          <strong>{{ variant.primary_gene.hgnc_symbol }}</strong>: {{ variant.primary_gene.description }}
         </div>
-        {% if gene.inheritance %}
+        {% if variant.primary_gene.inheritance %}
           <div>
-            <strong>Models</strong>: {{ gene.inheritance|join(',') }}
-          </div>
-        {% endif %}
-        {% if gene.phenotypes %}
-          <div><strong>OMIM disease</strong>
-          {% for disease in gene.phenotypes %}
-            <div>
-                {{ disease.description }}
-            </div>
-          {% endfor %}
+            <strong>Models</strong>: {{ variant.primary_gene.inheritance|join(',') }}
           </div>
         {% endif %}
       </div>"
-        href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
-      </a>
-    {% endfor %}
+      {% if variant.primary_gene.phenotypes %}
+        <div><strong>OMIM disease</strong>
+        {% for disease in variant.primary_gene.phenotypes %}
+          <div>
+              {{ disease.description }}
+          </div>
+        {% endfor %}
+        </div>:
+      {% endif %}
+      href="{{ url_for('genes.gene', hgnc_id=variant.primary_gene.hgnc_id) }}">
+      {{ variant.primary_gene.hgnc_symbol or variant.primary_gene.hgnc_id }}
+    </a>
     {% if variant.panels|count > 0 %}
         <a
           class="badge badge-secondary text-white"

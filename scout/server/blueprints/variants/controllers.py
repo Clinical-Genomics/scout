@@ -19,6 +19,7 @@ from scout.constants import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CHROMOSOMES,
+    SO_TERMS,
     CHROMOSOMES_38,
     CLINSIG_MAP,
     DISMISS_VARIANT_OPTIONS,
@@ -361,7 +362,14 @@ def parse_variant(
     variant_obj["cosmic_link"] = cosmic_link(variant_obj)
     variant_obj["str_source_link"] = str_source_link(variant_obj)
     # Format clinvar information
-    variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    variant_obj["clinsig_human"] = (
+        clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    )
+    # Assign primary gene
+    LOG.warning(variant_genes[0])
+    variant_obj["primary_gene"] = max(
+        variant_genes, key=lambda gn: SO_TERMS[gn["functional_annotation"]]['rank']
+    )
 
     return variant_obj
 

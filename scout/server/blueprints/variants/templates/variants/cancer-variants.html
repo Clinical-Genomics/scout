@@ -85,11 +85,8 @@
             <td>
               <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
                                   variant_id=variant._id, cancer='yes') }}">
-                {% for gene in variant.genes %}
-                  {% if gene.hgvs_identifier %}
-                    <div>{{ gene.hgvs_identifier }}</div>
-                  {% endif %}
-                {% endfor %}
+                <div>{{ variant.primary_gene.hgvs_identifier }}</div>
+                <div>{{ variant.primary_gene.hgvsp_identifier }}</div>
               </a>
             </td>
             <td>{{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}</td>
