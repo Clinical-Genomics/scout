@@ -21,8 +21,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tests for CADD score parsing function
 ### Changed
 - Refactor according to CodeFactor - mostly reuse of duplicated code
+- Phenomodels language adjustment
+- Open variants in a new window (from variants page)
+- Open overlapping and compound variants in a new window (from variant page)
 - SV clinical filter no longer filters out sub 100 nt variants
-
 
 ## [4.31.1]
 ### Added
