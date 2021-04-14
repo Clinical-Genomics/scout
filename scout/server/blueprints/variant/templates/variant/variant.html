@@ -480,10 +480,7 @@
           <div>
             {{ igv_button(case, variant, case_groups) }}
           </div>
-          
-          {% if case.mt_bams or case.bam_files %}
-          {% endif %}
-
+         
           {% if config.SQLALCHEMY_DATABASE_URI %}
           <div class="d-flex flex-wrap">
             {% for gene in variant.genes %}
