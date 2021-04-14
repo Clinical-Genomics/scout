@@ -373,7 +373,7 @@ def parse_variant(
         clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
     )
     # Assign primary gene
-    primary_gene = max(
+    primary_gene = min(
         variant_genes, key=lambda gn: SO_TERMS[gn["functional_annotation"]]["rank"]
     )
     # get HGVNp identifier from the canonical transcript
