@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update case individuals with splice junctions tracks
 - Simple Docker compose for development with local build
 - Make Phenomodels subpanels collapsible
+- User side documentation of cytogenomics features (Gens, Chromograph, vcf2cytosure, rhocall)
 ### Fixed
 - Show other causative once, even if several events point to it
 - Filtering variants by mitochondrial chromosome for cases with genome build=38
@@ -28,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Open overlapping and compound variants in a new window (from variant page)
 - gnomAD link points to gnomAD v.3 (build GRCh38) for mitochondrial variants.
 - Display only number of affected genes for dismissed SVs in general report
+- Chromosome build check when populating the variants filter chromosome selection
 - Display mitochondrial and rare diseases coverage report in cases with missing 'rare' track
 
 ## [4.31.1]
