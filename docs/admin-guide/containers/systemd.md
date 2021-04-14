@@ -19,11 +19,11 @@ into a Linux user's home directory. The Scout software and Mongodb software will
 
 | Systemd service | Description |
 | --              | --          |
-| [scout-pod.service](./scout-pod.service) | Runs a pod in which the other containers will be running |
-| [scout-create-datadir.service](./scout-create-datadir.service) | Creates an empty directory that will be used by Mongodb to store data |
-| [scout-mongo.service](./scout-mongo.service) | Runs Mongodb in the container docker.io/library/mongo |
-| [scout-setup-demo.service](./scout-setup-demo.service) | Loads the demo data by running the container docker.io/clinicalgenomics/scout:latest  |
-| [scout-scout.service](./scout-scout.service) | Serves the Scout webserver by running the container docker.io/clinicalgenomics/scout:latest |
+| [scout-pod.service](https://github.com/Clinical-Genomics/scout/blob/master/containers/systemd/scout-pod.service) | Runs a pod in which the other containers will be running |
+| [scout-create-datadir.service](https://github.com/Clinical-Genomics/scout/blob/master/containers/systemd/scout-create-datadir.service) | Creates an empty directory that will be used by Mongodb to store data |
+| [scout-mongo.service](https://github.com/Clinical-Genomics/scout/blob/master/containers/systemd/scout-mongo.service) | Runs Mongodb in the container docker.io/library/mongo |
+| [scout-setup-demo.service](https://github.com/Clinical-Genomics/scout/blob/master/containers/systemd/scout-setup-demo.service) | Loads the demo data by running the container docker.io/clinicalgenomics/scout:latest  |
+| [scout-scout.service](https://github.com/Clinical-Genomics/scout/blob/master/containers/systemd/scout-scout.service) | Serves the Scout webserver by running the container docker.io/clinicalgenomics/scout:latest |
 
 
 It is also possible to run the Scout systemd services in the same way but on a new Fedora CoreOS computer.
@@ -33,7 +33,7 @@ It is also possible to run the Scout systemd services in the same way but on a n
 
 In the Git repo root directory, run
 
-1. Copy the systemd unit files located under scout/containers/systemd to _~/.config/systemd/user_
+1. Copy the systemd unit files located under `scout/containers/systemd` to `~/.config/systemd/user`
 
 ```
 mkdir -p ~/.config/systemd/user
@@ -76,7 +76,7 @@ systemctl --user status scout-pod.service scout-create-datadir.service scout-mon
 If you would like the services to start automatically after a reboot of your computer,
 run
 
-```s
+```
 loginctl enable-linger $USER
 ```
 If the above command should fail due to permission issues, run it as superuser (sudo).

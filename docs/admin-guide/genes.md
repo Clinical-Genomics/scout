@@ -26,7 +26,7 @@ scout load exons
 ```
 where you can specify what build to use, default is `37`.
 
-There has been some problems to download from the ensembl biomart for build `38`, in this case one can download a flatfile from 
+There has been some problems to download from the ensembl biomart for build `38`, in this case one can download a flatfile from
 the [ensembl martview][martview] and selecting:
 
 - database: ensembl genes (current version)
@@ -43,10 +43,10 @@ Download this file and use command
 ```
 scout load exons --exons-file path/to/mart_export.txt --build 38
 ```
-    
+
 
 [martview]: https://www.ensembl.org/biomart/martview/
-[hgnc]: www.genenames.org
+[hgnc]: https://www.genenames.org
 [biomart]: http://www.ensembl.org/biomart/martview/63a1d476e23a0672e6c89d0e80fb62b5
 [omim]: https://omim.org
 [hpo]: https://human-phenotype-ontology.github.io
