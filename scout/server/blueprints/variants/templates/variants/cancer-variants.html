@@ -49,14 +49,14 @@
     <table class="table table-hover table-bordered" style="table-layout:fixed">
       <thead>
             <tr>
-              <th title="Observed"></th>
+              <th style="width:2%"></th>
               <th title="Gene">Gene</th>
-              <th title="Exon">Exon</th>
-              <th title="Sequence variant" style="width:8%">HGVS[c/p]</th>
+              <th title="Sequence variant" style="width:12%">HGVS[c/p]</th>
               <th title="Assessments including variant tier">Tier</th>
               <th title="Rank score">Score</th>
               <th title="Chromosome and genomic coordinate" style="width:10%">Chr pos</th>
               <th title="Poulation frequency">Pop Freq</th>
+              <th title="Observed" style="width:7%">Observed</th>
               <th title="Variant type">Type</th>
               <th title="Functional consequence annotation" style="width:18%">Consequence</th>
               <th data-toggle="tooltip" data-placement="top" title="Tumor alt. AF. &#013; Alt. allele count | Ref. allele count">Tumor</th>
@@ -74,18 +74,10 @@
           {% endif %}
             <td>
               <input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()">
-              {{ observed_cell_general(variant) }}
             </td>
             <td>{{ gene_cell(variant) }}</td>
             <td>
-              {% for gene in variant.genes %}
-                {% if gene.exon %}
-                  <div>{{ gene.exon }}</div>
-                {% endif %}
-              {% endfor %}
-            </td>
-            <td>
-              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
+              <a href="{{ url_for('variant.cancer_variant', institute_id=institute._id, case_name=case.display_name,
                                   variant_id=variant._id, cancer='yes') }}">
                 <div>{{ variant.primary_gene.hgvs_identifier }}</div>
                 <div>{{ variant.primary_gene.hgvsp_identifier }}</div>
@@ -95,6 +87,7 @@
             <td>{{ score_cell(variant) }}</td>
             <td>{{ position_cell(variant) }}</td>
             <td class="text-right">{{ frequency_cell(variant) }}</td>
+            <td>{{ observed_cell_general(variant) }}</td>
             <td>{{ variant.sub_category }}</td>
             <td>
               {% for annotation in variant.functional_annotations %}
