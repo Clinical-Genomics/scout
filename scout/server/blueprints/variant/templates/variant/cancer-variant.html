@@ -354,8 +354,19 @@
   <div class="card panel-default">
     <div class="panel-heading">Summary</div>
     <div class="card-body">
+      {% set tmp_gene_info = [] %}
+      {% for gene in variant.genes %}
+        {% for transcript in gene.transcripts %}
+          {% if transcript.is_primary %}
+            {% do tmp_gene_info.append(gene) %}
+            {% do tmp_gene_info.append(transcript) %}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+      {% set primary_gene = tmp_gene_info[0] %}
+      {% set primary_transcript = tmp_gene_info[1] %}
       <a href=""><h5 class="card-title">
-        {{ variant.genes[0].hgnc_symbol }}; {{ variant.genes[0].description }}
+        {{ primary_gene.hgnc_symbol }}; {{ primary_gene.description }}
       </h5></a>
       <ul class="list-group list-group-flush">
         <li class="list-group-item">
@@ -378,8 +389,9 @@
           ;
           <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
         </li>
+        <li class="list-group-item">HGVSp: {{ primary_transcript.protein_sequence_name }}</li>
         <li class="list-group-item">
-          <span class="font-weight-bold">{{ variant.genes[0].functional_annotation|truncate(20, True) }}</span> in <span class="font-weight-bold">{{ variant.genes[0].region_annotation }} region</span>
+          <span class="font-weight-bold">{{ primary_gene.functional_annotation|truncate(20, True) }}</span> in <span class="font-weight-bold">{{ primary_gene.region_annotation }} region</span>
         <li class="list-group-item">Rank score: <span class="font-weight-bold">{{ variant.rank_score }}</span>
         </li>
       </ul>
