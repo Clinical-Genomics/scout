@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Open overlapping and compound variants in a new window (from variant page)
 - gnomAD link points to gnomAD v.3 (build GRCh38) for mitochondrial variants.
 - Display only number of affected genes for dismissed SVs in general report
+- Chromosome build check when populating the variants filter chromosome selection
 
 ## [4.31.1]
 ### Added
