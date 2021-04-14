@@ -76,7 +76,7 @@
             <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
             <td class="text-left">{{cell_rank(variant, institute, case, form, manual_rank_options)}}</td>
             <td>
-              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
+              <a href="{{ url_for('variant.cancer_variant', institute_id=institute._id, case_name=case.display_name,
                                   variant_id=variant._id, cancer='yes') }}">
               {% for annotation in variant.canonical_transcripts %}
                 <div>{{ annotation }}</div>
