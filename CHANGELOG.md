@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - HPO gene search button triggers any warnings for clinical / non-existing genes also on first search
 - Fixed a bug in variants pages caused by MT variants without alt_frequency
 - Tests for CADD score parsing function
+- Missing case track on case reupload
 ### Changed
 - Refactor according to CodeFactor - mostly reuse of duplicated code
 - Phenomodels language adjustment

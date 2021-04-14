@@ -689,7 +689,11 @@ class CaseHandler(object):
         The following will be updated:
             - collaborators: If new collaborators these will be added to the old ones
             - analysis_date: Is updated to the new date
-            - analyses: The new analysis date will be added to old runs
+            - delivery_report: path to the static delivery report file
+            - cnv_report: path to the CNV report file
+            - coverage_qc_report: path to the static coverage and qc report file
+            - gene_fusion_report: path to the gene fusions report
+            - gene_fusion_report_research: path to the research gene fusions report
             - individuals: There could be new individuals
             - updated_at: When the case was updated in the database
             - rerun_requested: Is set to False since that is probably what happened
@@ -699,16 +703,19 @@ class CaseHandler(object):
             - rank_model_version: If there is a new rank model
             - sv_rank_model_version: If there is a new sv rank model
             - madeline_info: If there is a new pedigree
+            - chromograph_image_files: path to Chromograph image files
+            - chromograph_prefixes: path to Chromograph prefixes
+            - smn_tsv: path to static SMN TSV file
             - vcf_files: paths to the new files
-            - cnv_report: path to the CNV report file
-            - coverage_qc_report: path to the static coverage and qc report file
-            - gene_fusion_report: path to the gene fusions report
-            - gene_fusion_report_research: path to the research gene fusions report
             - has_svvariants: If there are new svvariants
             - has_strvariants: If there are new strvariants
+            - is_research: True is is a research case otherwise False
+            - research_requested: Boolean, if research variants where requested for this case
             - multiqc: If there's an updated multiqc report location
             - mme_submission: If case was submitted to MatchMaker Exchange
+            - status: case status
             - variants_stats: number of variants by type
+            - track: "rare" or "cancer"
 
             Args:
                 case_obj(dict): The new case information
@@ -775,6 +782,7 @@ class CaseHandler(object):
                     "mme_submission": case_obj.get("mme_submission"),
                     "status": case_obj.get("status"),
                     "variants_stats": case_obj.get("variants_stats"),
+                    "track": case_obj.get("track"),
                 },
             },
             return_document=pymongo.ReturnDocument.AFTER,
