@@ -49,8 +49,7 @@ LOG = logging.getLogger(__name__)
 def populate_chrom_choices(form, case_obj):
     """Populate the option of the chromosome select accordig to the case genome build"""
     # Populate chromosome choices
-    flash(case_obj)
-    chromosomes = CHROMOSOMES if str(case_obj.get("genome_build")) == "37" else CHROMOSOMES_38
+    chromosomes = CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
     form.chrom.choices = [("", "All")] + [(chrom, chrom) for chrom in chromosomes]
 
 
