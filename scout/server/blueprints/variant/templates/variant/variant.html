@@ -68,7 +68,7 @@
 
     <div class="row">
       <div class="col-sm-12">{{ matching_variants() }}</div>
-      <div class="col-sm-4">{{ panel_basics() }}</div>
+      <div class="col-sm-4">{{ panel_classify() }}</div>
       <div class="col-sm-8">
         <div class="col-sm-12">{{ panel_summary() }}</div>
         {% if variant.disease_associated_transcripts %}
@@ -259,52 +259,55 @@
 {% endmacro %}
 
 {% macro panel_basics() %}
+  <table class="table table-sm">
+    <tbody>
+      <tr>
+        <td>
+          Position
+          <span>
+            <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
+            {% if variant.is_par %}
+              <span class="badge badge-info">PAR</span>
+            {% endif %}
+          </span>
+        </td>
+        <td>
+          Change
+          <span>
+            {%- if variant.reference|length > 8 -%}
+              <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+                style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.reference}}" title="Copy to clipboard">
+              </button>
+            {%- else -%}
+              <strong>{{ variant.reference }}</strong>
+            {%- endif -%}
+              →
+            {%- if variant.alternative|length > 8 -%}
+              <strong>{{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+                style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.alternative}}" title="Copy to clipboard">
+                </button>
+            {%- else -%}
+              <strong>{{ variant.alternative }}</strong>
+            {%- endif -%}
+            </span>
+        </td>
+      </tr>
+      {% if variant.str_repid %}
+      <tr>
+        <td colspan="2">
+          Repeat locus
+          <span><strong>{{variant.str_repid}}</strong></span>
+        </td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+{% endmacro  %}
+
+{% macro panel_classify() %}
   <div class="card panel-default">
-    <div class="panel-heading">Basics</div>
+    <div class="panel-heading">Classify</div>
     <div class="card-body">
-      <table class="table table-sm">
-        <tbody>
-          <tr>
-            <td>
-              Position
-              <span>
-                <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
-                {% if variant.is_par %}
-                  <span class="badge badge-info">PAR</span>
-                {% endif %}
-              </span>
-            </td>
-            <td>
-              Change
-              <span>
-                {%- if variant.reference|length > 8 -%}
-                  <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
-                    style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.reference}}" title="Copy to clipboard">
-                  </button>
-                {%- else -%}
-                  <strong>{{ variant.reference }}</strong>
-                {%- endif -%}
-                  →
-                {%- if variant.alternative|length > 8 -%}
-                  <strong>{{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
-                    style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.alternative}}" title="Copy to clipboard">
-                    </button>
-                {%- else -%}
-                  <strong>{{ variant.alternative }}</strong>
-                {%- endif -%}
-                </span>
-            </td>
-          </tr>
-          {% if variant.str_repid %}
-          <tr>
-            <td colspan="2">
-              Repeat locus
-              <span><strong>{{variant.str_repid}}</strong></span>
-            </td>
-          </tr>
-          {% endif %}
-        </tbody>
-      </table>
       <div class="table-responsive">
         <table class="table table-sm"">
           <thead class="border-top">
