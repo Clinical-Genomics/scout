@@ -8,7 +8,7 @@ The November update includes the following highlights:
 
 - You can now add an entirely NEW [gene panel](https://scout.scilifelab.se/panels) directly from Scout 🆕
 
-  ![New gene panel](/img/blog/new-gene-panel.png)
+  ![New gene panel](../img/blog/new-gene-panel.png)
 
 - Scout now uploads ALL variants on the mitochondrial chromosome (MT) - independently of rank score
 
@@ -21,7 +21,7 @@ The November update includes the following highlights:
 
 - We now report if you filtered for a gene in the clinical list which isn't part of any gene panel
 
-  ![Clinical list check](/img/blog/clinical-list-check.png)
+  ![Clinical list check](../img/blog/clinical-list-check.png)
 
 ## Bugfixes
 
