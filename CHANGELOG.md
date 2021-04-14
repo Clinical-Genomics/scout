@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Fixed
 - iSort lint check only
+### Changed
+- Reworked the layout and content of cancer variant view
 
 ## [4.32]
 ### Added
