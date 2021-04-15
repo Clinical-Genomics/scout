@@ -1,8 +1,8 @@
 import logging
 from pprint import pprint as pp
-import intervaltree
 
-from pymongo.errors import DuplicateKeyError, BulkWriteError
+import intervaltree
+from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from scout.exceptions import IntegrityError
 

@@ -1,7 +1,6 @@
 import logging
 
 import click
-
 from flask.cli import with_appcontext
 
 from scout.commands.utils import builds_option

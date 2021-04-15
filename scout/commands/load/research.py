@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from functools import partial
 import logging
+from functools import partial
 from typing import Optional
 
 import click

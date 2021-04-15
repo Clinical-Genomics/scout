@@ -1,17 +1,14 @@
-import pytest
 from pprint import pprint as pp
 
-from scout.exceptions.database import IntegrityError
-from scout.server.blueprints.variants.controllers import variants
+import pytest
+from cyvcf2 import VCF
 
+from scout.build import build_variant
+from scout.exceptions.database import IntegrityError
+from scout.parse.variant import parse_variant
 from scout.parse.variant.headers import parse_rank_results_header, parse_vep_header
 from scout.parse.variant.rank_score import parse_rank_score
-
-from scout.parse.variant import parse_variant
-from scout.build import build_variant
-
-
-from cyvcf2 import VCF
+from scout.server.blueprints.variants.controllers import variants
 
 
 def test_compounds_region(real_populated_database, case_obj, variant_clinical_file):

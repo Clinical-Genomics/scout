@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
 from datetime import datetime
-from bson.objectid import ObjectId
-from pymongo import ReturnDocument
 
 import pymongo
+from bson.objectid import ObjectId
+from pymongo import ReturnDocument
 
 LOG = logging.getLogger(__name__)
 

@@ -4,49 +4,41 @@
 !!!!!!!! NOT COMPLETE !!!!!!!!
 """
 
-import os
 import logging
-
+import os
 from pprint import pprint as pp
 
 import click
 import coloredlogs
 
+from scout.demo.resources import (
+    exac_reduced_path,
+    genemap2_reduced_path,
+    genes37_reduced_path,
+    genes38_reduced_path,
+    hgnc_reduced_path,
+    hpo_phenotype_to_terms_reduced_path,
+    hpogenes_reduced_path,
+    hpoterms_reduced_path,
+    mim2gene_reduced_path,
+    transcripts37_reduced_path,
+    transcripts38_reduced_path,
+)
+from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_genes, parse_ensembl_transcripts
+from scout.parse.exac import parse_exac_genes
+from scout.parse.hgnc import parse_hgnc_line
+from scout.parse.omim import parse_genemap2, parse_mim2gene
 from scout.utils.scout_requests import (
-    fetch_hgnc,
-    fetch_mim_files,
-    fetch_exac_constraint,
+    fetch_ensembl_exons,
     fetch_ensembl_genes,
     fetch_ensembl_transcripts,
-    fetch_ensembl_exons,
+    fetch_exac_constraint,
+    fetch_hgnc,
     fetch_hpo_files,
     fetch_hpo_genes,
     fetch_hpo_terms,
+    fetch_mim_files,
 )
-
-from scout.parse.hgnc import parse_hgnc_line
-from scout.parse.omim import parse_genemap2, parse_mim2gene
-from scout.parse.exac import parse_exac_genes
-from scout.parse.ensembl import (
-    parse_ensembl_genes,
-    parse_ensembl_exons,
-    parse_ensembl_transcripts,
-)
-
-from scout.demo.resources import (
-    hgnc_reduced_path,
-    genemap2_reduced_path,
-    mim2gene_reduced_path,
-    exac_reduced_path,
-    genes37_reduced_path,
-    genes38_reduced_path,
-    transcripts37_reduced_path,
-    transcripts38_reduced_path,
-    hpogenes_reduced_path,
-    hpoterms_reduced_path,
-    hpo_phenotype_to_terms_reduced_path,
-)
-
 
 LOG = logging.getLogger(__name__)
 

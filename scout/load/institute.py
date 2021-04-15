@@ -1,4 +1,5 @@
 import logging
+
 from scout.build import build_institute
 
 LOG = logging.getLogger(__name__)

@@ -4,8 +4,12 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-from flask_login import current_user
+from anytree import Node, RenderTree
+from anytree.exporter import DictExporter
+from anytree.importer import DictImporter
 from flask import flash
+from flask_login import current_user
+
 from scout.constants import CASE_STATUSES
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.genes.controllers import gene
@@ -13,10 +17,8 @@ from scout.server.blueprints.variant.utils import predictions
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
 from scout.utils.md5 import generate_md5_key
+
 from .forms import CaseFilterForm
-from anytree.importer import DictImporter
-from anytree import RenderTree, Node
-from anytree.exporter import DictExporter
 
 TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
 

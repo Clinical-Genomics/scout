@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+
 import pymongo.errors as pymongo_errors
 
 from scout.constants import INDEXES

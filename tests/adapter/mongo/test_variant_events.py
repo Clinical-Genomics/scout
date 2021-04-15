@@ -1,7 +1,8 @@
-import pytest
-import logging
 import datetime
+import logging
+
 import pymongo
+import pytest
 
 from scout.constants import VERBS_MAP
 

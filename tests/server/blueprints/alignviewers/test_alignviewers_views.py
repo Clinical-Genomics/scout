@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import requests
-
 from flask import url_for
 
 

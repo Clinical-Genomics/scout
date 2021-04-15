@@ -11,10 +11,7 @@ from wtforms import (
     validators,
 )
 
-from scout.constants import (
-    SV_TYPES,
-    CHROMOSOMES,
-)
+from scout.constants import CHROMOSOMES, SV_TYPES
 
 LOG = logging.getLogger(__name__)
 CHROMOSOME_FILTER_OPTIONS = [("", "All")] + [(chrom, chrom) for chrom in CHROMOSOMES]

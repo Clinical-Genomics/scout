@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import click
 from flask.cli import with_appcontext
+
 from scout.load.cytoband import load_cytobands
 from scout.resources import cytoband_files
 from scout.server.extensions import store
