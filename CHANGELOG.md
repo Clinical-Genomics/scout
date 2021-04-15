@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Phenomodels language adjustment
 - Open variants in a new window (from variants page)
 - Open overlapping and compound variants in a new window (from variant page)
+- Dont display OMIM panel and causatives variant panel in case view for cancer cases
 
 ## [4.31.1]
 ### Added
