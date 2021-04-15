@@ -1,6 +1,5 @@
-from scout.parse.ensembl import parse_ensembl_exons
-
 from scout.constants import CHROMOSOMES
+from scout.parse.ensembl import parse_ensembl_exons
 
 
 def test_exons_file_37(exons_handle):

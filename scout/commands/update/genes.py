@@ -17,22 +17,22 @@ Copyright (c) 2015 __MoonsoInc__. All rights reserved.
 
 """
 import logging
-
-import click
-from flask.cli import with_appcontext, current_app
 from pprint import pprint as pp
 
-from scout.load import load_hgnc_genes, load_transcripts, load_exons
+import click
+from flask.cli import current_app, with_appcontext
+
+from scout.load import load_exons, load_hgnc_genes, load_transcripts
 from scout.server.extensions import store
-from scout.utils.link import link_genes
 from scout.utils.handle import get_file_handle
+from scout.utils.link import link_genes
 from scout.utils.scout_requests import (
-    fetch_mim_files,
+    fetch_ensembl_genes,
+    fetch_ensembl_transcripts,
+    fetch_exac_constraint,
     fetch_genes_to_hpo_to_disease,
     fetch_hgnc,
-    fetch_ensembl_genes,
-    fetch_exac_constraint,
-    fetch_ensembl_transcripts,
+    fetch_mim_files,
 )
 
 LOG = logging.getLogger(__name__)

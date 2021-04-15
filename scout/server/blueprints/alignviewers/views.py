@@ -2,21 +2,20 @@
 import logging
 import os.path
 
+import requests
 from flask import (
-    abort,
     Blueprint,
-    render_template,
-    send_file,
-    request,
     Response,
+    abort,
     current_app,
     flash,
+    render_template,
+    request,
+    send_file,
 )
 
-from .partial import send_file_partial
 from . import controllers
-
-import requests
+from .partial import send_file_partial
 
 alignviewers_bp = Blueprint(
     "alignviewers",

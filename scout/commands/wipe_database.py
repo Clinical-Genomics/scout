@@ -11,9 +11,9 @@ Copyright (c) 2015 __MoonsoInc__. All rights reserved.
 """
 
 import logging
-import click
 
-from flask.cli import with_appcontext, current_app
+import click
+from flask.cli import current_app, with_appcontext
 
 LOG = logging.getLogger(__name__)
 

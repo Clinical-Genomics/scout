@@ -1,6 +1,7 @@
+from pprint import pprint as pp
+
 import pytest
 
-from pprint import pprint as pp
 from scout.exceptions import IntegrityError
 
 

@@ -8,6 +8,7 @@ import json
 import logging
 import subprocess
 from subprocess import CalledProcessError
+
 from scout.exceptions.config import ConfigError
 from scout.utils.scout_requests import get_request_json as api_get
 

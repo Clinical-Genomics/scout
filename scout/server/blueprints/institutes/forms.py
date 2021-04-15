@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm
-from wtforms.widgets import TextInput
 from wtforms import (
     BooleanField,
+    DecimalField,
+    Field,
     IntegerField,
     SelectField,
     SelectMultipleField,
     SubmitField,
-    DecimalField,
     TextField,
     validators,
-    Field,
 )
-from scout.constants import PHENOTYPE_GROUPS, CASE_SEARCH_TERMS
+from wtforms.widgets import TextInput
+
+from scout.constants import CASE_SEARCH_TERMS, PHENOTYPE_GROUPS
 
 CASE_SEARCH_KEY = [(value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()]
 
