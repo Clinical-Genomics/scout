@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed the look of IGV settings on SNV variant page
 - Cases analyzed once shown as `rerun`
 - Missing case track on case re-upload
+- Fixed severity rank for SO term "regulatory region ablation"
 ### Changed
 - Refactor according to CodeFactor - mostly reuse of duplicated code
 - Phenomodels language adjustment
