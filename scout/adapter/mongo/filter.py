@@ -106,9 +106,7 @@ class FilterHandler(object):
 
         return filter_id
 
-    def audit_filter(
-        self, filter_obj, institute_obj, case_obj, user_obj, category="snv", link=None
-    ):
+    def audit_filter(self, filter_id, institute_obj, case_obj, user_obj, category="snv", link=None):
         """Mark audit of filter for case in events.
 
         Arguments:
