@@ -1,21 +1,19 @@
 # -*- coding: utf-8 -*-
 import logging
+from pprint import pprint as pp
 
 import click
 import coloredlogs
-import yaml
 import pymongo
-
-from pprint import pprint as pp
-
-# Adapter stuff
-from scout.adapter.mongo import MongoAdapter
-from scout.adapter.client import get_connection
+import yaml
 from pymongo.errors import ConnectionFailure
 
 # General, logging
 from scout import __version__
+from scout.adapter.client import get_connection
 
+# Adapter stuff
+from scout.adapter.mongo import MongoAdapter
 from scout.adapter.utils import check_connection
 
 try:

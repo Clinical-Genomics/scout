@@ -1,14 +1,14 @@
 from scout.server.blueprints.variant.utils import (
-    predictions,
-    frequencies,
-    is_affected,
-    evaluation,
-    transcript_str,
-    frequency,
-    end_position,
     add_panel_specific_gene_info,
-    update_transcripts_information,
     clinsig_human,
+    end_position,
+    evaluation,
+    frequencies,
+    frequency,
+    is_affected,
+    predictions,
+    transcript_str,
+    update_transcripts_information,
 )
 
 

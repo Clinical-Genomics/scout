@@ -5,9 +5,9 @@ import click
 from flask.cli import with_appcontext
 
 from scout.load.report import (
-    load_delivery_report,
     load_cnv_report,
     load_coverage_qc_report,
+    load_delivery_report,
     load_gene_fusion_report,
 )
 from scout.server.extensions import store

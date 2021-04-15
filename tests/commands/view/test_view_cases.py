@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pymongo
+
 from scout.commands import cli
 from scout.server.extensions import store
 

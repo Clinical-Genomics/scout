@@ -1,9 +1,8 @@
 from copy import deepcopy
 from pprint import pprint as pp
 
-from werkzeug.datastructures import MultiDict
-
 import pytest
+from werkzeug.datastructures import MultiDict
 
 
 @pytest.yield_fixture

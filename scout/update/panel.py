@@ -1,5 +1,4 @@
 import logging
-
 from pprint import pprint as pp
 
 from scout.exceptions import IntegrityError
