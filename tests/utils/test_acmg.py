@@ -1,9 +1,9 @@
 from scout.utils.acmg import (
-    is_pathogenic,
-    is_likely_pathogenic,
+    get_acmg,
     is_benign,
     is_likely_benign,
-    get_acmg,
+    is_likely_pathogenic,
+    is_pathogenic,
 )
 
 

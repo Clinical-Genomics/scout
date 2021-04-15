@@ -3,21 +3,21 @@ import decimal
 import logging
 
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField
 from wtforms import (
     BooleanField,
     DecimalField,
     Field,
-    TextField,
-    SelectMultipleField,
-    SelectField,
     HiddenField,
-    StringField,
     IntegerField,
+    SelectField,
+    SelectMultipleField,
+    StringField,
     SubmitField,
+    TextField,
     validators,
 )
 from wtforms.widgets import TextInput
-from flask_wtf.file import FileField
 
 from scout.constants import (
     CLINSIG_MAP,

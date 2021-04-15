@@ -1,9 +1,8 @@
 import logging
-
 from os import path
 
-from scout.utils.md5 import generate_md5_key
 from scout.utils.handle import get_file_handle
+from scout.utils.md5 import generate_md5_key
 
 LOG = logging.getLogger(__name__)
 

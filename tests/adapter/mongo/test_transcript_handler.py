@@ -1,8 +1,7 @@
 import pytest
 
-from scout.models.hgnc_map import HgncGene
-
 from scout.exceptions import IntegrityError
+from scout.models.hgnc_map import HgncGene
 
 #################### HGNC transcript tests ####################
 

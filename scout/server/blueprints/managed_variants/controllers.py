@@ -1,8 +1,8 @@
 import logging
 import os.path
 
-from scout.parse.variant.managed_variant import parse_managed_variant_lines
 from scout.build import build_managed_variant
+from scout.parse.variant.managed_variant import parse_managed_variant_lines
 
 LOG = logging.getLogger(__name__)
 

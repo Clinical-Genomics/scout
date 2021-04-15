@@ -2,7 +2,7 @@
 import logging
 
 from scout.adapter import MongoAdapter
-from scout.exceptions import IntegrityError, DataNotFoundError
+from scout.exceptions import DataNotFoundError, IntegrityError
 
 LOG = logging.getLogger(__name__)
 
