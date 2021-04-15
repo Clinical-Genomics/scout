@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed a bug in variants pages caused by MT variants without alt_frequency
 - Tests for CADD score parsing function
 - Fixed the look of IGV settings on SNV variant page
+- Cases analyzed once shown as `rerun`
 - Missing case track on case re-upload
 ### Changed
 - Refactor according to CodeFactor - mostly reuse of duplicated code
