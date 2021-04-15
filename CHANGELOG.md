@@ -4,10 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [X.X.X]
+## [4.32]
 ### Added
 - Load and show MITOMAP associated diseases from VCF (INFO field: MitomapAssociatedDiseases, via HmtNote)
-- Show variant allele frequencies for mitochondrial variants
+- Show variant allele frequencies for mitochondrial variants (GRCh38 cases)
 - Extend "public" json API with diseases (OMIM) and phenotypes (HPO)
 - HPO gene list download now has option for clinical and non-clinical genes
 - Display gene splice junctions data in sashimi plots
