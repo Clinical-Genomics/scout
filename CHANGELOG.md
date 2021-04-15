@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tests for CADD score parsing function
 - Fixed the look of IGV settings on SNV variant page
 - Cases analyzed once shown as `rerun`
+- Missing case track on case re-upload
 ### Changed
 - Refactor according to CodeFactor - mostly reuse of duplicated code
 - Phenomodels language adjustment
@@ -33,6 +34,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - gnomAD link points to gnomAD v.3 (build GRCh38) for mitochondrial variants.
 - Display only number of affected genes for dismissed SVs in general report
 - Chromosome build check when populating the variants filter chromosome selection
+- Display mitochondrial and rare diseases coverage report in cases with missing 'rare' track
 
 ## [4.31.1]
 ### Added
