@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
+from pprint import pprint as pp
 
 from scout.constants import SO_TERMS
-from pprint import pprint as pp
 
 LOG = logging.getLogger(__name__)
 

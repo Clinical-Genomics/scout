@@ -1,5 +1,4 @@
 import logging
-
 from datetime import datetime
 from pprint import pprint as pp
 
@@ -7,10 +6,9 @@ import click
 from flask.cli import with_appcontext
 
 from scout.load import load_exons
-
+from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import fetch_ensembl_exons
-from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 

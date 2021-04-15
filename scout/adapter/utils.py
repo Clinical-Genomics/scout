@@ -7,9 +7,8 @@ except ImportError:
     # Python 2.x
     from urllib import quote_plus
 
-
 from pymongo import MongoClient
-from pymongo.errors import ServerSelectionTimeoutError, OperationFailure
+from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 
 LOG = logging.getLogger(__name__)
 

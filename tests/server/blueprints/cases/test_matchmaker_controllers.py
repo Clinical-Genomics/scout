@@ -1,11 +1,12 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
 import socket
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
-import requests
-import pymongo
 
+import pymongo
+import requests
+
+from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms
 from scout.server.blueprints.cases import controllers
-from scout.parse.matchmaker import genomic_features, omim_terms, hpo_terms
 
 MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
 MME_TOKEN = "test_token"

@@ -1,12 +1,11 @@
 import logging
-
 from datetime import datetime
 from pprint import pprint as pp
 
 import pymongo
 
-from scout.exceptions import IntegrityError
 from scout.constants import PHENOTYPE_GROUPS
+from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
 

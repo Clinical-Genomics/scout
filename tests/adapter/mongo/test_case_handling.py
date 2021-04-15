@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import pytest
 import copy
-import pymongo
 import logging
 from pprint import pprint as pp
+
+import pymongo
+import pytest
 
 from scout.constants import INDEXES, REV_ACMG_MAP
 from scout.exceptions import IntegrityError
