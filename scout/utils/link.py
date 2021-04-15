@@ -1,15 +1,10 @@
-import sys
 import logging
-
+import sys
 from pprint import pprint as pp
 
-from scout.parse.hgnc import parse_hgnc_genes
-from scout.parse.ensembl import (
-    parse_ensembl_transcripts,
-    parse_ensembl_exons,
-    parse_ensembl_genes,
-)
+from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_genes, parse_ensembl_transcripts
 from scout.parse.exac import parse_exac_genes
+from scout.parse.hgnc import parse_hgnc_genes
 from scout.parse.hpo_terms import get_incomplete_penetrance_genes
 from scout.parse.omim import get_mim_genes
 

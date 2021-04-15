@@ -3,9 +3,9 @@ import logging
 import click
 from flask.cli import with_appcontext
 
-from scout.utils.date import get_date
-from scout.update.panel import update_panel
 from scout.server.extensions import store
+from scout.update.panel import update_panel
+from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
 

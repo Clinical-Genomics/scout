@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from scout.export.variant import export_mt_variants, export_verified_variants
-from scout.constants.variants_export import MT_EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.constants import CALLERS
+from scout.constants.variants_export import MT_EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
+from scout.export.variant import export_mt_variants, export_verified_variants
 
 
 def test_export_mt_variants(case_obj, real_populated_database):

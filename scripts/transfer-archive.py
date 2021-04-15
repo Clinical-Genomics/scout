@@ -19,7 +19,6 @@ from pymongo.database import Database
 from scout.adapter import MongoAdapter
 from scout.adapter.mongo.case import get_variantid
 
-
 LOG = logging.getLogger(__name__)
 
 

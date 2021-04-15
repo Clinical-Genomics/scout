@@ -1,12 +1,11 @@
 import logging
-
 from datetime import datetime
 from pprint import pprint as pp
 
 from click import progressbar
 
-from scout.parse.ensembl import parse_ensembl_exons
 from scout.build.genes.exon import build_exon
+from scout.parse.ensembl import parse_ensembl_exons
 
 LOG = logging.getLogger(__name__)
 

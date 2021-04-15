@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 import logging
-
+import traceback
 from pprint import pprint as pp
 
-from flask.cli import with_appcontext
 import click
 import yaml
-import traceback
-
 from cyvcf2 import VCF
+from flask.cli import with_appcontext
 
+from scout.exceptions import ConfigError, IntegrityError
 from scout.load import load_scout
 from scout.parse.case import parse_case_data
-from scout.exceptions import IntegrityError, ConfigError
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)

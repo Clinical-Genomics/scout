@@ -1,4 +1,4 @@
-from scout.utils.convert import make_bool, convert_number
+from scout.utils.convert import convert_number, make_bool
 
 
 def parse_peddy_ped(lines):

@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import cli
-from scout.server.extensions import store
-from scout.exceptions import ConfigError, IntegrityError
-import click
-import sys
 import logging
+import sys
+
+import click
 import pytest
+
+from scout.commands import cli
+from scout.exceptions import ConfigError, IntegrityError
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 

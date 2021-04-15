@@ -1,6 +1,8 @@
 import datetime
+
 import pytest
-from scout.utils.date import match_date, get_date
+
+from scout.utils.date import get_date, match_date
 
 
 @pytest.mark.parametrize("date_str", ["2015.05.10", "2015-05-10", "2015 05 10", "2015/05/10"])

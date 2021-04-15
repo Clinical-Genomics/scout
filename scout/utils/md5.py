@@ -1,5 +1,6 @@
 # encoding: utf-8
 import hashlib
+
 from six import string_types
 
 

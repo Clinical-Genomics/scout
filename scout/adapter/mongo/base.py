@@ -29,29 +29,29 @@ Copyright (c) 2017 __MoonsoInc__. All rights reserved.
 """
 import logging
 from datetime import datetime
+
 from flask import current_app
 
-from .hgnc import GeneHandler
-from .transcript import TranscriptHandler
+from .acmg import ACMGHandler
 from .case import CaseHandler
 from .case_group import CaseGroupHandler
-from .institute import InstituteHandler
+from .clinvar import ClinVarHandler
+from .cytoband import CytobandHandler
 from .event import EventHandler
+from .filter import FilterHandler
+from .hgnc import GeneHandler
 from .hpo import HpoHandler
+from .index import IndexHandler
+from .institute import InstituteHandler
+from .managed_variant import ManagedVariantHandler
+from .matchmaker import MMEHandler
 from .omim import DiagnosisHandler
 from .panel import PanelHandler
-from .query import QueryHandler
-from .variant import VariantHandler
-from .user import UserHandler
-from .acmg import ACMGHandler
-from .index import IndexHandler
-from .clinvar import ClinVarHandler
-from .matchmaker import MMEHandler
-from .filter import FilterHandler
-from .cytoband import CytobandHandler
-from .managed_variant import ManagedVariantHandler
 from .phenomodel import PhenoModelHandler
-
+from .query import QueryHandler
+from .transcript import TranscriptHandler
+from .user import UserHandler
+from .variant import VariantHandler
 
 log = logging.getLogger(__name__)
 
