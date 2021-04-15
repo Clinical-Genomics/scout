@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Simple Docker compose for development with local build
 - Make Phenomodels subpanels collapsible
 - User side documentation of cytogenomics features (Gens, Chromograph, vcf2cytosure, rhocall)
+- iSort GitHub Action
 ### Fixed
 - Show other causative once, even if several events point to it
 - Filtering variants by mitochondrial chromosome for cases with genome build=38

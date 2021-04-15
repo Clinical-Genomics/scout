@@ -2,6 +2,7 @@
 
 import subprocess
 from subprocess import CalledProcessError
+
 import pytest
 
 from scout.server.extensions.loqus_extension import LoqusDB

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from scout.commands import cli
-from scout.server.extensions import store
-
 from scout.demo import panel_path
+from scout.server.extensions import store
 
 
 def test_load_panel(mock_app, institute_obj):

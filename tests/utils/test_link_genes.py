@@ -1,5 +1,6 @@
-from scout.utils.link import link_genes, add_ensembl_info
 from pprint import pprint as pp
+
+from scout.utils.link import add_ensembl_info, link_genes
 
 
 def test_link_genes(

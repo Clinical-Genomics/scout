@@ -1,5 +1,6 @@
 """Fixtures for extenstions"""
 import pytest
+
 from scout.server.app import create_app
 from scout.server.extensions.loqus_extension import LoqusDB
 

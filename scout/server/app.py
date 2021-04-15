@@ -1,6 +1,7 @@
 """Code for flask app"""
 import logging
 import re
+
 import coloredlogs
 from flask import Flask, current_app, redirect, request, url_for
 from flask_babel import Babel
@@ -19,12 +20,12 @@ from .blueprints import (
     genes,
     institutes,
     login,
+    managed_variants,
     panels,
     phenotypes,
     public,
     variant,
     variants,
-    managed_variants,
 )
 
 try:
@@ -229,6 +230,7 @@ def configure_oauth_login(app):
 def configure_email_logging(app):
     """Setup logging of error/exceptions to email."""
     import logging
+
     from scout.log import TlsSMTPHandler
 
     mail_handler = TlsSMTPHandler(

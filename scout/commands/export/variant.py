@@ -1,17 +1,19 @@
-import os
-import click
-import logging
 import datetime
 import json as json_lib
+import logging
+import os
+
+import click
 from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
-from scout.export.variant import export_variants, export_verified_variants
-from .utils import json_option
-from .export_handler import bson_handler
 from scout.constants import CALLERS
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
+from scout.export.variant import export_variants, export_verified_variants
 from scout.server.extensions import store
+
+from .export_handler import bson_handler
+from .utils import json_option
 
 LOG = logging.getLogger(__name__)
 

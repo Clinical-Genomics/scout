@@ -1,19 +1,18 @@
 import logging
 import os
-
 from pprint import pprint as pp
 
 from flask import (
-    abort,
     Blueprint,
+    abort,
     current_app,
+    flash,
+    jsonify,
     redirect,
     render_template,
     request,
-    url_for,
     send_from_directory,
-    jsonify,
-    flash,
+    url_for,
 )
 from flask_login import current_user
 
