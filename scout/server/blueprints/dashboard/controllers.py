@@ -1,4 +1,5 @@
 import logging
+
 from flask_login import current_user
 
 LOG = logging.getLogger(__name__)

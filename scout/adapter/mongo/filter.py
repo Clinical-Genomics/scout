@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
-from bson.objectid import ObjectId
-from flask import url_for
 
 import pymongo
+from bson.objectid import ObjectId
+from flask import url_for
 
 LOG = logging.getLogger(__name__)
 

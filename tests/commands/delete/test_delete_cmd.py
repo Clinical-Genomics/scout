@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pymongo import IndexModel, ASCENDING
+from pymongo import ASCENDING, IndexModel
 
 from scout.commands import cli
 from scout.server.extensions import store

@@ -1,6 +1,6 @@
 from cyvcf2 import VCF
 
-from scout.parse.variant.genotype import parse_genotypes, parse_genotype, GENOTYPE_MAP
+from scout.parse.variant.genotype import GENOTYPE_MAP, parse_genotype, parse_genotypes
 
 one_cnvnator = "tests/parse/vcfs/one_cnvnator.vcf"
 

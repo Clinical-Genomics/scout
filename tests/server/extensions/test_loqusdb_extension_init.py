@@ -1,6 +1,7 @@
 """Tests for loqusdb extension"""
 import subprocess
 from subprocess import CalledProcessError
+
 import pytest
 from flask import Flask
 

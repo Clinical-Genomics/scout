@@ -1,5 +1,6 @@
 from pprint import pprint as pp
-from scout.load.hgnc_gene import load_hgnc_genes, load_hgnc
+
+from scout.load.hgnc_gene import load_hgnc, load_hgnc_genes
 
 
 def test_load_hgnc_genes(

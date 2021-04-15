@@ -1,4 +1,4 @@
-from scout.parse.exac import parse_exac_line, parse_exac_genes
+from scout.parse.exac import parse_exac_genes, parse_exac_line
 
 
 def test_parse_exac_line(exac_handle):

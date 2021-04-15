@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from scout.constants import SAMPLE_SOURCE
 from flask import get_template_attribute
+
+from scout.constants import SAMPLE_SOURCE
 
 
 def test_update_individuals_table(app, case_obj, institute_obj):

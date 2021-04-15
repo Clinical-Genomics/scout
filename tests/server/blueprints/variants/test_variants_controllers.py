@@ -1,18 +1,20 @@
 import copy
 import logging
-from scout.constants import EXPORT_HEADER, CHROMOSOMES_38
-from scout.server.blueprints.variants.controllers import (
-    gene_panel_choices,
-    variants_export_header,
-    variant_export_lines,
-    variants,
-    sv_variants,
-    match_gene_txs_variant_txs,
-    populate_chrom_choices,
-)
+
+from bson.objectid import ObjectId
 from flask_wtf import FlaskForm
 from wtforms import SelectField
-from bson.objectid import ObjectId
+
+from scout.constants import CHROMOSOMES_38, EXPORT_HEADER
+from scout.server.blueprints.variants.controllers import (
+    gene_panel_choices,
+    match_gene_txs_variant_txs,
+    populate_chrom_choices,
+    sv_variants,
+    variant_export_lines,
+    variants,
+    variants_export_header,
+)
 
 LOG = logging.getLogger(__name__)
 

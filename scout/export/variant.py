@@ -4,7 +4,7 @@ import urllib.parse
 
 LOG = logging.getLogger(__name__)
 
-from scout.constants import CHROMOSOMES, CHROMOSOME_INTEGERS, CALLERS
+from scout.constants import CALLERS, CHROMOSOME_INTEGERS, CHROMOSOMES
 
 
 def export_variants(adapter, collaborator, document_id=None, case_id=None):

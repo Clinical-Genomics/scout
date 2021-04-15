@@ -1,8 +1,9 @@
-from pprint import pprint as pp
-import pytest
-import logging
 import datetime
+import logging
+from pprint import pprint as pp
+
 import pymongo
+import pytest
 
 from scout.constants import VERBS_MAP
 
