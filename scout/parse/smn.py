@@ -1,4 +1,4 @@
-from scout.utils.convert import make_bool_pass_none, convert_number
+from scout.utils.convert import convert_number, make_bool_pass_none
 
 
 def parse_smn_file(lines):

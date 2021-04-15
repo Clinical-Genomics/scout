@@ -1,15 +1,15 @@
 from __future__ import absolute_import
 
-import os
 import logging
+import os
 from datetime import datetime
+
+from scout.constants import ANALYSIS_TYPES
+from scout.models import PhenotypeTerm
+from scout.models.panel import GenePanel
 
 from . import STATUS
 from .individual import Individual
-
-from scout.models import PhenotypeTerm
-from scout.models.panel import GenePanel
-from scout.constants import ANALYSIS_TYPES
 
 logger = logging.getLogger(__name__)
 

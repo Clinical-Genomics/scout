@@ -2,65 +2,64 @@
 import re
 from collections import OrderedDict
 
-from intervaltree import IntervalTree, Interval
+from intervaltree import Interval, IntervalTree
 
 from scout.parse.cytoband import parse_cytoband
 from scout.resources import cytoband_files
 from scout.utils.handle import get_file_handle
 
-from .indexes import INDEXES
-
-from .acmg import ACMG_COMPLETE_MAP, ACMG_OPTIONS, ACMG_CRITERIA, ACMG_MAP, REV_ACMG_MAP
-from .so_terms import SO_TERMS, SO_TERM_KEYS, SEVERE_SO_TERMS
+from .acmg import ACMG_COMPLETE_MAP, ACMG_CRITERIA, ACMG_MAP, ACMG_OPTIONS, REV_ACMG_MAP
+from .case_tags import (
+    ANALYSIS_TYPES,
+    CANCER_PHENOTYPE_MAP,
+    CASE_SEARCH_TERMS,
+    CASE_STATUSES,
+    CUSTOM_CASE_REPORTS,
+    PHENOTYPE_MAP,
+    REV_PHENOTYPE_MAP,
+    REV_SEX_MAP,
+    SAMPLE_SOURCE,
+    SEX_MAP,
+    VERBS_MAP,
+)
+from .clinvar import CASEDATA_HEADER, CLINVAR_HEADER
+from .clnsig import CLINSIG_MAP, REV_CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
+from .file_types import FILE_TYPE_MAP
 from .gene_tags import (
     GENE_CUSTOM_INHERITANCE_MODELS,
-    PANEL_GENE_INFO_TRANSCRIPTS,
-    PANEL_GENE_INFO_MODELS,
-    VALID_MODELS,
     INCOMPLETE_PENETRANCE_MAP,
     MODELS_MAP,
+    PANEL_GENE_INFO_MODELS,
+    PANEL_GENE_INFO_TRANSCRIPTS,
+    VALID_MODELS,
 )
+from .igv_tracks import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS, USER_DEFAULT_TRACKS
+from .indexes import INDEXES
+from .phenotype import COHORT_TAGS, PHENOTYPE_GROUPS
+from .query_terms import FUNDAMENTAL_CRITERIA, PRIMARY_CRITERIA, SECONDARY_CRITERIA
+from .so_terms import SEVERE_SO_TERMS, SO_TERM_KEYS, SO_TERMS
 from .variant_tags import (
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+    CANCER_TIER_OPTIONS,
     CONSEQUENCE,
     CONSERVATION,
     DISMISS_VARIANT_OPTIONS,
     FEATURE_TYPES,
-    SPIDEX_LEVELS,
-    SPIDEX_HUMAN,
-    SV_TYPES,
     GENETIC_MODELS,
-    VARIANT_CALL,
-    CANCER_TIER_OPTIONS,
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
+    SPIDEX_HUMAN,
+    SPIDEX_LEVELS,
+    SV_TYPES,
+    VARIANT_CALL,
 )
-from .case_tags import (
-    ANALYSIS_TYPES,
-    CUSTOM_CASE_REPORTS,
-    SEX_MAP,
-    REV_SEX_MAP,
-    PHENOTYPE_MAP,
-    CANCER_PHENOTYPE_MAP,
-    REV_PHENOTYPE_MAP,
-    CASE_STATUSES,
-    VERBS_MAP,
-    SAMPLE_SOURCE,
-    CASE_SEARCH_TERMS,
-)
-from .clnsig import CLINSIG_MAP, REV_CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
-from .phenotype import PHENOTYPE_GROUPS, COHORT_TAGS
-from .query_terms import FUNDAMENTAL_CRITERIA, PRIMARY_CRITERIA, SECONDARY_CRITERIA
-from .file_types import FILE_TYPE_MAP
-from .clinvar import CLINVAR_HEADER, CASEDATA_HEADER
 from .variants_export import (
     EXPORT_HEADER,
-    VCF_HEADER,
-    MT_EXPORT_HEADER,
     MT_COV_STATS_HEADER,
+    MT_EXPORT_HEADER,
+    VCF_HEADER,
     VERIFIED_VARIANTS_HEADER,
 )
-from .igv_tracks import IGV_TRACKS, HUMAN_REFERENCE, CASE_SPECIFIC_TRACKS, USER_DEFAULT_TRACKS
 
 cytobands_37_handle = get_file_handle(cytoband_files.get("37"))
 cytobands_38_handle = get_file_handle(cytoband_files.get("38"))

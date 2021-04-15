@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
 import os.path
+
 from flask import flash
 from flask_login import current_user
-from scout.server.extensions import store, cloud_tracks
-from scout.constants import IGV_TRACKS, CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE
+
+from scout.constants import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS
+from scout.server.extensions import cloud_tracks, store
 from scout.server.utils import institute_and_case
 
 LOG = logging.getLogger(__name__)

@@ -1,6 +1,7 @@
-from datetime import datetime, timedelta
 import logging
 import re
+from datetime import datetime, timedelta
+
 from scout.constants import (
     FUNDAMENTAL_CRITERIA,
     PRIMARY_CRITERIA,
@@ -10,7 +11,7 @@ from scout.constants import (
 
 LOG = logging.getLogger(__name__)
 
-from scout.constants import SPIDEX_HUMAN, CLINSIG_MAP
+from scout.constants import CLINSIG_MAP, SPIDEX_HUMAN
 
 
 class QueryHandler(object):

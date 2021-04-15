@@ -6,17 +6,17 @@ import click
 
 from .case import case as case_command
 from .cytoband import cytoband as cytoband_command
+from .exons import exons as exons_command
 from .institute import institute as institute_command
 from .panel import panel as panel_command
-from .research import research as research_command
-from .variants import variants as variants_command
 from .region import region as region_command
-from .user import user as user_command
-from .report import delivery_report as delivery_report_command
 from .report import cnv_report as cnv_report_command
 from .report import coverage_qc_report as coverage_qc_report_command
+from .report import delivery_report as delivery_report_command
 from .report import gene_fusion_report as gene_fusion_report_command
-from .exons import exons as exons_command
+from .research import research as research_command
+from .user import user as user_command
+from .variants import variants as variants_command
 
 LOG = logging.getLogger(__name__)
 

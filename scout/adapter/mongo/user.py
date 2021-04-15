@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import logging
 import datetime
+import logging
 
 import pymongo
 from pymongo.errors import DuplicateKeyError

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from scout.server.blueprints.login.models import LoginUser, LdapUser
+from scout.server.blueprints.login.models import LdapUser, LoginUser
 
 
 def test_login_user(user_obj):

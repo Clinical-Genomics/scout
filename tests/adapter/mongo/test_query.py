@@ -1,6 +1,8 @@
-from scout.constants import CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 import re
+
 from pymongo import ReturnDocument
+
+from scout.constants import CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 
 
 def test_build_gene_variant_query(adapter, case_obj, test_hpo_terms, institute_obj):
