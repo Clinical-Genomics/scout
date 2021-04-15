@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from scout.parse.variant import parse_variant
 from scout.exceptions import VcfError
+from scout.parse.variant import parse_variant
 
 
 def test_parse_minimal(one_variant, case_obj):

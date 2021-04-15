@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from bson import ObjectId
 import pymongo
+from bson import ObjectId
 
-from scout.utils.acmg import get_acmg
 from scout.build.acmg import build_evaluation
 from scout.constants import ACMG_MAP
+from scout.utils.acmg import get_acmg
 
 log = logging.getLogger(__name__)
 

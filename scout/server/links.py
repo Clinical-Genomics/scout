@@ -1,5 +1,6 @@
-from flask import current_app
 from pprint import pprint as pp
+
+from flask import current_app
 
 from scout.constants import SPIDEX_HUMAN
 from scout.utils.convert import amino_acid_residue_change_3_to_1

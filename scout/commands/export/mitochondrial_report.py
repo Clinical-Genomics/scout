@@ -1,11 +1,10 @@
-import os
-import click
-import logging
 import datetime
+import logging
+import os
 
-from xlsxwriter import Workbook
-
+import click
 from flask.cli import with_appcontext
+from xlsxwriter import Workbook
 
 from scout.constants import MT_EXPORT_HEADER
 from scout.export.variant import export_mt_variants
