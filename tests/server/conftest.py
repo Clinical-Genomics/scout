@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 import logging
 
-import pytest
 import pymongo
+import pytest
 from flask import request
 from flask_login import login_user, logout_user
 
-from scout.server.blueprints.login.models import LoginUser
-from scout.server.app import create_app
 from scout.adapter import MongoAdapter
 from scout.load.hgnc_gene import load_hgnc_genes
 from scout.load.hpo import load_hpo
+from scout.server.app import create_app
+from scout.server.blueprints.login.models import LoginUser
 
 log = logging.getLogger(__name__)
 

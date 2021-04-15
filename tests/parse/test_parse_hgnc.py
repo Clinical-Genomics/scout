@@ -1,4 +1,4 @@
-from scout.parse.hgnc import parse_hgnc_line, parse_hgnc_genes
+from scout.parse.hgnc import parse_hgnc_genes, parse_hgnc_line
 
 
 def test_parse_hgnc_line(hgnc_handle):

@@ -1,6 +1,7 @@
 """Tests for update individual command"""
 
 from click.testing import CliRunner
+
 from scout.commands.update.individual import individual as ind_cmd
 
 

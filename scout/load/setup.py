@@ -19,12 +19,12 @@ from scout.demo import load_path, panel_path
 
 ### Import demo files ###
 from scout.demo.resources import demo_files
-from scout.resources import cytoband_files
-from scout.load import load_hgnc_genes, load_hpo, load_transcripts, load_cytobands
+from scout.load import load_cytobands, load_hgnc_genes, load_hpo, load_transcripts
 
 # Resources
 from scout.parse.case import parse_case_data
 from scout.parse.panel import parse_gene_panel
+from scout.resources import cytoband_files
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import (
     fetch_ensembl_genes,

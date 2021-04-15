@@ -1,8 +1,9 @@
 import copy
+
 from werkzeug.datastructures import MultiDict
-from scout.server.extensions import store
 
 from scout.server.blueprints.institutes.controllers import cases, phenomodel_checkgroups_filter
+from scout.server.extensions import store
 
 
 def test_phenomodel_checkgroups_filter(app, institute_obj, hpo_checkboxes, omim_checkbox):

@@ -1,6 +1,8 @@
 """Tests for server utils"""
 import tempfile
+
 import pytest
+
 from scout.server.links import get_variant_links
 from scout.server.utils import append_safe, find_index, variant_case
 

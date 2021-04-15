@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
+
 from flask import url_for
 from flask_login import current_user
+
 from scout.server.extensions import store
 
 TEST_SUBPANEL = dict(

@@ -4,8 +4,12 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-from flask_login import current_user
+from anytree import Node, RenderTree
+from anytree.exporter import DictExporter
+from anytree.importer import DictImporter
 from flask import flash
+from flask_login import current_user
+
 from scout.constants import CASE_STATUSES
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.genes.controllers import gene
@@ -13,10 +17,8 @@ from scout.server.blueprints.variant.utils import predictions
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
 from scout.utils.md5 import generate_md5_key
+
 from .forms import CaseFilterForm
-from anytree.importer import DictImporter
-from anytree import RenderTree, Node
-from anytree.exporter import DictExporter
 
 TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
 
@@ -171,7 +173,14 @@ def cases(store, case_query, prioritized_cases_query=None, limit=100):
         case_obj["assignees"] = [
             store.user(user_email) for user_email in case_obj.get("assignees", [])
         ]
-        case_obj["is_rerun"] = len(case_obj.get("analyses", [])) > 0
+        # Check if case was re-runned
+        analyses = case_obj.get("analyses", [])
+        now = datetime.datetime.now()
+        case_obj["is_rerun"] = (
+            len(analyses) > 1
+            or analyses
+            and analyses[0].get("date", now) < case_obj.get("analysis_date", now)
+        )
         case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
         case_obj["display_track"] = TRACKS[case_obj.get("track", "rare")]
         return case_obj

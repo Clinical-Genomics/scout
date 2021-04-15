@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import datetime as dt
-import operator
 import logging
+import operator
 
 from flask import flash
 
-from scout.parse.panel import parse_genes
 from scout.build.panel import build_panel
+from scout.parse.panel import parse_genes
 
 log = logging.getLogger(__name__)
 

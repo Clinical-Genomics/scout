@@ -1,4 +1,4 @@
-from pymongo import IndexModel, ASCENDING, DESCENDING, TEXT
+from pymongo import ASCENDING, DESCENDING, TEXT, IndexModel
 
 INDEXES = {
     "hgnc_gene": [

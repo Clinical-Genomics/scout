@@ -1,33 +1,29 @@
 # -*- coding: utf-8 -*-
 # stdlib modules
 import logging
-import re
 import pathlib
+import re
 import tempfile
-
 from datetime import datetime
 from pprint import pprint as pp
 
 # Third party modules
 import pymongo
-from pymongo.errors import DuplicateKeyError, BulkWriteError
-
 from cyvcf2 import VCF
 from intervaltree import IntervalTree
+from pymongo.errors import BulkWriteError, DuplicateKeyError
+
+from scout.build import build_variant
+from scout.constants import CHROMOSOMES, FILE_TYPE_MAP
+from scout.exceptions import IntegrityError
+from scout.parse.variant import parse_variant
+from scout.parse.variant.clnsig import is_pathogenic
+from scout.parse.variant.coordinates import parse_coordinates
 
 # Local modules
 from scout.parse.variant.headers import parse_rank_results_header, parse_vep_header
-from scout.parse.variant.rank_score import parse_rank_score
-from scout.parse.variant.clnsig import is_pathogenic
-from scout.parse.variant.coordinates import parse_coordinates
 from scout.parse.variant.managed_variant import parse_managed_variant_id
-
-from scout.parse.variant import parse_variant
-from scout.build import build_variant
-
-from scout.exceptions import IntegrityError
-
-from scout.constants import CHROMOSOMES, FILE_TYPE_MAP
+from scout.parse.variant.rank_score import parse_rank_score
 
 LOG = logging.getLogger(__name__)
 

@@ -3,7 +3,7 @@ import mimetypes
 import os
 import re
 
-from flask import abort, request, Response, send_file
+from flask import Response, abort, request, send_file
 
 BYTE_RANGE_RE = re.compile(r"bytes=(\d+)-(\d+)?$")
 

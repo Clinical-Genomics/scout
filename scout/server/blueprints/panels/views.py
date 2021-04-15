@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-import logging
 import datetime
+import logging
 
-from flask import abort, Blueprint, request, redirect, url_for, flash, render_template
-from flask_weasyprint import HTML, render_pdf
+from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user
+from flask_weasyprint import HTML, render_pdf
 
 from scout.server.extensions import store
 from scout.server.utils import templated, user_institutes
-from .forms import PanelGeneForm
+
 from . import controllers
+from .forms import PanelGeneForm
 
 LOG = logging.getLogger(__name__)
 panels_bp = Blueprint("panels", __name__, template_folder="templates")

@@ -1,5 +1,6 @@
-import click
 from pprint import pprint as pp
+
+import click
 
 
 @click.command()

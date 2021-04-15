@@ -1,25 +1,23 @@
 import logging
-
 from pprint import pprint as pp
 
-from scout.utils.md5 import generate_md5_key
-from .genotype import parse_genotypes
-from .compound import parse_compounds
-from .clnsig import parse_clnsig
-from .gene import parse_genes
-from .frequency import parse_frequencies, parse_sv_frequencies
-from .conservation import parse_conservations
-from .ids import parse_ids
-from .callers import parse_callers
-from .rank_score import parse_rank_score
-from .coordinates import parse_coordinates
-from .models import parse_genetic_models
-from .transcript import parse_transcripts
-from .deleteriousness import parse_cadd
-
 from scout.constants import CHR_PATTERN
-
 from scout.exceptions import VcfError
+from scout.utils.md5 import generate_md5_key
+
+from .callers import parse_callers
+from .clnsig import parse_clnsig
+from .compound import parse_compounds
+from .conservation import parse_conservations
+from .coordinates import parse_coordinates
+from .deleteriousness import parse_cadd
+from .frequency import parse_frequencies, parse_sv_frequencies
+from .gene import parse_genes
+from .genotype import parse_genotypes
+from .ids import parse_ids
+from .models import parse_genetic_models
+from .rank_score import parse_rank_score
+from .transcript import parse_transcripts
 
 LOG = logging.getLogger(__name__)
 
