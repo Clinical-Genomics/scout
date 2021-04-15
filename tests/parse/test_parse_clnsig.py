@@ -1,6 +1,7 @@
 from pprint import pprint as pp
-from scout.parse.variant.clnsig import parse_clnsig, is_pathogenic
+
 from scout.parse.variant import parse_variant
+from scout.parse.variant.clnsig import is_pathogenic, parse_clnsig
 
 
 def test_parse_classic_clnsig(cyvcf2_variant):

@@ -1,5 +1,7 @@
 import logging
+
 import pymongo
+
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 
 LOG = logging.getLogger(__name__)

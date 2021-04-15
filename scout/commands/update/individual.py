@@ -2,6 +2,7 @@
 from pathlib import Path
 
 import click
+
 from scout.server.extensions import store
 
 UPDATE_KEYS = [

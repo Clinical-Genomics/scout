@@ -1,7 +1,7 @@
 import pytest
 
-from scout.parse.variant.callers import parse_callers
 from scout.constants import CALLERS
+from scout.parse.variant.callers import parse_callers
 
 
 def test_parse_callers(cyvcf2_variant):

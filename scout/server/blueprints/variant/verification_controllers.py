@@ -7,7 +7,6 @@ from flask_login import current_user
 from flask_mail import Message
 
 from scout.server.extensions import mail as ex_mail
-
 from scout.server.links import external_primer_order_link
 
 from .controllers import variant as variant_controller

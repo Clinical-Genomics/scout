@@ -1,7 +1,8 @@
 import logging
 from pprint import pprint as pp
-import pymongo
+
 import click
+import pymongo
 from flask.cli import with_appcontext
 
 from scout.server.extensions import store

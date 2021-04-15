@@ -7,8 +7,9 @@ Define a document to describe a phenomodel dictionary
 
 Phenomodels are stored in phenomodel collection
 """
-from bson import ObjectId
 from datetime import datetime
+
+from bson import ObjectId
 
 phenomodel = dict(
     _id=ObjectId,

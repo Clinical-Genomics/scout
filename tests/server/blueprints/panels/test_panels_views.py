@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from flask import url_for
 from urllib.parse import urlencode
+
+from flask import url_for
 
 # def test_panels(client, real_database, user_info):
 #     # GIVEN a user connected to one institute in the database

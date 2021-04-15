@@ -1,9 +1,11 @@
-import pytest
 import unittest
+
 import mongomock
+import pytest
 from pymongo.errors import ConnectionFailure
-from scout.adapter.client import get_connection
+
 import scout
+from scout.adapter.client import get_connection
 
 
 def get_mock_client():

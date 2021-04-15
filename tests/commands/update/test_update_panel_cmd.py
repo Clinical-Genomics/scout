@@ -2,7 +2,6 @@
 
 from scout.commands import cli
 from scout.server.extensions import store
-
 from scout.utils.date import get_date
 
 

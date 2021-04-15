@@ -1,5 +1,5 @@
-from codecs import open, getreader
 import gzip
+from codecs import getreader, open
 
 
 def get_file_handle(file_path):

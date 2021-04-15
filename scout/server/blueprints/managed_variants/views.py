@@ -1,13 +1,14 @@
-import logging
 import datetime
+import logging
 
-from flask import Blueprint, request, redirect, url_for, flash
+from flask import Blueprint, flash, redirect, request, url_for
 from flask_login import current_user
 
 from scout.server.extensions import store
 from scout.server.utils import templated, user_institutes
-from .forms import ManagedVariantsFilterForm, ManagedVariantAddForm, ManagedVariantModifyForm
+
 from . import controllers
+from .forms import ManagedVariantAddForm, ManagedVariantModifyForm, ManagedVariantsFilterForm
 
 LOG = logging.getLogger(__name__)
 

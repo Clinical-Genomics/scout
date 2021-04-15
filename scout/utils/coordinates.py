@@ -1,4 +1,4 @@
-from scout.constants import PAR_COORDINATES, CHR_PATTERN
+from scout.constants import CHR_PATTERN, PAR_COORDINATES
 
 
 def is_par(chromosome, position, build="37"):
