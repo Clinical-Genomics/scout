@@ -87,6 +87,8 @@ case = dict(
     suspects=list,  # List of variants referred by there _id
     sv_rank_model_version=str,
     synopsis=str,  # The synopsis is a text blob
+    track=str,  # "rare" or "cancer"
     updated_at=datetime,
+    variant_stats=dict,  # Contains the number of variants of each type for this case
     vcf_files=dict,  # A dictionary with vcf files
 )
