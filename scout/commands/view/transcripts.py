@@ -1,7 +1,7 @@
 import logging
-import click
 from pprint import pprint as pp
 
+import click
 from flask.cli import with_appcontext
 
 from scout.server.extensions import store

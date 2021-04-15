@@ -1,8 +1,9 @@
 import logging
 
 import click
-from flask import url_for, current_app
+from flask import current_app, url_for
 from flask.cli import with_appcontext
+
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)

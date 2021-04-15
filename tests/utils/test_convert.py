@@ -1,9 +1,9 @@
 from scout.utils.convert import (
+    amino_acid_residue_change_3_to_1,
+    convert_number,
     isfloat,
     isint,
     make_bool,
-    convert_number,
-    amino_acid_residue_change_3_to_1,
 )
 
 

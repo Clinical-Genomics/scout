@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
-import pytest
 import tempfile
-from scout.demo import load_path, ped_path
+
+import pytest
 
 from scout.commands import cli
+from scout.demo import load_path, ped_path
 from scout.parse import case
 from scout.server.extensions import store
 

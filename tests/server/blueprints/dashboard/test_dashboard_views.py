@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
 
-# from urllib.request import urlopen
-
 from flask import url_for
 from flask_login import current_user
+
 from scout.server.blueprints.login.models import LoginUser
+
+# from urllib.request import urlopen
+
 
 log = logging.getLogger(__name__)
 

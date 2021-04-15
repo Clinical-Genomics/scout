@@ -1,8 +1,8 @@
 import logging
 from datetime import datetime
 
-from bson import ObjectId
 import pymongo
+from bson import ObjectId
 
 from scout.constants import REV_ACMG_MAP
 
