@@ -49,51 +49,46 @@ individual = dict(
 )
 
 case = dict(
-    # This is a string with the id for the family:
-    case_id=str,  # required=True, unique
-    # This is the string that will be shown in scout:
-    display_name=str,  # required
-    # This internal_id for the owner of the case. E.g. 'cust000'
-    owner=str,  # required
-    # These are the names of all the collaborators that are allowed to view the
-    # case, including the owner
-    collaborators=list,  # List of institute_ids
-    assignees=list,  # list of str _id of a user (email)
-    individuals=list,  # list of dictionaries with individuals
-    created_at=datetime,
-    updated_at=datetime,
-    suspects=list,  # List of variants referred by there _id
-    causatives=list,  # List of variants referred by there _id
-    synopsis=str,  # The synopsis is a text blob
-    status=str,  # default='inactive', choices=STATUS
-    is_research=bool,  # default=False
-    research_requested=bool,  # default=False
-    rerun_requested=bool,  # default=False
     analysis_date=datetime,
-    # default_panels specifies which panels that should be shown when
-    # the case is opened
-    panels=list,  # list of dictionaries with panel information
-    dynamic_gene_list=list,  # List of genes
-    genome_build=str,  # This should be 37 or 38
-    genome_version=float,  # What version of the build
-    rank_model_version=str,
-    rank_score_threshold=int,  # default=8
-    sv_rank_model_version=str,
-    phenotype_terms=list,  # List of dictionaries with phenotype information
-    phenotype_groups=list,  # List of dictionaries with phenotype information
-    madeline_info=str,  # madeline info is a full xml file
-    delivery_report=str,  # delivery report is a path to html file
+    assignees=list,  # list of str _id of a user (email)
+    case_id=str,  # required=True, unique. This is a string with the id for the family
+    causatives=list,  # List of variants referred by there _id
     cnv_report=str,  # CNV report is a path to pdf file
+    collaborators=list,  # List of institute_ids that are allowed to view the case
     coverage_qc_report=str,  # Covearge and qc report is a path to a html file
+    created_at=datetime,
+    delivery_report=str,  # delivery report is a path to html file
+    diagnosis_genes=list,  # List of references to genes
+    diagnosis_phenotypes=list,  # List of references to diseases
+    display_name=str,  # required. This is the case name that will be shown in scout.
+    dynamic_gene_list=list,  # List of genes
     gene_fusion_report=str,  # Path to the gene fusions report file
     gene_fusion_report_research=str,  # Path to the gene fusions research report file
-    vcf_files=dict,  # A dictionary with vcf files
-    smn_tsv=str,  # path to an SMN TSV file
-    diagnosis_phenotypes=list,  # List of references to diseases
-    diagnosis_genes=list,  # List of references to genes
-    has_svvariants=bool,  # default=False
-    has_strvariants=bool,  # default=False
-    is_migrated=bool,  # default=False
-    multiqc=str,  # path to multiqc report
+    genome_build=str,  # This should be 37 or 38
+    genome_version=float,  # What version of the build
     group=list,  # a list of group ids for cases conceptually grouped together with this
+    has_strvariants=bool,  # default=False
+    has_svvariants=bool,  # default=False
+    individuals=list,  # list of dictionaries with individuals
+    is_migrated=bool,  # default=False
+    is_research=bool,  # default=False
+    madeline_info=str,  # madeline info is a full xml file
+    multiqc=str,  # path to multiqc report
+    owner=str,  # required. Internal_id for the owner of the case. E.g. 'cust000'
+    panels=list,  # list of dictionaries with panel information.
+    phenotype_groups=list,  # List of dictionaries with phenotype information
+    phenotype_terms=list,  # List of dictionaries with phenotype information
+    rank_model_version=str,
+    rank_score_threshold=int,  # default=8
+    rerun_requested=bool,  # default=False
+    research_requested=bool,  # default=False
+    smn_tsv=str,  # path to an SMN TSV file
+    status=str,  # default='inactive', choices=STATUS
+    suspects=list,  # List of variants referred by there _id
+    sv_rank_model_version=str,
+    synopsis=str,  # The synopsis is a text blob
+    track=str,  # "rare" or "cancer"
+    updated_at=datetime,
+    variant_stats=dict,  # Contains the number of variants of each type for this case
+    vcf_files=dict,  # A dictionary with vcf files
 )
