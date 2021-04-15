@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from scout.constants import CHROMOSOMES, CHROMOSOME_INTEGERS
+from scout.constants import CHROMOSOME_INTEGERS, CHROMOSOMES
 
 LOG = logging.getLogger(__name__)
 

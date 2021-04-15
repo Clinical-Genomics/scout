@@ -1,7 +1,7 @@
 from scout.parse.variant.conservation import (
-    parse_conservations,
-    parse_conservation_info,
     parse_conservation_csq,
+    parse_conservation_info,
+    parse_conservations,
 )
 
 

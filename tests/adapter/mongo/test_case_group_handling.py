@@ -1,8 +1,8 @@
-import pytest
 import copy
-import pymongo
 import logging
 
+import pymongo
+import pytest
 from bson.objectid import ObjectId
 
 logger = logging.getLogger(__name__)

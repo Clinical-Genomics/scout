@@ -1,8 +1,8 @@
 import pytest
 
+from scout.exceptions import IntegrityError
 from scout.models.hgnc_map import HgncGene
 
-from scout.exceptions import IntegrityError
 
 #################### HGNC gene tests ####################
 def test_insert_gene(adapter, parsed_gene):

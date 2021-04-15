@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
 import operator
-from pymongo.errors import DuplicateKeyError, BulkWriteError
+
 import pymongo
-from anytree import RenderTree, Node, search, resolver
+from anytree import Node, RenderTree, resolver, search
 from anytree.exporter import DictExporter
+from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from scout.exceptions import IntegrityError
 

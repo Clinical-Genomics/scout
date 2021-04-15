@@ -1,27 +1,27 @@
 # -*- coding: utf-8 -*-
+import logging
 from datetime import datetime
 
 from flask import (
+    Blueprint,
     abort,
     current_app,
-    Blueprint,
     flash,
     redirect,
+    render_template,
     request,
     session,
     url_for,
-    render_template,
 )
-from flask_login import login_user, logout_user
-from flask_ldap3_login.forms import LDAPLoginForm
 from flask_ldap3_login import AuthenticationResponseStatus
+from flask_ldap3_login.forms import LDAPLoginForm
+from flask_login import login_user, logout_user
 
-from scout.server.extensions import login_manager, store, ldap_manager, oauth_client
+from scout.server.extensions import ldap_manager, login_manager, oauth_client, store
 from scout.server.utils import public_endpoint
-from . import controllers
-from .models import LoginUser, LdapUser
 
-import logging
+from . import controllers
+from .models import LdapUser, LoginUser
 
 LOG = logging.getLogger(__name__)
 

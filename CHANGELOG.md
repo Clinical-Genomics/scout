@@ -4,26 +4,37 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [X.X.X]
+## [4.32]
 ### Added
 - Load and show MITOMAP associated diseases from VCF (INFO field: MitomapAssociatedDiseases, via HmtNote)
-- Show variant allele frequencies for mitochondrial variants
+- Show variant allele frequencies for mitochondrial variants (GRCh38 cases)
 - Extend "public" json API with diseases (OMIM) and phenotypes (HPO)
 - HPO gene list download now has option for clinical and non-clinical genes
 - Display gene splice junctions data in sashimi plots
 - Update case individuals with splice junctions tracks
 - Simple Docker compose for development with local build
+- Make Phenomodels subpanels collapsible
+- User side documentation of cytogenomics features (Gens, Chromograph, vcf2cytosure, rhocall)
+- iSort GitHub Action
 ### Fixed
 - Show other causative once, even if several events point to it
 - Filtering variants by mitochondrial chromosome for cases with genome build=38
 - HPO gene search button triggers any warnings for clinical / non-existing genes also on first search
 - Fixed a bug in variants pages caused by MT variants without alt_frequency
 - Tests for CADD score parsing function
+- Fixed the look of IGV settings on SNV variant page
+- Cases analyzed once shown as `rerun`
+- Missing case track on case re-upload
+- Fixed severity rank for SO term "regulatory region ablation"
 ### Changed
 - Refactor according to CodeFactor - mostly reuse of duplicated code
 - Phenomodels language adjustment
 - Open variants in a new window (from variants page)
 - Open overlapping and compound variants in a new window (from variant page)
+- gnomAD link points to gnomAD v.3 (build GRCh38) for mitochondrial variants.
+- Display only number of affected genes for dismissed SVs in general report
+- Chromosome build check when populating the variants filter chromosome selection
+- Display mitochondrial and rare diseases coverage report in cases with missing 'rare' track
 
 ## [4.31.1]
 ### Added

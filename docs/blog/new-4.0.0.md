@@ -8,7 +8,7 @@ This major update includes the following highlights:
 
 - Finally!! There will always be a downloadable case report available at case page (great stuff @northwestwitch)🦄
 
-  ![Case report](/img/blog/case_report.png)
+  ![Case report](../img/blog/case_report.png)
 
 - Scout now uploads ALL variants from the mitochondrial chromosome (MT) - independently of rank score both for clinical and research variants
 
