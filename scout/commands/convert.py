@@ -4,9 +4,9 @@ import logging
 import click
 from flask.cli import with_appcontext
 
-from scout.utils.handle import get_file_handle
 from scout.parse.panel import parse_genes
 from scout.server.extensions import store
+from scout.utils.handle import get_file_handle
 
 log = logging.getLogger(__name__)
 

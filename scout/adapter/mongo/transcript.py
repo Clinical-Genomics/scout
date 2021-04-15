@@ -1,9 +1,9 @@
 import logging
 from pprint import pprint as pp
 
-from scout.build.genes.exon import build_exon
-from pymongo.errors import DuplicateKeyError, BulkWriteError
+from pymongo.errors import BulkWriteError, DuplicateKeyError
 
+from scout.build.genes.exon import build_exon
 from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)

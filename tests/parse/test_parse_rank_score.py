@@ -1,5 +1,5 @@
-from scout.parse.variant.variant import parse_variant
 from scout.parse.variant.rank_score import parse_rank_score
+from scout.parse.variant.variant import parse_variant
 
 
 def test_parse_rank_score():

@@ -2,20 +2,19 @@ import logging
 
 import click
 
-from .panels import panels
-from .users import users
-from .institutes import institutes
-from .diseases import diseases
-from .hpo import hpo
 from .aliases import aliases
-from .individuals import individuals
-from .index import index
-from .intervals import intervals
-from .collections import collections
-from .transcripts import transcripts
 from .case import cases
+from .collections import collections
+from .diseases import diseases
 from .hgnc import hgnc
-
+from .hpo import hpo
+from .index import index
+from .individuals import individuals
+from .institutes import institutes
+from .intervals import intervals
+from .panels import panels
+from .transcripts import transcripts
+from .users import users
 
 LOG = logging.getLogger(__name__)
 

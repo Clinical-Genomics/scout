@@ -8,6 +8,7 @@ import json
 import logging
 import subprocess
 from subprocess import CalledProcessError
+
 from scout.exceptions.config import ConfigError
 
 LOG = logging.getLogger(__name__)
