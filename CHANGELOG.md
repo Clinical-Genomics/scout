@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Fixed
 - iSort lint check only
+- iSort test - merging not intended
 
 ## [4.32]
 ### Added
