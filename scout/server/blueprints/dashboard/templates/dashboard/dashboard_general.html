@@ -35,7 +35,7 @@
         <div class="col-2 ml-3">
           {{ dashboard_form.search_institute(class="form-control") }}
         </div>
-  
+
         {% if panel != "3" %}
           <!--Search type select field-->
           <div class="col-3 ml-3">
@@ -170,9 +170,12 @@
       text.disabled = (sel.value == "");
     });
 
-    sel.onchange = function(e) {
-      text.disabled = (sel.value == "");
-    };
+    if(sel){
+      sel.onchange = function(e) {
+        text.disabled = (sel.value == "");
+      };
+    }
+
 
     {% if panel == "1" and cases %}
       //create analysis type chart ===> general stats
@@ -182,9 +185,8 @@
       //create pedigree info chart
       createChart(document.getElementById("pedigreeTypes").getContext('2d'), pedigreeTypes( {{pedigree|safe}} ))
     {% elif panel == "2" and cases %}
-    // create cases detailed stats chart ===> case stats
-    createChart(document.getElementById("cases-bar-horiz").getContext('2d'), casesDetailed( {{overview|safe}}, {{cases[0].count}} ))
-
+      // create cases detailed stats chart ===> case stats
+      createChart(document.getElementById("cases-bar-horiz").getContext('2d'), casesDetailed( {{overview|safe}}, {{cases[0].count}} ))
     {% elif panel == "3" %}
       // create variants detailed stats chart ===> variants stats
       createChart(document.getElementById("var-validations").getContext('2d'), varValidations( {{variants|safe }}))
