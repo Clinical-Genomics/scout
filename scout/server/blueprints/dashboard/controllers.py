@@ -1,6 +1,6 @@
 import logging
 
-from flask import flash, redirect, request
+from flask import redirect, request
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -43,7 +43,6 @@ def compose_slice_query(search_type, search_term):
         slice_query(str): example case:17867
     """
     slice_query = None
-    flash(search_type)
     if search_term and search_type:
         slice_query = "".join([search_type, search_term])
 
