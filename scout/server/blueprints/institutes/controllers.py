@@ -20,7 +20,7 @@ from scout.utils.md5 import generate_md5_key
 
 from .forms import CaseFilterForm
 
-TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
+TRACKS = {None: "Rare Disease", "rare": "Rare Disease", "cancer": "Cancer"}
 
 
 def institute(store, institute_id):
