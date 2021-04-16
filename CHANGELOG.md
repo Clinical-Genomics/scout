@@ -6,9 +6,16 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Fixed
-- iSort lint check only
+### Added
 ### Changed
 - Refactored the MatchMaker integration as an extension
+
+## [4.32.1]
+### Fixed
+- iSort lint check only
+- Institute cases page crashing when a case has track:Null
+### Changed
+
 
 ## [4.32]
 ### Added
