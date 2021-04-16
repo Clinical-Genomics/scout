@@ -57,7 +57,11 @@ from scout.load.transcript import load_transcripts
 from scout.log import init_log
 from scout.models.hgnc_map import HgncGene
 from scout.parse.case import parse_case
-from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_transcripts, parse_transcripts
+from scout.parse.ensembl import (
+    parse_ensembl_exons,
+    parse_ensembl_transcripts,
+    parse_transcripts,
+)
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hgnc import parse_hgnc_genes
 from scout.parse.panel import parse_gene_panel
@@ -1568,7 +1572,9 @@ def mme_patient():
             "href": "mailto:contact_email@email.com",
             "name": "A contact at an institute",
         },
-        "features": [{"id": "HP:0001644", "label": "Dilated cardiomyopathy", "observed": "yes"}],
+        "features": [
+            {"id": "HP:0001644", "label": "Dilated cardiomyopathy", "observed": "yes"}
+        ],
         "genomicFeatures": [
             {
                 "gene": {"id": "LIMS2"},

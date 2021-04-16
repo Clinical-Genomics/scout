@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import uuid
 
 import pymongo
 import pytest
@@ -79,6 +80,9 @@ def app(real_database_name, real_variant_database, user_obj):
             DEBUG_TB_ENABLED=False,
             LOGIN_DISABLED=True,
             WTF_CSRF_ENABLED=False,
+            MME_URL="test_matchmaker.com",
+            MME_ACCEPTS="application/vnd.ga4gh.matchmaker.v1.0+json",
+            MME_TOKEN=str(uuid.uuid4()),
         )
     )
 
@@ -534,7 +538,9 @@ def sv_var_obj():
                         "sift_prediction": "unknown",
                         "region_annotations": ["ncRNA_exonic"],
                         "swiss_prot": "unknown",
-                        "functional_annotations": ["non_coding_transcript_exon_variant"],
+                        "functional_annotations": [
+                            "non_coding_transcript_exon_variant"
+                        ],
                         "is_canonical": false,
                         "biotype": "processed_transcript",
                         "strand": "-",

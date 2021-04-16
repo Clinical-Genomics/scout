@@ -1,6 +1,4 @@
 """Fixtures for extenstions"""
-import uuid
-
 import pytest
 
 from scout.server.app import create_app
@@ -53,18 +51,4 @@ def gens_app():
     """Return an app containing the Gens extension"""
 
     app = create_app(config=dict(TESTING=True, GENS_HOST="127.0.0.1", GENS_PORT=5000))
-    return app
-
-
-@pytest.fixture
-def matchmaker_app():
-    """Return an app containing the MatchMaker Exchange extension"""
-    app = create_app(
-        config=dict(
-            TESTING=True,
-            MME_URL="test_matchmaker.com",
-            MME_ACCEPTS="application/vnd.ga4gh.matchmaker.v1.0+json",
-            MME_TOKEN=str(uuid.uuid4()),
-        )
-    )
     return app
