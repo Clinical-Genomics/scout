@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request
 
-from .controllers import get_dashboard_info
+from .controllers import prepare_data
 
 blueprint = Blueprint(
     "dashboard",
@@ -14,7 +14,7 @@ blueprint = Blueprint(
 @blueprint.route("/dashboard", methods=["GET", "POST"])
 def index():
     """Display the Scout dashboard."""
-    data = get_dashboard_info(request)
+    data = prepare_data(request)
 
     return render_template(
         "dashboard/dashboard_general.html",

@@ -51,24 +51,39 @@ def compose_slice_query(request):
     return slice_query
 
 
-def get_dashboard_info(request=None):
-    """Returns data to be displayed in dashboard
+def prepare_data(request):
+    """Prepate data display object to be returned to the view
+
     Args:
-        request(flask.request): request data received by dashboard page
+        request(flask.rquest): request received by the view
+
     Returns:
-        data(dict): Dictionary with relevant information
+        data(dict): data to be diplayed in the template
     """
     institute_id = request.form.get("search_institute")
     if institute_id == "None":
         institute_id = None
     data = {"dashboard_form": dashboard_form(request.form)}
-
     slice_query = compose_slice_query(request)
+    get_dashboard_info(store, data, institute_id, slice_query)
+    return data
 
+
+def get_dashboard_info(adapter, data={}, institute_id=None, slice_query=None):
+    """Append case data stats to data display object
+    Args:
+        adapter(adapter.MongoAdapter)
+        data(dict): data dictionary to be passed to template
+        institute_id(str): institute id
+        slice_query(str): example case:55888
+
+    Returns:
+        data(dict): data to be diplayed in the template
+    """
     # If a slice_query is present then numbers in "General statistics" and "Case statistics" will
     # reflect the data available for the query
     general_sliced_info = get_general_case_info(
-        store, institute_id=institute_id, slice_query=slice_query
+        adapter, institute_id=institute_id, slice_query=slice_query
     )
 
     total_sliced_cases = general_sliced_info["total_cases"]
@@ -83,11 +98,11 @@ def get_dashboard_info(request=None):
         data["pedigree"].append(ped_info)
 
     data["cases"] = get_case_groups(
-        store, total_sliced_cases, institute_id=institute_id, slice_query=slice_query
+        adapter, total_sliced_cases, institute_id=institute_id, slice_query=slice_query
     )
 
     data["analysis_types"] = get_analysis_types(
-        store, total_sliced_cases, institute_id=institute_id, slice_query=slice_query
+        adapter, total_sliced_cases, institute_id=institute_id, slice_query=slice_query
     )
 
     overview = [
@@ -115,7 +130,7 @@ def get_dashboard_info(request=None):
 
     # Data from "Variant statistics tab" is not filtered by slice_query and numbers will
     # reflect verified variants in all available cases for an institute
-    general_info = get_general_case_info(store, institute_id=institute_id)
+    general_info = get_general_case_info(adapter, institute_id=institute_id)
     total_cases = general_info["total_cases"]
     sliced_case_ids = general_sliced_info["case_ids"]
     verified_query = {
@@ -135,7 +150,7 @@ def get_dashboard_info(request=None):
         0  # use this counter to count 'True Positive', 'False positive' and 'Not validated' vars
     )
 
-    validate_events = store.event_collection.find(verified_query)
+    validate_events = adapter.event_collection.find(verified_query)
     for validate_event in list(validate_events):
         case_id = validate_event.get("case")
         var_obj = adapter.variant(case_id=case_id, document_id=validate_event["variant_id"])
