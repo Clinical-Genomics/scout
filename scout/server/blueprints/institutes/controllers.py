@@ -20,6 +20,7 @@ from scout.utils.md5 import generate_md5_key
 
 from .forms import CaseFilterForm
 
+# Do not assume all cases have a valid track set
 TRACKS = {None: "Rare Disease", "rare": "Rare Disease", "cancer": "Cancer"}
 
 
