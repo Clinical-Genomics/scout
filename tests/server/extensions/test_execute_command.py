@@ -1,10 +1,11 @@
 """Tests for execute commands function"""
 import os
 import subprocess
+
 import pytest
 
-from scout.server.extensions.loqus_extension import execute_command
 from scout.server.extensions import loqusdb
+from scout.server.extensions.loqus_extension import execute_command
 
 
 def test_execute_command():

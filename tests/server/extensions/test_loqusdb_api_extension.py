@@ -1,7 +1,8 @@
 """Tests for the loqusdb REST API extension"""
 import pytest
+
 from scout.exceptions.config import ConfigError
-from scout.server.extensions import loqusdb, loqus_extension
+from scout.server.extensions import loqus_extension, loqusdb
 
 
 def test_loqusdb_api_settings(loqus_api_app):

@@ -1,11 +1,12 @@
 """Tests for the loqusdb executable extension"""
 
 import subprocess
+
 import pytest
 
-from scout.server.app import create_app
-from scout.server.extensions import LoqusDB, loqusdb, loqus_extension
 from scout.exceptions.config import ConfigError
+from scout.server.app import create_app
+from scout.server.extensions import LoqusDB, loqus_extension, loqusdb
 
 
 def test_set_coordinates_no_variant_type():
