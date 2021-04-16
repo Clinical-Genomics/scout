@@ -1,11 +1,13 @@
 """Code for MatchMaker Exchange integration
    Tested with PatientMatcher: https://github.com/Clinical-Genomics/patientMatcher
 """
+import datetime
 import json
 import logging
-import datetime
-from scout.utils import scout_requests
+
 from werkzeug.datastructures import Headers
+
+from scout.utils import scout_requests
 
 LOG = logging.getLogger(__name__)
 

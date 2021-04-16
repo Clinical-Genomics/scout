@@ -25,8 +25,9 @@ from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
-from scout.server.extensions import gens, mail, store, matchmaker
+from scout.server.extensions import gens, mail, matchmaker, store
 from scout.server.utils import institute_and_case, templated, user_institutes, zip_dir_to_obj
+
 from . import controllers
 
 LOG = logging.getLogger(__name__)

@@ -1,6 +1,7 @@
 """Tests for the MatchMaker REST API extension"""
 
 import requests
+
 from scout.server.extensions import matchmaker
 
 

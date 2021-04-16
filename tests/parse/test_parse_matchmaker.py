@@ -1,4 +1,4 @@
-from scout.parse.matchmaker import hpo_terms, parse_matches, omim_terms, genomic_features
+from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 
 
 def test_parse_hpo_terms(case_obj, test_hpo_terms):

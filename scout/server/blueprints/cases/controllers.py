@@ -33,7 +33,7 @@ from scout.constants.variant_tags import (
 from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
-from scout.server.extensions import store, matchmaker
+from scout.server.extensions import matchmaker, store
 from scout.server.utils import institute_and_case
 from scout.utils.scout_requests import post_request_json
 
