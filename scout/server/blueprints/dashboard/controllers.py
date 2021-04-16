@@ -59,6 +59,8 @@ def get_dashboard_info(request=None):
         data(dict): Dictionary with relevant information
     """
     institute_id = request.form.get("search_institute")
+    if institute_id == "None":
+        institute_id = None
     data = {"dashboard_form": dashboard_form(request.form)}
 
     slice_query = compose_slice_query(request)
