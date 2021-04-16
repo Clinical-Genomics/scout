@@ -1,7 +1,7 @@
-import pytest
 import time
-
 from datetime import datetime
+
+import pytest
 
 from scout.exceptions import IntegrityError
 

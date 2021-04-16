@@ -4,9 +4,9 @@ import logging
 import urllib.request
 import zlib
 from urllib.error import HTTPError
-from defusedxml import ElementTree
 
 import requests
+from defusedxml import ElementTree
 
 from scout.constants import CHROMOSOMES
 from scout.utils.ensembl_rest_clients import EnsemblBiomartClient

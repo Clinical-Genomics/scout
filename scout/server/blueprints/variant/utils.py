@@ -1,7 +1,7 @@
 import logging
 
-from scout.constants import CLINSIG_MAP, CALLERS, ACMG_COMPLETE_MAP
-from scout.server.links import add_gene_links, ensembl, add_tx_links
+from scout.constants import ACMG_COMPLETE_MAP, CALLERS, CLINSIG_MAP
+from scout.server.links import add_gene_links, add_tx_links, ensembl
 
 LOG = logging.getLogger(__name__)
 

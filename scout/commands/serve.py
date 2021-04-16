@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-import os.path
 import logging
+import os.path
 
 import click
-from flask.cli import with_appcontext, current_app
-from werkzeug.serving import run_simple
+from flask.cli import current_app, with_appcontext
 from livereload import Server
+from werkzeug.serving import run_simple
 
 from scout.adapter.utils import check_connection
 
