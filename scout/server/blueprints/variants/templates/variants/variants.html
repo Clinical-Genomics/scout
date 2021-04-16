@@ -85,7 +85,7 @@
                   {% if variant.chromosome in ["MT","M"] %}
                     {{ mark_heteroplasmic_mt(case.individuals, variant.samples) }}
                   {% endif %}
-		</td>
+		            </td>
                 <td>{{ gene_cell(variant) }}</td>
                 <td class="text-right">{{ frequency_cell(variant) }}</td>
                 <td class="text-right">{{ cell_cadd(variant) }}</td>
