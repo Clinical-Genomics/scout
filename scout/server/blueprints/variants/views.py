@@ -355,7 +355,6 @@ def cancer_variants(institute_id, case_name):
 
     data = controllers.cancer_variants(
         store,
-        case_obj,
         institute_id,
         case_name,
         variants_query,
@@ -367,9 +366,6 @@ def cancer_variants(institute_id, case_name):
         "True",
         "",
     ]
-    LOG.warning("=== panels data ===")
-    LOG.warning(form.gene_panels.data)
-    LOG.warning("===             ===")
     return dict(
         variant_type=variant_type,
         cytobands=cytobands,
