@@ -157,6 +157,15 @@ def causatives(institute_id):
     return dict(institute=institute_obj, variant_groups=all_variants, acmg_map=acmg_map)
 
 
+@blueprint.route("/<institute_id>/filters", methods=["GET"])
+@templated("overview/filters.html")
+def filters(institute_id):
+
+    institute_obj = institute_and_case(store, institute_id)
+
+    return dict(institute=institute_obj, form=form, **data)
+
+
 @blueprint.route("/<institute_id>/gene_variants", methods=["GET", "POST"])
 @templated("overview/gene_variants.html")
 def gene_variants(institute_id):

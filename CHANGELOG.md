@@ -5,8 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
+### Added
+- Allow saved filter lock and unlock
 ### Fixed
 - iSort lint check only
+### Changed
+- SV clinical filter no longer filters out sub 100 nt variants
 
 ## [4.32]
 ### Added
@@ -39,7 +43,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display only number of affected genes for dismissed SVs in general report
 - Chromosome build check when populating the variants filter chromosome selection
 - Display mitochondrial and rare diseases coverage report in cases with missing 'rare' track
-- SV clinical filter no longer filters out sub 100 nt variants
+
 
 ## [4.31.1]
 ### Added
@@ -59,7 +63,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display on case activity the event of a user resetting all dismissed variants
 - Support gnomAD population frequencies for mitochondrial variants
 - Anchor links in Casedata ClinVar panels to redirect after renaming individuals
-- Allow saved filter lock and unlock
 ### Fixed
 - Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
 - Page formatting issues whenever case and variant comments contain extremely long strings with no spaces
