@@ -1,38 +1,79 @@
 import logging
 
+from flask import flash, redirect, request
 from flask_login import current_user
+
+from scout.server.extensions import store
+from scout.server.utils import user_institutes
+
+from .forms import DashboardFilterForm
 
 LOG = logging.getLogger(__name__)
 
 
-def get_dashboard_info(adapter, institute_id=None, slice_query=None):
-    """Returns cases with phenotype
+def institute_select_choices():
+    """Return a list of tuples with institute _id, institute names to populate a form select.
 
-        If phenotypes are provided search for only those
+    Returns:
+        institute_choices(list). Example:[(cust000, "Institute 1"), ..]
+    """
+    institute_choices = [(None, "All institutes")]
+    # Collect only institutes available to the user
+    institute_objs = list(user_institutes(store, current_user))
+    for inst in institute_objs:
+        institute_choices.append((inst["internal_id"], inst["display_name"]))
+    return institute_choices
+
+
+def dashboard_form(request_form):
+    """Retrieve data to be displayed on dashboard page"""
+    form = DashboardFilterForm(request_form)
+    form.search_institute.choices = institute_select_choices()
+    return form
+
+
+def compose_slice_query(request):
+    """Extract a filter query given a form search term and search type
 
     Args:
-        adapter(adapter.MongoAdapter)
-        institute_id(str): an institute _id
-        slice_query(str): query to filter cases to obtain statistics for.
+        request(flask.request): request data received by dashboard page
 
+    Returns:
+        slice_query(str): example case:17867
+    """
+    slice_query = None
+    search_type = request.form.get("search_type")
+    search_term = request.form.get("search_term")
+
+    if search_term and search_type:
+        slice_query = "".join([search_type, search_term])
+
+    return slice_query
+
+
+def get_dashboard_info(request=None):
+    """Returns data to be displayed in dashboard
+    Args:
+        request(flask.request): request data received by dashboard page
     Returns:
         data(dict): Dictionary with relevant information
     """
+    institute_id = request.form.get("search_institute")
+    data = {"dashboard_form": dashboard_form(request.form)}
 
-    LOG.debug("General query with institute_id {}.".format(institute_id))
-
-    # if institute_id == 'None' or None, all cases and general stats will be returned
-    if institute_id == "None":
-        institute_id = None
+    slice_query = compose_slice_query(request)
 
     # If a slice_query is present then numbers in "General statistics" and "Case statistics" will
     # reflect the data available for the query
     general_sliced_info = get_general_case_info(
-        adapter, institute_id=institute_id, slice_query=slice_query
+        store, institute_id=institute_id, slice_query=slice_query
     )
-    total_sliced_cases = general_sliced_info["total_cases"]
 
-    data = {"total_cases": total_sliced_cases}
+    flash(general_sliced_info)
+
+    total_sliced_cases = general_sliced_info["total_cases"]
+    data["total_cases"] = total_sliced_cases
+
     if total_sliced_cases == 0:
         return data
 
@@ -42,11 +83,11 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
         data["pedigree"].append(ped_info)
 
     data["cases"] = get_case_groups(
-        adapter, total_sliced_cases, institute_id=institute_id, slice_query=slice_query
+        store, total_sliced_cases, institute_id=institute_id, slice_query=slice_query
     )
 
     data["analysis_types"] = get_analysis_types(
-        adapter, total_sliced_cases, institute_id=institute_id, slice_query=slice_query
+        store, total_sliced_cases, institute_id=institute_id, slice_query=slice_query
     )
 
     overview = [
@@ -74,7 +115,7 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
 
     # Data from "Variant statistics tab" is not filtered by slice_query and numbers will
     # reflect verified variants in all available cases for an institute
-    general_info = get_general_case_info(adapter, institute_id=institute_id)
+    general_info = get_general_case_info(store, institute_id=institute_id)
     total_cases = general_info["total_cases"]
     sliced_case_ids = general_sliced_info["case_ids"]
     verified_query = {
@@ -94,7 +135,7 @@ def get_dashboard_info(adapter, institute_id=None, slice_query=None):
         0  # use this counter to count 'True Positive', 'False positive' and 'Not validated' vars
     )
 
-    validate_events = adapter.event_collection.find(verified_query)
+    validate_events = store.event_collection.find(verified_query)
     for validate_event in list(validate_events):
         case_id = validate_event.get("case")
         var_obj = adapter.variant(case_id=case_id, document_id=validate_event["variant_id"])
