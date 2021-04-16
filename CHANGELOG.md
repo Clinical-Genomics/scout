@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Fixed
+- Dashboard page crashing when filters return no data
 ### Added
 ### Changed
 
