@@ -6,7 +6,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Fixed
+### Added
+### Changed
+
+## [x.x.x]
+### Fixed
 - iSort lint check only
+### Added
+### Changed
 
 ## [4.32]
 ### Added
