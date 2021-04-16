@@ -1,19 +1,4 @@
-import logging
-import os
-from pprint import pprint as pp
-
-from flask import (
-    Blueprint,
-    abort,
-    current_app,
-    flash,
-    jsonify,
-    redirect,
-    render_template,
-    request,
-    send_from_directory,
-    url_for,
-)
+from flask import Blueprint, render_template, request
 
 from .controllers import get_dashboard_info
 
@@ -24,8 +9,6 @@ blueprint = Blueprint(
     static_folder="static",
     static_url_path="/dashboard/static",
 )
-
-LOG = logging.getLogger(__name__)
 
 
 @blueprint.route("/dashboard", methods=["GET", "POST"])
