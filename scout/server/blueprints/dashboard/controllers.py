@@ -25,26 +25,25 @@ def institute_select_choices():
     return institute_choices
 
 
-def dashboard_form(request_form):
+def dashboard_form(request_form=None):
     """Retrieve data to be displayed on dashboard page"""
     form = DashboardFilterForm(request_form)
     form.search_institute.choices = institute_select_choices()
     return form
 
 
-def compose_slice_query(request):
+def compose_slice_query(search_type, search_term):
     """Extract a filter query given a form search term and search type
 
     Args:
-        request(flask.request): request data received by dashboard page
+        search_type(str): example -> "case:"
+        search_term(str): example -> "17867"
 
     Returns:
         slice_query(str): example case:17867
     """
     slice_query = None
-    search_type = request.form.get("search_type")
-    search_term = request.form.get("search_term")
-
+    flash(search_type)
     if search_term and search_type:
         slice_query = "".join([search_type, search_term])
 
@@ -64,7 +63,9 @@ def prepare_data(request):
     if institute_id == "None":
         institute_id = None
     data = {"dashboard_form": dashboard_form(request.form)}
-    slice_query = compose_slice_query(request)
+    slice_query = compose_slice_query(
+        request.form.get("search_type"), request.form.get("search_term")
+    )
     get_dashboard_info(store, data, institute_id, slice_query)
     return data
 
