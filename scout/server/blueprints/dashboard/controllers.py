@@ -71,8 +71,6 @@ def get_dashboard_info(request=None):
         store, institute_id=institute_id, slice_query=slice_query
     )
 
-    flash(general_sliced_info)
-
     total_sliced_cases = general_sliced_info["total_cases"]
     data["total_cases"] = total_sliced_cases
 
