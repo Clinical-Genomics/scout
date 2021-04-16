@@ -57,7 +57,7 @@ LOG = logging.getLogger(__name__)
 def populate_chrom_choices(form, case_obj):
     """Populate the option of the chromosome select accordig to the case genome build"""
     # Populate chromosome choices
-    chromosomes = CHROMOSOMES if str(case_obj.get("genome_build")) == "37" else CHROMOSOMES_38
+    chromosomes = CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
     form.chrom.choices = [("", "All")] + [(chrom, chrom) for chrom in chromosomes]
 
 
@@ -369,13 +369,9 @@ def parse_variant(
     variant_obj["cosmic_link"] = cosmic_link(variant_obj)
     variant_obj["str_source_link"] = str_source_link(variant_obj)
     # Format clinvar information
-    variant_obj["clinsig_human"] = (
-        clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
-    )
+    variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
     # Assign primary gene
-    primary_gene = min(
-        variant_genes, key=lambda gn: SO_TERMS[gn["functional_annotation"]]["rank"]
-    )
+    primary_gene = min(variant_genes, key=lambda gn: SO_TERMS[gn["functional_annotation"]]["rank"])
     # get HGVNp identifier from the canonical transcript
     hgvsp_identifier = None
     for tc in primary_gene["transcripts"]:
@@ -609,9 +605,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
     # build variant object
     variants_list = []
     for variant in variant_res:
-        variant_obj = parse_variant(
-            store, institute_obj, case_obj, variant, update=True
-        )
+        variant_obj = parse_variant(store, institute_obj, case_obj, variant, update=True)
         # get which gene is used in the panel
         secondary_gene = None
         if variant_obj["primary_gene"]["hgnc_id"] not in gene_panel_lookup:

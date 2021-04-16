@@ -1,6 +1,5 @@
 from scout.constants import PAR_COORDINATES
-from scout.utils.coordinates import is_par
-from scout.utils.coordinates import check_coordinates
+from scout.utils.coordinates import check_coordinates, is_par
 
 
 def test_par_coordinates():

@@ -1,9 +1,10 @@
 import logging
-import click
 
+import click
 from flask.cli import with_appcontext
+
+from scout.constants import PHENOTYPE_MAP, SEX_MAP
 from scout.server.extensions import store
-from scout.constants import SEX_MAP, PHENOTYPE_MAP
 
 LOG = logging.getLogger(__name__)
 

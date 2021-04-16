@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import get_template_attribute
+
 from scout.server.blueprints.variants.forms import FiltersForm
 
 

@@ -1,4 +1,4 @@
-from scout.parse.hpo_mappings import parse_hpo_to_genes, parse_hpo_diseases
+from scout.parse.hpo_mappings import parse_hpo_diseases, parse_hpo_to_genes
 
 
 def test_parse_hpo_to_genes(hpo_disease_handle):

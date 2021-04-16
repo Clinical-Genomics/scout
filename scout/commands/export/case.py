@@ -1,17 +1,15 @@
-import logging
 import json as json_lib
-
-
+import logging
 from pprint import pprint as pp
 
-from flask.cli import with_appcontext
-
 import click
+from flask.cli import with_appcontext
 
 from scout.constants import CASE_STATUSES
 from scout.server.extensions import store
-from .utils import json_option
+
 from .export_handler import bson_handler
+from .utils import json_option
 
 LOG = logging.getLogger(__name__)
 
