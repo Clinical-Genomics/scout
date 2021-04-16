@@ -6,9 +6,16 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Fixed
-- iSort lint check only
+### Added
 ### Changed
 - Reworked the layout and content of cancer variant view
+
+## [4.32.1]
+### Fixed
+- iSort lint check only
+### Changed
+- Institute cases page crashing when a case has track:Null
+### Added
 
 ## [4.32]
 ### Added
