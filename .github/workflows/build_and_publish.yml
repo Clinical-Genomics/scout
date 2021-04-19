@@ -1,4 +1,4 @@
-name: Publish to PyPI and Docker Hub
+name: Publish to PyPI, Docker Hub and GitHub IO
 
 on:
  release:
@@ -54,4 +54,19 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         tags: "latest,${{ github.event.release.tag_name }}"
+
+ deploy-docs:
+   name: Deploy Docs to GitHubIO
+   runs-on: ubuntu-latest
+   steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+    - name: Setup environment for docs deployment
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+    - name: Install mkdocs
+      run: pip install mkdocs-material
+    - name: Deploy documentation
+      run: mkdocs gh-deploy --force
 
