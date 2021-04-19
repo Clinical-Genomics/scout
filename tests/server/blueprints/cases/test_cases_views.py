@@ -692,7 +692,7 @@ def test_status(app, institute_obj, case_obj, user_obj):
         assert resp.status_code == 302  # page should be redirected
 
 
-def _test_delivery_report(client, institute_obj, case_obj, format):
+def _test_delivery_report(client, institute_obj, case_obj, response_format):
     """Test helper: test report of given format"""
 
     # WHEN the case has a delivery report
@@ -707,7 +707,7 @@ def _test_delivery_report(client, institute_obj, case_obj, format):
             "cases.delivery_report",
             institute_id=institute_obj["internal_id"],
             case_name=case_obj["display_name"],
-            format=format,
+            format=response_format,
         )
     )
     return resp
@@ -722,7 +722,7 @@ def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        resp = _test_delivery_report(client, institute_obj, case_obj, format="html")
+        resp = _test_delivery_report(client, institute_obj, case_obj, response_format="html")
         # THEN the endpoint should return the delivery report HTML page
         assert "Leveransrapport Clinical Genomics" in str(resp.data)
 
@@ -736,7 +736,7 @@ def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        resp = _test_delivery_report(client, institute_obj, case_obj, format="pdf")
+        resp = _test_delivery_report(client, institute_obj, case_obj, response_format="pdf")
         # a successful response should be returned
         assert resp.status_code == 200
         # and it should contain a pdf file, not HTML code

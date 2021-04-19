@@ -88,8 +88,8 @@ def genes(build, api_key):
     hgnc_lines = fetch_hgnc()
     exac_lines = fetch_exac_constraint()
 
-    for build in builds:
-        ensembl_genes = fetch_ensembl_genes(build=build)
+    for genome_build in builds:
+        ensembl_genes = fetch_ensembl_genes(build=genome_build)
 
         # load the genes
         hgnc_genes = load_hgnc_genes(
@@ -100,7 +100,7 @@ def genes(build, api_key):
             mim2gene_lines=mim_files.get("mim2genes"),
             genemap_lines=mim_files.get("genemap2"),
             hpo_lines=hpo_genes,
-            build=build,
+            build=genome_build,
         )
 
         ensembl_genes = {}
