@@ -692,6 +692,27 @@ def test_status(app, institute_obj, case_obj, user_obj):
         assert resp.status_code == 302  # page should be redirected
 
 
+def _test_delivery_report(client, institute_obj, case_obj, format):
+    """Test helper: test report of given format"""
+
+    # WHEN the case has a delivery report
+    store.case_collection.update_one(
+        {"_id": case_obj["_id"]},
+        {"$set": {"delivery_report": delivery_report_path}},
+    )
+
+    # WHEN accessing the delivery report page with the format=pdf param
+    resp = client.get(
+        url_for(
+            "cases.delivery_report",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+            format=format,
+        )
+    )
+    return resp
+
+
 def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
 
     # GIVEN an initialized app
@@ -701,21 +722,7 @@ def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        # AND the case has a delivery report
-        store.case_collection.update_one(
-            {"_id": case_obj["_id"]},
-            {"$set": {"delivery_report": delivery_report_path}},
-        )
-
-        # WHEN accessing the delivery report page
-        resp = client.get(
-            url_for(
-                "cases.delivery_report",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            )
-        )
-
+        resp = _test_delivery_report(client, institute_obj, case_obj, format="html")
         # THEN the endpoint should return the delivery report HTML page
         assert "Leveransrapport Clinical Genomics" in str(resp.data)
 
@@ -729,22 +736,7 @@ def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        # AND the case has a delivery report
-        store.case_collection.update_one(
-            {"_id": case_obj["_id"]},
-            {"$set": {"delivery_report": delivery_report_path}},
-        )
-
-        # WHEN accessing the delivery report page with the format=pdf param
-        resp = client.get(
-            url_for(
-                "cases.delivery_report",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-                format="pdf",
-            )
-        )
-
+        resp = _test_delivery_report(client, institute_obj, case_obj, format="pdf")
         # a successful response should be returned
         assert resp.status_code == 200
         # and it should contain a pdf file, not HTML code
@@ -797,6 +789,21 @@ def test_omimterms(app, test_omim_term):
         assert test_omim_term["_id"] in str(resp.data)
 
 
+def _test_beacon_submit(client, case_obj, vcf_files):
+    """ Test beacon connection: given client, produce response """
+    form_data = {
+        "case": case_obj["_id"],
+        "samples": "affected",
+        "vcf_files": vcf_files,
+    }
+    # WHEN case page is loaded
+    resp = client.post(
+        url_for("cases.beacon_submit"),
+        data=form_data,
+    )
+    return resp
+
+
 def test_beacon_submit_wrong_config(app, case_obj):
     """Test saving variants to a Beacon server when Beacon connection parameters are not set"""
 
@@ -806,20 +813,14 @@ def test_beacon_submit_wrong_config(app, case_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        form_data = {
-            "case": case_obj["_id"],
-            "samples": "affected",
-            "vcf_files": ["vcf_snv_research", "vcf_snv"],
-        }
-        # WHEN case page is loaded
-        resp = client.post(
-            url_for("cases.beacon_submit"),
-            data=form_data,
-        )
+        vcf_files = ["vcf_snv_research", "vcf_snv"]
+        # WHEN case page is loaded without beacon config settings
+        resp = _test_beacon_submit(client, case_obj, vcf_files)
+
         # THEN it should redirect to case page
         assert resp.status_code == 302
         updated_case = store.case_collection.find_one()
-        # and submission should not be saved in case object
+        # but submission should not be saved in case object
         assert "beacon" not in updated_case
 
 
@@ -841,23 +842,17 @@ def test_beacon_submit(app, case_obj, monkeypatch, mocked_beacon):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        form_data = {
-            "case": case_obj["_id"],
-            "samples": "affected",
-            "vcf_files": ["vcf_snv_research", "vcf_snv"],
-        }
-        # WHEN users submits a POST request to Beacon
-        resp = client.post(
-            url_for("cases.beacon_submit"),
-            data=form_data,
-        )
+        vcf_files = ["vcf_snv_research", "vcf_snv"]
+        # WHEN case page is loaded
+        resp = _test_beacon_submit(client, case_obj, vcf_files)
+
         # THEN it should redirect to case page
         assert resp.status_code == 302
         updated_case = store.case_collection.find_one()
         # and submissions details should be saved in case object
         assert "beacon" in updated_case
         assert updated_case["beacon"]["samples"]
-        assert updated_case["beacon"]["vcf_files"] == form_data["vcf_files"]
+        assert updated_case["beacon"]["vcf_files"] == vcf_files
 
 
 def test_beacon_remove(app, case_obj, monkeypatch, mocked_beacon):
