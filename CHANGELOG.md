@@ -8,9 +8,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Allow saved filter lock and unlock
 ### Fixed
-- iSort lint check only
+### Added
 ### Changed
 - SV clinical filter no longer filters out sub 100 nt variants
+
+## [4.32.1]
+### Fixed
+- iSort lint check only
+### Changed
+- Institute cases page crashing when a case has track:Null
+### Added
+### Changed
 
 ## [4.32]
 ### Added
