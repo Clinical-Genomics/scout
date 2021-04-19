@@ -23,7 +23,7 @@ def test_institute_select_choices(user_obj, app):
 
         # It should return the expected list of tuples
         assert len(select_choices) == len(user_obj["institutes"]) + 1
-        assert select_choices[0] == (None, "All institutes")
+        assert select_choices[0] == ("All", "All institutes")
         user_institute = user_obj["institutes"][0]
         assert select_choices[1][0] == user_institute
 
