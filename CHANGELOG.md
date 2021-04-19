@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Dashboard page crashing when filters return no data
 ### Added
+- Autodeploy docs on release
 ### Changed
 - Pre-selected fields to run queries with in dashboard page
 - Do not filter by any institute when fist accessing the dashboard
