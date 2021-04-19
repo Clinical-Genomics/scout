@@ -69,8 +69,3 @@ jobs:
        GITHUB_TOKEN: ${{ secrets.github_token }}
        CONFIG_FILE: mkdocs.yml
        EXTRA_PACKAGES: build-base
-
-   uses: peaceiris/actions-gh-pages@v3
-   with:
-     github_token: ${{ secrets.github_token }}
-     publish_dir: ./public
