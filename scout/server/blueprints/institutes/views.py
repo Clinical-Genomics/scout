@@ -161,7 +161,11 @@ def causatives(institute_id):
 @templated("overview/filters.html")
 def filters(institute_id):
 
+    form = request.form
+
     institute_obj = institute_and_case(store, institute_id)
+
+    data = controllers.filters(store, institute_obj)
 
     return dict(institute=institute_obj, form=form, **data)
 

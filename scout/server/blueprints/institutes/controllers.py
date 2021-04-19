@@ -347,6 +347,16 @@ def gene_variants(store, pymongo_cursor, variant_count, institute_id, page=1, pe
     return {"variants": variants, "more_variants": more_variants}
 
 
+def filters(store, institute_id):
+    """Retrieve all filters for an institute"""
+    filters = []
+    catergories = ["cancer", "snv", "str", "sv"]
+    for category in categories:
+        category_filters = store.filters(institute_id, category)
+        filters.append(category_filters)
+    return data
+
+
 def clinvar_submissions(store, institute_id):
     """Get all Clinvar submissions for a user and an institute"""
     submissions = list(store.clinvar_submissions(institute_id))
