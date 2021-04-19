@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 ### Added
 ### Changed
+- Changed from deprecated db update method
 
 ## [4.32.1]
 ### Fixed
