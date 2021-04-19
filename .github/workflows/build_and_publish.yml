@@ -1,4 +1,4 @@
-name: Publish to PyPI and Docker Hub
+name: Publish to PyPI, Docker Hub and GitHub IO
 
 on:
  release:
@@ -55,3 +55,22 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         tags: "latest,${{ github.event.release.tag_name }}"
 
+ deploy-docs:
+   name: Deploy Docs to GitHubIO
+   runs-on: ubuntu-latest
+   steps:
+    - name: Checkout main
+      uses: actions/checkout@v2
+
+    - name: Deploy docs
+      uses: mhausenblas/mkdocs-deploy-gh-pages@master
+       # Or use mhausenblas/mkdocs-deploy-gh-pages@nomaterial to build without the mkdocs-material theme
+      env:
+       GITHUB_TOKEN: ${{ secrets.github_token }}
+       CONFIG_FILE: mkdocs.yml
+       EXTRA_PACKAGES: build-base
+
+   uses: peaceiris/actions-gh-pages@v3
+   with:
+     github_token: ${{ secrets.github_token }}
+     publish_dir: ./public
