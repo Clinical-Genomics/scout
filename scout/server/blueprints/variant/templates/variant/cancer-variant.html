@@ -381,7 +381,7 @@
           <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
         </li>
         <li class="list-group-item">HGVSp:
-            <strong>{{ primary_transcript.protein_sequence_name[2:5] }}</strong>{{ primary_transcript.protein_sequence_name[5:-3] }}<strong>{{ primary_transcript.protein_sequence_name[-3:] }}</strong>
+            {{ primary_transcript.protein_sequence_name | url_decode }}
         </li>
         <li class="list-group-item">
           <span class="font-weight-bold">{{ primary_gene.functional_annotation|truncate(20, True) }}</span> in <span class="font-weight-bold">{{ primary_gene.region_annotation }} region</span>
