@@ -59,13 +59,14 @@ jobs:
    name: Deploy Docs to GitHubIO
    runs-on: ubuntu-latest
    steps:
-    - name: Checkout main
+    - name: Checkout repo
       uses: actions/checkout@v2
+    - name: Setup environment for docs deployment
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+    - name: Install mkdocs
+      run: pip install mkdocs-material
+    - name: Deploy documentation
+      run: mkdocs gh-deploy --force
 
-    - name: Deploy docs
-      uses: mhausenblas/mkdocs-deploy-gh-pages@master
-       # Or use mhausenblas/mkdocs-deploy-gh-pages@nomaterial to build without the mkdocs-material theme
-      env:
-       GITHUB_TOKEN: ${{ secrets.github_token }}
-       CONFIG_FILE: mkdocs.yml
-       EXTRA_PACKAGES: build-base
