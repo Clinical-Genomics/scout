@@ -24,4 +24,4 @@ class DashboardFilterForm(FlaskForm):
     )
     search_institute = NonValidatingSelectField("Institute", choices=[])
     search_term = TextField("Search term")
-    search = SubmitField(label="Filter")
+    search = SubmitField(label="Search")

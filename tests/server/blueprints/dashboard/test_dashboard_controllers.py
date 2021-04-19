@@ -22,9 +22,10 @@ def test_institute_select_choices(user_obj, app):
         select_choices = institute_select_choices()
 
         # It should return the expected list of tuples
-        assert len(select_choices) == len(user_obj["institutes"])
+        assert len(select_choices) == len(user_obj["institutes"]) + 1
+        assert select_choices[0] == ("All", "All institutes")
         user_institute = user_obj["institutes"][0]
-        assert select_choices[0][0] == user_institute
+        assert select_choices[1][0] == user_institute
 
 
 def test_dashboard_form(app):

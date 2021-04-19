@@ -9,7 +9,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Dashboard page crashing when filters return no data
 ### Added
 ### Changed
-- Remove option to display stats for all institutes together in dashboard (admin users)
 - Pre-selected fields to run queries with in dashboard page
 
 ## [4.32.1]

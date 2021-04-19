@@ -11,9 +11,9 @@
       <!--filter panel -->
       <div>
         {{ dashboard_search_form() }}
-        {% if total_cases == 0 %}
+        {% if total_cases and total_cases == 0 %}
           <div class="alert alert-danger">Your search didn't return any results!</div>
-        {% else %}
+        {% elif total_cases %}
           {{ general_stats_panels() }}
           {{ cases_stats_panels() }}
           {{ variants_stats_panels() }}
@@ -143,7 +143,7 @@
         {% endfor %}
       </table>
         <br>
-        <div id="card mt-3" >
+        <div class="card mt-3" >
           <form id="dowload_var_stats" action="{{ url_for('variants.download_verified')}}" method="GET">
             <button type="submit" name="verified_vars" value="verified" class="btn btn-primary btn-md">Download all verified variants for your cases</button>
           </form>
