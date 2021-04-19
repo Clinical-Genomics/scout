@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Fixed
 ### Added
+- Autodeploy docs on release
 ### Changed
 - Reworked the layout and content of cancer variant view
 
