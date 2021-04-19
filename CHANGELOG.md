@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Changed
 - Pre-selected fields to run queries with in dashboard page
+- Do not filter by any institute when fist accessing the dashboard
+
 
 ## [4.32.1]
 ### Fixed
