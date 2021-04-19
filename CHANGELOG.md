@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow saved filter lock and unlock
 ### Fixed
 ### Added
+- Autodeploy docs on release
 ### Changed
 - SV clinical filter no longer filters out sub 100 nt variants
 
