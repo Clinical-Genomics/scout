@@ -17,7 +17,7 @@ def institute_select_choices():
     Returns:
         institute_choices(list). Example:[(cust000, "Institute 1"), ..]
     """
-    institute_choices = [(None, "All institutes")] if current_user.is_admin else []
+    institute_choices = [("All", "All institutes")] if current_user.is_admin else []
     # Collect only institutes available to the user
     institute_objs = list(user_institutes(store, current_user))
     for inst in institute_objs:
@@ -59,13 +59,14 @@ def prepare_data(request):
         data(dict): data to be diplayed in the template
     """
     institute_id = request.form.get("search_institute")
-    if institute_id == "None":
-        institute_id = None
-    allowed_insititutes = [inst[0] for inst in institute_select_choices()]
 
-    if institute_id not in allowed_insititutes:
+    allowed_insititutes = [inst[0] for inst in institute_select_choices()]
+    if institute_id and institute_id not in allowed_insititutes:
         flash("Your user is not allowed to visualize this data", "warning")
         redirect(url_for("dashboard.index"))
+
+    if institute_id == "All":
+        institute_id = None
 
     data = {"dashboard_form": dashboard_form(request.form)}
     slice_query = compose_slice_query(
