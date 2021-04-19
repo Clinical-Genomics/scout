@@ -3,9 +3,9 @@
 {% block content_main %}
   <div class="container-float mt-3">
       <ul class="nav nav-tabs nav-justified">
-        <li class="nav-item"><a href="{{url_for('dashboard.index', panel=1)}}" class="nav-link {% if panel == '1' %}active{% endif %}"><h4>General statistics</h4></a></li>
-        <li class="nav-item"><a href="{{url_for('dashboard.index', panel=2)}}" class="nav-link {% if panel == '2' %}active{% endif %}" ><h4>Case statistics</h4></a></li>
-        <li class="nav-item"><a href="{{url_for('dashboard.index', panel=3)}}" class="nav-link {% if panel == '3' %}active{% endif %}"><h4>Variant statistics</h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == '1' %}active{% endif %}" data-toggle="tab" onclick="hide_div(1)"><h4>General statistics</h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == '2' %}active{% endif %}" data-toggle="tab" onclick="hide_div(2)"><h4>Case statistics</h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == '3' %}active{% endif %}" data-toggle="tab" onclick="hide_div(3)"><h4>Variant statistics</h4></a></li>
       </ul>
 
       <!--filter panel -->
@@ -13,12 +13,10 @@
         {{ dashboard_search_form() }}
         {% if total_cases == 0 %}
           <div class="alert alert-danger">Your search didn't return any results!</div>
-        {% elif panel == "2" %}
-          {{ cases_stats_panels() }}
-        {% elif panel == "3" %}
-          {{ variants_stats_panels() }}
         {% else %}
           {{ general_stats_panels() }}
+          {{ cases_stats_panels() }}
+          {{ variants_stats_panels() }}
         {% endif %}
       </div>
 
@@ -58,7 +56,7 @@
 {% endmacro %}
 
 {% macro general_stats_panels() %}
-<div class="mt-3 text-center">
+<div class="mt-3 text-center" id=1>
   <div class="row">
     <div class="col-md-4">
       <h1>Samples</h1>
@@ -108,7 +106,7 @@
 {% endmacro %}
 
 {% macro cases_stats_panels() %}
-<div class="mt-3">
+<div class="mt-3" id=2>
   <div class="row">
     <div class="col-md-8">
         <canvas id="cases-bar-horiz" height="100"></canvas>
@@ -129,7 +127,7 @@
 
 
 {% macro variants_stats_panels() %}
-<div class="container-float mt-3 text-center">
+<div class="container-float mt-3 text-center" id=3>
   <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-4 d-flex justify-content-right align-items-center">
@@ -168,6 +166,7 @@
 
     $(document).ready(function(){
       text.disabled = (sel.value == "");
+      hide_div(1)
     });
 
     if(sel){
@@ -176,18 +175,29 @@
       };
     }
 
+    function hide_div(show_div){
+      for (i=1; i<4; i++) {
+        var div_el = document.getElementById(i);
+        if (i==show_div){ //show div
+          div_el.style.display = "block";
+        }
+        else{ //hode other divs
+          div_el.style.display = "none";
+        }
+      }
+    }
 
-    {% if panel == "1" and cases %}
+    {% if cases %}
       //create analysis type chart ===> general stats
       createChart(document.getElementById("ngsType").getContext('2d'), analysisTypeData( {{analysis_types|safe }} ))
       //create cases types chart
       createChart(document.getElementById("casesType").getContext('2d'), casesType( {{cases[1:]|safe}} ))
       //create pedigree info chart
       createChart(document.getElementById("pedigreeTypes").getContext('2d'), pedigreeTypes( {{pedigree|safe}} ))
-    {% elif panel == "2" and cases %}
+
       // create cases detailed stats chart ===> case stats
       createChart(document.getElementById("cases-bar-horiz").getContext('2d'), casesDetailed( {{overview|safe}}, {{cases[0].count}} ))
-    {% elif panel == "3" %}
+
       // create variants detailed stats chart ===> variants stats
       createChart(document.getElementById("var-validations").getContext('2d'), varValidations( {{variants|safe }}))
     {% endif %}
