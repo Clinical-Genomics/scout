@@ -58,9 +58,12 @@ def prepare_data(request):
     Returns:
         data(dict): data to be diplayed in the template
     """
-    institute_id = request.form.get("search_institute")
-
     allowed_insititutes = [inst[0] for inst in institute_select_choices()]
+
+    institute_id = request.form.get(
+        "search_institute", allowed_insititutes[0]
+    )  # GET request has no institute, select the first option of the select
+
     if institute_id and institute_id not in allowed_insititutes:
         flash("Your user is not allowed to visualize this data", "warning")
         redirect(url_for("dashboard.index"))
