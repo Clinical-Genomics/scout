@@ -17,15 +17,12 @@ Copyright (c) 2015 __MoonsoInc__. All rights reserved.
 
 """
 import logging
-from pprint import pprint as pp
 
 import click
 from flask.cli import current_app, with_appcontext
 
-from scout.load import load_exons, load_hgnc_genes, load_transcripts
+from scout.load import load_hgnc_genes, load_transcripts
 from scout.server.extensions import store
-from scout.utils.handle import get_file_handle
-from scout.utils.link import link_genes
 from scout.utils.scout_requests import (
     fetch_ensembl_genes,
     fetch_ensembl_transcripts,
@@ -109,9 +106,9 @@ def genes(build, api_key):
             ensembl_genes[ensembl_id] = gene_obj
 
         # Fetch the transcripts from ensembl
-        ensembl_transcripts = fetch_ensembl_transcripts(build=build)
+        ensembl_transcripts = fetch_ensembl_transcripts(build=genome_build)
 
-        transcripts = load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
+        transcripts = load_transcripts(adapter, ensembl_transcripts, genome_build, ensembl_genes)
 
     adapter.update_indexes()
 
