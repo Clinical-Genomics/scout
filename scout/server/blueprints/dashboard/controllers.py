@@ -17,9 +17,9 @@ def institute_select_choices():
     Returns:
         institute_choices(list). Example:[(cust000, "Institute 1"), ..]
     """
-    institute_choices = [("All", "All institutes")] if current_user.is_admin else []
+    institute_choices = []
     # Collect only institutes available to the user
-    institute_objs = list(user_institutes(store, current_user))
+    institute_objs = user_institutes(store, current_user)
     for inst in institute_objs:
         institute_choices.append((inst["_id"], inst["display_name"]))
     return institute_choices
@@ -67,9 +67,6 @@ def prepare_data(request):
     if institute_id and institute_id not in allowed_insititutes:
         flash("Your user is not allowed to visualize this data", "warning")
         redirect(url_for("dashboard.index"))
-
-    if institute_id == "All":
-        institute_id = None
 
     data = {"dashboard_form": dashboard_form(request.form)}
     slice_query = compose_slice_query(
