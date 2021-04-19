@@ -344,6 +344,16 @@
           {% endif %}
         {% endfor %}
       {% endfor %}
+      {% if tmp_gene_info | length  == 0 %}
+        {% for gene in variant.genes %}
+          {% for transcript in gene.transcripts %}
+          {% if transcript.transcript_id.startswith('NM_') %}
+              {% do tmp_gene_info.append(gene) %}
+              {% do tmp_gene_info.append(transcript) %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      {% endif %}
       {% set primary_gene = tmp_gene_info[0] %}
       {% set primary_transcript = tmp_gene_info[1] %}
       <a href=""><h5 class="card-title">
@@ -386,11 +396,13 @@
           <a class="btn btn-sm btn-info" role="button" target="_blank" href="{{variant.snp_links[snp]}}">dbSNP ({{ snp }})</a>
         {% endfor %}
       {% endif %}
-      {% for clinsig in variant.clinsig_human %}
-        {% if clinsig.accession %}
-          <a class="btn btn-sm btn-info"  role="button" href="{{ clinsig.link }}" target="_blank">Clinvar {{ clinsig.accession }}</a>
-        {% endif %}
-      {% endfor %}
+      {% if variant.clinsig_human %}
+        {% for clinsig in variant.clinsig_human %}
+          {% if clinsig.accession %}
+            <a class="btn btn-sm btn-info"  role="button" href="{{ clinsig.link }}" target="_blank">Clinvar {{ clinsig.accession }}</a>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
     </div>
     <!--IGV URLS-->
     <table class="table table-sm">
