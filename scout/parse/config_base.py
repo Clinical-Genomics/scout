@@ -1,16 +1,16 @@
 """Class to hold information about scout load config"""
 
 import datetime
-from typing import Any, List, Optional, Union
-from pydantic import BaseModel, validator, Field, root_validator
-from typing_extensions import Literal
-from fractions import Fraction
-from scout.exceptions import ConfigError, PedigreeError
-from pathlib import Path
-from scout.utils.date import get_date
-
-
 import logging
+from fractions import Fraction
+from pathlib import Path
+from typing import Any, List, Optional, Union
+
+from pydantic import BaseModel, Field, root_validator, validator
+from typing_extensions import Literal
+
+from scout.exceptions import ConfigError, PedigreeError
+from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
 

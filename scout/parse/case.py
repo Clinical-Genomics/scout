@@ -9,11 +9,10 @@ from ped_parser import FamilyParser
 
 from scout.constants import PHENOTYPE_MAP, REV_PHENOTYPE_MAP, REV_SEX_MAP, SEX_MAP
 from scout.exceptions import ConfigError, PedigreeError
+from scout.parse.config_base import ScoutIndividual, ScoutLoadConfig, VcfFiles
 from scout.parse.peddy import parse_peddy_ped, parse_peddy_ped_check, parse_peddy_sex_check
 from scout.parse.smn import parse_smn_file
 from scout.utils.date import get_date
-
-from scout.parse.config_base import ScoutLoadConfig, ScoutIndividual, VcfFiles
 
 LOG = logging.getLogger(__name__)
 
