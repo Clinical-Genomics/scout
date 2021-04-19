@@ -1,6 +1,6 @@
 import logging
 
-from flask import redirect, request
+from flask import flash, redirect, request, url_for
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -17,7 +17,7 @@ def institute_select_choices():
     Returns:
         institute_choices(list). Example:[(cust000, "Institute 1"), ..]
     """
-    institute_choices = [(None, "All institutes")]
+    institute_choices = [(None, "All institutes")] if current_user.is_admin else []
     # Collect only institutes available to the user
     institute_objs = list(user_institutes(store, current_user))
     for inst in institute_objs:
@@ -61,6 +61,12 @@ def prepare_data(request):
     institute_id = request.form.get("search_institute")
     if institute_id == "None":
         institute_id = None
+    allowed_insititutes = [inst[0] for inst in institute_select_choices()]
+
+    if institute_id not in allowed_insititutes:
+        flash("Your user is not allowed to visualize this data", "warning")
+        redirect(url_for("dashboard.index"))
+
     data = {"dashboard_form": dashboard_form(request.form)}
     slice_query = compose_slice_query(
         request.form.get("search_type"), request.form.get("search_term")
