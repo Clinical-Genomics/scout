@@ -1572,9 +1572,7 @@ def mme_patient():
             "href": "mailto:contact_email@email.com",
             "name": "A contact at an institute",
         },
-        "features": [
-            {"id": "HP:0001644", "label": "Dilated cardiomyopathy", "observed": "yes"}
-        ],
+        "features": [{"id": "HP:0001644", "label": "Dilated cardiomyopathy", "observed": "yes"}],
         "genomicFeatures": [
             {
                 "gene": {"id": "LIMS2"},
