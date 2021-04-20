@@ -786,7 +786,7 @@ def test_omimterms(app, test_omim_term):
         assert resp.status_code == 200
 
         # containing the OMIM term
-        assert test_omim_term["_id"] in str(resp.data)
+        assert resp.mimetype == "application/pdf"
 
 
 def _test_beacon_submit(client, case_obj, vcf_files):
