@@ -116,7 +116,10 @@
   </div>
 {% endmacro %}
 
-{% macro frequency_cell(variant) %}
+{% macro frequency_cell_general(variant) %}
+  {% if variant.category != "cancer" %}
+    {{ observed_cell_general(variant) }}
+  {% endif %}
   {% if variant.chromosome != "MT" %}
     {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency else '~' }}
   {% else %}

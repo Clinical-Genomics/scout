@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, mark_heteroplasmic_mt %}
-{% from "variants/components.html" import gene_cell, frequency_cell %}
+{% from "variants/components.html" import gene_cell, frequency_cell_general %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} variants
@@ -87,7 +87,7 @@
                   {% endif %}
 		            </td>
                 <td>{{ gene_cell(variant) }}</td>
-                <td class="text-right">{{ frequency_cell(variant) }}</td>
+                <td class="text-right">{{ frequency_cell_general(variant) }}</td>
                 <td class="text-right">{{ cell_cadd(variant) }}</td>
                 <td>
                   {% for annotation in variant.region_annotations %}

@@ -369,9 +369,7 @@ def parse_variant(
     variant_obj["cosmic_link"] = cosmic_link(variant_obj)
     variant_obj["str_source_link"] = str_source_link(variant_obj)
     # Format clinvar information
-    variant_obj["clinsig_human"] = (
-        clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
-    )
+    variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
     # Set the gene with most severe consequence as being representavie
     # used for display purposes
     if variant_genes:
