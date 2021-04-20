@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 ### Added
 - Autodeploy docs on release
+- Documentation for updating case individuals tracks
 ### Changed
 
 ## [4.32.1]
