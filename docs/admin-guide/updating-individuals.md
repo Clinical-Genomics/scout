@@ -29,7 +29,7 @@ And the tracks that can be updated are the following:
 ## Description of custom individual tracks:
 
 ### DNA-sequencing alignment files
-The following files are used by the [igv.js] integrated browser to display sequence variation alignments. The igv.js browser can be opened by clicking on the relative link (button) present on variants page. The link is displayed only if at least one individual of the case contains one bam_file or mt_bam track saved.
+The following files are used by the [igv.js](https://github.com/igvteam/igv.js/wiki/Alignment-Track) integrated browser to display sequence variation alignments. The igv.js browser can be opened by clicking on the relative link (button) present on variants page. The link is displayed only if at least one individual of the case contains one bam_file or mt_bam track saved.
 
 | key name            | key value     |
 | --------------------|:-------------:|
@@ -41,15 +41,15 @@ The following files are used by the [igv.js] integrated browser to display seque
 | upd_regions_bed     | path to upd_regions_bed                                     |
 | upd_sites_bed       | path to vcf2cytosure file                                   |
 
-rhocall_bed and rhocall_wig files are both obtained from [rhocall], a software that calls and annotates UPDs from VCF files.
+rhocall_bed and rhocall_wig files are both obtained from [rhocall](https://github.com/dnil/rhocall), a software that calls and annotates UPDs from VCF files.
 
-tiddit_coverage_wig files are obtained from [tiddit], a software in turn is used to call structural variants.
+tiddit_coverage_wig files are obtained from [tiddit](https://github.com/SciLifeLab/TIDDIT), a software in turn is used to call structural variants.
 
-upd_regions_bed and upd_sites_bed files are created from VCF files using the [upd tool]
+upd_regions_bed and upd_sites_bed files are created from VCF files using the [upd tool](https://github.com/bjhall/upd).
 
 
 ### RNA-sequencing splice junctions files
-These files are both required by the integrated [splice junction] track view of igv.js.
+These files are both required by the integrated [splice junction track](https://github.com/igvteam/igv.js/wiki/Splice-Junctions) view of igv.js.
 
 | key name             | key value     |
 | -------------------- |:-------------:|
@@ -66,13 +66,4 @@ A link to the splice junction view is present on variants pages of cases with at
 | ------------- |:-------------:|
 | vcf2cytosure | path to vcf2cytosure file  |
 
-[vcf2cytosure] is a tool that converts a VCF with structural variations to the “.CGH” format used by the commercial CytoSure Interpret Software by OGT (Oxford Gene Technology). Once the individual is updated with this track, vcf2cytosure files will be available for download from the individuals table present on Scout's case page.
-
-
-[igv.js]: https://github.com/igvteam/igv.js/wiki/Alignment-Track
-[rhocall] : https://github.com/dnil/rhocall
-[tiddit]: https://github.com/SciLifeLab/TIDDIT
-[splice junction]: https://github.com/igvteam/igv.js/wiki/Splice-Junctions
-[vcf2cytosure]: https://github.com/NBISweden/vcf2cytosure
-[CytoSure]: https://www.ogt.com/products/product-search/cytosure-interpret-software/
-[upd tool]: https://github.com/bjhall/upd
+[vcf2cytosure](https://github.com/NBISweden/vcf2cytosure) is a tool that converts a VCF with structural variations to the “.CGH” format used by the commercial [CytoSure Interpret Software](https://www.ogt.com/products/product-search/cytosure-interpret-software/) by OGT (Oxford Gene Technology). Once the individual is updated with this track, vcf2cytosure files will be available for download from the individuals table present on Scout's case page.
