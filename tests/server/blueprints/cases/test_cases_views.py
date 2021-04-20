@@ -8,7 +8,10 @@ from flask_login import current_user
 
 from scout.demo import delivery_report_path
 from scout.server.blueprints.cases import controllers
-from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_gene_symbols
+from scout.server.blueprints.cases.views import (
+    parse_raw_gene_ids,
+    parse_raw_gene_symbols,
+)
 from scout.server.extensions import mail, store
 
 TEST_TOKEN = "test_token"
@@ -299,7 +302,11 @@ def test_update_case_comment(app, institute_obj, case_obj, user_obj):
         assert comment
 
         # WHEN a user updates the comment via the modal form
-        form_data = {"event_id": comment["_id"], "updatedContent": "an updated comment", "edit": ""}
+        form_data = {
+            "event_id": comment["_id"],
+            "updatedContent": "an updated comment",
+            "edit": "",
+        }
         resp = client.post(
             url_for(
                 "cases.events",
@@ -391,7 +398,11 @@ def test_download_hpo_genes(app, case_obj, institute_obj):
 
     # GIVEN a case containing a dynamic gene list
     dynamic_gene_list = [
-        {"hgnc_symbol": "ACTA2", "hgnc_id": 130, "description": "actin alpha 2, smooth muscle"},
+        {
+            "hgnc_symbol": "ACTA2",
+            "hgnc_id": 130,
+            "description": "actin alpha 2, smooth muscle",
+        },
         {"hgnc_symbol": "LMNB2", "hgnc_id": 6638, "description": "lamin B2"},
     ]
 
@@ -757,7 +768,9 @@ def test_caselist(app, case_obj):
         # WHEN the API is invoked with a query string containing part of the case term description
         resp = client.get(
             url_for(
-                "cases.caselist", institute_id=case_obj["owner"], query=case_obj["display_name"]
+                "cases.caselist",
+                institute_id=case_obj["owner"],
+                query=case_obj["display_name"],
             )
         )
         # THEN it should return a valid response
@@ -786,7 +799,8 @@ def test_omimterms(app, test_omim_term):
         assert resp.status_code == 200
 
         # containing the OMIM term
-        assert resp.mimetype == "application/pdf"
+        assert test_omim_term["_id"] in str(resp.data)
+        assert resp.mimetype == "application/json"
 
 
 def _test_beacon_submit(client, case_obj, vcf_files):
