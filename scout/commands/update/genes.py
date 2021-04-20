@@ -42,11 +42,6 @@ LOG = logging.getLogger(__name__)
     help="What genome build should be used. If no choice update 37 and 38.",
 )
 @click.option("--api-key", help="Specify the api key")
-@click.option(
-    "--files",
-    type=click.Path(exists=True, dir_okay=True, file_okay=False),
-    help="Path to directory with resource files",
-)
 @with_appcontext
 def genes(build, api_key):
     """
