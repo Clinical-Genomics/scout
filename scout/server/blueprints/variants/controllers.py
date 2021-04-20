@@ -606,8 +606,11 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
     # build variant object
     variants_list = []
     for variant in variant_res:
+        # parse variant information
         variant_obj = parse_variant(store, institute_obj, case_obj, variant, update=True)
-        # get which gene is used in the panel
+        # if one or more gene panles is selected assigne the gene present
+        # in the panel as the second representative gene.
+        # if no gene panel is selected dont assign the gene
         secondary_gene = None
         if variant_obj["first_representative_gene"]["hgnc_id"] not in gene_panel_lookup:
             for gene in variant_obj["genes"]:
