@@ -369,17 +369,24 @@ def parse_variant(
     variant_obj["cosmic_link"] = cosmic_link(variant_obj)
     variant_obj["str_source_link"] = str_source_link(variant_obj)
     # Format clinvar information
-    variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    variant_obj["clinsig_human"] = (
+        clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    )
     # Set the gene with most severe consequence as being representavie
     # used for display purposes
-    first_rep_gene = min(variant_genes, key=lambda gn: SO_TERMS[gn["functional_annotation"]]["rank"])
-    # get HGVNp identifier from the canonical transcript
-    hgvsp_identifier = None
-    for tc in first_rep_gene["transcripts"]:
-        if tc["is_canonical"]:
-            hgvsp_identifier = tc.get("protein_sequence_name")
-    first_rep_gene["hgvsp_identifier"] = hgvsp_identifier
-    variant_obj["first_rep_gene"] = first_rep_gene
+    if variant_genes:
+        first_rep_gene = min(
+            variant_genes, key=lambda gn: SO_TERMS[gn["functional_annotation"]]["rank"]
+        )
+        # get HGVNp identifier from the canonical transcript
+        hgvsp_identifier = None
+        for tc in first_rep_gene["transcripts"]:
+            if tc["is_canonical"]:
+                hgvsp_identifier = tc.get("protein_sequence_name")
+        first_rep_gene["hgvsp_identifier"] = hgvsp_identifier
+        variant_obj["first_rep_gene"] = first_rep_gene
+    else:
+        variant_obj["first_rep_gene"] = None
 
     return variant_obj
 
