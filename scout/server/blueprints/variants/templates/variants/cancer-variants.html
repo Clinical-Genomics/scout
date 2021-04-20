@@ -80,8 +80,8 @@
             <td>
               <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
                                   variant_id=variant._id, cancer='yes') }}">
-                <div>{{ variant.primary_gene.hgvs_identifier }}</div>
-                <div>{{ (variant.primary_gene.hgvsp_identifier or '') |url_decode }}</div>
+                <div>{{ variant.first_rep_gene.hgvs_identifier }}</div>
+                <div>{{ (variant.first_rep_gene.hgvsp_identifier or '') |url_decode }}</div>
               </a>
             </td>
             <td>{{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}</td>

@@ -3,28 +3,28 @@
     <a data-toggle="tooltip" data-html="true" title="
       <div>
         <div>
-          <strong>{{ variant.primary_gene.hgnc_symbol }}</strong>: {{ variant.primary_gene.description }}
+          <strong>{{ variant.first_rep_gene.hgnc_symbol }}</strong>: {{ variant.first_rep_gene.description }}
         </div>
-        {% if variant.primary_gene.inheritance %}
+        {% if variant.first_rep_gene.inheritance %}
           <div>
-            <strong>Models</strong>: {{ variant.primary_gene.inheritance|join(',') }}
+            <strong>Models</strong>: {{ variant.first_rep_gene.inheritance|join(',') }}
           </div>
         {% endif %}
       </div>"
-      {% if variant.primary_gene.phenotypes %}
+      {% if variant.first_rep_gene.phenotypes %}
         <div><strong>OMIM disease</strong>
-        {% for disease in variant.primary_gene.phenotypes %}
+        {% for disease in variant.first_rep_gene.phenotypes %}
           <div>
               {{ disease.description }}
           </div>
         {% endfor %}
         </div>:
       {% endif %}
-      href="{{ url_for('genes.gene', hgnc_id=variant.primary_gene.hgnc_id) }}">
-      {{ variant.primary_gene.hgnc_symbol or variant.primary_gene.hgnc_id }}
+      href="{{ url_for('genes.gene', hgnc_id=variant.first_rep_gene.hgnc_id) }}">
+      {{ variant.first_rep_gene.hgnc_symbol or variant.first_rep_gene.hgnc_id }}
       {% if variant.secondary_gene %}
         <span class="text-muted">
-          ({{ variant.secondary_gene.hgnc_symbol or variant.secondary_gene.hgnc_id }})
+          ({{ variant.second_rep_gene.hgnc_symbol or variant.second_rep_gene.hgnc_id }})
         </span>
       {% endif %}
     </a>
