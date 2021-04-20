@@ -64,6 +64,7 @@
               <th data-toggle="tooltip" data-placement="top" title="Normal alt. AF. &#013; Alt. allele count | Ref. allele count">Normal</th>
             </tr>
       </thead>
+      {{ variants[5] }}
       <tbody>
         {% for variant in variants %}
           {% if variant.dismiss_variant %}
@@ -80,8 +81,18 @@
             <td>
               <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
                                   variant_id=variant._id, cancer='yes') }}">
-                <div>{{ variant.first_rep_gene.hgvs_identifier }}</div>
-                <div>{{ (variant.first_rep_gene.hgvsp_identifier or '') |url_decode }}</div>
+                {% if variant.first_rep_gene.hgvs_identifier %}
+                  <div>{{ variant.first_rep_gene.hgvs_identifier }}</div>
+                  <div>{{ (variant.first_rep_gene.hgvsp_identifier or '') |url_decode }}</div>
+                {% else %}
+                  <div>{{ variant.reference }}→
+                    {% if variant.alternative | length > 5 %}
+                      {{ variant.alternative[0] }}...{{ variant.alternative[-1] }}
+                    {% else %}
+                      {{ variant.alternative }}
+                    {% endif %}
+                  </div>
+                {% endif %}
               </a>
             </td>
             <td>{{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}</td>
