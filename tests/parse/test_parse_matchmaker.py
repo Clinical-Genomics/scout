@@ -36,19 +36,19 @@ def test_genomic_features(real_variant_database, case_obj):
     # GIVEN a case with a pinned variant that is in the database
     adapter = real_variant_database
     test_variant = adapter.variant_collection.find_one({"hgnc_symbols": ["POT1"]})
-    case_obj["suspects"] = test_variant["_id"]
+
+    case_obj["suspects"] = [test_variant["_id"]]
     sample_name = "NA12882"
-    """
-    adapter.case_collection.find_one_and_update(
-        {"_id" : case_obj["_id"]},
-        {"$set":{"suspects":[]}}
+
+    # WHEN the parse genomic_features is used to parse genotype features of this case
+    g_features = genomic_features(
+        store=adapter, case_obj=case_obj, sample_name=sample_name, genes_only=False
     )
-
-
-    # WHEN the parse genomic_features is used to parse genotype features
-    g_features = genomic_features(adapter, case_obj, sample_name, False)
-    assert g_features
-    """
+    # THEN it should return the expected data
+    assert isinstance(g_features, list)
+    assert g_features[0]["gene"] == {"id": "POT1"}
+    assert isinstance(g_features[0]["variant"], dict)
+    assert g_features[0]["zygosity"]
 
 
 def test_parse_matches(case_obj, match_objs):
