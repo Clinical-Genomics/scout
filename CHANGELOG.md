@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Autodeploy docs on release
 - Documentation for updating case individuals tracks
 ### Changed
+- Changed from deprecated db update method
 
 ## [4.32.1]
 ### Fixed

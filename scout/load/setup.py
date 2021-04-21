@@ -195,7 +195,7 @@ def setup_scout(
         adapter.load_panel(parsed_panel)
 
         case_handle = get_file_handle(load_path)
-        case_data = yaml.load(case_handle, Loader=yaml.FullLoader)
+        case_data = yaml.load(case_handle, Loader=yaml.SafeLoader)
         config_data = parse_case_data(config=case_data)
         adapter.load_case(config_data)
 
