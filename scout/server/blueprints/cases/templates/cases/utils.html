@@ -173,11 +173,15 @@
   </a>
 {% endmacro %}
 
-{% macro causatives_list(causatives, partial_causatives, institute, case) %}
+{% macro causatives_list(causatives, partial_causatives, evaluated_variants, institute, case) %}
   <div class="card panel-default">
     <div data-toggle='tooltip' class="panel-heading" title="Displays all variants that have been marked causative for this case">
       <span class="fa fa-medkit"></span>&nbsp;
-      Causative variants
+      {% if case.track == 'cancer' %}
+        Clinically significant
+      {% else %}
+        Causative variants
+      {% endif %}
     </div>
     <div class="card-body">
     <ul class="list-group">
@@ -285,6 +289,23 @@
       {% if not case.causatives|length and not case.partial_causatives|length %}
         No variants marked causative
       {% endif %}
+      <!-- variants with cancer tier I or II -->
+      {% if case.track == 'cancer' %}
+        {% for variant in evaluated_variants %}
+          {% set exp_tiers =  ['1A', '1B', '2C', '2D'] %}
+          {% if variant.cancer_tier in exp_tiers %}
+	    <li class="list-group-item">
+              <div class="row align-items-between align-items-center">
+                <div class="col">
+		  <span class="badge badge-success">Tier {{ variant.cancer_tier }}</span>
+                  {{ pretty_link_variant(variant, case) }}
+                </div>
+              </div>
+	    </li>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      <!-- end of cancer tier variants -->
     </ul>
     </div>
   </div>
