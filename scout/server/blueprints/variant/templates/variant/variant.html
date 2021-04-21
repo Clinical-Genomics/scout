@@ -5,7 +5,8 @@
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, severity_list, conservations, mappability %}
-{% from "variant/buttons.html" import igv_button, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
+{% from "variant/components.html" import panel_classify %}
+{% from "variant/buttons.html" import igv_button, splice_junctions_button %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -68,7 +69,7 @@
 
     <div class="row">
       <div class="col-sm-12">{{ matching_variants() }}</div>
-      <div class="col-sm-4">{{ panel_classify() }}</div>
+      <div class="col-sm-4">{{ panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options) }}</div>
       <div class="col-sm-8">
         <div class="col-sm-12">{{ panel_summary() }}</div>
         {% if variant.disease_associated_transcripts %}
@@ -304,78 +305,32 @@
   </table>
 {% endmacro  %}
 
-{% macro panel_classify() %}
-  <div class="card panel-default">
-    <div class="panel-heading">Classify</div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-sm"">
-          <thead class="border-top">
-            <tr class="active">
-              <th>Gene</th>
-              <th>Region</th>
-              <th>Function</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for gene in variant.genes %}
-              <tr>
-                <th>
-                  <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                    {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                  </a>
-                </th>
-                <td>{{ gene.region_annotation }}</td>
-                <td>{{ gene.functional_annotation|truncate(20, True) }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <ul class="list-group">
-        <div class="list-group-item">
-          <strong>Gene panels:</strong><br>
-          {% for panel_id in variant.panels %}
-            <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>&nbsp;&nbsp;
-          {% endfor %}
-        </div>
-      </ul>
-      {{ variant_tag_button(variant, institute, case, manual_rank_options) }}
-      {% if cancer %}
-       {{ variant_tier_button(variant, institute, case, cancer_tier_options) }}
-      {% endif %}
-        {{ dismiss_variant_button(variant, institute, case, dismiss_variant_options) }}
-      {% if not cancer %}
-        {{ mosaic_variant_button(variant, institute, case, mosaic_variant_options) }}
-      {% endif %}
-      {{ acmg_form(variant.acmg_classification.code if variant.acmg_classification) }}
-      <div class="mt-3">
-        <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
-        {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
-          <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}"
-            class="btn btn-outline-secondary form-control" target="_blank">Submit to ClinVar</a>
-        {% endif %}
-        {% if variant.clinvar_clinsig %}
-          <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-outline-secondary form-control">Modify clinvar submission</a>
-        {% endif %}
-      </div>
-      {% if evaluations %}
-        <div class="list-group mt-3">
-          {% for evaluation in evaluations %}
-            {{ acmg_classification_item(evaluation) }}
-          {% endfor %}
-        </div>
-      {% endif %}
-    </div>
-  </div>
-{% endmacro %}
-
 {% macro panel_summary() %}
   <div class="card mt-3 panel-default">
       <div class="panel-heading">Summary</div>
     <div class="card-body">
       <table class="table table-bordered table-fixed table-sm">
         <tbody>
+          <tr>
+            <td>
+              Position: 
+	      <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
+            </td>
+            <td colspan=3>
+              Change: 
+              {% if variant.reference|length > 8 %}
+                <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong>
+              {% else %}
+                <strong>{{ variant.reference }}</strong>
+              {% endif %}
+              →
+              {%- if variant.alternative|length > 8 -%}
+                <strong>{{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}</strong>
+              {% else %}
+                <strong>{{ variant.alternative }}</strong>
+              {% endif %}
+	    </td>
+          </tr>
           <tr>
             <td>
               Rank
@@ -477,6 +432,36 @@
             </span>
           </li>
         {% endif %}
+      </ul>
+      <table class="table table-bordered table-fixed table-sm">
+        <thead class="border-top">
+          <tr class="active">
+            <th>Gene</th>
+            <th>Region</th>
+            <th>Function</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for gene in variant.genes %}
+            <tr>
+              <th>
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                </a>
+              </th>
+              <td>{{ gene.region_annotation }}</td>
+              <td>{{ gene.functional_annotation|truncate(20, True) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <ul class="list-group">
+        <div class="list-group-item">
+          <strong>Gene panels:</strong><br>
+          {% for panel_id in variant.panels %}
+            <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>&nbsp;&nbsp;
+          {% endfor %}
+        </div>
       </ul>
       <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between">
@@ -634,46 +619,6 @@
       </div>
     {% endfor %}
   </div>
-{% endmacro %}
-
-{% macro acmg_form(selected=None) %}
-  <label class="mt-3">ACMG classification</label>
-  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
-    <div class="d-flex justify-content-between">
-      {% for option in ACMG_OPTIONS %}
-        <button class="btn btn-{{ option.color if (option.code == selected or not selected) else 'outline-secondary' }} form-control {{ 'mr-1' if not loop.last }}" name="acmg_classification" value="{{ option.code }}" title="{{ option.label }}">
-          {{ option.short }}
-        </button>
-      {% endfor %}
-    </div>
-  </form>
-{% endmacro %}
-
-{% macro acmg_classification_item(data) %}
-  {% set current_variant = (data.variant_specific == variant._id) %}
-  <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
-    <div class="d-flex">
-      <span>
-        <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
-          {{ data.classification.label }}
-        </a>
-        <span class="badge badge-info">{{ data.classification.short }}</span>
-      </span>
-      <span>
-        {% if not current_variant %}
-          <small>{{ data.case.display_name }}</small>
-        {% endif %}
-      </span>
-    </div>
-    <small class="text-muted">
-      <form action="{{ url_for('variant.evaluation', evaluation_id=data._id) }}" method="POST">
-      {{ data.user_name }} on {{ data.created_at.date() }}
-      {% if current_variant %}
-        <button class="btn btn-xs btn-link">Delete</button>
-      {% endif %}
-      </form>
-    </small>
-  </li>
 {% endmacro %}
 
 {% block scripts %}
