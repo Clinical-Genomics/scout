@@ -282,7 +282,6 @@ class VariantLoader(object):
                     self.update_mongo_compound_variants(bulk)
 
         LOG.info("All compounds updated")
-        return
 
     def load_variant(self, variant_obj):
         """Load a variant object
