@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Autodeploy docs on release
 - Documentation for updating case individuals tracks
+- Filter cases and dashboard stats by analysis track
 ### Changed
 - Changed from deprecated db update method
 - Pre-selected fields to run queries with in dashboard page
