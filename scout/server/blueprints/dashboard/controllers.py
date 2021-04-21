@@ -49,7 +49,7 @@ def compose_slice_query(search_type, search_term):
     return slice_query
 
 
-def prepare_data(request):
+def populate_dashboard_data(request):
     """Prepate data display object to be returned to the view
 
     Args:

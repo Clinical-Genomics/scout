@@ -3,9 +3,9 @@
 {% block content_main %}
   <div class="container-float mt-3">
       <ul class="nav nav-tabs nav-justified">
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == '1' %}active{% endif %}" data-toggle="tab" onclick="hide_div(1)"><h4>General statistics</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == '2' %}active{% endif %}" data-toggle="tab" onclick="hide_div(2)"><h4>Case statistics</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == '3' %}active{% endif %}" data-toggle="tab" onclick="hide_div(3)"><h4>Variant statistics</h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'general' %}active{% endif %}" data-toggle="tab" onclick="hide_div('general')"><h4>General statistics</h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'cases' %}active{% endif %}" data-toggle="tab" onclick="hide_div('cases')"><h4>Case statistics</h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'variants' %}active{% endif %}" data-toggle="tab" onclick="hide_div('variants')"><h4>Variant statistics</h4></a></li>
       </ul>
 
       <!--filter panel -->
@@ -13,11 +13,11 @@
         {{ dashboard_search_form() }}
         {% if total_cases and total_cases == 0 %}
           <div class="alert alert-danger">Your search didn't return any results!</div>
-        {% elif total_cases %}
-          {{ general_stats_panels() }}
-          {{ cases_stats_panels() }}
-          {{ variants_stats_panels() }}
         {% endif %}
+
+        {{ general_stats_panels() }}
+        {{ cases_stats_panels() }}
+        {{ variants_stats_panels() }}
       </div>
 
   </div>
@@ -27,7 +27,7 @@
 {% macro dashboard_search_form() %}
 <div class="card">
   <form class="mt-3 ml-3" id='form' class="form-horizontal" method='POST' action="{{ url_for('dashboard.index') }}" accept-charset="utf-8">
-      <input type="hidden" value={{panel}} name="panel">
+      <input type="hidden" value="{{panel}}" name="panel">
       <div class="form-row align-items-center mb-3">
         <!--Search institute select-->
         <div class="col-2 ml-3">
@@ -56,7 +56,7 @@
 {% endmacro %}
 
 {% macro general_stats_panels() %}
-<div class="mt-3 text-center" id=1>
+<div class="mt-3 text-center" id="general">
   <div class="row">
     <div class="col-md-4">
       <h1>Samples</h1>
@@ -106,7 +106,7 @@
 {% endmacro %}
 
 {% macro cases_stats_panels() %}
-<div class="mt-3" id=2>
+<div class="mt-3" id="cases">
   <div class="row">
     <div class="col-md-8">
         <canvas id="cases-bar-horiz" height="100"></canvas>
@@ -127,7 +127,7 @@
 
 
 {% macro variants_stats_panels() %}
-<div class="container-float mt-3 text-center" id=3>
+<div class="container-float mt-3 text-center" id="variants">
   <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-4 d-flex justify-content-right align-items-center">
@@ -166,7 +166,11 @@
 
     $(document).ready(function(){
       text.disabled = (sel.value == "");
-      hide_div(1)
+      {% if not total_cases %}
+        hide_div("all");
+      {% else %}
+        hide_div('{{panel}}');
+      {% endif %}
     });
 
     if(sel){
@@ -176,12 +180,13 @@
     }
 
     function hide_div(show_div){
-      for (i=1; i<4; i++) {
-        var div_el = document.getElementById(i);
-        if (i==show_div){ //show div
+      panels = ["general", "cases", "variants"];
+      for (index = 0; index < panels.length; ++index) {
+        var div_el = document.getElementById(panels[index]);
+        if (panels[index] == show_div){ //show div
           div_el.style.display = "block";
         }
-        else{ //hode other divs
+        else{
           div_el.style.display = "none";
         }
       }
