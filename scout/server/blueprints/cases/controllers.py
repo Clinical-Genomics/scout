@@ -898,7 +898,7 @@ def beacon_remove(case_id):
     flash_color = "success"
     if resp.get("status_code") == 200:
         message = resp.get("content", {}).get("message")
-        store.case_collection.update({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})
+        store.case_collection.update_one({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})
     else:
         message = resp.get("message")
         flash_color = "warning"
