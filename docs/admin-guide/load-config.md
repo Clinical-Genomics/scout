@@ -3,6 +3,14 @@
 Scout have the possibility to store loads of information about a case and the samples that are included. It is cumbersome to specify to many parameters on the command line so there is an option to give this information in a yaml formated config file.
 Here we can give scout some meta information about the analysis, how it was performed, information about family, samples etc.
 
+
+### Depreication Warnings:
+`bam_file`, `bam_path` and `alignment_path` are redundant in internal usage. Future versions of Scout will only
+support `alignment_path`.
+
+
+
+### The Configuration File
 The basic structure of a load config looks like:
 
 
@@ -32,8 +40,8 @@ rank_score_threshold: float(optional)
 samples:
   - alignment_path: str(optional) # path to bam file
     analysis_type: str(optional), [external, mixed, panel, unknown, wes, wgs]
-    bam_file: str(optional) # path to bam file
-    bam_path: str(optional) # path to bam file
+    bam_file: str(optional) # WARNING: WILL BE DEPRECATED
+    bam_path: str(optional) # WARNING: WILL BE DEPRECATED
     capture_kit: str(optional)
     chromograph_images (optional):
         autozygous: str(optional)
@@ -50,7 +58,7 @@ samples:
     rhocall_bed: str(optional) # path to bed file
     rhocall_wig: str(optional) # path to wig file
     sample_id: str(mandatory)
-    sample_name: str(mandatory)
+    sample_name: str(optional)
     sex: str(mandatory), [male, female, unknown]
     smn1_cn:
     smn2_cn:
@@ -105,8 +113,10 @@ Let's go through each field:
 - **rank model version** which rank model that was used when scoring the variants
 - **rank_score_treshold** only include variants with a rank score above this treshold
 - **samples** list of samples included in the case
+	- *alignment_path* Path to bam file to view alignments
 	- *analysis_type* specifies the analysis type for the sample
-	- *bam_file* Path to bam file to view alignments
+	- *bam_file* Path to bam file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*
+	- *bam_path* Path to bam file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*
 	- *capture_kit* for exome specifies the capture kit
 	- *expected_coverage* the level of expected coverage
 	- *father* sample id for father or 0
