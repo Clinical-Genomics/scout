@@ -73,6 +73,7 @@
                                  variant_id=compound.variant) }}' target='_blank'>
                 {{ compound.display_name|truncate(20, True) }}
               </a>
+               --->(dismissed:{{compound.is_dismissed}})<---
             {% endif %}
           </td>
           <td class='text-right'>{{ compound.combined_score }}</td>
