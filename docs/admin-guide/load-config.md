@@ -22,6 +22,7 @@ samples:
     expected_coverage: int(mandatory)
     vcf2cytosure: str(optional) # path to CGH file
     bam_path: str(optional) # path to bam file
+    mt_bam: str(optional) # path to downsampled mitochondrial bam/cram alignment file
     rhocall_bed: str(optional) # path to bed file
     rhocall_wig: str(optional) # path to wig file
     upd_regions_bed: str(optional) # path to bed file
