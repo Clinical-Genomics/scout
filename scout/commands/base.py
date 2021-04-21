@@ -48,7 +48,7 @@ def get_app(ctx):
     # if a .yaml config file was provided use its params to intiate the app
     if options.params.get("config"):
         with open(options.params["config"], "r") as in_handle:
-            cli_config = yaml.load(in_handle, Loader=yaml.FullLoader)
+            cli_config = yaml.load(in_handle, Loader=yaml.SafeLoader)
 
     flask_conf = None
     if options.params.get("flask_config"):
