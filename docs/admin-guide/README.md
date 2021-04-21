@@ -7,6 +7,7 @@ This includes instructions for bioinformaticians to install, manage and update a
   * [Setup](./setup-scout.md)
   * [Loading](./loading.md)
   * [Load config](./load-config.md)
+  * [Updating case individuals tracks](./updating-individuals.md)
   * [Genes, transcripts and exons](./genes.md)
   * [HPO terms](./hpo.md)
   * [Annotations](./annotations.md)
