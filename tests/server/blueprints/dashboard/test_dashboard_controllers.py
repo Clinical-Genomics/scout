@@ -1,6 +1,57 @@
-from pprint import pprint as pp
+from flask import url_for
 
-from scout.server.blueprints.dashboard.controllers import get_dashboard_info
+from scout.server.blueprints.dashboard.controllers import (
+    compose_slice_query,
+    dashboard_form,
+    get_dashboard_info,
+    institute_select_choices,
+)
+from scout.server.blueprints.dashboard.forms import DashboardFilterForm
+from scout.server.extensions import store
+
+
+def test_institute_select_choices(user_obj, app):
+    """Test the function that creates the data for the institute select"""
+
+    # GIVEN an app with a logged user
+    with app.test_client() as client:
+
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN returning the institute institute select choices
+        select_choices = institute_select_choices()
+
+        # It should return the expected list of tuples
+        assert len(select_choices) == len(user_obj["institutes"]) + 1
+        assert select_choices[0] == ("All", "All institutes")
+        user_institute = user_obj["institutes"][0]
+        assert select_choices[1][0] == user_institute
+
+
+def test_dashboard_form(app):
+    """Test the function returning the dashboard page form"""
+
+    # GIVEN an app with a logged user
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+
+        # A DashboardFilterForm should be created correctly by dashboard_form
+        df = dashboard_form(None)
+        assert isinstance(df, DashboardFilterForm)
+        assert df.search_type
+        assert df.search_institute
+        assert df.search_term
+        assert df.search
+
+
+def test_compose_slice_query(app):
+    """Test function that combines form fields to create filter query"""
+
+    # GIVEN two parameters provided in the dashboard filter form
+    search_type = "case:"
+    search_term = "test_case"
+    slice_query = compose_slice_query(search_type, search_term)
+    assert slice_query == f"{search_type}{search_term}"
 
 
 def test_empty_database(real_adapter):
@@ -16,6 +67,7 @@ def test_one_case(real_adapter, case_obj):
     ## GIVEN an database with one case
     adapter = real_adapter
     adapter._add_case(case_obj)
+
     ## WHEN asking for data
     data = get_dashboard_info(adapter)
     ## THEN assert there is one case in the data
