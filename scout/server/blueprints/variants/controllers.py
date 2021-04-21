@@ -300,18 +300,18 @@ def parse_variant(
     has_changed = False
     compounds = variant_obj.get("compounds", [])
     if compounds and get_compounds:
-        # Check if we need to add compound information
-        # If it is the first time the case is viewed we fill in some compound information
-        if "not_loaded" not in compounds[0]:
-            new_compounds = store.update_variant_compounds(variant_obj)
-            variant_obj["compounds"] = new_compounds
+        # Check if we need to add compound information, such as not_loaded or dismissed
+        new_compounds = store.update_variant_compounds(variant_obj)
+        if variant_obj["compounds"] != new_compounds:
             has_changed = True
 
         # sort compounds on combined rank score
         variant_obj["compounds"] = sorted(
             variant_obj["compounds"], key=lambda compound: -compound["combined_score"]
         )
+        flash(variant_obj.get("compounds"))
 
+    # flash(variant_obj.get("compounds"))
     # Update the hgnc symbols if they are incorrect
     variant_genes = variant_obj.get("genes")
     if variant_genes is not None:
