@@ -41,7 +41,7 @@ The following files are used by the [igv.js](https://github.com/igvteam/igv.js/w
 | upd_regions_bed     | path to upd_regions_bed                                     |
 | upd_sites_bed       | path to vcf2cytosure file                                   |
 
-rhocall_bed and rhocall_wig files are both obtained from [rhocall](https://github.com/dnil/rhocall), a software that calls and annotates UPDs from VCF files.
+rhocall_bed and rhocall_wig files are both obtained from [rhocall](https://github.com/dnil/rhocall), a software that calls and annotates autozygosity from VCF files.
 
 tiddit_coverage_wig files are obtained from [tiddit](https://github.com/SciLifeLab/TIDDIT), a software in turn is used to call structural variants.
 
