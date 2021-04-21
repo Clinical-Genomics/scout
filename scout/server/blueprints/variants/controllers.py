@@ -604,7 +604,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
     # get gene panel lookup table
-    gene_panel_lookup = store.gene_to_panels(case_obj) # build variant object
+    gene_panel_lookup = store.gene_to_panels(case_obj)  # build variant object
     variants_list = []
     for variant in variant_res:
         # parse variant information
