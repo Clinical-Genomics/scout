@@ -209,7 +209,7 @@ def case(store, institute_obj, case_obj):
         "events": events,
         "suspects": suspects,
         "causatives": causatives,
-        "evaluated_variants": store.evaluated_variants(case_obj['_id']),
+        "evaluated_variants": store.evaluated_variants(case_obj["_id"]),
         "partial_causatives": partial_causatives,
         "collaborators": collab_ids,
         "cohort_tags": institute_obj.get("cohorts", []),
