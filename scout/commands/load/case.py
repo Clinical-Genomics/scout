@@ -80,7 +80,7 @@ def case(
 
     # Scout needs a config object with the neccessary information
     # If no config is used create a dictionary
-    config_raw = yaml.load(config, Loader=yaml.FullLoader) if config else {}
+    config_raw = yaml.load(config, Loader=yaml.SafeLoader) if config else {}
 
     try:
         config_data = parse_case_data(

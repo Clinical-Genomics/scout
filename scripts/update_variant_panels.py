@@ -59,7 +59,7 @@ def update_panels(context, mongodb, username, password, authdb, host, port, logl
     if config:
         LOG.debug("Use config file %s", config)
         with open(config, "r") as in_handle:
-            cli_config = yaml.load(in_handle, Loader=yaml.FullLoader)
+            cli_config = yaml.load(in_handle, Loader=yaml.SafeLoader)
 
     mongo_config["mongodb"] = mongodb or cli_config.get("mongodb") or "scout"
 

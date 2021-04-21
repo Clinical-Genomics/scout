@@ -1,100 +1,62 @@
 {% extends "layout_bs4.html" %}
 
 {% block content_main %}
-{% set panel = panel|int %}
   <div class="container-float mt-3">
-      <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 1 %}active{% endif %}" data-toggle="tab" onclick="hide_div(1)"><h4>General statistics</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 2 %}active{% endif %}" data-toggle="tab" onclick="hide_div(2)"><h4>Case statistics</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 3 %}active{% endif %}" data-toggle="tab" onclick="hide_div(3)"><h4>Variant statistics</h4></a></li>
+      <ul class="nav nav-tabs nav-justified">
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'general' %}active{% endif %}" data-toggle="tab" onclick="hide_div('general')"><h4>General statistics</h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'cases' %}active{% endif %}" data-toggle="tab" onclick="hide_div('cases')"><h4>Case statistics</h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'variants' %}active{% endif %}" data-toggle="tab" onclick="hide_div('variants')"><h4>Variant statistics</h4></a></li>
       </ul>
-    <div class="tab-content" id="tabs">
-      <div class="tab-pane" id="1">
-        {{ basic_stats() }}
-      </div>
-      <div class="tab-pane" id="2">
-        {{ cases_stats() }}
-      </div>
-      <div class="tab-pane" id="3">
-        {{ variants_stats() }}
-      </div>
-    </div>
-  </div>
 
+      <!--filter panel -->
+      <div>
+        {{ dashboard_search_form() }}
+        {% if total_cases == 0 %}
+          <div class="alert alert-danger">Your search didn't return any results!</div>
+        {% endif %}
+
+        {{ general_stats_panels() }}
+        {{ cases_stats_panels() }}
+        {{ variants_stats_panels() }}
+      </div>
+
+  </div>
 {% endblock %}
 
-{% macro basic_stats() %}
-<div class="card">
-  <div class="card-body">
-    {{ dashboard_search_form(1) }}
-    {{ general_stats_panels() }}
-  </div>
-</div>
-{% endmacro %}
 
-{% macro cases_stats() %}
+{% macro dashboard_search_form() %}
 <div class="card">
-  <div class="card-body">
-    {{ dashboard_search_form(2) }}
-    {{ cases_stats_panels() }}
-  </div>
-</div>
-{% endmacro %}
+  <form class="mt-3 ml-3" id='form' class="form-horizontal" method='POST' action="{{ url_for('dashboard.index') }}" accept-charset="utf-8">
+      <input type="hidden" value="{{panel}}" name="panel">
+      <div class="form-row align-items-center mb-3">
+        <!--Search institute select-->
+        <div class="col-2 ml-3">
+          {{ dashboard_form.search_institute(class="form-control") }}
+        </div>
 
-{% macro variants_stats() %}
-<div class="card">
-  <div class="card-body">
-    {{ dashboard_search_form(3) }}<br><br>
-    {{ variants_stats_panels() }}
-  </div>
-</div>
-{% endmacro %}
-
-{% macro dashboard_search_form(pane) %}
-<br>
-<form id='form' class="form-horizontal" method='POST' action="{{ url_for('dashboard.index') }}" accept-charset="utf-8">
-    <input type="hidden" value={{pane}} name="pane_id" id="pane_id">
-    <div class="row text-center">
-      <div class="col-md-4 col-sm-4">
-        {% if pane in (1,2) %}
-          <div class="input-group">
-            <span class="input-group-addon">
-              <span class="glyphicon glyphicon-search"></span>
-            </span>
-            <input type="search" class="form-control" value="{{ query if query }}" name="query" id="query" placeholder="Enter query to filter cases summarized below" onchange="update_select({% if current_user.is_admin %}true{% else %}false{% endif %})"></input>
+        {% if panel != "3" %}
+          <!--Search type select field-->
+          <div class="col-3 ml-3">
+            {{ dashboard_form.search_type(class="form-control", id="search_type") }}
+          </div>
+          <!--Search term textfield-->
+          <div class="col-4 ml-3">
+            {{ dashboard_form.search_term(class="form-control", placeholder="Search term", id="search_term") }}
           </div>
         {% endif %}
-      </div>
-      <div class="col-md-4 col-sm-2">
-      <select name="institute" class="form-control" id="institute" onchange="this.form.submit()">
-        {% for inst in institutes %}
-          {% if inst.display_name == 'All institutes' and query and not current_user.is_admin %}
-            <option value="{{ inst._id }}" disabled>{{ inst.display_name }}</option>
-          {% else %}
-            <option value="{{ inst._id }}" {{ "selected" if inst._id == choice }} >{{ inst.display_name }}</option>
-          {% endif %}
-        {% endfor %}
-      </select>
-      </div>
-      <div class="col-md-2 col-sm-2">
-        <button type="submit" class="form-control">Search</input>
-      </div>
-    </div>
-    {% if pane in (1,2) %}
-    <br>
-    <div class="bottom-align-text">
-      Query examples:
-      {% for elem in ["case:18201", "exact_pheno:HP:0001166", "synopsis:epilepsy", "panel:NMD", "pheno_group:HP:0001250", "status:active", "cohort:pedhep", "similar_case:1820", "similar_pheno:HP:0001166,HP:0001250", "pinned:POT1", "causative:POT1", "user:Kent"]%}
-        <span class="badge badge-info">{{elem}}</span>
-      {% endfor %}
-    </div>
-    {% endif %}
-  </form>
-  <br>
+
+        <!--Search term textfield-->
+        <div class="col-1 ml-3">
+          {{ dashboard_form.search(class="form-control") }}
+        </div>
+
+      </div> <!--end of class="form-row align-items-center"-->
+    </form>
+  </div>
 {% endmacro %}
 
 {% macro general_stats_panels() %}
-<div class="mt-3 text-center">
+<div class="mt-3 text-center" id="general">
   <div class="row">
     <div class="col-md-4">
       <h1>Samples</h1>
@@ -143,9 +105,8 @@
 </div>
 {% endmacro %}
 
-
 {% macro cases_stats_panels() %}
-<div class="mt-3">
+<div class="mt-3" id="cases">
   <div class="row">
     <div class="col-md-8">
         <canvas id="cases-bar-horiz" height="100"></canvas>
@@ -166,7 +127,7 @@
 
 
 {% macro variants_stats_panels() %}
-<div class="container-float mt-3 text-center">
+<div class="container-float mt-3 text-center" id="variants">
   <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-4 d-flex justify-content-right align-items-center">
@@ -182,7 +143,7 @@
         {% endfor %}
       </table>
         <br>
-        <div id="card mt-3" >
+        <div class="card mt-3" >
           <form id="dowload_var_stats" action="{{ url_for('variants.download_verified')}}" method="GET">
             <button type="submit" name="verified_vars" value="verified" class="btn btn-primary btn-md">Download all verified variants for your cases</button>
           </form>
@@ -200,50 +161,51 @@
   <script src="{{ url_for('dashboard.static', filename='charts.js') }}"></script>
   <script type="text/javascript">
 
-    //create analysis type chart ===> general stats
-    createChart(document.getElementById("ngsType").getContext('2d'), analysisTypeData( {{analysis_types|safe }} ))
+    var sel = document.getElementById("search_type"),
+    text = document.getElementById("search_term");
 
-    {% if cases|length >0 %}
-    //create cases types chart
-    createChart(document.getElementById("casesType").getContext('2d'), casesType( {{cases[1:]|safe}} ))
-    // create cases detailed stats chart ===> case stats
-    createChart(document.getElementById("cases-bar-horiz").getContext('2d'), casesDetailed( {{overview|safe}}, {{cases[0].count}} ))
-    {% endif %}
-    //create pedigree info chart
-    createChart(document.getElementById("pedigreeTypes").getContext('2d'), pedigreeTypes( {{pedigree|safe}} ))
-
-    // create variants detailed stats chart ===> variants stats
-    createChart(document.getElementById("var-validations").getContext('2d'), varValidations( {{variants|safe }}))
-
-    $(document).ready(function() {
-      hide_div({{panel}})
+    $(document).ready(function(){
+      text.disabled = (sel.value == "");
+      {% if not total_cases %}
+        hide_div("all");
+      {% else %}
+        hide_div('{{panel}}');
+      {% endif %}
     });
 
+    if(sel){
+      sel.onchange = function(e) {
+        text.disabled = (sel.value == "");
+      };
+    }
+
     function hide_div(show_div){
-      for (i=1; i<4; i++) {
-        var div_el = document.getElementById(i);
-        if (i==show_div){ //show div
+      panels = ["general", "cases", "variants"];
+      for (index = 0; index < panels.length; ++index) {
+        var div_el = document.getElementById(panels[index]);
+        if (panels[index] == show_div){ //show div
           div_el.style.display = "block";
         }
-        else{ //hode other divs
+        else{
           div_el.style.display = "none";
         }
       }
     }
 
-    function update_select(admin_user){
-      var query_text = document.getElementById("query").value;
-      var sel = document.getElementById("institute");
-      if(query_text && !admin_user) {
-        sel.children[0].disabled = "disabled";
-        if(sel.options[0].selected) {
-          sel.options[0].selected = false;
-          sel.options[1].selected = true;
-        }
-      }
-      else{
-        sel.children[0].disabled = "";
-      }
-    }
+    {% if cases %}
+      //create analysis type chart ===> general stats
+      createChart(document.getElementById("ngsType").getContext('2d'), analysisTypeData( {{analysis_types|safe }} ))
+      //create cases types chart
+      createChart(document.getElementById("casesType").getContext('2d'), casesType( {{cases[1:]|safe}} ))
+      //create pedigree info chart
+      createChart(document.getElementById("pedigreeTypes").getContext('2d'), pedigreeTypes( {{pedigree|safe}} ))
+
+      // create cases detailed stats chart ===> case stats
+      createChart(document.getElementById("cases-bar-horiz").getContext('2d'), casesDetailed( {{overview|safe}}, {{cases[0].count}} ))
+
+      // create variants detailed stats chart ===> variants stats
+      createChart(document.getElementById("var-validations").getContext('2d'), varValidations( {{variants|safe }}))
+    {% endif %}
+
   </script>
 {% endblock %}
