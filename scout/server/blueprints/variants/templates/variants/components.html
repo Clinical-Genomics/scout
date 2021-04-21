@@ -1,42 +1,79 @@
 {% macro gene_cell(variant) %}
   <div class="align-items-center">
-    <a data-toggle="tooltip" data-html="true" title="
-      <div>
+    {% if variant.category == "cancer" or variant.category == "sv_cancer" %}
+      <a data-toggle="tooltip" data-html="true" title="
         <div>
-          <strong>{{ variant.first_rep_gene.hgnc_symbol }}</strong>: {{ variant.first_rep_gene.description }}
-        </div>
-        {% if variant.first_rep_gene.inheritance %}
           <div>
-            <strong>Models</strong>: {{ variant.first_rep_gene.inheritance|join(',') }}
+            <strong>{{ variant.first_rep_gene.hgnc_symbol }}</strong>: {{ variant.first_rep_gene.description }}
           </div>
+          {% if variant.first_rep_gene.inheritance %}
+            <div>
+              <strong>Models</strong>: {{ variant.first_rep_gene.inheritance|join(',') }}
+            </div>
+          {% endif %}
+        </div>"
+        {% if variant.first_rep_gene.phenotypes %}
+          <div><strong>OMIM disease</strong>
+          {% for disease in variant.first_rep_gene.phenotypes %}
+            <div>
+                {{ disease.description }}
+            </div>
+          {% endfor %}
+          </div>:
         {% endif %}
-      </div>"
-      {% if variant.first_rep_gene.phenotypes %}
-        <div><strong>OMIM disease</strong>
-        {% for disease in variant.first_rep_gene.phenotypes %}
+        href="{{ url_for('genes.gene', hgnc_id=variant.first_rep_gene.hgnc_id) }}">
+        {{ variant.first_rep_gene.hgnc_symbol or variant.first_rep_gene.hgnc_id }}
+        {% if variant.secondary_gene %}
+          <span class="text-muted">
+            ({{ variant.second_rep_gene.hgnc_symbol or variant.second_rep_gene.hgnc_id }})
+          </span>
+        {% endif %}
+      </a>
+      {% if variant.panels|count > 0 %}
+          <a
+            class="badge badge-secondary text-white"
+            data-toggle="popover"
+            data-html="true"
+            data-trigger="hover click"
+            data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
+            title="">{{variant.panels|count}}
+          </a>
+      {% endif %}
+    {% else %}
+      {% for gene in variant.genes %}
+        <a data-toggle="tooltip" data-html="true" title="
+        <div>
           <div>
-              {{ disease.description }}
+            <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
           </div>
-        {% endfor %}
-        </div>:
+          {% if gene.inheritance %}
+            <div>
+              <strong>Models</strong>: {{ gene.inheritance|join(',') }}
+            </div>
+          {% endif %}
+          {% if gene.phenotypes %}
+            <div><strong>OMIM disease</strong>
+            {% for disease in gene.phenotypes %}
+              <div>
+                  {{ disease.description }}
+              </div>
+            {% endfor %}
+            </div>
+          {% endif %}
+        </div>"
+          href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
+        </a>
+      {% endfor %}
+      {% if variant.panels|count > 0 %}
+          <a
+            class="badge badge-secondary text-white"
+            data-toggle="popover"
+            data-html="true"
+            data-trigger="hover click"
+            data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
+            title="">{{variant.panels|count}}
+          </a>
       {% endif %}
-      href="{{ url_for('genes.gene', hgnc_id=variant.first_rep_gene.hgnc_id) }}">
-      {{ variant.first_rep_gene.hgnc_symbol or variant.first_rep_gene.hgnc_id }}
-      {% if variant.secondary_gene %}
-        <span class="text-muted">
-          ({{ variant.second_rep_gene.hgnc_symbol or variant.second_rep_gene.hgnc_id }})
-        </span>
-      {% endif %}
-    </a>
-    {% if variant.panels|count > 0 %}
-        <a
-          class="badge badge-secondary text-white"
-          data-toggle="popover"
-          data-html="true"
-          data-trigger="hover click"
-          data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
-          title="">{{variant.panels|count}}
-         </a>
     {% endif %}
   </div>
 {% endmacro %}
