@@ -617,7 +617,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
         # in the panel as the second representative gene.
         # if no gene panel is selected dont assign the gene
         secondary_gene = None
-        if variant_obj["first_representative_gene"]["hgnc_id"] not in gene_panel_lookup:
+        if variant_obj["first_rep_gene"]["hgnc_id"] not in gene_panel_lookup:
             for gene in variant_obj["genes"]:
                 in_panels = set(gene_panel_lookup.get(gene["hgnc_id"], []))
                 # if gene is in one of the panles used
