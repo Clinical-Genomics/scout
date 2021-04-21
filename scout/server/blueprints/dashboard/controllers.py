@@ -1,38 +1,107 @@
 import logging
 
+from flask import flash, redirect, request, url_for
 from flask_login import current_user
+
+from scout.server.extensions import store
+from scout.server.utils import user_institutes
+
+from .forms import DashboardFilterForm
 
 LOG = logging.getLogger(__name__)
 
 
-def get_dashboard_info(adapter, institute_id=None, slice_query=None):
-    """Returns cases with phenotype
-
-        If phenotypes are provided search for only those
-
-    Args:
-        adapter(adapter.MongoAdapter)
-        institute_id(str): an institute _id
-        slice_query(str): query to filter cases to obtain statistics for.
+def institute_select_choices():
+    """Return a list of tuples with institute _id, institute names to populate a form select.
 
     Returns:
-        data(dict): Dictionary with relevant information
+        institute_choices(list). Example:[(cust000, "Institute 1"), ..]
     """
+    institute_choices = [("All", "All institutes")] if current_user.is_admin else []
+    # Collect only institutes available to the user
+    institute_objs = user_institutes(store, current_user)
+    for inst in institute_objs:
+        institute_choices.append((inst["_id"], inst["display_name"]))
+    return institute_choices
 
-    LOG.debug("General query with institute_id {}.".format(institute_id))
 
-    # if institute_id == 'None' or None, all cases and general stats will be returned
-    if institute_id == "None":
+def dashboard_form(request_form=None):
+    """Retrieve data to be displayed on dashboard page"""
+    form = DashboardFilterForm(request_form)
+    form.search_institute.choices = institute_select_choices()
+    return form
+
+
+def compose_slice_query(search_type, search_term):
+    """Extract a filter query given a form search term and search type
+
+    Args:
+        search_type(str): example -> "case:"
+        search_term(str): example -> "17867"
+
+    Returns:
+        slice_query(str): example case:17867
+    """
+    slice_query = None
+    if search_term and search_type:
+        slice_query = "".join([search_type, search_term])
+
+    return slice_query
+
+
+def populate_dashboard_data(request):
+    """Prepate data display object to be returned to the view
+
+    Args:
+        request(flask.rquest): request received by the view
+
+    Returns:
+        data(dict): data to be diplayed in the template
+    """
+    data = {"dashboard_form": dashboard_form(request.form)}
+    if request.method == "GET":
+        return data
+
+    allowed_insititutes = [inst[0] for inst in institute_select_choices()]
+
+    institute_id = request.form.get(
+        "search_institute", allowed_insititutes[0]
+    )  # GET request has no institute, select the first option of the select
+
+    if institute_id and institute_id not in allowed_insititutes:
+        flash("Your user is not allowed to visualize this data", "warning")
+        redirect(url_for("dashboard.index"))
+
+    if institute_id == "All":
         institute_id = None
 
+    slice_query = compose_slice_query(
+        request.form.get("search_type"), request.form.get("search_term")
+    )
+    get_dashboard_info(store, data, institute_id, slice_query)
+    return data
+
+
+def get_dashboard_info(adapter, data={}, institute_id=None, slice_query=None):
+    """Append case data stats to data display object
+    Args:
+        adapter(adapter.MongoAdapter)
+        data(dict): data dictionary to be passed to template
+        institute_id(str): institute id
+        slice_query(str): example case:55888
+
+    Returns:
+        data(dict): data to be diplayed in the template
+    """
     # If a slice_query is present then numbers in "General statistics" and "Case statistics" will
     # reflect the data available for the query
     general_sliced_info = get_general_case_info(
         adapter, institute_id=institute_id, slice_query=slice_query
     )
-    total_sliced_cases = general_sliced_info["total_cases"]
 
-    data = {"total_cases": total_sliced_cases}
+    total_sliced_cases = general_sliced_info["total_cases"]
+    data["total_cases"] = total_sliced_cases
+
     if total_sliced_cases == 0:
         return data
 
