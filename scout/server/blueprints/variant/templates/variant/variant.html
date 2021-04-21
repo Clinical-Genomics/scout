@@ -1,11 +1,12 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
-{% from "variants/utils.html" import compounds_table, modal_causative %}
+{% from "variants/utils.html" import modal_causative %}
 {% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, igv_track_selection %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, severity_list, conservations, mappability %}
-{% from "variant/components.html" import panel_classify %}
+{% from "variant/components.html" import panel_classify, compounds_panel, matching_variants , external_links %}
+{% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
 {% from "variant/buttons.html" import igv_button, splice_junctions_button %}
 
 {% block title %}
@@ -52,7 +53,7 @@
 {% block top_nav_right %}
   {% if config['MAIL_USERNAME'] %}
     {# Email setting must be setup #}
-    <li class="nav-item text-nowrap">{{ sanger_button() }}</li>
+    <li class="nav-item text-nowrap">{{ sanger_button(variant) }}</li>
   {% endif %}
   <li class="nav-item">{{ pin_button(variant, case, institute) }}</li>
   <li class="nav-item text-nowrap">{{ causative_button(variant, case, institute) }}</li>
@@ -68,7 +69,7 @@
     {% endif %}
 
     <div class="row">
-      <div class="col-sm-12">{{ matching_variants() }}</div>
+      <div class="col-sm-12">{{ matching_variants(managed_variant) }}</div>
       <div class="col-sm-4">{{ panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options) }}</div>
       <div class="col-sm-8">
         <div class="col-sm-12">{{ panel_summary() }}</div>
@@ -108,7 +109,7 @@
     </div>
     {% if variant.compounds %}
       <div class="row">
-        <div class="col-12">{{ compounds_panel() }}</div>
+        <div class="col-12">{{ compounds_panel(institute, case, variant) }}</div>
       </div>
     {% endif %}
     <div class="row">
@@ -137,173 +138,24 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-12">{{ external_links() }}</div>
+      <div class="col-12">{{ external_links(case, variant) }}</div>
     </div>
     <div class="row">
       <div class="col-12">{{ activity_panel(events|reverse) }}</div>
     </div>
     {% if config['MAIL_USERNAME'] %}
       {# Email setting must be setup #}
-      {{ modal_sanger() }}
+      {{ modal_sanger(case, variant, current_user) }}
     {% endif %}
 
     {% if config['MAIL_USERNAME'] %}
       {# Email setting must be setup #}
-      {{ modal_cancel_sanger() }}
+      {{ modal_cancel_sanger(case, variant, current_user) }}
     {% endif %}
 </div>
 {{ modal_causative(case, institute, variant) }}
 {% endblock %}
 
-{% macro sanger_button() %}
-  {% if variant.sanger_ordered %}
-    {% if variant.validation in ['True positive', 'False positive']%}
-      <p class="navbar-text">Sanger: {{ variant.validation }}</p>
-    {% else %}
-      <button class="btn btn-light" data-toggle="modal" data-target="#cancelSangerModal">
-        Sanger pending...
-      </button>
-    {% endif %}
-  {% else %}
-    <button class="btn btn-light" data-toggle="modal" data-target="#sangerModal">
-      Sanger
-    </button>
-  {% endif %}
-{% endmacro %}
-
-{% macro sanger_form() %}
-  <ul class="list-group">
-    <div class="list-group-item">
-      <strong>Case {{ case.display_name }}</strong><br>
-      <a href="{{ url_for('variant.variant', institute_id=institute._id,
-                          case_name=case.display_name, variant_id=variant._id) }}">
-        {{ variant.display_name }}
-      </a>
-    </div>
-    <div class="list-group-item">
-      <strong>HGNC symbols</strong>:
-      {{ variant.hgnc_symbols|join(', ') }}
-    </div>
-    <div class="list-group-item">
-      <strong>Gene panels</strong>:
-      {{ variant.panels|join(', ') }}
-    </div>
-    <div class="list-group-item disabled"><strong>Amino acid changes</strong></div>
-    {% for gene in variant.genes %}
-        {% for transcript in gene.transcripts %}
-          {% if "refseq_identifiers" in transcript or transcript.is_canonical %}
-              {% if transcript.protein_sequence_name%}
-                <div class="list-group-item">
-                  [{{ transcript.refseq_identifiers|join(", ") }}]<span class="text-muted"> ({{ transcript.transcript_id }})</span>:
-                  {{ (transcript.protein_sequence_name or '')|url_decode }}
-                </div>
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-    {% endfor %}
-    <div class="list-group-item disabled"><strong>GT call</strong></div>
-    {% for individual in variant.samples %}
-      <div class="list-group-item">
-        {{ individual.display_name }}: {{ individual.genotype_call }}
-      </div>
-    {% endfor %}
-    <div class="list-group-item">
-      <strong>Ordered by</strong>:
-      {{ current_user.name }}
-    </div>
-    <div class="list-group-item">Comment: <input type="text" size=45 name="verification_comment"></div>
-  </ul>
-{% endmacro %}
-
-{% macro matching_variants() %}
-  {% if causatives %}
-    <div class="card panel-default">
-      <div class="panel-heading">Matching causatives from other cases</div>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-          {% for other_variant in causatives %}
-            <li class="list-group-item">
-              <a href="{{ url_for('variant.variant',
-                                  institute_id=institute._id,
-                                  case_name=other_variant.case_display_name,
-                                  variant_id=other_variant._id) }}">
-                {{ other_variant.case_display_name }}
-              </a>
-            </li>
-          {% endfor %}
-        </ul>
-      </div> <!--end of card body-->
-    </div><!--end of card-->
-  {% endif %}
-  {% if managed_variant %}
-    <div class="card panel-default">
-      <div class="panel-heading">Matching managed variant</div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-2">
-            {{ managed_variant.display_id }}
-          </div>
-          <div class="col-10">
-            {{ managed_variant.description }}
-          </div>
-        </div>
-      </div> <!--end of card body-->
-    </div><!--end of card-->
-  {% endif %}
-  {% if not managed_variant and not causatives %}
-    <div class="card mt-3">
-      <div class="card-body mt-1 ml-1" style="padding: 0;">
-        <h6>No matching causative or managed variants</h6>
-      </div> <!--end of card body-->
-    </div><!--end of card-->
-  {% endif%}
-{% endmacro %}
-
-{% macro panel_basics() %}
-  <table class="table table-sm">
-    <tbody>
-      <tr>
-        <td>
-          Position
-          <span>
-            <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
-            {% if variant.is_par %}
-              <span class="badge badge-info">PAR</span>
-            {% endif %}
-          </span>
-        </td>
-        <td>
-          Change
-          <span>
-            {%- if variant.reference|length > 8 -%}
-              <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
-                style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.reference}}" title="Copy to clipboard">
-              </button>
-            {%- else -%}
-              <strong>{{ variant.reference }}</strong>
-            {%- endif -%}
-              →
-            {%- if variant.alternative|length > 8 -%}
-              <strong>{{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
-                style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.alternative}}" title="Copy to clipboard">
-                </button>
-            {%- else -%}
-              <strong>{{ variant.alternative }}</strong>
-            {%- endif -%}
-            </span>
-        </td>
-      </tr>
-      {% if variant.str_repid %}
-      <tr>
-        <td colspan="2">
-          Repeat locus
-          <span><strong>{{variant.str_repid}}</strong></span>
-        </td>
-      </tr>
-      {% endif %}
-    </tbody>
-  </table>
-{% endmacro  %}
 
 {% macro panel_summary() %}
   <div class="card mt-3 panel-default">
@@ -517,109 +369,6 @@
   </div> <!--  end of card div -->
 {% endmacro %}
 
-
-{% macro compounds_panel() %}
-  <div class="card panel-default">
-    <div class="panel-heading">Compounds (top 20)</div>
-    <div class="card-body">
-      {{ compounds_table(institute, case, variant.compounds[:20]) }}
-    </div>
-  </div>
-{% endmacro %}
-
-
-{% macro modal_sanger() %}
-  <form action="{{ url_for('variant.verify', institute_id=institute._id,
-                           case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=True) }}"
-        method="POST">
-    <div class="modal fade" id="sangerModal">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Order Sanger sequencing</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            {{ sanger_form() }}
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-danger" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Send sanger order request</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </form>
-{% endmacro %}
-
-{% macro modal_cancel_sanger() %}
-  <form action="{{ url_for('variant.verify', institute_id=institute._id,
-                           case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=False) }}"
-        method="POST">
-    <div class="modal fade" id="cancelSangerModal">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Cancel Sanger sequencing</h4>
-          </div>
-          <div class="modal-body">
-            {{ sanger_form() }}
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Send sanger cancellation request</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </form>
-{% endmacro %}
-
-{% macro external_links() %}
-  <div class="panel panel-default">
-    {% for gene in variant.genes %}
-      <div class="panel-heading">
-        External links: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-      </div>
-      <div class="panel-body">
-          <a href="{{ gene.ensembl_link }}" class="btn btn-outline-secondary" target="_blank">Ensembl</a>
-          <a href="{{ gene.hpa_link }}" class="btn btn-outline-secondary" target="_blank">HPA</a>
-          <a href="{{ gene.string_link }}" class="btn btn-outline-secondary" target="_blank">STRING</a>
-          <a href="{{ gene.genemania_link }}" class="btn btn-outline-secondary" target="_blank">GENEMANIA</a>
-          <a href="{{ variant.ucsc_link }}" class="btn btn-outline-secondary" target="_blank">UCSC</a>
-          {% if gene.entrez_link %}
-            <a href="{{ gene.entrez_link }}" class="btn btn-outline-secondary" target="_blank">Entrez</a>
-          {% endif %}
-          <a href="http://tools.genes.toronto.edu/" class="btn btn-outline-secondary" target="_blank">SPANR</a>
-          <a href="{{ gene.reactome_link }}" class="btn btn-outline-secondary" target="_blank">Reactome</a>
-          <a href="{{ gene.expression_atlas_link }}" class="btn btn-outline-secondary" target="_blank">Expr. Atlas</a>
-          <a href="{{ gene.clingen_link }}" class="btn btn-outline-secondary" target="_blank">ClinGen</a>
-          {% if case.mt_bams or case.bam_files %}
-            <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
-          {% endif %}
-          <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
-          {% if variant.chromosome == 'MT' %}
-            <a href="{{ variant.mitomap_link }}" class="btn btn-outline-secondary" target="_blank">MitoMap</a>
-          {% endif %}
-          {% if gene.tp53_link %}
-            <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>
-          {% endif %}
-          {% if gene.iarctp53_link %}
-            <a href="{{ gene.iarctp53_link }}" class="btn btn-outline-secondary" target="_blank">IARC TP53</a>
-          {% endif %}
-          {% if cancer %}
-            <a href="{{ gene.cbioportal_link }}" class="btn btn-outline-secondary" target="_blank">cBioPortal</a>
-            <a href="{{ gene.oncokb_link }}" class="btn btn-outline-secondary" target="_blank">OncoKB</a>
-            <a href="{{ gene.civic_link }}" class="btn btn-outline-secondary" target="_blank">CIViC</a>
-          {% endif %}
-            <a href="http://marrvel.org/human/variant/{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{variant.alternative}}" class="btn btn-outline-secondary" target="_blank">MARRVEL</a>
-      </div>
-    {% endfor %}
-  </div>
-{% endmacro %}
 
 {% block scripts %}
   {{ super() }}

@@ -1,4 +1,5 @@
 {% from "variant/buttons.html" import variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button %}
+{% from "variants/utils.html" import compounds_table %}
 
 {% macro acmg_classification_item(data) %}
   {% set current_variant = (data.variant_specific == variant._id) %}
@@ -73,5 +74,85 @@
         </div>
       {% endif %}
     </div>
+  </div>
+{% endmacro %}
+
+
+{% macro matching_variants(managed_variant) %}
+  {% if managed_variant %}
+    <div class="card panel-default">
+      <div class="panel-heading">Matching managed variant</div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-2">
+            {{ managed_variant.display_id }}
+          </div>
+          <div class="col-10">
+            {{ managed_variant.description }}
+          </div>
+        </div>
+      </div> <!--end of card body-->
+    </div><!--end of card-->
+  {% endif %}
+  {% if not managed_variant %}
+    <div class="card mt-3">
+      <div class="card-body mt-1 ml-1" style="padding: 0;">
+        <h6>No managed variants</h6>
+      </div> <!--end of card body-->
+    </div><!--end of card-->
+  {% endif%}
+{% endmacro %}
+
+
+{% macro compounds_panel(institute, case, variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Compounds (top 20)</div>
+    <div class="card-body">
+      {{ compounds_table(institute, case, variant.compounds[:20]) }}
+    </div>
+  </div>
+{% endmacro %}
+
+
+{% macro external_links(case, variant) %}
+  <div class="panel panel-default">
+    {% for gene in variant.genes %}
+      <div class="panel-heading">
+        External links: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+      </div>
+      <div class="panel-body">
+          <a href="{{ gene.ensembl_link }}" class="btn btn-outline-secondary" target="_blank">Ensembl</a>
+          <a href="{{ gene.hpa_link }}" class="btn btn-outline-secondary" target="_blank">HPA</a>
+          <a href="{{ gene.string_link }}" class="btn btn-outline-secondary" target="_blank">STRING</a>
+          <a href="{{ gene.genemania_link }}" class="btn btn-outline-secondary" target="_blank">GENEMANIA</a>
+          <a href="{{ variant.ucsc_link }}" class="btn btn-outline-secondary" target="_blank">UCSC</a>
+          {% if gene.entrez_link %}
+            <a href="{{ gene.entrez_link }}" class="btn btn-outline-secondary" target="_blank">Entrez</a>
+          {% endif %}
+          <a href="http://tools.genes.toronto.edu/" class="btn btn-outline-secondary" target="_blank">SPANR</a>
+          <a href="{{ gene.reactome_link }}" class="btn btn-outline-secondary" target="_blank">Reactome</a>
+          <a href="{{ gene.expression_atlas_link }}" class="btn btn-outline-secondary" target="_blank">Expr. Atlas</a>
+          <a href="{{ gene.clingen_link }}" class="btn btn-outline-secondary" target="_blank">ClinGen</a>
+          {% if case.mt_bams or case.bam_files %}
+            <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
+          {% endif %}
+          <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
+          {% if variant.chromosome == 'MT' %}
+            <a href="{{ variant.mitomap_link }}" class="btn btn-outline-secondary" target="_blank">MitoMap</a>
+          {% endif %}
+          {% if gene.tp53_link %}
+            <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>
+          {% endif %}
+          {% if gene.iarctp53_link %}
+            <a href="{{ gene.iarctp53_link }}" class="btn btn-outline-secondary" target="_blank">IARC TP53</a>
+          {% endif %}
+          {% if cancer %}
+            <a href="{{ gene.cbioportal_link }}" class="btn btn-outline-secondary" target="_blank">cBioPortal</a>
+            <a href="{{ gene.oncokb_link }}" class="btn btn-outline-secondary" target="_blank">OncoKB</a>
+            <a href="{{ gene.civic_link }}" class="btn btn-outline-secondary" target="_blank">CIViC</a>
+          {% endif %}
+            <a href="http://marrvel.org/human/variant/{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{variant.alternative}}" class="btn btn-outline-secondary" target="_blank">MARRVEL</a>
+      </div>
+    {% endfor %}
   </div>
 {% endmacro %}
