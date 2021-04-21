@@ -11,7 +11,7 @@
       <!--filter panel -->
       <div>
         {{ dashboard_search_form() }}
-        {% if total_cases and total_cases == 0 %}
+        {% if total_cases == 0 %}
           <div class="alert alert-danger">Your search didn't return any results!</div>
         {% endif %}
 
