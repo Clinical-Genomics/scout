@@ -186,7 +186,7 @@
           // Assign a new value to hidden panel form field
           panel_field = document.getElementById("panel");
           panel_field.value=show_div;
-          // Hide search type select and search term inthe filters if panel=="variants"
+          // Hide search type select and search term in the filters if panel=="variants"
           if (show_div=="variants"){
             sel.style.display = "none";
             text.style.display = "none";
@@ -196,7 +196,7 @@
             text.style.display = "block";
           }
         }
-        else{
+        else{ // hide the other 2 divs
           div_el.style.display = "none";
         }
       }
