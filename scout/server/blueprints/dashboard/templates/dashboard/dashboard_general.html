@@ -13,11 +13,11 @@
         {{ dashboard_search_form() }}
         {% if total_cases == 0 %}
           <div class="alert alert-danger">Your search didn't return any results!</div>
+        {% elif total_cases %}
+          {{ general_stats_panels() }}
+          {{ cases_stats_panels() }}
+          {{ variants_stats_panels() }}
         {% endif %}
-
-        {{ general_stats_panels() }}
-        {{ cases_stats_panels() }}
-        {{ variants_stats_panels() }}
       </div>
 
   </div>
@@ -27,23 +27,21 @@
 {% macro dashboard_search_form() %}
 <div class="card">
   <form class="mt-3 ml-3" id='form' class="form-horizontal" method='POST' action="{{ url_for('dashboard.index') }}" accept-charset="utf-8">
-      <input type="hidden" value="{{panel}}" name="panel">
+      <input type="hidden" value="{{panel}}" name="panel" id="panel">
       <div class="form-row align-items-center mb-3">
         <!--Search institute select-->
         <div class="col-2 ml-3">
           {{ dashboard_form.search_institute(class="form-control") }}
         </div>
 
-        {% if panel != "3" %}
-          <!--Search type select field-->
-          <div class="col-3 ml-3">
-            {{ dashboard_form.search_type(class="form-control", id="search_type") }}
-          </div>
-          <!--Search term textfield-->
-          <div class="col-4 ml-3">
-            {{ dashboard_form.search_term(class="form-control", placeholder="Search term", id="search_term") }}
-          </div>
-        {% endif %}
+        <!--Search type select field-->
+        <div class="col-3 ml-3">
+          {{ dashboard_form.search_type(class="form-control", id="search_type") }}
+        </div>
+        <!--Search term textfield-->
+        <div class="col-4 ml-3">
+          {{ dashboard_form.search_term(class="form-control", placeholder="Search term", id="search_term") }}
+        </div>
 
         <!--Search term textfield-->
         <div class="col-1 ml-3">
@@ -161,8 +159,8 @@
   <script src="{{ url_for('dashboard.static', filename='charts.js') }}"></script>
   <script type="text/javascript">
 
-    var sel = document.getElementById("search_type"),
-    text = document.getElementById("search_term");
+    var sel = document.getElementById("search_type");
+    var text = document.getElementById("search_term");
 
     $(document).ready(function(){
       text.disabled = (sel.value == "");
@@ -185,6 +183,18 @@
         var div_el = document.getElementById(panels[index]);
         if (panels[index] == show_div){ //show div
           div_el.style.display = "block";
+          // Assign a new value to hidden panel form field
+          panel_field = document.getElementById("panel");
+          panel_field.value=show_div;
+          // Hide search type select and search term inthe filters if panel=="variants"
+          if (show_div=="variants"){
+            sel.style.display = "none";
+            text.style.display = "none";
+          }
+          else{
+            sel.style.display = "block";
+            text.style.display = "block";
+          }
         }
         else{
           div_el.style.display = "none";
