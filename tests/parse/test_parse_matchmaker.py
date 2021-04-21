@@ -1,4 +1,9 @@
-from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
+from scout.parse.matchmaker import (
+    genomic_features,
+    hpo_terms,
+    omim_terms,
+    parse_matches,
+)
 
 
 def test_parse_hpo_terms(case_obj, test_hpo_terms):
@@ -48,7 +53,6 @@ def test_genomic_features(real_variant_database, case_obj):
     assert isinstance(g_features, list)
     assert g_features[0]["gene"] == {"id": "POT1"}
     assert isinstance(g_features[0]["variant"], dict)
-    assert g_features[0]["zygosity"]
 
 
 def test_parse_matches(case_obj, match_objs):
