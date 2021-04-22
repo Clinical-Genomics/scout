@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Autodeploy docs on release
 - Documentation for updating case individuals tracks
+- Filter cases and dashboard stats by analysis track
 - Gray background for dismissed compounds in variants list and variant page
 ### Changed
 - Changed from deprecated db update method

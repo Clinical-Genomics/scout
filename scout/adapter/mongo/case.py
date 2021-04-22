@@ -159,14 +159,12 @@ class CaseHandler(object):
         query_term = name_query[name_query.index(":") + 1 :].strip()
 
         if query_field == "case" and query_term != "":
-            LOG.debug("Case display name query")
             query["$or"] = [
                 {"display_name": {"$regex": query_term}},
                 {"individuals.display_name": {"$regex": query_term}},
             ]
 
         if query_field == "exact_pheno":
-            LOG.debug("Exact HPO phenotype query")
             if query_term != "":
                 query["phenotype_terms.phenotype_id"] = query_term
             else:  # query for cases with no HPO terms
@@ -175,22 +173,21 @@ class CaseHandler(object):
                     {"phenotype_terms": {"$exists": False}},
                 ]
         if query_field == "synopsis":
-            LOG.debug("Case synopsis query")
             if query_term != "":
                 query["$text"] = {"$search": query_term}
             else:
                 query["synopsis"] = ""
 
         if query_field == "panel":
-            LOG.debug("Gene panel query")
             query["panels"] = {"$elemMatch": {"panel_name": query_term, "is_default": True}}
 
         if query_field == "status":
-            LOG.debug("Case status query")
             query["status"] = query_term
 
+        if query_field == "track":
+            query["track"] = query_term
+
         if query_field == "pheno_group":
-            LOG.debug("Phenotye group query")
             if query_term != "":
                 query["phenotype_groups.phenotype_id"] = query_term
             else:
@@ -199,7 +196,6 @@ class CaseHandler(object):
                     {"phenotype_groups": {"$exists": False}},
                 ]
         if query_field == "cohort":
-            LOG.debug("Case cohort query")
             query["cohorts"] = query_term
 
         if query_term != "" and (query_field == "similar_case" or query_field == "similar_pheno"):
@@ -211,7 +207,6 @@ class CaseHandler(object):
             self._set_genes_of_interest_query(query, query_field, query_term)
 
         if query_field == "user":
-            LOG.debug(f"Search for cases with assignee '{query_term}'.")
             query_terms = query_term.split(" ")
             user_query = {
                 "$and": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]
