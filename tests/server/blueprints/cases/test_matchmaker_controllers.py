@@ -89,3 +89,73 @@ def test_matchmaker_add(app, user_obj, case_obj, test_hpo_terms, mocker):
         # THEN ine case should be uodated and a submission object correctly saved to database
         updated_case = store.case_collection.find_one()
         assert len(updated_case["mme_submission"]["patients"]) == 1
+
+
+def test_matchmaker_delete(app, mme_submission, user_obj, case_obj, mocker):
+    """testing controller function that deletes a case from MatchMaker"""
+    # GIVEN a mocked response from MME server
+    mocker.patch(
+        "scout.server.extensions.matchmaker.patient_delete",
+        return_value={"status_code": 200},
+    )
+    # GIVEN an app containing MatchMaker connection params
+    with app.test_client() as client:
+        # GIVEN a case with a MatchMaker submission:
+        updated_case = store.case_collection.find_one_and_update(
+            {"_id": case_obj["_id"]},
+            {"$set": {"mme_submission": mme_submission}},
+        )
+        # GIVEN a user which is registered as a MatchMaker submitter
+        store.user_collection.find_one_and_update(
+            {"email": user_obj["email"]}, {"$set": {"roles": ["mme_submitter"]}}
+        )
+        client.get(url_for("auto_login"))
+
+        # WHEN user deletes the case using the matchmaker_delete controller
+        controllers.matchmaker_delete(
+            request, institute_id=case_obj["owner"], case_name=case_obj["display_name"]
+        )
+
+        # THEN the case should be updated and the submission should be gone
+        updated_case = store.case_collection.find_one()
+        assert updated_case.get("mme_submission") is None
+
+
+def test_matchmaker_match(app, mme_submission, user_obj, case_obj, mocker):
+    """testing controller function to match one patient against other patients from Scout"""
+
+    # GIVEN a mocked responses from MME server
+    mocker.patch(
+        "scout.server.extensions.matchmaker.match_internal", return_value={"status_code": 200}
+    )
+    mocker.patch(
+        "scout.server.extensions.matchmaker.match_external", return_value={"status_code": 200}
+    )
+
+    # GIVEN an app containing MatchMaker connection params
+    with app.test_client() as client:
+        # GIVEN a user which is registered as a MatchMaker submitter
+        store.user_collection.find_one_and_update(
+            {"email": user_obj["email"]}, {"$set": {"roles": ["mme_submitter"]}}
+        )
+        client.get(url_for("auto_login"))
+
+        # GIVEN a case with a MatchMaker submission:
+        updated_case = store.case_collection.find_one_and_update(
+            {"_id": case_obj["_id"]},
+            {"$set": {"mme_submission": mme_submission}},
+        )
+
+        # WHEN user submits a patient for matching on the Scout node (internal matching)
+        ok_responses = controllers.matchmaker_match(
+            request, "internal", institute_id=case_obj["owner"], case_name=case_obj["display_name"]
+        )
+        # The expected response should be succcess
+        assert ok_responses > 0
+
+        # WHEN user submits a patient for matching on a connected node (external matching)
+        ok_responses = controllers.matchmaker_match(
+            request, "external", institute_id=case_obj["owner"], case_name=case_obj["display_name"]
+        )
+        # The expected response should be not succcess since there are no connected nodes
+        assert ok_responses == 0

@@ -1224,3 +1224,5 @@ def matchmaker_match(request, match_type, institute_id, case_name):
                 ok_responses += 1
     if ok_responses > 0:
         flash("Matching request sent. Look for eventual matches in 'Matches' page.", "info")
+
+    return ok_responses
