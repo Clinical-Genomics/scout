@@ -16,6 +16,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changed from deprecated db update method
 - Pre-selected fields to run queries with in dashboard page
 - Do not filter by any institute when first accessing the dashboard
+- Removed OMIM panel in case view for cancer cases
+- Display Tier I and II variants in case view causatives panel for cancer cases
+- Refactored Individuals and Causative panels in case view for cancer cases
 
 ## [4.32.1]
 ### Fixed
