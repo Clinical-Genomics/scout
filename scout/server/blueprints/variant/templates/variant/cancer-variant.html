@@ -3,7 +3,7 @@
 {% from "variants/utils.html" import modal_causative %}
 {% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, igv_track_selection %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
-{% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, conservations %}
+{% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, conservations, mappability %}
 {% from "variant/buttons.html" import igv_button, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
 {% from "variant/components.html" import panel_classify, compounds_panel, matching_variants, external_links  %}
 {% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
@@ -123,7 +123,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-12">{{ external_links(variant) }}</div>
+      <div class="col-12">{{ external_links(case, variant) }}</div>
     </div>
     <div class="row">
       <div class="col-12">{{ activity_panel(events|reverse) }}</div>
