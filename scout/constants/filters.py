@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from .so_terms import SEVERE_SO_TERMS
 
-CLINICAL_FILTER = {
+CLINICAL_FILTER_BASE = {
     "variant_type": "clinical",
     "region_annotations": ["exonic", "splicing"],
     "functional_annotations": SEVERE_SO_TERMS,
@@ -9,7 +9,7 @@ CLINICAL_FILTER = {
     "clinsig_confident_always_returned": True,
 }
 
-CLINICAL_FILTER_SV = {
+CLINICAL_FILTER_BASE_SV = {
     "variant_type": "clinical",
     "region_annotations": ["exonic", "splicing"],
     "functional_annotations": SEVERE_SO_TERMS,
@@ -17,7 +17,7 @@ CLINICAL_FILTER_SV = {
     "swegen": 10,
 }
 
-CLINICAL_FILTER_CANCER = {
+CLINICAL_FILTER_BASE_CANCER = {
     "variant_type": "clinical",
     "region_annotations": ["exonic", "splicing"],
     "functional_annotations": SEVERE_SO_TERMS,
