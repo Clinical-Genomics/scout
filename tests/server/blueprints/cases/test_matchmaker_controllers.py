@@ -5,14 +5,14 @@ from scout.server.blueprints.cases.controllers import matchmaker_check_requireme
 from scout.server.extensions import matchmaker, store
 
 
-def test_matchmaker_check_requirements_wrong_settings(app):
+def test_matchmaker_check_requirements_wrong_settings(app, user_obj):
     """Test that the matchmaker_check_requirements redirects if app settings requirements are not met"""
     # GIVEN an app that is not properly configured and it's missing either
     # matchmaker.host, matchmaker.accept, matchmaker.token
     with app.test_client() as client:
-        del matchmaker.host
+        del matchmaker.host  # removing host property from matchmaker object
 
-        # GIVEN a user that is logged in but doesn't have access to MatchMaker
+        # GIVEN a user that is logged in
         client.get(url_for("auto_login"))
         # THEN the matchmaker_check_requirements function should redirect to the previous page
         resp = matchmaker_check_requirements(request)

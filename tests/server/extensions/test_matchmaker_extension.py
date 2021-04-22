@@ -16,10 +16,10 @@ class MockNodesResponse(object):
         ]
 
 
-def test_matchmaker_config_settings(matchmaker_app):
+def test_matchmaker_config_settings(app):
     """Test that the app is initialized with the correct MatchMaker Exchange settings"""
     # WHEN the app is initialized, it should contain the default MME parameters
-    with matchmaker_app.app_context():
+    with app.app_context():
         assert matchmaker.host
         assert matchmaker.accept
         assert matchmaker.token
