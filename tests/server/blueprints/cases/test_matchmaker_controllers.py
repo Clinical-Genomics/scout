@@ -3,7 +3,6 @@ from flask_login import current_user
 
 import scout.server.blueprints.cases.controllers as controllers
 from scout.server.extensions import matchmaker, store
-from scout.utils.scout_requests import requests
 
 
 def test_matchmaker_check_requirements_wrong_settings(app, user_obj):
