@@ -136,8 +136,7 @@ class FilterHandler(object):
             target = variants_target_from_category.get(category)
 
             case_name = case_obj.get("display_name")
-            # filter dict already contains institute_id=institute_id,
-            link = url_for(target, case_name=case_name, **filter_dict)
+            link = url_for(target, case_name=case_name, institute_id=institute_obj.get("_id"))
 
         subject = filter_obj["display_name"]
 

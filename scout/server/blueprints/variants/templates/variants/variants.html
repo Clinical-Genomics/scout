@@ -213,6 +213,11 @@
         {% if filter.lock %}
           $("#stash_filter_padlock").removeClass("fa-unlock")
           $("#stash_filter_padlock").addClass("fa-lock")
+          {% if filter.owner == current_user._id %}
+            $("stash_filter_padlock").disabled = false;
+          {% elif filter.owner and filter.owner != current_user._id %}
+            $("stash_filter_padlock").disabled = true;
+          {% endif %}
         {% else %}
           $("#stash_filter_padlock").removeClass("fa-lock")
           $("#stash_filter_padlock").addClass("fa-unlock")

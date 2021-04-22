@@ -6,7 +6,6 @@ LOG = logging.getLogger(__name__)
 
 from anytree import Node, RenderTree
 from anytree.exporter import DictExporter
-from anytree.importer import DictImporter
 from flask import flash
 from flask_login import current_user
 
