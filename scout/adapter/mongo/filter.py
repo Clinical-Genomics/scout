@@ -154,12 +154,11 @@ class FilterHandler(object):
 
         return filter_obj
 
-    def lock_filter(self, filter_id: str, institute_id: str, user_id: str):
+    def lock_filter(self, filter_id: str, user_id: str):
         """Lock a filter
 
         Args:
             filter_id: str
-            institute_id: str
             user_id: str
 
         Returns:
@@ -176,12 +175,11 @@ class FilterHandler(object):
         )
         return return_doc
 
-    def unlock_filter(self, filter_id: str, institute_id: str, user_id: str):
+    def unlock_filter(self, filter_id: str, user_id: str):
         """Unlock a filter
 
         Args:
             filter_id: str
-            institute_id: str
             user_id: str
 
         Returns:
