@@ -988,7 +988,16 @@ def matchmaker_check_requirements(request):
         None, if requirements are fulfilled, otherwise redirects to previous page with error message
     """
     # Make sure all MME connection parameters are available in scout instance
-    if not all([matchmaker.host, matchmaker.accept, matchmaker.token]):
+    if (
+        any(
+            [
+                hasattr(matchmaker, "host"),
+                hasattr(matchmaker, "accept"),
+                hasattr(matchmaker, "token"),
+            ]
+        )
+        is None
+    ):
         flash(
             "An error occurred reading matchmaker connection parameters. Please check config file!",
             "danger",
