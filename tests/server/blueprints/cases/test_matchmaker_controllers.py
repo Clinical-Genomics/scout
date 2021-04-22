@@ -123,8 +123,7 @@ def test_matchmaker_delete(app, mme_submission, user_obj, case_obj, mocker):
 
 def test_matchmaker_match(app, mme_submission, user_obj, case_obj, mocker):
     """testing controller function to match one patient against other patients from Scout"""
-
-    # GIVEN a mocked responses from MME server
+    # GIVEN mocked responses from MME server
     mocker.patch(
         "scout.server.extensions.matchmaker.match_internal", return_value={"status_code": 200}
     )
@@ -159,3 +158,34 @@ def test_matchmaker_match(app, mme_submission, user_obj, case_obj, mocker):
         )
         # The expected response should be not succcess since there are no connected nodes
         assert ok_responses == 0
+
+
+def test_matchmaker_matches(app, mme_submission, match_objs, user_obj, case_obj, mocker):
+    """Test controller that retrieves past matching results from the database and returns it to the view"""
+    # GIVEN a mocked response from MME server
+    mocker.patch(
+        "scout.server.extensions.matchmaker.patient_matches",
+        return_value={"status_code": 200, "content": {"matches": match_objs}},
+    )
+
+    # GIVEN an app containing MatchMaker connection params
+    with app.test_client() as client:
+        # GIVEN a user which is registered as a MatchMaker submitter
+        store.user_collection.find_one_and_update(
+            {"email": user_obj["email"]}, {"$set": {"roles": ["mme_submitter"]}}
+        )
+        client.get(url_for("auto_login"))
+
+        # GIVEN a case with a MatchMaker submission:
+        updated_case = store.case_collection.find_one_and_update(
+            {"_id": case_obj["_id"]},
+            {"$set": {"mme_submission": mme_submission}},
+        )
+
+        # WHEN the controller retrieves the matches data
+        data = controllers.matchmaker_matches(
+            request, institute_id=case_obj["owner"], case_name=case_obj["display_name"]
+        )
+        # THEN returned data should contain the expected fields should be as expected
+        assert data["case"]["_id"] == updated_case["_id"]
+        assert data["matches"]
