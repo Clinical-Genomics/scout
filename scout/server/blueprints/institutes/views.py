@@ -165,9 +165,9 @@ def filters(institute_id):
 
     institute_obj = institute_and_case(store, institute_id)
 
-    data = controllers.filters(store, institute_obj)
+    filters = controllers.filters(store, institute_obj)
 
-    return dict(institute=institute_obj, form=form, **data)
+    return dict(institute=institute_obj, form=form, filters=filters)
 
 
 @blueprint.route("/<institute_id>/gene_variants", methods=["GET", "POST"])

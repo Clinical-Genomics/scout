@@ -34,10 +34,15 @@
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
     {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
     <div class="col">
-      {{ model_preview() }}
-      {{ phenomodel_page() }}
-      <!-- Display all subpanels for this model -->
-      {{ subpanels_macro() }}
+      <table>
+        {% for filter in filters %}
+          <tr>
+            <input type="hidden" id="_id" value="{{filter._id}}">
+            <td>{{ filter.display_name }}</td>
+            <td>{{ filter.category }}</td>
+          </tr>
+        {% endfor %}
+      </table>
     </div>
   </div><!-- end of body row div -->
 </div><!-- end of container-float-->
