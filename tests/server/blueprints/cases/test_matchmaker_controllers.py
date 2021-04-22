@@ -1,8 +1,9 @@
 from flask import request, url_for
 from flask_login import current_user
 
-from scout.server.blueprints.cases.controllers import matchmaker_check_requirements
+import scout.server.blueprints.cases.controllers as controllers
 from scout.server.extensions import matchmaker, store
+from scout.utils.scout_requests import requests
 
 
 def test_matchmaker_check_requirements_wrong_settings(app, user_obj):
@@ -15,7 +16,7 @@ def test_matchmaker_check_requirements_wrong_settings(app, user_obj):
         # GIVEN a user that is logged in
         client.get(url_for("auto_login"))
         # THEN the matchmaker_check_requirements function should redirect to the previous page
-        resp = matchmaker_check_requirements(request)
+        resp = controllers.matchmaker_check_requirements(request)
         assert resp.status_code == 302
 
 
@@ -26,20 +27,65 @@ def test_matchmaker_check_requirements_unauthorized_user(app, user_obj):
         # GIVEN a user that is logged in but doesn't have access to MatchMaker
         client.get(url_for("auto_login"))
         # THEN the matchmaker_check_requirements function should redirect to the previous page
-        resp = matchmaker_check_requirements(request)
+        resp = controllers.matchmaker_check_requirements(request)
         assert resp.status_code == 302
 
 
-def test_matchmaker_check_requirements_authorized_user(app, user_obj):
-    """Test a user with MatchMaker content access does not get redirected to previous page"""
+def test_matchmaker_add_no_genes_no_features(app, user_obj, case_obj):
+    """Testing adding a case to matchmaker when the case has no set phenotype or candidate gene/variant"""
+
+    # GIVEN a case with no phenotype terms:
+    store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]}, {"$set": {"phenotype_terms": []}}
+    )
+    # GIVEN a user which is registered as a MatchMaker submitter
+    store.user_collection.find_one_and_update(
+        {"email": user_obj["email"]}, {"$set": {"roles": ["mme_submitter"]}}
+    )
+
     # GIVEN an app containing MatchMaker connection params
     with app.test_client() as client:
-        # Given a user which is registered as a MatchMaker submitter
+        # AND a user that is logged in but doesn't have access to MatchMaker
+        client.get(url_for("auto_login"))
+
+        # WHEN user tries to save this case to MME
+        resp = controllers.matchmaker_add(
+            request, institute_id=case_obj["owner"], case_name=case_obj["display_name"]
+        )
+        assert resp.status_code == 302  # redirect
+
+        # AND no MME submission should be saved in the database
+        updated_case = store.case_collection.find_one()
+        assert "mme_submission" not in updated_case
+
+
+def test_matchmaker_add(app, user_obj, case_obj, test_hpo_terms, mocker):
+    # GIVEN a mocked response from MME server
+    mocker.patch(
+        "scout.server.extensions.matchmaker.patient_submit",
+        return_value={"message": "ok", "status_code": 200},
+    )
+    # GIVEN an app containing MatchMaker connection params
+    with app.test_client() as client:
+        # GIVEN a user which is registered as a MatchMaker submitter
         store.user_collection.find_one_and_update(
             {"email": user_obj["email"]}, {"$set": {"roles": ["mme_submitter"]}}
         )
-        # AND a user that is logged in but doesn't have access to MatchMaker
         client.get(url_for("auto_login"))
-        # THEN the matchmaker_check_requirements function should redirect to the previous page
-        resp = matchmaker_check_requirements(request)
-        assert resp is None
+
+        # submitting a case with HPO terms and a pinned variant
+        test_variant = store.variant_collection.find_one({"hgnc_symbols": ["POT1"]})
+        updated_case = store.case_collection.find_one_and_update(
+            {"_id": case_obj["_id"]},
+            {"$set": {"suspects": [test_variant["_id"]], "phenotype_terms": test_hpo_terms}},
+        )
+
+        # WHEN user submits the case using the matchmaker_add controller
+        saved_results = controllers.matchmaker_add(
+            request, institute_id=case_obj["owner"], case_name=case_obj["display_name"]
+        )
+        assert saved_results == 1
+
+        # THEN ine case should be uodated and a submission object correctly saved to database
+        updated_case = store.case_collection.find_one()
+        assert len(updated_case["mme_submission"]["patients"]) == 1

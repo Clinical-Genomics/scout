@@ -9,7 +9,7 @@ import query_phenomizer
 import requests
 from bs4 import BeautifulSoup
 from bson.objectid import ObjectId
-from flask import current_app, flash, redirect, url_for
+from flask import current_app, flash, redirect, request, url_for
 from flask_login import current_user
 from flask_mail import Message
 from xlsxwriter import Workbook
@@ -1037,7 +1037,7 @@ def matchmaker_add(request, institute_id, case_name):
         else []
     )
     disorders = omim_terms(case_obj) if "disorders" in request.form else []
-    genes_only = request.form["genomicfeatures"] == "genes"
+    genes_only = request.form.get("genomicfeatures") == "genes"
 
     if not features and not candidate_vars:
         flash(
@@ -1113,6 +1113,8 @@ def matchmaker_add(request, institute_id, case_name):
 
     if n_updated > 0:
         store.case_mme_update(case_obj=case_obj, user_obj=user_obj, mme_subm_obj=submitted_info)
+
+    return n_updated
 
 
 def matchmaker_delete(request, institute_id, case_name):
