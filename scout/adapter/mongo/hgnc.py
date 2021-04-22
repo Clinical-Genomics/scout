@@ -116,6 +116,10 @@ class GeneHandler(object):
             pymongo.cursor
         """
         LOG.debug("Fetching genes with symbol %s" % hgnc_symbol)
+        query = {}
+        if str(build) in ['37', '38']:
+            query['build'] = str(build)
+
         if search:
             # first search for a full match
             query = self.get_query_alias_or_id(hgnc_symbol, build)
@@ -123,13 +127,10 @@ class GeneHandler(object):
             if nr_genes != 0:
                 return self.hgnc_collection.find(query)
 
-            return self.hgnc_collection.find(
-                {
-                    "aliases": {"$regex": hgnc_symbol, "$options": "i"},
-                    "build": str(build),
-                }
-            )
-        return self.hgnc_collection.find({"build": build, "aliases": hgnc_symbol})
+            query['aliases'] = {"$regex": hgnc_symbol, "$options": "i"}
+            return self.hgnc_collection.find(query)
+        query['aliases'] = hgnc_symbol
+        return self.hgnc_collection.find(query)
 
     def hgnc_genes_find_one(self, hgnc_symbol, build="37"):
         """Find one hgnc genes that match a hgnc symbol. Replaces depricated
@@ -154,8 +155,9 @@ class GeneHandler(object):
                 {"aliases": hgnc_symbol},
                 {"hgnc_id": int(hgnc_symbol) if hgnc_symbol.isdigit() else None},
             ],
-            "build": str(build),
         }
+        if build in ['37', '38']:
+            query["build"] = str(build)
         return query
 
     def all_genes(self, build=None, add_transcripts=False, limit=100000):
