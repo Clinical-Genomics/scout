@@ -117,8 +117,8 @@ class GeneHandler(object):
         """
         LOG.debug("Fetching genes with symbol %s" % hgnc_symbol)
         build_query = {}
-        if str(build) in ['37', '38']:
-            build_query['build'] = str(build)
+        if str(build) in ["37", "38"]:
+            build_query["build"] = str(build)
 
         if search:
             # first search for a full match
@@ -127,8 +127,10 @@ class GeneHandler(object):
             if nr_genes != 0:
                 return self.hgnc_collection.find(query_full_match)
 
-            return self.hgnc_collection.find({'aliases': {"$regex": hgnc_symbol, "$options": "i"}, **build_query})
-        return self.hgnc_collection.find({'aliases': hgnc_symbol, **build_query})
+            return self.hgnc_collection.find(
+                {"aliases": {"$regex": hgnc_symbol, "$options": "i"}, **build_query}
+            )
+        return self.hgnc_collection.find({"aliases": hgnc_symbol, **build_query})
 
     def hgnc_genes_find_one(self, hgnc_symbol, build="37"):
         """Find one hgnc genes that match a hgnc symbol. Replaces depricated
@@ -154,7 +156,7 @@ class GeneHandler(object):
                 {"hgnc_id": int(hgnc_symbol) if hgnc_symbol.isdigit() else None},
             ],
         }
-        if build in ['37', '38']:
+        if build in ["37", "38"]:
             query["build"] = str(build)
         return query
 
