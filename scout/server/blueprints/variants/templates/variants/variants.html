@@ -207,6 +207,20 @@
       width: '100%'
     });
 
+    $("#filters").change(function () {
+     {% for filter in filters %}
+      if ($(this).val() == {{ filter._id }}) {
+        {% if filter.lock %}
+          $("#stash_filter_padlock").removeClass("fa-unlock")
+          $("#stash_filter_padlock").addClass("fa-lock")
+        {% else %}
+          $("#stash_filter_padlock").removeClass("fa-lock")
+          $("#stash_filter_padlock").addClass("fa-unlock")
+        {% endif %}
+      };
+      {% endfor %}
+    });
+
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
       $('[data-toggle="popover"]').popover({
@@ -230,6 +244,7 @@
         var the_form = document.forms['filters_form'];
         the_form.submit();
       };
+
     });
-  </script>
+   </script>
 {% endblock %}

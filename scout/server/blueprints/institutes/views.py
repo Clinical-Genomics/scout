@@ -165,7 +165,7 @@ def filters(institute_id):
 
     institute_obj = institute_and_case(store, institute_id)
 
-    filters = controllers.filters(store, institute_obj)
+    filters = controllers.filters(store, institute_id)
 
     return dict(institute=institute_obj, form=form, filters=filters)
 

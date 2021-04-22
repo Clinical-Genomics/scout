@@ -34,15 +34,24 @@
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
     {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
     <div class="col">
-      <table>
-        {% for filter in filters %}
-          <tr>
-            <input type="hidden" id="_id" value="{{filter._id}}">
-            <td>{{ filter.display_name }}</td>
-            <td>{{ filter.category }}</td>
-          </tr>
-        {% endfor %}
-      </table>
+      <div class="card">
+        <div class="card-header"><b>Filters created for institute on variants pages</b></div>
+        <div class="card-body">
+          <ul class="list-group">
+            {% for filter in filters %}
+              <li class="list-group-item">
+                <div class="row">
+                  <input type="hidden" id="_id" value="{{filter._id}}">
+                  <div class="col-2">{{ filter.display_name }}</div>
+                  <div class="col-1">{{ filter.category|upper }}</div>
+                  <div class="col-2">{{ filter.owner }}</div>
+                  <div class="col-1"><button type="button" class="btn btn-primary btn-sm"><i class="fa {% if filter.lock %}fa-lock{% else %}fa-unlock{% endif %}"></i></button></div>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
     </div>
   </div><!-- end of body row div -->
 </div><!-- end of container-float-->
@@ -51,48 +60,7 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script type="text/javascript">
-
-  function showDiv(showElem, hideElem) {
-    // show div of interest
-    var divElem = document.getElementById(showElem);
-    divElem.style.display = "block";
-    // hide the other div
-    divElem = document.getElementById(hideElem);
-    divElem.style.display = "none";
-  }
-
-  $(document).ready(function(){
-    $('#omimForm').toggle();
-  });
-
-  $('#hpoHasTitle').change(function() {
-    if($(this).prop("checked")){
-      $("#hpoTermTitle").removeAttr('disabled');
-    }
-    else{
-      $("#hpoTermTitle").prop("disabled", true);
-    }
-  });
-
-  $('#omimHasTitle').change(function() {
-    if($(this).prop("checked")){
-      $("#omimTermTitle").removeAttr('disabled');
-    }
-    else{
-      $("#omimTermTitle").prop("disabled", true);
-    }
-  });
-
-  function toggleDiv(divName){
-    var div = document.getElementById(divName);
-    if (div.style.display === "none") {
-      div.style.display = "block";
-    } else {
-      div.style.display = "none";
-    }
-  }
 
 </script>
 {% endblock %}

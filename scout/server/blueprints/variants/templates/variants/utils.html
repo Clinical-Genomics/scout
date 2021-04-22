@@ -676,9 +676,13 @@
       {{ form.filters(class="form-control") }}
     </div>
     <div class="btn-group col-4" role="group">
+
+      {{ form.filter_lock }}
       {{ form.load_filter(class="btn btn-secondary", disabled=form.filters.choices|length==0) }}
+      <button type="button" class="btn btn-primary btn-sm" aria-hidden="true"><i id="stash_filter_padlock" class="fa fa-unlock"></i></button>
       {{ form.delete_filter(class="btn btn-secondary bg-danger", data_toggle="tooltip", data_placement="top",
         title="Delete selected filter for this institute.", disabled=form.filters.choices|length==0) }}
+
     </div>
   </div>
 {% endmacro %}
