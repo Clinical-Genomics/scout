@@ -173,6 +173,25 @@
   </a>
 {% endmacro %}
 
+
+{% macro variant_validation_badge(variant) %}
+  {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
+    <span class="badge badge-default">Verification ordered</span>
+  {% elif variant.sanger_ordered %}
+    <span class="badge badge-success">Validated</span>
+  {% endif %}
+{% endmacro %}
+
+{% macro tumor_allele_freq(variant) %}
+  {% if variant.tumor %}
+    {{ allele_div(variant.tumor, "Tumor") }}
+  {% endif %}
+  {% if variant.normal %}
+    {{ allele_div(variant.normal, "Normal") }}
+  {% endif %}
+{% endmacro %}
+
+
 {% macro causatives_list(causatives, partial_causatives, evaluated_variants, institute, case) %}
   <div class="card panel-default">
     <div data-toggle='tooltip' class="panel-heading" title="Displays all variants that have been marked causative for this case">
@@ -186,24 +205,15 @@
     <div class="card-body">
     <ul class="list-group">
       {% for variant in causatives %}
-        <li class="list-group-item">
+        <li class="list-group-item list-group-item-action">
           {% if variant._id %}
             <div class="row align-items-between align-items-center">
               <div class="col">
                 <i class="fa fa-check-circle-o"></i>
                 {{ pretty_link_variant(variant, case) }}
-                {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
-                  <span class="badge badge-default">Verification ordered</span>
-                {% elif variant.sanger_ordered %}
-                  <span class="badge badge-success">Validated</span>
-                {% endif %}
+                {{ variant_validation_badge(variant) }}
               </div>
-              {% if variant.tumor %}
-                {{ allele_div(variant.tumor, "Tumor") }}
-              {% endif %}
-              {% if variant.normal %}
-                {{ allele_div(variant.normal, "Normal") }}
-              {% endif %}
+              {{ tumor_allele_freq(variant) }}
               <div class="col-1">
                 {{ remove_form(url_for('cases.mark_causative',
                                        institute_id=institute._id,
@@ -222,7 +232,7 @@
       <!-- Partial causative variants -->
       {% for variant_phenotypes in partial_causatives %}
         {% set variant = variant_phenotypes.variant %}
-        <div class="list-group-item">
+        <div class="list-group-item list-group-item-action">
           {% if variant._id %}
             <div class="row align-items-between align-items-center">
               <div class="col">
@@ -294,14 +304,18 @@
         {% for variant in evaluated_variants %}
           {% set exp_tiers =  ['1A', '1B', '2C', '2D'] %}
           {% if variant.cancer_tier in exp_tiers %}
-	    <li class="list-group-item">
-              <div class="row align-items-between align-items-center">
-                <div class="col">
-		  <span class="badge badge-success">Tier {{ variant.cancer_tier }}</span>
-                  {{ pretty_link_variant(variant, case) }}
-                </div>
+          <li class="list-group-item list-group-item-action">
+            <div class="row align-items-between align-items-center">
+              <div class="col">
+                {{ pretty_link_variant(variant, case) }}
+                {{ variant_validation_badge(variant) }}
               </div>
-	    </li>
+                {{ tumor_allele_freq(variant) }}
+              <div class="col-2">
+                <span class="badge badge-success">Tier {{ variant.cancer_tier }}</span>
+              </div>
+            </div>
+          </li>
           {% endif %}
         {% endfor %}
       {% endif %}
