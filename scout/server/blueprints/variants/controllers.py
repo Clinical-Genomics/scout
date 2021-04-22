@@ -20,7 +20,9 @@ from scout.constants import (
     CANCER_TIER_OPTIONS,
     CHROMOSOMES,
     CHROMOSOMES_38,
-    CLINSIG_MAP,
+    CLINICAL_FILTER_BASE,
+    CLINICAL_FILTER_BASE_CANCER,
+    CLINICAL_FILTER_BASE_SV,
     DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
@@ -28,18 +30,11 @@ from scout.constants import (
     SPIDEX_HUMAN,
     VERBS_MAP,
 )
-from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
 from scout.server.blueprints.variant.utils import clinsig_human, predictions
 from scout.server.links import cosmic_link, ensembl, str_source_link
-from scout.server.utils import (
-    case_append_alignments,
-    institute_and_case,
-    user_institutes,
-    variant_case,
-)
-from scout.utils.scout_requests import fetch_refseq_version
+from scout.server.utils import case_append_alignments, institute_and_case
 
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
@@ -703,51 +698,42 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
     FiltersFormClass = VariantFiltersForm
     if category == "snv":
         FiltersFormClass = FiltersForm
-        clinical_filter = MultiDict(
+        clinical_filter_dict = CLINICAL_FILTER_BASE
+        clinical_filter_dict.update(
             {
-                "variant_type": "clinical",
-                "region_annotations": ["exonic", "splicing"],
-                "functional_annotations": SEVERE_SO_TERMS,
-                "clinsig": [4, 5],
-                "clinsig_confident_always_returned": True,
                 "gnomad_frequency": str(institute_obj["frequency_cutoff"]),
                 "gene_panels": clinical_filter_panels,
             }
         )
+        clinical_filter = MultiDict(clinical_filter_dict)
     elif category in ("sv", "cancer_sv"):
         FiltersFormClass = SvFiltersForm
-        clinical_filter = MultiDict(
+        clinical_filter_dict = CLINICAL_FILTER_BASE_SV
+        clinical_filter_dict.update(
             {
-                "variant_type": "clinical",
-                "region_annotations": ["exonic", "splicing"],
-                "functional_annotations": SEVERE_SO_TERMS,
-                "thousand_genomes_frequency": str(institute_obj["frequency_cutoff"]),
-                "clingen_ngi": 10,
-                "swegen": 10,
                 "gene_panels": clinical_filter_panels,
             }
         )
+        clinical_filter = MultiDict(clinical_filter)
     elif category == "cancer":
         FiltersFormClass = CancerFiltersForm
-        clinical_filter = MultiDict(
+        clinical_filter_dict = CLINICAL_FILTER_BASE_CANCER
+        clinical_filter_dict.update(
             {
-                "variant_type": "clinical",
-                "region_annotations": ["exonic", "splicing"],
-                "functional_annotations": SEVERE_SO_TERMS,
+                "gene_panels": clinical_filter_panels,
             }
         )
+        clinical_filter = MultiDict(clinical_filter_dict)
+
     elif category == "str":
         FiltersFormClass = StrFiltersForm
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)
-
-    form = persistent_filter_actions(
-        store, institute_obj, case_obj, user_obj, category, request_form, FiltersFormClass
-    )
-
-    if form is None:
-        form = FiltersFormClass(request_form)
+    else:
+        form = persistent_filter_actions(
+            store, institute_obj, case_obj, user_obj, category, request_form, FiltersFormClass
+        )
 
     return form
 
@@ -822,6 +808,9 @@ def persistent_filter_actions(
             form = FiltersFormClass(request_form)
         else:
             flash("Requested filter was not found", "warning")
+
+    if form is None:
+        form = FiltersFormClass(request_form)
 
     return form
 
