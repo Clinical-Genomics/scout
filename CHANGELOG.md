@@ -8,8 +8,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Allow saved filter lock and unlock
 ### Fixed
+- command line crashing when updating an individual not found in database
 ### Added
 - Autodeploy docs on release
+- Documentation for updating case individuals tracks
 ### Changed
 - SV clinical filter no longer filters out sub 100 nt variants
 
