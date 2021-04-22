@@ -192,7 +192,7 @@
 {% endmacro %}
 
 
-{% macro causatives_list(causatives, partial_causatives, evaluated_variants, institute, case) %}
+{% macro causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) %}
   <div class="card panel-default">
     <div data-toggle='tooltip' class="panel-heading" title="Displays all variants that have been marked causative for this case">
       <span class="fa fa-medkit"></span>&nbsp;
@@ -312,7 +312,7 @@
               </div>
                 {{ tumor_allele_freq(variant) }}
               <div class="col-2">
-                <span class="badge badge-success">Tier {{ variant.cancer_tier }}</span>
+                {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
               </div>
             </div>
           </li>
