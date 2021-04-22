@@ -7,11 +7,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Fixed
 - command line crashing when updating an individual not found in database
+- Dashboard page crashing when filters return no data
 ### Added
 - Autodeploy docs on release
 - Documentation for updating case individuals tracks
+- Filter cases and dashboard stats by analysis track
 ### Changed
 - Changed from deprecated db update method
+- Pre-selected fields to run queries with in dashboard page
+- Do not filter by any institute when first accessing the dashboard
 - Refactored the MatchMaker integration as an extension
 
 ## [4.32.1]
