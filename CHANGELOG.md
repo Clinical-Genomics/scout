@@ -16,9 +16,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changed from deprecated db update method
 - Pre-selected fields to run queries with in dashboard page
 - Do not filter by any institute when first accessing the dashboard
-- Reworked the layout and content of cancer variant view
-- Moved variant, gene and panel info from the basic pane to summary panel for all variants. 
+- Moved variant, gene and panel info from the basic pane to summary panel for all variants.
 - Renamed basic panel to classify.
+- Added dedicated template for cancer variants
+- Removed OMIM, Inheritance, Old loqusdb and Pedigre panels for cancer variants
+- Reorganized the orders of panels for variant and cancer variant views
+- Revamped “basic” panel to a panel dedicated to classify variants
+- Revamped the summary panel to be more compact.
+- Added dedicated variant quality pane and removed relevant panes (mappability)
 
 ## [4.32.1]
 ### Fixed
