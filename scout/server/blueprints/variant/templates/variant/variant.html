@@ -70,7 +70,11 @@
 
     <div class="row">
       <div class="col-sm-12">{{ matching_variants(managed_variant) }}</div>
-      <div class="col-sm-4">{{ panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options) }}</div>
+      <div class="col-sm-4">
+        {{ panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options) }}
+        {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
+        {{ omim_phenotypes(variant) }}
+      </div>
       <div class="col-sm-8">
         <div class="col-sm-12">{{ panel_summary() }}</div>
         {% if variant.disease_associated_transcripts %}
@@ -81,7 +85,6 @@
     </div>
 
     <div class="card-columns">
-      {{ omim_phenotypes(variant) }}
       {{ genemodels_panel(variant) }}
       {{ inheritance_panel(variant) }}
         {% if variant.azlength %}
@@ -98,14 +101,11 @@
     </div>
 
     <div class="row">
-      <div class="col-sm-4">
-        {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
-      </div>
-      <div class="col-sm-5">{{ gtcall_panel(variant) }}</div>
       {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
       {% if has_pedigree %}
         <div class="col-sm-3">{{ pedigree_panel(case) }}</div>
       {% endif %}
+      <div class="col-sm-5">{{ gtcall_panel(variant) }}</div>
     </div>
     {% if variant.compounds %}
       <div class="row">
@@ -165,11 +165,11 @@
         <tbody>
           <tr>
             <td>
-              Position: 
+              Position:
 	      <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
             </td>
             <td colspan=3>
-              Change: 
+              Change:
               {% if variant.reference|length > 8 %}
                 <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong>
               {% else %}
@@ -320,7 +320,7 @@
           <div>
             {{ igv_button(case, variant, case_groups) }}
           </div>
-         
+
           {% if config.SQLALCHEMY_DATABASE_URI %}
           <div class="d-flex flex-wrap">
             {% for gene in variant.genes %}
