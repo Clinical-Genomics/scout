@@ -1,8 +1,8 @@
 {% from "variants/utils.html" import tier_cell %}
 
-{% macro matchmaker_modal(institute, case) %}
+{% macro matchmaker_modal(institute, case, mme_nodes) %}
 <div class="modal fade" id="matchmaker_modal" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">MatchMaker Exchange patient submission</h5>
@@ -16,13 +16,13 @@
             <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-secondary text-white" role="button" target="_blank">Past Matches <span class="fas fa-people-arrows"></span></a>
             <select class="custom-select" onchange="window.open(this.value,'_self');" style="width:auto;">
                  <option selected>Match against</option>
-                  <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</option>
-                  {% if mme_nodes|length >1 %}
-                  <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</option>
-                  {% endif %}
-                  {% for node in mme_nodes %}
-                  <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</option>
-               {% endfor %}
+                 <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</option>
+                 {% if mme_nodes %}
+                    <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</option>
+                    {% for node in mme_nodes %}
+                      <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</option>
+                    {% endfor %}
+                {% endif %}
             </select>
           </div>
           <hr>
@@ -120,7 +120,7 @@
     </button>
     <!-- Modal -->
     <div class="modal fade" id="mme_delete_confirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-body">
           Confirm delete case from Matchmaker?
