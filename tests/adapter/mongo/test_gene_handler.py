@@ -240,20 +240,21 @@ def test_get_genes_per_build(real_adapter):
     assert sum(1 for i in res) == 1
 
     ##THEN assert gene is excluded when using genome build is 38
-    res = adapter.hgnc_genes(hgnc_symbol="AA", build='38', search=True)
+    res = adapter.hgnc_genes(hgnc_symbol="AA", build="38", search=True)
     assert sum(1 for i in res) == 0
 
     ##THEN assert that build==37 excludes 38 variants when using regex
-    res = adapter.hgnc_genes(hgnc_symbol="A", build='37', search=True)
+    res = adapter.hgnc_genes(hgnc_symbol="A", build="37", search=True)
     assert sum(1 for i in res) == 2
 
     ##THEN assert that build==38 excludes 37 variants when using regex
-    res = adapter.hgnc_genes(hgnc_symbol="A", build='38', search=True)
+    res = adapter.hgnc_genes(hgnc_symbol="A", build="38", search=True)
     assert sum(1 for i in res) == 1
 
     ##THEN assert that build==all includes both 37 and 38 variants when using regex
-    res = adapter.hgnc_genes(hgnc_symbol="A", build='all', search=True)
+    res = adapter.hgnc_genes(hgnc_symbol="A", build="all", search=True)
     assert sum(1 for i in res) == 3
+
 
 def test_get_all_genes(adapter):
     ##GIVEN a empty adapter
