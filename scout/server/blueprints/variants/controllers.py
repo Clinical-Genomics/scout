@@ -714,7 +714,7 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
                 "gene_panels": clinical_filter_panels,
             }
         )
-        clinical_filter = MultiDict(clinical_filter)
+        clinical_filter = MultiDict(clinical_filter_dict)
     elif category == "cancer":
         FiltersFormClass = CancerFiltersForm
         clinical_filter_dict = CLINICAL_FILTER_BASE_CANCER
