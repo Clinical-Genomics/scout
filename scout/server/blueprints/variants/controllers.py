@@ -369,7 +369,7 @@ def parse_variant(
     variant_obj["str_source_link"] = str_source_link(variant_obj)
     # Format clinvar information
     variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
-    # Set the gene with most severe consequence as being representavie
+    # Set the gene with most severe consequence as being representative
     # used for display purposes
     if variant_genes:
         first_rep_gene = min(
@@ -609,7 +609,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
     for variant in variant_res:
         # parse variant information
         variant_obj = parse_variant(store, institute_obj, case_obj, variant, update=True)
-        # if one or more gene panles is selected assigne the gene present
+        # if one or more gene panles are selected, assign the gene present
         # in the panel as the second representative gene.
         # if no gene panel is selected dont assign the gene
         secondary_gene = None
