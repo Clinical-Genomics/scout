@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - command line crashing when updating an individual not found in database
 - Dashboard page crashing when filters return no data
+- Cancer variants filter by chromosome
 ### Added
 - Autodeploy docs on release
 - Documentation for updating case individuals tracks
