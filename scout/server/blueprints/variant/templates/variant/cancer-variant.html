@@ -183,7 +183,7 @@
       {% if tmp_gene_info | length  == 0 %}
         {% for gene in variant.genes %}
           {% for transcript in gene.transcripts %}
-          {% if transcript.transcript_id.startswith('NM_') %}
+            {% if transcript.refseq_id.startswith('NM_') %}
               {% do tmp_gene_info.append(gene) %}
               {% do tmp_gene_info.append(transcript) %}
             {% endif %}
@@ -192,7 +192,7 @@
       {% endif %}
       {% set primary_gene = tmp_gene_info[0] %}
       {% set primary_transcript = tmp_gene_info[1] %}
-      <a href=""><h5 class="card-title">
+      <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=primary_gene.hgnc_id) }}"><h5 class="card-title">
         {{ primary_gene.hgnc_symbol }}; {{ primary_gene.description }}
       </h5></a>
       <ul class="list-group list-group-flush">
