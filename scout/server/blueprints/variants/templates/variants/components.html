@@ -81,39 +81,6 @@
 {% macro observed_cell_general(variant) %}
   <div data-toggle="tooltip" data-placement="left" data-html="true" title="
     <div class='text-left'>
-      {% if 'gnomad_mt_homoplasmic_frequency' in variant %}
-        <div>
-          <strong>gnomAD(MT) hom</strong>: {{ variant.gnomad_mt_homoplasmic_frequency|human_decimal if variant.gnomad_mt_homoplasmic_frequency }}
-        </div>
-      {% endif %}
-      {% if 'gnomad_mt_heteroplasmic_frequency' in variant %}
-        <div>
-          <strong>gnomAD(MT) het</strong>: {{ variant.gnomad_mt_heteroplasmic_frequency|human_decimal if variant.gnomad_mt_heteroplasmic_frequency }}
-        </div>
-      {% endif %}
-
-      {% if 'gnomad_frequency' in variant %}
-        <div>
-          <strong>gnomAD</strong>: {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency }}
-        </div>
-        <div>
-          <strong>gnomAD (max)</strong>: {{ variant.max_gnomad_frequency|human_decimal if variant.max_gnomad_frequency }}
-        </div>
-      {% endif %}
-      <div>
-        <strong>1000G</strong>: {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}
-      </div>
-      <div>
-        <strong>1000G (max)</strong>: {{ variant.max_thousand_genomes_frequency|human_decimal if variant.max_thousand_genomes_frequency }}
-      </div>
-      <div>
-        <strong>ExAC</strong>:
-        {{ variant.exac_frequency|human_decimal if variant.exac_frequency }}
-      </div>
-      <div>
-        <strong>ExAC (max)</strong>:
-        {{ variant.max_exac_frequency|human_decimal if variant.max_exac_frequency }}
-      </div>
       <div>
         <strong>Local (arch.)</strong>: {{ variant.local_obs_old or 0 }} obs.
       </div>
@@ -150,10 +117,52 @@
     <span class="badge badge-dark">MITOMAP</span>
     <br>
   {% endif %}
+  {% if variant.local_obs_old %}
+    <span class="badge badge-dark">local obs</span>
+    <br>
+  {% endif %}
+
   </div>
 {% endmacro %}
 
 {% macro frequency_cell_general(variant) %}
+  <div data-toggle="tooltip" data-placement="left" data-html="true" title="
+    <div class='text-left'>
+      {% if 'gnomad_mt_homoplasmic_frequency' in variant %}
+        <div>
+          <strong>gnomAD(MT) hom</strong>: {{ variant.gnomad_mt_homoplasmic_frequency|human_decimal if variant.gnomad_mt_homoplasmic_frequency }}
+        </div>
+      {% endif %}
+      {% if 'gnomad_mt_heteroplasmic_frequency' in variant %}
+        <div>
+          <strong>gnomAD(MT) het</strong>: {{ variant.gnomad_mt_heteroplasmic_frequency|human_decimal if variant.gnomad_mt_heteroplasmic_frequency }}
+        </div>
+      {% endif %}
+
+      {% if 'gnomad_frequency' in variant %}
+        <div>
+          <strong>gnomAD</strong>: {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency }}
+        </div>
+        <div>
+          <strong>gnomAD (max)</strong>: {{ variant.max_gnomad_frequency|human_decimal if variant.max_gnomad_frequency }}
+        </div>
+      {% endif %}
+      <div>
+        <strong>1000G</strong>: {{ variant.thousand_genomes_frequency|human_decimal if variant.thousand_genomes_frequency }}
+      </div>
+      <div>
+        <strong>1000G (max)</strong>: {{ variant.max_thousand_genomes_frequency|human_decimal if variant.max_thousand_genomes_frequency }}
+      </div>
+      <div>
+        <strong>ExAC</strong>:
+        {{ variant.exac_frequency|human_decimal if variant.exac_frequency }}
+      </div>
+      <div>
+        <strong>ExAC (max)</strong>:
+        {{ variant.max_exac_frequency|human_decimal if variant.max_exac_frequency }}
+      </div>
+    </div>
+  ">
   {% if variant.category != "cancer" %}
     {{ observed_cell_general(variant) }}
   {% endif %}
@@ -162,4 +171,5 @@
   {% else %}
     {{ variant.gnomad_mt_homoplasmic_frequency|human_decimal if variant.gnomad_mt_homoplasmic_frequency else '~' }}
   {% endif %}
+  </div>
 {% endmacro %}
