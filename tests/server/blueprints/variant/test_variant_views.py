@@ -38,6 +38,26 @@ def test_variant(app, institute_obj, case_obj, variant_obj):
         )
         # THEN it should return a page
         assert resp.status_code == 200
+def test_cancer_variant(app, institute_obj, cancer_case_obj, cancer_variant_obj):
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN sending a request (GET) to the variant page
+        resp = client.get(
+            url_for(
+                "variant.cancer_variant",
+                institute_id=institute_obj["internal_id"],
+                case_name=cancer_case_obj["display_name"],
+                variant_id=cancer_variant_obj["_id"],
+            )
+        )
+        # THEN it should return a page
+        assert resp.status_code == 200
 
 
 def test_sv_variant(app, institute_obj, case_obj, variant_obj):
