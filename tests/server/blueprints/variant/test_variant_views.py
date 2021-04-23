@@ -38,6 +38,8 @@ def test_variant(app, institute_obj, case_obj, variant_obj):
         )
         # THEN it should return a page
         assert resp.status_code == 200
+
+
 def test_cancer_variant(app, institute_obj, cancer_case_obj, cancer_variant_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
