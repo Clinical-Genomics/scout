@@ -1,5 +1,6 @@
 {% from "variant/buttons.html" import variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button %}
 {% from "variants/utils.html" import compounds_table %}
+{% from "variant/variant_details.html" import severity_list %}
 
 {% macro acmg_classification_item(data) %}
   {% set current_variant = (data.variant_specific == variant._id) %}

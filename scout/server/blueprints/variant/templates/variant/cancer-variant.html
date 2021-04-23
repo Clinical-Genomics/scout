@@ -3,7 +3,7 @@
 {% from "variants/utils.html" import modal_causative %}
 {% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, igv_track_selection %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
-{% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, conservations, mappability %}
+{% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, mappability_list, severity_list %}
 {% from "variant/buttons.html" import igv_button, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
 {% from "variant/components.html" import panel_classify, compounds_panel, matching_variants, external_links  %}
 {% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
@@ -82,6 +82,7 @@
       {% endif %}
 
       {{ panel_quality() }}
+      {{ severity_list(variant) }}
       {{ panel_comment() }}
     </div>
 
@@ -145,6 +146,7 @@
 {% macro panel_quality() %}
   <div class="card panel-default">
     <div class="panel-heading">Quality</div>
+    <!-- General quality metrics -->
     <ul class="list-group list-group-flush">
       <li class="list-group-item">QUAL:
         <span class="font-weight-bold">
@@ -154,7 +156,13 @@
             -
           {% endif %}
         </span>
-        <li class="list-group-item">{{ mappability(variant) }} </li>
+    </ul>
+    <!-- Mappability -->
+    <h6 class="card-header">
+      Mappability (<a class="text" target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups">fracMatch</a>)
+    </h6>
+    <ul class="list-group">
+      {{ mappability_list(variant) }}
     </ul>
   </div>
 {% endmacro %}
