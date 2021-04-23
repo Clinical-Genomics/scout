@@ -1,7 +1,8 @@
 """Tests for the MatchMaker REST API extension"""
 
-import requests
+import uuid
 
+from scout.server.app import create_app
 from scout.server.extensions import matchmaker
 
 
@@ -16,23 +17,32 @@ class MockNodesResponse(object):
         ]
 
 
-def test_matchmaker_config_settings(app):
+def test_matchmaker_config_settings(mocker):
     """Test that the app is initialized with the correct MatchMaker Exchange settings"""
     # WHEN the app is initialized, it should contain the default MME parameters
-    with app.app_context():
+
+    # GIVEN a patched MatchMaker server returning a list of connected nodes:
+    nodes = [
+        {"description": "Node 1", "id": "node1"},
+        {"description": "Node 2", "id": "node2"},
+    ]
+    mocker.patch(
+        "scout.utils.scout_requests.get_request_json",
+        return_value={"status_code": 200, "content": nodes},
+    )
+
+    # WHEN app is created
+    test_app = create_app(
+        config=dict(
+            TESTING=True,
+            MME_URL="test_matchmaker.com",
+            MME_ACCEPTS="application/vnd.ga4gh.matchmaker.v1.0+json",
+            MME_TOKEN=str(uuid.uuid4()),
+        )
+    )
+    # THEN it should contain the expected matchmaker class attributes:
+    with test_app.app_context():
         assert matchmaker.host
         assert matchmaker.accept
         assert matchmaker.token
-        assert matchmaker.connected_nodes == []
-
-
-def test_nodes(monkeypatch):
-    """Test the function that retrieves MME nodes connected to default MME instance"""
-
-    # GIVEN a patched MatchMaker server
-    def mock_get(*args, **kwargs):
-        return MockNodesResponse()
-
-    monkeypatch.setattr(requests, "get", mock_get)
-    # Calling the "nodes" endpoint should return a list of nodes
-    assert isinstance(matchmaker.nodes(), list)
+        assert matchmaker.connected_nodes == nodes
