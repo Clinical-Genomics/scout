@@ -55,6 +55,7 @@
     <li class="nav-item text-nowrap">{{ sanger_button(variant) }}</li>
   {% endif %}
   <li class="nav-item">{{ pin_button(variant, case, institute) }}</li>
+  <li class="nav-item text-nowrap">{{ causative_button(variant, case, institute) }}</li>
   {{ super() }}
 {% endblock %}
 
