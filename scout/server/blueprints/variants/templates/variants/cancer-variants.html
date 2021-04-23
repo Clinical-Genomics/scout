@@ -1,6 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell_general, observed_cell_general %}
 {% from "variants/utils.html" import cancer_filters, tier_cell, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer %}
+{% from "variants/indicators.html" import pin_indicator, causative_badge, comments_badge, evaluations_badge, research_assessments_badge, clinical_assessments_badge, group_assessments_badge %}
 
 {% block title %}
   {{ variant_type|capitalize }} cancer variants
@@ -53,7 +54,7 @@
               <th style="width:2%"></th>
               <th title="Gene">Gene</th>
               <th title="Variant" style="width:12%">HGVS[c/p]</th>
-              <th title="Assessments including variant tier">Tier</th>
+              <th title="Assessments including variant tier">Assessment</th>
               <th title="Rank score">Score</th>
               <th title="Genomic coordinate" style="width:10%">Chr pos</th>
               <th title="Population frequency">Pop Freq</th>
@@ -75,6 +76,7 @@
           {% endif %}
             <td>
               <input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()">
+              {{ pin_indicator(variant, case) }}
             </td>
             <td>{{ gene_cell(variant) }}</td>
             <td>
@@ -94,7 +96,16 @@
                 {% endif %}
               </a>
             </td>
-            <td>{{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}</td>
+            <td>
+              {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
+              {{ evaluations_badge(variant) }}
+              {{ research_assessments_badge(variant) }}
+              {{ clinical_assessments_badge(variant) }}
+              {{ group_assessments_badge(variant) }}
+
+              {{ comments_badge(variant) }}
+              {{ causative_badge(variant, case) }}
+            </td>
             <td>{{ score_cell(variant) }}</td>
             <td>{{ position_cell(variant) }}</td>
             <td class="text-right">{{ frequency_cell_general(variant) }}</td>
