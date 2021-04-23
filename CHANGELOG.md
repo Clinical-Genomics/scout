@@ -4,6 +4,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [x.x.x]
+### Fixed
+- command line crashing when updating an individual not found in database
+- Dashboard page crashing when filters return no data
+- Cancer variants filter by chromosome
+### Added
+- Autodeploy docs on release
+- Documentation for updating case individuals tracks
+- Filter cases and dashboard stats by analysis track
+### Changed
+- Changed from deprecated db update method
+- Pre-selected fields to run queries with in dashboard page
+- Do not filter by any institute when first accessing the dashboard
+
+## [4.32.1]
+### Fixed
+- iSort lint check only
+- Institute cases page crashing when a case has track:Null
+### Added
+### Changed
+
 ## [4.32]
 ### Added
 - Load and show MITOMAP associated diseases from VCF (INFO field: MitomapAssociatedDiseases, via HmtNote)
