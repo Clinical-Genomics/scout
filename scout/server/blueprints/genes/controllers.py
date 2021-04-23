@@ -52,16 +52,16 @@ def gene(store, hgnc_id):
     return res
 
 
-def genes_to_json(store, query):
+def genes_to_json(store, query, build):
     """Fetch matching genes and convert to JSON."""
-    gene_query = store.hgnc_genes(query, search=True)
-    json_terms = [
-        {
+    gene_query = store.hgnc_genes(query, build, search=True)
+    json_terms = {
+        gene["hgnc_id"]: {
             "name": "{} | {} ({})".format(
                 gene["hgnc_id"], gene["hgnc_symbol"], ", ".join(gene["aliases"])
             ),
             "id": gene["hgnc_id"],
         }
         for gene in gene_query
-    ]
-    return json_terms
+    }
+    return list(json_terms.values())
