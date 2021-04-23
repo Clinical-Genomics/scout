@@ -109,6 +109,7 @@ CASE_SEARCH_TERMS = {
     },
     "panel": {"label": "Gene panel", "prefix": "panel:"},
     "status": {"label": "Case status", "prefix": "status:"},
+    "track": {"label": "Analysis track", "prefix": "track:"},
     "pheno_group": {
         "label": "Phenotype group",
         "prefix": "pheno_group:",
