@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Fixed
+- Include markdown for release autodeploy docs
 ### Added
 - Gray background for dismissed compounds in variants list and variant page
 - Pin badge for pinned compounds in variants list and variant page
