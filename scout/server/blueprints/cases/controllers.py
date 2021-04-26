@@ -528,7 +528,7 @@ def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
 
 
 def _update_case(store, case_obj, user_obj, institute_obj, verb):
-    """ Update case with new sample data, and create an associated event """
+    """Update case with new sample data, and create an associated event"""
     store.update_case(case_obj, keep_date=True)
 
     link = url_for(
