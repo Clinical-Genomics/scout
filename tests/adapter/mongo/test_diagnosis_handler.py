@@ -157,7 +157,7 @@ def test_case_omim_diagnoses(adapter, case_obj, test_omim_term):
 
 
 def test_omim_genes(adapter, test_omim_term):
-    """"Test function that collects complete gene info for a given OMIM term"""
+    """Test function that collects complete gene info for a given OMIM term"""
 
     omim_gene_id = test_omim_term["genes"][0]
 

@@ -528,7 +528,7 @@ def get_hgvs(gene_obj):
 
 
 def hgvs_str(gene_symbols, hgvs_p, hgvs_c):
-    """"""
+    """ """
     if hgvs_p[0] != "None":
         return hgvs_p[0]
     if hgvs_c[0] != "None":
