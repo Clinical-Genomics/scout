@@ -6,7 +6,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Fixed
+- Make MitoMap link work for hg38 again
 ### Added
+- Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
 ### Changed
 
 ## [4.33.1]
