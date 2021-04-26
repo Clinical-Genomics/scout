@@ -75,7 +75,7 @@ def test_load_vep97_parsed_variant(one_vep97_annotated_variant, real_populated_d
 def test_load_cancer_SV_variant(
     one_cancer_manta_SV_variant, real_populated_database, cancer_case_obj
 ):
-    """ Test loading a cancer SV variant into a mongo database """
+    """Test loading a cancer SV variant into a mongo database"""
 
     # GIVEN a database containing one cancer case
     adapter = real_populated_database

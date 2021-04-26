@@ -73,7 +73,7 @@ def make_sashimi_tracks(institute_id, case_name, variant_id, build="38"):
 
 
 def make_igv_tracks(name, file_list):
-    """Return a dict according to IGV track format. """
+    """Return a dict according to IGV track format."""
     track_list = []
     for track in file_list:
         track_list.append({"name": name, "url": track, "min": 0.0, "max": 30.0})

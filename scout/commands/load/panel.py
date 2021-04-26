@@ -106,7 +106,7 @@ def panel(
 
 
 def _panel_omim(adapter, genemap2, mim2genes, api_key, institute, maintainer):
-    """ Add OMIM panel to the database. """
+    """Add OMIM panel to the database."""
 
     mim_files = None
     if genemap2 and mim2genes:
