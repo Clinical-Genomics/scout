@@ -34,7 +34,7 @@ class NonValidatingSelectMultipleField(SelectMultipleField):
 
 
 class InstituteForm(FlaskForm):
-    """ Instutute-specif settings """
+    """Instutute-specif settings"""
 
     hpo_tuples = []
     for key in PHENOTYPE_GROUPS.keys():
