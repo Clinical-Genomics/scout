@@ -104,6 +104,7 @@ def test_parse_mitomapassociateddiseases(variants, case_obj):
             # THEN make sure that it is parsed correct
             assert parsed_variant["mitomap_associated_diseases"] == mitomap_associated_diseases
 
+
 def test_parse_hmtvar(variants, case_obj):
     # GIVEN some parsed variant dicts
     for variant in variants:
