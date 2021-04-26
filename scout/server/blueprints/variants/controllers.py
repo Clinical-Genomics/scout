@@ -325,12 +325,12 @@ def parse_variant(
     """
     has_changed = False
     compounds = variant_obj.get("compounds", [])
-    LOG.error(compounds)
+    compound_ids = [compound["variant"] for compound in compounds] or []
 
     if compounds and get_compounds:
-        # Check if we need to add compound information
-        # Such as "not_loaded" or "dismissed" keys
-        if "not_loaded" not in compounds[0] or set(compounds).intersection(
+        # Check if we need to update compound information
+        # Such as "not_loaded" or "is_dismissed" keys
+        if "not_loaded" not in compounds[0] or set(compound_ids).intersection(
             set(case_dismissed_vars)
         ):
             new_compounds = store.update_variant_compounds(variant_obj)
