@@ -67,7 +67,7 @@ def test_parse_raw_gene_symbols(app):
 
 
 def test_parse_raw_gene_ids(app):
-    """ Test parse gene symbols"""
+    """Test parse gene symbols"""
 
     # GIVEN a list of autocompleted gene symbols
     gene_symbols = ["1234 | SYM (OLDSYM, SYM)", "4321 | MYS (OLDMYS, MYS)"]
@@ -667,7 +667,7 @@ def test_omimterms(app, test_omim_term):
 
 
 def _test_beacon_submit(client, case_obj, vcf_files):
-    """ Test beacon connection: given client, produce response """
+    """Test beacon connection: given client, produce response"""
     form_data = {
         "case": case_obj["_id"],
         "samples": "affected",

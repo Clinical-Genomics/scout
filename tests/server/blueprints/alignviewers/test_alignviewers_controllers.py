@@ -86,7 +86,7 @@ def test_set_cloud_public_tracks(app):
 
 
 def test_make_igv_tracks():
-    """ Test function that creates custom track dictionaries """
+    """Test function that creates custom track dictionaries"""
 
     # GIVEN a test track with 2 files
     file_list = ["sample_1_file", "sample_2_file"]
@@ -101,7 +101,7 @@ def test_make_igv_tracks():
 
 
 def test_sample_tracks():
-    """ Test the function that creates case individual tracks """
+    """Test the function that creates case individual tracks"""
 
     # GIVEN a case with 3 samples alignments
     sample_names = ["sample1", "sample2", "sample3"]
