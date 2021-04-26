@@ -44,6 +44,7 @@ from .hpo import HpoHandler
 from .index import IndexHandler
 from .institute import InstituteHandler
 from .managed_variant import ManagedVariantHandler
+from .variant_evaluation_terms import VariantEvaluationHandler
 from .matchmaker import MMEHandler
 from .omim import DiagnosisHandler
 from .panel import PanelHandler
@@ -67,6 +68,7 @@ class MongoAdapter(
     PanelHandler,
     QueryHandler,
     VariantHandler,
+    VariantEvaluationHandler,
     UserHandler,
     ACMGHandler,
     IndexHandler,
@@ -106,6 +108,7 @@ class MongoAdapter(
         self.hpo_term_collection = database.hpo_term
         self.disease_term_collection = database.disease_term
         self.variant_collection = database.variant
+        self.evaluation_terms_collection = database.evaluation_terms
         self.acmg_collection = database.acmg
         self.clinvar_collection = database.clinvar
         self.clinvar_submission_collection = database.clinvar_submission
