@@ -64,6 +64,8 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
     if genome_build not in ["37", "38"]:
         genome_build = "37"
 
+    case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
+
     variants = []
     for variant_obj in variant_res:
         overlapping_svs = [sv for sv in store.overlapping(variant_obj)]
@@ -99,7 +101,13 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
 
         variants.append(
             parse_variant(
-                store, institute_obj, case_obj, variant_obj, update=True, genome_build=genome_build
+                store,
+                institute_obj,
+                case_obj,
+                variant_obj,
+                update=True,
+                genome_build=genome_build,
+                case_dismissed_vars=case_dismissed_vars,
             )
         )
 
@@ -145,6 +153,8 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
     if genome_build not in ["37", "38"]:
         genome_build = "37"
 
+    case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
+
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
         # show previous classifications for research variants
         clinical_var_obj = variant_obj
@@ -156,7 +166,14 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
             variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
         variants.append(
-            parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build)
+            parse_variant(
+                store,
+                institute_obj,
+                case_obj,
+                variant_obj,
+                genome_build=genome_build,
+                case_dismissed_vars=case_dismissed_vars,
+            )
         )
 
     return {"variants": variants, "more_variants": more_variants}
@@ -284,7 +301,14 @@ def get_manual_assessments(variant_obj):
 
 
 def parse_variant(
-    store, institute_obj, case_obj, variant_obj, update=False, genome_build="37", get_compounds=True
+    store,
+    institute_obj,
+    case_obj,
+    variant_obj,
+    update=False,
+    genome_build="37",
+    get_compounds=True,
+    case_dismissed_vars=[],
 ):
     """Parse information about variants.
     - Adds information about compounds
@@ -295,15 +319,22 @@ def parse_variant(
         case_obj(scout.models.Case)
         variant_obj(scout.models.Variant)
         update(bool): If variant should be updated in database
+        get_compounds(bool): if compounds should be added to added to the returned variant object
         genome_build(str)
+        case_dismissed_vars(list): list of dismissed variants for this case
     """
     has_changed = False
     compounds = variant_obj.get("compounds", [])
+    LOG.error(compounds)
+
     if compounds and get_compounds:
-        # Update variant compounds if needed, for instance when variant is viewed for the first time
-        # or if a compound gets dismissed
-        new_compounds = store.update_variant_compounds(variant_obj)
-        if variant_obj["compounds"] != new_compounds:
+        # Check if we need to add compound information
+        # Such as "not_loaded" or "dismissed" keys
+        if "not_loaded" not in compounds[0] or set(compounds).intersection(
+            set(case_dismissed_vars)
+        ):
+            new_compounds = store.update_variant_compounds(variant_obj)
+            variant_obj["compounds"] = new_compounds
             has_changed = True
 
         # sort compounds on combined rank score
@@ -574,6 +605,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
     """Fetch data related to cancer variants for a case."""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
     per_page = 50
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
@@ -583,7 +615,14 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
     variants_list = []
 
     for variant in variant_res:
-        elem = parse_variant(store, institute_obj, case_obj, variant, update=True)
+        elem = parse_variant(
+            store,
+            institute_obj,
+            case_obj,
+            variant,
+            update=True,
+            case_dismissed_vars=case_dismissed_vars,
+        )
         variants_list.append(elem)
 
     data = dict(

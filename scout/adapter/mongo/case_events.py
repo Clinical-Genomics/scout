@@ -1,4 +1,5 @@
 import logging
+from collections import Counter
 from datetime import datetime
 
 import pymongo
@@ -280,6 +281,35 @@ class CaseEventHandler(object):
         )
         LOG.debug("Case updated")
         return updated_case
+
+    def case_dismissed_variants(self, institute, case):
+        """Collect the id of all dismissed variants for a case
+
+        Args:
+            institute (dict): an institute id
+            case (dict): a case id
+
+        Returns:
+            case_dismissed (list): a list of variant ids
+        """
+        dismissed_variants = Counter(
+            [
+                var.get("link").rsplit("/", 1)[1]
+                for var in self.case_events_by_verb(
+                    institute=institute, case=case, verb="dismiss_variant"
+                )
+            ]
+        )
+        reset_dismissed_variants = Counter(
+            [
+                var.get("link").rsplit("/", 1)[1]
+                for var in self.case_events_by_verb(
+                    institute=institute, case=case, verb="reset_dismiss_variant"
+                )
+            ]
+        )
+        diff_dismissed = dismissed_variants - reset_dismissed_variants
+        return list(diff_dismissed.elements())
 
     def order_dismissed_variants_reset(self, institute, case, user, link):
         """Register the event associated to a user resetting all dismissed variants.
