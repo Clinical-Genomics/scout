@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 ### Added
 ### Changed
+- SV clinical filter no longer filters out sub 100 nt variants
 
 ## [4.33]
 ### Fixed
@@ -26,8 +27,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changed from deprecated db update method
 - Pre-selected fields to run queries with in dashboard page
 - Do not filter by any institute when first accessing the dashboard
-- SV clinical filter no longer filters out sub 100 nt variants
-
 
 ## [4.32.1]
 ### Fixed
