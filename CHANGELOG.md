@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Dashboard page crashing when filters return no data
 - Cancer variants filter by chromosome
 - /api/v1/genes now searches for genes in all genome builds by default
+- Upgraded igv.js to version 2.8.1 (Fixed Unparsable bed record error)
 ### Added
 - Autodeploy docs on release
 - Documentation for updating case individuals tracks
@@ -18,7 +19,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changed from deprecated db update method
 - Pre-selected fields to run queries with in dashboard page
 - Do not filter by any institute when first accessing the dashboard
-- Upgraded igv.js to version 2.8
 
 ## [4.32.1]
 ### Fixed
