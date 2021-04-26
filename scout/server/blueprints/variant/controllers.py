@@ -458,5 +458,5 @@ def clinvar_export(store, institute_id, case_name, variant_id):
         case=case_obj,
         variant=variant_obj,
         pinned_vars=pinned,
-        inherirance_models=INHERITANCE_MODELS,
+        inheritance_models=INHERITANCE_MODELS,
     )
