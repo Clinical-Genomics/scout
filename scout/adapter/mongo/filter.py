@@ -154,7 +154,7 @@ class FilterHandler(object):
         return filter_obj
 
     def lock_filter(self, filter_id: str, user_id: str):
-        """Lock a filter
+        """Lock a filter, set owner
 
         Args:
             filter_id: str
@@ -170,12 +170,12 @@ class FilterHandler(object):
             return
 
         return_doc = self.filter_collection.find_one_and_update(
-            {"_id": ObjectId(filter_id)}, {"lock": True, "owner": user_id}
+            {"_id": ObjectId(filter_id)}, {"$set": {"lock": True, "owner": user_id}}
         )
         return return_doc
 
     def unlock_filter(self, filter_id: str, user_id: str):
-        """Unlock a filter
+        """Unlock a filter, clear owner
 
         Args:
             filter_id: str
@@ -195,7 +195,7 @@ class FilterHandler(object):
 
         filter_obj["lock"] = False
         return_doc = self.filter_collection.find_one_and_update(
-            {"_id": ObjectId(filter_id)}, {"lock": False}
+            {"_id": ObjectId(filter_id)}, {"$set": {"lock": False, "owner": None}}
         )
         return return_doc
 

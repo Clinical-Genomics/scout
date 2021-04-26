@@ -170,6 +170,19 @@ def filters(institute_id):
     return dict(institute=institute_obj, form=form, filters=filters)
 
 
+@blueprint.route("/<institute_id>/lock_filter/<filter_id>", methods=["POST"])
+def lock_filter(institute_id, filter_id):
+
+    filter_lock = request.form.get("filter_lock", "False")
+    if filter_lock == "True":
+        filter_obj = controllers.unlock_filter(store, current_user, filter_id)
+
+    if filter_lock == "False":
+        filter_obj = controllers.lock_filter(store, current_user, filter_id)
+
+    return redirect(request.referrer)
+
+
 @blueprint.route("/<institute_id>/gene_variants", methods=["GET", "POST"])
 @templated("overview/gene_variants.html")
 def gene_variants(institute_id):

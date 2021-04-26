@@ -761,7 +761,7 @@ def persistent_filter_actions(
 
     if bool(request_form.get("lock_filter")):
         filter_id = request_form.get("filters")
-        filter_obj = store.lock_filter(filter_id, case_obj, user_obj, category)
+        filter_obj = store.lock_filter(filter_id, user_obj._id)
         if filter_obj is not None:
             form = FiltersFormClass(MultiDict(filter_obj))
         else:
@@ -769,7 +769,7 @@ def persistent_filter_actions(
 
     if bool(request_form.get("unlock_filter")):
         filter_id = request_form.get("filters")
-        filter_obj = store.unlock_filter(filter_id, case_obj, user_obj, category)
+        filter_obj = store.unlock_filter(filter_id, user_obj._id)
         if filter_obj is not None:
             form = FiltersFormClass(MultiDict(filter_obj))
         else:
