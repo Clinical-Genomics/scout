@@ -1,5 +1,5 @@
 def test_case_mme_update(adapter, case_obj, user_obj, mme_patient, institute_obj, mme_submission):
-    """ Test the function that registers an effected individual as submitted to MatchMaker """
+    """Test the function that registers an effected individual as submitted to MatchMaker"""
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
     adapter.user_collection.insert_one(user_obj)
@@ -17,7 +17,7 @@ def test_case_mme_update(adapter, case_obj, user_obj, mme_patient, institute_obj
 
 
 def test_case_mme_delete(adapter, case_obj, user_obj, institute_obj, mme_patient):
-    """ Test the function that updates a case by deleting a MME submission associated to it """
+    """Test the function that updates a case by deleting a MME submission associated to it"""
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
     adapter.user_collection.insert_one(user_obj)
