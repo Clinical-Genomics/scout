@@ -50,5 +50,6 @@ def gene(hgnc_id=None, hgnc_symbol=None):
 def api_genes():
     """Return JSON data about genes."""
     query = request.args.get("query")
-    json_out = controllers.genes_to_json(store, query)
+    build = request.args.get("build", "all")
+    json_out = controllers.genes_to_json(store, query, build)
     return jsonify(json_out)
