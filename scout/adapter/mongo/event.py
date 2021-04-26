@@ -198,23 +198,22 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
                 LOG.debug("Fetching info for mim term {0}".format(omim_term))
                 disease_obj = self.disease_term(omim_term)
                 if disease_obj:
-                    for hpo_term in disease_obj.get("hpo_terms", []):
-                        hpo_results.append(hpo_term)
+                    for term in disease_obj.get("hpo_terms", []):
+                        hpo_results.append(term)
             else:
                 raise ValueError("Must supply either hpo or omim term")
-        except ValueError as e:
+        except ValueError as ex:
             ## TODO Should ve raise a more proper exception here?
-            raise e
+            raise ex
 
         existing_terms = set(term["phenotype_id"] for term in case.get("phenotype_terms", []))
 
         updated_case = case
         phenotype_terms = []
-        for hpo_term in hpo_results:
-            LOG.debug("Fetching info for hpo term {0}".format(hpo_term))
-            hpo_obj = self.hpo_term(hpo_term)
+        for term in hpo_results:
+            hpo_obj = self.hpo_term(term)
             if hpo_obj is None:
-                raise ValueError("Hpo term: %s does not exist in database" % hpo_term)
+                raise ValueError("Hpo term: %s does not exist in database" % term)
 
             phenotype_id = hpo_obj["_id"]
             description = hpo_obj["description"]
