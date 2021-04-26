@@ -105,7 +105,7 @@ REVSTAT_TERMS = {
 
 # Models of inheritance are defined here:
 # https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt
-INHERITANCE_MODELS = [
+CLINVAR_INHERITANCE_MODELS = [
     "Autosomal dominant inheritance",
     "Autosomal dominant inheritance with maternal imprinting",
     "Autosomal dominant inheritance with paternal imprinting",
