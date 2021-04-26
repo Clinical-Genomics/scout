@@ -616,6 +616,9 @@
           {% if variant.chromosome in ['MT','M'] %}
             <a href="{{ variant.mitomap_link }}" class="btn btn-outline-secondary" target="_blank">MitoMap</a>
           {% endif %}
+          {% if variant.hmtvar_variant_id %}
+            <a href="{{ variant.hmtvar_link }}" class="btn btn-outline-secondary" target="_blank">HmtVar</a>
+          {% endif %}
           {% if gene.tp53_link %}
             <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>
           {% endif %}
