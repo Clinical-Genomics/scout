@@ -22,7 +22,7 @@ from .case_tags import (
     SEX_MAP,
     VERBS_MAP,
 )
-from .clinvar import CASEDATA_HEADER, CLINVAR_HEADER
+from .clinvar import CASEDATA_HEADER, CLINVAR_HEADER, INHERITANCE_MODELS
 from .clnsig import CLINSIG_MAP, REV_CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 from .file_types import FILE_TYPE_MAP
 from .gene_tags import (

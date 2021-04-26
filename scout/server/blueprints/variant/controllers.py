@@ -14,6 +14,7 @@ from scout.constants import (
     CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
     IGV_TRACKS,
+    INHERITANCE_MODELS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     VERBS_MAP,
@@ -457,4 +458,5 @@ def clinvar_export(store, institute_id, case_name, variant_id):
         case=case_obj,
         variant=variant_obj,
         pinned_vars=pinned,
+        inherirance_models=INHERITANCE_MODELS,
     )
