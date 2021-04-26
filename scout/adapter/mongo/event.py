@@ -203,7 +203,6 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             else:
                 raise ValueError("Must supply either hpo or omim term")
         except ValueError as ex:
-            ## TODO Should ve raise a more proper exception here?
             raise ex
 
         existing_terms = set(term["phenotype_id"] for term in case.get("phenotype_terms", []))
