@@ -1,3 +1,5 @@
+import uuid
+
 import requests
 
 from scout.utils.matchmaker import mme_nodes
@@ -24,7 +26,7 @@ def test_mme_nodes(monkeypatch):
 
     # WHEN Scout asks for connected nodes
     mme_base_url = "fakeynode.se"
-    token = "test_token"
+    token = str(uuid.uuid4())
     nodes = mme_nodes(mme_base_url, token)
     # Then 2 nodes should be returned
     assert len(nodes) == 2

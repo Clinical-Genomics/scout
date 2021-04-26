@@ -10,7 +10,7 @@ LOG = logging.getLogger(__name__)
 
 
 def test_variant(real_variant_database, variant_objs, case_obj):
-    """ "Test querying a variant"""
+    """Test querying a variant"""
     adapter = real_variant_database
     test_variant = list(variant_objs)[0]
 
