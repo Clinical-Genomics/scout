@@ -5,7 +5,7 @@ from scout.server.extensions import store
 
 
 def test_managed_variants(app, user_obj, institute_obj):
-    """ Test managed variants view """
+    """Test managed variants view"""
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
