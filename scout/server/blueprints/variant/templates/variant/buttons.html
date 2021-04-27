@@ -51,8 +51,8 @@
     <div class="row">
       <div class="col-8">
         <select multiple="multiple" name="dismiss_variant" id="dismiss_variant" class="selectpicker" data-width="100%">
-          {% for rank, data in dismiss_variant_options.items() %}
-            <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
+          {% for data in dismiss_variant_options %}
+            <option {% if data.internal_id~"" in variant.dismiss_variant %} selected {% endif %} value="{{ data.internal_id }}">
               {{ data.label }}
             </option>
           {% endfor %}

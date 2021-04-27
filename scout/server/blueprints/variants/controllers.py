@@ -10,6 +10,7 @@ from flask_login import current_user
 from flask_mail import Message
 from werkzeug.datastructures import Headers, MultiDict
 from xlsxwriter import Workbook
+from scout.build.variant import build_variant_dismiss_terms
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
@@ -21,7 +22,6 @@ from scout.constants import (
     CHROMOSOMES,
     CHROMOSOMES_38,
     CLINSIG_MAP,
-    DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     SEVERE_SO_TERMS,
@@ -86,13 +86,13 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
 
         clinical_var_obj = variant_obj
         if is_research:
-            variant_obj["research_assessments"] = get_manual_assessments(variant_obj)
+            variant_obj["research_assessments"] = get_manual_assessments(store, variant_obj)
 
             clinical_var_obj = store.variant(
                 case_id=case_obj["_id"], simple_id=variant_obj["simple_id"], variant_type="clinical"
             )
 
-        variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
+        variant_obj["clinical_assessments"] = get_manual_assessments(store, clinical_var_obj)
 
         if case_obj.get("group"):
             variant_obj["group_assessments"] = _get_group_assessments(store, case_obj, variant_obj)
@@ -130,7 +130,7 @@ def _get_group_assessments(store, case_obj, variant_obj):
                 simple_id=variant_obj["simple_id"],
                 variant_type=variant_obj["variant_type"],
             )
-            group_assessments.extend(get_manual_assessments(cohort_var_obj))
+            group_assessments.extend(get_manual_assessments(store, cohort_var_obj))
 
     return group_assessments
 
@@ -153,7 +153,7 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
                 case_id=case_obj["_id"], simple_id=variant_obj["simple_id"], variant_type="clinical"
             )
         if clinical_var_obj is not None:
-            variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
+            variant_obj["clinical_assessments"] = get_manual_assessments(store, clinical_var_obj)
 
         variants.append(
             parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build)
@@ -196,7 +196,7 @@ def str_variants(
     return return_view_data
 
 
-def get_manual_assessments(variant_obj):
+def get_manual_assessments(store, variant_obj):
     """Return manual assessments ready for display.
 
     An assessment dict of str has keys "title", "label" and "display_class".
@@ -252,15 +252,19 @@ def get_manual_assessments(variant_obj):
                 assessment["display_class"] = classification["color"]
 
             if assessment_type == "dismiss_variant":
+                eval_terms = store.evaluation_terms()
                 dismiss_variant_options = {
-                    **DISMISS_VARIANT_OPTIONS,
                     **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+                    **{term['internal_id']: term for term in build_variant_dismiss_terms(eval_terms)}
                 }
                 assessment["label"] = "Dismissed"
                 assessment["title"] = "dismiss:<br>"
                 for reason in variant_obj[assessment_type]:
                     if not isinstance(reason, int):
-                        reason = int(reason)
+                        try:
+                            reason = int(reason)
+                        except ValueError:
+                            reason = reason
                         assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
                             dismiss_variant_options[reason]["label"],
                             dismiss_variant_options[reason]["description"],

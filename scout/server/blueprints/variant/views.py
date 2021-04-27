@@ -15,6 +15,7 @@ from scout.server.blueprints.variant.verification_controllers import (
     MissingVerificationRecipientError,
     variant_verification,
 )
+from scout.build.variant import build_variant_dismiss_terms
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, public_endpoint, templated
 from scout.utils.acmg import get_acmg
@@ -269,22 +270,9 @@ def acmg():
 def evalutation_terms():
     """Get list of evalutation terms for institute."""
     institute_id = request.args.get("institute_id")
-    data = []
-    for term in store.evaluation_terms(institute_id):
-        term_obj = dict(
-                internal_id=term['internal_id'],
-                label=term['label'],
-                last_modified=term['last_modified'].isoformat(),
-        )
-        # load optional terms
-        if term.get('institute'):
-            term_obj['institute'] = term['institute']
-        if term.get('description'):
-            term_obj['description'] = term['description']
-        if term.get('evidence'):
-            term_obj['evidence'] = term['evidence']
-        data.append(term_obj)
-    return jsonify(data)
+    evalutation_terms = store.evaluation_terms(institute_id)
+    dismiss_terms_obj = build_variant_dismiss_terms(evalutation_terms)
+    return jsonify(dismiss_terms_obj)
 
 
 @variant_bp.route("/<institute_id>/<case_name>/<variant_id>/clinvar", methods=["POST", "GET"])

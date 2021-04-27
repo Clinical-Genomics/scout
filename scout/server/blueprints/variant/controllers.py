@@ -20,6 +20,7 @@ from scout.constants import (
     VERBS_MAP,
 )
 from scout.parse.variant.ids import parse_document_id
+from scout.build.variant import build_variant_dismiss_terms
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import (
@@ -254,7 +255,10 @@ def variant(
             overlapping_vars.append(var)
     variant_obj["end_chrom"] = variant_obj.get("end_chrom", variant_obj["chromosome"])
 
-    dismiss_options = DISMISS_VARIANT_OPTIONS
+    # get dismiss_variant_options
+    evalutation_terms = store.evaluation_terms(institute_obj['internal_id'])
+    dismiss_options = build_variant_dismiss_terms(evalutation_terms)
+
     if case_obj.get("track") == "cancer":
         dismiss_options = {
             **DISMISS_VARIANT_OPTIONS,
