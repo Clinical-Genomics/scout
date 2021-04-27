@@ -1,0 +1,82 @@
+[
+   {
+      "label": "VUS",
+      "name": "Unknown Significance",
+      "description": "Variant of unknown significance",
+      "label_class": "default",
+      "institute": "all",
+      "internal_id": "unknown-significance"
+   },
+   {
+      "label": "KP",
+      "name": "Known pathogenic",
+      "description": "Known pathogenic, previously known pathogenic in ClinVar, HGMD, literature, etc",
+      "label_class": "danger",
+      "institute": "all",
+      "internal_id": "known-pathogenic"
+   },
+   {
+      "label": "P",
+      "name": "Pathogenic",
+      "description": "Pathogenic, novel mutation but overlapping phenotype with known pathogenic, no further experimental validation needed",
+      "label_class": "danger",
+      "institute": "all",
+      "internal_id": "pathogenic"
+   },
+   {
+      "label": "NVP",
+      "name": "Novel validated pathogenic",
+      "description": "Novel validated pathogenic, novel mutation and validated experimentally",
+      "label_class": "danger",
+      "institute": "all",
+      "internal_id": "novel-validated-pathogenic"
+   },
+   {
+      "label": "PPP",
+      "name": "Pathogenic partial phenotype",
+      "description": "Pathogenic partial phenotype, pathogenic variant explains part of patients phenotype, but not all symptoms",
+      "label_class": "danger",
+      "institute": "all",
+      "internal_id": "pathogenic-partial-phenotype"
+   },
+   {
+      "label": "LP",
+      "name": "Likely pathogenic",
+      "description": "Likely pathogenic, experimental validation required to prove causality",
+      "label_class": "warning",
+      "institute": "all",
+      "internal_id": "likely-pathogenic"
+   },
+   {
+      "label": "PP",
+      "name": "Possibly pathogenic",
+      "description": "Possibly pathogenic, uncertain significance, but cannot disregard yet",
+      "label_class": "primary",
+      "institute": "all",
+      "internal_id": "possibly-pathogenic"
+   },
+   {
+      "label": "LB",
+      "name": "Likely benign",
+      "description": "Likely benign, uncertain significance, but can discard",
+      "label_class": "info",
+      "institute": "all",
+      "internal_id": "likely-benign"
+   },
+   {
+      "label": "B",
+      "name": "Benign",
+      "description": "Benign, does not cause phenotype",
+      "label_class": "success",
+      "institute": "all",
+      "internal_id": "benign"
+   },
+   {
+      "label": "O",
+      "name": "Other",
+      "description": "Other, phenotype not related to disease",
+      "label_class": "default",
+      "institute": "all",
+      "internal_id": "other"
+   }
+]

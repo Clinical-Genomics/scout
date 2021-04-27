@@ -1,0 +1,133 @@
+[
+   {
+      "label": "Common public",
+      "description": "Too common in public databases.",
+      "evidence": [
+         "freq"
+      ],
+      "institute": "all",
+      "internal_id": "common-public"
+   },
+   {
+      "label": "Common local",
+      "description": "Too common in local databases.",
+      "evidence": [
+         "freq"
+      ],
+      "institute": "all",
+      "internal_id": "common-local"
+   },
+   {
+      "label": "Irrelevant phenotype",
+      "description": "Phenotype not relevant.",
+      "evidence": [
+         "OMIM"
+      ],
+      "institute": "all",
+      "internal_id": "irrelevant-phenotype"
+   },
+   {
+      "label": "Inconsistent inheritance pattern",
+      "description": "Inheritance pattern not relevant.",
+      "evidence": [
+         "OMIM",
+         "GT",
+         "inheritance_model"
+      ],
+      "institute": "all",
+      "internal_id": "inconsistent-inheritance-pattern"
+   },
+   {
+      "label": "No plausible compound",
+      "description": "No plausible compound - AR disease.",
+      "evidence": [
+         "Compounds"
+      ],
+      "institute": "all",
+      "internal_id": "no-plausible-compound"
+   },
+   {
+      "label": "Not in disease transcript",
+      "description": "Not in transcript relevant to disease.",
+      "evidence": [
+         "transcript"
+      ],
+      "institute": "all",
+      "internal_id": "not-in-disease-transcript"
+   },
+   {
+      "label": "Not in RefSeq transcript",
+      "description": "Not in a RefSeq transcript - could not be determined relevant.",
+      "evidence": [
+         "transcript"
+      ],
+      "institute": "all",
+      "internal_id": "not-in-refseq-transcript"
+   },
+   {
+      "label": "Splicing unaffected",
+      "description": "Does not appear to affect splicing.",
+      "evidence": [
+         "spidex"
+      ],
+      "institute": "all",
+      "internal_id": "splicing-unaffected"
+   },
+   {
+      "label": "Inherited from unaffected",
+      "description": "Inherited from an unaffected individual.",
+      "evidence": [
+         "GT",
+         "pedigree"
+      ],
+      "institute": "all",
+      "internal_id": "inherited-from-unaffected"
+   },
+   {
+      "label": "Technical issues",
+      "description": "Technical issues - likely false positive.",
+      "evidence": [
+         "GT",
+         "IGV"
+      ],
+      "institute": "all",
+      "internal_id": "technical-issues"
+   },
+   {
+      "label": "No protein function",
+      "description": "Not likely to alter protein function - eg benign polyQ expansion.",
+      "evidence": [
+         "CADD",
+         "conservation"
+      ],
+      "institute": "all",
+      "internal_id": "no-protein-function"
+   },
+   {
+      "label": "Reputation benign",
+      "description": "Reputable source classified benign.",
+      "evidence": [
+         "clinvar"
+      ],
+      "institute": "all",
+      "internal_id": "reputation-benign"
+   },
+   {
+      "label": "Common variation type",
+      "description": "Found in a gene with much benign such (e.g. missense) variation.",
+      "evidence": [
+         "type"
+      ],
+      "institute": "all",
+      "internal_id": "common-variation-type"
+   },
+   {
+      "label": "Unstudied variation type",
+      "description": "In a gene where mainly other types of variation (e.g. repeat expansion) are established as pathologic.",
+      "evidence": [
+         "type"
+      ],
+      "institute": "all",
+      "internal_id": "unstudied-variation-type"
+   }
+]

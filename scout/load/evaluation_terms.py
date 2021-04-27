@@ -8,7 +8,7 @@ import datetime
 LOG = logging.getLogger(__name__)
 
 
-def load_evaluation_term(adapter, internal_id, label, description, evidence, institute=None):
+def load_evaluation_term(adapter, internal_id, label, description, term_categroy, institute=None, **kwargs):
     """Load a evaluation term into the database."""
 
     evaluation_term_obj = dict(
@@ -16,8 +16,8 @@ def load_evaluation_term(adapter, internal_id, label, description, evidence, ins
         label=label,
         institute=institute,
         description=description,
-        evidence=evidence,
+        type=term_categroy,
         last_modified=datetime.datetime.utcnow(),
+        **kwargs
     )
     adapter.add_evaluation_term(evaluation_term_obj)
-

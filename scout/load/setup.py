@@ -9,6 +9,7 @@ import datetime
 import logging
 
 import yaml
+import json
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
 from scout.build import build_institute
@@ -19,7 +20,7 @@ from scout.demo import load_path, panel_path
 
 ### Import demo files ###
 from scout.demo.resources import demo_files
-from scout.load import load_cytobands, load_hgnc_genes, load_hpo, load_transcripts
+from scout.load import load_cytobands, load_hgnc_genes, load_hpo, load_transcripts, load_evaluation_term
 
 # Resources
 from scout.parse.case import parse_case_data
@@ -89,14 +90,15 @@ def setup_scout(
         roles=["admin"],
         institutes=[institute_id],
     )
-
     adapter.add_user(user_obj)
+
 
     resource_files = resource_files or {}
     if demo:
         resource_files = demo_files
     mim2gene_lines = None
     genemap_lines = None
+    mim2gene_path = resource_files.get("mim2gene_path")
     mim2gene_path = resource_files.get("mim2gene_path")
     genemap_path = resource_files.get("genemap_path")
     if genemap_path and mim2gene_path:
@@ -163,6 +165,27 @@ def setup_scout(
             ensembl_transcripts = fetch_ensembl_transcripts(build=build)
         # Load the transcripts for a certain build
         transcripts = load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
+
+    # load default dismissal terms to the database
+    dismissal_terms_path = resource_files.get("dismissal_terms_path")
+    LOG.info('Loading variant dismissal terms to database')
+    with open(dismissal_terms_path) as inpt:
+        for term in json.load(inpt):
+            load_evaluation_term(
+                    adapter,
+                    internal_id=term['internal_id'],
+                    label=term['label'],
+                    description=term['description'],
+                    institute=term['institute'],
+                    term_categroy='dismissal_term',
+                    evidence=term['evidence'],
+            )
+    # load default manual rank terms
+    manual_rank_path = resource_files.get("manual_rank_path")
+    LOG.info('Loading variant manual rank terms to database')
+    with open(manual_rank_path) as inpt:
+        for term in json.load(inpt):
+            load_evaluation_term(adapter, term_categroy='manual_rank', **term)
 
     hpo_terms_handle = None
     if resource_files.get("hpoterms_path"):

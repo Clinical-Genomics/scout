@@ -5,6 +5,7 @@ from datetime import datetime
 
 LOG = logging.getLogger(__name__)
 
+
 class VariantEvaluationHandler(object):
     """Interact with variant evalutation information."""
 

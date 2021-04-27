@@ -17,6 +17,8 @@ import click
 from flask.cli import current_app, with_appcontext
 from pymongo.errors import ServerSelectionTimeoutError
 
+from scout.resources import evaluation_terms
+
 # Adapter stuff
 from scout.adapter import MongoAdapter
 from scout.load.setup import setup_scout
@@ -140,6 +142,7 @@ def database(
         "hpogenes_path": hpogenes,
         "hpoterms_path": hpoterms,
         "hpo_to_genes_path": hpo_to_genes,
+        **evaluation_terms,
     }
     LOG.info("Setting up database %s", context.obj["mongodb"])
     if files:
