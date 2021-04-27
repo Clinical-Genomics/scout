@@ -300,6 +300,30 @@ def get_manual_assessments(variant_obj):
     return assessments
 
 
+def compounds_need_updating(compounds, dismissed):
+    """Checks if the list of compounds for a variant needs to be updated.
+     Returns True or False.
+
+    Args:
+      compounds (list): list of compounds dictionaries
+      dismissed (list): list of case dismissed variant ids
+
+    Returns:
+      True or False (bool)
+    """
+    for compound in compounds:
+        if "not_loaded" not in compound:  # This key should be always present
+            return True
+
+        if compound["variant"] in dismissed and compound.get("is_dismissed") != True:
+            return True
+
+        if compound.get("is_dismissed") is True and compound["variant"] not in dismissed:
+            return True
+
+    return False
+
+
 def parse_variant(
     store,
     institute_obj,
@@ -329,10 +353,7 @@ def parse_variant(
 
     if compounds and get_compounds:
         # Check if we need to update compound information
-        # Such as "not_loaded" or "is_dismissed" keys
-        if "not_loaded" not in compounds[0] or set(compound_ids).intersection(
-            set(case_dismissed_vars)
-        ):
+        if compounds_need_updating(compounds, case_dismissed_vars):
             new_compounds = store.update_variant_compounds(variant_obj)
             variant_obj["compounds"] = new_compounds
             has_changed = True
