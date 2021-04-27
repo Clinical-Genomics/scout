@@ -35,14 +35,13 @@
               </div>
           </a>
 
-          <!-- shared data menu item -->
-          <a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <!-- ClinVar data menu item -->
+          <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
               <div class="d-flex w-100 justify-content-start align-items-center">
-                  <span class="menu-collapsed">Shared data</span>
-                  <span class="submenu-icon ml-auto"></span>
+                  <span class="fas fa-file-medical mr-3"></span>
+                  <span class="menu-collapsed">ClinVar submissions</span>
               </div>
           </a>
-        {{ shared_submenu(institute, highlight) }}
 
           <!-- Advanced phenotypes -->
           <a href="{{ url_for('overview.advanced_phenotypes', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
@@ -61,20 +60,4 @@
           </a>
       </ul><!-- List Group END-->
   </div><!-- sidebar-container END -->
-{% endmacro %}
-
-{% macro shared_submenu(institute, highlight) %}
-<!-- Submenu content -->
-<div id='submenu1' class="{{ 'collapse' if highlight != 'shared'}} sidebar-submenu">
-  <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="bg-dark list-group-item flex-column align-items-start">
-    <span>Clinvar</span>
-    <i class="fa fa-share-alt mr-3 ml-3"></i>
-  </a>
-  <!-- To be implemented
-  <a href="#" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
-    <span>MatchMaker</span>
-    <i class="fa fa-share-alt mr-3 ml-3"></i>
-  </a>
-  -->
-</div>
 {% endmacro %}
