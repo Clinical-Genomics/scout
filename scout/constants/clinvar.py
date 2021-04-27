@@ -102,3 +102,27 @@ REVSTAT_TERMS = {
     "practice_guideline",
     "reviewed_by_expert_panel",
 }
+
+# Models of inheritance are defined here:
+# https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt
+CLINVAR_INHERITANCE_MODELS = [
+    "Autosomal dominant inheritance",
+    "Autosomal dominant inheritance with maternal imprinting",
+    "Autosomal dominant inheritance with paternal imprinting",
+    "Autosomal recessive inheritance",
+    "Autosomal unknown",
+    "Codominant",
+    "Genetic anticipation",
+    "Mitochondrial inheritance",
+    "Multifactorial inheritance",
+    "Oligogenic inheritance",
+    "Other",
+    "Sex-limited autosomal dominant",
+    "Somatic mutation",
+    "Sporadic",
+    "Unknown mechanism",
+    "X-linked dominant inheritance",
+    "X-linked inheritance",
+    "X-linked recessive inheritance",
+    "Y-linked inheritance",
+]
