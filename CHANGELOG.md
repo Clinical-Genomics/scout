@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Use standard inheritance model in CLinVar (https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt)
 ### Added
 ### Changed
+- Sort ClinVar submissions objects by ascending "Last evaluated" date
 
 ## [4.33]
 ### Fixed
