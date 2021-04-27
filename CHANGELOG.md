@@ -6,7 +6,20 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Fixed
-- command line crashing when updating an individual not found in database
+### Added
+### Changed
+
+## [4.33.1]
+### Fixed
+- Include markdown for release autodeploy docs
+- Use standard inheritance model in ClinVar (https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt)
+- Fix issue crash with variants that have been unflagged causative not being avaliable in other causatives
+### Added
+### Changed
+
+## [4.33]
+### Fixed
+- Command line crashing when updating an individual not found in database
 - Dashboard page crashing when filters return no data
 - Cancer variants filter by chromosome
 - /api/v1/genes now searches for genes in all genome builds by default
