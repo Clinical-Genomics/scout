@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 ### Added
 ### Changed
+- Sort ClinVar submissions objects by ascending "Last evaluated" date
 
 ## [4.33.1]
 ### Fixed
@@ -16,7 +17,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix issue crash with variants that have been unflagged causative not being avaliable in other causatives
 ### Added
 ### Changed
-- Sort ClinVar submissions objects by ascending "Last evaluated" date
 
 ## [4.33]
 ### Fixed
