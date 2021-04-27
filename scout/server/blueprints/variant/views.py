@@ -264,6 +264,29 @@ def acmg():
     return jsonify(dict(classification=classification))
 
 
+@variant_bp.route("/api/v1/evaluation_terms", methods=['GET'])
+@public_endpoint
+def evalutation_terms():
+    """Get list of evalutation terms for institute."""
+    institute_id = request.args.get("institute_id")
+    data = []
+    for term in store.evaluation_terms(institute_id):
+        term_obj = dict(
+                internal_id=term['internal_id'],
+                label=term['label'],
+                last_modified=term['last_modified'].isoformat(),
+        )
+        # load optional terms
+        if term.get('institute'):
+            term_obj['institute'] = term['institute']
+        if term.get('description'):
+            term_obj['description'] = term['description']
+        if term.get('evidence'):
+            term_obj['evidence'] = term['evidence']
+        data.append(term_obj)
+    return jsonify(data)
+
+
 @variant_bp.route("/<institute_id>/<case_name>/<variant_id>/clinvar", methods=["POST", "GET"])
 @templated("variant/clinvar.html")
 def clinvar(institute_id, case_name, variant_id):

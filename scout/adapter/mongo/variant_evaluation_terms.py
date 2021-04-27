@@ -21,9 +21,9 @@ class VariantEvaluationHandler(object):
         self.evaluation_terms_collection.drop()
         LOG.info('Dropped the evaluation terms collection from database')
 
-    def evaluation_terms(self, institute_obj=None):
+    def evaluation_terms(self, institute_id=None):
         """List evaluation terms used by a institute."""
         query = {}
-        if institute_obj:
-            query['institute'] = institute_obj['internal_id']
+        if institute_id:
+            query['institute'] = institute_id
         return self.evaluation_terms_collection.find(query)
