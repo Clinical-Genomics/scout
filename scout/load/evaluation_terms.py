@@ -3,7 +3,6 @@
 
 import logging
 
-from scout.build import build_evaluation_term
 import datetime
 
 LOG = logging.getLogger(__name__)
@@ -18,6 +17,7 @@ def load_evaluation_term(adapter, internal_id, label, description, evidence, ins
         institute=institute,
         description=description,
         evidence=evidence,
-        last_modified: datetime.datetime.utcnow(),
+        last_modified=datetime.datetime.utcnow(),
     )
     adapter.add_evaluation_term(evaluation_term_obj)
+

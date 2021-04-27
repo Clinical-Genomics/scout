@@ -4,10 +4,12 @@ import logging
 import click
 from flask.cli import with_appcontext
 
-from scout.load import load_evaluation_terms
+from scout.load import load_evaluation_term
 from scout.server.extensions import store
 
-@click.command("evaluation_terms", short_help="Load a variant evaluation term")
+LOG = logging.getLogger(__name__)
+
+@click.command("evaluation-term", short_help="Load a variant evaluation term")
 @click.option("-i", "--internal-id", required=True)
 @click.option("-l", "--label")
 @click.option("-a", "--institute")
@@ -22,7 +24,7 @@ def evaluation_term(internal_id, institute, label, description, evidence):
         label = internal_id
 
     try:
-        load_evaluation_terms(
+        load_evaluation_term(
             adapter=adapter,
             internal_id=internal_id,
             institute=institute,

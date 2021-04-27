@@ -17,6 +17,7 @@ from .report import gene_fusion_report as gene_fusion_report_command
 from .research import research as research_command
 from .user import user as user_command
 from .variants import variants as variants_command
+from .evaluation_terms import evaluation_term as evaluation_term_command
 
 LOG = logging.getLogger(__name__)
 
@@ -40,3 +41,4 @@ load.add_command(cnv_report_command)
 load.add_command(coverage_qc_report_command)
 load.add_command(gene_fusion_report_command)
 load.add_command(exons_command)
+load.add_command(evaluation_term_command)
