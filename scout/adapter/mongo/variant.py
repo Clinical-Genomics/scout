@@ -591,19 +591,19 @@ class VariantHandler(VariantLoader):
                 # User doesn't have access to this case/variant
                 continue
 
-            other_case_causatives = other_case.get("causatives", [])
             other_link = var_event["link"]
             # link contains other variant ID
             other_causative_id = other_link.split("/")[-1]
+            if other_causative_id in yielded_other_causative_ids:
+                continue
 
-            # if variant is still causative for that case:
+            other_case_causatives = other_case.get("causatives", [])
             if other_causative_id in other_case_causatives:
                 other_causative = {
                     "_id": other_causative_id,
                     "case_id": other_case["_id"],
                     "case_display_name": other_case["display_name"],
                 }
-            if other_causative_id not in yielded_other_causative_ids:
                 yielded_other_causative_ids.append(other_causative_id)
                 yield other_causative
 
