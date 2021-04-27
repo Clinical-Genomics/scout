@@ -596,11 +596,11 @@ class VariantHandler(VariantLoader):
             # link contains other variant ID
             other_causative_id = other_link.split("/")[-1]
 
+            if other_causative_id in yielded_other_causative_ids:
+                continue
+
             # if variant is still causative for that case:
-            if (
-                other_causative_id in other_case_causatives
-                and other_causative_id not in yielded_other_causative_ids
-            ):
+            if other_causative_id in other_case_causatives:
                 other_causative = {
                     "_id": other_causative_id,
                     "case_id": other_case["_id"],
