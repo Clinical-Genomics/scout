@@ -318,7 +318,7 @@ def compounds_need_updating(compounds, dismissed):
         if compound["variant"] in dismissed and compound.get("is_dismissed") is not True:
             return True
 
-        if compound.get("is_dismissed") is True and compound["variant"] not in dismissed:
+        if compound.get("is_dismissed") and compound["variant"] not in dismissed:
             return True
 
     return False
@@ -349,7 +349,6 @@ def parse_variant(
     """
     has_changed = False
     compounds = variant_obj.get("compounds", [])
-    compound_ids = [compound["variant"] for compound in compounds] or []
 
     if compounds and get_compounds:
         # Check if we need to update compound information
