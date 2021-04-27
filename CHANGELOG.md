@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 ### Added
 ### Changed
+- Refactored the MatchMaker integration as an extension
 
 ## [4.33.1]
 ### Fixed
@@ -32,7 +33,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changed from deprecated db update method
 - Pre-selected fields to run queries with in dashboard page
 - Do not filter by any institute when first accessing the dashboard
-- Refactored the MatchMaker integration as an extension
 
 ## [4.32.1]
 ### Fixed
