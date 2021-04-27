@@ -6,8 +6,18 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Fixed
-- command line crashing when updating an individual not found in database
+- Include markdown for release autodeploy docs
+- Use standard inheritance model in CLinVar (https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt)
+### Added
+### Changed
+
+## [4.33]
+### Fixed
+- Command line crashing when updating an individual not found in database
 - Dashboard page crashing when filters return no data
+- Cancer variants filter by chromosome
+- /api/v1/genes now searches for genes in all genome builds by default
+- Upgraded igv.js to version 2.8.1 (Fixed Unparsable bed record error)
 ### Added
 - Autodeploy docs on release
 - Documentation for updating case individuals tracks
