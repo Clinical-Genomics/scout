@@ -80,7 +80,7 @@ def variants(institute_id, case_name):
             form.gene_panels.data = controllers.case_default_panels(case_obj)
 
     # populate filters dropdown
-    available_filters = store.filters(institute_id, category)
+    available_filters = list(store.filters(institute_id, category))
     form.filters.choices = [
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
@@ -129,6 +129,7 @@ def variants(institute_id, case_name):
         institute=institute_obj,
         case=case_obj,
         form=form,
+        filters=available_filters,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
@@ -171,7 +172,8 @@ def str_variants(institute_id, case_name):
         form.chrom.data = request.args.get("chrom", "")
 
     # populate filters dropdown
-    available_filters = store.filters(institute_id, category)
+    available_filters = list(store.filters(institute_id, category))
+
     form.filters.choices = [
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
@@ -211,6 +213,7 @@ def str_variants(institute_id, case_name):
         cytobands=cytobands,
         form=form,
         page=page,
+        filters=available_filters,
         expand_search=str(request.method == "POST"),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),

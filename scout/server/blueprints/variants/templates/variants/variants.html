@@ -209,18 +209,19 @@
 
     $("#filters").change(function () {
      {% for filter in filters %}
-      if ($(this).val() == {{ filter._id }}) {
+      if ($(this).val() === "{{ filter._id }}") {
         {% if filter.lock %}
-          $("#stash_filter_padlock").removeClass("fa-unlock")
-          $("#stash_filter_padlock").addClass("fa-lock")
+          $("#stash_filter_padlock").removeClass("fa-unlock");
+          $("#stash_filter_padlock").addClass("fa-lock");
+          $("#stash_filter_delete").disabled = true;
           {% if filter.owner == current_user._id %}
-            $("stash_filter_padlock").disabled = false;
+            $("#stash_filter_padlock").disabled = false;
           {% elif filter.owner and filter.owner != current_user._id %}
-            $("stash_filter_padlock").disabled = true;
+            $("#stash_filter_padlock").disabled = true;
           {% endif %}
         {% else %}
-          $("#stash_filter_padlock").removeClass("fa-lock")
-          $("#stash_filter_padlock").addClass("fa-unlock")
+          $("#stash_filter_padlock").removeClass("fa-lock");
+          $("#stash_filter_padlock").addClass("fa-unlock");
         {% endif %}
       };
       {% endfor %}

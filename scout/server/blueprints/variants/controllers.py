@@ -805,7 +805,7 @@ def persistent_filter_actions(
         if filter_obj is not None:
             form = FiltersFormClass(request_form)
         else:
-            flash("Requested filter was not found", "warning")
+            flash("Requested filter was locked or not found", "warning")
 
     if form is None:
         form = FiltersFormClass(request_form)
