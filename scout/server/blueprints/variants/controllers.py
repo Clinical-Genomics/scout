@@ -315,7 +315,7 @@ def compounds_need_updating(compounds, dismissed):
         if "not_loaded" not in compound:  # This key should be always present
             return True
 
-        if compound["variant"] in dismissed and compound.get("is_dismissed") != True:
+        if compound["variant"] in dismissed and compound.get("is_dismissed") is not True:
             return True
 
         if compound.get("is_dismissed") is True and compound["variant"] not in dismissed:

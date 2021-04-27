@@ -35,7 +35,7 @@ def test_compounds_need_updating():
     # THEN the function that checks if the compounds need updating should return True
     assert compounds_need_updating(compounds, dismissed_variants) is True
 
-    # GIVEN a list of compounds with a dismissed one that is not up to date (not in list of case dismissed variants)
+    # GIVEN a list of compounds with a dismissed one that is not up-to-date (not in list of case dismissed variants)
     compounds = [{"variant": "ccc", "is_dismissed": True}, {"variant": "bbb"}]
     # THEN the function that checks if the compounds need updating should return True
     assert compounds_need_updating(compounds, dismissed_variants) is True
