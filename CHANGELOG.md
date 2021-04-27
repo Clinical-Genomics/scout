@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Allow saved filter lock and unlock
 ### Fixed
+- Include markdown for release autodeploy docs
+- Use standard inheritance model in CLinVar (https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt)
 ### Added
 ### Changed
 - SV clinical filter no longer filters out sub 100 nt variants
