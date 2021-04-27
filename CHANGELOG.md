@@ -6,8 +6,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Fixed
+### Added
+### Changed
+
+## [4.33.1]
+### Fixed
 - Include markdown for release autodeploy docs
-- Use standard inheritance model in CLinVar (https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt)
+- Use standard inheritance model in ClinVar (https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt)
 - Fix issue crash with variants that have been unflagged causative not being avaliable in other causatives
 ### Added
 ### Changed
