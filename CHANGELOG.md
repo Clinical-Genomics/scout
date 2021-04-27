@@ -7,7 +7,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Fixed
 ### Added
+- Support LoqusDB REST API queries
 ### Changed
+- Count cases in LoqusDB by variant type
+- Introduce deprecation warning for Loqus configs that are not dictionaries
 
 ## [4.33.1]
 ### Fixed
