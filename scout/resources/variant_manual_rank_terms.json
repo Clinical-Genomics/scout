@@ -5,7 +5,8 @@
       "description": "Variant of unknown significance",
       "label_class": "default",
       "institute": "all",
-      "internal_id": "unknown-significance"
+      "internal_id": "unknown-significance",
+      "rank": 9
    },
    {
       "label": "KP",
@@ -13,7 +14,8 @@
       "description": "Known pathogenic, previously known pathogenic in ClinVar, HGMD, literature, etc",
       "label_class": "danger",
       "institute": "all",
-      "internal_id": "known-pathogenic"
+      "internal_id": "known-pathogenic",
+      "rank": 8
    },
    {
       "label": "P",
@@ -21,7 +23,8 @@
       "description": "Pathogenic, novel mutation but overlapping phenotype with known pathogenic, no further experimental validation needed",
       "label_class": "danger",
       "institute": "all",
-      "internal_id": "pathogenic"
+      "internal_id": "pathogenic",
+      "rank": 7
    },
    {
       "label": "NVP",
@@ -29,7 +32,8 @@
       "description": "Novel validated pathogenic, novel mutation and validated experimentally",
       "label_class": "danger",
       "institute": "all",
-      "internal_id": "novel-validated-pathogenic"
+      "internal_id": "novel-validated-pathogenic",
+      "rank": 6
    },
    {
       "label": "PPP",
@@ -37,7 +41,8 @@
       "description": "Pathogenic partial phenotype, pathogenic variant explains part of patients phenotype, but not all symptoms",
       "label_class": "danger",
       "institute": "all",
-      "internal_id": "pathogenic-partial-phenotype"
+      "internal_id": "pathogenic-partial-phenotype",
+      "rank": 5
    },
    {
       "label": "LP",
@@ -45,7 +50,8 @@
       "description": "Likely pathogenic, experimental validation required to prove causality",
       "label_class": "warning",
       "institute": "all",
-      "internal_id": "likely-pathogenic"
+      "internal_id": "likely-pathogenic",
+      "rank": 4
    },
    {
       "label": "PP",
@@ -53,7 +59,8 @@
       "description": "Possibly pathogenic, uncertain significance, but cannot disregard yet",
       "label_class": "primary",
       "institute": "all",
-      "internal_id": "possibly-pathogenic"
+      "internal_id": "possibly-pathogenic",
+      "rank": 3
    },
    {
       "label": "LB",
@@ -61,7 +68,8 @@
       "description": "Likely benign, uncertain significance, but can discard",
       "label_class": "info",
       "institute": "all",
-      "internal_id": "likely-benign"
+      "internal_id": "likely-benign",
+      "rank": 2
    },
    {
       "label": "B",
@@ -69,7 +77,8 @@
       "description": "Benign, does not cause phenotype",
       "label_class": "success",
       "institute": "all",
-      "internal_id": "benign"
+      "internal_id": "benign",
+      "rank": 1
    },
    {
       "label": "O",
@@ -77,6 +86,7 @@
       "description": "Other, phenotype not related to disease",
       "label_class": "default",
       "institute": "all",
-      "internal_id": "other"
+      "internal_id": "other",
+      "rank": 0
    }
 ]

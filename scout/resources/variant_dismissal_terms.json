@@ -6,7 +6,8 @@
          "freq"
       ],
       "institute": "all",
-      "internal_id": "common-public"
+      "internal_id": "common-public",
+      "rank": 2
    },
    {
       "label": "Common local",
@@ -15,7 +16,8 @@
          "freq"
       ],
       "institute": "all",
-      "internal_id": "common-local"
+      "internal_id": "common-local",
+      "rank": 3
    },
    {
       "label": "Irrelevant phenotype",
@@ -24,7 +26,8 @@
          "OMIM"
       ],
       "institute": "all",
-      "internal_id": "irrelevant-phenotype"
+      "internal_id": "irrelevant-phenotype",
+      "rank": 5
    },
    {
       "label": "Inconsistent inheritance pattern",
@@ -35,7 +38,8 @@
          "inheritance_model"
       ],
       "institute": "all",
-      "internal_id": "inconsistent-inheritance-pattern"
+      "internal_id": "inconsistent-inheritance-pattern",
+      "rank": 7
    },
    {
       "label": "No plausible compound",
@@ -44,7 +48,8 @@
          "Compounds"
       ],
       "institute": "all",
-      "internal_id": "no-plausible-compound"
+      "internal_id": "no-plausible-compound",
+      "rank": 11
    },
    {
       "label": "Not in disease transcript",
@@ -53,7 +58,8 @@
          "transcript"
       ],
       "institute": "all",
-      "internal_id": "not-in-disease-transcript"
+      "internal_id": "not-in-disease-transcript",
+      "rank": 13
    },
    {
       "label": "Not in RefSeq transcript",
@@ -62,7 +68,8 @@
          "transcript"
       ],
       "institute": "all",
-      "internal_id": "not-in-refseq-transcript"
+      "internal_id": "not-in-refseq-transcript",
+      "rank": 17
    },
    {
       "label": "Splicing unaffected",
@@ -71,7 +78,8 @@
          "spidex"
       ],
       "institute": "all",
-      "internal_id": "splicing-unaffected"
+      "internal_id": "splicing-unaffected",
+      "rank": 19
    },
    {
       "label": "Inherited from unaffected",
@@ -81,7 +89,8 @@
          "pedigree"
       ],
       "institute": "all",
-      "internal_id": "inherited-from-unaffected"
+      "internal_id": "inherited-from-unaffected",
+      "rank": 23
    },
    {
       "label": "Technical issues",
@@ -91,7 +100,8 @@
          "IGV"
       ],
       "institute": "all",
-      "internal_id": "technical-issues"
+      "internal_id": "technical-issues",
+      "rank": 29
    },
    {
       "label": "No protein function",
@@ -101,7 +111,8 @@
          "conservation"
       ],
       "institute": "all",
-      "internal_id": "no-protein-function"
+      "internal_id": "no-protein-function",
+      "rank": 31
    },
    {
       "label": "Reputation benign",
@@ -110,7 +121,8 @@
          "clinvar"
       ],
       "institute": "all",
-      "internal_id": "reputation-benign"
+      "internal_id": "reputation-benign",
+      "rank": 37
    },
    {
       "label": "Common variation type",
@@ -119,7 +131,8 @@
          "type"
       ],
       "institute": "all",
-      "internal_id": "common-variation-type"
+      "internal_id": "common-variation-type",
+      "rank": 41
    },
    {
       "label": "Unstudied variation type",
@@ -128,6 +141,7 @@
          "type"
       ],
       "institute": "all",
-      "internal_id": "unstudied-variation-type"
+      "internal_id": "unstudied-variation-type",
+      "rank": 43
    }
 ]
