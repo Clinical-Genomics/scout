@@ -8,6 +8,7 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
+
 @click.command("institute", short_help="Load a institute")
 @click.option("-i", "--internal-id", required=True)
 @click.option("-d", "--display-name")

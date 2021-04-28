@@ -7,8 +7,8 @@ cytoband_hg19_file = "resources/cytoBand_hg19.txt.gz"
 cytoband_hg38_file = "resources/cytoBand_hg38.txt.gz"
 
 # Dismissal terms
-variant_dismissal_terms = 'resources/variant_dismissal_terms.json'
-variant_maual_rank_terms = 'resources/variant_manual_rank_terms.json'
+variant_dismissal_terms = "resources/variant_dismissal_terms.json"
+variant_maual_rank_terms = "resources/variant_manual_rank_terms.json"
 
 ###### Paths ######
 

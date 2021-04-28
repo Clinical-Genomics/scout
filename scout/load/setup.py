@@ -20,7 +20,13 @@ from scout.demo import load_path, panel_path
 
 ### Import demo files ###
 from scout.demo.resources import demo_files
-from scout.load import load_cytobands, load_hgnc_genes, load_hpo, load_transcripts, load_evaluation_term
+from scout.load import (
+    load_cytobands,
+    load_hgnc_genes,
+    load_hpo,
+    load_transcripts,
+    load_evaluation_term,
+)
 
 # Resources
 from scout.parse.case import parse_case_data
@@ -91,7 +97,6 @@ def setup_scout(
         institutes=[institute_id],
     )
     adapter.add_user(user_obj)
-
 
     resource_files = resource_files or {}
     if demo:
@@ -168,16 +173,16 @@ def setup_scout(
 
     # load default dismissal terms to the database
     dismissal_terms_path = resource_files.get("dismissal_terms_path")
-    LOG.info('Loading variant dismissal terms to database')
+    LOG.info("Loading variant dismissal terms to database")
     with open(dismissal_terms_path) as inpt:
         for term in json.load(inpt):
-            load_evaluation_term( adapter, term_categroy='dismissal_term', **term)
+            load_evaluation_term(adapter, term_categroy="dismissal_term", **term)
     # load default manual rank terms
     manual_rank_path = resource_files.get("manual_rank_path")
-    LOG.info('Loading variant manual rank terms to database')
+    LOG.info("Loading variant manual rank terms to database")
     with open(manual_rank_path) as inpt:
         for term in json.load(inpt):
-            load_evaluation_term(adapter, term_categroy='manual_rank', **term)
+            load_evaluation_term(adapter, term_categroy="manual_rank", **term)
 
     hpo_terms_handle = None
     if resource_files.get("hpoterms_path"):

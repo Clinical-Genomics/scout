@@ -252,10 +252,13 @@ def get_manual_assessments(store, variant_obj):
                 assessment["display_class"] = classification["color"]
 
             if assessment_type == "dismiss_variant":
-                eval_terms = store.evaluation_terms('dismissal_term')
+                eval_terms = store.evaluation_terms("dismissal_term")
                 dismiss_variant_options = {
                     **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-                    **{term['internal_id']: term for term in build_variant_evaluation_terms(eval_terms)}
+                    **{
+                        term["internal_id"]: term
+                        for term in build_variant_evaluation_terms(eval_terms)
+                    },
                 }
                 assessment["label"] = "Dismissed"
                 assessment["title"] = "dismiss:<br>"

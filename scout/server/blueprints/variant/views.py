@@ -137,9 +137,7 @@ def variant_update(institute_id, case_name, variant_id):
     manual_rank = request.form.get("manual_rank")
     cancer_tier = request.form.get("cancer_tier")
     if manual_rank:
-        store.update_manual_rank(
-            institute_obj, case_obj, user_obj, link, variant_obj, manual_rank
-        )
+        store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj, manual_rank)
         if manual_rank:
             flash("updated variant tag: {}".format(manual_rank), "info")
         else:

@@ -10,15 +10,20 @@ import json
 
 LOG = logging.getLogger(__name__)
 
+
 @click.command("evaluation-term", short_help="Load a variant evaluation term")
 @click.option("-i", "--internal-id")
 @click.option("-l", "--label")
 @click.option("-a", "--institute")
 @click.option("-d", "--description")
-@click.option("-c", "--category", help='Type of evaluation term')
+@click.option("-c", "--category", help="Type of evaluation term")
 @click.option("-e", "--evidence", multiple=True)
-@click.option("-r", "--rank", type=int, help="Rank used for determening the order entries are displayed")
-@click.option("-f", "--file", type=click.File(), help="Load a json file with multiple evaluation terms")
+@click.option(
+    "-r", "--rank", type=int, help="Rank used for determening the order entries are displayed"
+)
+@click.option(
+    "-f", "--file", type=click.File(), help="Load a json file with multiple evaluation terms"
+)
 @with_appcontext
 def evaluation_term(internal_id, institute, label, description, category, evidence, rank, file):
     """Create a new evalution term and add it to the database."""
