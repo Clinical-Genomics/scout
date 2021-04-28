@@ -17,6 +17,7 @@ from scout.constants import (
 )
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, templated, user_institutes
+from scout.build.variant import build_variant_evaluation_terms
 
 from . import controllers
 from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
@@ -241,12 +242,16 @@ def institute_settings(institute_id):
     data = controllers.institute(store, institute_id)
     loqus_instances = loqusdb.loqus_ids if hasattr(loqusdb, "loqus_ids") else []
     default_phenotypes = controllers.populate_institute_form(form, institute_obj)
+    # get instiute evaluation terms
+    evaluation_terms = store.evaluation_terms(institute_obj["internal_id"])
+    evaluation_terms = build_variant_evaluation_terms(evaluation_terms)
 
     return render_template(
         "/overview/institute_settings.html",
         form=form,
         default_phenotypes=default_phenotypes,
         loqus_instances=loqus_instances,
+        institute_evaluation_terms=evaluation_terms,
         panel=1,
         **data,
     )

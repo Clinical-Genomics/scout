@@ -23,8 +23,12 @@ class VariantEvaluationHandler(object):
         self.evaluation_terms_collection.drop()
         LOG.info("Dropped the evaluation terms collection from database")
 
-    def evaluation_terms(self, term_category, analysis_type=None, institute_id=None):
+    def evaluation_terms(self, term_category=None, analysis_type=None, institute_id=None):
         """List evaluation terms used by a institute."""
+        query = {}
+        if term_category:
+            query['type'] = term_category
+
         target_institutes = ["all"]
         if institute_id:
             target_institutes.append(institute_id)
@@ -33,8 +37,7 @@ class VariantEvaluationHandler(object):
         if analysis_type:
             target_analysis_types.append(analysis_type)
 
-        query = {"type": term_category, "analysis": {"$in": target_institutes},
-                "institute": {"$in": target_institutes}}
+        query = {"analysis": {"$in": target_institutes}, "institute": {"$in": target_institutes}}
         return self.evaluation_terms_collection.find(query, sort=[("rank", pymongo.ASCENDING)])
 
 
