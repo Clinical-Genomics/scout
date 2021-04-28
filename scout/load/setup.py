@@ -171,15 +171,7 @@ def setup_scout(
     LOG.info('Loading variant dismissal terms to database')
     with open(dismissal_terms_path) as inpt:
         for term in json.load(inpt):
-            load_evaluation_term(
-                    adapter,
-                    internal_id=term['internal_id'],
-                    label=term['label'],
-                    description=term['description'],
-                    institute=term['institute'],
-                    term_categroy='dismissal_term',
-                    evidence=term['evidence'],
-            )
+            load_evaluation_term( adapter, term_categroy='dismissal_term', **term)
     # load default manual rank terms
     manual_rank_path = resource_files.get("manual_rank_path")
     LOG.info('Loading variant manual rank terms to database')
