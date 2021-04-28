@@ -42,35 +42,35 @@ Below are available configuration parameters for a Scout case. Names marked with
 	- **bam_file** Path to bam file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*
 	- **bam_path** Path to bam file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*
 	- **capture_kit** for exome specifies the capture kit
-        - **chromograph_images**:
-            - **autozygous**: Path to file.
-            - **upd_regions**: Path to file.
-            - **upd_sites**: Path to file.
-        - **confirmed_parent**: True if parent confirmed.
+	- **chromograph_images**:
+		- **autozygous**: Path to file.
+		- **upd_regions**: Path to file.
+		- **upd_sites**: Path to file.
+	- **confirmed_parent**: True if parent confirmed.
 	- **expected_coverage** The level of expected coverage.
 	- **father** Sample id for father or 0
-        - **is_sma**: True / False if SMA status determined - None if not done.
-        - **is_sma_carrier**:  # True / False if SMA carriership determined - None if not done.
+	- **is_sma**: True / False if SMA status determined - None if not done.
+	- **is_sma_carrier**:  # True / False if SMA carriership determined - None if not done.
 	- **mother** sample id for mother or 0
-        - **msi** Microsatellite instability [0-60]
+	- **msi** Microsatellite instability [0-60]
 	- **phenotype(*)** Specifies the affection status {affected, unaffected, unknown}  
 	- **rhocall_bed** Path to bed file to view alignments [Reference][rhocall]
 	- **rhocall_wig** Path to wig file to view alignments [Reference][rhocall]
 	- **samlple_id(*)** Identifyer for a sample 
-        - **sample_name**: Name of sample.
-        - **sex (*)**:{male, female, unknown} 
-        - **smn1_cn** int Copynumber
-        - **smn2_cn** int Copynumber
-        - **smn2delta78_cn** int Copynumber
+	- **sample_name**: Name of sample.
+	- **sex (*)**:{male, female, unknown} 
+	- **smn1_cn** int Copynumber
+	- **smn2_cn** int Copynumber
+	- **smn2delta78_cn** int Copynumber
 	- **sex(*)** Sex of the sample in human readable format
 	- **tiddit_coverage_wig** Path to wig file to view alignments [Reference][tiddit]
-        - **tissue_type** Sample tissue origin i.e. blood, muscle, 
-        - **tmb** Tumor mutational burden
-        - **tumor_purity** Purity of tumor sample
-        - **tumor_type** Type of tumor
+	- **tissue_type** Sample tissue origin i.e. blood, muscle, 
+	- **tmb** Tumor mutational burden
+	- **tumor_purity** Purity of tumor sample
+	- **tumor_type** Type of tumor
 	- **upd_regions_bed** Path to bed file to view alignments [Reference][bjhall]
 	- **upd_sites_bed** Path to bed file to view alignments [Reference][bjhall]
-        - **vcf2cytosure** Path to CGH file to allow download per individual
+	- **vcf2cytosure** Path to CGH file to allow download per individual
 - **smn_tsv** Path to an SMN TSV file
 - **synopsis** Synopsis of case.
 - **sv_rank_model_version** String
