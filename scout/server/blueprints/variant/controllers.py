@@ -1,7 +1,7 @@
 import logging
 from datetime import date
 
-from flask import flash, url_for
+from flask import url_for
 from flask_login import current_user
 
 from scout.constants import (
@@ -19,7 +19,6 @@ from scout.constants import (
     MOSAICISM_OPTIONS,
     VERBS_MAP,
 )
-from scout.parse.variant.ids import parse_document_id
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import (
@@ -335,7 +334,6 @@ def observations(store, loqusdb, case_obj, variant_obj):
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
 
     obs_data["cases"] = []
-    flash(obs_data)
     for i, case_id in enumerate(obs_data.get("families", [])):
         if i > 10:
             break
@@ -353,8 +351,8 @@ def observations(store, loqusdb, case_obj, variant_obj):
         if user_institutes_ids.isdisjoint(other_institutes):
             # If the user does not have access to the information we skip it
             continue
-        document_id = parse_document_id(chrom, str(pos), ref, alt, var_type, case_id)
-        other_variant = store.variant(document_id=document_id)
+
+        other_variant = store.variant(document_id=variant_obj[""])
         # If the other variant is not loaded we skip it
         if not other_variant:
             continue
