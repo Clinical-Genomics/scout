@@ -770,7 +770,7 @@ def test_institute_users(app, institute_obj, user_obj):
 
 
 def test_clinvar_submissions(app, institute_obj, clinvar_variant, clinvar_casedata):
-    """"Test the web page containing the clinvar submissions for an institute"""
+    """ "Test the web page containing the clinvar submissions for an institute"""
 
     # GIVEN an institute with a clinvar submission
     store.create_submission(institute_obj["_id"])

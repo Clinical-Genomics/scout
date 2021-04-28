@@ -4,7 +4,7 @@ from scout.utils.matchmaker import mme_nodes
 
 
 def test_mme_nodes(monkeypatch):
-    """ Test the function that returns the connected MatchMaker nodes """
+    """Test the function that returns the connected MatchMaker nodes"""
 
     # GIVEN a monkeypatched connection to a MME server connected with 2 other nodes
     class MockResponse(object):
