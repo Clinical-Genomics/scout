@@ -10,7 +10,7 @@ from flask_login import current_user
 from flask_mail import Message
 from werkzeug.datastructures import Headers, MultiDict
 from xlsxwriter import Workbook
-from scout.build.variant import build_variant_dismiss_terms
+from scout.build.variant import build_variant_evaluation_terms
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
@@ -252,10 +252,10 @@ def get_manual_assessments(store, variant_obj):
                 assessment["display_class"] = classification["color"]
 
             if assessment_type == "dismiss_variant":
-                eval_terms = store.evaluation_terms()
+                eval_terms = store.evaluation_terms('dismissal_term')
                 dismiss_variant_options = {
                     **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-                    **{term['internal_id']: term for term in build_variant_dismiss_terms(eval_terms)}
+                    **{term['internal_id']: term for term in build_variant_evaluation_terms(eval_terms)}
                 }
                 assessment["label"] = "Dismissed"
                 assessment["title"] = "dismiss:<br>"

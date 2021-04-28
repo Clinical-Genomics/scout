@@ -2,6 +2,7 @@
 
 import logging
 from datetime import datetime
+import pymongo
 
 LOG = logging.getLogger(__name__)
 
@@ -22,9 +23,11 @@ class VariantEvaluationHandler(object):
         self.evaluation_terms_collection.drop()
         LOG.info('Dropped the evaluation terms collection from database')
 
-    def evaluation_terms(self, institute_id=None):
+    def evaluation_terms(self, term_category, institute_id=None):
         """List evaluation terms used by a institute."""
-        query = {}
+        target_institutes = ['all']
         if institute_id:
-            query['institute'] = institute_id
+            target_institutes.append(institute_id)
+        query = {'type': term_category, 'institute': {'$in': target_institutes},
+                 'sort': [('rank', pymongo.ASCENDING)]}
         return self.evaluation_terms_collection.find(query)

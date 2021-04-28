@@ -13,14 +13,12 @@ from scout.constants import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CLINVAR_INHERITANCE_MODELS,
-    DISMISS_VARIANT_OPTIONS,
     IGV_TRACKS,
-    MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     VERBS_MAP,
 )
 from scout.parse.variant.ids import parse_document_id
-from scout.build.variant import build_variant_dismiss_terms
+from scout.build.variant import build_variant_evaluation_terms
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import (
@@ -123,7 +121,7 @@ def variant(
             'causatives': <list(other_causatives)>,
             'events': <list(events)>,
             'overlapping_svs': <list(overlapping svs)>,
-            'manual_rank_options': MANUAL_RANK_OPTIONS,
+            'manual_rank_options': manual_rank_options,
             'cancer_tier_options': CANCER_TIER_OPTIONS,
             'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
             'ACMG_OPTIONS': ACMG_OPTIONS,
@@ -256,8 +254,12 @@ def variant(
     variant_obj["end_chrom"] = variant_obj.get("end_chrom", variant_obj["chromosome"])
 
     # get dismiss_variant_options
-    evalutation_terms = store.evaluation_terms(institute_obj['internal_id'])
-    dismiss_options = build_variant_dismiss_terms(evalutation_terms)
+    evalutation_terms = store.evaluation_terms('dismissal_term', institute_obj['internal_id'])
+    dismiss_options = build_variant_evaluation_terms(evalutation_terms)
+
+    # get manual rank options
+    evalutation_terms = store.evaluation_terms('manual_rank', institute_obj['internal_id'])
+    manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
 
     if case_obj.get("track") == "cancer":
         dismiss_options = {
@@ -275,7 +277,7 @@ def variant(
         "managed_variant": managed_variant,
         "events": events,
         "overlapping_vars": overlapping_vars,
-        "manual_rank_options": MANUAL_RANK_OPTIONS,
+        "manual_rank_options": manual_rank_options,
         "cancer_tier_options": CANCER_TIER_OPTIONS,
         "dismiss_variant_options": dismiss_options,
         "mosaic_variant_options": MOSAICISM_OPTIONS,
