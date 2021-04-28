@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 ### Added
 ### Changed
+- Documentation for load-configuration rewritten.
 
 ## [4.33.1]
 ### Fixed
