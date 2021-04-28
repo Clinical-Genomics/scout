@@ -137,18 +137,11 @@ def variant_update(institute_id, case_name, variant_id):
     manual_rank = request.form.get("manual_rank")
     cancer_tier = request.form.get("cancer_tier")
     if manual_rank:
-        try:
-            new_manual_rank = int(manual_rank) if manual_rank != "-1" else None
-        except ValueError:
-            LOG.warning("Attempt to update manual rank with invalid value {}".format(manual_rank))
-            manual_rank = "-1"
-            new_manual_rank = -1
-
         store.update_manual_rank(
-            institute_obj, case_obj, user_obj, link, variant_obj, new_manual_rank
+            institute_obj, case_obj, user_obj, link, variant_obj, manual_rank
         )
-        if new_manual_rank:
-            flash("updated variant tag: {}".format(new_manual_rank), "info")
+        if manual_rank:
+            flash("updated variant tag: {}".format(manual_rank), "info")
         else:
             flash(
                 "reset variant tag: {}".format(variant_obj.get("manual_rank", "NA")),
