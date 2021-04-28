@@ -25,7 +25,7 @@ def fixture_demo_files():
 def demo_case_keys():
     """Returns a list of keys expected to be saved when demo case is loaded"""
 
-    demo_case_keys = [
+    case_keys = [
         "_id",
         "display_name",
         "owner",
@@ -64,7 +64,43 @@ def demo_case_keys():
         "track",
         "group",
     ]
-    return demo_case_keys
+    return case_keys
+
+
+@pytest.fixture(scope="function")
+def demo_individual_keys():
+    """Returns a list of keys expected to be saved for an individual when demo case is loaded"""
+
+    individual_keys = [
+        "individual_id",
+        "display_name",
+        "sex",
+        "phenotype",
+        "bam_file",
+        "mt_bam",
+        "vcf2cytosure",
+        "rhocall_bed",
+        "rhocall_wig",
+        "tiddit_coverage_wig",
+        "upd_regions_bed",
+        "upd_sites_bed",
+        "father",
+        "mother",
+        "capture_kits",
+        "confirmed_sex",
+        "confirmed_parent",
+        "predicted_ancestry",
+        "chromograph_images",
+        "analysis_type",
+        "tissue_type",
+        "is_sma",
+        "is_sma_carrier",
+        "smn1_cn",
+        "smn2_cn",
+        "smn2delta78_cn",
+        "smn_27134_cn",
+    ]
+    return individual_keys
 
 
 @pytest.fixture(scope="function")

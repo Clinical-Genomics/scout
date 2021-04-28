@@ -45,7 +45,7 @@ def test_load_case_from_ped(mock_app, institute_obj, case_obj):
     assert case_obj["genome_build"] == 37
 
 
-def test_load_case_from_yaml_keys(mock_app, institute_obj, case_obj, demo_case_keys):
+def test_load_case_case_keys(mock_app, institute_obj, case_obj, demo_case_keys):
     """Testing loaded case contains expected keys when loaded using yaml file"""
 
     runner = mock_app.test_cli_runner()
@@ -72,26 +72,77 @@ def test_load_case_from_yaml_keys(mock_app, institute_obj, case_obj, demo_case_k
     assert new_case
 
     # WHEN case is loaded it should contain the expected fields:
+    key_value_template = "{key}:{bool_value}"  # for instance lims_id:True
+    key_value = None
+
     for key in demo_case_keys:
-        key_value_expected = f"{key}->True"
-        key_value = "{key}->{bool_value}"
+        expected_key_value = key_value_template.format(key=key, bool_value=True)
 
         # Some fields might be boolean False values
         if key in ["is_research", "research_requested", "rerun_requested", "is_migrated"]:
-            assert (
-                key_value.format(key=key, bool_value=new_case[key] is False) == key_value_expected
-            )
+            key_value = key_value_template.format(key=key, bool_value=new_case[key] is False)
+
         # Some fields might not have values:
         elif key in ["multiqc", "cnv_report", "coverage_qc_report", "gene_fusion_report_research"]:
-            assert key_value.format(key=key, bool_value=new_case[key] is None) == key_value_expected
+            key_value = key_value_template.format(key=key, bool_value=new_case[key] is None)
 
         # Some other keys might be empty lists
         elif key in ["dynamic_gene_list", "group"]:
-            assert (
-                key_value.format(key=key, bool_value=len(new_case[key]) == 0) == key_value_expected
-            )
+            key_value = key_value_template.format(key=key, bool_value=len(new_case[key]) == 0)
+
         else:
-            assert key_value.format(key=key, bool_value=bool(new_case[key])) == key_value_expected
+            key_value = key_value_template.format(key=key, bool_value=bool(new_case[key]))
+
+        assert key_value == expected_key_value
+
+
+def test_load_case_individual_keys(mock_app, institute_obj, case_obj, demo_individual_keys):
+    """Testing loaded case contains expected individual keys when loaded using yaml file"""
+
+    runner = mock_app.test_cli_runner()
+
+    # GIVEN a database with no cases
+    store.delete_case(case_id=case_obj["_id"])
+    assert store.case_collection.find_one() is None
+
+    # WHEN a case is loaded using a yaml config file
+    runner.invoke(cli, ["load", "case", load_path])
+    new_case = store.case_collection.find_one()
+
+    # THEN case individuals should contain the expected key/values
+    individual = new_case["individuals"][0]
+
+    key_value_template = "{key}:{bool_value}"  # for instance mt_bam:True
+    key_value = None
+
+    for key in demo_individual_keys:
+        expected_key_value = key_value_template.format(key=key, bool_value=True)
+
+        # Some values might be None
+        if key in [
+            "bam_file",
+            "rhocall_bed",
+            "rhocall_wig",
+            "tiddit_coverage_wig",
+            "upd_regions_bed",
+            "upd_sites_bed",
+            "confirmed_parent",
+            "is_sma_carrier",
+        ]:
+            key_value = key_value_template.format(key=key, bool_value=individual[key] is None)
+
+        # Some values might be False:
+        elif key == "is_sma":
+            key_value = key_value_template.format(key=key, bool_value=individual[key] is False)
+
+        # Some values might be 0:
+        elif key in ["smn2_cn", "smn2delta78_cn", "smn_27134_cn"]:
+            key_value = key_value_template.format(key=key, bool_value=individual[key] == 0)
+
+        else:
+            key_value = key_value_template.format(key=key, bool_value=bool(individual[key]))
+
+        assert key_value == expected_key_value
 
 
 def test_load_case_KeyError(mock_app, institute_obj, case_obj, monkeypatch):
