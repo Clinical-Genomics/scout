@@ -6,8 +6,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Fixed
+- Matching LoqusDB results with variants in database
 ### Added
 ### Changed
+- Count total cases in LoqusDB by variant type when there are no variant observations
 
 ## [4.33.1]
 ### Fixed
