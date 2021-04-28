@@ -236,7 +236,7 @@ class LoqusDB:
         except AttributeError:
             raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
-    def case_count(self):
+    def case_count(self, variant_category="snv"):
         """Returns number of cases in loqus instance
 
         Returns:
@@ -244,7 +244,7 @@ class LoqusDB:
         """
         nr_cases = 0
         case_call = self.get_command()
-        case_call.extend(["cases", "--count"])
+        case_call.extend(["cases", "--count", "-t", variant_category])
         output = ""
         try:
             output = execute_command(case_call)

@@ -328,7 +328,9 @@ def observations(store, loqusdb, case_obj, variant_obj):
     obs_data = loqusdb.get_variant(variant_query, loqusdb_id=institute_obj.get("loqusdb_id")) or {}
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)
-        obs_data["total"] = loqusdb.case_count()
+        obs_data["total"] = loqusdb.case_count(
+            variant_category=variant_obj["category"]
+        )  # count only case having the specifuc type of variant (snv/sv)
         return obs_data
 
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
