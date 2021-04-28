@@ -10,7 +10,6 @@ from scout.constants import (
     ACMG_MAP,
     ACMG_OPTIONS,
     CALLERS,
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CLINVAR_INHERITANCE_MODELS,
     IGV_TRACKS,
@@ -258,14 +257,12 @@ def variant(
     dismiss_options = build_variant_evaluation_terms(evalutation_terms)
 
     # get manual rank options
-    evalutation_terms = store.evaluation_terms("manual_rank", institute_obj["internal_id"])
+    evalutation_terms = store.evaluation_terms(
+            "manual_rank",
+            analysis_type='cancer' if case_obj.get("track") == "cancer" else None,
+            institute_id=institute_obj["internal_id"]
+    )
     manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
-
-    if case_obj.get("track") == "cancer":
-        dismiss_options = {
-            **DISMISS_VARIANT_OPTIONS,
-            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-        }
 
     return {
         "institute": institute_obj,

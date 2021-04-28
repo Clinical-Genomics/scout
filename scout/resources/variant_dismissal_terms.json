@@ -6,7 +6,9 @@
          "freq"
       ],
       "institute": "all",
+      "analysis": "all",
       "internal_id": "common-public",
+      "type": "dismissal_term",
       "rank": 2
    },
    {
@@ -16,7 +18,9 @@
          "freq"
       ],
       "institute": "all",
+      "analysis": "all",
       "internal_id": "common-local",
+      "type": "dismissal_term",
       "rank": 3
    },
    {
@@ -26,7 +30,9 @@
          "OMIM"
       ],
       "institute": "all",
+      "analysis": "all",
       "internal_id": "irrelevant-phenotype",
+      "type": "dismissal_term",
       "rank": 5
    },
    {
@@ -38,7 +44,9 @@
          "inheritance_model"
       ],
       "institute": "all",
+      "analysis": "all",
       "internal_id": "inconsistent-inheritance-pattern",
+      "type": "dismissal_term",
       "rank": 7
    },
    {
@@ -48,7 +56,9 @@
          "Compounds"
       ],
       "institute": "all",
+      "analysis": "all",
       "internal_id": "no-plausible-compound",
+      "type": "dismissal_term",
       "rank": 11
    },
    {
@@ -58,7 +68,9 @@
          "transcript"
       ],
       "institute": "all",
+      "analysis": "all",
       "internal_id": "not-in-disease-transcript",
+      "type": "dismissal_term",
       "rank": 13
    },
    {
@@ -68,7 +80,9 @@
          "transcript"
       ],
       "institute": "all",
+      "analysis": "all",
       "internal_id": "not-in-refseq-transcript",
+      "type": "dismissal_term",
       "rank": 17
    },
    {
@@ -78,7 +92,9 @@
          "spidex"
       ],
       "institute": "all",
+      "analysis": "all",
       "internal_id": "splicing-unaffected",
+      "type": "dismissal_term",
       "rank": 19
    },
    {
@@ -89,7 +105,9 @@
          "pedigree"
       ],
       "institute": "all",
+      "analysis": "all",
       "internal_id": "inherited-from-unaffected",
+      "type": "dismissal_term",
       "rank": 23
    },
    {
@@ -100,7 +118,9 @@
          "IGV"
       ],
       "institute": "all",
+      "analysis": "all",
       "internal_id": "technical-issues",
+      "type": "dismissal_term",
       "rank": 29
    },
    {
@@ -111,7 +131,9 @@
          "conservation"
       ],
       "institute": "all",
+      "analysis": "all",
       "internal_id": "no-protein-function",
+      "type": "dismissal_term",
       "rank": 31
    },
    {
@@ -121,7 +143,9 @@
          "clinvar"
       ],
       "institute": "all",
+      "analysis": "all",
       "internal_id": "reputation-benign",
+      "type": "dismissal_term",
       "rank": 37
    },
    {
@@ -131,7 +155,9 @@
          "type"
       ],
       "institute": "all",
+      "analysis": "all",
       "internal_id": "common-variation-type",
+      "type": "dismissal_term",
       "rank": 41
    },
    {
@@ -141,7 +167,39 @@
          "type"
       ],
       "institute": "all",
+      "analysis": "all",
       "internal_id": "unstudied-variation-type",
+      "type": "dismissal_term",
       "rank": 43
-   }
+   },
+   {
+      "label": "Possible Germline",
+      "description": "Variant is possibly a germline event.",
+      "evidence": [],
+      "institute": "all",
+      "analysis": "cancer",
+      "internal_id": "possible-germline",
+      "type": "dismissal_term",
+      "rank": 44
+    },
+    {
+      "label": "Low count normal",
+      "description": "Variant has too few reads in normal sample \"AD\".",
+      "evidence": [],
+      "institute": "all",
+      "analysis": "cancer",
+      "internal_id": "low-count-normal",
+      "type": "dismissal_term",
+      "rank": 45
+    },
+    {
+      "label": "Low count tumor",
+      "description": "Variant has too few reads in tumor sample. \"AD\".",
+      "evidence": [],
+      "institute": "all",
+      "analysis": "cancer",
+      "internal_id": "low-count-tumor",
+      "type": "dismissal_term",
+      "rank": 46
+    }
 ]

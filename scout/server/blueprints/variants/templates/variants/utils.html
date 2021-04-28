@@ -35,8 +35,8 @@
   <div class="col-2 ">Dismiss selected variants:</div>
   <div class="col-4 align-items-start">
     <select multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-width="100%" onchange="enableDismiss();">
-      {% for value, data in dismiss_variant_options.items() %}
-        <option value="{{ value }}">{{ data.label }}</option>
+      {% for data in dismiss_variant_options %}
+        <option value="{{ data.internal_id }}">{{ data.label }}</option>
       {% endfor %}
     </select>
   </div>

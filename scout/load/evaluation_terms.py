@@ -10,7 +10,7 @@ LOG = logging.getLogger(__name__)
 
 
 def load_evaluation_term(
-    adapter, internal_id, label, description, term_categroy, institute=None, rank=None, **kwargs
+    adapter, internal_id, label, description, type, institute=None, rank=None, **kwargs
 ):
     """Load a evaluation term into the database."""
 
@@ -27,7 +27,7 @@ def load_evaluation_term(
         label=label,
         institute=institute,
         description=description,
-        type=term_categroy,
+        type=type,
         rank=rank,
         last_modified=datetime.datetime.utcnow(),
         **kwargs

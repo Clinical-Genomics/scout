@@ -24,12 +24,11 @@ from scout.constants import (
     VERBS_MAP,
 )
 from scout.constants.variant_tags import (
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
-    DISMISS_VARIANT_OPTIONS,
     GENETIC_MODELS,
-    MANUAL_RANK_OPTIONS,
 )
+
+from scout.build.variant import build_variant_evaluation_terms
 from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
@@ -198,6 +197,10 @@ def case(store, institute_obj, case_obj):
     # complete OMIM diagnoses specific for this case
     omim_terms = {term["disease_nr"]: term for term in store.case_omim_diagnoses(case_obj)}
 
+    # get manual rank options
+    evalutation_terms = store.evaluation_terms("manual_rank", institute_obj["internal_id"])
+    manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
+
     data = {
         "status_class": STATUS_MAP.get(case_obj["status"]),
         "other_causatives": [var for var in store.check_causatives(case_obj=case_obj)],
@@ -213,7 +216,7 @@ def case(store, institute_obj, case_obj):
         "collaborators": collab_ids,
         "cohort_tags": institute_obj.get("cohorts", []),
         "omim_terms": omim_terms,
-        "manual_rank_options": MANUAL_RANK_OPTIONS,
+        "manual_rank_options": manual_rank_options,
         "cancer_tier_options": CANCER_TIER_OPTIONS,
     }
 
@@ -284,18 +287,21 @@ def case_report_content(store, institute_obj, case_obj):
 
         individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
 
-    dismiss_options = DISMISS_VARIANT_OPTIONS
+    evalutation_terms = store.evaluation_terms("dismissal_term", institute_obj["internal_id"])
+    dismiss_options = build_variant_evaluation_terms(evalutation_terms)
+
     data["cancer"] = case_obj.get("track") == "cancer"
     if data["cancer"]:
-        dismiss_options = {
-            **DISMISS_VARIANT_OPTIONS,
-            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-        }
+        dismiss_options = dismiss_options
 
     # Add the case comments
     data["comments"] = store.events(institute_obj, case=case_obj, comments=True)
 
-    data["manual_rank_options"] = MANUAL_RANK_OPTIONS
+    # read manual rank options from database
+    evalutation_terms = store.evaluation_terms("manual_rank", institute_obj["internal_id"])
+    manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
+    data["manual_rank_options"] = manual_rank_options
+
     data["cancer_tier_options"] = CANCER_TIER_OPTIONS
     data["dismissed_options"] = dismiss_options
     data["genetic_models"] = dict(GENETIC_MODELS)

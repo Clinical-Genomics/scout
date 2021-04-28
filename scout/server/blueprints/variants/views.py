@@ -10,12 +10,11 @@ from flask import Blueprint, abort, current_app, flash, redirect, request, send_
 from flask_login import current_user
 
 from scout.constants import (
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
-    DISMISS_VARIANT_OPTIONS,
-    MANUAL_RANK_OPTIONS,
     SEVERE_SO_TERMS,
 )
+
+from scout.build.variant import build_variant_evaluation_terms
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated, zip_dir_to_obj
 
@@ -125,12 +124,21 @@ def variants(institute_id, case_name):
 
     data = controllers.variants(store, institute_obj, case_obj, variants_query, result_size, page)
     expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
+
+    # get dismiss_variant_options
+    evalutation_terms = store.evaluation_terms("dismissal_term", institute_obj["internal_id"])
+    dismiss_variant_options = build_variant_evaluation_terms(evalutation_terms)
+
+    # get manual rank options
+    evalutation_terms = store.evaluation_terms("manual_rank", institute_obj["internal_id"])
+    manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
+
     return dict(
         institute=institute_obj,
         case=case_obj,
         form=form,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
+        manual_rank_options=manual_rank_options,
+        dismiss_variant_options=dismiss_variant_options,
         cancer_tier_options=CANCER_TIER_OPTIONS,
         severe_so_terms=SEVERE_SO_TERMS,
         cytobands=cytobands,
@@ -202,12 +210,21 @@ def str_variants(institute_id, case_name):
     data = controllers.str_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
+
+    # get dismiss_variant_options
+    evalutation_terms = store.evaluation_terms("dismissal_term", institute_obj["internal_id"])
+    dismiss_variant_options = build_variant_evaluation_terms(evalutation_terms)
+
+    # get manual rank options
+    evalutation_terms = store.evaluation_terms("manual_rank", institute_obj["internal_id"])
+    manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
+
     return dict(
         institute=institute_obj,
         case=case_obj,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
+        dismiss_variant_options=dismiss_variant_options,
         variant_type=variant_type,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
+        manual_rank_options=manual_rank_options,
         cytobands=cytobands,
         form=form,
         page=page,
@@ -263,16 +280,25 @@ def sv_variants(institute_id, case_name):
     data = controllers.sv_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
+
+    # get dismiss_variant_options
+    evalutation_terms = store.evaluation_terms("dismissal_term", institute_obj["internal_id"])
+    dismiss_variant_options = build_variant_evaluation_terms(evalutation_terms)
+
+    # get manual rank options
+    evalutation_terms = store.evaluation_terms("manual_rank", institute_obj["internal_id"])
+    manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
+
     expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
     return dict(
         institute=institute_obj,
         case=case_obj,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
+        dismiss_variant_options=dismiss_variant_options,
         variant_type=variant_type,
         form=form,
         cytobands=cytobands,
         severe_so_terms=SEVERE_SO_TERMS,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
+        manual_rank_options=manual_rank_options,
         page=page,
         expand_search=expand_search,
         result_size=result_size,
@@ -357,13 +383,19 @@ def cancer_variants(institute_id, case_name):
         store, institute_id, case_name, variants_query, result_size, form, page=page
     )
     expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
+
+    # get dismiss_variant_options
+    evalutation_terms = store.evaluation_terms(
+            "dismissal_term",
+            analysis_type='cancer',
+            institute_id=institute_obj["internal_id"]
+    )
+    dismiss_variant_options = build_variant_evaluation_terms(evalutation_terms)
+
     return dict(
         variant_type=variant_type,
         cytobands=cytobands,
-        dismiss_variant_options={
-            **DISMISS_VARIANT_OPTIONS,
-            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-        },
+        dismiss_variant_options=dismiss_variant_options,
         expand_search=expand_search,
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
@@ -416,18 +448,28 @@ def cancer_sv_variants(institute_id, case_name):
         store, institute_obj, case_obj, variants_query, result_size, page
     )
     expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
+
+    # get dismiss_variant_options
+    evalutation_terms = store.evaluation_terms("dismissal_term", institute_obj["internal_id"])
+    dismiss_variant_options = build_variant_evaluation_terms(evalutation_terms)
+
+    # get manual_rank_options
+    evalutation_terms = store.evaluation_terms(
+            "dismissal_term",
+            analysis_type='cancer',
+            institute_id=institute_obj["internal_id"]
+    )
+    manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
+
     return dict(
         institute=institute_obj,
         case=case_obj,
-        dismiss_variant_options={
-            **DISMISS_VARIANT_OPTIONS,
-            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-        },
+        dismiss_variant_options=dismiss_variant_options,
         variant_type=variant_type,
         form=form,
         severe_so_terms=SEVERE_SO_TERMS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
+        manual_rank_options=manual_rank_options,
         cytobands=cytobands,
         page=page,
         expand_search=expand_search,
