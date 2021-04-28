@@ -46,7 +46,7 @@ def test_load_case_from_ped(mock_app, institute_obj, case_obj):
 
 
 def test_load_case_from_yaml_keys(mock_app, institute_obj, case_obj, demo_case_keys):
-    """Testing the scout load case command"""
+    """Testing loaded case contains expected keys when loaded using yaml file"""
 
     runner = mock_app.test_cli_runner()
 
