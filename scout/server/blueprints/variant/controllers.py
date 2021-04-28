@@ -352,7 +352,9 @@ def observations(store, loqusdb, case_obj, variant_obj):
             # If the user does not have access to the information we skip it
             continue
 
-        other_variant = store.variant(document_id=variant_obj["variant_id"])
+        other_variant = store.variant(
+            case_id=other_case["_id"], document_id=variant_obj["variant_id"]
+        )
         # If the other variant is not loaded we skip it
         if not other_variant:
             continue
