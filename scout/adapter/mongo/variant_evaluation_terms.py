@@ -28,6 +28,6 @@ class VariantEvaluationHandler(object):
         target_institutes = ['all']
         if institute_id:
             target_institutes.append(institute_id)
-        query = {'type': term_category, 'institute': {'$in': target_institutes},
-                 'sort': [('rank', pymongo.ASCENDING)]}
-        return self.evaluation_terms_collection.find(query)
+        query = {'type': term_category, 'institute': {'$in': target_institutes}}
+        return self.evaluation_terms_collection.find(query, sort=[('rank', pymongo.ASCENDING)])
+
