@@ -45,25 +45,53 @@ def test_load_case_from_ped(mock_app, institute_obj, case_obj):
     assert case_obj["genome_build"] == 37
 
 
-def test_load_case_from_yaml(mock_app, institute_obj, case_obj):
+def test_load_case_from_yaml_keys(mock_app, institute_obj, case_obj, demo_case_keys):
     """Testing the scout load case command"""
 
     runner = mock_app.test_cli_runner()
-    assert runner
 
-    # remove case from real populated database using adapter
+    # GIVEN a database with no cases
     store.delete_case(case_id=case_obj["_id"])
     assert store.case_collection.find_one() is None
-    res = store.institute_collection.find({"_id": "cust000"})
-    assert sum(1 for i in res) == 1
 
-    # Make sure the scout config file is available
-    assert os.path.exists(load_path)
+    # GIVEN that the database contains cases HPO terms:
+    hpo_terms = [
+        {"_id": "HP:0001298", "hpo_id": "HP:0001298", "description": "Encephalopathy"},
+        {"_id": "HP:0001250", "hpo_id": "HP:0001250", "description": "Seizures"},
+    ]
+    store.hpo_term_collection.insert_many(hpo_terms)
 
-    # Test command to upload case using demo resources:
+    # WHEN a case is loaded using a yaml config file
     result = runner.invoke(cli, ["load", "case", load_path])
+
+    # THEN the command should be successful
     assert result.exit_code == 0
-    assert sum(1 for i in store.case_collection.find()) == 1
+
+    # AND the case should be saved in database
+    new_case = store.case_collection.find_one()
+    assert new_case
+
+    # WHEN case is loaded it should contain the expected fields:
+    for key in demo_case_keys:
+        key_value_expected = f"{key}->True"
+        key_value = "{key}->{bool_value}"
+
+        # Some fields might be boolean False values
+        if key in ["is_research", "research_requested", "rerun_requested", "is_migrated"]:
+            assert (
+                key_value.format(key=key, bool_value=new_case[key] is False) == key_value_expected
+            )
+        # Some fields might not have values:
+        elif key in ["multiqc", "cnv_report", "coverage_qc_report", "gene_fusion_report_research"]:
+            assert key_value.format(key=key, bool_value=new_case[key] is None) == key_value_expected
+
+        # Some other keys might be empty lists
+        elif key in ["dynamic_gene_list", "group"]:
+            assert (
+                key_value.format(key=key, bool_value=len(new_case[key]) == 0) == key_value_expected
+            )
+        else:
+            assert key_value.format(key=key, bool_value=bool(new_case[key])) == key_value_expected
 
 
 def test_load_case_KeyError(mock_app, institute_obj, case_obj, monkeypatch):

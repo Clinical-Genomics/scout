@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Fixed
 ### Added
+- Test checking that case keys are correctly parsed when case is loaded with command line
 ### Changed
 
 ## [4.33.1]
