@@ -1,7 +1,7 @@
 import logging
 from datetime import date
 
-from flask import url_for
+from flask import flash, url_for
 from flask_login import current_user
 
 from scout.constants import (
@@ -335,6 +335,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
 
     obs_data["cases"] = []
+    flash(obs_data)
     for i, case_id in enumerate(obs_data.get("families", [])):
         if i > 10:
             break
