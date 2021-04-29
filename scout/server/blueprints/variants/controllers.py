@@ -478,7 +478,7 @@ def match_gene_txs_variant_txs(variant_gene, hgnc_gene):
             pt_change = var_tx.get("protein_sequence_name") or "-"
 
             # collect info from primary transcripts
-            if tx_refseq in hgnc_gene.get("primary_transcripts"):
+            if tx_refseq in hgnc_gene.get("primary_transcripts", []):
                 primary_txs.append("/".join([tx_refseq or tx_id, hgvs, pt_change]))
 
             # collect info from canonical transcript

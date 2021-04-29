@@ -84,7 +84,13 @@
                     </div>
                   </td> <!-- end of ID col-->
                   <td title="{{ transcript.coding_sequence_name or '' }}"> <!-- >HGVS Description col -->
-                    {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
+                    {% set hgvs_c = (transcript.coding_sequence_name or '')|truncate(20, True) %}
+                    {% if variant.chromosome in ["MT","M"] %}
+                      {% set mt_notation = "m." ~ variant.position ~ variant.reference ~ ">" ~ variant.alternative %}
+                      {{ mt_notation|truncate(20,True) }} <span class="text-muted">({{ hgvs_c }})</span>
+                    {% else %}
+                      {{ hgvs_c }}
+                    {% endif %}
                     <span class="text-muted float-right">
                       {{ (transcript.protein_sequence_name or '')|url_decode }}
                     </span>
