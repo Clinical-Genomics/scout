@@ -13,6 +13,7 @@ from .individuals import individuals
 from .institutes import institutes
 from .intervals import intervals
 from .panels import panels
+from .evaluation_terms import evaluation_terms
 from .transcripts import transcripts
 from .users import users
 
@@ -41,3 +42,4 @@ view.add_command(collections)
 view.add_command(transcripts)
 view.add_command(cases)
 view.add_command(hgnc)
+view.add_command(evaluation_terms)
