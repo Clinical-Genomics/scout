@@ -84,16 +84,22 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
 
         clinical_var_obj = variant_obj
         if is_research:
-            variant_obj["research_assessments"] = get_manual_assessments(store, institute_obj, variant_obj)
+            variant_obj["research_assessments"] = get_manual_assessments(
+                store, institute_obj, variant_obj
+            )
 
             clinical_var_obj = store.variant(
                 case_id=case_obj["_id"], simple_id=variant_obj["simple_id"], variant_type="clinical"
             )
 
-        variant_obj["clinical_assessments"] = get_manual_assessments(store, institute_obj, clinical_var_obj)
+        variant_obj["clinical_assessments"] = get_manual_assessments(
+            store, institute_obj, clinical_var_obj
+        )
 
         if case_obj.get("group"):
-            variant_obj["group_assessments"] = _get_group_assessments(store, institute_obj, case_obj, variant_obj)
+            variant_obj["group_assessments"] = _get_group_assessments(
+                store, institute_obj, case_obj, variant_obj
+            )
 
         variants.append(
             parse_variant(
@@ -151,7 +157,9 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
                 case_id=case_obj["_id"], simple_id=variant_obj["simple_id"], variant_type="clinical"
             )
         if clinical_var_obj is not None:
-            variant_obj["clinical_assessments"] = get_manual_assessments(store, institute_obj, clinical_var_obj)
+            variant_obj["clinical_assessments"] = get_manual_assessments(
+                store, institute_obj, clinical_var_obj
+            )
 
         variants.append(
             parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build)
@@ -225,10 +233,10 @@ def get_manual_assessments(store, institute_obj, variant_obj):
         if variant_obj.get(assessment_type) is not None:
             if assessment_type == "manual_rank":
                 manual_rank_id = variant_obj[assessment_type]
-                term = store.get_evaluation_term(assessment_type, manual_rank_id, institute_id=institute_obj['internal_id'])
-                assessment["title"] = "Manual rank: {}".format(
-                    term["description"]
+                term = store.get_evaluation_term(
+                    assessment_type, manual_rank_id, institute_id=institute_obj["internal_id"]
                 )
+                assessment["title"] = "Manual rank: {}".format(term["description"])
                 assessment["label"] = term["label"]
                 assessment["display_class"] = term["label_class"]
 
@@ -251,7 +259,7 @@ def get_manual_assessments(store, institute_obj, variant_obj):
                 assessment["display_class"] = classification["color"]
 
             if assessment_type == "dismiss_variant":
-                eval_terms = store.evaluation_terms("dismissal_term", analysis_type='cancer')
+                eval_terms = store.evaluation_terms("dismissal_term", analysis_type="cancer")
                 dismiss_variant_options = build_variant_evaluation_terms(eval_terms)
 
                 assessment["label"] = "Dismissed"

@@ -243,9 +243,11 @@ def institute_settings(institute_id):
     loqus_instances = loqusdb.loqus_ids if hasattr(loqusdb, "loqus_ids") else []
     default_phenotypes = controllers.populate_institute_form(form, institute_obj)
     # get instiute evaluation terms
-    terms = (term
-            for term in store.evaluation_terms(institute_id=institute_obj["internal_id"])
-            if term['institute'] == institute_obj["internal_id"])
+    terms = (
+        term
+        for term in store.evaluation_terms(institute_id=institute_obj["internal_id"])
+        if term["institute"] == institute_obj["internal_id"]
+    )
     evaluation_terms = build_variant_evaluation_terms(terms)
 
     return render_template(

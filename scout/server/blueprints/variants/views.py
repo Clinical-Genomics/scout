@@ -386,9 +386,7 @@ def cancer_variants(institute_id, case_name):
 
     # get dismiss_variant_options
     evalutation_terms = store.evaluation_terms(
-            "dismissal_term",
-            analysis_type='cancer',
-            institute_id=institute_obj["internal_id"]
+        "dismissal_term", analysis_type="cancer", institute_id=institute_obj["internal_id"]
     )
     dismiss_variant_options = build_variant_evaluation_terms(evalutation_terms)
 
@@ -455,9 +453,7 @@ def cancer_sv_variants(institute_id, case_name):
 
     # get manual_rank_options
     evalutation_terms = store.evaluation_terms(
-            "dismissal_term",
-            analysis_type='cancer',
-            institute_id=institute_obj["internal_id"]
+        "dismissal_term", analysis_type="cancer", institute_id=institute_obj["internal_id"]
     )
     manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
 

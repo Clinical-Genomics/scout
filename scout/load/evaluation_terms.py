@@ -10,7 +10,16 @@ LOG = logging.getLogger(__name__)
 
 
 def load_evaluation_term(
-        adapter, internal_id, name, description, term_category, rank=None, institute='all', analysis_type='all', **kwargs):
+    adapter,
+    internal_id,
+    name,
+    description,
+    term_category,
+    rank=None,
+    institute="all",
+    analysis_type="all",
+    **kwargs,
+):
     """Load a evaluation term into the database.
 
     Mandatory terms are:
@@ -25,23 +34,25 @@ def load_evaluation_term(
         **kwargs: other variables to be associated with the term
     """
     if internal_id:  # verify unique internal_id
-        resp = adapter.evaluation_terms_collection.find_one({
-            'internal_id': internal_id, 'term_category': term_category
-        })
+        resp = adapter.evaluation_terms_collection.find_one(
+            {"internal_id": internal_id, "term_category": term_category}
+        )
         if resp is not None:
             raise ValueError(f'internal_id "{internal_id}" is not unique')
 
     if rank:  # verify unique rank
-        resp = adapter.evaluation_terms_collection.find_one({'rank': rank, 'term_category': term_category})
+        resp = adapter.evaluation_terms_collection.find_one(
+            {"rank": rank, "term_category": term_category}
+        )
         if resp is not None:
             raise ValueError(f'rank "{rank}" is not unique')
     else:  # get latest rank and increment with one
         query = {
-            'term_category': term_category,
+            "term_category": term_category,
             "sort": [("rank", pymongo.DESCENDING)],
         }
         rank_query = adapter.evaluation_terms_collection.find_one(query)
-        last_rank = rank_query['rank'] if rank else 0
+        last_rank = rank_query["rank"] if rank else 0
         # rank to the next rank in the order
         rank = rank + last_rank if rank else last_rank
 
@@ -55,6 +66,6 @@ def load_evaluation_term(
         institute=institute,
         analysis_type=analysis_type,
         last_modified=datetime.datetime.utcnow(),
-        **kwargs
+        **kwargs,
     )
     adapter.add_evaluation_term(evaluation_term_obj)

@@ -258,9 +258,9 @@ def variant(
 
     # get manual rank options
     evalutation_terms = store.evaluation_terms(
-            "manual_rank",
-            analysis_type='cancer' if case_obj.get("track") == "cancer" else None,
-            institute_id=institute_obj["internal_id"]
+        "manual_rank",
+        analysis_type="cancer" if case_obj.get("track") == "cancer" else None,
+        institute_id=institute_obj["internal_id"],
     )
     manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
 

@@ -20,22 +20,26 @@ LOG = logging.getLogger(__name__)
     "-r", "--rank", type=int, help="Rank used for determening the order entries are displayed"
 )
 @click.option("-e", "--evidence", multiple=True, help="Type of evidence for a term")
-@click.option("-s", "--institute", default='all', help="Limit the term to a an")
+@click.option("-s", "--institute", default="all", help="Limit the term to a an")
 @click.option("-c", "--term_category", help="Type of evaluation term")
-@click.option("-a", "--analysis_type", default='all', help="Limit the term to a given analysis type")
+@click.option(
+    "-a", "--analysis_type", default="all", help="Limit the term to a given analysis type"
+)
 @with_appcontext
-def evaluation_term(internal_id, name, label, description, rank, evidence, institute, term_category, analysis_type):
+def evaluation_term(
+    internal_id, name, label, description, rank, evidence, institute, term_category, analysis_type
+):
     """Create a new evalution term and add it to the database."""
     adapter = store
 
     try:
         # set default terms
         if not internal_id:
-            internal_id = name.lower().replace(' ', '-')
+            internal_id = name.lower().replace(" ", "-")
         if not label:
             label = name
 
-        LOG.info(f'adding a new term: {label} with {term_category} to {institute}')
+        LOG.info(f"adding a new term: {label} with {term_category} to {institute}")
         load_evaluation_term(
             adapter=adapter,
             internal_id=internal_id,
@@ -54,19 +58,23 @@ def evaluation_term(internal_id, name, label, description, rank, evidence, insti
         LOG.warning(e)
         raise click.Abort()
     else:
-        click.secho('✓ Added new term', fg='green')
+        click.secho("✓ Added new term", fg="green")
 
 
 @click.command("batch-evaluation-term", help="Load a variant evaluation term")
 @click.option(
-    "-f", "--file", type=click.File(), required=True, help="Load a json file with multiple evaluation terms"
+    "-f",
+    "--file",
+    type=click.File(),
+    required=True,
+    help="Load a json file with multiple evaluation terms",
 )
 @with_appcontext
 def batch_evaluation_terms(file):
     """Create multiple evalutaion terms stored in a file."""
     adapter = store
     try:
-        LOG.info(f'adding terms from {file}')
+        LOG.info(f"adding terms from {file}")
         for entry in json.load(file):
             load_evaluation_term(adapter, **entry)
     except ValueError as e:
@@ -75,4 +83,4 @@ def batch_evaluation_terms(file):
         LOG.warning(e)
         raise click.Abort()
     else:
-        click.secho('✓ Added new term', fg='green')
+        click.secho("✓ Added new term", fg="green")
