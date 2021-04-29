@@ -10,7 +10,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export Variants feature crashing when one of the variants has no primary transcripts
 ### Added
 - Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
+- Display custom evaluation terms in institute settings
+- Added comands for loading evalutaion terms into database and viewing loaded terms
+- Added support for evaluation terms specific to a given type of analysis or institute
 ### Changed
+- Manual rank and dismiss variant terms are read from database
 
 ## [4.33.1]
 ### Fixed
