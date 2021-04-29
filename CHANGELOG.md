@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Fixed
 - Make MitoMap link work for hg38 again
+- Export Variants feature crashing when one of the variants has no primary transcripts
 ### Added
 - Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
 ### Changed
