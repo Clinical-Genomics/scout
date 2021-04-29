@@ -37,7 +37,7 @@ class VariantEvaluationHandler(object):
         if analysis_type:
             target_analysis_types.append(analysis_type)
 
-        query = {"analysis": {"$in": target_institutes}, "institute": {"$in": target_institutes}}
+        query = {"analysis": {"$in": target_analysis_types}, "institute": {"$in": target_institutes}}
         return self.evaluation_terms_collection.find(query, sort=[("rank", pymongo.ASCENDING)])
 
 

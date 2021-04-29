@@ -11,44 +11,68 @@ import json
 LOG = logging.getLogger(__name__)
 
 
-@click.command("evaluation-term", short_help="Load a variant evaluation term")
-@click.option("-i", "--internal-id")
-@click.option("-l", "--label")
-@click.option("-n", "--institute")
-@click.option("-d", "--description")
-@click.option("-c", "--category", help="Type of evaluation term")
-@click.option("-a", "--analysis_type", default='all')
-@click.option("-e", "--evidence", multiple=True)
+@click.command("evaluation-term", help="Load a variant evaluation term")
+@click.option("-i", "--internal-id", help="Unique id of a term")
+@click.option("-n", "--name", required=True, help="Displayed name of a term")
+@click.option("-l", "--label", help="Displayed shorthand name of a term")
+@click.option("-d", "--description", help="Full description of a term")
 @click.option(
     "-r", "--rank", type=int, help="Rank used for determening the order entries are displayed"
 )
-@click.option(
-    "-f", "--file", type=click.File(), help="Load a json file with multiple evaluation terms"
-)
+@click.option("-e", "--evidence", multiple=True, help="Type of evidence for a term")
+@click.option("-s", "--institute", default='all', help="Limit the term to a an")
+@click.option("-c", "--term_category", help="Type of evaluation term")
+@click.option("-a", "--analysis_type", default='all', help="Limit the term to a given analysis type")
 @with_appcontext
-def evaluation_term(internal_id, institute, label, description, category, analysis_type, evidence, rank, file):
+def evaluation_term(internal_id, name, label, description, rank, evidence, institute,  term_category, analysis_type):
     """Create a new evalution term and add it to the database."""
     adapter = store
 
     try:
-        if file:
-            for entry in json.load(file):
-                load_evaluation_term(adapter, **entry)
-        else:
-            if not label:
-                label = internal_id
+        # set default terms
+        if not internal_id:
+            internal_id = name.lower().replace(' ', '-')
+        if not label:
+            label = name
 
-                load_evaluation_term(
-                    adapter=adapter,
-                    term_categroy=category,
-                    type=analysis_type,
-                    internal_id=internal_id,
-                    institute=institute,
-                    label=label,
-                    description=description,
-                    evidence=evidence,
-                    rank=rank,
-                )
+        LOG.info(f'adding a new term: {label} with {category} to {institute}')
+        load_evaluation_term(
+            adapter=adapter,
+            internal_id=internal_id,
+            name=name,
+            label=label,
+            description=description,
+            rank=rank,
+            evidence=evidence,
+            institute=institute,
+            term_category=term_category,
+            analysis_type=analysis_type,
+        )
+    except ValueError as e:
+        raise click.UsageError(e)
     except Exception as e:
         LOG.warning(e)
         raise click.Abort()
+    else:
+        click.secho('✓ Added new term', fg='green')
+
+
+@click.command("batch-evaluation-term", help="Load a variant evaluation term")
+@click.option(
+    "-f", "--file", type=click.File(), required=True, help="Load a json file with multiple evaluation terms"
+)
+@with_appcontext
+def batch_evaluation_terms(file):
+    """Create multiple evalutaion terms stored in a file."""
+    adapter = store
+    try:
+        LOG.info(f'adding terms from {file}')
+        for entry in json.load(file):
+            load_evaluation_term(adapter, **entry)
+    except ValueError as e:
+        raise click.UsageError(e)
+    except Exception as e:
+        LOG.warning(e)
+        raise click.Abort()
+    else:
+        click.secho('✓ Added new term', fg='green')

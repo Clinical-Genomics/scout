@@ -6,8 +6,8 @@
       "label_class": "default",
       "institute": "all",
       "internal_id": "unknown-significance",
-      "analysis": "all",
-      "type": "manual_rank",
+      "analysis_type": "all",
+      "term_category": "manual_rank",
       "rank": 9
    },
    {
@@ -17,8 +17,8 @@
       "label_class": "danger",
       "institute": "all",
       "internal_id": "known-pathogenic",
-      "analysis": "all",
-      "type": "manual_rank",
+      "analysis_type": "all",
+      "term_category": "manual_rank",
       "rank": 8
    },
    {
@@ -28,8 +28,8 @@
       "label_class": "danger",
       "institute": "all",
       "internal_id": "pathogenic",
-      "analysis": "all",
-      "type": "manual_rank",
+      "analysis_type": "all",
+      "term_category": "manual_rank",
       "rank": 7
    },
    {
@@ -39,8 +39,8 @@
       "label_class": "danger",
       "institute": "all",
       "internal_id": "novel-validated-pathogenic",
-      "analysis": "all",
-      "type": "manual_rank",
+      "analysis_type": "all",
+      "term_category": "manual_rank",
       "rank": 6
    },
    {
@@ -50,8 +50,8 @@
       "label_class": "danger",
       "institute": "all",
       "internal_id": "pathogenic-partial-phenotype",
-      "analysis": "all",
-      "type": "manual_rank",
+      "analysis_type": "all",
+      "term_category": "manual_rank",
       "rank": 5
    },
    {
@@ -61,8 +61,8 @@
       "label_class": "warning",
       "institute": "all",
       "internal_id": "likely-pathogenic",
-      "analysis": "all",
-      "type": "manual_rank",
+      "analysis_type": "all",
+      "term_category": "manual_rank",
       "rank": 4
    },
    {
@@ -72,8 +72,8 @@
       "label_class": "primary",
       "institute": "all",
       "internal_id": "possibly-pathogenic",
-      "analysis": "all",
-      "type": "manual_rank",
+      "analysis_type": "all",
+      "term_category": "manual_rank",
       "rank": 3
    },
    {
@@ -83,8 +83,8 @@
       "label_class": "info",
       "institute": "all",
       "internal_id": "likely-benign",
-      "analysis": "all",
-      "type": "manual_rank",
+      "analysis_type": "all",
+      "term_category": "manual_rank",
       "rank": 2
    },
    {
@@ -94,8 +94,8 @@
       "label_class": "success",
       "institute": "all",
       "internal_id": "benign",
-      "analysis": "all",
-      "type": "manual_rank",
+      "analysis_type": "all",
+      "term_category": "manual_rank",
       "rank": 1
    },
    {
@@ -105,8 +105,8 @@
       "label_class": "default",
       "institute": "all",
       "internal_id": "other",
-      "analysis": "all",
-      "type": "manual_rank",
+      "analysis_type": "all",
+      "term_category": "manual_rank",
       "rank": 0
    }
 ]
