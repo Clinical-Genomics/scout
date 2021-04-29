@@ -246,12 +246,17 @@ def parse_variant(
     if somatic_score:
         parsed_variant["somatic_score"] = int(somatic_score)
 
-    ################# Add mitomap info #################
+    ################# Add mitomap info, from HmtNote #################
     mitomap_associated_diseases = variant.INFO.get("MitomapAssociatedDiseases")
     if mitomap_associated_diseases and mitomap_associated_diseases != ".":
         parsed_variant["mitomap_associated_diseases"] = str(
             mitomap_associated_diseases.replace("_", " ")
         )
+
+    ################# Add HmtVar variant id, from HmtNote #################
+    hmtvar_variant_id = variant.INFO.get("HmtVar")
+    if hmtvar_variant_id and hmtvar_variant_id != ".":
+        parsed_variant["hmtvar_variant_id"] = int(hmtvar_variant_id)
 
     ################# Add custom info ##################
     scout_custom_data = variant.INFO.get("SCOUT_CUSTOM")

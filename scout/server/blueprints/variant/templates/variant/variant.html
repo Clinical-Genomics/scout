@@ -613,8 +613,11 @@
             <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
           {% endif %}
           <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
-          {% if variant.chromosome == 'MT' %}
+          {% if variant.chromosome in ['MT','M'] %}
             <a href="{{ variant.mitomap_link }}" class="btn btn-outline-secondary" target="_blank">MitoMap</a>
+          {% endif %}
+          {% if variant.hmtvar_variant_id %}
+            <a href="{{ variant.hmtvar_link }}" class="btn btn-outline-secondary" target="_blank">HmtVar</a>
           {% endif %}
           {% if gene.tp53_link %}
             <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>
