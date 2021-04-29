@@ -6,8 +6,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Fixed
+- Make MitoMap link work for hg38 again
 - Matching LoqusDB results with variants in database
 ### Added
+- Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
 ### Changed
 - Count total cases in LoqusDB by variant type when there are no variant observations
 
@@ -15,8 +17,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Include markdown for release autodeploy docs
 - Use standard inheritance model in ClinVar (https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt)
-- Fix issue crash with variants that have been unflagged causative not being avaliable in other causatives
+- Fix issue crash with variants that have been unflagged causative not being available in other causatives
+
 ### Added
+
 ### Changed
 
 ## [4.33]
