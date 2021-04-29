@@ -123,7 +123,21 @@
 {% macro custom_evaluation_terms_list(evaluation_terms) %}
 <div class="col-md-5 align-self-center">
   <div>
-    <h5>Custom evaluation terms</h5>
+    <h6>Custom evaluation terms</h6>
+    <ul class="list-group">
+      {% for term in evaluation_terms  %}
+        {% set color =  term.label_class if term.label_class else "list-group-item-dark" %}
+        <li class="list-group-item list-group-item-action {{ color }}">
+          <div data-toggle="tooltip" title="{{ term.description }}; {{ term.evidence }}" class="d-flex flex-row justify-content-between">
+            <div>
+              <h6 class="mb-0">{{ term.name }}</h6>
+            </div>
+            <span class="text-sm font-weight-light">Analysis: {{ term.analysis_type }}</span>
+            <span class="text-sm font-weight-light">Category: {{ term.term_category }}</span>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
   </div>
 </div>
 {% endmacro %}

@@ -27,7 +27,7 @@ class VariantEvaluationHandler(object):
         """List evaluation terms used by a institute."""
         query = {}
         if term_category:
-            query['type'] = term_category
+            query['term_category'] = term_category
 
         target_institutes = ["all"]
         if institute_id:
@@ -37,7 +37,8 @@ class VariantEvaluationHandler(object):
         if analysis_type:
             target_analysis_types.append(analysis_type)
 
-        query = {"analysis": {"$in": target_analysis_types}, "institute": {"$in": target_institutes}}
+        query = {"analysis_type": {"$in": target_analysis_types}, "institute": {"$in": target_institutes}}
+        LOG.debug(f'query for terms: "{query}"')
         return self.evaluation_terms_collection.find(query, sort=[("rank", pymongo.ASCENDING)])
 
 
@@ -51,6 +52,6 @@ class VariantEvaluationHandler(object):
         if analysis_type:
             target_analysis_types.append(analysis_type)
 
-        query = {"type": term_category, 'internal_id': term_id, 'analysis': target_analysis_types,
+        query = {"term_category": term_category, 'internal_id': term_id, 'analysis_type': target_analysis_types,
                 "institute": {"$in": target_institutes}}
         return self.evaluation_terms_collection.find_one(query, sort=[("rank", pymongo.ASCENDING)])

@@ -24,7 +24,7 @@ LOG = logging.getLogger(__name__)
 @click.option("-c", "--term_category", help="Type of evaluation term")
 @click.option("-a", "--analysis_type", default='all', help="Limit the term to a given analysis type")
 @with_appcontext
-def evaluation_term(internal_id, name, label, description, rank, evidence, institute,  term_category, analysis_type):
+def evaluation_term(internal_id, name, label, description, rank, evidence, institute, term_category, analysis_type):
     """Create a new evalution term and add it to the database."""
     adapter = store
 
@@ -35,7 +35,7 @@ def evaluation_term(internal_id, name, label, description, rank, evidence, insti
         if not label:
             label = name
 
-        LOG.info(f'adding a new term: {label} with {category} to {institute}')
+        LOG.info(f'adding a new term: {label} with {term_category} to {institute}')
         load_evaluation_term(
             adapter=adapter,
             internal_id=internal_id,

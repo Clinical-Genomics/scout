@@ -41,6 +41,12 @@ def build_variant_evaluation_terms(evaluation_terms):
 
         if term.get('evidence'):
             term_obj['evidence'] = term['evidence']
+
+        if term.get('analysis_type'):
+            term_obj['analysis_type'] = term['analysis_type']
+
+        if term.get('term_category'):
+            term_obj['term_category'] = term['term_category']
         # store processed term
         dissmiss_terms_obj.append(term_obj)
     return dissmiss_terms_obj
