@@ -46,9 +46,9 @@ def test_get_igv_tracks():
     assert "test track" in igv_tracks
 
 
-def test_observations_controller_non_existing(app, real_variant_database, case_obj, loqusdb):
+def test_observations_controller_non_existing(app, case_obj, loqusdb):
     ## GIVEN a database and a loqusdb mock without the variant
-    var_obj = real_variant_database.variant_collection.find_one()
+    var_obj = store.variant_collection.find_one()
     assert var_obj
 
     ## WHEN updating the case_id for the variant
@@ -57,7 +57,7 @@ def test_observations_controller_non_existing(app, real_variant_database, case_o
     data = None
     with app.test_client() as client:
         resp = client.get(url_for("auto_login"))
-        data = observations(real_variant_database, loqusdb, case_obj, var_obj)
+        data = observations(store, loqusdb, case_obj, var_obj)
 
     ## THEN assert that the number of cases is still returned
     assert data["total"] == loqusdb.nr_cases
@@ -67,23 +67,44 @@ def test_observations_controller_non_existing(app, real_variant_database, case_o
     assert data["cases"] == []
 
 
-def test_observations_controller(app, real_variant_database, case_obj, loqusdb):
-    ## GIVEN a database and a loqusdb mock with one variant from the database
-    var_obj = real_variant_database.variant_collection.find_one()
+def test_observations_controller_snv(app, case_obj, loqusdb):
+    """Testing observation controller to reatrieve observations for one SNV variant"""
+    # GIVEN a database with a case with a specific SNV variant
+    var_obj = store.variant_collection.find_one()
     assert var_obj
 
     loqusdb._add_variant(var_obj)
 
-    ## WHEN updating the case_id for the variant
+    # WHEN the same variant is in another case
     var_obj["case_id"] = "internal_id2"
 
-    data = None
     with app.test_client() as client:
         resp = client.get(url_for("auto_login"))
-        data = observations(real_variant_database, loqusdb, case_obj, var_obj)
+        data = observations(store, loqusdb, case_obj, var_obj)
 
-    ## THEN assert that the data was found
-    assert data
+        ## THEN loqus should return the occurrence from the first case
+        assert case_obj["_id"] in data["families"]
+
+
+def test_observations_controller_sv(app, case_obj, sv_variant_obj, loqusdb):
+    """Testing observation controller to reatrieve observations for one SV variant"""
+    # GIVEN a database with a case with a specific SV variant
+    store.variant_collection.insert_one(sv_variant_obj)
+    sv_var_obj = store.variant_collection.find_one({"category": "sv"})
+    assert sv_var_obj
+
+    loqusdb._add_variant(sv_var_obj)
+
+    # WHEN the same variant is in another case
+    sv_var_obj["case_id"] = "internal_id2"
+
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+        # THEN the observation of the original case should be found
+        data = observations(store, loqusdb, case_obj, sv_var_obj)
+
+        ## THEN loqus should return the occurrence from the first case
+        assert case_obj["_id"] in data["families"]
 
 
 def test_case_variant_check_causatives(app, real_variant_database):
