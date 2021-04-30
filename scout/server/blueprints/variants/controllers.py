@@ -10,7 +10,7 @@ from flask_login import current_user
 from flask_mail import Message
 from werkzeug.datastructures import Headers, MultiDict
 from xlsxwriter import Workbook
-from scout.build.variant import build_variant_evaluation_terms
+from scout.build.variant import build_variant_evaluation_terms, build_evaluation_term
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
@@ -232,13 +232,18 @@ def get_manual_assessments(store, institute_obj, variant_obj):
         assessment = {}
         if variant_obj.get(assessment_type) is not None:
             if assessment_type == "manual_rank":
+                query = {'term_category': assessment_type,
+                        'institute_id': institute_obj["internal_id"]}
                 manual_rank_id = variant_obj[assessment_type]
-                term = store.get_evaluation_term(
-                    assessment_type, manual_rank_id, institute_id=institute_obj["internal_id"]
-                )
-                assessment["title"] = "Manual rank: {}".format(term["description"])
-                assessment["label"] = term["label"]
-                assessment["display_class"] = term["label_class"]
+                if isinstance(manual_rank_id, (int)):
+                    query['rank'] = manual_rank_id
+                else:
+                    query['term_id'] = manual_rank_id
+                term = store.get_evaluation_term(**query)
+                term_obj = build_evaluation_term(term)
+                assessment["title"] = "Manual rank: {}".format(term_obj["description"])
+                assessment["label"] = term_obj["label"]
+                assessment["display_class"] = term_obj["label_class"]
 
             if assessment_type == "cancer_tier":
                 cancer_tier = variant_obj[assessment_type]
@@ -259,21 +264,18 @@ def get_manual_assessments(store, institute_obj, variant_obj):
                 assessment["display_class"] = classification["color"]
 
             if assessment_type == "dismiss_variant":
-                eval_terms = store.evaluation_terms("dismissal_term", analysis_type="cancer")
-                dismiss_variant_options = build_variant_evaluation_terms(eval_terms)
-
                 assessment["label"] = "Dismissed"
                 assessment["title"] = "dismiss:<br>"
                 for reason in variant_obj[assessment_type]:
-                    if not isinstance(reason, int):
-                        try:
-                            reason = int(reason)
-                        except ValueError:
-                            reason = reason
-                        assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                            dismiss_variant_options[reason]["label"],
-                            dismiss_variant_options[reason]["description"],
-                        )
+                    query = {'term_category': 'dismissal_term',
+                            'analysis_type': 'cancer'}
+                    try:
+                        query['rank'] = int(reason)
+                    except ValueError:
+                        query['term_id'] = reason
+                    term = store.get_evaluation_term(**query)
+                    term_obj = build_evaluation_term(term)
+                    assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(term_obj["name"], term_obj["description"])
                 assessment["display_class"] = "secondary"
 
             if assessment_type == "mosaic_tags":

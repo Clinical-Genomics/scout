@@ -26,6 +26,10 @@ hpo_terms_def_file = "demo/resources/hpo_terms.csv"
 # Additional resources
 madeline_file = "demo/madeline.xml"
 
+# variant evaluation files
+dismissal_terms_file = 'resources/variant_dismissal_terms.json'
+manual_rank_file = 'resources/variant_manual_rank_terms.json'
+
 ###### Paths ######
 
 # Gene paths
@@ -55,6 +59,8 @@ hpo_terms_def_path = pkg_resources.resource_filename("scout", hpo_terms_def_file
 
 # Additional paths
 madeline_path = pkg_resources.resource_filename("scout", madeline_file)
+dismissal_terms_path = pkg_resources.resource_filename("scout", dismissal_terms_file)
+manual_rank_path = pkg_resources.resource_filename("scout", manual_rank_file)
 
 demo_files = {
     "exac_path": exac_reduced_path,
@@ -70,4 +76,6 @@ demo_files = {
     "transcripts37_path": transcripts37_reduced_path,
     "transcripts38_path": transcripts38_reduced_path,
     "panel_path": transcripts38_reduced_path,
+    "dismissal_terms_path": dismissal_terms_path,
+    "manual_rank_path": manual_rank_path,
 }

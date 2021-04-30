@@ -8,6 +8,7 @@ import pymongo
 import pytest
 import yaml
 from cyvcf2 import VCF
+import json
 
 # Adapter stuff
 from mongomock import MongoClient
@@ -50,8 +51,10 @@ from scout.demo.resources import (
     phenotype_to_genes_reduced_path,
     transcripts37_reduced_path,
     transcripts38_reduced_path,
+    dismissal_terms_path,
+    manual_rank_path,
 )
-from scout.load import load_hgnc_genes
+from scout.load import load_hgnc_genes, load_evaluation_term
 from scout.load.hpo import load_hpo
 from scout.load.transcript import load_transcripts
 from scout.log import init_log
@@ -681,6 +684,17 @@ def real_institute_database(request, real_adapter, institute_obj, user_obj):
 
 
 @pytest.fixture(scope="function")
+def real_evaluation_term_database(request, real_institute_database):
+    """Returns fan adapter to a database populated with evaluation terms."""
+    adapter = real_institute_database
+    for term_file_path in [dismissal_terms_path, manual_rank_path]:
+        with open(term_file_path) as inpt:
+            for term in json.load(inpt):
+                load_evaluation_term(adapter, **term)
+    return adapter
+
+
+@pytest.fixture(scope="function")
 def gene_database(request, institute_database, genes):
     "Returns an adapter to a database populated with user, institute, case and genes"
     adapter = institute_database
@@ -707,7 +721,7 @@ def gene_database(request, institute_database, genes):
 @pytest.fixture(scope="function")
 def real_gene_database(
     request,
-    real_institute_database,
+    real_evaluation_term_database,
     genes37_handle,
     hgnc_handle,
     exac_handle,
@@ -716,7 +730,7 @@ def real_gene_database(
     hpo_genes_handle,
 ):
     "Returns an adapter to a database populated with user, institute, case and genes"
-    adapter = real_institute_database
+    adapter = real_evaluation_term_database
 
     load_hgnc_genes(
         adapter=adapter,
