@@ -779,7 +779,7 @@ def persistent_filter_actions(
 
     if bool(request_form.get("audit_filter")):
         filter_id = request_form.get("filters")
-        form = store.audit_filter(filter_id, institute_obj, case_obj, user_obj, category)
+        filter_obj = store.audit_filter(filter_id, institute_obj, case_obj, user_obj, category)
         if filter_obj is not None:
             form = FiltersFormClass(MultiDict(filter_obj))
         else:

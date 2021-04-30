@@ -90,6 +90,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         variant_id=None,
         level=None,
         comments=False,
+        audits=False,
         panel=None,
     ):
         """Fetch events from the database.
@@ -100,6 +101,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
           variant_id (str, optional): global variant id
           level (str, optional): restrict comments to 'specific' or 'global'
           comments (bool, optional): restrict events to include only comments
+          audits (bool, optional): restrict events to include only audits
           panel (str): A panel name
 
         Returns:
@@ -152,6 +154,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
                 if comments:
                     query["verb"] = "comment"
+
+                if audits:
+                    query["verb"] = "filter_audit"
 
         return self.event_collection.find(query).sort("created_at", pymongo.DESCENDING)
 

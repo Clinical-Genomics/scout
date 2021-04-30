@@ -68,6 +68,7 @@ VERBS_MAP = {
     "mme_add": "exported to MatchMaker patient",
     "mme_remove": "removed from MatchMaker patient",
     "filter_stash": "stored a filter for",
+    "filter_audit": "marked case audited with filter",
     "update_sample": "updated sample data for",
     "update_case_group_ids": "updated case group ids for",
 }

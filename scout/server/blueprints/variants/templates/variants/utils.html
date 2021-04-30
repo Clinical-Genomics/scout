@@ -677,6 +677,7 @@
     </div>
     <div class="btn-group col-4" role="group">
       {{ form.load_filter(class="btn btn-secondary", disabled=form.filters.choices|length==0) }}
+      {{ form.audit_filter(class="btn btn-secondary bg-info", title="Note selected filter audited for this case.", disabled=form.filters.choices|length==0) }}
       <button name="lock_filter" type="submit" value="Lock filter" class="btn btn-primary btn-sm" aria-hidden="true" title="Toggle filter lock" id="lock_filter" disabled="{{form.filters.choices|length==0}}">
               <span id="stash_filter_padlock" class="fa fa-unlock"></span></button>
       {{ form.delete_filter(class="btn btn-secondary bg-danger", data_toggle="tooltip", data_placement="top",
