@@ -56,6 +56,7 @@ Below are available configuration parameters for a Scout case. Names marked with
 	- **is_sma_carrier**  _Bool/None_  # True / False if SMA carriership determined - None if not done.
 	- **mother** _String/Int_ Sample id for mother or 0
 	- **msi** _Int_ Microsatellite instability [0-60]
+        - **mt_bam** _String_ Path to the reduced mitochondrial bam/cram alignment file
 	- **phenotype(*)** _String_ Specifies the affection status {affected, unaffected, unknown}  
 	- **rhocall_bed** _String_ Path to bed file to view alignments [Reference][rhocall]
 	- **rhocall_wig** _String_ Path to wig file to view alignments [Reference][rhocall]
