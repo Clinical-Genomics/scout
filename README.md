@@ -24,3 +24,9 @@ Examples:
 Examples: 
 `feature/3`
 `fix/4`
+
+
+### Bump the version on master (by code-owner):
+- Cloning the master branch locally or pull master into local existing clone
+- Run: `bump2version patch|minor|major` if applicable
+- Push version bump: `git push && git push --tags` if applicable
