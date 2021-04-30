@@ -241,7 +241,6 @@ def build_variant(
     if "hmtvar_variant_id" in variant:
         variant_obj["hmtvar_variant_id"] = variant["hmtvar_variant_id"]
 
-
     gt_types = []
     for sample in variant.get("samples", []):
         gt_call = build_genotype(sample)

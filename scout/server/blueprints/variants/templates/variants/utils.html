@@ -123,7 +123,7 @@
   </table>
 {% endmacro %}
 
-{% macro modal_causative(case, institute, variant) %}
+{% macro modal_causative(case, institute, variant, filters) %}
 <div class="modal fade" id="causativeModal" tabindex="-1" role="dialog" aria-labelledby="causativeLabel"
   aria-hidden="true" onsubmit="return validate_causative_form();">
   <div class="modal-dialog modal-lg" role="document">
@@ -201,7 +201,7 @@
 </div>
 {% endmacro %}
 
-{% macro snv_filters(form, institute, case)%}
+{% macro snv_filters(form, institute, case, filters)%}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
 <div class="form-group">
   <div class="row">
@@ -328,7 +328,7 @@
 </div>
 {% endmacro %}
 
-{% macro str_filters(form, institute, case) %}
+{% macro str_filters(form, institute, case, filters) %}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
 <div class="form-group">
   <div class="row">
@@ -522,7 +522,7 @@
 </div>
 {% endmacro %}
 
-{% macro cancer_filters(form, institute, case) %}
+{% macro cancer_filters(form, institute, case, filters) %}
     {{ form.csrf_token }}
     {{ form.variant_type() }}
     <div class="form-group">

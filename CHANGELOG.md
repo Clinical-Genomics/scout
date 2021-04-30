@@ -13,17 +13,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
 ### Changed
+- SV clinical filter no longer filters out sub 100 nt variants
 
 ## [4.33.1]
 ### Fixed
 - Include markdown for release autodeploy docs
 - Use standard inheritance model in ClinVar (https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt)
 - Fix issue crash with variants that have been unflagged causative not being available in other causatives
-
 ### Added
-
 ### Changed
-- SV clinical filter no longer filters out sub 100 nt variants
 
 ## [4.33]
 ### Fixed

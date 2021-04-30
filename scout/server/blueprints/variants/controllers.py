@@ -861,16 +861,8 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
             store, institute_obj, case_obj, user_obj, category, request_obj.form
         )
 
-    # populate filters dropdown
-    available_filters = store.filters(institute_obj["_id"], category)
-    form.filters.choices = [
-        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
-    ]
-
     # populate available panel choices
     form.gene_panels.choices = gene_panel_choices(institute_obj, case_obj)
-
-    form = update_form_hgnc_symbols(store, case_obj, form)
 
     return form
 

@@ -130,7 +130,7 @@
     </div>
   ">
     {% if variant.cadd_score %}
-      {{ variant.cadd_score|round(1) }}
+      {{ variant.cadd_score|round(1) }}
     {% else %}
       -
     {% endif %}
@@ -201,6 +201,8 @@
 
     window.onload=function() {
       populateCytobands({{cytobands|safe}});
+
+      {{ update_stash_filter_button_status(filters) }}
     }
 
     $('select[multiple]').selectpicker({
@@ -208,23 +210,7 @@
     });
 
     $("#filters").change(function () {
-     {% for filter in filters %}
-      if ($(this).val() === "{{ filter._id }}") {
-        {% if filter.lock %}
-          $("#stash_filter_padlock").removeClass("fa-unlock");
-          $("#stash_filter_padlock").addClass("fa-lock");
-          $("#stash_filter_delete").disabled = true;
-          {% if filter.owner == current_user._id %}
-            $("#stash_filter_padlock").disabled = false;
-          {% elif filter.owner and filter.owner != current_user._id %}
-            $("#stash_filter_padlock").disabled = true;
-          {% endif %}
-        {% else %}
-          $("#stash_filter_padlock").removeClass("fa-lock");
-          $("#stash_filter_padlock").addClass("fa-unlock");
-        {% endif %}
-      };
-      {% endfor %}
+      {{ update_stash_filter_button_status(filters) }}
     });
 
     $(function () {
@@ -254,3 +240,24 @@
     });
    </script>
 {% endblock %}
+
+{% macro update_stash_filter_button_status(filters) %}
+ {% for filter in filters %}
+    if ($("#filters").val() === "{{ filter._id }}") {
+      {% if filter.lock %}
+        $("#stash_filter_padlock").removeClass("fa-unlock");
+        $("#stash_filter_padlock").addClass("fa-lock");
+        $("#stash_filter_delete").attr("disabled", true);
+        {% if filter.owner == current_user._id %}
+          $("#stash_filter_padlock").attr("disabled", false);
+        {% elif filter.owner and filter.owner != current_user._id %}
+          $("#stash_filter_padlock").attr("disabled",true);
+        {% endif %}
+      {% else %}
+        $("#stash_filter_padlock").removeClass("fa-lock");
+        $("#stash_filter_padlock").addClass("fa-unlock");
+        $("#stash_filter_delete").attr("disabled",false);
+      {% endif %}
+    };
+  {% endfor %}
+{% endmacro %}
