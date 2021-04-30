@@ -4,6 +4,9 @@
 Scout have the possibility to store loads of information about a case and the samples that are included. It is cumbersome to specify to many parameters on the command line so there is an option to give this information in a yaml formated config file.
 Here we can give scout some meta information about the analysis, how it was performed, information about family, samples etc.
 
+Format is [Yaml] [yaml].
+
+Example configuration files are found here: `<scout root dir>/scout/demo/643594.config.yaml`
 
 ### Depreication Warnings:
 `bam_file`, `bam_path` and `alignment_path` are redundant in internal usage. Future versions of Scout will only
@@ -121,3 +124,4 @@ analysis tools. See [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure/blo
 [peddy]: https://github.com/brentp/peddy
 [tiddit]: https://github.com/SciLifeLab/TIDDIT
 [rhocall]: https://github.com/dnil/rhocall
+[yaml]: https://yaml.org
