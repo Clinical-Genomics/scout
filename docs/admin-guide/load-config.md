@@ -69,7 +69,7 @@ Below are available configuration parameters for a Scout case. Names marked with
 	- **sex(*)** _String_ Sex of the sample in human readable format
 	- **tiddit_coverage_wig** _String_ Path to wig file to view alignments [Reference][tiddit]
 	- **tissue_type** _String_ Sample tissue origin i.e. blood, muscle, 
-	- **tmb** _String_ Tumor mutational burden
+	- **tmb** _Int_ Tumor mutational burden [0, 1000]
 	- **tumor_purity** _Float_ Purity of tumor sample [0.1, 1.0]
 	- **tumor_type** _String_ Type of tumor
 	- **upd_regions_bed** _String_ Path to bed file to view alignments [Reference][upd]
