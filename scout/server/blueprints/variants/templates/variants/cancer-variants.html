@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
-{% from "variants/utils.html" import cancer_filters, tier_cell, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer %}
+{% from "variants/utils.html" import cancer_filters, tier_cell, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status %}
 
 {% block title %}
   {{ variant_type|capitalize }} cancer variants
