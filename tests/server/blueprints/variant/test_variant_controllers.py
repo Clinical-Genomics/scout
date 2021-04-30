@@ -68,7 +68,7 @@ def test_observations_controller_non_existing(app, case_obj, loqusdb):
 
 
 def test_observations_controller_snv(app, case_obj, loqusdb):
-    """Testing observation controller to reatrieve observations for one SNV variant"""
+    """Testing observation controller to retrieve observations for one SNV variant"""
     # GIVEN a database with a case with a specific SNV variant
     var_obj = store.variant_collection.find_one()
     assert var_obj
@@ -100,6 +100,7 @@ def test_observations_controller_sv(app, case_obj, sv_variant_obj, loqusdb):
 
     # WHEN the same variant is in another case
     sv_var_obj["case_id"] = "internal_id2"
+    # match all SVs in that position, regardless of type
     sv_var_obj["variant_id"] = "someOtherVarID"
 
     with app.test_client() as client:
