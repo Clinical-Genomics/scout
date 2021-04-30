@@ -52,5 +52,6 @@ def test_get_institute_exclusive_evaluation_term(adapter, param_name):
     assert sum(1 for i in adapter.evaluation_terms()) == 1
 
     ##THEN assert that the exclusive transcript is there
+    param_name = "institute_id" if param_name == "institute" else param_name
     query = {param_name: "foobar"}
-    assert sum(1 for i in adapter.evaluation_terms(query)) == 2
+    assert sum(1 for i in adapter.evaluation_terms(**query)) == 2
