@@ -119,7 +119,7 @@ for download on the case page. Such SV files can be visualized using standard ar
 analysis tools. See [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure/blob/master/README.md).
 
 [arriba]: https://arriba.readthedocs.io/en/latest/
-[bjhall]: https://github.com/bjhall/upd
+[upd]: https://github.com/bjhall/upd
 [multiqc]: https://github.com/ewels/multiqc
 [peddy]: https://github.com/brentp/peddy
 [tiddit]: https://github.com/SciLifeLab/TIDDIT
