@@ -16,7 +16,7 @@ recursive-include scout/server/**/static *
 recursive-include scout/server/translations *
 
 # static files
-recursive-include scout/resources *.gz
+recursive-include scout/resources *.gz *.json
 recursive-include scout/demo *
 
 # tests
