@@ -248,7 +248,7 @@ class VariantHandler(VariantLoader):
     ):
         """Returns the specified variant.
 
-        Arguments:
+        Ars:
             document_id : A md5 key that represents the variant or "variant_id"
             gene_panels(List[GenePanel])
             case_id (str): case id (will search with "variant_id")
@@ -291,6 +291,26 @@ class VariantHandler(VariantLoader):
             variant_obj["is_par"] = is_par(variant_obj["chromosome"], variant_obj["position"])
 
         return variant_obj
+
+    def case_variant_by_coordinates(self, case_id, category, chrom, chrom_end, start, end):
+        """Return a variant for a case that has the given coordinates
+
+        Args:
+            case_id (str): case id
+            category (str): "sv" or "snv"
+            chrom (str): variant chromosome
+            chrom_end (str): end chromosome
+            start (int): start position
+            end (int): end position
+
+        Returns:
+            variant_obj (Variant): a variant object dictionary
+        """
+        query = dict(case_id=case_id, category=category, chromosome=chrom, position=start, end=end)
+        if chrom_end and chrom_end != chrom:
+            query["end_chrom"] = chrom_end
+
+        return self.variant_collection.find_one(query)
 
     def gene_variants(
         self,

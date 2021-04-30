@@ -305,22 +305,25 @@ def observations(store, loqusdb, case_obj, variant_obj):
         obs_data(dict)
     """
     chrom = variant_obj["chromosome"]
+    end_chrom = variant_obj.get("end_chrom", chrom)
     pos = variant_obj["position"]
+    end = variant_obj["end"]
     ref = variant_obj["reference"]
     alt = variant_obj["alternative"]
     var_case_id = variant_obj["case_id"]
     var_type = variant_obj.get("variant_type", "clinical")
+    category = variant_obj["category"]
 
     composite_id = "{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt)
     variant_query = {
         "_id": composite_id,
         "chrom": chrom,
-        "end_chrom": variant_obj.get("end_chrom", chrom),
+        "end_chrom": end_chrom,
         "pos": pos,
-        "end": variant_obj["end"],
+        "end": end,
         "length": variant_obj.get("length", 0),
         "variant_type": variant_obj.get("sub_category", "").upper(),
-        "category": variant_obj["category"],
+        "category": category,
     }
 
     institute_id = variant_obj["institute"]
@@ -329,7 +332,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)
         obs_data["total"] = loqusdb.case_count(
-            variant_category=variant_obj["category"]
+            variant_category=category
         )  # count only cases having the specific type of variant (snv/sv)
         return obs_data
 
@@ -357,8 +360,15 @@ def observations(store, loqusdb, case_obj, variant_obj):
         other_variant = store.variant(
             case_id=other_case["_id"], document_id=variant_obj["variant_id"]
         )
+
+        # IF variant is SV variant, look for variants with different sub_category occurring at the same coordinates
+        if other_variant is None and category == "sv":
+            other_variant = store.case_variant_by_coordinates(
+                other_case["_id"], category, chrom, end_chrom, pos, end
+            )
+
         # If the other variant is not loaded we skip it
-        if not other_variant:
+        if other_variant is None:
             continue
         obs_data["cases"].append(dict(case=other_case, variant=other_variant))
 
