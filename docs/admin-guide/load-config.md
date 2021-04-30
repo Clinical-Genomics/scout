@@ -71,8 +71,8 @@ Below are available configuration parameters for a Scout case. Names marked with
 	- **tmb** _String_ Tumor mutational burden
 	- **tumor_purity** _Float_ Purity of tumor sample [0.1, 1.0]
 	- **tumor_type** _String_ Type of tumor
-	- **upd_regions_bed** _String_ Path to bed file to view alignments [Reference][bjhall]
-	- **upd_sites_bed** _String_ Path to bed file to view alignments [Reference][bjhall]
+	- **upd_regions_bed** _String_ Path to bed file to view alignments [Reference][upd]
+	- **upd_sites_bed** _String_ Path to bed file to view alignments [Reference][upd]
 	- **vcf2cytosure** _String_ Path to CGH file to allow download per individual
 - **smn_tsv** _String_ Path to an SMN TSV file
 - **synopsis** _String_ Synopsis of case.
@@ -119,9 +119,9 @@ for download on the case page. Such SV files can be visualized using standard ar
 analysis tools. See [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure/blob/master/README.md).
 
 [arriba]: https://arriba.readthedocs.io/en/latest/
-[upd]: https://github.com/bjhall/upd
 [multiqc]: https://github.com/ewels/multiqc
 [peddy]: https://github.com/brentp/peddy
-[tiddit]: https://github.com/SciLifeLab/TIDDIT
 [rhocall]: https://github.com/dnil/rhocall
+[tiddit]: https://github.com/SciLifeLab/TIDDIT
+[upd]: https://github.com/bjhall/upd
 [yaml]: https://yaml.org
