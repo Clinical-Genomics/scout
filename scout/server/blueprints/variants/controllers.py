@@ -761,19 +761,21 @@ def persistent_filter_actions(
 
     if bool(request_form.get("lock_filter")):
         filter_id = request_form.get("filters")
-        filter_obj = store.lock_filter(filter_id, user_obj._id)
-        if filter_obj is not None:
-            form = FiltersFormClass(MultiDict(filter_obj))
-        else:
-            flash("Requested filter could not be locked", "warning")
 
-    if bool(request_form.get("unlock_filter")):
-        filter_id = request_form.get("filters")
-        filter_obj = store.unlock_filter(filter_id, user_obj._id)
+        filter_obj = store.retrieve_filter(filter_id)
+        if not filter_obj:
+            flash("Requested filter could not be found", "warning")
+            return form
+
+        if filter_obj.get("lock"):
+            filter_obj = store.unlock_filter(filter_id, current_user.email)
+        else:
+            filter_obj = store.lock_filter(filter_id, current_user.email)
+
         if filter_obj is not None:
             form = FiltersFormClass(MultiDict(filter_obj))
         else:
-            flash("Requested filter could not be unlocked.", "warning")
+            flash("Requested filter lock could not be toggled", "warning")
 
     if bool(request_form.get("audit_filter")):
         filter_id = request_form.get("filters")

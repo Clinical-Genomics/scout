@@ -677,7 +677,8 @@
     </div>
     <div class="btn-group col-4" role="group">
       {{ form.load_filter(class="btn btn-secondary", disabled=form.filters.choices|length==0) }}
-      <button class="btn btn-primary btn-sm" aria-hidden="true" id="stash_filter_lock" disabled="{{form.filters.choices|length==0}}"><i id="stash_filter_padlock" class="fa fa-unlock"></i></button>
+      <button name="lock_filter" type="submit" value="Lock filter" class="btn btn-primary btn-sm" aria-hidden="true" title="Toggle filter lock" id="lock_filter" disabled="{{form.filters.choices|length==0}}">
+              <span id="stash_filter_padlock" class="fa fa-unlock"></span></button>
       {{ form.delete_filter(class="btn btn-secondary bg-danger", data_toggle="tooltip", data_placement="top",
         id="stash_filter_delete", title="Delete selected filter for this institute.", disabled=form.filters.choices|length==0) }}
     </div>
@@ -692,15 +693,15 @@
         $("#stash_filter_padlock").addClass("fa-lock");
         $("#stash_filter_delete").attr("disabled", true);
         {% if filter.owner == current_user._id %}
-          $("#stash_filter_lock").attr("disabled", false);
+          $("#lock_filter").attr("disabled", false);
         {% elif filter.owner and filter.owner != current_user._id %}
-          $("#stash_filter_lock").attr("disabled",true);
+          $("#lock_filter").attr("disabled",true);
         {% endif %}
       {% else %}
         $("#stash_filter_padlock").removeClass("fa-lock");
         $("#stash_filter_padlock").addClass("fa-unlock");
         $("#stash_filter_delete").attr("disabled",false);
-        $("#stash_filter_lock").attr("disabled",false);
+        $("#lock_filter").attr("disabled",false);
       {% endif %}
     };
   {% endfor %}
