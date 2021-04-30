@@ -13,76 +13,76 @@ support `alignment_path`.
 ### Configuration Parameters
 Below are available configuration parameters for a Scout case. Names marked with asterix (*) are mandatory. 
 
-- **analysis_date(*)** Time for analysis in datetime format. Defaults to time of uploading. Example `2016-10-12 14:00:46`
-- **cnv_report** Path to the CNV report file.
-- **coverage_qc_report** Path to static coverage and qc report file.
-- **cohorts** List of strings, for meta organising study participants or cases.
-- **collaborators** list of collaborators
-- **coverage_qc_report** Path to html file with coverage and qc report.
-- **default_gene_panels** List of default gene panels. Variants from the genes in the gene panels specified will be shown when opening the case in scout
-- **delivery_report**: Path to html delivery report.
-- **family(*)**  Unique id of family in the configuration.
-- **gene_fusion_report** Path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from default clinical data.
-- **gene_fusion_report_research** Path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from research data.
-- **gene_panels** List of gene panels. This will specify what panels the case has been run with.
-- **human_genome_build** Version of genome version used.
-- **lims_id** Lims Id used.
-- **madeline** Path to a madeline pedigree file in xml format.
-- **multiqc** Path to a [multiqc][multiqc] report with arbitrary information.
-- **owner(*)**  Institute who owns current case. Must refer to existing institute
-- **peddy_check** Path to a [peddy][peddy] ped check file.
-- **peddy_ped** Path to a [peddy][peddy] ped file with an analysis of the pedigree based on variant information.
-- **peddy_sex** Path to a [peddy][peddy] ped sex check file.
-- **phenotype_terms** List of phenotype terms.
-- **rank model version** Which rank model that was used when scoring the variants.
-- **rank_score_treshold** Only include variants with a rank score above this treshold.
-- **samples** List of samples included in the case:
-	- **alignment_path** Path to bam file to view alignments
-	- **analysis_type** specifies the analysis type for the sample
-	- **bam_file** Path to bam file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*
-	- **bam_path** Path to bam file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*
-	- **capture_kit** for exome specifies the capture kit
-	- **chromograph_images**:
-		- **autozygous**: Path to file.
-		- **upd_regions**: Path to file.
-		- **upd_sites**: Path to file.
-	- **confirmed_parent**: True if parent confirmed.
-	- **expected_coverage** The level of expected coverage.
-	- **father** Sample id for father or 0
-	- **is_sma**: True / False if SMA status determined - None if not done.
-	- **is_sma_carrier**:  # True / False if SMA carriership determined - None if not done.
-	- **mother** sample id for mother or 0
-	- **msi** Microsatellite instability [0-60]
-	- **phenotype(*)** Specifies the affection status {affected, unaffected, unknown}  
-	- **rhocall_bed** Path to bed file to view alignments [Reference][rhocall]
-	- **rhocall_wig** Path to wig file to view alignments [Reference][rhocall]
-	- **samlple_id(*)** Identifyer for a sample 
-	- **sample_name**: Name of sample.
-	- **sex (*)**:{male, female, unknown} 
-	- **smn1_cn** int Copynumber
-	- **smn2_cn** int Copynumber
-	- **smn2delta78_cn** int Copynumber
-	- **sex(*)** Sex of the sample in human readable format
-	- **tiddit_coverage_wig** Path to wig file to view alignments [Reference][tiddit]
-	- **tissue_type** Sample tissue origin i.e. blood, muscle, 
-	- **tmb** Tumor mutational burden
-	- **tumor_purity** Purity of tumor sample
-	- **tumor_type** Type of tumor
-	- **upd_regions_bed** Path to bed file to view alignments [Reference][bjhall]
-	- **upd_sites_bed** Path to bed file to view alignments [Reference][bjhall]
-	- **vcf2cytosure** Path to CGH file to allow download per individual
-- **smn_tsv** Path to an SMN TSV file
-- **synopsis** Synopsis of case.
-- **sv_rank_model_version** String
-- **track** Type of track: {"rare", "cancer"}. Default: "rare".
-- **vcf_file** A dictionary with vcf files
-- **sv_rank_model_version** the SV rank model version used when scoring SV variants
-- **vcf_cancer** Path to canver vcf file.
-- **vcf_cancer_research** Path to vcf file with all variants.
-- **vcf_snv** Path to snv vcf file.
-- **vcf_snv_research** Path to vcf file with all variants.
-- **vcf_sv** Path to sv vcf file
-- **vcf_sv_research** Path to vcf file with all variants.
+- **analysis_date(*)** _Datetime_ Time for analysis in datetime format. Defaults to time of uploading. Example `2016-10-12 14:00:46`
+- **cnv_report** _String_ Path to the CNV report file.
+- **coverage_qc_report** _String_ Path to static coverage and qc report file.
+- **cohorts** _List of strings_ Meta organising study participants or cases.
+- **collaborators** _List of strings_ List of collaborators
+- **coverage_qc_report** _String_ Path to html file with coverage and qc report.
+- **default_gene_panels** _List of strings_ List of default gene panels. Variants from the genes in the gene panels specified will be shown when opening the case in scout
+- **delivery_report** _String_: Path to html delivery report.
+- **family(*)**  _String_ Unique id of family in the configuration.
+- **gene_fusion_report** _String_ Path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from default clinical data.
+- **gene_fusion_report_research** _String_ Path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from research data.
+- **gene_panels** _List of strings_ List of gene panels. Specifies what panels the case has been run with.
+- **human_genome_build** _String_ Version of genome version used.
+- **lims_id** _String_ Lims Id used.
+- **madeline** _String_ Path to a madeline pedigree file in xml format.
+- **multiqc** _String_ Path to a [multiqc][multiqc] report with arbitrary information.
+- **owner(*)**  _String_ Institute who owns current case. Must refer to existing institute
+- **peddy_check** _String_ Path to a [peddy][peddy] ped check file.
+- **peddy_ped** _String_ Path to a [peddy][peddy] ped file with an analysis of the pedigree based on variant information.
+- **peddy_sex** _String_ Path to a [peddy][peddy] ped sex check file.
+- **phenotype_terms** _List of strings_ List of phenotype terms.
+- **rank model version** _String_ Which rank model that was used when scoring the variants.
+- **rank_score_treshold** _Float_ Only include variants with a rank score above this treshold.
+- **samples** _List_ List of samples included in the case:
+	- **alignment_path** _String_ Path to bam file to view alignments
+	- **analysis_type** _String_ Specifies the analysis type for the sample
+	- **bam_file** _String_ Path to bam file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*
+	- **bam_path** _String_ Path to bam file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*
+	- **capture_kit** _String_ Exome specifies the capture kit
+	- **chromograph_images** _List_
+		- **autozygous** _String_ Path to file.
+		- **upd_regions** _String_ Path to file.
+		- **upd_sites** _String_ Path to file.
+	- **confirmed_parent** _Bool_ True if parent confirmed.
+	- **expected_coverage** _Int_ The level of expected coverage.
+	- **father** _String/Int_ Sample id for father or 0
+	- **is_sma** _Bool/None_ if SMA status determined - None if not done.
+	- **is_sma_carrier**  _Bool/None_  # True / False if SMA carriership determined - None if not done.
+	- **mother** _String/Int_ Sample id for mother or 0
+	- **msi** _Int_ Microsatellite instability [0-60]
+	- **phenotype(*)** _String_ Specifies the affection status {affected, unaffected, unknown}  
+	- **rhocall_bed** _String_ Path to bed file to view alignments [Reference][rhocall]
+	- **rhocall_wig** _String_ Path to wig file to view alignments [Reference][rhocall]
+	- **samlple_id(*)** _String_ Identifyer for a sample 
+	- **sample_name**: _String_ Name of sample.
+	- **sex (*)**: _String_ One of: {male, female, unknown} 
+	- **smn1_cn** _Int_ Copynumber
+	- **smn2_cn** _Int_ Copynumber
+	- **smn2delta78_cn** _Int_ Copynumber
+	- **sex(*)** _String_ Sex of the sample in human readable format
+	- **tiddit_coverage_wig** _String_ Path to wig file to view alignments [Reference][tiddit]
+	- **tissue_type** _String_ Sample tissue origin i.e. blood, muscle, 
+	- **tmb** _String_ Tumor mutational burden
+	- **tumor_purity** _Float_ Purity of tumor sample [0.1, 1.0]
+	- **tumor_type** _String_ Type of tumor
+	- **upd_regions_bed** _String_ Path to bed file to view alignments [Reference][bjhall]
+	- **upd_sites_bed** _String_ Path to bed file to view alignments [Reference][bjhall]
+	- **vcf2cytosure** _String_ Path to CGH file to allow download per individual
+- **smn_tsv** _String_ Path to an SMN TSV file
+- **synopsis** _String_ Synopsis of case.
+- **sv_rank_model_version** _String_ Rank model that was used when scoring the variants
+- **track** _String_ Type of track: {"rare", "cancer"}. Default: "rare".
+- **vcf_file** _String_ Path to dictionary with vcf files
+- **sv_rank_model_version** _String_ SV rank model version used when scoring SV variants
+- **vcf_cancer** _String_ Path to canver vcf file.
+- **vcf_cancer_research** _String_ Path to vcf file with all variants.
+- **vcf_snv** _String_ Path to snv vcf file.
+- **vcf_snv_research** _String_ Path to vcf file with all variants.
+- **vcf_sv** _String_ Path to sv vcf file
+- **vcf_sv_research** _String_ Path to vcf file with all variants.
 
 
 
