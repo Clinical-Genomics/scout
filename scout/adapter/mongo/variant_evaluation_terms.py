@@ -44,17 +44,19 @@ class VariantEvaluationHandler(object):
         LOG.debug(f'query for terms: "{query}"')
         return self.evaluation_terms_collection.find(query, sort=[("rank", pymongo.ASCENDING)])
 
-    def get_evaluation_term(self, term_category, term_id=None, rank=None, analysis_type=None, institute_id=None):
+    def get_evaluation_term(
+        self, term_category, term_id=None, rank=None, analysis_type=None, institute_id=None
+    ):
         """Get evaluation term data."""
         # for backwards compat
         if not term_id and not rank:
-            raise ValueError('neither internal_id nor rank was provided')
+            raise ValueError("neither internal_id nor rank was provided")
         query = {}
         if term_id:
-            query['internal_id'] = term_id
+            query["internal_id"] = term_id
 
         if rank:
-            query['rank'] = rank
+            query["rank"] = rank
 
         target_institutes = ["all"]
         if institute_id:
@@ -65,7 +67,8 @@ class VariantEvaluationHandler(object):
             target_analysis_types.append(analysis_type)
 
         # build final query
-        query = {**query,
+        query = {
+            **query,
             "term_category": term_category,
             "analysis_type": {"$in": target_analysis_types},
             "institute": {"$in": target_institutes},

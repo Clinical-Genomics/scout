@@ -51,9 +51,9 @@ def load_evaluation_term(
             "term_category": term_category,
         }
         rank_query = adapter.evaluation_terms_collection.find_one(
-                query, sort=[("rank", pymongo.DESCENDING)]
+            query, sort=[("rank", pymongo.DESCENDING)]
         )
-        last_rank = rank_query['rank'] if rank_query else 0
+        last_rank = rank_query["rank"] if rank_query else 0
         # rank to the next rank in the order
         rank = last_rank + 1
 

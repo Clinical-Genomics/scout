@@ -232,13 +232,15 @@ def get_manual_assessments(store, institute_obj, variant_obj):
         assessment = {}
         if variant_obj.get(assessment_type) is not None:
             if assessment_type == "manual_rank":
-                query = {'term_category': assessment_type,
-                        'institute_id': institute_obj["internal_id"]}
+                query = {
+                    "term_category": assessment_type,
+                    "institute_id": institute_obj["internal_id"],
+                }
                 manual_rank_id = variant_obj[assessment_type]
                 if isinstance(manual_rank_id, (int)):
-                    query['rank'] = manual_rank_id
+                    query["rank"] = manual_rank_id
                 else:
-                    query['term_id'] = manual_rank_id
+                    query["term_id"] = manual_rank_id
                 term = store.get_evaluation_term(**query)
                 term_obj = build_evaluation_term(term)
                 assessment["title"] = "Manual rank: {}".format(term_obj["description"])
@@ -267,15 +269,16 @@ def get_manual_assessments(store, institute_obj, variant_obj):
                 assessment["label"] = "Dismissed"
                 assessment["title"] = "dismiss:<br>"
                 for reason in variant_obj[assessment_type]:
-                    query = {'term_category': 'dismissal_term',
-                            'analysis_type': 'cancer'}
+                    query = {"term_category": "dismissal_term", "analysis_type": "cancer"}
                     try:
-                        query['rank'] = int(reason)
+                        query["rank"] = int(reason)
                     except ValueError:
-                        query['term_id'] = reason
+                        query["term_id"] = reason
                     term = store.get_evaluation_term(**query)
                     term_obj = build_evaluation_term(term)
-                    assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(term_obj["name"], term_obj["description"])
+                    assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
+                        term_obj["name"], term_obj["description"]
+                    )
                 assessment["display_class"] = "secondary"
 
             if assessment_type == "mosaic_tags":

@@ -27,8 +27,8 @@ hpo_terms_def_file = "demo/resources/hpo_terms.csv"
 madeline_file = "demo/madeline.xml"
 
 # variant evaluation files
-dismissal_terms_file = 'resources/variant_dismissal_terms.json'
-manual_rank_file = 'resources/variant_manual_rank_terms.json'
+dismissal_terms_file = "resources/variant_dismissal_terms.json"
+manual_rank_file = "resources/variant_manual_rank_terms.json"
 
 ###### Paths ######
 
