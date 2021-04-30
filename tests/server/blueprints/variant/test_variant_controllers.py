@@ -87,7 +87,10 @@ def test_observations_controller_snv(app, case_obj, loqusdb):
 
 
 def test_observations_controller_sv(app, case_obj, sv_variant_obj, loqusdb):
-    """Testing observation controller to reatrieve observations for one SV variant"""
+    """Testing observations controller to retrieve observations for one SV variant.
+    Specifically test that observations in other SV variants are accounted for even if
+    variants subcategory is different, resulting in a different variant_obj[variant_id].
+    """
     # GIVEN a database with a case with a specific SV variant
     store.variant_collection.insert_one(sv_variant_obj)
     sv_var_obj = store.variant_collection.find_one({"category": "sv"})
@@ -97,6 +100,7 @@ def test_observations_controller_sv(app, case_obj, sv_variant_obj, loqusdb):
 
     # WHEN the same variant is in another case
     sv_var_obj["case_id"] = "internal_id2"
+    sv_var_obj["variant_id"] = "someOtherVarID"
 
     with app.test_client() as client:
         resp = client.get(url_for("auto_login"))
