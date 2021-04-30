@@ -1,20 +1,22 @@
 import logging
 
-from flask import Blueprint, current_app, flash, jsonify, redirect, request, url_for
+from flask import (Blueprint, current_app, flash, jsonify, redirect, request,
+                   url_for)
 from flask_login import current_user
 
 from scout.constants import ACMG_CRITERIA, ACMG_MAP
 from scout.parse.clinvar import set_submission_objects
 from scout.server.blueprints.variant.controllers import clinvar_export
-from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
+from scout.server.blueprints.variant.controllers import \
+				evaluation as evaluation_controller
 from scout.server.blueprints.variant.controllers import observations
-from scout.server.blueprints.variant.controllers import variant as variant_controller
-from scout.server.blueprints.variant.controllers import variant_acmg as acmg_controller
+from scout.server.blueprints.variant.controllers import \
+				variant as variant_controller
+from scout.server.blueprints.variant.controllers import \
+				variant_acmg as acmg_controller
 from scout.server.blueprints.variant.controllers import variant_acmg_post
 from scout.server.blueprints.variant.verification_controllers import (
-    MissingVerificationRecipientError,
-    variant_verification,
-)
+				MissingVerificationRecipientError, variant_verification)
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, public_endpoint, templated
 from scout.utils.acmg import get_acmg

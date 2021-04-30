@@ -6,6 +6,7 @@ from .aliases import aliases
 from .case import cases
 from .collections import collections
 from .diseases import diseases
+from .evaluation_terms import evaluation_terms
 from .hgnc import hgnc
 from .hpo import hpo
 from .index import index
@@ -13,7 +14,6 @@ from .individuals import individuals
 from .institutes import institutes
 from .intervals import intervals
 from .panels import panels
-from .evaluation_terms import evaluation_terms
 from .transcripts import transcripts
 from .users import users
 

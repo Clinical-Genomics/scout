@@ -1,4 +1,5 @@
 """CLI for adding a new evalution term to the database."""
+import json
 import logging
 
 import click
@@ -6,7 +7,6 @@ from flask.cli import with_appcontext
 
 from scout.load import load_evaluation_term
 from scout.server.extensions import store
-import json
 
 LOG = logging.getLogger(__name__)
 

@@ -6,6 +6,9 @@ import click
 
 from .case import case as case_command
 from .cytoband import cytoband as cytoband_command
+from .evaluation_terms import \
+				batch_evaluation_terms as batch_evaluation_term_command
+from .evaluation_terms import evaluation_term as evaluation_term_command
 from .exons import exons as exons_command
 from .institute import institute as institute_command
 from .panel import panel as panel_command
@@ -17,8 +20,6 @@ from .report import gene_fusion_report as gene_fusion_report_command
 from .research import research as research_command
 from .user import user as user_command
 from .variants import variants as variants_command
-from .evaluation_terms import evaluation_term as evaluation_term_command
-from .evaluation_terms import batch_evaluation_terms as batch_evaluation_term_command
 
 LOG = logging.getLogger(__name__)
 

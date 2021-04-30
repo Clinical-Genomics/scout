@@ -2,7 +2,8 @@
 import datetime
 import logging
 
-from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask import (Blueprint, abort, flash, redirect, render_template, request,
+                   url_for)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 

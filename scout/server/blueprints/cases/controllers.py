@@ -14,24 +14,16 @@ from flask_login import current_user
 from flask_mail import Message
 from xlsxwriter import Workbook
 
-from scout.constants import (
-    CANCER_PHENOTYPE_MAP,
-    MT_COV_STATS_HEADER,
-    MT_EXPORT_HEADER,
-    PHENOTYPE_GROUPS,
-    PHENOTYPE_MAP,
-    SEX_MAP,
-    VERBS_MAP,
-)
-from scout.constants.variant_tags import (
-    CANCER_TIER_OPTIONS,
-    GENETIC_MODELS,
-)
-
 from scout.build.variant import build_variant_evaluation_terms
+from scout.constants import (CANCER_PHENOTYPE_MAP, MT_COV_STATS_HEADER,
+                             MT_EXPORT_HEADER, PHENOTYPE_GROUPS, PHENOTYPE_MAP,
+                             SEX_MAP, VERBS_MAP)
+from scout.constants.variant_tags import CANCER_TIER_OPTIONS, GENETIC_MODELS
 from scout.export.variant import export_mt_variants
-from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
-from scout.server.blueprints.variant.controllers import variant as variant_decorator
+from scout.parse.matchmaker import (genomic_features, hpo_terms, omim_terms,
+                                    parse_matches)
+from scout.server.blueprints.variant.controllers import \
+				variant as variant_decorator
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case
 from scout.utils.matchmaker import matchmaker_request

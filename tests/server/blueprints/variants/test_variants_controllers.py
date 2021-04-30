@@ -7,14 +7,8 @@ from wtforms import SelectField
 
 from scout.constants import CHROMOSOMES_38, EXPORT_HEADER
 from scout.server.blueprints.variants.controllers import (
-    gene_panel_choices,
-    match_gene_txs_variant_txs,
-    populate_chrom_choices,
-    sv_variants,
-    variant_export_lines,
-    variants,
-    variants_export_header,
-)
+				gene_panel_choices, match_gene_txs_variant_txs, populate_chrom_choices,
+				sv_variants, variant_export_lines, variants, variants_export_header)
 
 LOG = logging.getLogger(__name__)
 

@@ -1,5 +1,8 @@
 import logging
 
+from pymongo import MongoClient
+from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
+
 try:
     # Python 3.x
     from urllib.parse import quote_plus
@@ -7,8 +10,6 @@ except ImportError:
     # Python 2.x
     from urllib import quote_plus
 
-from pymongo import MongoClient
-from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 
 LOG = logging.getLogger(__name__)
 

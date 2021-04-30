@@ -17,11 +17,10 @@ import click
 from flask.cli import current_app, with_appcontext
 from pymongo.errors import ServerSelectionTimeoutError
 
-from scout.resources import evaluation_terms
-
 # Adapter stuff
 from scout.adapter import MongoAdapter
 from scout.load.setup import setup_scout
+from scout.resources import evaluation_terms
 
 LOG = logging.getLogger(__name__)
 

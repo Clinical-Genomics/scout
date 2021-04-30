@@ -2,6 +2,7 @@
 
 import logging
 from datetime import datetime
+
 import pymongo
 
 LOG = logging.getLogger(__name__)

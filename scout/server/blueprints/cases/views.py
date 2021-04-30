@@ -6,27 +6,17 @@ import re
 import shutil
 from operator import itemgetter
 
-from flask import (
-    Blueprint,
-    Response,
-    abort,
-    current_app,
-    flash,
-    jsonify,
-    redirect,
-    render_template,
-    request,
-    send_file,
-    send_from_directory,
-    url_for,
-)
+from flask import (Blueprint, Response, abort, current_app, flash, jsonify,
+                   redirect, render_template, request, send_file,
+                   send_from_directory, url_for)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from werkzeug.datastructures import Headers
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
 from scout.server.extensions import gens, mail, store
-from scout.server.utils import institute_and_case, templated, user_institutes, zip_dir_to_obj
+from scout.server.utils import (institute_and_case, templated, user_institutes,
+                                zip_dir_to_obj)
 
 from . import controllers
 

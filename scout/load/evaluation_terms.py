@@ -1,9 +1,9 @@
 """Load an evaluation term into the database."""
 
 
+import datetime
 import logging
 
-import datetime
 import pymongo
 
 LOG = logging.getLogger(__name__)

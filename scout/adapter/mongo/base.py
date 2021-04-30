@@ -44,7 +44,6 @@ from .hpo import HpoHandler
 from .index import IndexHandler
 from .institute import InstituteHandler
 from .managed_variant import ManagedVariantHandler
-from .variant_evaluation_terms import VariantEvaluationHandler
 from .matchmaker import MMEHandler
 from .omim import DiagnosisHandler
 from .panel import PanelHandler
@@ -53,6 +52,7 @@ from .query import QueryHandler
 from .transcript import TranscriptHandler
 from .user import UserHandler
 from .variant import VariantHandler
+from .variant_evaluation_terms import VariantEvaluationHandler
 
 log = logging.getLogger(__name__)
 

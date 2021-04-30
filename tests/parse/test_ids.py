@@ -1,10 +1,6 @@
-from scout.parse.variant.ids import (
-    parse_display_name,
-    parse_document_id,
-    parse_ids,
-    parse_simple_id,
-    parse_variant_id,
-)
+from scout.parse.variant.ids import (parse_display_name, parse_document_id,
+                                     parse_ids, parse_simple_id,
+                                     parse_variant_id)
 from scout.utils.md5 import generate_md5_key
 
 

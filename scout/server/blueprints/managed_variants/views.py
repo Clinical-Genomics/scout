@@ -8,7 +8,8 @@ from scout.server.extensions import store
 from scout.server.utils import templated, user_institutes
 
 from . import controllers
-from .forms import ManagedVariantAddForm, ManagedVariantModifyForm, ManagedVariantsFilterForm
+from .forms import (ManagedVariantAddForm, ManagedVariantModifyForm,
+                    ManagedVariantsFilterForm)
 
 LOG = logging.getLogger(__name__)
 
