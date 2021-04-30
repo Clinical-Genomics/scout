@@ -1,5 +1,4 @@
-from scout.parse.variant.frequency import (parse_frequencies, parse_frequency,
-                                           parse_sv_frequencies)
+from scout.parse.variant.frequency import parse_frequencies, parse_frequency, parse_sv_frequencies
 
 
 def test_parse_frequency(cyvcf2_variant):

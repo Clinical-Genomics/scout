@@ -6,8 +6,7 @@ from subprocess import CalledProcessError
 import pytest
 
 from scout.server.extensions.loqus_extension import LoqusDB
-from scout.server.extensions.loqus_extension import \
-				execute_command as execute_command
+from scout.server.extensions.loqus_extension import execute_command as execute_command
 
 
 def test_set_coordinates_no_variant_type():

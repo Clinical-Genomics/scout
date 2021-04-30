@@ -6,9 +6,12 @@ from flask import current_app, url_for
 from flask_login import current_user
 
 from scout.constants import IGV_TRACKS
-from scout.server.blueprints.variant.controllers import (get_igv_tracks,
-                                                         has_rna_tracks,
-                                                         observations, variant)
+from scout.server.blueprints.variant.controllers import (
+    get_igv_tracks,
+    has_rna_tracks,
+    observations,
+    variant,
+)
 from scout.server.extensions import cloud_tracks, loqusdb, store
 
 LOG = logging.getLogger(__name__)

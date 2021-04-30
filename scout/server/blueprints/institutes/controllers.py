@@ -9,8 +9,7 @@ from flask import flash
 from flask_login import current_user
 
 from scout.constants import CASE_STATUSES
-from scout.parse.clinvar import (clinvar_submission_header,
-                                 clinvar_submission_lines)
+from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.utils import predictions
 from scout.server.extensions import store
@@ -20,8 +19,6 @@ from scout.utils.md5 import generate_md5_key
 from .forms import CaseFilterForm
 
 LOG = logging.getLogger(__name__)
-
-
 
 
 # Do not assume all cases have a valid track set

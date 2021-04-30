@@ -1,8 +1,7 @@
 import pytest
 
 from scout.exceptions import DataNotFoundError, IntegrityError
-from scout.load.report import (load_cnv_report, load_coverage_qc_report,
-                               load_delivery_report)
+from scout.load.report import load_cnv_report, load_coverage_qc_report, load_delivery_report
 
 
 def test_load_delivery_report_bad_case_id(adapter):

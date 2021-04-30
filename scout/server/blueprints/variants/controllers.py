@@ -11,24 +11,35 @@ from flask_mail import Message
 from werkzeug.datastructures import Headers, MultiDict
 from xlsxwriter import Workbook
 
-from scout.build.variant import (build_evaluation_term,
-                                 build_variant_evaluation_terms)
-from scout.constants import (ACMG_COMPLETE_MAP, ACMG_MAP, ACMG_OPTIONS,
-                             CALLERS, CANCER_TIER_OPTIONS, CHROMOSOMES,
-                             CHROMOSOMES_38, CLINSIG_MAP, MOSAICISM_OPTIONS,
-                             SEVERE_SO_TERMS, SPIDEX_HUMAN, VERBS_MAP)
+from scout.build.variant import build_evaluation_term, build_variant_evaluation_terms
+from scout.constants import (
+    ACMG_COMPLETE_MAP,
+    ACMG_MAP,
+    ACMG_OPTIONS,
+    CALLERS,
+    CANCER_TIER_OPTIONS,
+    CHROMOSOMES,
+    CHROMOSOMES_38,
+    CLINSIG_MAP,
+    MOSAICISM_OPTIONS,
+    SEVERE_SO_TERMS,
+    SPIDEX_HUMAN,
+    VERBS_MAP,
+)
 from scout.constants.acmg import ACMG_CRITERIA
-from scout.constants.variants_export import (EXPORT_HEADER,
-                                             VERIFIED_VARIANTS_HEADER)
+from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
 from scout.server.blueprints.variant.utils import clinsig_human, predictions
 from scout.server.links import cosmic_link, ensembl, str_source_link
-from scout.server.utils import (case_append_alignments, institute_and_case,
-                                user_institutes, variant_case)
+from scout.server.utils import (
+    case_append_alignments,
+    institute_and_case,
+    user_institutes,
+    variant_case,
+)
 from scout.utils.scout_requests import fetch_refseq_version
 
-from .forms import (CancerFiltersForm, FiltersForm, StrFiltersForm,
-                    SvFiltersForm, VariantFiltersForm)
+from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
 LOG = logging.getLogger(__name__)
 

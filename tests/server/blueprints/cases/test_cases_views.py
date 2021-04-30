@@ -8,8 +8,7 @@ from flask_login import current_user
 
 from scout.demo import delivery_report_path
 from scout.server.blueprints.cases import controllers
-from scout.server.blueprints.cases.views import (parse_raw_gene_ids,
-                                                 parse_raw_gene_symbols)
+from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_gene_symbols
 from scout.server.extensions import mail, store
 
 TEST_TOKEN = "test_token"

@@ -1,8 +1,11 @@
 """Tests to parse coordinates"""
 
-from scout.parse.variant.coordinates import (get_cytoband_coordinates,
-                                             parse_coordinates, sv_end,
-                                             sv_length)
+from scout.parse.variant.coordinates import (
+    get_cytoband_coordinates,
+    parse_coordinates,
+    sv_end,
+    sv_length,
+)
 
 
 def test_parse_coordinates_snv(mock_variant):

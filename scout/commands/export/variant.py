@@ -8,8 +8,7 @@ from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
 from scout.constants import CALLERS
-from scout.constants.variants_export import (VCF_HEADER,
-                                             VERIFIED_VARIANTS_HEADER)
+from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_variants, export_verified_variants
 from scout.server.extensions import store
 

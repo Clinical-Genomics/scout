@@ -1,7 +1,6 @@
 """Tests for scout server links"""
 
-from scout.server.links import (add_gene_links, cbioportal, mycancergenome,
-                                snp_links)
+from scout.server.links import add_gene_links, cbioportal, mycancergenome, snp_links
 
 
 def test_add_gene_links():

@@ -11,6 +11,7 @@ from pymongo.errors import ConnectionFailure
 # General, logging
 from scout import __version__
 from scout.adapter.client import get_connection
+
 # Adapter stuff
 from scout.adapter.mongo import MongoAdapter
 from scout.adapter.utils import check_connection

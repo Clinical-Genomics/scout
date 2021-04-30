@@ -6,8 +6,7 @@ import click
 
 from .case import case as case_command
 from .cytoband import cytoband as cytoband_command
-from .evaluation_terms import \
-				batch_evaluation_terms as batch_evaluation_term_command
+from .evaluation_terms import batch_evaluation_terms as batch_evaluation_term_command
 from .evaluation_terms import evaluation_term as evaluation_term_command
 from .exons import exons as exons_command
 from .institute import institute as institute_command

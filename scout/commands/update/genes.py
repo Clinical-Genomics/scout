@@ -23,11 +23,14 @@ from flask.cli import current_app, with_appcontext
 
 from scout.load import load_hgnc_genes, load_transcripts
 from scout.server.extensions import store
-from scout.utils.scout_requests import (fetch_ensembl_genes,
-                                        fetch_ensembl_transcripts,
-                                        fetch_exac_constraint,
-                                        fetch_genes_to_hpo_to_disease,
-                                        fetch_hgnc, fetch_mim_files)
+from scout.utils.scout_requests import (
+    fetch_ensembl_genes,
+    fetch_ensembl_transcripts,
+    fetch_exac_constraint,
+    fetch_genes_to_hpo_to_disease,
+    fetch_hgnc,
+    fetch_mim_files,
+)
 
 LOG = logging.getLogger(__name__)
 

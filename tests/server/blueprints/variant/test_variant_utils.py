@@ -1,7 +1,15 @@
 from scout.server.blueprints.variant.utils import (
-				add_panel_specific_gene_info, clinsig_human, end_position, evaluation,
-				frequencies, frequency, is_affected, predictions, transcript_str,
-				update_transcripts_information)
+    add_panel_specific_gene_info,
+    clinsig_human,
+    end_position,
+    evaluation,
+    frequencies,
+    frequency,
+    is_affected,
+    predictions,
+    transcript_str,
+    update_transcripts_information,
+)
 
 
 def test_clinsig_human():

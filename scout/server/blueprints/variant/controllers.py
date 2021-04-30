@@ -5,20 +5,41 @@ from flask import url_for
 from flask_login import current_user
 
 from scout.build.variant import build_variant_evaluation_terms
-from scout.constants import (ACMG_COMPLETE_MAP, ACMG_CRITERIA, ACMG_MAP,
-                             ACMG_OPTIONS, CALLERS, CANCER_TIER_OPTIONS,
-                             CLINVAR_INHERITANCE_MODELS, IGV_TRACKS,
-                             MOSAICISM_OPTIONS, VERBS_MAP)
+from scout.constants import (
+    ACMG_COMPLETE_MAP,
+    ACMG_CRITERIA,
+    ACMG_MAP,
+    ACMG_OPTIONS,
+    CALLERS,
+    CANCER_TIER_OPTIONS,
+    CLINVAR_INHERITANCE_MODELS,
+    IGV_TRACKS,
+    MOSAICISM_OPTIONS,
+    VERBS_MAP,
+)
 from scout.parse.variant.ids import parse_document_id
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import ensembl, get_variant_links
-from scout.server.utils import (case_append_alignments, institute_and_case,
-                                user_institutes, variant_case)
+from scout.server.utils import (
+    case_append_alignments,
+    institute_and_case,
+    user_institutes,
+    variant_case,
+)
 from scout.utils.scout_requests import fetch_refseq_version
 
-from .utils import (add_gene_info, callers, clinsig_human, default_panels,
-                    end_position, evaluation, frequencies, frequency,
-                    is_affected, predictions)
+from .utils import (
+    add_gene_info,
+    callers,
+    clinsig_human,
+    default_panels,
+    end_position,
+    evaluation,
+    frequencies,
+    frequency,
+    is_affected,
+    predictions,
+)
 
 LOG = logging.getLogger(__name__)
 

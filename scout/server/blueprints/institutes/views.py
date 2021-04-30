@@ -3,20 +3,24 @@ import logging
 
 import pymongo
 from bson import ObjectId
-from flask import (Blueprint, Response, flash, redirect, render_template,
-                   request, url_for)
+from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
 from scout.build.variant import build_variant_evaluation_terms
-from scout.constants import (ACMG_COMPLETE_MAP, ACMG_MAP, CASE_SEARCH_TERMS,
-                             CASEDATA_HEADER, CLINVAR_HEADER, PHENOTYPE_GROUPS)
+from scout.constants import (
+    ACMG_COMPLETE_MAP,
+    ACMG_MAP,
+    CASE_SEARCH_TERMS,
+    CASEDATA_HEADER,
+    CLINVAR_HEADER,
+    PHENOTYPE_GROUPS,
+)
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, templated, user_institutes
 
 from . import controllers
-from .forms import (GeneVariantFiltersForm, InstituteForm, PhenoModelForm,
-                    PhenoSubPanelForm)
+from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
 
 LOG = logging.getLogger(__name__)
 

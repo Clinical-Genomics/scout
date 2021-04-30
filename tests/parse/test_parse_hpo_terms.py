@@ -1,5 +1,4 @@
-from scout.parse.hpo_terms import (build_hpo_tree,
-                                   get_incomplete_penetrance_genes)
+from scout.parse.hpo_terms import build_hpo_tree, get_incomplete_penetrance_genes
 
 
 def test_build_hpo_tree(hpo_terms_handle):

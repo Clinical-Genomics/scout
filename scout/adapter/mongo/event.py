@@ -14,7 +14,6 @@ COMMENT_LEVELS = ["global", "specific"]
 LOG = logging.getLogger(__name__)
 
 
-
 class EventHandler(CaseEventHandler, VariantEventHandler):
     """Class to handle events for the mongo adapter"""
 

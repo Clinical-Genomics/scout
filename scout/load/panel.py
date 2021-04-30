@@ -8,8 +8,7 @@ import logging
 
 from click import Abort
 
-from scout.parse.panel import (get_panel_info, parse_gene_panel,
-                               parse_panel_app_panel)
+from scout.parse.panel import get_panel_info, parse_gene_panel, parse_panel_app_panel
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import fetch_resource
 
