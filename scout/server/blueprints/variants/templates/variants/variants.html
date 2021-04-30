@@ -1,5 +1,5 @@
 {% extends "layout_bs4.html" %}
-{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, mark_heteroplasmic_mt %}
+{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, mark_heteroplasmic_mt %}
 {% from "variants/components.html" import gene_cell, frequency_cell %}
 
 {% block title %}
@@ -202,7 +202,7 @@
     window.onload=function() {
       populateCytobands({{cytobands|safe}});
 
-      {{ update_stash_filter_button_status(filters) }}
+      {{ update_stash_filter_button_status(current_user, filters) }}
     }
 
     $('select[multiple]').selectpicker({
@@ -210,7 +210,7 @@
     });
 
     $("#filters").change(function () {
-      {{ update_stash_filter_button_status(filters) }}
+      {{ update_stash_filter_button_status(current_user, filters) }}
     });
 
     $(function () {
@@ -241,23 +241,3 @@
    </script>
 {% endblock %}
 
-{% macro update_stash_filter_button_status(filters) %}
- {% for filter in filters %}
-    if ($("#filters").val() === "{{ filter._id }}") {
-      {% if filter.lock %}
-        $("#stash_filter_padlock").removeClass("fa-unlock");
-        $("#stash_filter_padlock").addClass("fa-lock");
-        $("#stash_filter_delete").attr("disabled", true);
-        {% if filter.owner == current_user._id %}
-          $("#stash_filter_padlock").attr("disabled", false);
-        {% elif filter.owner and filter.owner != current_user._id %}
-          $("#stash_filter_padlock").attr("disabled",true);
-        {% endif %}
-      {% else %}
-        $("#stash_filter_padlock").removeClass("fa-lock");
-        $("#stash_filter_padlock").addClass("fa-unlock");
-        $("#stash_filter_delete").attr("disabled",false);
-      {% endif %}
-    };
-  {% endfor %}
-{% endmacro %}
