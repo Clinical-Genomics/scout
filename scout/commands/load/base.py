@@ -26,7 +26,6 @@ LOG = logging.getLogger(__name__)
 @click.group()
 def load():
     """Load items into the scout database."""
-    pass
 
 
 load.add_command(case_command)

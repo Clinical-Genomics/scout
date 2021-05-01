@@ -223,8 +223,6 @@ def configure_oauth_login(app):
 
 def configure_email_logging(app):
     """Setup logging of error/exceptions to email."""
-    import logging
-
     from scout.log import TlsSMTPHandler
 
     mail_handler = TlsSMTPHandler(
