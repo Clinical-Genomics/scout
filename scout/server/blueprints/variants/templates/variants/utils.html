@@ -668,14 +668,14 @@
 
 {% macro stash_filter_buttons(form, institute, case) %}
   <div class="row">
-    <div class="col-4 text-right">
+    <div class="col-3 text-right">
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#filterNameModal"><i class="fa fa-star"></i> Save filter</button>
     </div>
     {{ modal_prompt_filter_name(form) }}
-    <div class="col-4">
+    <div class="col-3">
       {{ form.filters(class="form-control") }}
     </div>
-    <div class="btn-group col-4" role="group">
+    <div class="btn-group col-6" role="group">
       {{ form.load_filter(class="btn btn-secondary", disabled=form.filters.choices|length==0) }}
       {{ form.audit_filter(class="btn btn-secondary bg-info", title="Note selected filter audited for this case.", disabled=form.filters.choices|length==0) }}
       <button name="lock_filter" type="submit" value="Lock filter" class="btn btn-primary btn-sm" aria-hidden="true" title="Toggle filter lock" id="lock_filter" disabled="{{form.filters.choices|length==0}}">
