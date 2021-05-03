@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added comands for loading evalutaion terms into database and viewing loaded terms
 - Added support for evaluation terms specific to a given type of analysis or institute
 ### Changed
+- Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - Manual rank and dismiss variant terms are read from database
 
 ## [4.33.1]
@@ -164,6 +165,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improve create new gene panel form validation
 - Make XM- transcripts less visible if they don't overlap with transcript refseq_id in variant page
 - Color of gene panels and comments panels on cases and variant pages
+- Do not choke if case is missing research variants when reserch requested
 
 ## [4.29.1]
 ### Added

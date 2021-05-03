@@ -392,7 +392,6 @@ def case_obj(request, parsed_case):
     case["owner"] = parsed_case["owner"]
     case["created_at"] = parsed_case["analysis_date"]
     case["dynamic_gene_list"] = []
-    case["genome_version"] = None
     case["has_svvariants"] = True
 
     case["individuals"][0]["sex"] = "1"
