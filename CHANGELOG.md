@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Relaxed matching of SVs Loqus occurrences in other cases (look for SVs with different subtype)
 ### Added
 - Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
+- Grey background for dismissed compounds in variants list and variant page
+- Pin badge for pinned compounds in variants list and variant page
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - Count total cases in LoqusDB by variant type when there are no variant observations
@@ -20,9 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Include markdown for release autodeploy docs
 - Use standard inheritance model in ClinVar (https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt)
 - Fix issue crash with variants that have been unflagged causative not being available in other causatives
-
 ### Added
-
 ### Changed
 
 ## [4.33]
