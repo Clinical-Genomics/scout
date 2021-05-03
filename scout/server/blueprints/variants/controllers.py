@@ -19,13 +19,13 @@ from scout.constants import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CHROMOSOMES,
-    SO_TERMS,
     CHROMOSOMES_38,
     CLINSIG_MAP,
     DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     SEVERE_SO_TERMS,
+    SO_TERMS,
     SPIDEX_HUMAN,
     VERBS_MAP,
 )
@@ -42,13 +42,7 @@ from scout.server.utils import (
 )
 from scout.utils.scout_requests import fetch_refseq_version
 
-from .forms import (
-    CancerFiltersForm,
-    FiltersForm,
-    StrFiltersForm,
-    SvFiltersForm,
-    VariantFiltersForm,
-)
+from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
 LOG = logging.getLogger(__name__)
 
