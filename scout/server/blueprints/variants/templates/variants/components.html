@@ -10,8 +10,7 @@
             <div>
               <strong>Models</strong>: {{ variant.first_rep_gene.inheritance|join(',') }}
             </div>
-          {% endif %}
-        </div>"
+          {% endif %}>
         {% if variant.first_rep_gene.phenotypes %}
           <div><strong>OMIM disease</strong>
           {% for disease in variant.first_rep_gene.phenotypes %}
@@ -19,11 +18,12 @@
                 {{ disease.description }}
             </div>
           {% endfor %}
-          </div>:
+          </div>
         {% endif %}
+        </div>"
         {% if variant.first_rep_gene %}
           href="{{ url_for('genes.gene', hgnc_id=variant.first_rep_gene.hgnc_id) }}"
-        {%  endif %}>
+        {% endif %}>
         {{ variant.first_rep_gene.hgnc_symbol or variant.first_rep_gene.hgnc_id }}
         {% if variant.secondary_gene %}
           <span class="text-muted">
