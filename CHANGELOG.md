@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Grey background for dismissed compounds in variants list and variant page
 - Pin badge for pinned compounds in variants list and variant page
 ### Changed
+- Remove parsing of case `genome_version`, since it's not used anywhere downstream
 
 ## [4.33.1]
 ### Fixed
