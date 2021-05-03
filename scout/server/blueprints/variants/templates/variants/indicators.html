@@ -1,3 +1,6 @@
+
+{% from "utils.html" import comments_table %}
+
 {% macro pin_indicator(variant, case) %}
   {% if variant._id in case.suspects %}
     <i class="fa fa-map-pin"></i>
@@ -12,7 +15,7 @@
 {% endmacro %}
 
 
-{% macro comments_badge(variant) %}
+{% macro comments_badge(institute, case, variant) %}
   {% set comment_count = variant.comments | count_cursor %}
   {% if comment_count > 0 %}
     {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
