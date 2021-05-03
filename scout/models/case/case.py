@@ -65,7 +65,6 @@ case = dict(
     gene_fusion_report=str,  # Path to the gene fusions report file
     gene_fusion_report_research=str,  # Path to the gene fusions research report file
     genome_build=str,  # This should be 37 or 38
-    genome_version=float,  # What version of the build
     group=list,  # a list of group ids for cases conceptually grouped together with this
     has_strvariants=bool,  # default=False
     has_svvariants=bool,  # default=False
