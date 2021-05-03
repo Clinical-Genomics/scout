@@ -579,8 +579,8 @@ def get_variant_info(genes):
 def cancer_variants(store, institute_id, case_name, variants_query, variant_count, form, page=1):
     """Fetch data related to cancer variants for a case.
 
-        For each variant, if one or more gene panels are selected, assign the gene present
-        in the panel as the second representative gene. If no gene panel is selected dont assign such a gene.
+    For each variant, if one or more gene panels are selected, assign the gene present
+    in the panel as the second representative gene. If no gene panel is selected dont assign such a gene.
     """
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -597,7 +597,10 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
 
         secondary_gene = None
 
-        if "first_rep_gene" in variant_obj and variant_obj["first_rep_gene"].get("hgnc_id") not in gene_panel_lookup:
+        if (
+            "first_rep_gene" in variant_obj
+            and variant_obj["first_rep_gene"].get("hgnc_id") not in gene_panel_lookup
+        ):
             for gene in variant_obj["genes"]:
                 in_panels = set(gene_panel_lookup.get(gene["hgnc_id"], []))
 
