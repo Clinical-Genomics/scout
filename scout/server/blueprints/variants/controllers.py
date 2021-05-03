@@ -1,45 +1,32 @@
 import datetime
 import logging
 import os.path
-import urllib.parse
 from datetime import date
-from pprint import pprint as pp
 
-from flask import Response, flash, request, url_for
+from flask import Response, flash, url_for
 from flask_login import current_user
-from flask_mail import Message
 from werkzeug.datastructures import Headers, MultiDict
 from xlsxwriter import Workbook
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
-    ACMG_OPTIONS,
     CALLERS,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CHROMOSOMES,
     CHROMOSOMES_38,
-    CLINSIG_MAP,
     DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     SEVERE_SO_TERMS,
-    SPIDEX_HUMAN,
-    VERBS_MAP,
+    SO_TERMS,
 )
-from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
 from scout.server.blueprints.variant.utils import clinsig_human, predictions
-from scout.server.links import cosmic_link, ensembl, str_source_link
-from scout.server.utils import (
-    case_append_alignments,
-    institute_and_case,
-    user_institutes,
-    variant_case,
-)
-from scout.utils.scout_requests import fetch_refseq_version
+from scout.server.links import cosmic_link, str_source_link
+from scout.server.utils import case_append_alignments, institute_and_case
 
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
@@ -412,6 +399,21 @@ def parse_variant(
     variant_obj["str_source_link"] = str_source_link(variant_obj)
     # Format clinvar information
     variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    # Set the gene with most severe consequence as being representative
+    # used for display purposes
+    if variant_genes:
+        first_rep_gene = min(
+            variant_genes, key=lambda gn: SO_TERMS[gn["functional_annotation"]]["rank"]
+        )
+        # get HGVNp identifier from the canonical transcript
+        hgvsp_identifier = None
+        for tc in first_rep_gene["transcripts"]:
+            if tc["is_canonical"]:
+                hgvsp_identifier = tc.get("protein_sequence_name")
+        first_rep_gene["hgvsp_identifier"] = hgvsp_identifier
+        variant_obj["first_rep_gene"] = first_rep_gene
+    else:
+        variant_obj["first_rep_gene"] = None
 
     return variant_obj
 
@@ -533,7 +535,7 @@ def match_gene_txs_variant_txs(variant_gene, hgnc_gene):
             pt_change = var_tx.get("protein_sequence_name") or "-"
 
             # collect info from primary transcripts
-            if tx_refseq in hgnc_gene.get("primary_transcripts"):
+            if tx_refseq in hgnc_gene.get("primary_transcripts", []):
                 primary_txs.append("/".join([tx_refseq or tx_id, hgvs, pt_change]))
 
             # collect info from canonical transcript
@@ -622,7 +624,11 @@ def get_variant_info(genes):
 
 
 def cancer_variants(store, institute_id, case_name, variants_query, variant_count, form, page=1):
-    """Fetch data related to cancer variants for a case."""
+    """Fetch data related to cancer variants for a case.
+
+    For each variant, if one or more gene panels are selected, assign the gene present
+    in the panel as the second representative gene. If no gene panel is selected dont assign such a gene.
+    """
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
@@ -632,8 +638,8 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
 
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
+    gene_panel_lookup = store.gene_to_panels(case_obj)  # build variant object
     variants_list = []
-
     for variant in variant_res:
         variant_obj = parse_variant(
             store,
