@@ -635,7 +635,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
     variants_list = []
 
     for variant in variant_res:
-        elem = parse_variant(
+        variant_obj = parse_variant(
             store,
             institute_obj,
             case_obj,
@@ -643,7 +643,20 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
             update=True,
             case_dismissed_vars=case_dismissed_vars,
         )
-        variants_list.append(elem)
+        secondary_gene = None
+
+        if (
+            "first_rep_gene" in variant_obj
+            and variant_obj["first_rep_gene"] is not None
+            and variant_obj["first_rep_gene"].get("hgnc_id") not in gene_panel_lookup
+        ):
+            for gene in variant_obj["genes"]:
+                in_panels = set(gene_panel_lookup.get(gene["hgnc_id"], []))
+
+                if len(in_panels & set(form.gene_panels.data)) > 0:
+                    secondary_gene = gene
+        variant_obj["second_rep_gene"] = secondary_gene
+        variants_list.append(variant_obj)
 
     data = dict(
         page=page,
