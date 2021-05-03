@@ -155,6 +155,25 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
         return self.event_collection.find(query).sort("created_at", pymongo.DESCENDING)
 
+    def case_events_by_verb(self, category, institute, case, verb):
+        """Return events with a specific verb for a case of an institute
+        Args:
+            category (str): "case" or "variant"
+            institute (dict): an institute id
+            case (dict): a case id
+            verb (dict): an event action verb, example: "dismiss_variant"
+
+        Returns:
+            pymongo.Cursor: Query results
+        """
+        query = {
+            "category": category,
+            "institute": institute["_id"],
+            "case": case["_id"],
+            "verb": verb,
+        }
+        return self.event_collection.find(query)
+
     def user_events(self, user_obj=None):
         """Fetch all events by a specific user."""
         query = dict(user_id=user_obj["_id"]) if user_obj else dict()
@@ -189,15 +208,15 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
                         hpo_results.append(term)
             else:
                 raise ValueError("Must supply either hpo or omim term")
-        except ValueError as e:
-            raise e
+
+        except ValueError as ex:
+            raise ex
 
         existing_terms = set(term["phenotype_id"] for term in case.get("phenotype_terms", []))
 
         updated_case = case
         phenotype_terms = []
         for term in hpo_results:
-            LOG.debug("Fetching info for hpo term {0}".format(term))
             hpo_obj = self.hpo_term(term)
             if hpo_obj is None:
                 raise ValueError("Hpo term: %s does not exist in database" % term)
