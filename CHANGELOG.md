@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
 - Test checking that case and case individuals keys are correctly saved when case is loaded with command line
 ### Changed
+- Remove parsing of case `genome_version`, since it's not used anywhere downstream
 
 ## [4.33.1]
 ### Fixed
