@@ -296,7 +296,7 @@ class CaseEventHandler(object):
             [
                 var.get("link").rsplit("/", 1)[1]
                 for var in self.case_events_by_verb(
-                    institute=institute, case=case, verb="dismiss_variant"
+                    category="variant", institute=institute, case=case, verb="dismiss_variant"
                 )
             ]
         )
@@ -304,7 +304,7 @@ class CaseEventHandler(object):
             [
                 var.get("link").rsplit("/", 1)[1]
                 for var in self.case_events_by_verb(
-                    institute=institute, case=case, verb="reset_dismiss_variant"
+                    category="variant", institute=institute, case=case, verb="reset_dismiss_variant"
                 )
             ]
         )

@@ -155,17 +155,23 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
         return self.event_collection.find(query).sort("created_at", pymongo.DESCENDING)
 
-    def case_events_by_verb(self, institute, case, verb):
+    def case_events_by_verb(self, category, institute, case, verb):
         """Return events with a specific verb for a case of an institute
         Args:
-          institute (dict): an institute id
-          case (dict): a case id
-          verb (dict): an event action verb, example: "dismiss_variant"
+            category (str): "case" or "variant"
+            institute (dict): an institute id
+            case (dict): a case id
+            verb (dict): an event action verb, example: "dismiss_variant"
 
         Returns:
             pymongo.Cursor: Query results
         """
-        query = {"institute": institute["_id"], "case": case["_id"], "verb": verb}
+        query = {
+            "category": category,
+            "institute": institute["_id"],
+            "case": case["_id"],
+            "verb": verb,
+        }
         return self.event_collection.find(query)
 
     def user_events(self, user_obj=None):
