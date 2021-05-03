@@ -354,9 +354,18 @@ def cancer_variants(institute_id, case_name):
         return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.cancer_variants(
-        store, institute_id, case_name, variants_query, result_size, form, page=page
+        store,
+        institute_id,
+        case_name,
+        variants_query,
+        result_size,
+        form,
+        page=page,
     )
-    expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
+    expand_search = request.method == "POST" and request.form.get("expand_search") in [
+        "True",
+        "",
+    ]
     return dict(
         variant_type=variant_type,
         cytobands=cytobands,

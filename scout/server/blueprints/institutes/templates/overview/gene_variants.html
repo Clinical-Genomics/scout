@@ -1,5 +1,5 @@
 {% extends "layout_bs4.html" %}
-{% from "variants/components.html" import gene_cell, frequency_cell %}
+{% from "variants/components.html" import gene_cell, frequency_cell_general %}
 {% from "utils.html" import comments_table %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 
@@ -55,7 +55,7 @@
     {% endif %}
             <td class="align-middle">{{ cell_rank(variant) }}</td>
             <td class="align-middle">{{ gene_cell(variant) }}</td>
-            <td class="align-middle">{{ frequency_cell(variant) }}</td>
+            <td class="align-middle">{{ frequency_cell_general(variant) }}</td>
             <td class="align-middle">{{ cell_cadd(variant) }}</td>
             <td class="align-middle">
               {% for annotation in variant.region_annotations %}
