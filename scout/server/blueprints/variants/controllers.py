@@ -588,7 +588,11 @@ def get_variant_info(genes):
 
 
 def cancer_variants(store, institute_id, case_name, variants_query, variant_count, form, page=1):
-    """Fetch data related to cancer variants for a case."""
+    """Fetch data related to cancer variants for a case.
+
+        For each variant, if one or more gene panels are selected, assign the gene present
+        in the panel as the second representative gene. If no gene panel is selected dont assign such a gene.
+    """
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     per_page = 50
@@ -597,23 +601,19 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
 
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
-    # get gene panel lookup table
     gene_panel_lookup = store.gene_to_panels(case_obj)  # build variant object
     variants_list = []
     for variant in variant_res:
-        # parse variant information
         variant_obj = parse_variant(store, institute_obj, case_obj, variant, update=True)
-        # if one or more gene panles are selected, assign the gene present
-        # in the panel as the second representative gene.
-        # if no gene panel is selected dont assign the gene
+
         secondary_gene = None
-        if variant_obj["first_rep_gene"]["hgnc_id"] not in gene_panel_lookup:
+
+        if "first_rep_gene" in variant_obj and variant_obj["first_rep_gene"]["hgnc_id"] not in gene_panel_lookup:
             for gene in variant_obj["genes"]:
                 in_panels = set(gene_panel_lookup.get(gene["hgnc_id"], []))
-                # if gene is in one of the panles used
+
                 if len(in_panels & set(form.gene_panels.data)) > 0:
                     secondary_gene = gene
-        # store as secondary
         variant_obj["second_rep_gene"] = secondary_gene
         variants_list.append(variant_obj)
 
