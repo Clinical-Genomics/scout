@@ -26,10 +26,7 @@ from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEA
 from scout.export.variant import export_verified_variants
 from scout.server.blueprints.variant.utils import clinsig_human, predictions
 from scout.server.links import cosmic_link, str_source_link
-from scout.server.utils import (
-    case_append_alignments,
-    institute_and_case,
-)
+from scout.server.utils import case_append_alignments, institute_and_case
 
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
