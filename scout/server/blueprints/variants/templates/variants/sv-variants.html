@@ -1,5 +1,4 @@
 {% extends "layout_bs4.html" %}
-{% from "utils.html" import comments_table %}
 {% from "variants/utils.html" import sv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer %}
 {% from "variants/components.html" import frequency_cell_general %}
 
@@ -38,9 +37,9 @@
 {% endblock %}
 
 {% block content_main %}
+ <form method="POST" id="filters_form" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name)}}"
+onsubmit="return validateForm()">
   <div class="container-float">
-    <form method="POST" id="filters_form" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name)}}"
-  onsubmit="return validateForm()">
     {{ pagination_hidden_div(page) }}
       <div class="card panel-default" id="accordion">
         <div class="card-header">
@@ -80,12 +79,16 @@
             {% endfor %}
           </tbody>
         </table>
-        {{ dismiss_variants_block(dismiss_variant_options, institute, case) }}
       </div>
-    </form>
-  </div>
-  <div class="container-fluid">
-  {{ pagination_footer(more_variants, page) }}
+    </div>
+    <div class="fixed-bottom bg-light border">
+      <div class="pt-2 mx-4">
+       {{ dismiss_variants_block(dismiss_variant_options, institute, case) }}
+      </div>
+    </div>
+  </form>
+  <div class="container-fluid" style="padding-bottom: 100px">
+   {{ pagination_footer(more_variants, page) }}
   </div>
 {% endblock %}
 
