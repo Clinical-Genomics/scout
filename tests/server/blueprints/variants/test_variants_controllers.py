@@ -7,6 +7,7 @@ from wtforms import SelectField
 
 from scout.constants import CHROMOSOMES_38, EXPORT_HEADER
 from scout.server.blueprints.variants.controllers import (
+    compounds_need_updating,
     gene_panel_choices,
     match_gene_txs_variant_txs,
     populate_chrom_choices,
@@ -17,6 +18,35 @@ from scout.server.blueprints.variants.controllers import (
 )
 
 LOG = logging.getLogger(__name__)
+
+
+def test_compounds_need_updating():
+    """Test function that checks if variant compound objects need updating"""
+
+    # GIVEN a list of compounds for a variant missing the "not loaded key"
+    compounds = [{"variant": "aaa"}, {"variant": "bbb"}]
+    # THEN the function that checks if the compounds need updating should return True
+    assert compounds_need_updating(compounds, []) is True
+
+    # GIVEN a list of dismissed variants for a case
+    dismissed_variants = ["aaa", "ddd"]
+
+    # GIVEN a list of compounds with a compound missing dismissed status
+    # THEN the function that checks if the compounds need updating should return True
+    assert compounds_need_updating(compounds, dismissed_variants) is True
+
+    # GIVEN a list of compounds with a dismissed one that is not up-to-date (not in list of case dismissed variants)
+    compounds = [{"variant": "ccc", "is_dismissed": True}, {"variant": "bbb"}]
+    # THEN the function that checks if the compounds need updating should return True
+    assert compounds_need_updating(compounds, dismissed_variants) is True
+
+    # GIVEN an up-to-date list of compounds
+    compounds = [
+        {"variant": "aaa", "is_dismissed": True, "not_loaded": False},
+        {"variant": "bbb", "not_loaded": True},
+    ]
+    # THEN the function that checks if the compounds need updating should return False
+    assert compounds_need_updating(compounds, dismissed_variants) is False
 
 
 def test_populate_chrom_choices(app):
