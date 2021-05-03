@@ -1,5 +1,4 @@
 {% extends "layout_bs4.html" %}
-{% from "utils.html" import comments_table %}
 {% from "variants/utils.html" import sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer, update_stash_filter_button_status, dismiss_variants_block %}
 
 {% block title %}
@@ -79,12 +78,17 @@
         {% endfor %}
       </tbody>
     </table>
-    {{ dismiss_variants_block(dismiss_variant_options, institute, case) }}
   </div>
-  <div class="container-fluid">
-    {{ pagination_footer(more_variants, page) }}
+  <div class="fixed-bottom bg-light border">
+    <div class="pt-2 mx-4">
+      {{ dismiss_variants_block(dismiss_variant_options, institute, case) }}
+    </div>
   </div>
   </form>
+  <div class="container-fluid" style="padding-bottom: 100px">
+    {{ pagination_footer(more_variants, page) }}
+  </div>
+
 {% endblock %}
 
 {% macro filters_form() %}

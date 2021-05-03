@@ -1,5 +1,6 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% from "utils.html" import comments_table %}
+{% from "variants/indicators.html" import pin_indicator, causative_badge, comments_badge, evaluations_badge, research_assessments_badge, clinical_assessments_badge, group_assessments_badge %}
 
 {% macro mark_heteroplasmic_mt(individuals, samples) %}
   {% for ind in individuals if ind.phenotype == 2 %}
@@ -31,7 +32,7 @@
 {% endmacro %}
 
 {% macro dismiss_variants_block(dismiss_variant_options, institute, case) %}
-<div class="row d-flex align-items-center mb-3 ml-1">
+<div class="row d-flex align-items-center mb-2 ml-1">
   <div class="col-2 ">Dismiss selected variants:</div>
   <div class="col-4 align-items-start">
     <select multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-width="100%" onchange="enableDismiss();">
@@ -62,18 +63,25 @@
     </thead>
     <tbody>
       {% for compound in compounds %}
-        <tr>
+        {% if compound.is_dismissed %}
+          <tr class='dismiss'>
+        {% else %}
+          <tr>
+        {% endif %}
           <td>
-            {% if compound.not_loaded %}
-              {{ compound.display_name }} <small>(not loaded)</small>
-            {% else %}
-              <a href='{{ url_for("variant.variant",
-                                 institute_id=institute._id,
-                                 case_name=case.display_name,
-                                 variant_id=compound.variant) }}' target='_blank'>
+              {% if compound.not_loaded %}
+                {{ compound.display_name }} <small>(not loaded)</small>
+              {% else %}
+                <a href='{{ url_for("variant.variant",
+                institute_id=institute._id,
+                case_name=case.display_name,
+                variant_id=compound.variant) }}' target='_blank'>
                 {{ compound.display_name|truncate(20, True) }}
-              </a>
-            {% endif %}
+                </a>
+                {% if compound.variant in case.suspects %}
+                  <i class='fa fa-map-pin ml-1'></i>
+                {% endif %}
+              {% endif %}
           </td>
           <td class='text-right'>{{ compound.combined_score }}</td>
           <td class='text-right'>{{ compound.rank_score }}</td>
@@ -722,81 +730,28 @@
   {% endif %}
 {% endmacro %}
 
+
 {% macro cell_rank(variant, institute, case, form, manual_rank_options) %}
-{% if variant.category in ("sv", "cancer_sv") %}
-  <a class="variants-row-item flex-small layout"
-      href="{{ url_for('variant.sv_variant', institute_id=institute._id,
-                       case_name=case.display_name, variant_id=variant._id) }}" target='_blank'>
-{% else %}
-  <a class="variants-row-item flex-small layout"
-     href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
-                      variant_id=variant._id) }}" target='_blank'>
-{% endif %}
+  {% if variant.category in ("sv", "cancer_sv") %}
+    <a class="variants-row-item flex-small layout"
+        href="{{ url_for('variant.sv_variant', institute_id=institute._id,
+                         case_name=case.display_name, variant_id=variant._id) }}" target='_blank'>
+  {% else %}
+    <a class="variants-row-item flex-small layout"
+       href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
+                        variant_id=variant._id) }}" target='_blank'>
+  {% endif %}
+
   {{ variant.variant_rank }}&nbsp;</a>
 
-  {% set comment_count = variant.comments | count_cursor %}
+  {{ evaluations_badge(variant) }}
+  {{ research_assessments_badge(variant) }}
+  {{ clinical_assessments_badge(variant) }}
+  {{ group_assessments_badge(variant) }}
 
-  {% if variant.evaluations %}
-    {% for evaluation in (variant.evaluations or []) %}
-      <span class="badge badge-secondary" style="margin-left:1px" data-toggle="tooltip" data-placement="right"
-        title="Previously classified as {{ evaluation.classification.label }}">
-        {{ evaluation.classification.short }}
-      </span>
-    {% endfor %}
-  {% endif %}
-
-  {% if variant.research_assessments %}
-    {% for assessment in (variant.research_assessments or []) %}
-      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
-        title="Research {{ assessment.title }}">
-        {{ assessment.label }}</span>
-    {% endfor %}
-  {% endif %}
-
-  {% if variant.clinical_assessments %}
-    {% for assessment in (variant.clinical_assessments or []) %}
-      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
-          title="Clinical {{ assessment.title }}">
-          {{ assessment.label }}</span>
-    {% endfor %}
-  {% endif %}
-
-  {% if variant.group_assessments %}
-    {% for assessment in (variant.group_assessments or []) %}
-      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
-        title="Cohort {{ assessment.title }}">
-        {{ assessment.label }}</span>
-    {% endfor %}
-  {% endif %}
-
-  {% if variant._id in case.causatives %}
-    <span class="badge badge-success" style="margin-left:1px" data-toggle="tooltip" data-placement="right" title="Causative variant">Causative</span>
-  {% endif %}
-
-  {% if comment_count > 0 %}
-    {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
-    <a href="#"
-       class="badge badge-info"
-       data-toggle="popover"
-       data-placement="right"
-       data-html="true"
-       data-trigger="hover click"
-       data-content="{{ comments_content }}"
-       title=""
-       style="color:white;"
-       >
-      {{ comment_count }}
-      <i class="fa fa-comment"></i>
-      {% if 'GLOBAL' in comments_content %}
-        <i class="fa fa-globe" aria-hidden="true"></i>
-      {% endif %}
-    </a>
-  {% endif %}
-
-  {% if variant._id in case.suspects %}
-    <i class="fa fa-map-pin"></i>
-  {% endif %}
-
+  {{ comments_badge(institute, case, variant) }}
+  {{ causative_badge(variant, case) }}
+  {{ pin_indicator(variant, case) }}
 {% endmacro %}
 
 {% macro pagination_hidden_div(page) %}

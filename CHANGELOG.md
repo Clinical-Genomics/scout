@@ -12,7 +12,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export Variants feature crashing when one of the variants has no primary transcripts
 ### Added
 - Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
+- Grey background for dismissed compounds in variants list and variant page
+- Pin badge for pinned compounds in variants list and variant page
 ### Changed
+- Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - SV clinical filter no longer filters out sub 100 nt variants
 
 ## [4.33.1]
@@ -163,6 +166,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improve create new gene panel form validation
 - Make XM- transcripts less visible if they don't overlap with transcript refseq_id in variant page
 - Color of gene panels and comments panels on cases and variant pages
+- Do not choke if case is missing research variants when reserch requested
 
 ## [4.29.1]
 ### Added
