@@ -1,1 +1,43 @@
-.Nav {}
+@use 'App' as global;
+
+
+.Nav {
+  border-bottom: 1px solid rgba(217, 217, 217, 0.45);
+  //box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+  background-color: global.$primary-color;
+  color: white;
+  ul {
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+
+    li {
+      list-style-type: none;
+      display: flex;
+      align-items: center;
+
+      /* Header */
+      .header {
+        display: flex;
+        align-items: center;
+        margin-right: 8px;
+        img {
+          max-width: 36px;
+          max-height: 36px;
+          margin-left: 8px;
+          margin-right: 8px;
+        }
+        span {
+          font-size: 1.5em;
+        }
+      }
+      /* Header and links */
+      a,
+      button {
+        padding: 8px;
+        color: inherit;
+        text-decoration: none;
+      }
+    }
+  }
+}

@@ -1,4 +1,28 @@
+/***** Global colors *****/
+// Primary color (nav, footer)
+$primary-color: #2377ce;
+$primary-color-text: white;
+
+// Secondary colors
+$secondary-color: #2377ce;
+
+
+/***** Clobal styles *****/
+*,
+*::before,
+*::after {
+  font-family: "Poppins", sans-serif !important;
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+}
+
 .App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   text-align: center;
 }
 
@@ -35,4 +59,12 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.no-button-style {
+  background-color: inherit;
+  color: inherit;
+  font-size: inherit;
+  border: none;
+  padding: 0px;
 }

@@ -1,5 +1,4 @@
 # Frontend Core Project
-
 ## Standards 
 Type can be:
 - `feature`: (new feature for the user, not a new feature for build script)
@@ -15,15 +14,15 @@ The message will have form:
 [type] (main component): [description] (#[issue number])
 
 Examples:
-`Chore: Update standards for commit message and user story (#2, #3)`
-`Feature (Nav): Adding navigation menu (#1)`
+- `Chore: Update standards for commit message and user story (#2, #3)`
+- `Feature (Nav): Adding navigation menu (#1)`
 
 ### Branch name standard
 [type]/[issue number]
 
 Examples: 
-`feature/3`
-`fix/4`
+- `feature/3`
+- `fix/4`
 
 
 ### Bump the version on master (by code-owner):
