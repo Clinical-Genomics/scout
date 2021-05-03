@@ -78,12 +78,17 @@
         {% endfor %}
       </tbody>
     </table>
-    {{ dismiss_variants_block(dismiss_variant_options, institute, case) }}
   </div>
+  <div class="fixed-bottom bg-light border">
+    <div class="pt-2 mx-4">
+      {{ dismiss_variants_block(dismiss_variant_options, institute, case) }}
+    </div>
+  </div>
+  </form>
   <div class="container-fluid">
     {{ pagination_footer(more_variants, page) }}
   </div>
-  </form>
+
 {% endblock %}
 
 {% macro filters_form() %}

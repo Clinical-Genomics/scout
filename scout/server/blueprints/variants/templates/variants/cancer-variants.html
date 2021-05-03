@@ -33,8 +33,8 @@
 {% endblock %}
 
 {% block content_main %}
-<div class="container-float">
   <form method="POST" id="filters_form" action="{{url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name)}}">
+  <div class="container-float">
     {{ pagination_hidden_div(page) }}
     <div class="card panel-default" id="accordion">
       <div class="card-header">
@@ -123,13 +123,13 @@
       </tbody>
     </table>
   </div><!-- end of card-->
-</form><!--end of form containing filters and variants' table elements -->
 </div><!--end of container-float -->
 <div class="fixed-bottom bg-light border">
   <div class="pt-2 mx-4">
     {{ dismiss_variants_block(dismiss_variant_options, institute, case) }}
   </div>
 </div>
+</form><!--end of form containing filters and variants' table elements -->
 <div class="container-fluid" style="padding-bottom: 100px">
   {{ pagination_footer(more_variants, page) }}
 </div>
