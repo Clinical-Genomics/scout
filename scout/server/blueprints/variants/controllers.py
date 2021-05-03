@@ -599,7 +599,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
 
         if (
             "first_rep_gene" in variant_obj
-            and variant_obj["first_rep_gene"]
+            and variant_obj["first_rep_gene"] is not None
             and variant_obj["first_rep_gene"].get("hgnc_id") not in gene_panel_lookup
         ):
             for gene in variant_obj["genes"]:
