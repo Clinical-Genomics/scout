@@ -127,6 +127,7 @@ class VariantLoader(object):
                 # If the variant exosts we try to collect as much info as possible
                 not_loaded = False
                 compound["rank_score"] = variant_obj["rank_score"]
+                compound["is_dismissed"] = len(variant_obj.get("dismiss_variant", [])) > 0
                 for gene in variant_obj.get("genes", []):
                     gene_obj = {
                         "hgnc_id": gene["hgnc_id"],
@@ -281,7 +282,6 @@ class VariantLoader(object):
                     self.update_mongo_compound_variants(bulk)
 
         LOG.info("All compounds updated")
-        return
 
     def load_variant(self, variant_obj):
         """Load a variant object
