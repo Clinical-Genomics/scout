@@ -238,6 +238,9 @@ def build_variant(
     if "mitomap_associated_diseases" in variant:
         variant_obj["mitomap_associated_diseases"] = variant["mitomap_associated_diseases"]
 
+    if "hmtvar_variant_id" in variant:
+        variant_obj["hmtvar_variant_id"] = variant["hmtvar_variant_id"]
+
     gt_types = []
     for sample in variant.get("samples", []):
         gt_call = build_genotype(sample)

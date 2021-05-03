@@ -6,9 +6,21 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Fixed
-- Include markdown for release autodeploy docs
-- Use standard inheritance model in CLinVar (https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt)
+- Make MitoMap link work for hg38 again
+- Export Variants feature crashing when one of the variants has no primary transcripts
 ### Added
+- Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
+### Changed
+- Remove parsing of case `genome_version`, since it's not used anywhere downstream
+
+## [4.33.1]
+### Fixed
+- Include markdown for release autodeploy docs
+- Use standard inheritance model in ClinVar (https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt)
+- Fix issue crash with variants that have been unflagged causative not being available in other causatives
+
+### Added
+
 ### Changed
 
 ## [4.33]
@@ -150,6 +162,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improve create new gene panel form validation
 - Make XM- transcripts less visible if they don't overlap with transcript refseq_id in variant page
 - Color of gene panels and comments panels on cases and variant pages
+- Do not choke if case is missing research variants when reserch requested
 
 ## [4.29.1]
 ### Added
