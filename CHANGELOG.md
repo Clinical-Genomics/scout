@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
 ### Changed
+- Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - Configuration Parsing now uses Pydantic for improved typechecking and config handling
 
 ## [4.33.1]
@@ -161,6 +162,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improve create new gene panel form validation
 - Make XM- transcripts less visible if they don't overlap with transcript refseq_id in variant page
 - Color of gene panels and comments panels on cases and variant pages
+- Do not choke if case is missing research variants when reserch requested
 
 ## [4.29.1]
 ### Added
