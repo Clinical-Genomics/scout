@@ -197,9 +197,7 @@ def test_loqusdb_exe_wrong_version(monkeypatch, loqus_exe, loqus_config):
     with pytest.raises(EnvironmentError):
         # Then the app should not be created because of EnvironmentError
         app = create_app(
-            config=dict(
-                LOQUSDB_SETTINGS={"loqusdb_binary": loqus_exe, "loqusdb_config": loqus_config}
-            )
+            config=dict(LOQUSDB_SETTINGS={"binary_path": loqus_exe, "loqusdb_config": loqus_config})
         )
 
 
@@ -214,9 +212,7 @@ def test_init_app_loqus_list(monkeypatch, loqus_exe, loqus_config):
 
     # The app shold be created by providing LoqusDB params as a list
     app = create_app(
-        config=dict(
-            LOQUSDB_SETTINGS=[{"loqusdb_binary": loqus_exe, "loqusdb_config": loqus_config}]
-        )
+        config=dict(LOQUSDB_SETTINGS=[{"binary_path": loqus_exe, "loqusdb_config": loqus_config}])
     )
     assert app
 
@@ -235,7 +231,7 @@ def test_init_app_loqus_dict(monkeypatch, loqus_exe, loqus_config):
         config=dict(
             LOQUSDB_SETTINGS={
                 "id": "default",
-                "loqusdb_binary": loqus_exe,
+                "binary_path": loqus_exe,
                 "loqusdb_config": loqus_config,
             }
         )

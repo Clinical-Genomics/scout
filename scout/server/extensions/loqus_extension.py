@@ -66,12 +66,14 @@ class LoqusDB:
         LOG.info("Init and check loqusdb connection settings")
         cfg = app.config["LOQUSDB_SETTINGS"]
 
-        if isinstance(cfg, list):
+        if isinstance(cfg, list):  # A list of dict instances
             self.settings_list_to_dict(cfg)
             LOG.warning(
                 "Deprecated settings: Scout version >=5 will no longer accept LoqusDB settings defined as a list. For additional info please check the Scout admin guide."
             )
-        elif isinstance(cfg, dict) and "binary_path" in cfg:  # Loqus Exec settings in a dictionary
+        elif isinstance(cfg, dict) and (
+            "binary_path" in cfg or "api_url" in cfg
+        ):  # One instance, formatted as a dictionary
             self.loqusdb_settings[cfg.get("id") or "default"] = cfg
             LOG.warning(
                 "Deprecated settings: Scout version >=5 will no longer accept LoqusDB settings missing the instance ID. For additional info please check the Scout admin guide."
