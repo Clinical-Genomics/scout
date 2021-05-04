@@ -311,16 +311,11 @@ def observations(store, loqusdb, case_obj, variant_obj):
     alt = variant_obj["alternative"]
     var_case_id = variant_obj["case_id"]
     var_type = variant_obj.get("variant_type", "clinical")
-    category = None
-    for cat in ["snv", "sv", "cancer", "cancer_sv"]:
-        if variant_obj.get(cat) in ["snv", "sv"]:
-            category = cat
-            break
-        if variant_obj.get(cat) == "cancer":
-            category = "snv"
-            break
-        if variant_obj.get(cat) == "cancer_sv":
-            category = "sv"
+    category = variant_obj["category"]
+    if category == "cancer":
+        category = "snv"
+    if category == "cancer_sv":
+        category = "sv"
 
     composite_id = "{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt)
     variant_query = {
@@ -331,8 +326,10 @@ def observations(store, loqusdb, case_obj, variant_obj):
         "end": variant_obj["end"],
         "length": variant_obj.get("length", 0),
         "variant_type": variant_obj.get("sub_category", "").upper(),
-        "category": variant_obj["category"],
+        "category": category,
     }
+
+    LOG.error(variant_query)
 
     institute_id = variant_obj["institute"]
     institute_obj = store.institute(institute_id)
@@ -343,7 +340,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
     if not obs_data:
         LOG.debug("Could not find any observations for %s", composite_id)
         obs_data["total"] = loqusdb.case_count(
-            variant_category=category,
+            variant_category=variant_obj["category"],
             loqusdb_id=institute_obj.get("loqusdb_id", "default"),
         )
         return obs_data
