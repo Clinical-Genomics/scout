@@ -48,7 +48,7 @@ def loqus_exe_variant():
 
 @pytest.fixture
 def loqus_exe_app(loqus_exe, loqus_config):
-    """Return an connected to LoqusDB via Loqus executable"""
+    """Return an app connected to LoqusDB via Loqus executable"""
 
     app = create_app(
         config=dict(
