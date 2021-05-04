@@ -16,8 +16,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support LoqusDB REST API queries
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
-- Count cases in LoqusDB by variant type
 - Introduce deprecation warning for Loqus configs that are not dictionaries
+- Count cases in LoqusDB by variant type
 - Refactored the MatchMaker integration as an extension
 
 ## [4.33.1]
