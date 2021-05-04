@@ -194,7 +194,9 @@ def case(store, institute_obj, case_obj):
     omim_terms = {term["disease_nr"]: term for term in store.case_omim_diagnoses(case_obj)}
 
     # get manual rank options
-    evalutation_terms = store.evaluation_terms(term_category="manual_rank", institute_id=institute_obj["internal_id"])
+    evalutation_terms = store.evaluation_terms(
+        term_category="manual_rank", institute_id=institute_obj["internal_id"]
+    )
     manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
 
     data = {
@@ -283,7 +285,9 @@ def case_report_content(store, institute_obj, case_obj):
 
         individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
 
-    evalutation_terms = store.evaluation_terms(term_category="dismissal_term", institute_id=institute_obj["internal_id"])
+    evalutation_terms = store.evaluation_terms(
+        term_category="dismissal_term", institute_id=institute_obj["internal_id"]
+    )
     dismiss_options = build_variant_evaluation_terms(evalutation_terms)
 
     data["cancer"] = case_obj.get("track") == "cancer"
@@ -294,7 +298,9 @@ def case_report_content(store, institute_obj, case_obj):
     data["comments"] = store.events(institute_obj, case=case_obj, comments=True)
 
     # read manual rank options from database
-    evalutation_terms = store.evaluation_terms(term_category="manual_rank", institute_id=institute_obj["internal_id"])
+    evalutation_terms = store.evaluation_terms(
+        term_category="manual_rank", institute_id=institute_obj["internal_id"]
+    )
     manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
     data["manual_rank_options"] = manual_rank_options
 
