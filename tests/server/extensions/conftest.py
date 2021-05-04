@@ -64,7 +64,7 @@ def loqus_exe_app(loqus_exe, loqus_config):
 
 @pytest.fixture
 def loqus_api_app():
-    """Return an connected to LoqusDB via REST API"""
+    """Return an app connected to LoqusDB via REST API"""
 
     app = create_app(
         config=dict(
