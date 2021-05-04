@@ -231,11 +231,11 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
                  {% for audit in audits %}
-                 <td><strong>{{ audit.subject }}</strong> was marked checked by {{ audit.user_name }} on {{audit.created_at.strftime('%Y-%m-%d')}}.</td>
+                  <tr>
+                    <td><strong>{{ audit.subject }}</strong> was marked checked by {{ audit.user_name }} on {{audit.created_at.strftime('%Y-%m-%d')}}.</td>
+                  </tr>
                  {%  endfor %}
-                </tr>
               </tbody>
             </table>
           </td>

@@ -7,6 +7,13 @@ from flask import url_for
 
 LOG = logging.getLogger(__name__)
 
+VARIANTS_TARGET_FROM_CATEGORY = {
+    "sv": "variants.sv_variants",
+    "cancer": "variants.cancer_variants",
+    "snv": "variants.variants",
+    "str": "variants.str_variants",
+}
+
 
 class FilterHandler(object):
     """Class to handle persistent variant filters in the mongo adapter"""
@@ -81,13 +88,7 @@ class FilterHandler(object):
 
         # link e.g. to the variants view where filter was created
         if link is None:
-            variants_target_from_category = {
-                "sv": "variants.sv_variants",
-                "cancer": "variants.cancer_variants",
-                "snv": "variants.variants",
-                "str": "variants.str_variants",
-            }
-            target = variants_target_from_category.get(category)
+            target = VARIANTS_TARGET_FROM_CATEGORY.get(category)
 
             case_name = case_obj.get("display_name")
             # filter dict already contains institute_id=institute_id,
@@ -108,16 +109,21 @@ class FilterHandler(object):
 
     def audit_filter(self, filter_id, institute_obj, case_obj, user_obj, category="snv", link=None):
         """Mark audit of filter for case in events.
+        Audit filter leaves a voluntary log trail to answer questions like "did I really check for recessive variants"
+        or "did we do both the stringent and relaxed filter on this tumor". The operator loads a set filter, checks
+        through the variants and then ticks off an audit, and the case event audit log and report will contain
+        mention of the filters investigated.
 
-        Arguments:
-            filter_id(MultiDict)
-            institute_obj(dict)
-            user_obj(dict)
-            case_obj(dict)
-            category(str): in ['cancer', 'snv', 'str', 'sv']
+             Arguments:
+                 filter_id(MultiDict)
+                 institute_obj(dict)
+                 user_obj(dict)
+                 case_obj(dict)
+                 category(str): in ['cancer', 'snv', 'str', 'sv']
+                 link(str): link (url connected to event, for filters variantS page of origin)
 
-        Returns:
-            filter_obj(ReturnDocument)
+             Returns:
+                 filter_obj(ReturnDocument)
         """
         filter_obj = None
         LOG.debug("Retrieve filter {}".format(filter_id))
@@ -127,13 +133,7 @@ class FilterHandler(object):
 
         # link e.g. to the variants view where filter was created
         if link is None:
-            variants_target_from_category = {
-                "sv": "variants.sv_variants",
-                "cancer": "variants.cancer_variants",
-                "snv": "variants.variants",
-                "str": "variants.str_variants",
-            }
-            target = variants_target_from_category.get(category)
+            target = VARIANTS_TARGET_FROM_CATEGORY.get(category)
 
             case_name = case_obj.get("display_name")
             link = url_for(target, case_name=case_name, institute_id=institute_obj.get("_id"))

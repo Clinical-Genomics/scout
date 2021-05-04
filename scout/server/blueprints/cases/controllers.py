@@ -293,7 +293,9 @@ def case_report_content(store, institute_obj, case_obj):
         }
 
     data["comments"] = store.events(institute_obj, case=case_obj, comments=True)
-    data["audits"] = store.events(institute_obj, case=case_obj, audits=True)
+    data["audits"] = store.case_events_by_verb(
+        category="case", institute=institute_obj, case=case_obj, verb="filter_audit"
+    )
 
     data["manual_rank_options"] = MANUAL_RANK_OPTIONS
     data["cancer_tier_options"] = CANCER_TIER_OPTIONS
