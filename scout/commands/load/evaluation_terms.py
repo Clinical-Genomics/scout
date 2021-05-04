@@ -71,7 +71,10 @@ def evaluation_term(
 )
 @with_appcontext
 def batch_evaluation_terms(file):
-    """Create multiple evalutaion terms stored in a file."""
+    """Load several evaluation terms from a file into the database.
+
+    The tool expects an json array as input.
+    """
     adapter = store
     try:
         LOG.info(f"adding terms from {file}")
