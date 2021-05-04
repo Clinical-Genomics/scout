@@ -71,13 +71,16 @@ class LoqusDB:
             LOG.warning(
                 "Deprecated settings: Scout version >=5 will no longer accept LoqusDB settings defined as a list. For additional info please check the Scout admin guide."
             )
-        elif isinstance(cfg, dict) and "default" not in cfg:
-            self.loqusdb_settings["default"] = cfg
-            LOG.warning(
-                "Deprecated settings: Scout version >=5 will no longer accept LoqusDB settings missing the instance ID. For additional info please check the Scout admin guide."
-            )
-        else:
+        elif isinstance(cfg, dict) and "binary_path" in cfg:  # Loqus Exec settings in a dictionary
             self.loqusdb_settings = cfg
+            LOG.warning(
+                "Deprecated settings: Scout version >=5 will no longeg accept LoqusDB settings missing the instance ID. For additional info please check the Scout admin guide."
+            )
+        elif isinstance(
+            cfg, dict
+        ):  # Multiple Loqus settings in a dictionary, each key is a distinct instance
+            for cfg_id, setting in cfg.items():
+                self.loqusdb_settings[cfg_id] = setting
 
         for key, setting in self.loqusdb_settings.items():
             # Scout might connect to Loqus via an API or an executable, define which one for every instance
@@ -120,7 +123,6 @@ class LoqusDB:
         if api_url is None:
             return None
         json_resp = api_get("".join([api_url, "/"]))
-        LOG.error(json_resp)
         version = json_resp.get("content", {}).get("loqusdb_version")
         if version is None:
             raise ConfigError(f"LoqusDB API url '{api_url}' did not return a valid response.")
@@ -202,7 +204,7 @@ class LoqusDB:
         if loqus_instance.get("instance_type") == "exec":
             return self.get_exec_loqus_variant(loqus_instance, variant_info)
 
-        # Loqus instace is a REST API
+        # Loqus instance is a REST API
         return self.get_api_loqus_variant(loqus_instance.get(API_URL), variant_info)
 
     @staticmethod
