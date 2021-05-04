@@ -122,11 +122,11 @@ def variants(institute_id, case_name):
     expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
 
     # get dismiss_variant_options
-    evalutation_terms = store.evaluation_terms("dismissal_term", institute_obj["internal_id"])
+    evalutation_terms = store.evaluation_terms(term_category="dismissal_term", institute_id=institute_obj["internal_id"])
     dismiss_variant_options = build_variant_evaluation_terms(evalutation_terms)
 
     # get manual rank options
-    evalutation_terms = store.evaluation_terms("manual_rank", institute_obj["internal_id"])
+    evalutation_terms = store.evaluation_terms(term_category="manual_rank", institute_id=institute_obj["internal_id"])
     manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
 
     return dict(
@@ -208,11 +208,11 @@ def str_variants(institute_id, case_name):
     )
 
     # get dismiss_variant_options
-    evalutation_terms = store.evaluation_terms("dismissal_term", institute_obj["internal_id"])
+    evalutation_terms = store.evaluation_terms(term_category="dismissal_term", institute_id=institute_obj["internal_id"])
     dismiss_variant_options = build_variant_evaluation_terms(evalutation_terms)
 
     # get manual rank options
-    evalutation_terms = store.evaluation_terms("manual_rank", institute_obj["internal_id"])
+    evalutation_terms = store.evaluation_terms(term_category="manual_rank", institute_id=institute_obj["internal_id"])
     manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
 
     return dict(
@@ -278,11 +278,11 @@ def sv_variants(institute_id, case_name):
     )
 
     # get dismiss_variant_options
-    evalutation_terms = store.evaluation_terms("dismissal_term", institute_obj["internal_id"])
+    evalutation_terms = store.evaluation_terms(term_category="dismissal_term", institute_id=institute_obj["internal_id"])
     dismiss_variant_options = build_variant_evaluation_terms(evalutation_terms)
 
     # get manual rank options
-    evalutation_terms = store.evaluation_terms("manual_rank", institute_obj["internal_id"])
+    evalutation_terms = store.evaluation_terms(term_category="manual_rank", institute_id=institute_obj["internal_id"])
     manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
 
     expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
@@ -387,7 +387,7 @@ def cancer_variants(institute_id, case_name):
 
     # get dismiss_variant_options
     evalutation_terms = store.evaluation_terms(
-        "dismissal_term", analysis_type="cancer", institute_id=institute_obj["internal_id"]
+        term_category="dismissal_term", analysis_type="cancer", institute_id=institute_obj["internal_id"]
     )
     dismiss_variant_options = build_variant_evaluation_terms(evalutation_terms)
 
@@ -453,12 +453,12 @@ def cancer_sv_variants(institute_id, case_name):
     expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
 
     # get dismiss_variant_options
-    evalutation_terms = store.evaluation_terms("dismissal_term", institute_obj["internal_id"])
+    evalutation_terms = store.evaluation_terms(term_category="dismissal_term", institute_id=institute_obj["internal_id"])
     dismiss_variant_options = build_variant_evaluation_terms(evalutation_terms)
 
     # get manual_rank_options
     evalutation_terms = store.evaluation_terms(
-        "dismissal_term", analysis_type="cancer", institute_id=institute_obj["internal_id"]
+        term_category="dismissal_term", analysis_type="cancer", institute_id=institute_obj["internal_id"]
     )
     manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
 

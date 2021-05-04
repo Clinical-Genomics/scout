@@ -680,7 +680,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
         variants_list.append(variant_obj)
 
     # get manual rank options
-    evalutation_terms = store.evaluation_terms("manual_rank", institute_obj["internal_id"])
+    evalutation_terms = store.evaluation_terms(term_category="manual_rank", institute_id=institute_obj["internal_id"])
     manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
 
     data = dict(
