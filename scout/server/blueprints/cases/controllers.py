@@ -896,6 +896,7 @@ def beacon_remove(case_id):
     data = {"dataset_id": dataset_id, "samples": samples}
     resp = post_request_json("/".join([request_url, "delete"]), data, req_headers)
     flash_color = "success"
+    message = None
     if resp.get("status_code") == 200:
         message = resp.get("content", {}).get("message")
         store.case_collection.update_one({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})

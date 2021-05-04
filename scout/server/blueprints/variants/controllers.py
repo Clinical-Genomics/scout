@@ -1,45 +1,32 @@
 import datetime
 import logging
 import os.path
-import urllib.parse
 from datetime import date
-from pprint import pprint as pp
 
-from flask import Response, flash, request, url_for
+from flask import Response, flash, url_for
 from flask_login import current_user
-from flask_mail import Message
 from werkzeug.datastructures import Headers, MultiDict
 from xlsxwriter import Workbook
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
-    ACMG_OPTIONS,
     CALLERS,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CHROMOSOMES,
     CHROMOSOMES_38,
-    CLINSIG_MAP,
     DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     SEVERE_SO_TERMS,
-    SPIDEX_HUMAN,
-    VERBS_MAP,
+    SO_TERMS,
 )
-from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
 from scout.server.blueprints.variant.utils import clinsig_human, predictions
-from scout.server.links import cosmic_link, ensembl, str_source_link
-from scout.server.utils import (
-    case_append_alignments,
-    institute_and_case,
-    user_institutes,
-    variant_case,
-)
-from scout.utils.scout_requests import fetch_refseq_version
+from scout.server.links import cosmic_link, str_source_link
+from scout.server.utils import case_append_alignments, institute_and_case
 
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
@@ -63,6 +50,8 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
     genome_build = str(case_obj.get("genome_build", "37"))
     if genome_build not in ["37", "38"]:
         genome_build = "37"
+
+    case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
     variants = []
     for variant_obj in variant_res:
@@ -99,7 +88,13 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
 
         variants.append(
             parse_variant(
-                store, institute_obj, case_obj, variant_obj, update=True, genome_build=genome_build
+                store,
+                institute_obj,
+                case_obj,
+                variant_obj,
+                update=True,
+                genome_build=genome_build,
+                case_dismissed_vars=case_dismissed_vars,
             )
         )
 
@@ -145,6 +140,8 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
     if genome_build not in ["37", "38"]:
         genome_build = "37"
 
+    case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
+
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
         # show previous classifications for research variants
         clinical_var_obj = variant_obj
@@ -156,7 +153,14 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
             variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
         variants.append(
-            parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build)
+            parse_variant(
+                store,
+                institute_obj,
+                case_obj,
+                variant_obj,
+                genome_build=genome_build,
+                case_dismissed_vars=case_dismissed_vars,
+            )
         )
 
     return {"variants": variants, "more_variants": more_variants}
@@ -283,8 +287,39 @@ def get_manual_assessments(variant_obj):
     return assessments
 
 
+def compounds_need_updating(compounds, dismissed):
+    """Checks if the list of compounds for a variant needs to be updated.
+     Returns True or False.
+
+    Args:
+      compounds (list): list of compounds dictionaries
+      dismissed (list): list of case dismissed variant ids
+
+    Returns:
+      True or False (bool)
+    """
+    for compound in compounds:
+        if "not_loaded" not in compound:  # This key should be always present
+            return True
+
+        if compound["variant"] in dismissed and compound.get("is_dismissed") is not True:
+            return True
+
+        if compound.get("is_dismissed") and compound["variant"] not in dismissed:
+            return True
+
+    return False
+
+
 def parse_variant(
-    store, institute_obj, case_obj, variant_obj, update=False, genome_build="37", get_compounds=True
+    store,
+    institute_obj,
+    case_obj,
+    variant_obj,
+    update=False,
+    genome_build="37",
+    get_compounds=True,
+    case_dismissed_vars=[],
 ):
     """Parse information about variants.
     - Adds information about compounds
@@ -295,14 +330,16 @@ def parse_variant(
         case_obj(scout.models.Case)
         variant_obj(scout.models.Variant)
         update(bool): If variant should be updated in database
+        get_compounds(bool): if compounds should be added to added to the returned variant object
         genome_build(str)
+        case_dismissed_vars(list): list of dismissed variants for this case
     """
     has_changed = False
     compounds = variant_obj.get("compounds", [])
+
     if compounds and get_compounds:
-        # Check if we need to add compound information
-        # If it is the first time the case is viewed we fill in some compound information
-        if "not_loaded" not in compounds[0]:
+        # Check if we need to update compound information
+        if compounds_need_updating(compounds, case_dismissed_vars):
             new_compounds = store.update_variant_compounds(variant_obj)
             variant_obj["compounds"] = new_compounds
             has_changed = True
@@ -362,6 +399,21 @@ def parse_variant(
     variant_obj["str_source_link"] = str_source_link(variant_obj)
     # Format clinvar information
     variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    # Set the gene with most severe consequence as being representative
+    # used for display purposes
+    if variant_genes:
+        first_rep_gene = min(
+            variant_genes, key=lambda gn: SO_TERMS[gn["functional_annotation"]]["rank"]
+        )
+        # get HGVNp identifier from the canonical transcript
+        hgvsp_identifier = None
+        for tc in first_rep_gene["transcripts"]:
+            if tc["is_canonical"]:
+                hgvsp_identifier = tc.get("protein_sequence_name")
+        first_rep_gene["hgvsp_identifier"] = hgvsp_identifier
+        variant_obj["first_rep_gene"] = first_rep_gene
+    else:
+        variant_obj["first_rep_gene"] = None
 
     return variant_obj
 
@@ -483,7 +535,7 @@ def match_gene_txs_variant_txs(variant_gene, hgnc_gene):
             pt_change = var_tx.get("protein_sequence_name") or "-"
 
             # collect info from primary transcripts
-            if tx_refseq in hgnc_gene.get("primary_transcripts"):
+            if tx_refseq in hgnc_gene.get("primary_transcripts", []):
                 primary_txs.append("/".join([tx_refseq or tx_id, hgvs, pt_change]))
 
             # collect info from canonical transcript
@@ -572,20 +624,45 @@ def get_variant_info(genes):
 
 
 def cancer_variants(store, institute_id, case_name, variants_query, variant_count, form, page=1):
-    """Fetch data related to cancer variants for a case."""
+    """Fetch data related to cancer variants for a case.
+
+    For each variant, if one or more gene panels are selected, assign the gene present
+    in the panel as the second representative gene. If no gene panel is selected dont assign such a gene.
+    """
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
     per_page = 50
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
 
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
+    gene_panel_lookup = store.gene_to_panels(case_obj)  # build variant object
     variants_list = []
-
     for variant in variant_res:
-        elem = parse_variant(store, institute_obj, case_obj, variant, update=True)
-        variants_list.append(elem)
+        variant_obj = parse_variant(
+            store,
+            institute_obj,
+            case_obj,
+            variant,
+            update=True,
+            case_dismissed_vars=case_dismissed_vars,
+        )
+        secondary_gene = None
+
+        if (
+            "first_rep_gene" in variant_obj
+            and variant_obj["first_rep_gene"] is not None
+            and variant_obj["first_rep_gene"].get("hgnc_id") not in gene_panel_lookup
+        ):
+            for gene in variant_obj["genes"]:
+                in_panels = set(gene_panel_lookup.get(gene["hgnc_id"], []))
+
+                if len(in_panels & set(form.gene_panels.data)) > 0:
+                    secondary_gene = gene
+        variant_obj["second_rep_gene"] = secondary_gene
+        variants_list.append(variant_obj)
 
     data = dict(
         page=page,
