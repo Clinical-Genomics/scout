@@ -313,6 +313,10 @@ def observations(store, loqusdb, case_obj, variant_obj):
     var_case_id = variant_obj["case_id"]
     var_type = variant_obj.get("variant_type", "clinical")
     category = variant_obj["category"]
+    if category == "cancer":
+        category = "snv"
+    if category == "cancer_sv":
+        category = "sv"
 
     composite_id = "{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt)
     variant_query = {
@@ -326,14 +330,19 @@ def observations(store, loqusdb, case_obj, variant_obj):
         "category": category,
     }
 
+    LOG.error(variant_query)
+
     institute_id = variant_obj["institute"]
     institute_obj = store.institute(institute_id)
-    obs_data = loqusdb.get_variant(variant_query, loqusdb_id=institute_obj.get("loqusdb_id")) or {}
+    obs_data = (
+        loqusdb.get_variant(variant_query, loqusdb_id=institute_obj.get("loqusdb_id", "default"))
+        or {}
+    )
     if not obs_data:
-        LOG.debug("Could not find any observations for %s", composite_id)
         obs_data["total"] = loqusdb.case_count(
-            variant_category=category
-        )  # count only cases having the specific type of variant (snv/sv)
+            variant_category=category,
+            loqusdb_id=institute_obj.get("loqusdb_id", "default"),
+        )
         return obs_data
 
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
