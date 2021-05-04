@@ -72,9 +72,9 @@ class LoqusDB:
                 "Deprecated settings: Scout version >=5 will no longer accept LoqusDB settings defined as a list. For additional info please check the Scout admin guide."
             )
         elif isinstance(cfg, dict) and "binary_path" in cfg:  # Loqus Exec settings in a dictionary
-            self.loqusdb_settings = cfg
+            self.loqusdb_settings[cfg.get("id") or "default"] = cfg
             LOG.warning(
-                "Deprecated settings: Scout version >=5 will no longeg accept LoqusDB settings missing the instance ID. For additional info please check the Scout admin guide."
+                "Deprecated settings: Scout version >=5 will no longer accept LoqusDB settings missing the instance ID. For additional info please check the Scout admin guide."
             )
         elif isinstance(
             cfg, dict
