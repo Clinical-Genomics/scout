@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
+- Redirect to last visited variantS page when dismissing variants from variants list
 - Relaxed matching of SVs Loqus occurrences in other cases (look for SVs with different subtype)
 ### Added
 - Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
