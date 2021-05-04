@@ -21,24 +21,13 @@ MAIL_USE_SSL = False
 # GENS_PORT = 5000
 
 # connection details for LoqusDB MongoDB database
+# Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API
+# When multiple instances are available, admin users can modify which one is in use for a given institute from the admin settings page
+# LOQUSDB_SETTINGS = {
+#    "default" : {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "config_path": "/home/user/settings/loqus_default.yaml"},
+#    "loqus_api" : {"api_url": "http://127.0.0.1:9000"},
+# }
 #
-# 1. One LoqusDB
-# LOQUSDB_SETTINGS = dict(
-#  binary_path="/miniconda3/envs/loqus2.5/bin/loqusdb")
-# # config_path=<path/to/loqus/config>
-#
-# 2. LoqusDB configurable per Institute
-# LOQUSDB_SETTINGS = [
-#     {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "id": "default"},
-#     {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "id": "hejhej"},
-#     {"binary_path": "/bin/yetanother/loqusdb", "id": "Mayo"},
-# ]
-
-# )
-# If not on localhost 27017 one needs to provide uri with
-# connection details for LoqusDB MongoDB database in the loqusdb config file
-#    uri=("mongodb://{}:{}@localhost:{}/loqusdb".format(MONGO_USERNAME, MONGO_PASSWORD, MONGO_PORT))
-
 # Cloud IGV tracks can be configured here to allow users to enable them on their IGV views.
 # CLOUD_IGV_TRACKS = [
 #    {
