@@ -99,7 +99,7 @@ def test_bulk_reset_dismiss_variants(app, institute_obj, case_obj):
         variant = store.variant_collection.find_one()
 
         # WHEN dismissing a variant using a POST request
-        dismiss_reasons = [3, 5, 7]
+        dismiss_reasons = ['3', '5', '7']
         form_data = {
             "dismiss": variant["_id"],
             "dismiss_choices": dismiss_reasons,
