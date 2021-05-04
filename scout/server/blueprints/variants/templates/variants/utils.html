@@ -31,7 +31,7 @@
 </div>
 {% endmacro %}
 
-{% macro dismiss_variants_block(dismiss_variant_options, institute, case) %}
+{% macro dismiss_variants_block(dismiss_variant_options, institute, case, page) %}
 <div class="row d-flex align-items-center mb-2 ml-1">
   <div class="col-2 ">Dismiss selected variants:</div>
   <div class="col-4 align-items-start">
@@ -735,6 +735,7 @@
     <input type="submit" name="page" id="paginate-first" value=1 hidden="true">
     <input type="submit" name="page" id="paginate-previous" value={{page-1}} hidden="true">
     <input type="submit" name="page" id="paginate-next" value={{page+1}} hidden="true">
+    <input type="hidden" name="page" value="{{page}}"> <!-- In order to work, this input should be placed AFTER the submit form items with the same name -->
   </div>
 {% endmacro %}
 
