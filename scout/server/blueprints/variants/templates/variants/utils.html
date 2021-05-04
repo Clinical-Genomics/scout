@@ -691,7 +691,7 @@
   </div>
 {% endmacro %}
 
-{% macro tier_cell(variant, manual_rank_options, cancer_tier_options) %}
+{% macro tier_cell(variant, manual_rank_options, dismiss_variant_options, cancer_tier_options) %}
   {% if variant.cancer_tier %}
     <span class="badge badge-{{ cancer_tier_options[variant.cancer_tier].label_class }}" data-toggle="tooltip" data-placement="right"
       title="Tier: {{ cancer_tier_options[variant.cancer_tier].description }}">
@@ -699,9 +699,30 @@
   {% endif %}
 
   {% if variant.manual_rank %}
-    <span class="badge badge-{{ manual_rank_options[variant.manual_rank].label_class }}" data-toggle="tooltip" data-placement="right"
-      title="Manual rank: {{ manual_rank_options[variant.manual_rank].description }}">
-      {{ manual_rank_options[variant.manual_rank].label }}</span>
+    {% for option in manual_rank_options %}
+      {% if variant.manual_rank == option.internal_id %}
+        <span class="badge badge-{{ option.label_class }}" data-toggle="tooltip" data-placement="right"
+          title="Manual rank: {{ option.description }}">
+          {{ option.label }}</span>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  {% if variant.dismiss_variant %}
+    {% set dismiss_reasons = [] %}
+    {% for option in dismiss_variant_options %}
+      {% if option.internal_id in variant.dismiss_variant %}
+        {% do dismiss_reasons.append(option) %}
+      {% endif %}
+    {% endfor %}
+    {% if dismiss_reasons | length > 0 %}
+      <span class="badge badge-dark" data-toggle="tooltip" data-html="true" data-placement="right" title="
+      {% for reason in dismiss_reasons %}
+        <strong>{{ reason.name}}</strong> {{ reason.description }}
+        <br><br>
+      {% endfor %}
+         ">Dismissed</span>
+    {% endif %}
   {% endif %}
 {% endmacro %}
 
