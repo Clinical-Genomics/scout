@@ -248,7 +248,7 @@ class VariantHandler(VariantLoader):
     ):
         """Returns the specified variant.
 
-        Ars:
+        Args:
             document_id : A md5 key that represents the variant or "variant_id"
             gene_panels(List[GenePanel])
             case_id (str): case id (will search with "variant_id")
