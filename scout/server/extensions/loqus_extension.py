@@ -349,64 +349,7 @@ class LoqusDB:
         except AttributeError:
             raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
 
-    def get_configured_version(self, loqusdb_id=None):
-        """Return configured version
-        Args:
-            loqusdb(str)
-
-        Returns:
-            loqus_versio(str)
-        """
-        if loqusdb_id is None or loqusdb_id == "":
-            return self.default_setting().get(VERSION)
-
-        try:
-            return self.search_setting(loqusdb_id).get(VERSION)
-        except AttributeError:
-            raise ConfigError("LoqusDB id not found: {}".format(loqusdb_id))
-
-    def case_count(self, variant_category="snv"):
-        """Returns number of cases in loqus instance
-
-        Returns:
-            nr_cases(int)
-        """
-        nr_cases = 0
-        case_call = self.get_command()
-        case_call.extend(["cases", "--count", "-t", variant_category])
-        output = ""
-        try:
-            output = execute_command(case_call)
-        except CalledProcessError:
-            LOG.warning("Something went wrong with loqus")
-            return nr_cases
-
-        try:
-            nr_cases = int(output.strip())
-        except ValueError:
-            pass
-
-        return nr_cases
-
-    def get_version(self):
-        """Get LoqusDB version as float"""
-        if self.version:
-            return self.version
-
-        call_str = self.get_command()
-        call_str.extend(["--version"])
-        LOG.debug("call_str: {}".format(call_str))
-        try:
-            output = execute_command(call_str)
-        except CalledProcessError:
-            LOG.warning("Something went wrong with loqus")
-            return -1.0
-
-        version = output.rstrip().split(" ")[-1]
-        LOG.debug("version: {}".format(version))
-        return float(version)
-
-    def get_command(self, loqusdb_id=None):
+    def get_command(self, loqusdb_id="default"):
         """Get command string, with additional arguments if configured
 
         Returns: path(str)"""
