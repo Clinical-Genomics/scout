@@ -15,6 +15,7 @@ LOG = logging.getLogger(__name__)
 
 HPO_URL = "http://purl.obolibrary.org/obo/hp/hpoa/{}"
 HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
+TIMEOUT = 20
 
 
 def post_request_json(url, data, headers):
@@ -56,9 +57,9 @@ def get_request_json(url, headers=None):
     try:
         LOG.debug(f"Sending GET request to {url}")
         if headers:
-            resp = requests.get(url, timeout=20, headers=headers)
+            resp = requests.get(url, timeout=TIMEOUT, headers=headers)
         else:
-            resp = requests.get(url, timeout=20)
+            resp = requests.get(url, timeout=TIMEOUT)
         json_response["content"] = resp.json()
 
     except Exception as ex:
@@ -79,7 +80,7 @@ def get_request(url):
     """
     try:
         LOG.info("Requesting %s", url)
-        response = requests.get(url, timeout=20)
+        response = requests.get(url, timeout=TIMEOUT)
         if response.status_code != 200:
             response.raise_for_status()
         LOG.info("Encoded to %s", response.encoding)
@@ -110,7 +111,7 @@ def fetch_resource(url, json=False):
     data = None
     if url.startswith("ftp"):
         # requests do not handle ftp
-        response = urllib.request.urlopen(url, timeout=20)
+        response = urllib.request.urlopen(url, timeout=TIMEOUT)
         if isinstance(response, Exception):
             raise response
         data = response.read().decode("utf-8")
