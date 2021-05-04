@@ -63,18 +63,25 @@
     </thead>
     <tbody>
       {% for compound in compounds %}
-        <tr>
+        {% if compound.is_dismissed %}
+          <tr class='dismiss'>
+        {% else %}
+          <tr>
+        {% endif %}
           <td>
-            {% if compound.not_loaded %}
-              {{ compound.display_name }} <small>(not loaded)</small>
-            {% else %}
-              <a href='{{ url_for("variant.variant",
-                                 institute_id=institute._id,
-                                 case_name=case.display_name,
-                                 variant_id=compound.variant) }}' target='_blank'>
+              {% if compound.not_loaded %}
+                {{ compound.display_name }} <small>(not loaded)</small>
+              {% else %}
+                <a href='{{ url_for("variant.variant",
+                institute_id=institute._id,
+                case_name=case.display_name,
+                variant_id=compound.variant) }}' target='_blank'>
                 {{ compound.display_name|truncate(20, True) }}
-              </a>
-            {% endif %}
+                </a>
+                {% if compound.variant in case.suspects %}
+                  <i class='fa fa-map-pin ml-1'></i>
+                {% endif %}
+              {% endif %}
           </td>
           <td class='text-right'>{{ compound.combined_score }}</td>
           <td class='text-right'>{{ compound.rank_score }}</td>
@@ -728,6 +735,7 @@
     <input type="submit" name="page" id="paginate-first" value=1 hidden="true">
     <input type="submit" name="page" id="paginate-previous" value={{page-1}} hidden="true">
     <input type="submit" name="page" id="paginate-next" value={{page+1}} hidden="true">
+    <input type="hidden" name="page" value="{{page}}"> <!-- In order to work, this input should be placed AFTER the submit form items with the same name -->
   </div>
 {% endmacro %}
 
