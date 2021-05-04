@@ -8,24 +8,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
-<<<<<<< HEAD
-- Relaxed matching of SVs Loqus occurrences in other cases (look for SVs with different subtype)
-=======
 - Redirect to last visited variantS page when dismissing variants from variants list
->>>>>>> e7b4a8e5632b993032e11f9a5060ade13c033d17
+- Relaxed matching of SVs Loqus occurrences in other cases (look for SVs with different subtype)
 ### Added
 - Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
 - Grey background for dismissed compounds in variants list and variant page
 - Pin badge for pinned compounds in variants list and variant page
 - Support LoqusDB REST API queries
 ### Changed
-<<<<<<< HEAD
-- Count total cases in LoqusDB by variant type when there are no variant observations
-=======
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
-- Count cases in LoqusDB by variant type
+- Count total cases in LoqusDB by variant type when there are no variant observations
 - Introduce deprecation warning for Loqus configs that are not dictionaries
->>>>>>> e7b4a8e5632b993032e11f9a5060ade13c033d17
 
 ## [4.33.1]
 ### Fixed
