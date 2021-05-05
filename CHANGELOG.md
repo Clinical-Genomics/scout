@@ -22,6 +22,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Count cases in LoqusDB by variant type
 - Introduce deprecation warning for Loqus configs that are not dictionaries
 - SV clinical filter no longer filters out sub 100 nt variants
+- Commit pulse repo badge temporarily set to weekly
+- Sort ClinVar submissions objects by ascending "Last evaluated" date
 - Documentation for load-configuration rewritten.
 
 ## [4.33.1]
