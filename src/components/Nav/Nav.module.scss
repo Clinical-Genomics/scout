@@ -1,10 +1,13 @@
 @use 'App' as global;
 
 .Nav {
+  display: flex;
+  justify-content: space-between;
   //border-bottom: 1px solid rgba(217, 217, 217, 0.45);
   box-shadow: global.$shadow;
   background-color: global.$primary-color;
   color: global.$primary-color-text;
+  padding: 0px 4px;
   ul {
     display: flex;
     margin: 0px;
@@ -52,6 +55,27 @@
         display: flex;
       }
     }
+    .loginButton {
+      background-color: global.$cg-color;
+      margin-right: 8px;
+    }
+
+    .greeting {
+      cursor: pointer;
+
+      & > ul {
+        display: none;
+      }
+      &:hover > ul {
+        display: flex;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 992px) {
+  .Nav {
+    flex-direction: column;
   }
 }
 

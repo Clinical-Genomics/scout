@@ -3,6 +3,8 @@
 $primary-color: white;
 $primary-color-text: black;
 
+$cg-color: #ef7c01;
+
 /** Shadow */
 //$shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
 $shadow: 0px 0px 3px #cccccc;
@@ -19,15 +21,23 @@ html {
   box-sizing: border-box;
 }
 
-li{
+li {
   list-style-type: none;
 }
 
 .no-button-style {
   background-color: inherit;
   color: inherit;
-  font-size: inherit;
   border: none;
   padding: 0px;
   cursor: pointer;
+}
+
+.btn-style{
+  box-sizing: content-box;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 8px 16px;
+  box-shadow: $shadow;
 }

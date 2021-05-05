@@ -4,6 +4,7 @@
   display: none;
   flex-direction: column;
   position: absolute;
+  min-width: 100%;
   top: 100%;
   bottom: 0px;
   height: fit-content; // Works in IE? Should we support IE?

@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { GoogleLogin, GoogleLogout } from "react-google-login";
 import styles from "./Nav.module.scss";
 import DropdownMenu from "components/DropdownMenu/DropdownMenu";
 
@@ -20,7 +21,24 @@ interface Props {
   navItems: Array<NavItem>;
 }
 
+const { REACT_APP_GOOGLE_OAUTH_CLIENT_ID } = process.env;
+const clientId = REACT_APP_GOOGLE_OAUTH_CLIENT_ID
+  ? REACT_APP_GOOGLE_OAUTH_CLIENT_ID
+  : "no-id";
+
 const Nav: React.FC<Props> = ({ header, navItems }) => {
+  const [userName, setUserName] = useState("");
+  const [sigendIn, setSigendIn] = useState(false);
+
+  const responseGoogle = (response: any) => {
+    setUserName(response.ft.Ue);
+    setSigendIn(true);
+  };
+
+  const onLogoutSuccess = () => {
+    setSigendIn(false);
+  };
+
   return (
     <nav className={styles.Nav}>
       <ul>
@@ -45,7 +63,7 @@ const Nav: React.FC<Props> = ({ header, navItems }) => {
             {/* Dropdown menu */}
             {navItem.dropdownList && (
               <>
-                <span className={"no-button-style"}>
+                <span>
                   {navItem.linkTitle}
                   {" v"}
                 </span>
@@ -63,6 +81,56 @@ const Nav: React.FC<Props> = ({ header, navItems }) => {
             )}
           </li>
         ))}
+      </ul>
+      <ul>
+        {/* Greeting */}
+        {sigendIn && (
+          <li key={"logout"} className={styles.greeting}>
+            <span>
+              Hi {userName}!{" v"}
+            </span>
+            <DropdownMenu>
+              <li>
+                <GoogleLogout
+                  clientId={clientId}
+                  render={(renderProps) => (
+                    <button
+                    className={"no-button-style"}
+                      onClick={renderProps.onClick}
+                      disabled={renderProps.disabled}
+                    >
+                      Sign out
+                    </button>
+                  )}
+                  buttonText="Sign out"
+                  onLogoutSuccess={onLogoutSuccess}
+                />
+              </li>
+            </DropdownMenu>
+          </li>
+        )}
+        {/* Login button */}
+        {!sigendIn && (
+          <li>
+            <GoogleLogin
+              clientId={clientId}
+              render={(renderProps) => (
+                <button
+                  className={`${styles.loginButton} btn-style`}
+                  onClick={renderProps.onClick}
+                  disabled={renderProps.disabled}
+                >
+                  Login with Google
+                </button>
+              )}
+              buttonText="Login"
+              onSuccess={responseGoogle}
+              onFailure={responseGoogle}
+              isSignedIn={true}
+              cookiePolicy={"single_host_origin"}
+            />
+          </li>
+        )}
       </ul>
     </nav>
   );
