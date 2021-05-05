@@ -80,7 +80,7 @@ def variants(institute_id, case_name):
             form.gene_panels.data = controllers.case_default_panels(case_obj)
 
     # populate filters dropdown
-    available_filters = store.filters(institute_id, category)
+    available_filters = list(store.filters(institute_id, category))
     form.filters.choices = [
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
@@ -129,6 +129,7 @@ def variants(institute_id, case_name):
         institute=institute_obj,
         case=case_obj,
         form=form,
+        filters=available_filters,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
@@ -171,7 +172,7 @@ def str_variants(institute_id, case_name):
         form.chrom.data = request.args.get("chrom", "")
 
     # populate filters dropdown
-    available_filters = store.filters(institute_id, category)
+    available_filters = list(store.filters(institute_id, category))
     form.filters.choices = [
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
@@ -211,6 +212,7 @@ def str_variants(institute_id, case_name):
         cytobands=cytobands,
         form=form,
         page=page,
+        filters=available_filters,
         expand_search=str(request.method == "POST"),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
@@ -245,12 +247,21 @@ def sv_variants(institute_id, case_name):
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
+
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
+
+    # populate filters dropdown
+    available_filters = list(store.filters(institute_obj["_id"], category))
+    form.filters.choices = [
+        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
+    ]
 
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
+
+    form = controllers.update_form_hgnc_symbols(store, case_obj, form)
 
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
 
@@ -270,6 +281,7 @@ def sv_variants(institute_id, case_name):
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         variant_type=variant_type,
         form=form,
+        filters=available_filters,
         cytobands=cytobands,
         severe_so_terms=SEVERE_SO_TERMS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
@@ -335,7 +347,7 @@ def cancer_variants(institute_id, case_name):
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
     # populate filters dropdown
-    available_filters = store.filters(institute_id, category)
+    available_filters = list(store.filters(institute_id, category))
     form.filters.choices = [
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
@@ -369,6 +381,7 @@ def cancer_variants(institute_id, case_name):
     return dict(
         variant_type=variant_type,
         cytobands=cytobands,
+        filters=available_filters,
         dismiss_variant_options={
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
@@ -409,6 +422,12 @@ def cancer_sv_variants(institute_id, case_name):
     controllers.activate_case(store, institute_obj, case_obj, current_user)
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
 
+    # populate filters dropdown
+    available_filters = list(store.filters(institute_obj["_id"], category))
+    form.filters.choices = [
+        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
+    ]
+
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
@@ -434,6 +453,7 @@ def cancer_sv_variants(institute_id, case_name):
         },
         variant_type=variant_type,
         form=form,
+        filters=available_filters,
         severe_so_terms=SEVERE_SO_TERMS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
