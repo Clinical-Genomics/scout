@@ -857,17 +857,19 @@ def persistent_filter_actions(
             filter_obj = store.lock_filter(filter_id, current_user.email)
 
         if filter_obj is not None:
-            form = FiltersFormClass(MultiDict(filter_obj))
+            form = FiltersFormClass(request_form)
         else:
             flash("Requested filter lock could not be toggled", "warning")
+            form = FiltersFormClass(request_form)
 
     if bool(request_form.get("audit_filter")):
         filter_id = request_form.get("filters")
         filter_obj = store.audit_filter(filter_id, institute_obj, case_obj, user_obj, category)
         if filter_obj is not None:
-            form = FiltersFormClass(MultiDict(filter_obj))
+            form = FiltersFormClass(request_form)
         else:
             flash("Requested filter could not be audited.", "warning")
+            form = FiltersFormClass(request_form)
 
     if bool(request_form.get("save_filter")):
         # The form should be applied and remain set the page after saving
