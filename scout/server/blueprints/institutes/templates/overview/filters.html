@@ -1,0 +1,76 @@
+{% extends "layout_bs4.html" %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - Filters
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+.tree {
+  list-style-type: none;
+}
+</style>
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }} cases </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.filters', institute_id=institute._id) }}">Filters</a>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
+    <div class="col">
+      <div class="card">
+        <div class="card-header"><b>Filters created for institute on variants pages</b></div>
+        <div class="card-body">
+          <ul class="list-group">
+           <li class="list-group-item list-group-item-heading">
+            <div class="row">
+              <div class="col-3"><b>Filter name</b></div>
+              <div class="col-1"><b>Category</b></div>
+              <div class="col-3"><b>Owner</b></div>
+              <div class="col-1"><b>Lock status</b></div>
+            </div>
+           </li>
+            {% for filter in filters %}
+              <li class="list-group-item">
+              <form method="POST" action="{{ url_for('overview.lock_filter', institute_id=institute._id, filter_id=filter._id) }}">
+                <input type="hidden" name="filter_lock" value="{{ filter.lock }}">
+                <div class="row">
+                    <div class="col-3">{{ filter.display_name }}</div>
+                    <div class="col-1">{{ filter.category|upper }}</div>
+                    <div class="col-3">{{ filter.owner }}</div>
+                    <div class="col-1"><button type="submit" class="btn btn-primary btn-sm"><i class="fas {% if filter.lock %}fa-lock{% else %}fa-lock-open{% endif %}"></i></button></div>
+                </div>
+              </form>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div><!-- end of body row div -->
+</div><!-- end of container-float-->
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+
+</script>
+{% endblock %}
