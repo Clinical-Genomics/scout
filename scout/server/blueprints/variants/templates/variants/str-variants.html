@@ -1,6 +1,7 @@
 {% extends "layout_bs4.html" %}
+{% from "utils.html" import comments_table %}
 {% from "variants/components.html" import gene_cell, frequency_cell_general %}
-{% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, pagination_footer, pagination_hidden_div, str_filters %}
+{% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters %}
 {% from "variant/buttons.html" import igv_button %}
 
 {% block title %}
@@ -151,7 +152,13 @@
 
     window.onload=function() {
       populateCytobands({{cytobands|safe}});
+
+      {{ update_stash_filter_button_status(current_user, filters) }}
     }
+
+    $("#filters").change(function () {
+      {{ update_stash_filter_button_status(current_user, filters) }}
+    });
 
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
