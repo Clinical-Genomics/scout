@@ -206,6 +206,30 @@ class ClinVarHandler(object):
 
         return updated_submission
 
+    def sort_clinvar_case_data(self, variant_list, case_data_list):
+        """Sort Case Data for a ClinVar submission reflecting the order of the submission's Variant Data.
+
+        Args:
+            variant_list(list): The list of variants in a ClinVar submission (list of dictionaries)
+            case_data_list(list): The list of Case info, each relative to a variant in a submission (list of dictionaries)
+
+        Returns:
+            sorted_case_data(list): case_data dictionaries sorted according to the order of variants
+        """
+
+        # Sort case data according to the order of submissions variant data:
+        sorted_case_data = []
+        # Loop over submission variants
+        for variant_info in variant_list:
+            # Loop over submission case data
+            for cdata_info in case_data_list:
+                # Check that case data linking_id and variant linking_id match to sort case data
+                if cdata_info["linking_id"] != variant_info["linking_id"]:
+                    continue
+                sorted_case_data.append(cdata_info)
+
+        return sorted_case_data or case_data_list
+
     def clinvar_submissions(self, institute_id):
         """Collect all open and closed clinvar submissions for an institute
 
@@ -221,6 +245,7 @@ class ClinVarHandler(object):
         results = list(self.clinvar_submission_collection.find(query))
 
         submissions = []
+        # Loop over all ClinVar submissions for an institute
         for result in results:
             submission = {}
             cases = {}
@@ -233,20 +258,30 @@ class ClinVarHandler(object):
             if "clinvar_subm_id" in result:
                 submission["clinvar_subm_id"] = result["clinvar_subm_id"]
 
+            # If submission has variants registered
             if result.get("variant_data"):
-                submission["variant_data"] = self.clinvar_collection.find(
-                    {"_id": {"$in": result["variant_data"]}}
+                submission["variant_data"] = list(
+                    self.clinvar_collection.find({"_id": {"$in": result["variant_data"]}}).sort(
+                        "last_evaluated", pymongo.ASCENDING
+                    )
                 )
+
+                # Loop over variants contained in a single ClinVar submission
                 for var_data_id in list(result["variant_data"]):
                     # get case_id from variant id (caseID_variant_ID)
                     case_id = var_data_id.rsplit("_", 1)[0]
                     case_obj = self.case(case_id=case_id)
                     cases[case_id] = case_obj.get("display_name")
+
             submission["cases"] = cases
 
+            # If submission has case data registered
             if result.get("case_data"):
-                submission["case_data"] = self.clinvar_collection.find(
-                    {"_id": {"$in": result["case_data"]}}
+                unsorted_case_data = list(
+                    self.clinvar_collection.find({"_id": {"$in": result["case_data"]}})
+                )
+                submission["case_data"] = self.sort_clinvar_case_data(
+                    submission.get("variant_data", []), unsorted_case_data or []
                 )
 
             submissions.append(submission)
