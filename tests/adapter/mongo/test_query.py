@@ -457,6 +457,34 @@ def test_build_spidex_high(adapter):
     ]
 
 
+def test_build_has_clnsig(
+    adapter,
+    case_obj,
+):
+    """Test building query to retrieve all variants with ClinVar tag"""
+    case_id = case_obj["_id"]
+    query = {"clinvar_tag": True}
+
+    mongo_query = adapter.build_query(case_id, query=query)
+
+    assert {"clnsig": {"$exists": True}} in mongo_query["$and"]
+    assert {"clnsig": {"$ne": None}} in mongo_query["$and"]
+
+
+def test_build_has_cosmic_ids(
+    adapter,
+    case_obj,
+):
+    """Test building query to retrieve all variants with cosmic IDs"""
+    case_id = case_obj["_id"]
+    query = {"cosmic_tag": True}
+
+    mongo_query = adapter.build_query(case_id, query=query)
+
+    assert {"cosmic_ids": {"$exists": True}} in mongo_query["$and"]
+    assert {"cosmic_ids": {"$ne": None}} in mongo_query["$and"]
+
+
 def test_build_clinsig_always_only(adapter):
     case_id = "cust000"
     clinsig_confident_always_returned = True
