@@ -186,7 +186,7 @@
               {% if comments | count_cursor > 0 %}
 	        <tr>
 	          <td colspan=2>
-	            <table id="panel-table" class="table table-sm" style="background-color: transparent">
+	            <table id="comment-table" class="table table-sm" style="background-color: transparent">
 	              <thead>
 	                <tr>
 	                  <td><strong>Case-related comments</strong></td>
@@ -195,7 +195,7 @@
 	              <tbody>
 	                <tr>
 	                  <td>
-	                    <table id="panel-table" class="table table-sm" style="background-color: transparent">
+	                    <table id="comment-table-inner" class="table table-sm" style="background-color: transparent">
 	                    {% for comment in comments %}
 	                      <tr>
 	                        <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}</td>
@@ -212,7 +212,7 @@
 	      {% else %}
 	        <tr>
 	          <td colspan=2>
-	            <table id="panel-table" class="table table-sm" style="background-color: transparent">
+	            <table id="comment-table" class="table table-sm" style="background-color: transparent">
 	              <tr>
 	                <td>No comments left for this case.</td>
 	              </tr>
@@ -220,7 +220,28 @@
 	          </td>
 	        </tr>
 	      {% endif %}
-	    </table>
+
+        {% if audits | count_cursor > 0 %}
+        <tr>
+          <td colspan=2>
+            <table id="audit-table" class="table table-sm" style="background-color: transparent">
+              <thead>
+                <tr>
+                  <th>Filters marked audited for case</th>
+                </tr>
+              </thead>
+              <tbody>
+                 {% for audit in audits %}
+                  <tr>
+                    <td><strong>{{ audit.subject }}</strong> was marked checked by {{ audit.user_name }} on {{audit.created_at.strftime('%Y-%m-%d')}}.</td>
+                  </tr>
+                 {%  endfor %}
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        {% endif %}
+      </table>
 	  </div>
 	</div>
 {% endmacro %}
