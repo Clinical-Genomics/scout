@@ -184,7 +184,7 @@ def case(store, institute_obj, case_obj):
 
     events = list(store.events(institute_obj, case=case_obj))
     for event in events:
-        event["verb"] = VERBS_MAP.get(event["verb"], "did %s for".format(event["verb"]))
+        event["verb"] = VERBS_MAP.get(event["verb"], "did {} for".format(event["verb"]))
 
     case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
 
@@ -292,8 +292,10 @@ def case_report_content(store, institute_obj, case_obj):
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         }
 
-    # Add the case comments
     data["comments"] = store.events(institute_obj, case=case_obj, comments=True)
+    data["audits"] = store.case_events_by_verb(
+        category="case", institute=institute_obj, case=case_obj, verb="filter_audit"
+    )
 
     data["manual_rank_options"] = MANUAL_RANK_OPTIONS
     data["cancer_tier_options"] = CANCER_TIER_OPTIONS
@@ -901,7 +903,7 @@ def beacon_remove(case_id):
         store.case_collection.update_one({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})
     else:
         flash_color = "warning"
-    flash(f"Beacon responded:{resp['message']}", flash_color)
+    flash(f"Beacon responded:{resp.get('content',{}).get('message')}", flash_color)
 
 
 def beacon_add(form):

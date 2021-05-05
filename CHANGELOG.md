@@ -5,15 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
+### Added
+- Saved filter lock and unlock
+- Filters can optionally be marked audited, logging the filter name, user and date on the case events and general report.
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
+- Redirect to last visited variantS page when dismissing variants from variants list
 ### Added
 - Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
 - Grey background for dismissed compounds in variants list and variant page
 - Pin badge for pinned compounds in variants list and variant page
+- Support LoqusDB REST API queries
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
+- Count cases in LoqusDB by variant type
+- Introduce deprecation warning for Loqus configs that are not dictionaries
+- SV clinical filter no longer filters out sub 100 nt variants
 - Documentation for load-configuration rewritten.
 
 ## [4.33.1]
@@ -43,9 +51,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.32.1]
 ### Fixed
 - iSort lint check only
+### Changed
 - Institute cases page crashing when a case has track:Null
 ### Added
-### Changed
 
 ## [4.32]
 ### Added
@@ -59,6 +67,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Make Phenomodels subpanels collapsible
 - User side documentation of cytogenomics features (Gens, Chromograph, vcf2cytosure, rhocall)
 - iSort GitHub Action
+- Support LoqusDB REST API queries
 ### Fixed
 - Show other causative once, even if several events point to it
 - Filtering variants by mitochondrial chromosome for cases with genome build=38
@@ -78,6 +87,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display only number of affected genes for dismissed SVs in general report
 - Chromosome build check when populating the variants filter chromosome selection
 - Display mitochondrial and rare diseases coverage report in cases with missing 'rare' track
+
 
 ## [4.31.1]
 ### Added
@@ -159,6 +169,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Style of case synopsis, variants and case comments
 - Switched to igv.js 2.7.5
 - Do not choke if case is missing research variants when research requested
+- Count cases in LoqusDB by variant type
+- Introduce deprecation warning for Loqus configs that are not dictionaries
 - Improve create new gene panel form validation
 - Make XM- transcripts less visible if they don't overlap with transcript refseq_id in variant page
 - Color of gene panels and comments panels on cases and variant pages
