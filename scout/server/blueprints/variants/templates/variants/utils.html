@@ -556,8 +556,18 @@
           {{ form.clinsig(class="selectpicker") }}
         </div>
         <div class="col-2">
-          {{ form.mvl_tag.label(class="control-label") }}
-          <div>{{ form.mvl_tag() }}</div>
+          <div class="row form-inline">
+            {{ form.mvl_tag() }}
+            {{ form.mvl_tag.label(class="ml-2") }}
+          </div>
+          <div class="row form-inline">
+            {{ form.clinvar_tag() }}
+            {{ form.clinvar_tag.label(class="ml-2") }}
+          </div>
+          <div class="row form-inline">
+            {{ form.cosmic_tag() }}
+            {{ form.cosmic_tag.label(class="ml-2") }}
+          </div>
         </div>
       </div>
     </div>
