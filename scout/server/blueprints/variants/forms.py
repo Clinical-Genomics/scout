@@ -101,7 +101,9 @@ class VariantFiltersForm(FlaskForm):
     filter_display_name = StringField(default="")
     save_filter = SubmitField(label="Save filter")
     load_filter = SubmitField(label="Load filter")
+    lock_filter = SubmitField(label="Lock filter")
     delete_filter = SubmitField(label="Delete filter")
+    audit_filter = SubmitField(label="Audit filter")
 
     chrom_pos = StringField(
         "Chromosome position",

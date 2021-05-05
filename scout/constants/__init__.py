@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import re
-from collections import OrderedDict
 
 from intervaltree import Interval, IntervalTree
 
@@ -25,6 +24,7 @@ from .case_tags import (
 from .clinvar import CASEDATA_HEADER, CLINVAR_HEADER, CLINVAR_INHERITANCE_MODELS
 from .clnsig import CLINSIG_MAP, REV_CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 from .file_types import FILE_TYPE_MAP
+from .filters import CLINICAL_FILTER_BASE, CLINICAL_FILTER_BASE_CANCER, CLINICAL_FILTER_BASE_SV
 from .gene_tags import (
     GENE_CUSTOM_INHERITANCE_MODELS,
     INCOMPLETE_PENETRANCE_MAP,

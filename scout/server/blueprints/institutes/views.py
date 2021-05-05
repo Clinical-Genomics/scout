@@ -157,6 +157,36 @@ def causatives(institute_id):
     return dict(institute=institute_obj, variant_groups=all_variants, acmg_map=acmg_map)
 
 
+@blueprint.route("/<institute_id>/filters", methods=["GET"])
+@templated("overview/filters.html")
+def filters(institute_id):
+
+    form = request.form
+
+    institute_obj = institute_and_case(store, institute_id)
+
+    filters = controllers.filters(store, institute_id)
+
+    return dict(institute=institute_obj, form=form, filters=filters)
+
+
+@blueprint.route("/<institute_id>/lock_filter/<filter_id>", methods=["POST"])
+def lock_filter(institute_id, filter_id):
+
+    filter_lock = request.form.get("filter_lock", "False")
+    LOG.debug(
+        "Attempting to toggle lock %s for %s with status %s", filter_id, institute_id, filter_lock
+    )
+
+    if filter_lock == "True":
+        filter_obj = controllers.unlock_filter(store, current_user, filter_id)
+
+    if filter_lock == "False" or not filter_lock:
+        filter_obj = controllers.lock_filter(store, current_user, filter_id)
+
+    return redirect(request.referrer)
+
+
 @blueprint.route("/<institute_id>/gene_variants", methods=["GET", "POST"])
 @templated("overview/gene_variants.html")
 def gene_variants(institute_id):
