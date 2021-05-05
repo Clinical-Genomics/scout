@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - SV clinical filter no longer filters out sub 100 nt variants
 - Count cases in LoqusDB by variant type
 - Commit pulse repo badge temporarily set to weekly
+- Sort ClinVar submissions objects by ascending "Last evaluated" date
 - Refactored the MatchMaker integration as an extension
 
 ## [4.33.1]
