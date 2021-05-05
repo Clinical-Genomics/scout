@@ -251,7 +251,7 @@ def sv_variants(institute_id, case_name):
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
 
     # populate filters dropdown
-    available_filters = store.filters(institute_obj["_id"], category)
+    available_filters = list(store.filters(institute_obj["_id"], category))
     form.filters.choices = [
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
@@ -347,7 +347,7 @@ def cancer_variants(institute_id, case_name):
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
     # populate filters dropdown
-    available_filters = store.filters(institute_id, category)
+    available_filters = list(store.filters(institute_id, category))
     form.filters.choices = [
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
@@ -423,7 +423,7 @@ def cancer_sv_variants(institute_id, case_name):
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
 
     # populate filters dropdown
-    available_filters = store.filters(institute_obj["_id"], category)
+    available_filters = list(store.filters(institute_obj["_id"], category))
     form.filters.choices = [
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
