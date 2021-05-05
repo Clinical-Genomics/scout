@@ -797,7 +797,7 @@ def update_phenomodel(model_id, user_form):
 
 def lock_filter(store, user_obj, filter_id):
     """Lock filter and set owner from"""
-    filter_obj = store.lock_filter(filter_id, user_obj._id)
+    filter_obj = store.lock_filter(filter_id, user_obj.email)
     if filter_obj is None:
         flash("Requested filter could not be locked", "warning")
     return filter_obj
@@ -805,7 +805,7 @@ def lock_filter(store, user_obj, filter_id):
 
 def unlock_filter(store, user_obj, filter_id):
     """Unlock filter, unset owner"""
-    filter_obj = store.unlock_filter(filter_id, user_obj._id)
+    filter_obj = store.unlock_filter(filter_id, user_obj.email)
     if filter_obj is None:
         flash("Requested filter could not be unlocked.", "warning")
     return filter_obj

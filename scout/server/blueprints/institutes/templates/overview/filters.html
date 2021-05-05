@@ -40,9 +40,9 @@
           <ul class="list-group">
            <li class="list-group-item list-group-item-heading">
             <div class="row">
-              <div class="col-2"><b>Filter name</b></div>
+              <div class="col-3"><b>Filter name</b></div>
               <div class="col-1"><b>Category</b></div>
-              <div class="col-2"><b>Owner</b></div>
+              <div class="col-3"><b>Owner</b></div>
               <div class="col-1"><b>Lock status</b></div>
             </div>
            </li>
@@ -51,10 +51,10 @@
               <form method="POST" action="{{ url_for('overview.lock_filter', institute_id=institute._id, filter_id=filter._id) }}">
                 <input type="hidden" name="filter_lock" value="{{ filter.lock }}">
                 <div class="row">
-                    <div class="col-2">{{ filter.display_name }}</div>
+                    <div class="col-3">{{ filter.display_name }}</div>
                     <div class="col-1">{{ filter.category|upper }}</div>
-                    <div class="col-2">{{ filter.owner }}</div>
-                    <div class="col-1"><button type="submit" class="btn btn-primary btn-sm"><i class="fa {% if filter.lock %}fa-lock{% else %}fa-lock-open{% endif %}"></i></button></div>
+                    <div class="col-3">{{ filter.owner }}</div>
+                    <div class="col-1"><button type="submit" class="btn btn-primary btn-sm"><i class="fas {% if filter.lock %}fa-lock{% else %}fa-lock-open{% endif %}"></i></button></div>
                 </div>
               </form>
               </li>

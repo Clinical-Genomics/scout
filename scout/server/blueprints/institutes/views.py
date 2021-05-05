@@ -174,10 +174,14 @@ def filters(institute_id):
 def lock_filter(institute_id, filter_id):
 
     filter_lock = request.form.get("filter_lock", "False")
+    LOG.debug(
+        "Attempting to toggle lock %s for %s with status %s", filter_id, institute_id, filter_lock
+    )
+
     if filter_lock == "True":
         filter_obj = controllers.unlock_filter(store, current_user, filter_id)
 
-    if filter_lock == "False":
+    if filter_lock == "False" or not filter_lock:
         filter_obj = controllers.lock_filter(store, current_user, filter_id)
 
     return redirect(request.referrer)
