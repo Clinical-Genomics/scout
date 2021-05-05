@@ -10,6 +10,7 @@ LOG = logging.getLogger(__name__)
 VARIANTS_TARGET_FROM_CATEGORY = {
     "sv": "variants.sv_variants",
     "cancer": "variants.cancer_variants",
+    "cancer_sv": "variants.cancer_sv_variants",
     "snv": "variants.variants",
     "str": "variants.str_variants",
 }
