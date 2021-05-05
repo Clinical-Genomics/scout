@@ -45,6 +45,7 @@
         width: 100%;
         display: flex;
         align-items: center;
+        cursor: pointer;
       }
 
       /** Dropdown menu */
@@ -70,6 +71,14 @@
         display: flex;
       }
     }
+  }
+
+  /** Collapse arrow animation */
+  .collapse_arrow {
+    transition: transform 0.5s;
+  }
+  li:hover > span > .collapse_arrow {
+    transform: rotate(180deg);
   }
 }
 

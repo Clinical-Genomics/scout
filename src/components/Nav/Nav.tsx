@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { GoogleLogin, GoogleLogout } from "react-google-login";
 import styles from "./Nav.module.scss";
 import DropdownMenu from "components/DropdownMenu/DropdownMenu";
+import { FaAngleDown } from "react-icons/fa";
 
 export interface Header {
   icon?: string; // Path to icon
@@ -65,7 +66,7 @@ const Nav: React.FC<Props> = ({ header, navItems }) => {
               <>
                 <span>
                   {navItem.linkTitle}
-                  {" v"}
+                  <FaAngleDown className={styles.collapse_arrow} />
                 </span>
 
                 <DropdownMenu>
@@ -87,7 +88,8 @@ const Nav: React.FC<Props> = ({ header, navItems }) => {
         {sigendIn && (
           <li key={"logout"} className={styles.greeting}>
             <span>
-              Hi {userName}!{" v"}
+              {`Hi ${userName}!`}
+              <FaAngleDown className={styles.collapse_arrow} />
             </span>
             <DropdownMenu>
               <li>
@@ -95,7 +97,7 @@ const Nav: React.FC<Props> = ({ header, navItems }) => {
                   clientId={clientId}
                   render={(renderProps) => (
                     <button
-                    className={"no-button-style"}
+                      className={"no-button-style"}
                       onClick={renderProps.onClick}
                       disabled={renderProps.disabled}
                     >
