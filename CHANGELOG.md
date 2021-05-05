@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Introduce deprecation warning for Loqus configs that are not dictionaries
 - SV clinical filter no longer filters out sub 100 nt variants
 - Count cases in LoqusDB by variant type
+- Commit pulse repo badge temporarily set to weekly
 - Refactored the MatchMaker integration as an extension
 
 ## [4.33.1]
