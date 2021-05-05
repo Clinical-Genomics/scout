@@ -15,27 +15,30 @@ const header_scout = {
   title: "Scout",
 };
 
-const navLinks: Array<NavItem> = [
-  { linkTitle: "Beställninger", link: "/bestallningar" },
-  { linkTitle: "Provkrav", link: "/provkrav" },
-  { linkTitle: "Applikationer", link: "/applikationer" },
-  { linkTitle: "Dataleverans", link: "/dataleverans" },
-  { linkTitle: "FAQ", link: "/faq" },
-  { linkTitle: "Kontakt", link: "/kontakt" },
+const cgNavItems: Array<NavItem> = [
+  { linkTitle: "Beställninger", public: true, link: "/orders" },
+  { linkTitle: "Provkrav", public: true, link: "/requirements" },
+  { linkTitle: "Applikationer", public: true, link: "/applications" },
+  { linkTitle: "Dataleverans", public: true, link: "/delivery" },
   {
-    linkTitle: "More",
+    linkTitle: "Support",
+    public: true,
     dropdownList: [
-      { linkTitle: "test dropdown 1", link: "test" },
-      { linkTitle: "test dropdown 2", link: "test" },
-      { linkTitle: "test dropdown 3", link: "test" },
+      { linkTitle: "FAQ", public: true, link: "/faq" },
+      { linkTitle: "Kontakt", public: true, link: "/contact" },
+      { linkTitle: "Feedback", public: false, link: "/feedback" },
+      { linkTitle: "Help", public: false, link: "/help" },
     ],
   },
+  { linkTitle: "New order", public: false, link: "/new-order" },
+  { linkTitle: "Status", public: false, link: "/status" },
+  { linkTitle: "Items", public: false, link: "/items" },
 ];
 
 const Layout: React.FC = ({ children }) => (
   <div className={styles.Layout}>
     <header>
-      <Nav header={header_scout} navLinks={navLinks} />
+      <Nav header={header_cg} navItems={cgNavItems} />
     </header>
     <main>{children}</main>
     <Footer />

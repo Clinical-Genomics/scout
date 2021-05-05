@@ -1,0 +1,27 @@
+@use 'App' as global;
+
+.DropdownMenu {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  bottom: 0px;
+  height: fit-content; // Works in IE? Should we support IE?
+  border-radius: 8px;
+  box-shadow: global.$shadow;
+  overflow: auto;
+  li {
+    background-color: white;
+    padding: 2px 8px;
+  }
+  li:focus,
+  li:hover {
+    background-color: #e8e8e8;
+  }
+  li:first-child {
+    padding-top: 6px;
+  }
+  li:last-child {
+    padding-bottom: 6px;
+  }
+}

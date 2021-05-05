@@ -1,22 +1,21 @@
 @use 'App' as global;
 
-
 .Nav {
-  border-bottom: 1px solid rgba(217, 217, 217, 0.45);
-  //box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+  //border-bottom: 1px solid rgba(217, 217, 217, 0.45);
+  box-shadow: global.$shadow;
   background-color: global.$primary-color;
-  color: white;
+  color: global.$primary-color-text;
   ul {
     display: flex;
     margin: 0px;
     padding: 0px;
-
     li {
       list-style-type: none;
+      position: relative;
       display: flex;
       align-items: center;
 
-      /* Header */
+      /** Header */
       .header {
         display: flex;
         align-items: center;
@@ -24,20 +23,68 @@
         img {
           max-width: 36px;
           max-height: 36px;
-          margin-left: 8px;
-          margin-right: 8px;
         }
         span {
           font-size: 1.5em;
         }
       }
-      /* Header and links */
+
+      /** Header and links */
       a,
-      button {
-        padding: 8px;
+      span {
+        position: relative;
+        margin: 0px 8px;
+        padding: 8px 0px;
         color: inherit;
         text-decoration: none;
+        font-size: 14px;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+      }
+
+      /** Dropdown menu */
+      & > ul {
+        display: none;
+      }
+      &:hover > ul {
+        display: flex;
       }
     }
   }
+}
+
+/** Underline animation */
+nav > ul > li > a,
+.selected_nav {
+  position: relative;
+}
+nav > ul > li > a::before,
+nav > ul > li > span::before,
+.selected_nav::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: 10px;
+  left: 0;
+  background-color: rgb(91, 91, 116);
+}
+nav > ul > li > a:not(.selected_nav)::before,
+nav > ul > li > span::before {
+  visibility: hidden;
+  transform: scaleX(0);
+  transition: all 0.3s ease-in-out 0s;
+}
+nav > ul > li > a:hover::before,
+nav > ul > li > span:hover::before {
+  visibility: visible;
+  transform: scaleX(1);
+}
+.selected_nav::before {
+  visibility: visible;
+}
+nav > ul > li > a:not(header)::before {
+  visibility: hidden;
 }
