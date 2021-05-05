@@ -909,7 +909,7 @@ def beacon_remove(case_id):
         store.case_collection.update_one({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})
     else:
         flash_color = "warning"
-    flash(f"Beacon responded:{resp['message']}", flash_color)
+    flash(f"Beacon responded:{resp.get('content',{}).get('message')}", flash_color)
 
 
 def beacon_add(form):
