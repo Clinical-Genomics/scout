@@ -769,6 +769,28 @@ def test_institute_users(app, institute_obj, user_obj):
         assert user_obj["name"] in str(resp.data)
 
 
+def test_filters(app, institute_obj, user_obj, case_obj, filter_obj):
+    """Test the link to all institute users"""
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        category = "snv"
+        filter_id = store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category)
+        store.lock_filter(filter_id, user_obj.get("email"))
+
+        # WHEN accessing the cases page
+        resp = client.get(url_for("overview.filters", institute_id=institute_obj["internal_id"]))
+
+        # THEN it should return a page
+        assert resp.status_code == 200
+
+        # Containing the test user's name
+        assert user_obj["name"] in str(resp.data)
+
+
 def test_clinvar_submissions(app, institute_obj, clinvar_variant, clinvar_casedata):
     """Test the web page containing the clinvar submissions for an institute"""
 

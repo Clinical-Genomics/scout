@@ -6,7 +6,6 @@ LOG = logging.getLogger(__name__)
 
 from anytree import Node, RenderTree
 from anytree.exporter import DictExporter
-from anytree.importer import DictImporter
 from flask import flash
 from flask_login import current_user
 
@@ -345,6 +344,17 @@ def gene_variants(store, pymongo_cursor, variant_count, institute_id, page=1, pe
         variants.append(variant_obj)
 
     return {"variants": variants, "more_variants": more_variants}
+
+
+def filters(store, institute_id):
+    """Retrieve all filters for an institute"""
+    filters = []
+    categories = ["cancer", "snv", "str", "sv"]
+    for category in categories:
+        category_filters = store.filters(institute_id, category)
+        filters.extend(category_filters)
+
+    return filters
 
 
 def clinvar_submissions(store, institute_id):
@@ -783,3 +793,19 @@ def update_phenomodel(model_id, user_form):
 
     if update_model:
         store.update_phenomodel(model_id=model_id, model_obj=model_dict)
+
+
+def lock_filter(store, user_obj, filter_id):
+    """Lock filter and set owner from"""
+    filter_obj = store.lock_filter(filter_id, user_obj.email)
+    if filter_obj is None:
+        flash("Requested filter could not be locked", "warning")
+    return filter_obj
+
+
+def unlock_filter(store, user_obj, filter_id):
+    """Unlock filter, unset owner"""
+    filter_obj = store.unlock_filter(filter_id, user_obj.email)
+    if filter_obj is None:
+        flash("Requested filter could not be unlocked.", "warning")
+    return filter_obj
