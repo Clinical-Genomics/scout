@@ -70,6 +70,7 @@ def test_observations_controller_non_existing(app, case_obj, loqusdb):
 def test_observations_controller_snv(app, case_obj, loqusdb):
     """Testing observation controller to retrieve observations for one SNV variant"""
     # GIVEN a database with a case with a specific SNV variant
+    case_obj = store.case_collection.find_one()
     var_obj = store.variant_collection.find_one()
     assert var_obj
 
@@ -84,32 +85,34 @@ def test_observations_controller_snv(app, case_obj, loqusdb):
 
         ## THEN loqus should return the occurrence from the first case
         assert case_obj["_id"] in data["families"]
+        assert data["cases"][0]["case"] == case_obj
+        assert data["cases"][0]["variant"]["_id"] == var_obj["_id"]
 
 
-def test_observations_controller_sv(app, case_obj, sv_variant_obj, loqusdb):
+def test_observations_controller_sv(app, sv_variant_obj, loqusdb):
     """Testing observations controller to retrieve observations for one SV variant.
-    Specifically test that observations in other SV variants are accounted for even if
-    variants subcategory is different, resulting in a different variant_obj[variant_id].
+    Test that SV variant similar to a given one from another case is returned
     """
     # GIVEN a database with a case with a specific SV variant
+    case_obj = store.case_collection.find_one()
     store.variant_collection.insert_one(sv_variant_obj)
-    sv_var_obj = store.variant_collection.find_one({"category": "sv"})
-    assert sv_var_obj
-
-    loqusdb._add_variant(sv_var_obj)
+    loqusdb._add_variant(sv_variant_obj)
 
     # WHEN the same variant is in another case
-    sv_var_obj["case_id"] = "internal_id2"
-    # match all SVs in that position, regardless of type
-    sv_var_obj["variant_id"] = "someOtherVarID"
+    sv_variant_obj["case_id"] = "internal_id2"
+    # And has a different variant_id
+    sv_variant_obj["variant_id"] = "someOtherVarID"
+    sv_variant_obj["variant_id"]
 
     with app.test_client() as client:
         resp = client.get(url_for("auto_login"))
         # THEN the observation of the original case should be found
-        data = observations(store, loqusdb, case_obj, sv_var_obj)
+        data = observations(store, loqusdb, case_obj, sv_variant_obj)
 
         ## THEN loqus should return the occurrence from the first case
-        assert case_obj["_id"] in data["families"]
+        case_obj["_id"] in data["families"]
+        assert data["cases"][0]["case"] == case_obj
+        assert data["cases"][0]["variant"]["_id"] == sv_variant_obj["_id"]
 
 
 def test_case_variant_check_causatives(app, real_variant_database):

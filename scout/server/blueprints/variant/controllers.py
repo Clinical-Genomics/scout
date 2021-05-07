@@ -330,8 +330,6 @@ def observations(store, loqusdb, case_obj, variant_obj):
         "category": category,
     }
 
-    LOG.error(variant_query)
-
     institute_id = variant_obj["institute"]
     institute_obj = store.institute(institute_id)
     obs_data = (
@@ -374,9 +372,6 @@ def observations(store, loqusdb, case_obj, variant_obj):
         if other_variant is None and category == "sv":
             other_variant = store.overlapping_sv_variant(other_case["_id"], variant_obj)
 
-        # If the other variant is not loaded we skip it
-        if other_variant is None:
-            continue
         obs_data["cases"].append(dict(case=other_case, variant=other_variant))
 
     return obs_data
