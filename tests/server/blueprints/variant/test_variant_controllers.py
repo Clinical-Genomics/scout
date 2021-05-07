@@ -109,7 +109,8 @@ def test_observations_controller_sv(app, sv_variant_obj, loqusdb):
         data = observations(store, loqusdb, case_obj, sv_variant_obj)
 
         ## THEN loqus should return the occurrence from the first case
-        case_obj["_id"] in data["families"]
+        assert case_obj["_id"] in data["families"]
+        assert data["cases"][0]["case"] == case_obj
         assert data["cases"][0]["variant"]["_id"] == sv_variant_obj["_id"]
 
 
