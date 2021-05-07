@@ -1,0 +1,38 @@
+
+name: Pull request pipeline
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v1
+    - name: Install
+      run: yarn install
+    - name: Build Stage
+      run: yarn build
+      env:
+        REACT_APP_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+    - name: Archive Stage Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-stage-branch
+        path: build
+  deploy-stage:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v1
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: build-stage-branch
+          path: build
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting -P stage
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
