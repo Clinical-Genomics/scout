@@ -102,7 +102,6 @@ def test_observations_controller_sv(app, sv_variant_obj, loqusdb):
     sv_variant_obj["case_id"] = "internal_id2"
     # And has a different variant_id
     sv_variant_obj["variant_id"] = "someOtherVarID"
-    sv_variant_obj["variant_id"]
 
     with app.test_client() as client:
         resp = client.get(url_for("auto_login"))
