@@ -18,8 +18,8 @@ HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
 TIMEOUT = 20
 
 
-def post_request_json(url, data, headers):
-    """Send json data via POST request and return response's json data
+def post_request_json(url, data, headers=None):
+    """Send json data via POST request and return response
 
     Args:
         url(str): url to send request to
@@ -27,16 +27,18 @@ def post_request_json(url, data, headers):
         headers(dict): request headers
 
     Returns:
-        json_response(dict), example {"status_code":200, "content":{original json content}}
+        json_response(dict)
     """
     resp = None
     json_response = {}
     try:
+        LOG.debug(f"Sending POST request with json data to {url}")
         if headers:
             resp = requests.post(url, headers=headers, json=data)
         else:
             resp = requests.post(url, json=data)
         json_response["content"] = resp.json()
+
     except Exception as ex:
         return {"message": f"An error occurred while sending a POST request to url {url} -> {ex}"}
 
@@ -45,7 +47,7 @@ def post_request_json(url, data, headers):
 
 
 def get_request_json(url, headers=None):
-    """Send GET request and return response as json data
+    """Send GET request and return response's json data
     Args:
         url(str): url to send request to
         headers(dict): eventual request HEADERS to use in request
@@ -64,6 +66,31 @@ def get_request_json(url, headers=None):
 
     except Exception as ex:
         return {"message": f"An error occurred while sending a GET request to url {url} -> {ex}"}
+
+    json_response["status_code"] = resp.status_code
+    return json_response
+
+
+def delete_request_json(url, headers=None):
+    """Send a DELETE request to a remote API and return its response
+    Args:
+        url(str): url to send request to
+        headers(dict): eventual request HEADERS to use in request
+    Returns:
+        json_response(dict)
+    """
+    resp = None
+    json_response = {}
+    try:
+        LOG.debug(f"Sending DELETE request to {url}")
+        if headers:
+            resp = requests.delete(url, headers=headers)
+        else:
+            resp = requests.delete(url)
+        json_response["content"] = resp.json()
+
+    except Exception as ex:
+        return {"message": f"An error occurred while sending a DELETE request to url {url} -> {ex}"}
 
     json_response["status_code"] = resp.status_code
     return json_response

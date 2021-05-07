@@ -20,11 +20,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support LoqusDB REST API queries
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
-- Count cases in LoqusDB by variant type
 - Introduce deprecation warning for Loqus configs that are not dictionaries
 - SV clinical filter no longer filters out sub 100 nt variants
+- Count cases in LoqusDB by variant type
 - Commit pulse repo badge temporarily set to weekly
 - Sort ClinVar submissions objects by ascending "Last evaluated" date
+- Refactored the MatchMaker integration as an extension
 - Configuration Parsing now uses Pydantic for improved typechecking and config handling
 
 ## [4.33.1]

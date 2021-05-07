@@ -25,7 +25,7 @@
 {% endblock %}
 
 {% block content_main %}
-{% set panel = panel|int %}
+{% set panel = panel or 1|int %}
 <div class="container-float">
   <div class="card">
     <div class="card-body">
