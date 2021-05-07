@@ -292,25 +292,51 @@ class VariantHandler(VariantLoader):
 
         return variant_obj
 
-    def case_variant_by_coordinates(self, case_id, category, chrom, chrom_end, start, end):
-        """Return a variant for a case that has the given coordinates
+    def overlapping_sv_variant(self, case_id, variant_obj):
+        """Returns a SV for a case that is as similar as possible to a SV from another case
 
         Args:
-            case_id (str): case id
-            category (str): "sv" or "snv"
-            chrom (str): variant chromosome
-            chrom_end (str): end chromosome
-            start (int): start position
-            end (int): end position
+            case_id (str): case id for the variant query
+            variant_obj (dict): a variant dictionary from another case
 
         Returns:
-            variant_obj (Variant): a variant object dictionary
+            hit (Variant): a variant object dictionary
         """
-        query = dict(case_id=case_id, category=category, chromosome=chrom, position=start, end=end)
-        if chrom_end and chrom_end != chrom:
-            query["end_chrom"] = chrom_end
+        coordinate_query = store.sv_coordinate_query(
+            {
+                "chrom": variant_obj["chromosome"],
+                "start": variant_obj["position"],
+                "end": variant_obj["end"],
+            }
+        )
+        query = {
+            "case_id": case_id,
+            "category": variant_obj["category"],  # sv
+            "variant_type": variant_obj["variant_type"],  # clinical or research
+            "sub_category": variant_obj["sub_category"],  # example -> "del"
+            "$and": coordinate_query,  # query for overlapping SV variants
+        }
 
-        return self.variant_collection.find_one(query)
+        overlapping_svs = list(
+            store.variant_collection.find(
+                query,
+            )
+        )
+        if not overlapping_svs:
+            return None
+        if len(overlapping_svs) == 1:
+            return overlapping_svs[0]
+
+        # If more than one SV is overlapping with this variant
+        # return the one with most similar size
+        query_size = variant_obj["length"]
+        hit_lengths = [hit["length"] for hit in overlapping_svs]
+        closest_length = min(hit_lengths, key=lambda x: abs(x - query_size))
+
+        # return the variant with the closes size
+        for hit in overlapping_svs:
+            if hit["length"] == closest_length:
+                return hit
 
     def gene_variants(
         self,
@@ -647,7 +673,7 @@ class VariantHandler(VariantLoader):
         result = self.variant_collection.delete_many(query)
         LOG.info("{0} variants deleted".format(result.deleted_count))
 
-    def overlapping(self, variant_obj):
+    def overlapping(self, variant_obj, case_id=None):
         """Return overlapping variants.
 
         Look at the genes that a variant overlaps to.
@@ -658,6 +684,7 @@ class VariantHandler(VariantLoader):
 
         Args:
             variant_obj(dict)
+            case_id(str): ID of a case
 
         Returns:
             variants(iterable(dict))
@@ -669,7 +696,7 @@ class VariantHandler(VariantLoader):
 
         query = {
             "$and": [
-                {"case_id": variant_obj["case_id"]},
+                {"case_id": case_id or variant_obj["case_id"]},
                 {"category": category},
                 {"variant_type": variant_type},
                 {"hgnc_ids": {"$in": hgnc_ids}},

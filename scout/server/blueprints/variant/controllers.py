@@ -372,9 +372,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
 
         # IF variant is SV variant, look for variants with different sub_category occurring at the same coordinates
         if other_variant is None and category == "sv":
-            other_variant = store.case_variant_by_coordinates(
-                other_case["_id"], category, chrom, end_chrom, pos, end
-            )
+            other_variant = store.overlapping_sv_variant(other_case["_id"], variant_obj)
 
         # If the other variant is not loaded we skip it
         if other_variant is None:
