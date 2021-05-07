@@ -673,7 +673,7 @@ class VariantHandler(VariantLoader):
         result = self.variant_collection.delete_many(query)
         LOG.info("{0} variants deleted".format(result.deleted_count))
 
-    def overlapping(self, variant_obj, case_id=None):
+    def overlapping(self, variant_obj):
         """Return overlapping variants.
 
         Look at the genes that a variant overlaps to.
@@ -684,7 +684,6 @@ class VariantHandler(VariantLoader):
 
         Args:
             variant_obj(dict)
-            case_id(str): ID of a case
 
         Returns:
             variants(iterable(dict))
@@ -696,7 +695,7 @@ class VariantHandler(VariantLoader):
 
         query = {
             "$and": [
-                {"case_id": case_id or variant_obj["case_id"]},
+                {"case_id": variant_obj["case_id"]},
                 {"category": category},
                 {"variant_type": variant_type},
                 {"hgnc_ids": {"$in": hgnc_ids}},
