@@ -1,8 +1,143 @@
 {% from "variants/utils.html" import tier_cell %}
 
+{% macro matchmaker_modal(institute, case, mme_nodes) %}
+<div class="modal fade" id="matchmaker_modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">MatchMaker Exchange patient submission</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> <!-- end of modal title -->
+      <div class="modal-body">
+        {% if case.mme_submission %} <!-- case was already submitted to MatchMaker -->
+          <div class="row d-flex justify-content-around">
+            <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-secondary text-white" role="button" target="_blank">Past Matches <span class="fas fa-people-arrows"></span></a>
+            <select class="custom-select" onchange="window.open(this.value,'_self');" style="width:auto;">
+                 <option selected>Match against</option>
+                 <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</option>
+                 {% if mme_nodes %}
+                    <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</option>
+                    {% for node in mme_nodes %}
+                      <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+          </div>
+          <hr>
+          <p><a href="#mme_form" data-toggle="collapse">Modify submission</a></p>
+        {% else %} <!-- display option to submit case to MatchMaker -->
+          <p>This case is not yet in MatchMaker!&nbsp;<a href="#mme_form" data-toggle="collapse">Submission form</a></p>
+        {% endif %}
+        <form id="mme_submit" method="POST" action="{{ url_for('cases.matchmaker_add', institute_id=institute._id, case_name=case.display_name )}}" >
+            <div id="mme_form" class="collapse">
+              <div class="d-flex justify-content-center">
+                <ul class="list-group">
+                  <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                      <div data-placement="top" title="hpo">
+                        Include patient gender
+                      </div>
+                      <div>
+                        <input type="checkbox" class="ios8-switch" id="sex" name="sex" {% if not case.mme_submission or case.mme_submission.sex %}checked{% endif %}>
+                        <label for="sex"></label>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                      <div data-placement="top" title="hpo">
+                        Include HPO terms
+                      </div>
+                      <div>
+                        <input type="checkbox" class="ios8-switch" id="features" name="features" {% if not case.mme_submission or case.mme_submission.features %}checked{% endif %}>
+                        <label for="features"></label>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                      <div data-placement="top" title="disorders">
+                        Include OMIM diagnoses
+                      </div>
+                      <div>
+                        <input type="checkbox" class="ios8-switch" id="disorders" name="disorders" {% if not case.mme_submission or case.mme_submission.disorders %}checked{% endif %}>
+                        <label for="disorders"></label>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                      <div data-placement="top" title="genomicfeatures">
+                        Share variants
+                      </div>
+                      <div>
+                        <input type="radio" class="ios8-switch" id="genomicfeatures" name="genomicfeatures" value="variants" checked>
+                        <label for="genomicfeatures"></label>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                      <div data-placement="top" title="genomicfeatures">
+                        Gene names only
+                      </div>
+                      <div>
+                        <input type="radio" class="ios8-switch" id="genomicfeatures" name="genomicfeatures" value="genes" {% if case.mme_submission and case.mme_submission.genes_only %}checked{% endif %}>
+                        <label for="genomicfeatures"></label>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <br>
+                <button class="btn btn-secondary mx-auto d-block" data-toggle="modal" type="submit">
+                  {% if case.mme_submission %}
+                    Update case
+                  {% else %}
+                    Share to MatchMaker
+                  {% endif %}</button>
+              </div>
+            </div>
+            <br>
+          </form>
+          {% if case.mme_submission %}
+            {{ modal_mme_delete(institute, case) }}
+          {% endif %}
+      </div> <!-- end of modal body -->
+    </div> <!--end of modal-content -->
+  </div> <!--end of modal-dialog modal-lg -->
+</div> <!--end of MatchMaker modal -->
+{% endmacro %}
+
+{% macro modal_mme_delete(institute, case) %}
+  <form id="mme_delete" method="POST" action="{{ url_for('cases.matchmaker_delete', institute_id=institute._id, case_name=case.display_name )}}">
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-danger form-control" data-toggle="modal" data-target="#mme_delete_confirm">
+    Remove case from MatchMaker
+    </button>
+    <!-- Modal -->
+    <div class="modal fade" id="mme_delete_confirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          Confirm delete case from Matchmaker?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+    </div>
+  </form>
+{% endmacro %}
+
 {% macro beacon_modal(case) %}
 <form method="POST" action="{{url_for('cases.beacon_submit')}}">
-<div class="modal fade" id="beacon_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="beacon_modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">

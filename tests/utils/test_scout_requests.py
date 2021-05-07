@@ -10,41 +10,83 @@ import responses
 from scout.utils import scout_requests
 
 
-class MockResponse:
-    def __init__(self):
-        self.status_code = 200
+def test_get_request_json_error():
+    """Test the function that sends a GET request that returns an error"""
 
-    @staticmethod
-    def json():
-        return {"mock_key": "mock_response"}
+    # GIVEN A URL that returns error
+    url = "http://bar"
+    resp_dict = scout_requests.get_request_json(url)
 
-
-def test_get_request_json(monkeypatch):
-    """Test Scout function that sends GET requests and returns json data from responses"""
-
-    def mock_get(*args, **kwargs):
-        return MockResponse()
-
-    monkeypatch.setattr(requests, "get", mock_get)
-
-    # WHEN Scout sends get requests via the get_request_json
-    url = "http://test"
-    json_resp = scout_requests.get_request_json(url)
-
-    # THEN the function should return a valid dictionary
-    assert json_resp["status_code"] == 200
-    assert json_resp["content"]["mock_key"] == "mock_response"
+    # THEN the response should return an error message
+    assert "An error occurred" in resp_dict["message"]
 
 
-def test_post_request_json_bad_url():
-    """Test function that sends a POST request to an url with headers and json data"""
+@responses.activate
+def test_get_request_json():
+    """Test the function that sends a GET request and returns the response content as json"""
 
-    url = "http://BAR"
+    # GIVEN a URL that returns a success response
+    url = "http://bar"
+    responses.add(responses.GET, url, json={"foo": "bar"}, status=200)
+
+    headers = {"X-Auth-Token": "XYZ"}
+    resp_dict = scout_requests.get_request_json(url, headers)
+    # Response should contain the expected data
+    assert resp_dict["status_code"] == 200
+    assert resp_dict["content"] == {"foo": "bar"}
+
+
+def test_post_request_json_error():
+    """Test function that sends a POST request to a URL that returns error"""
+
+    url = "http://bar"
+    data = {"param": "FOO"}
+
+    resp_dict = scout_requests.post_request_json(url, data)
+    assert "An error occurred while sending a POST request to url" in resp_dict["message"]
+
+
+@responses.activate
+def test_post_request_json():
+    """Test the function that sends a POST request and returns the response content as json"""
+
+    # GIVEN a URL that returns a success response
+    url = "http://bar"
+    responses.add(responses.POST, url, json={"foo": "bar"}, status=200)
+
     data = {"param": "FOO"}
     headers = {"Content-type": "application/json; charset=utf-8", "Accept": "text/json"}
 
-    json_resp = scout_requests.post_request_json(url, data, headers)
-    assert "An error occurred while sending a POST request to url" in json_resp["message"]
+    resp_dict = scout_requests.post_request_json(url, data, headers)
+    # Response should contain the expected data
+    assert resp_dict["status_code"] == 200
+    assert resp_dict["content"] == {"foo": "bar"}
+
+
+def test_delete_request_json_error():
+    """Test function that sends a DELETE request to a URL that returns error"""
+
+    # GIVEN A URL that returns error
+    url = "http://bar"
+    resp_dict = scout_requests.delete_request_json(url)
+
+    # THEN the response should return an error message
+    assert "An error occurred" in resp_dict["message"]
+
+
+@responses.activate
+def test_delete_request_json():
+    """Test the function that sends a DELETE request and returns the response content as json"""
+
+    # GIVEN a URL that returns a success response
+    url = "http://bar"
+    responses.add(responses.DELETE, url, json={"foo": "bar"}, status=200)
+
+    headers = {"X-Auth-Token": "XYZ"}
+    resp_dict = scout_requests.delete_request_json(url, headers)
+    # Response should contain the expected data
+    assert resp_dict["status_code"] == 200
+    assert resp_dict["content"] == {"foo": "bar"}
 
 
 def test_get_request_bad_url():

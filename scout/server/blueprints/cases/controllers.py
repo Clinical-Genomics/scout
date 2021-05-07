@@ -9,7 +9,7 @@ import query_phenomizer
 import requests
 from bs4 import BeautifulSoup
 from bson.objectid import ObjectId
-from flask import current_app, flash, url_for
+from flask import current_app, flash, redirect, request, url_for
 from flask_login import current_user
 from flask_mail import Message
 from xlsxwriter import Workbook
@@ -33,9 +33,8 @@ from scout.constants.variant_tags import (
 from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
-from scout.server.extensions import store
+from scout.server.extensions import matchmaker, store
 from scout.server.utils import institute_and_case
-from scout.utils.matchmaker import matchmaker_request
 from scout.utils.scout_requests import post_request_json
 
 LOG = logging.getLogger(__name__)
@@ -900,11 +899,14 @@ def beacon_remove(case_id):
     data = {"dataset_id": dataset_id, "samples": samples}
     resp = post_request_json("/".join([request_url, "delete"]), data, req_headers)
     flash_color = "success"
+    message = None
     if resp.get("status_code") == 200:
+        message = resp.get("content", {}).get("message")
         store.case_collection.update_one({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})
     else:
+        message = resp.get("message")
         flash_color = "warning"
-    flash(f"Beacon responded:{resp.get('content',{}).get('message')}", flash_color)
+    flash(f"Beacon responded:{message}", flash_color)
 
 
 def beacon_add(form):
@@ -981,66 +983,92 @@ def beacon_add(form):
     return
 
 
-def mme_add(
-    store,
-    user_obj,
-    case_obj,
-    add_gender,
-    add_features,
-    add_disorders,
-    genes_only,
-    mme_base_url,
-    mme_accepts,
-    mme_token,
-):
-    """Add a patient to MatchMaker server
+def matchmaker_check_requirements(request):
+    """Make sure requirements are fulfilled before submitting any request to MatchMaker Exchange
 
     Args:
-        store(adapter.MongoAdapter)
-        user_obj(dict) a scout user object (to be added as matchmaker contact)
-        case_obj(dict) a scout case object
-        add_gender(bool) if True case gender will be included in matchmaker
-        add_features(bool) if True HPO features will be included in matchmaker
-        add_disorders(bool) if True OMIM diagnoses will be included in matchmaker
-        genes_only(bool) if True only genes and not variants will be shared
-        mme_base_url(str) base url of the MME server
-        mme_accepts(str) request content accepted by MME server
-        mme_token(str) auth token of the MME server
-
+        request(werkzeug.local.LocalProxy)
     Returns:
-        submitted_info(dict) info submitted to MatchMaker and its responses
+        None, if requirements are fulfilled, otherwise redirects to previous page with error message
     """
+    # Make sure all MME connection parameters are available in scout instance
+    if (
+        any(
+            [
+                hasattr(matchmaker, "host"),
+                hasattr(matchmaker, "accept"),
+                hasattr(matchmaker, "token"),
+            ]
+        )
+        is None
+    ):
+        flash(
+            "An error occurred reading matchmaker connection parameters. Please check config file!",
+            "danger",
+        )
+        return redirect(request.referrer)
 
-    if not mme_base_url or not mme_accepts or not mme_token:
-        return "Please check that Matchmaker connection parameters are valid"
-    url = "".join([mme_base_url, "/patient/add"])
-    features = []  # this is the list of HPO terms
-    disorders = []  # this is the list of OMIM diagnoses
-    g_features = []
+    # Check that request comes from an authorized user (mme_submitter role)
+    user_obj = store.user(current_user.email)
+    if "mme_submitter" not in user_obj.get("roles", []):
+        flash("unauthorized request", "warning")
+        return redirect(request.referrer)
+
+
+def matchmaker_add(request, institute_id, case_name):
+    """Add all affected individuals from a case to a MatchMaker server
+
+    Args:
+        request(werkzeug.local.LocalProxy)
+        institute_id(str): _id of an institute
+        case_name(str): display name of a case
+    """
+    # Check that general MME request requirements are fulfilled
+    matchmaker_check_requirements(request)
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+    candidate_vars = case_obj.get("suspects") or []
+    if len(candidate_vars) > 3:
+        flash(
+            "At the moment it is not possible to save to MatchMaker more than 3 pinned variants",
+            "warning",
+        )
+        return redirect(request.referrer)
+
+    save_gender = "sex" in request.form
+    features = (
+        hpo_terms(case_obj)
+        if "features" in request.form and case_obj.get("phenotype_terms")
+        else []
+    )
+    disorders = omim_terms(case_obj) if "disorders" in request.form else []
+    genes_only = request.form.get("genomicfeatures") == "genes"
+
+    if not features and not candidate_vars:
+        flash(
+            "In order to upload a case to MatchMaker you need to pin a variant or at least assign a phenotype (HPO term)",
+            "danger",
+        )
+        return redirect(request.referrer)
 
     # create contact dictionary
+    user_obj = store.user(current_user.email)
     contact_info = {
         "name": user_obj["name"],
         "href": "".join(["mailto:", user_obj["email"]]),
         "institution": "Scout software user, Science For Life Laboratory, Stockholm, Sweden",
     }
-    if add_features:  # create features dictionaries
-        features = hpo_terms(case_obj)
-
-    if add_disorders:  # create OMIM disorders dictionaries
-        disorders = omim_terms(case_obj)
-
-    # send a POST request and collect response for each affected individual in case
-    server_responses = []
 
     submitted_info = {
         "contact": contact_info,
-        "sex": add_gender,
+        "sex": save_gender,
         "features": features,
         "disorders": disorders,
         "genes_only": genes_only,
         "patient_id": [],
+        "server_responses": [],
     }
+    server_responses = []
+    n_updated = 0
     for individual in case_obj.get("individuals"):
         if not individual["phenotype"] in [
             2,
@@ -1057,173 +1085,148 @@ def mme_add(
             "features": features,
             "disorders": disorders,
         }
-        if add_gender:
+        if save_gender:
             if individual["sex"] == "1":
                 patient["sex"] = "MALE"
             else:
                 patient["sex"] = "FEMALE"
 
-        if case_obj.get("suspects"):
+        if candidate_vars:
             g_features = genomic_features(
                 store, case_obj, individual.get("display_name"), genes_only
             )
             patient["genomicFeatures"] = g_features
-
-        # send add request to server and capture response
-        resp = matchmaker_request(
-            url=url,
-            token=mme_token,
-            method="POST",
-            content_type=mme_accepts,
-            accept="application/json",
-            data={"patient": patient},
-        )
-
-        server_responses.append(
+        resp = matchmaker.patient_submit(patient)
+        submitted_info["server_responses"].append(
             {
                 "patient": patient,
                 "message": resp.get("message"),
                 "status_code": resp.get("status_code"),
             }
         )
-    submitted_info["server_responses"] = server_responses
-    return submitted_info
+        if resp.get("status_code") != 200:
+            flash(
+                "an error occurred while adding patient to matchmaker: {}".format(
+                    resp.get("message")
+                ),
+                "warning",
+            )
+            continue
+        flash(f"Patient {individual.get('display_name')} saved to MatchMaker", "success")
+        n_updated += 1
+
+    if n_updated > 0:
+        store.case_mme_update(case_obj=case_obj, user_obj=user_obj, mme_subm_obj=submitted_info)
+
+    return n_updated
 
 
-def mme_delete(case_obj, mme_base_url, mme_token):
+def matchmaker_delete(request, institute_id, case_name):
     """Delete all affected samples for a case from MatchMaker
 
     Args:
-        case_obj(dict) a scout case object
-        mme_base_url(str) base url of the MME server
-        mme_token(str) auth token of the MME server
-
-    Returns:
-         server_responses(list): a list of object of this type:
-                    {
-                        'patient_id': patient_id
-                        'message': server_message,
-                        'status_code': server_status_code
-                    }
+        request(werkzeug.local.LocalProxy)
+        institute_id(str): _id of an institute
+        case_name(str): display name of a case
     """
-    server_responses = []
+    # Check that general MME request requirements are fulfilled
+    matchmaker_check_requirements(request)
 
-    if not mme_base_url or not mme_token:
-        return "Please check that Matchmaker connection parameters are valid"
-
-    # for each patient of the case in matchmaker
-    for patient in case_obj["mme_submission"]["patients"]:
-
-        # send delete request to server and capture server's response
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+    # Delete each patient submitted for this case
+    for patient in case_obj.get("mme_submission", {}).get("patients", []):
+        # Send delete request to server and capture server's response
         patient_id = patient["id"]
-        url = "".join([mme_base_url, "/patient/delete/", patient_id])
-        resp = matchmaker_request(url=url, token=mme_token, method="DELETE")
+        resp = matchmaker.patient_delete(patient_id)
+        category = "warning"
+        if resp["status_code"] == 200:
+            category = "success"
+            # update case by removing mme submission
+            # and create events for patients deletion from MME
+            user_obj = store.user(current_user.email)
+            store.case_mme_delete(case_obj=case_obj, user_obj=user_obj)
 
-        server_responses.append(
-            {
-                "patient_id": patient_id,
-                "message": resp.get("message"),
-                "status_code": resp.get("status_code"),
-            }
-        )
+            flash(f"Deleted patient '{patient_id}', case '{case_name}' from MatchMaker", "success")
+            continue
 
-    return server_responses
+        flash(f"An error occurred while deleting patient from MatchMaker", "danger")
 
 
-def mme_matches(case_obj, institute_obj, mme_base_url, mme_token):
+def matchmaker_matches(request, institute_id, case_name):
     """Show Matchmaker submission data for a sample and eventual matches.
 
     Args:
-        case_obj(dict): a scout case object
-        institute_obj(dict): an institute object
-        mme_base_url(str) base url of the MME server
-        mme_token(str) auth token of the MME server
+        request(werkzeug.local.LocalProxy)
+        institute_id(str): _id of an institute
+        case_name(str): display name of a case
 
     Returns:
         data(dict): data to display in the html template
     """
-    data = {"institute": institute_obj, "case": case_obj, "server_errors": []}
-    matches = {}
-    # loop over the submitted samples and get matches from the MatchMaker server
-    if not case_obj.get("mme_submission"):
-        return None
+    # Check that general MME request requirements are fulfilled
+    matchmaker_check_requirements(request)
 
-    for patient in case_obj["mme_submission"]["patients"]:
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = {"institute": institute_obj, "case": case_obj, "server_errors": [], "panel": 1}
+    matches = {}
+    for patient in case_obj.get("mme_submission", {}).get("patients", []):
         patient_id = patient["id"]
         matches[patient_id] = None
-        url = "".join([mme_base_url, "/matches/", patient_id])
-        server_resp = matchmaker_request(url=url, token=mme_token, method="GET")
-        if "status_code" in server_resp:  # the server returned a valid response
-            # and this will be a list of match objects sorted by desc date
-            pat_matches = []
-            if server_resp.get("matches"):
-                pat_matches = parse_matches(patient_id, server_resp["matches"])
-            matches[patient_id] = pat_matches
-        else:
-            LOG.warning("Server returned error message: {}".format(server_resp["message"]))
-            data["server_errors"].append(server_resp["message"])
+        server_resp = matchmaker.patient_matches(patient_id)
+        if server_resp.get("status_code") != 200:  # server returned error
+            flash("MatchMaker server returned error:{}".format(data["server_errors"]), "danger")
+            return redirect(request.referrer)
+        # server returned a valid response
+        pat_matches = []
+        if server_resp.get("content", {}).get("matches"):
+            pat_matches = parse_matches(patient_id, server_resp["content"]["matches"])
+        matches[patient_id] = pat_matches
 
     data["matches"] = matches
-
     return data
 
 
-def mme_match(case_obj, match_type, mme_base_url, mme_token, nodes=None, mme_accepts=None):
+def matchmaker_match(request, match_type, institute_id, case_name):
     """Initiate a MatchMaker match against either other Scout patients or external nodes
 
     Args:
-        case_obj(dict): a scout case object already submitted to MME
+        request(werkzeug.local.LocalProxy)
         match_type(str): 'internal' or 'external'
-        mme_base_url(str): base url of the MME server
-        mme_token(str): auth token of the MME server
-        mme_accepts(str): request content accepted by MME server (only for internal matches)
-
-    Returns:
-        matches(list): a list of eventual matches
+        institute_id(str): _id of an institute
+        case_name(str): display name of a case
     """
-    query_patients = []
-    server_responses = []
-    url = None
-    # list of patient dictionaries is required for internal matching
-    query_patients = case_obj["mme_submission"]["patients"]
-    if match_type == "internal":
-        url = "".join([mme_base_url, "/match"])
-        for patient in query_patients:
-            json_resp = matchmaker_request(
-                url=url,
-                token=mme_token,
-                method="POST",
-                content_type=mme_accepts,
-                accept=mme_accepts,
-                data={"patient": patient},
-            )
-            resp_obj = {
-                "server": "Local MatchMaker node",
-                "patient_id": patient["id"],
-                "results": json_resp.get("results"),
-                "status_code": json_resp.get("status_code"),
-                "message": json_resp.get("message"),  # None if request was successful
-            }
-            server_responses.append(resp_obj)
-    else:  # external matching
-        # external matching requires only patient ID
-        query_patients = [patient["id"] for patient in query_patients]
-        node_ids = [node["id"] for node in nodes]
-        if match_type in node_ids:  # match is against a specific external node
-            node_ids = [match_type]
+    # Check that general MME request requirements are fulfilled
+    matchmaker_check_requirements(request)
 
-        # Match every affected patient
-        for patient in query_patients:
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    query_patients = case_obj.get("mme_submission", {}).get("patients", [])
+    ok_responses = 0
+    for patient in query_patients:
+        json_resp = None
+        if match_type == "internal":  # Interal match against other patients on the MME server
+            json_resp = matchmaker.match_internal(patient)
+            if json_resp.get("status_code") != 200:
+                flash(
+                    f"An error occurred while matching patient against other patients of MatchMaker:{json_resp.get('message')}",
+                    "danger",
+                )
+                continue
+            ok_responses += 1
+        else:  # external matches
+            # Match every affected patient
+            patient_id = patient["id"]
             # Against every node
-            for node in node_ids:
-                url = "".join([mme_base_url, "/match/external/", patient, "?node=", node])
-                json_resp = matchmaker_request(url=url, token=mme_token, method="POST")
-                resp_obj = {
-                    "server": node,
-                    "patient_id": patient,
-                    "results": json_resp.get("results"),
-                    "status_code": json_resp.get("status_code"),
-                    "message": json_resp.get("message"),  # None if request was successful
-                }
-                server_responses.append(resp_obj)
-    return server_responses
+            nodes = [node["id"] for node in matchmaker.connected_nodes]
+            for node in nodes:
+                json_resp = matchmaker.match_external(patient_id, node)
+                if json_resp.get("status") != 200:
+                    flash(
+                        f"An error occurred while matching patient against external node: '{node}' : {json_resp.get('message')}",
+                        "danger",
+                    )
+                    continue
+                ok_responses += 1
+    if ok_responses > 0:
+        flash("Matching request sent. Look for eventual matches in 'Matches' page.", "info")
+
+    return ok_responses
