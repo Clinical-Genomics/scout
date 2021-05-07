@@ -24,7 +24,7 @@ class MMEHandler(object):
 
         existing_mm_submission = case_obj.get("mme_submission")
         if existing_mm_submission:
-            created = existing_mm_submission["created_at"]
+            created = existing_mm_submission.get("created_at")
 
         patients = [resp["patient"] for resp in mme_subm_obj.get("server_responses")]
 
