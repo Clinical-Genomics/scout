@@ -302,7 +302,7 @@ class VariantHandler(VariantLoader):
         Returns:
             hit (Variant): a variant object dictionary
         """
-        coordinate_query = store.sv_coordinate_query(
+        coordinate_query = self.sv_coordinate_query(
             {
                 "chrom": variant_obj["chromosome"],
                 "start": variant_obj["position"],
@@ -318,7 +318,7 @@ class VariantHandler(VariantLoader):
         }
 
         overlapping_svs = list(
-            store.variant_collection.find(
+            self.variant_collection.find(
                 query,
             )
         )
