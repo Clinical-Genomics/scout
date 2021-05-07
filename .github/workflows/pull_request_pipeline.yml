@@ -9,8 +9,6 @@ jobs:
       uses: actions/checkout@v1
     - name: Install
       run: yarn install
-    - name: Run lint check
-      run: yarn lint
     - name: Test
       run: yarn test
     - name: Build Stage
