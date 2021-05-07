@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import uuid
 
 import pymongo
 import pytest
@@ -11,8 +12,6 @@ from scout.load.hgnc_gene import load_hgnc_genes
 from scout.load.hpo import load_hpo
 from scout.server.app import create_app
 from scout.server.blueprints.login.models import LoginUser
-
-log = logging.getLogger(__name__)
 
 
 class LoqusdbMock:
@@ -72,7 +71,7 @@ def loqusdb():
 
 @pytest.fixture
 def app(real_database_name, real_variant_database, user_obj):
-
+    """A test app containing the endpoints of the real app"""
     app = create_app(
         config=dict(
             TESTING=True,
@@ -81,35 +80,14 @@ def app(real_database_name, real_variant_database, user_obj):
             DEBUG_TB_ENABLED=False,
             LOGIN_DISABLED=True,
             WTF_CSRF_ENABLED=False,
+            MME_URL="test_matchmaker.com",
+            MME_ACCEPTS="application/vnd.ga4gh.matchmaker.v1.0+json",
+            MME_TOKEN=str(uuid.uuid4()),
         )
     )
 
     @app.route("/auto_login")
     def auto_login():
-        log.debug("Got request for auto login for {}".format(user_obj))
-        user_inst = LoginUser(user_obj)
-        assert login_user(user_inst, remember=True)
-        return "ok"
-
-    return app
-
-
-@pytest.fixture
-def minimal_app(real_database_name, real_populated_database, user_obj):
-    "An app without data"
-    app = create_app(
-        config=dict(
-            TESTING=True,
-            DEBUG=True,
-            MONGO_DBNAME=real_database_name,
-            DEBUG_TB_ENABLED=False,
-            LOGIN_DISABLED=True,
-        )
-    )
-
-    @app.route("/auto_login")
-    def auto_login():
-        log.debug("Got request for auto login for {}".format(user_obj))
         user_inst = LoginUser(user_obj)
         assert login_user(user_inst, remember=True)
         return "ok"
@@ -218,7 +196,10 @@ def variant_gene_updated_info():
                 "ensembl_38_link": "http://ensembl.org/Homo_sapiens/Gene/Summary?t=ENST00000452699",
                 "ensembl_link": "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?t=ENST00000452699",
                 "refseq_links": [
-                    {"link": "http://www.ncbi.nlm.nih.gov/nuccore/NM_022089", "id": "NM_022089"}
+                    {
+                        "link": "http://www.ncbi.nlm.nih.gov/nuccore/NM_022089",
+                        "id": "NM_022089",
+                    }
                 ],
                 "swiss_prot_link": "http://www.uniprot.org/uniprot/Q9NQ11",
                 "pfam_domain_link": None,

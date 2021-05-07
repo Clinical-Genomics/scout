@@ -20,6 +20,12 @@ MAIL_USE_SSL = False
 # GENS_HOST = "127.0.0.1"
 # GENS_PORT = 5000
 
+# MatchMaker connection parameters
+# - Tested with PatientMatcher (https://github.com/Clinical-Genomics/patientMatcher) -
+# MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
+# MME_URL = "http://localhost:9020"
+# MME_TOKEN = "matchmaker_token"
+
 # connection details for LoqusDB MongoDB database
 # Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API
 # When multiple instances are available, admin users can modify which one is in use for a given institute from the admin settings page
