@@ -259,7 +259,7 @@ class LoqusDB:
         """
         loqus_id = variant_info["_id"]
         cmd = self.get_command(loqus_instance.get("id"))
-        cmd.extend(["variants", "--variant-id", loqus_id, "--case-count"])
+        cmd.extend(["variants", "--to-json", "--variant-id", loqus_id, "--case-count"])
         # If sv we need some more info
         if variant_info.get("category", "snv") in ["sv"]:
             self.set_coordinates(variant_info)
