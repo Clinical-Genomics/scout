@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Saved filter lock and unlock
 - Filters can optionally be marked audited, logging the filter name, user and date on the case events and general report.
 - Added `ClinVar hits` and `Cosmic hits` in cancer SNVs filters
+- Load cancer demo case in docker-compose files (default and demo file)
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
