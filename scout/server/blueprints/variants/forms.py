@@ -134,6 +134,7 @@ class FiltersForm(VariantFiltersForm):
     clinical_filter = SubmitField(label="Clinical filter")
     clinvar_tag = BooleanField("ClinVar hits")
 
+
 class CancerFiltersForm(VariantFiltersForm):
     """Base filters for CancerFiltersForm - extends VariantsFiltersForm"""
 
