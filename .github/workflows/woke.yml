@@ -18,17 +18,14 @@ jobs:
     name: Check changed files with woke
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v2
-
-      - uses: jitterbit/get-changed-files@v1
-        id: files
-
-      - name: 'woke'
-        uses: get-woke/woke-action@v0
+      - uses: actions/checkout@v2
+      - uses: get-woke/woke-action-reviewdog@v0
         with:
-          # Cause the check to fail on any broke rules
-          fail-on-error: true
-          # See https://github.com/marketplace/actions/get-all-changed-files
-          # for more options
-          woke-args: ${{ steps.files.outputs.added_modified }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Change reviewdog reporter if you need [github-pr-check,github-check,github-pr-review].
+          reporter: github-pr-review
+          # Change reporter level if you need.
+          # GitHub Status Check won't become failure with warning.
+          level: warning
+          # Enable this to fail the check when violations are found
+          # fail-on-error: true
