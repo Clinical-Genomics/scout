@@ -95,7 +95,7 @@ class LoqusDB:
             self.version_check(setting)
 
         self.loqus_ids = self.loqusdb_settings.keys()
-        LOG.info(f"LoqusDB setup: {self.__repr__()}")
+        LOG.debug(f"LoqusDB setup: {self.__repr__()}")
 
     def version_check(self, loqusdb_settings):
         """Check if a compatible version is used otherwise raise an error"""
@@ -280,7 +280,6 @@ class LoqusDB:
                 ]
             )
         output = ""
-        LOG.error(cmd)
         try:
             output = execute_command(cmd)
         except CalledProcessError as err:
@@ -290,7 +289,6 @@ class LoqusDB:
         res = {}
         if output:
             res = json.loads(output)
-        LOG.error(res)
 
         return res
 
