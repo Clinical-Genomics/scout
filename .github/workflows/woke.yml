@@ -1,17 +1,16 @@
 name: woke
-on: [pull_request]
+on:
+  - pull_request
 jobs:
-  linter_name:
-    name: runner / woke
+  woke:
+    name: woke
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: get-woke/woke-action-reviewdog@v0
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: woke
+        uses: get-woke/woke-action@v0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          # Change reviewdog reporter if you need [github-pr-check,github-check,github-pr-review].
-          reporter: github-pr-review
-          # Change reporter level if you need.
-          # GitHub Status Check won't become failure with warning.
-          level: warning
+          # Cause the check to fail on any broke rules
           fail-on-error: true
