@@ -290,6 +290,7 @@ class LoqusDB:
         res = {}
         if output:
             res = json.loads(output)
+        LOG.errot(res)
 
         return res
 
