@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
 - Redirect to last visited variantS page when dismissing variants from variants list
+- Relaxed matching of SVs Loqus occurrences in other cases (look for SVs with different subtype)
 ### Added
 - Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
 - Grey background for dismissed compounds in variants list and variant page
@@ -645,7 +646,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clear panel pending changes
 - Adds option to setup the database with static files
 - Adds cli command to download the resources from CLI that scout needs
-- Adds dummy files for merged somatic SV and CNV; as well as merged SNV, and INDEL part of #1279
+- Adds test files for merged somatic SV and CNV; as well as merged SNV, and INDEL part of #1279
 - Allows for upload of OMIM-AUTO gene panel from static files without api-key
 
 ### Fixed
