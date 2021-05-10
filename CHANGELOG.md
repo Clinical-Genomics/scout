@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added `ClinVar hits` and `Cosmic hits` in cancer SNVs filters
 - Added `ClinVar hits` to variants filter (rare disease track)
 - Load cancer demo case in docker-compose files (default and demo file)
+- Inclusive-language check using [woke](https://github.com/get-woke/woke) github action
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
