@@ -893,7 +893,7 @@ def parsed_panel(request, panel_info):
 
 
 @pytest.fixture(scope="function")
-def testpanel_geneobj():
+def dummypanel_geneobj():
     """A panel gene object"""
     gene_obj = {}
 
@@ -904,22 +904,22 @@ def testpanel_geneobj():
 
 
 @pytest.fixture(scope="function")
-def testpanel_obj(parsed_panel, testpanel_geneobj):
-    """Return a test panel object"""
-    test_panel = {}
+def dummypanel_obj(parsed_panel, dummypanel_geneobj):
+    """Return a dummy panel object"""
+    dummy_panel = {}
 
-    test_panel["panel_name"] = parsed_panel["panel_id"]
-    test_panel["institute"] = parsed_panel["institute"]
-    test_panel["version"] = float(parsed_panel["version"])
-    test_panel["date"] = parsed_panel["date"]
-    test_panel["display_name"] = parsed_panel["display_name"]
-    test_panel["description"] = "A panel description"
-    test_panel["genes"] = [
+    dummy_panel["panel_name"] = parsed_panel["panel_id"]
+    dummy_panel["institute"] = parsed_panel["institute"]
+    dummy_panel["version"] = float(parsed_panel["version"])
+    dummy_panel["date"] = parsed_panel["date"]
+    dummy_panel["display_name"] = parsed_panel["display_name"]
+    dummy_panel["description"] = "A panel description"
+    dummy_panel["genes"] = [
         {"symbol": "AAA", "hgnc_id": 100},
         {"symbol": "BBB", "hgnc_id": 222},
     ]
 
-    return test_panel
+    return dummy_panel
 
 
 @pytest.fixture(scope="function")
