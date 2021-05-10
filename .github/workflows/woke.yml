@@ -1,0 +1,15 @@
+name: woke
+on:
+  - pull_request
+jobs:
+  woke:
+    name: Non-inclusive language check with woke
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: woke
+        uses: get-woke/woke-action@v0
+        with:
+          fail-on-error: false
