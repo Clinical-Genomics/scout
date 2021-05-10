@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { GoogleLogin, GoogleLogout } from "react-google-login";
 import styles from "./Nav.module.scss";
 import DropdownMenu from "components/DropdownMenu/DropdownMenu";
-import { FaAngleDown } from "react-icons/fa";
+import { FaAngleDown, FaMoon, FaRegSun } from "react-icons/fa";
 
 export interface Header {
   icon?: string; // Path to icon
@@ -20,6 +20,8 @@ export interface NavItem {
 interface Props {
   header?: Header;
   navItems: Array<NavItem>;
+  darkMode: boolean;
+  toggleDarkMode: Function;
 }
 
 const { REACT_APP_GOOGLE_OAUTH_CLIENT_ID } = process.env;
@@ -27,7 +29,12 @@ const clientId = REACT_APP_GOOGLE_OAUTH_CLIENT_ID
   ? REACT_APP_GOOGLE_OAUTH_CLIENT_ID
   : "no-id";
 
-const Nav: React.FC<Props> = ({ header, navItems }) => {
+const Nav: React.FC<Props> = ({
+  header,
+  navItems,
+  darkMode,
+  toggleDarkMode,
+}) => {
   const [userName, setUserName] = useState("");
   const [sigendIn, setSigendIn] = useState(false);
 
@@ -84,6 +91,15 @@ const Nav: React.FC<Props> = ({ header, navItems }) => {
         ))}
       </ul>
       <ul>
+        <li>
+          <button
+            className="no_button_style flex"
+            onClick={() => toggleDarkMode()}
+          >
+            {darkMode && <FaMoon />}
+            {!darkMode && <FaRegSun />}
+          </button>
+        </li>
         {/* Greeting */}
         {sigendIn && (
           <li key={"logout"} className={styles.greeting}>
@@ -97,7 +113,7 @@ const Nav: React.FC<Props> = ({ header, navItems }) => {
                   clientId={clientId}
                   render={(renderProps) => (
                     <button
-                      className={"no-button-style"}
+                      className={"no_button_style"}
                       onClick={renderProps.onClick}
                       disabled={renderProps.disabled}
                     >
@@ -118,7 +134,7 @@ const Nav: React.FC<Props> = ({ header, navItems }) => {
               clientId={clientId}
               render={(renderProps) => (
                 <button
-                  className={`${styles.loginButton} btn-style`}
+                  className={`${styles.login_button} btn-style`}
                   onClick={renderProps.onClick}
                   disabled={renderProps.disabled}
                 >

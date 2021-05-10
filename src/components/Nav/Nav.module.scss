@@ -5,8 +5,8 @@
   justify-content: space-between;
   //border-bottom: 1px solid rgba(217, 217, 217, 0.45);
   box-shadow: global.$shadow;
-  background-color: global.$primary-color;
-  color: global.$primary-color-text;
+  background-color: global.$primary_color;
+  color: global.$primary_color_text;
   padding: 0px 4px;
   ul {
     display: flex;
@@ -56,7 +56,7 @@
         display: flex;
       }
     }
-    .loginButton {
+    .login_button {
       background-color: global.$cg-color;
       margin-right: 8px;
     }
@@ -82,6 +82,7 @@
   }
 }
 
+/** Smaller screens */
 @media only screen and (max-width: 992px) {
   .Nav {
     flex-direction: column;

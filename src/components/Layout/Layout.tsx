@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Nav, { NavItem } from "components/Nav/Nav";
 import styles from "./Layout.module.scss";
 import logo_scout from "assets/logo_scout.png";
@@ -35,14 +35,48 @@ const cgNavItems: Array<NavItem> = [
   { linkTitle: "Items", public: false, link: "/items" },
 ];
 
-const Layout: React.FC = ({ children }) => (
-  <div className={styles.Layout}>
-    <header>
-      <Nav header={header_cg} navItems={cgNavItems} />
-    </header>
-    <main>{children}</main>
-    <Footer />
-  </div>
-);
+const Layout: React.FC = ({ children }) => {
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    /** Check local storage */
+    const darkModeStorage = localStorage.getItem("darkMode");
+    if (darkModeStorage !== undefined) {
+      setDarkMode(darkModeStorage === "true");
+      return;
+    }
+
+    // Check OS dark/light mode
+    if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
+      // Dark
+      setDarkMode(true);
+    }
+  }, []);
+
+  // TODO: Check if there is a better way to solve the asynchronous problem
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem("darkMode", newMode.toString());
+  };
+
+  return (
+    <div className={`${styles.Layout} ${darkMode ? "dark_mode" : ""}`}>
+      <header>
+        <Nav
+          header={header_cg}
+          navItems={cgNavItems}
+          darkMode={darkMode}
+          toggleDarkMode={toggleDarkMode}
+        />
+      </header>
+      <main>{children}</main>
+      <Footer />
+    </div>
+  );
+};
 
 export default Layout;

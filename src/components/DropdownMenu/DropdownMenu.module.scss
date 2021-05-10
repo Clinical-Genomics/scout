@@ -10,9 +10,9 @@
   height: fit-content; // Works in IE? Should we support IE?
   border-radius: 8px;
   box-shadow: global.$shadow;
+  background-color: inherit;
   overflow: auto;
   li {
-    background-color: white;
     padding: 2px 8px;
   }
   li:focus,

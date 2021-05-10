@@ -1,7 +1,9 @@
 /***** Global colors *****/
 /** Primary color (nav, footer) */
-$primary-color: white;
-$primary-color-text: black;
+$primary_color: white;
+$primary_color_text: black;
+$primary_color_dark_mode: black;
+$primary_color_dark_mode_text: white;
 
 $cg-color: #ef7c01;
 
@@ -25,7 +27,7 @@ li {
   list-style-type: none;
 }
 
-.no-button-style {
+.no_button_style {
   background-color: inherit;
   color: inherit;
   border: none;
@@ -33,11 +35,30 @@ li {
   cursor: pointer;
 }
 
-.btn-style{
+.btn-style {
   box-sizing: content-box;
   border: none;
   cursor: pointer;
   border-radius: 4px;
   padding: 8px 16px;
   box-shadow: $shadow;
+}
+
+/** Dark mode */
+.dark_mode {
+  background-color: black;
+  color: white;
+}
+/** TODO: Check if this can be done better */
+.dark_mode Nav,
+.dark_mode Footer
+ {
+  background-color: $primary_color_dark_mode;
+  color: $primary_color_dark_mode_text;
+}
+/** TODO: Add selected/hover color on dropdown items another color */
+
+/** TODO: Add similar to Tailwind */
+.flex {
+  display: flex;
 }
