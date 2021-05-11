@@ -1038,6 +1038,13 @@ def one_sv_variant(request, sv_clinical_file):
 
 
 @pytest.fixture(scope="function")
+def sv_variant_obj(request, parsed_sv_variant):
+    institute_id = "cust000"
+    variant = build_variant(parsed_sv_variant, institute_id=institute_id)
+    return variant
+
+
+@pytest.fixture(scope="function")
 def one_str_variant(request, str_clinical_file):
     LOG.info("Return one parsed STR variant")
     variant_parser = VCF(str_clinical_file)

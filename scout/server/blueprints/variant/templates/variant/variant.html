@@ -221,7 +221,7 @@
       <div class="card-body">
         <ul class="list-group list-group-flush">
           {% for other_variant in causatives %}
-            <li class="list-group-item">
+            <li class="list-group-item" style="padding: 0;">
               <a href="{{ url_for('variant.variant',
                                   institute_id=institute._id,
                                   case_name=other_variant.case_display_name,
