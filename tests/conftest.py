@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
-import os
-from pprint import pprint as pp
 
 import pymongo
 import pytest
@@ -11,6 +9,7 @@ from cyvcf2 import VCF
 
 # Adapter stuff
 from mongomock import MongoClient
+from werkzeug.datastructures import MultiDict
 
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
 from scout.build import build_case, build_institute, build_panel
@@ -389,7 +388,6 @@ def case_obj(request, parsed_case):
     case["owner"] = parsed_case["owner"]
     case["created_at"] = parsed_case["analysis_date"]
     case["dynamic_gene_list"] = []
-    case["genome_version"] = None
     case["has_svvariants"] = True
 
     case["individuals"][0]["sex"] = "1"
@@ -841,6 +839,25 @@ def sv_database(request, populated_database, variant_objs, sv_variant_objs):
     return adapter
 
 
+####################################
+########## Filter fixtures ##########
+####################################
+
+
+@pytest.fixture
+def filter_obj():
+    filter_obj_md = MultiDict(
+        {
+            "variant_type": "clinical",
+            "region_annotations": ["exonic", "splicing"],
+            "filter_display_name": "clinical-exonic-splicing",
+            "empty_value": "",
+            "save_filter": True,
+        }
+    )
+    return filter_obj_md
+
+
 #############################################################
 ##################### Panel fixtures #####################
 #############################################################
@@ -1021,6 +1038,13 @@ def one_sv_variant(request, sv_clinical_file):
 
 
 @pytest.fixture(scope="function")
+def sv_variant_obj(request, parsed_sv_variant):
+    institute_id = "cust000"
+    variant = build_variant(parsed_sv_variant, institute_id=institute_id)
+    return variant
+
+
+@pytest.fixture(scope="function")
 def one_str_variant(request, str_clinical_file):
     LOG.info("Return one parsed STR variant")
     variant_parser = VCF(str_clinical_file)
@@ -1112,72 +1136,6 @@ def cyvcf2_variant():
 
     variant = Cyvcf2Variant()
     return variant
-
-
-# @pytest.fixture(scope='function')
-# def parsed_variant():
-#     """Return variant information for a parsed variant with minimal information"""
-#     variant = {'alternative': 'C',
-#                'callers': {
-#                    'freebayes': None,
-#                    'gatk': None,
-#                    'samtools': None
-#                },
-#                'case_id': 'cust000-643594',
-#                'category': 'snv',
-#                'chromosome': '2',
-#                'clnsig': [],
-#                'compounds': [],
-#                'conservation': {'gerp': [], 'phast': [], 'phylop': []},
-#                'dbsnp_id': None,
-#                'end': 176968945,
-#                'filters': ['PASS'],
-#                'frequencies': {
-#                    'exac': None,
-#                    'exac_max': None,
-#                    'thousand_g': None,
-#                    'thousand_g_left': None,
-#                    'thousand_g_max': None,
-#                    'thousand_g_right': None},
-#                'genes': [],
-#                'genetic_models': [],
-#                'hgnc_ids': [],
-#                'ids': {'display_name': '1_10_A_C_clinical',
-#                        'document_id': 'a1f1d2ac588dae7883f474d41cfb34b8',
-#                        'simple_id': '1_10_A_C',
-#                        'variant_id': 'e8e33544a4745f8f5a09c5dea3b0dbe4'},
-#                'length': 1,
-#                'local_obs_hom_old': None,
-#                'local_obs_old': None,
-#                'mate_id': None,
-#                'position': 176968944,
-#                'quality': 10.0,
-#                'rank_score': 0.0,
-#                'reference': 'A',
-#                'samples': [{'alt_depth': -1,
-#                             'display_name': 'NA12882',
-#                             'genotype_call': None,
-#                             'genotype_quality': None,
-#                             'individual_id': 'ADM1059A2',
-#                             'read_depth': None,
-#                             'ref_depth': -1},
-#                            {'alt_depth': -1,
-#                             'display_name': 'NA12877',
-#                             'genotype_call': None,
-#                             'genotype_quality': None,
-#                             'individual_id': 'ADM1059A1',
-#                             'read_depth': None,
-#                             'ref_depth': -1},
-#                            {'alt_depth': -1,
-#                             'display_name': 'NA12878',
-#                             'genotype_call': None,
-#                             'genotype_quality': None,
-#                             'individual_id': 'ADM1059A3',
-#                             'read_depth': None,
-#                             'ref_depth': -1}],
-#                'sub_category': 'snv',
-#                'variant_type': 'clinical'}
-#     return variant
 
 
 @pytest.fixture(scope="function")

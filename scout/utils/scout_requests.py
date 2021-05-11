@@ -15,9 +15,10 @@ LOG = logging.getLogger(__name__)
 
 HPO_URL = "http://purl.obolibrary.org/obo/hp/hpoa/{}"
 HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
+TIMEOUT = 20
 
 
-def post_request_json(url, data, headers):
+def post_request_json(url, data, headers=None):
     """Send json data via POST request and return response
 
     Args:
@@ -32,13 +33,66 @@ def post_request_json(url, data, headers):
     json_response = {}
     try:
         LOG.debug(f"Sending POST request with json data to {url}")
-        resp = requests.post(url, headers=headers, json=data)
-        json_response = resp.json()
+        if headers:
+            resp = requests.post(url, headers=headers, json=data)
+        else:
+            resp = requests.post(url, json=data)
+        json_response["content"] = resp.json()
+
     except Exception as ex:
         return {"message": f"An error occurred while sending a POST request to url {url} -> {ex}"}
 
     json_response["status_code"] = resp.status_code
-    LOG.debug(f"returned response is:{json_response}")
+    return json_response
+
+
+def get_request_json(url, headers=None):
+    """Send GET request and return response's json data
+    Args:
+        url(str): url to send request to
+        headers(dict): eventual request HEADERS to use in request
+    Returns:
+        json_response(dict), example {"status_code":200, "content":{original json content}}
+    """
+    resp = None
+    json_response = {}
+    try:
+        LOG.debug(f"Sending GET request to {url}")
+        if headers:
+            resp = requests.get(url, timeout=TIMEOUT, headers=headers)
+        else:
+            resp = requests.get(url, timeout=TIMEOUT)
+        json_response["content"] = resp.json()
+
+    except Exception as ex:
+        return {"message": f"An error occurred while sending a GET request to url {url} -> {ex}"}
+
+    json_response["status_code"] = resp.status_code
+    return json_response
+
+
+def delete_request_json(url, headers=None):
+    """Send a DELETE request to a remote API and return its response
+    Args:
+        url(str): url to send request to
+        headers(dict): eventual request HEADERS to use in request
+    Returns:
+        json_response(dict)
+    """
+    resp = None
+    json_response = {}
+    try:
+        LOG.debug(f"Sending DELETE request to {url}")
+        if headers:
+            resp = requests.delete(url, headers=headers)
+        else:
+            resp = requests.delete(url)
+        json_response["content"] = resp.json()
+
+    except Exception as ex:
+        return {"message": f"An error occurred while sending a DELETE request to url {url} -> {ex}"}
+
+    json_response["status_code"] = resp.status_code
     return json_response
 
 
@@ -53,7 +107,7 @@ def get_request(url):
     """
     try:
         LOG.info("Requesting %s", url)
-        response = requests.get(url, timeout=20)
+        response = requests.get(url, timeout=TIMEOUT)
         if response.status_code != 200:
             response.raise_for_status()
         LOG.info("Encoded to %s", response.encoding)
@@ -84,7 +138,7 @@ def fetch_resource(url, json=False):
     data = None
     if url.startswith("ftp"):
         # requests do not handle ftp
-        response = urllib.request.urlopen(url, timeout=20)
+        response = urllib.request.urlopen(url, timeout=TIMEOUT)
         if isinstance(response, Exception):
             raise response
         data = response.read().decode("utf-8")

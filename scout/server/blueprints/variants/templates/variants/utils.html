@@ -1,5 +1,6 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% from "utils.html" import comments_table %}
+{% from "variants/indicators.html" import pin_indicator, causative_badge, comments_badge, evaluations_badge, research_assessments_badge, clinical_assessments_badge, group_assessments_badge %}
 
 {% macro mark_heteroplasmic_mt(individuals, samples) %}
   {% for ind in individuals if ind.phenotype == 2 %}
@@ -31,7 +32,7 @@
 {% endmacro %}
 
 {% macro dismiss_variants_block(dismiss_variant_options, institute, case) %}
-<div class="row d-flex align-items-center mb-3 ml-1">
+<div class="row d-flex align-items-center mb-2 ml-1">
   <div class="col-2 ">Dismiss selected variants:</div>
   <div class="col-4 align-items-start">
     <select multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-width="100%" onchange="enableDismiss();">
@@ -62,18 +63,25 @@
     </thead>
     <tbody>
       {% for compound in compounds %}
-        <tr>
+        {% if compound.is_dismissed %}
+          <tr class='dismiss'>
+        {% else %}
+          <tr>
+        {% endif %}
           <td>
-            {% if compound.not_loaded %}
-              {{ compound.display_name }} <small>(not loaded)</small>
-            {% else %}
-              <a href='{{ url_for("variant.variant",
-                                 institute_id=institute._id,
-                                 case_name=case.display_name,
-                                 variant_id=compound.variant) }}' target='_blank'>
+              {% if compound.not_loaded %}
+                {{ compound.display_name }} <small>(not loaded)</small>
+              {% else %}
+                <a href='{{ url_for("variant.variant",
+                institute_id=institute._id,
+                case_name=case.display_name,
+                variant_id=compound.variant) }}' target='_blank'>
                 {{ compound.display_name|truncate(20, True) }}
-              </a>
-            {% endif %}
+                </a>
+                {% if compound.variant in case.suspects %}
+                  <i class='fa fa-map-pin ml-1'></i>
+                {% endif %}
+              {% endif %}
           </td>
           <td class='text-right'>{{ compound.combined_score }}</td>
           <td class='text-right'>{{ compound.rank_score }}</td>
@@ -123,7 +131,7 @@
   </table>
 {% endmacro %}
 
-{% macro modal_causative(case, institute, variant) %}
+{% macro modal_causative(case, institute, variant, filters) %}
 <div class="modal fade" id="causativeModal" tabindex="-1" role="dialog" aria-labelledby="causativeLabel"
   aria-hidden="true" onsubmit="return validate_causative_form();">
   <div class="modal-dialog modal-lg" role="document">
@@ -201,11 +209,11 @@
 </div>
 {% endmacro %}
 
-{% macro snv_filters(form, institute, case)%}
+{% macro snv_filters(form, institute, case, filters)%}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
 <div class="form-group">
   <div class="row">
-    <div class="col-4">
+    <div class="col-2">
       {{ form.gene_panels.label(class="control-label", data_toggle="tooltip", data_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
       {{ form.gene_panels(class="selectpicker") }}
     </div>
@@ -224,6 +232,10 @@
     <div class="col-2">
       {{ form.genetic_models.label(class="control-label") }}
       {{ form.genetic_models(class="selectpicker") }}
+    </div>
+    <div class="col-2">
+      {{ form.clinvar_tag() }}
+      {{ form.clinvar_tag.label(class="ml-2") }}
     </div>
   </div>
 </div>
@@ -328,7 +340,7 @@
 </div>
 {% endmacro %}
 
-{% macro str_filters(form, institute, case) %}
+{% macro str_filters(form, institute, case, filters) %}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
 <div class="form-group">
   <div class="row">
@@ -522,7 +534,7 @@
 </div>
 {% endmacro %}
 
-{% macro cancer_filters(form, institute, case) %}
+{% macro cancer_filters(form, institute, case, filters) %}
     {{ form.csrf_token }}
     {{ form.variant_type() }}
     <div class="form-group">
@@ -548,8 +560,18 @@
           {{ form.clinsig(class="selectpicker") }}
         </div>
         <div class="col-2">
-          {{ form.mvl_tag.label(class="control-label") }}
-          <div>{{ form.mvl_tag() }}</div>
+          <div class="row form-inline">
+            {{ form.mvl_tag() }}
+            {{ form.mvl_tag.label(class="ml-2") }}
+          </div>
+          <div class="row form-inline">
+            {{ form.clinvar_tag() }}
+            {{ form.clinvar_tag.label(class="ml-2") }}
+          </div>
+          <div class="row form-inline">
+            {{ form.cosmic_tag() }}
+            {{ form.cosmic_tag.label(class="ml-2") }}
+          </div>
         </div>
       </div>
     </div>
@@ -668,19 +690,44 @@
 
 {% macro stash_filter_buttons(form, institute, case) %}
   <div class="row">
-    <div class="col-4 text-right">
+    <div class="col-3 text-right">
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#filterNameModal"><i class="fa fa-star"></i> Save filter</button>
     </div>
     {{ modal_prompt_filter_name(form) }}
-    <div class="col-4">
+    <div class="col-3">
       {{ form.filters(class="form-control") }}
     </div>
-    <div class="btn-group col-4" role="group">
-      {{ form.load_filter(class="btn btn-secondary", disabled=form.filters.choices|length==0) }}
+    <div class="btn-group col-6" role="group">
+      {{ form.load_filter(class="btn btn-secondary", title="Load selected filter", data_toggle="tooltip", data_placement="top", disabled=form.filters.choices|length==0) }}
+      {{ form.audit_filter(class="btn btn-secondary bg-info", title="Note selected filter audited for this case. Filter name, user and date will then show up on general report.", data_toggle="tooltip", data_placement="top", disabled=form.filters.choices|length==0) }}
+      <button name="lock_filter" type="submit" value="Lock filter" class="btn btn-primary btn-sm" id="lock_filter" data-toggle="tooltip" data-placement="top" title="Lock filter and make you owner. Unlock if you own it." disabled="{{form.filters.choices|length==0}}">
+              <span id="stash_filter_padlock" class="fa fa-lock-open"></span></button>
       {{ form.delete_filter(class="btn btn-secondary bg-danger", data_toggle="tooltip", data_placement="top",
-        title="Delete selected filter for this institute.", disabled=form.filters.choices|length==0) }}
+        id="stash_filter_delete", title="Delete selected filter for this institute.", disabled=form.filters.choices|length==0) }}
     </div>
   </div>
+{% endmacro %}
+
+{% macro update_stash_filter_button_status(current_user, filters) %}
+ {% for filter in filters %}
+    if ($("#filters").val() === "{{ filter._id }}") {
+      {% if filter.lock %}
+        $("#stash_filter_padlock").removeClass("fa-lock-open");
+        $("#stash_filter_padlock").addClass("fa-lock");
+        $("#stash_filter_delete").attr("disabled", true);
+        {% if filter.owner == current_user._id %}
+          $("#lock_filter").attr("disabled", false);
+        {% elif filter.owner and filter.owner != current_user._id %}
+          $("#lock_filter").attr("disabled",true);
+        {% endif %}
+      {% else %}
+        $("#stash_filter_padlock").removeClass("fa-lock");
+        $("#stash_filter_padlock").addClass("fa-lock-open");
+        $("#stash_filter_delete").attr("disabled",false);
+        $("#lock_filter").attr("disabled",false);
+      {% endif %}
+    };
+  {% endfor %}
 {% endmacro %}
 
 {% macro tier_cell(variant, manual_rank_options, cancer_tier_options) %}
@@ -697,81 +744,28 @@
   {% endif %}
 {% endmacro %}
 
+
 {% macro cell_rank(variant, institute, case, form, manual_rank_options) %}
-{% if variant.category in ("sv", "cancer_sv") %}
-  <a class="variants-row-item flex-small layout"
-      href="{{ url_for('variant.sv_variant', institute_id=institute._id,
-                       case_name=case.display_name, variant_id=variant._id) }}" target='_blank'>
-{% else %}
-  <a class="variants-row-item flex-small layout"
-     href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
-                      variant_id=variant._id) }}" target='_blank'>
-{% endif %}
+  {% if variant.category in ("sv", "cancer_sv") %}
+    <a class="variants-row-item flex-small layout"
+        href="{{ url_for('variant.sv_variant', institute_id=institute._id,
+                         case_name=case.display_name, variant_id=variant._id) }}" target='_blank'>
+  {% else %}
+    <a class="variants-row-item flex-small layout"
+       href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
+                        variant_id=variant._id) }}" target='_blank'>
+  {% endif %}
+
   {{ variant.variant_rank }}&nbsp;</a>
 
-  {% set comment_count = variant.comments | count_cursor %}
+  {{ evaluations_badge(variant) }}
+  {{ research_assessments_badge(variant) }}
+  {{ clinical_assessments_badge(variant) }}
+  {{ group_assessments_badge(variant) }}
 
-  {% if variant.evaluations %}
-    {% for evaluation in (variant.evaluations or []) %}
-      <span class="badge badge-secondary" style="margin-left:1px" data-toggle="tooltip" data-placement="right"
-        title="Previously classified as {{ evaluation.classification.label }}">
-        {{ evaluation.classification.short }}
-      </span>
-    {% endfor %}
-  {% endif %}
-
-  {% if variant.research_assessments %}
-    {% for assessment in (variant.research_assessments or []) %}
-      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
-        title="Research {{ assessment.title }}">
-        {{ assessment.label }}</span>
-    {% endfor %}
-  {% endif %}
-
-  {% if variant.clinical_assessments %}
-    {% for assessment in (variant.clinical_assessments or []) %}
-      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
-          title="Clinical {{ assessment.title }}">
-          {{ assessment.label }}</span>
-    {% endfor %}
-  {% endif %}
-
-  {% if variant.group_assessments %}
-    {% for assessment in (variant.group_assessments or []) %}
-      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
-        title="Cohort {{ assessment.title }}">
-        {{ assessment.label }}</span>
-    {% endfor %}
-  {% endif %}
-
-  {% if variant._id in case.causatives %}
-    <span class="badge badge-success" style="margin-left:1px" data-toggle="tooltip" data-placement="right" title="Causative variant">Causative</span>
-  {% endif %}
-
-  {% if comment_count > 0 %}
-    {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
-    <a href="#"
-       class="badge badge-info"
-       data-toggle="popover"
-       data-placement="right"
-       data-html="true"
-       data-trigger="hover click"
-       data-content="{{ comments_content }}"
-       title=""
-       style="color:white;"
-       >
-      {{ comment_count }}
-      <i class="fa fa-comment"></i>
-      {% if 'GLOBAL' in comments_content %}
-        <i class="fa fa-globe" aria-hidden="true"></i>
-      {% endif %}
-    </a>
-  {% endif %}
-
-  {% if variant._id in case.suspects %}
-    <i class="fa fa-map-pin"></i>
-  {% endif %}
-
+  {{ comments_badge(institute, case, variant) }}
+  {{ causative_badge(variant, case) }}
+  {{ pin_indicator(variant, case) }}
 {% endmacro %}
 
 {% macro pagination_hidden_div(page) %}
@@ -780,6 +774,7 @@
     <input type="submit" name="page" id="paginate-first" value=1 hidden="true">
     <input type="submit" name="page" id="paginate-previous" value={{page-1}} hidden="true">
     <input type="submit" name="page" id="paginate-next" value={{page+1}} hidden="true">
+    <input type="hidden" name="page" value="{{page}}"> <!-- In order to work, this input should be placed AFTER the submit form items with the same name -->
   </div>
 {% endmacro %}
 

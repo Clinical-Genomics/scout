@@ -156,7 +156,6 @@
 {{ modal_causative(case, institute, variant) }}
 {% endblock %}
 
-
 {% macro panel_summary() %}
   <div class="card mt-3 panel-default">
       <div class="panel-heading">Summary</div>
@@ -370,6 +369,155 @@
 {% endmacro %}
 
 
+<<<<<<< HEAD
+=======
+{% macro compounds_panel() %}
+  <div class="card panel-default">
+    <div class="panel-heading">Compounds (top 20)</div>
+    <div class="card-body">
+      {{ compounds_table(institute, case, variant.compounds[:20]) }}
+    </div>
+  </div>
+{% endmacro %}
+
+
+{% macro modal_sanger() %}
+  <form action="{{ url_for('variant.verify', institute_id=institute._id,
+                           case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=True) }}"
+        method="POST">
+    <div class="modal fade" id="sangerModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Order Sanger sequencing</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            {{ sanger_form() }}
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-danger" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Send sanger order request</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro modal_cancel_sanger() %}
+  <form action="{{ url_for('variant.verify', institute_id=institute._id,
+                           case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=False) }}"
+        method="POST">
+    <div class="modal fade" id="cancelSangerModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Cancel Sanger sequencing</h4>
+          </div>
+          <div class="modal-body">
+            {{ sanger_form() }}
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Send sanger cancellation request</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro external_links() %}
+  <div class="panel panel-default">
+    {% for gene in variant.genes %}
+      <div class="panel-heading">
+        External links: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+      </div>
+      <div class="panel-body">
+          <a href="{{ gene.ensembl_link }}" class="btn btn-outline-secondary" target="_blank">Ensembl</a>
+          <a href="{{ gene.hpa_link }}" class="btn btn-outline-secondary" target="_blank">HPA</a>
+          <a href="{{ gene.string_link }}" class="btn btn-outline-secondary" target="_blank">STRING</a>
+          <a href="{{ gene.genemania_link }}" class="btn btn-outline-secondary" target="_blank">GENEMANIA</a>
+          <a href="{{ variant.ucsc_link }}" class="btn btn-outline-secondary" target="_blank">UCSC</a>
+          {% if gene.entrez_link %}
+            <a href="{{ gene.entrez_link }}" class="btn btn-outline-secondary" target="_blank">Entrez</a>
+          {% endif %}
+          <a href="http://tools.genes.toronto.edu/" class="btn btn-outline-secondary" target="_blank">SPANR</a>
+          <a href="{{ gene.reactome_link }}" class="btn btn-outline-secondary" target="_blank">Reactome</a>
+          <a href="{{ gene.expression_atlas_link }}" class="btn btn-outline-secondary" target="_blank">Expr. Atlas</a>
+          <a href="{{ gene.clingen_link }}" class="btn btn-outline-secondary" target="_blank">ClinGen</a>
+          {% if case.mt_bams or case.bam_files %}
+            <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
+          {% endif %}
+          <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
+          {% if variant.chromosome in ['MT','M'] %}
+            <a href="{{ variant.mitomap_link }}" class="btn btn-outline-secondary" target="_blank">MitoMap</a>
+          {% endif %}
+          {% if variant.hmtvar_variant_id %}
+            <a href="{{ variant.hmtvar_link }}" class="btn btn-outline-secondary" target="_blank">HmtVar</a>
+          {% endif %}
+          {% if gene.tp53_link %}
+            <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>
+          {% endif %}
+          {% if gene.iarctp53_link %}
+            <a href="{{ gene.iarctp53_link }}" class="btn btn-outline-secondary" target="_blank">IARC TP53</a>
+          {% endif %}
+          {% if cancer %}
+            <a href="{{ gene.cbioportal_link }}" class="btn btn-outline-secondary" target="_blank">cBioPortal</a>
+            <a href="{{ gene.oncokb_link }}" class="btn btn-outline-secondary" target="_blank">OncoKB</a>
+            <a href="{{ gene.civic_link }}" class="btn btn-outline-secondary" target="_blank">CIViC</a>
+          {% endif %}
+            <a href="http://marrvel.org/human/variant/{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{variant.alternative}}" class="btn btn-outline-secondary" target="_blank">MARRVEL</a>
+      </div>
+    {% endfor %}
+  </div>
+{% endmacro %}
+
+{% macro acmg_form(selected=None) %}
+  <label class="mt-3">ACMG classification</label>
+  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+    <div class="d-flex justify-content-between">
+      {% for option in ACMG_OPTIONS %}
+        <button class="btn btn-{{ option.color if (option.code == selected or not selected) else 'outline-secondary' }} form-control {{ 'mr-1' if not loop.last }}" name="acmg_classification" value="{{ option.code }}" title="{{ option.label }}">
+          {{ option.short }}
+        </button>
+      {% endfor %}
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro acmg_classification_item(data) %}
+  {% set current_variant = (data.variant_specific == variant._id) %}
+  <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
+    <div class="d-flex">
+      <span>
+        <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
+          {{ data.classification.label }}
+        </a>
+        <span class="badge badge-info">{{ data.classification.short }}</span>
+      </span>
+      <span>
+        {% if not current_variant %}
+          <small>{{ data.case.display_name }}</small>
+        {% endif %}
+      </span>
+    </div>
+    <small class="text-muted">
+      <form action="{{ url_for('variant.evaluation', evaluation_id=data._id) }}" method="POST">
+      {{ data.user_name }} on {{ data.created_at.date() }}
+      {% if current_variant %}
+        <button class="btn btn-xs btn-link">Delete</button>
+      {% endif %}
+      </form>
+    </small>
+  </li>
+{% endmacro %}
+
+>>>>>>> f73d376002e8d29b1133f6c60e55694958763ebd
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>

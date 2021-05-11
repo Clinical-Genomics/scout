@@ -94,12 +94,25 @@ def test_parse_customannotation(one_variant_customannotation, case_obj):
     assert parsed_variant["custom"] == [["key1", "val1"], ["key2", "val2"]]
 
 
-def test_parse_mitomapassociateddiseases(variants, case_obj):
-    # GIVEN some parsed variant dicts
-    for variant in variants:
-        # WHEN "mitomap associated diseases" is present
-        if variant.INFO.get("MitomapAssociatedDiseases"):
-            mitomap_associated_diseases = variant.INFO["MitomapAssociatedDiseases"]
-            parsed_variant = parse_variant(variant, case_obj)
-            # THEN make sure that it is parsed correct
-            assert parsed_variant["mitomap_associated_diseases"] == mitomap_associated_diseases
+def test_parse_mitomapassociateddiseases(cyvcf2_variant, case_obj):
+    """Test parsing HmtVar value from variant annotated with HmtNote"""
+
+    # GIVEN a variant containing HmtVar key in the INFO field:
+    cyvcf2_variant.INFO["MitomapAssociatedDiseases"] = "LHON"
+
+    # THEN make sure that it is parsed correctly
+    mitomap_associated_diseases = cyvcf2_variant.INFO["MitomapAssociatedDiseases"]
+    parsed_variant = parse_variant(cyvcf2_variant, case_obj)
+    assert parsed_variant["mitomap_associated_diseases"] == mitomap_associated_diseases
+
+
+def test_parse_hmtvar(cyvcf2_variant, case_obj):
+    """Test parsing HmtVar value from variant annotated with HmtNote"""
+
+    # GIVEN a variant containing HmtVar key in the INFO field:
+    cyvcf2_variant.INFO["HmtVar"] = "39192"
+
+    # THEN make sure that it is parsed correctly
+    hmtvar_variant_id = int(cyvcf2_variant.INFO["HmtVar"])
+    parsed_variant = parse_variant(cyvcf2_variant, case_obj)
+    assert parsed_variant["hmtvar_variant_id"] == hmtvar_variant_id

@@ -40,3 +40,17 @@ When choosing a [variant](variants.md) the detailed variant information is displ
 ### Gene Panels
 
 Page to investigate and manipulating [gene panels](panels.md).
+
+### Managed variants
+
+Managed variants allows users to add variants of interest to follow. Variants can be added manually or loaded from a csv file. Managed variants are always loaded if encountered during VCF file parsing,
+and will be highlighted on the [case page](cases.md) as well as on the [variant page](variants.md). The list of managed variants shown on the managed variants page can be filtered. Mark the variant category -
+snv, sv, cancer and cancer_sv are managed separately. No links to actual observations or cases are found from the Managed variants page.
+
+A valid managed variants `.csv` file can look like this:
+```
+chromosome;position;end;reference;alternative;category;sub_category;description
+14;76548781;76548781;CTGGACC;G;snv;indel;IFT43 indel test
+17;48696925;48696925;G;T;snv;snv;CACNA1G intronic test
+7;124491972;124491972;C;A;snv;snv;POT1 test snv
+```

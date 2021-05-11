@@ -373,6 +373,7 @@ def get_variant_links(variant_obj, build=None):
         ensembl_link=ensembl_link(variant_obj, build),
         alamut_link=alamut_link(variant_obj, build),
         mitomap_link=mitomap_link(variant_obj),
+        hmtvar_link=hmtvar_link(variant_obj),
         spidex_human=spidex_human(variant_obj),
         str_source_link=str_source_link(variant_obj),
         snp_links=snp_links(variant_obj),
@@ -623,6 +624,12 @@ def mitomap_link(variant_obj):
     """Compose a link to a variant in mitomap"""
     url_template = "https://mitomap.org/cgi-bin/search_allele?variant={this[position]}{this[reference]}%3E{this[alternative]}"
     return url_template.format(this=variant_obj)
+
+
+def hmtvar_link(variant_obj):
+    """Compose a link to a variant in HmtVar"""
+    url_template = "https://www.hmtvar.uniba.it/varCard/{id}"
+    return url_template.format(id=variant_obj.get("hmtvar_variant_id"))
 
 
 def spidex_human(variant_obj):
