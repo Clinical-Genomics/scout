@@ -9,12 +9,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Saved filter lock and unlock
 - Filters can optionally be marked audited, logging the filter name, user and date on the case events and general report.
 - Added `ClinVar hits` and `Cosmic hits` in cancer SNVs filters
+- Added `ClinVar hits` to variants filter (rare disease track)
 - Load cancer demo case in docker-compose files (default and demo file)
 - Inclusive-language check using [woke](https://github.com/get-woke/woke) github action
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
 - Redirect to last visited variantS page when dismissing variants from variants list
+- Improved matching of SVs Loqus occurrences in other cases
+- Remove padding from the list inside (Matching causatives from other cases) panel
 ### Added
 - Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
 - Grey background for dismissed compounds in variants list and variant page
@@ -648,7 +651,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clear panel pending changes
 - Adds option to setup the database with static files
 - Adds cli command to download the resources from CLI that scout needs
-- Adds dummy files for merged somatic SV and CNV; as well as merged SNV, and INDEL part of #1279
+- Adds test files for merged somatic SV and CNV; as well as merged SNV, and INDEL part of #1279
 - Allows for upload of OMIM-AUTO gene panel from static files without api-key
 
 ### Fixed
