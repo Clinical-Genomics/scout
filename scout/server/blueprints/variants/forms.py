@@ -132,6 +132,7 @@ class FiltersForm(VariantFiltersForm):
     local_obs = IntegerField("Local obs. (archive)")
 
     clinical_filter = SubmitField(label="Clinical filter")
+    clinvar_tag = BooleanField("ClinVar hits")
 
 
 class CancerFiltersForm(VariantFiltersForm):
