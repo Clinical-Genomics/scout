@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import url_for
 
+from scout.server.blueprints.managed_variants.views import redirect
 from scout.server.extensions import store
 
 
@@ -21,11 +22,14 @@ def test_managed_variants(app, user_obj, institute_obj):
         assert resp.status_code == 200
 
 
-def test_add_and_remove_managed_variants(app, user_obj, institute_obj):
+def test_add_and_remove_managed_variants(app, user_obj, institute_obj, mocker, mock_redirect):
     """Test first managed variants views:
     adding a managed variant,
     trying to add it again in duplicate and finally removing it.
     """
+    mocker.patch(
+        "scout.server.blueprints.managed_variants.views.redirect", return_value=mock_redirect
+    )
     # GIVEN an initialized app
     # GIVEN a user and institute
 
@@ -45,16 +49,10 @@ def test_add_and_remove_managed_variants(app, user_obj, institute_obj):
             "alternative": "G",
         }
 
-        # GIVEN a referal from the managed variants view
-        referer = url_for(
-            "managed_variants.managed_variants",
-        )
-
         # WHEN attempting to add a valid variant
         resp = client.post(
             url_for("managed_variants.add_managed_variant"),
             data=add_form_data,
-            headers={"referer": referer},
         )
         # THEN status should be redirect
         assert resp.status_code == 302
@@ -65,11 +63,7 @@ def test_add_and_remove_managed_variants(app, user_obj, institute_obj):
         assert test_managed_variant["chromosome"] == "14"
 
         # THEN attempting a duplicate insertion will return an error
-        resp = client.post(
-            url_for("managed_variants.add_managed_variant"),
-            data=add_form_data,
-            headers={"referer": referer},
-        )
+        resp = client.post(url_for("managed_variants.add_managed_variant"), data=add_form_data)
         # THEN the status code should still be redirect
         assert resp.status_code == 302
         # THEN the database should still contatain only one variant
@@ -80,8 +74,7 @@ def test_add_and_remove_managed_variants(app, user_obj, institute_obj):
             url_for(
                 "managed_variants.remove_managed_variant",
                 variant_id=test_managed_variant["managed_variant_id"],
-            ),
-            headers={"referer": referer},
+            )
         )
         # THEN the status code should again be redirect
         assert resp.status_code == 302
