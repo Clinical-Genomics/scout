@@ -25,7 +25,7 @@ samples:
     sex: male
     expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
-    vcf2cytosure: scout/demo/ADM1059A2.dummy.cgh
+    vcf2cytosure: scout/demo/ADM1059A2.test.cgh
     tissue_type: blood
     chromograph_images:
         'autozygous': 'scout/demo/images/chromograph_demo/autozygous_regions'
@@ -43,7 +43,7 @@ samples:
     sex: male
     expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
-    vcf2cytosure: scout/demo/ADM1059A1.dummy.cgh
+    vcf2cytosure: scout/demo/ADM1059A1.test.cgh
     tissue_type: blood
 
   - analysis_type: wes
@@ -56,7 +56,7 @@ samples:
     sex: female
     expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
-    vcf2cytosure: scout/demo/ADM1059A3.dummy.cgh
+    vcf2cytosure: scout/demo/ADM1059A3.test.cgh
     tissue_type: blood
 
 vcf_snv: scout/demo/643594.clinical.vcf.gz

@@ -14,7 +14,7 @@ The gene panel is a tab or semicolon (;)-separated text file with an optional he
 The columns that will be used by scout are the following. **Please note that if you do not include a header, the order of the columns can't be changed**
 
 - **hgnc_id(int)** This identifies the gene. *Mandatory*
-- **hgnc_symbol(str)** This is used for sanity check when humans look at the file. *Optional*
+- **hgnc_symbol(str)** This is used for coherence check when humans look at the file. *Optional*
 - **disease_associated_transcripts(str)** ','-separated list of manually curated transcripts. *Optional*
 - **genetic_disease_models(str)** ','-separated list of manually curated inheritance patterns that are followed for a gene. *Optional*
 - **mosaicism(str)** If a gene is known to be associated with mosaicism this is annotated. *Optional*
