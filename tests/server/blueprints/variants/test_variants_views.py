@@ -8,7 +8,9 @@ from flask_login import current_user
 from scout.server.extensions import store
 
 
-def test_variants_clinical_filter(app, institute_obj, case_obj):
+def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_redirect):
+
+    mocker.patch("scout.server.blueprints.variants.views.redirect", return_value=mock_redirect)
 
     # GIVEN a variant without clinVar annotations
     test_var = store.variant_collection.find_one(
@@ -41,13 +43,6 @@ def test_variants_clinical_filter(app, institute_obj, case_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        # GIVEN a referal from a variants view
-        referer = url_for(
-            "variants.variants",
-            institute_id=institute_obj["internal_id"],
-            case_name=case_obj["display_name"],
-        )
-
         # WHEN submitting form data to the variants page (POST method) with clinical filter
         data = urlencode(
             {
@@ -65,7 +60,6 @@ def test_variants_clinical_filter(app, institute_obj, case_obj):
             ),
             data=data,
             content_type="application/x-www-form-urlencoded",
-            headers={"referer": referer},
         )
 
         # THEN it should return a page
@@ -96,8 +90,10 @@ def test_variants(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_bulk_reset_dismiss_variants(app, institute_obj, case_obj):
+def test_bulk_reset_dismiss_variants(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test sending a GET request to reset all dismissed variants for a case"""
+
+    mocker.patch("scout.server.blueprints.variants.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     with app.test_client() as client:
@@ -106,13 +102,6 @@ def test_bulk_reset_dismiss_variants(app, institute_obj, case_obj):
 
         # GIVEN a variant
         variant = store.variant_collection.find_one()
-
-        # GIVEN a referal from a variants view
-        referer = url_for(
-            "variants.variants",
-            institute_id=institute_obj["internal_id"],
-            case_name=case_obj["display_name"],
-        )
 
         # WHEN dismissing a variant using a POST request
         dismiss_reasons = [3, 5, 7]
@@ -128,7 +117,6 @@ def test_bulk_reset_dismiss_variants(app, institute_obj, case_obj):
                 case_name=case_obj["display_name"],
             ),
             data=form_data,
-            headers={"referer": referer},
         )
         # THEN it should return a valid page
         assert resp.status_code == 200
@@ -142,8 +130,7 @@ def test_bulk_reset_dismiss_variants(app, institute_obj, case_obj):
                 "variants.reset_dismissed",
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
-            ),
-            headers={"referer": referer},
+            )
         )
         # THEN it should return redirect to variants page
         assert resp.status_code == 302
