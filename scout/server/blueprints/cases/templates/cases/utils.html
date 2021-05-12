@@ -1,4 +1,5 @@
 {% from "variants/utils.html" import tier_cell %}
+{% from "variants/indicators.html" import clinical_assessments_badge, research_assessments_badge %}
 
 {% macro matchmaker_modal(institute, case, mme_nodes) %}
 <div class="modal fade" id="matchmaker_modal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -328,6 +329,7 @@
 
 
 {% macro causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) %}
+  {% set already_displayed_variant_ids = [] %}
   <div class="card panel-default">
     <div data-toggle='tooltip' class="panel-heading" title="Displays all variants that have been marked causative for this case">
       <span class="fa fa-medkit"></span>&nbsp;
@@ -342,13 +344,18 @@
       {% for variant in causatives %}
         <li class="list-group-item list-group-item-action">
           {% if variant._id %}
+            {% do already_displayed_variant_ids.append( variant._id ) %}
             <div class="row align-items-between align-items-center">
               <div class="col">
                 <i class="fa fa-check-circle-o"></i>
                 {{ pretty_link_variant(variant, case) }}
                 {{ variant_validation_badge(variant) }}
               </div>
+              {{ clinical_assessments_badge(variant) }}
               {{ tumor_allele_freq(variant) }}
+              <div class="col-2">
+                  {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
+              </div>
               <div class="col-1">
                 {{ remove_form(url_for('cases.mark_causative',
                                        institute_id=institute._id,
@@ -369,6 +376,7 @@
         {% set variant = variant_phenotypes.variant %}
         <div class="list-group-item list-group-item-action">
           {% if variant._id %}
+            {% do already_displayed_variant_ids.append(variant._id) %}
             <div class="row align-items-between align-items-center">
               <div class="col">
                 <i class="fa fa-check-circle-o"></i>
@@ -420,7 +428,6 @@
                   <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.phenotype_id}}">
                     <span class="badge badge-sm badge-info">{{hpo.phenotype_id}}</span>
                   </a>
-
                 {% endfor %}
               </div>
             </div>
@@ -434,27 +441,65 @@
       {% if not case.causatives|length and not case.partial_causatives|length %}
         No variants marked causative
       {% endif %}
+
       <!-- variants with cancer tier I or II -->
       {% if case.track == 'cancer' %}
         {% for variant in evaluated_variants %}
           {% set exp_tiers =  ['1A', '1B', '2C', '2D'] %}
-          {% if variant.cancer_tier in exp_tiers %}
-          <li class="list-group-item list-group-item-action">
-            <div class="row align-items-between align-items-center">
-              <div class="col">
-                {{ pretty_link_variant(variant, case) }}
-                {{ variant_validation_badge(variant) }}
-              </div>
-                {{ tumor_allele_freq(variant) }}
-              <div class="col-2">
-                {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
-              </div>
-            </div>
-          </li>
+          {% if variant._id %}
+            {% if variant.cancer_tier in exp_tiers %}
+              {% if variant._id not in already_displayed_variant_ids %}
+                {% do already_displayed_variant_ids.append(variant._id) %}
+                <li class="list-group-item list-group-item-action">
+                  <div class="row align-items-between align-items-center">
+                    <div class="col">
+                      {{ pretty_link_variant(variant, case) }}
+                      {{ variant_validation_badge(variant) }}
+                    </div>
+                      {{ tumor_allele_freq(variant) }}
+                    <div class="col-2">
+                      {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
+                    </div>
+                  </div>
+                </li>
+
+              {% endif %}
+            {% endif %}
+          {% else %} <!-- no variant._id -->
+            {{ variant }} <small class="text-muted">(not loaded)</small>
           {% endif %}
+
         {% endfor %}
       {% endif %}
       <!-- end of cancer tier variants -->
+
+      <!-- variants with significant ACMG -->
+      {% if case.track == 'cancer' %}
+      {% set significant_acmg = ['P', 'LP'] %}
+      {% for variant in evaluated_variants %}
+          {% if variant._id %}
+            {% if variant.acmg_classification in significant_acmg %}
+              {% if variant._id not in already_displayed_variant_ids %}
+                  {% do already_displayed_variant_ids.append(variant._id) %}
+                  <li class="list-group-item list-group-item-action">
+                    <div class="row align-items-between align-items-center">
+                      <div class="col">
+                        {{ pretty_link_variant(variant, case) }}
+                        {{ variant_validation_badge(variant) }}
+                      </div>
+                        {{ tumor_allele_freq(variant) }}
+                      <div class="col-2">
+                        {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
+                      </div>
+                    </div>
+                  </li>
+              {% endif %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      <!-- end of ACMG variants -->
+
     </ul>
     </div>
   </div>
