@@ -146,7 +146,7 @@ def test_institutes(app):
         assert resp.status_code == 200
 
 
-def test_case_outdated_panel(app, institute_obj, case_obj, dummy_case):
+def test_case_outdated_panel(app, institute_obj, case_obj):
     """Test case displaying an outdated panel warning badge"""
 
     # GIVEN an adapter with a case with a gene panel of version 1

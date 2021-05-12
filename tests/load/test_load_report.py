@@ -11,7 +11,7 @@ def test_load_delivery_report_bad_case_id(adapter):
 
     ## WHEN trying to load a report for a case_id that does not exist in the data base
     case_id = "id_of_non_existing_case"
-    report_path = "a_dummy_path"
+    report_path = "a_fakey_path"
 
     ## THEN an exception should be raised
     with pytest.raises(DataNotFoundError):
