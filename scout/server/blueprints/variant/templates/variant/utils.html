@@ -427,7 +427,7 @@
 {% endmacro %}
 
 {% macro pin_button(variant, case, institute) %}
-  {% if suspects in case and variant._id in case.suspects %}
+  {% if 'suspects' in case and case.suspects and variant._id in case.suspects %}
     <form action="{{ url_for('cases.pin_variant',
                              institute_id=institute._id,
                              case_name=case.display_name,
@@ -458,7 +458,7 @@
           Reset causative
         </button>
       </form>
-  {% elif 'partial_causatives' in case and variant._id in case.partial_causatives %}
+  {% elif 'partial_causatives' in case and case.partial_causatives and variant._id in case.partial_causatives %}
     <form action="{{ url_for('cases.mark_causative',
                              institute_id=institute._id,
                              case_name=case.display_name,
