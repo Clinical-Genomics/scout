@@ -84,7 +84,7 @@ INDEXES = {
     "hpo_term": [
         IndexModel([("description", ASCENDING)], name="description"),
         IndexModel([("description", TEXT)], default_language="english", name="description_text"),
-        IndexModel([("hpo_number", ASCENDING)], name="number"),
+        IndexModel([("hpo_number", ASCENDING)], name="number", background=True),
     ],
     "event": [
         IndexModel([("category", ASCENDING), ("verb", ASCENDING)], name="category_verb"),
@@ -114,6 +114,5 @@ INDEXES = {
             background=True,
         )
     ],
-    "hpo_term": [IndexModel([("hpo_number", ASCENDING)], name="number", background=True)],
     "case": [IndexModel([("synopsis", TEXT)], default_language="english", name="synopsis_text")],
 }
