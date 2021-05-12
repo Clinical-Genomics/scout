@@ -256,7 +256,7 @@
         </li>
         {% endfor %}
       {% endif %}
-      {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
+      {% if suspects in case and variant._id in case.suspects and not variant.clinvar_clinsig %}
         <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control" target="_blank">Submit to ClinVar</a>
       {% endif %}
       {% if variant.clinvar_clinsig%}

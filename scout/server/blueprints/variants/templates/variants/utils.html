@@ -78,7 +78,7 @@
                 variant_id=compound.variant) }}' target='_blank'>
                 {{ compound.display_name|truncate(20, True) }}
                 </a>
-                {% if compound.variant in case.suspects %}
+                {% if suspects in case and compound.variant in case.suspects %}
                   <i class='fa fa-map-pin ml-1'></i>
                 {% endif %}
               {% endif %}
