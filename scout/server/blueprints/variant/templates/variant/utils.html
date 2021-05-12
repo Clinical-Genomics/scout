@@ -435,7 +435,6 @@
           method="POST">
       <button name="action" value="DELETE" type="submit" class="btn btn-light" title="Unpin variant">Unpin</button>
     </form>
-    </form>
   {% else %}
     <form action="{{ url_for('cases.pin_variant',
                              institute_id=institute._id,
@@ -443,6 +442,7 @@
                              variant_id=variant._id) }}"
           method="POST">
       <button name="action" value="ADD" type="submit" class="btn btn-light navbar-btn" title="Pin variant">Pin</button>
+    </form>
   {% endif %}
 {% endmacro %}
 
