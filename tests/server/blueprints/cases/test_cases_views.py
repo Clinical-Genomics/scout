@@ -14,8 +14,10 @@ from scout.server.extensions import mail, store
 TEST_TOKEN = "test_token"
 
 
-def test_rerun(app, institute_obj, case_obj, monkeypatch):
+def test_rerun(app, institute_obj, case_obj, monkeypatch, mocker, mock_redirect):
     """test case rerun function"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     # GIVEN a valid user
@@ -34,12 +36,6 @@ def test_rerun(app, institute_obj, case_obj, monkeypatch):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        referer = url_for(
-            "cases.case",
-            institute_id=institute_obj["internal_id"],
-            case_name=case_obj["display_name"],
-        )
-
         # WHEN rerun request is sent
         resp = client.post(
             url_for(
@@ -47,7 +43,6 @@ def test_rerun(app, institute_obj, case_obj, monkeypatch):
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
             ),
-            headers={"referer": referer},
         )
         assert resp.status_code == 302
         updated_case = store.case_collection.find_one()
@@ -86,7 +81,12 @@ def test_parse_raw_gene_ids(app):
     assert hgnc_ids == {1234, 4321}
 
 
-def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj):
+def test_update_cancer_case_sample(
+    app, user_obj, institute_obj, cancer_case_obj, mocker, mock_redirect
+):
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -116,12 +116,6 @@ def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj
             ".".join(["tumor_purity", ind_id]): "0.4",
         }
 
-        referer = url_for(
-            "cases.case",
-            institute_id=institute_obj["internal_id"],
-            case_name=cancer_case_obj["display_name"],
-        )
-
         resp = client.post(
             url_for(
                 "cases.update_cancer_sample",
@@ -129,7 +123,6 @@ def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj
                 case_name=cancer_case_obj["display_name"],
             ),
             data=form_data,
-            headers={"referer": referer},
         )
 
         # THEN the returned HTML page should redirect
@@ -218,7 +211,9 @@ def test_case_sma(app, case_obj, institute_obj):
         assert resp.status_code == 200
 
 
-def test_update_individual(app, user_obj, institute_obj, case_obj):
+def test_update_individual(app, user_obj, institute_obj, case_obj, mocker, mock_redirect):
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -241,12 +236,6 @@ def test_update_individual(app, user_obj, institute_obj, case_obj):
             "_".join(["tissue", ind_id]): "muscle",
         }
 
-        referer = url_for(
-            "cases.case",
-            institute_id=institute_obj["internal_id"],
-            case_name=case_obj["display_name"],
-        )
-
         resp = client.post(
             url_for(
                 "cases.update_individual",
@@ -254,7 +243,6 @@ def test_update_individual(app, user_obj, institute_obj, case_obj):
                 case_name=case_obj["display_name"],
             ),
             data=form_data,
-            headers={"referer": referer},
         )
 
         # THEN the returned HTML page should redirect
@@ -273,7 +261,10 @@ def test_update_individual(app, user_obj, institute_obj, case_obj):
         )
 
 
-def test_case_synopsis(app, institute_obj, case_obj):
+def test_case_synopsis(app, institute_obj, case_obj, mocker, mock_redirect):
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -284,12 +275,6 @@ def test_case_synopsis(app, institute_obj, case_obj):
 
         req_data = {"synopsis": "test synopsis"}
 
-        referer = url_for(
-            "cases.case",
-            institute_id=institute_obj["internal_id"],
-            case_name=case_obj["display_name"],
-        )
-
         # WHEN updating the synopsis of a case
         resp = client.post(
             url_for(
@@ -298,14 +283,15 @@ def test_case_synopsis(app, institute_obj, case_obj):
                 case_name=case_obj["display_name"],
                 data=req_data,
             ),
-            headers={"referer": referer},
         )
         # then it should return a redirected page
         assert resp.status_code == 302
 
 
-def test_update_case_comment(app, institute_obj, case_obj, user_obj):
+def test_update_case_comment(app, institute_obj, case_obj, user_obj, mocker, mock_redirect):
     """Test the functionality that allows updating of case-specific comments"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     with app.test_client() as client:
@@ -333,12 +319,6 @@ def test_update_case_comment(app, institute_obj, case_obj, user_obj):
             "edit": "",
         }
 
-        referer = url_for(
-            "cases.case",
-            institute_id=institute_obj["internal_id"],
-            case_name=case_obj["display_name"],
-        )
-
         resp = client.post(
             url_for(
                 "cases.events",
@@ -347,7 +327,6 @@ def test_update_case_comment(app, institute_obj, case_obj, user_obj):
                 event_id=comment["_id"],
             ),
             data=form_data,
-            headers={"referer": referer},
         )
         # THEN it should redirect to case page
         assert resp.status_code == 302
@@ -370,7 +349,6 @@ def test_add_case_group(app, case_obj, institute_obj):
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
 
-        # Given a page referrer (request to add case group starts from case page)
         referer = url_for(
             "cases.case",
             institute_id=institute_obj["internal_id"],
@@ -393,6 +371,7 @@ def test_add_case_group(app, case_obj, institute_obj):
 
 def test_remove_case_group(app, case_obj, institute_obj):
     """Test removing a case group."""
+
     ### GIVEN an initialized app
     group_id = ObjectId("101010101010101010101010")
     result = store.case_collection.find_one_and_update(
@@ -404,7 +383,6 @@ def test_remove_case_group(app, case_obj, institute_obj):
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
 
-        # Given a page referrer (request to remove case group starts from case page)
         referer = url_for(
             "cases.case",
             institute_id=institute_obj["internal_id"],
@@ -485,8 +463,10 @@ def test_case_report(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_case_diagnosis(app, institute_obj, case_obj):
+def test_case_diagnosis(app, institute_obj, case_obj, mocker, mock_redirect):
     # Test the web page containing the general case report
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app and a valid user and institute
     with app.test_client() as client:
@@ -496,12 +476,6 @@ def test_case_diagnosis(app, institute_obj, case_obj):
 
         req_data = {"omim_term": "OMIM:615349"}
 
-        referer = url_for(
-            "cases.case",
-            institute_id=institute_obj["internal_id"],
-            case_name=case_obj["display_name"],
-        )
-
         # When updating an OMIM diagnosis for a case
         resp = client.post(
             url_for(
@@ -510,7 +484,6 @@ def test_case_diagnosis(app, institute_obj, case_obj):
                 case_name=case_obj["display_name"],
             ),
             data=req_data,
-            headers={"referer": referer},
         )
         # Response should be redirected to case page
         assert resp.status_code == 302
@@ -583,7 +556,10 @@ def test_mt_report(app, institute_obj, case_obj):
         assert resp.mimetype == "application/zip"
 
 
-def test_status(app, institute_obj, case_obj, user_obj):
+def test_status(app, institute_obj, case_obj, user_obj, mocker, mock_redirect):
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -595,12 +571,6 @@ def test_status(app, institute_obj, case_obj, user_obj):
         # make sure test case status is inactive
         assert case_obj["status"] == "inactive"
 
-        referer = url_for(
-            "cases.case",
-            institute_id=institute_obj["internal_id"],
-            case_name=case_obj["display_name"],
-        )
-
         # use status view to update status for test case
         request_data = {"status": "prioritized"}
         resp = client.post(
@@ -609,8 +579,7 @@ def test_status(app, institute_obj, case_obj, user_obj):
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
                 params=request_data,
-            ),
-            headers={"referer": referer},
+            )
         )
 
         assert resp.status_code == 302  # page should be redirected
@@ -716,24 +685,22 @@ def test_omimterms(app, test_omim_term):
         assert resp.mimetype == "application/json"
 
 
-def _test_beacon_submit(client, institute_obj, case_obj, vcf_files):
+def _test_beacon_submit(client, institute_obj, case_obj, vcf_files, mocker, mock_redirect):
     """Test beacon connection: given client, produce response"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
     form_data = {
         "case": case_obj["_id"],
         "samples": "affected",
         "vcf_files": vcf_files,
     }
-    referer = url_for(
-        "cases.case",
-        institute_id=institute_obj["internal_id"],
-        case_name=case_obj["display_name"],
-    )
     # WHEN case page is loaded
-    resp = client.post(url_for("cases.beacon_submit"), data=form_data, headers={"referer": referer})
+    resp = client.post(url_for("cases.beacon_submit"), data=form_data)
     return resp
 
 
-def test_beacon_submit_wrong_config(app, institute_obj, case_obj):
+def test_beacon_submit_wrong_config(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test saving variants to a Beacon server when Beacon connection parameters are not set"""
 
     # GIVEN an initialized app
@@ -744,7 +711,9 @@ def test_beacon_submit_wrong_config(app, institute_obj, case_obj):
 
         vcf_files = ["vcf_snv_research", "vcf_snv"]
         # WHEN case page is loaded without beacon config settings
-        resp = _test_beacon_submit(client, institute_obj, case_obj, vcf_files)
+        resp = _test_beacon_submit(
+            client, institute_obj, case_obj, vcf_files, mocker, mock_redirect
+        )
 
         # THEN it should redirect to case page
         assert resp.status_code == 302
@@ -753,7 +722,9 @@ def test_beacon_submit_wrong_config(app, institute_obj, case_obj):
         assert "beacon" not in updated_case
 
 
-def test_beacon_submit(app, institute_obj, case_obj, monkeypatch, mocked_beacon):
+def test_beacon_submit(
+    app, institute_obj, case_obj, monkeypatch, mocked_beacon, mocker, mock_redirect
+):
     """Test submitting variants to a Beacon server"""
 
     # GIVEN a mocked Beacon server
@@ -773,7 +744,14 @@ def test_beacon_submit(app, institute_obj, case_obj, monkeypatch, mocked_beacon)
 
         vcf_files = ["vcf_snv_research", "vcf_snv"]
         # WHEN case page is loaded
-        resp = _test_beacon_submit(client, institute_obj, case_obj, vcf_files)
+        resp = _test_beacon_submit(
+            client,
+            institute_obj,
+            case_obj,
+            vcf_files,
+            mocker,
+            mock_redirect,
+        )
 
         # THEN it should redirect to case page
         assert resp.status_code == 302
@@ -784,8 +762,12 @@ def test_beacon_submit(app, institute_obj, case_obj, monkeypatch, mocked_beacon)
         assert updated_case["beacon"]["vcf_files"] == vcf_files
 
 
-def test_beacon_remove(app, institute_obj, case_obj, monkeypatch, mocked_beacon):
+def test_beacon_remove(
+    app, institute_obj, case_obj, monkeypatch, mocked_beacon, mock, mock_redirect
+):
     """Test removing variants submitted to Beacon for test case"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN a mocked Beacon server
     def mock_response(*args, **kwargs):
@@ -809,19 +791,12 @@ def test_beacon_remove(app, institute_obj, case_obj, monkeypatch, mocked_beacon)
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        referer = url_for(
-            "cases.case",
-            institute_id=institute_obj["internal_id"],
-            case_name=case_obj["display_name"],
-        )
-
         # WHEN users submits a GET request to remove data from Beacon
         resp = client.get(
             url_for(
                 "cases.beacon_remove",
                 case_id=case_obj["_id"],
-            ),
-            headers={"referer": referer},
+            )
         )
         # THEN it should redirect to case page
         assert resp.status_code == 302
