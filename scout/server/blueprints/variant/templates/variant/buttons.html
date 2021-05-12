@@ -52,7 +52,7 @@
       <div class="col-8">
         <select multiple="multiple" name="dismiss_variant" id="dismiss_variant" class="selectpicker" data-width="100%">
           {% for rank, data in dismiss_variant_options.items() %}
-            <option {% if rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
+            <option {% if dismiss_variant in variant and rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ rank }}">
               {{ data.label }}
             </option>
           {% endfor %}
@@ -72,7 +72,7 @@
       <div class="col-8">
         <select multiple="multiple" name="mosaic_tags" id="mosaic_tags" class="selectpicker" data-width="100%">
           {% for rank, data in mosaic_variant_options.items() %}
-            <option {% if rank~"" in variant.mosaic_tags %} selected {% endif %} value="{{ rank }}">
+            <option {% if mosaic_tags in variant and rank~"" in variant.mosaic_tags %} selected {% endif %} value="{{ rank }}">
               {{ data.label }}
             </option>
           {% endfor %}
