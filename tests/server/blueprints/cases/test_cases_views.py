@@ -763,7 +763,7 @@ def test_beacon_submit(
 
 
 def test_beacon_remove(
-    app, institute_obj, case_obj, monkeypatch, mocked_beacon, mock, mock_redirect
+    app, institute_obj, case_obj, monkeypatch, mocked_beacon, mocker, mock_redirect
 ):
     """Test removing variants submitted to Beacon for test case"""
 
