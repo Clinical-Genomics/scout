@@ -77,7 +77,7 @@
           {% set ns.allele0 = variant.chromosome + variant.position|string %}
           {% if variant.dismiss_variant %}
               <tr class="dismiss">
-          {% elif causatives in case and variant._id in case.causatives %}
+          {% elif 'causatives' in case and variant._id in case.causatives %}
              <tr class="causative">
           {% elif variant.str_status == 'normal' %}
               <tr class="bg-primary">
