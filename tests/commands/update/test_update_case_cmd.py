@@ -195,7 +195,7 @@ def test_update_case_change_sv_vcf_research_path(mock_app, case_obj, variant_cli
     assert res["vcf_files"]["vcf_cancer_research"] == variant_clinical_file
 
 
-def test_update_case_change_sv_vcf_research_path(mock_app, case_obj, sv_clinical_file):
+def test_update_case_reupload_sv_research(mock_app, case_obj, sv_clinical_file):
     """Tests the CLI that updates a case"""
 
     ## GIVEN a CLI object
@@ -229,5 +229,5 @@ def test_update_case_change_sv_vcf_research_path(mock_app, case_obj, sv_clinical
     assert sum(1 for i in store.variant_collection.find({"category": "sv"})) > 0
     res = store.variant_collection.find({"category": "sv", "variant_rank": {"$gt": 10}})
     assert sum(1 for i in res) == 0
-    res = store.case_collection.find({"sv_rank_model_version": 1.5})
+    res = store.case_collection.find({"sv_rank_model_version": "1.5"})
     assert sum(1 for i in res) > 0

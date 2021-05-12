@@ -6,6 +6,7 @@ import pymongo
 import pytest
 import yaml
 from cyvcf2 import VCF
+from flask import jsonify
 
 # Adapter stuff
 from mongomock import MongoClient
@@ -100,6 +101,17 @@ def mock_app(real_populated_database):
 def empty_mock_app(real_adapter):
     """Return the path to a mocked app object without any data"""
     return _mock_an_app()
+
+
+################## Requests fixture #####################
+
+
+@pytest.fixture
+def mock_redirect():
+    message = {"test": "redirect"}
+    resp = jsonify(message)
+    resp.status_code = 302
+    return resp
 
 
 ##################### Gene fixtures #####################
@@ -1034,6 +1046,13 @@ def one_sv_variant(request, sv_clinical_file):
     variant_parser = VCF(sv_clinical_file)
 
     variant = next(variant_parser)
+    return variant
+
+
+@pytest.fixture(scope="function")
+def sv_variant_obj(request, parsed_sv_variant):
+    institute_id = "cust000"
+    variant = build_variant(parsed_sv_variant, institute_id=institute_id)
     return variant
 
 
