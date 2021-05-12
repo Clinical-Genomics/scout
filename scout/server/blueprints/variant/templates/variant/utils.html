@@ -447,7 +447,7 @@
 {% endmacro %}
 
 {% macro causative_button(variant, case, institute) %}
-  {% if case.causatives and variant._id in case.causatives %}
+  {% if 'causatives' in case and case.causatives and variant._id in case.causatives %}
       <form action="{{ url_for('cases.mark_causative',
                                institute_id=institute._id,
                                case_name=case.display_name,
