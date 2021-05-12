@@ -2,14 +2,14 @@
 {% from "utils.html" import comments_table %}
 
 {% macro pin_indicator(variant, case) %}
-  {% if variant._id in case.suspects %}
+  {% if 'suspects' in case and variant._id in case.suspects %}
     <i class="fa fa-map-pin"></i>
   {% endif %}
 {% endmacro %}
 
 
 {% macro causative_badge(variant, case) %}
-  {% if variant._id in case.causatives %}
+  {% if 'causatives' in case and variant._id in case.causatives %}
     <span class="badge badge-success" style="margin-left:1px" data-toggle="tooltip" data-placement="right" title="Causative variant">Causative</span>
   {% endif %}
 {% endmacro %}
