@@ -904,7 +904,7 @@ def testpanel_geneobj():
 
 
 @pytest.fixture(scope="function")
-def testpanel_obj(parsed_panel, testpanel_geneobj):
+def testpanel_obj(parsed_panel):
     """Return a test panel object"""
     testpanel = {}
 
