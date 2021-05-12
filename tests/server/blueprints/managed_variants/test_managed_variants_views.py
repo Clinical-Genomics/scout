@@ -45,10 +45,16 @@ def test_add_and_remove_managed_variants(app, user_obj, institute_obj):
             "alternative": "G",
         }
 
+        # GIVEN a referal from the managed variants view
+        referer = url_for(
+            "managed_variants.managed_variants",
+        )
+
         # WHEN attempting to add a valid variant
         resp = client.post(
             url_for("managed_variants.add_managed_variant"),
             data=add_form_data,
+            headers={"referer": referer},
         )
         # THEN status should be redirect
         assert resp.status_code == 302
@@ -62,6 +68,7 @@ def test_add_and_remove_managed_variants(app, user_obj, institute_obj):
         resp = client.post(
             url_for("managed_variants.add_managed_variant"),
             data=add_form_data,
+            headers={"referer": referer},
         )
         # THEN the status code should still be redirect
         assert resp.status_code == 302
@@ -73,7 +80,8 @@ def test_add_and_remove_managed_variants(app, user_obj, institute_obj):
             url_for(
                 "managed_variants.remove_managed_variant",
                 variant_id=test_managed_variant["managed_variant_id"],
-            )
+            ),
+            headers={"referer": referer},
         )
         # THEN the status code should again be redirect
         assert resp.status_code == 302
