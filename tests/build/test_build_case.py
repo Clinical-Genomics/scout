@@ -6,13 +6,13 @@ from scout.exceptions import PedigreeError, ConfigError, IntegrityError
 from scout.build import build_case
 
 
-def test_build_case(parsed_case, adapter, institute_obj, dummypanel_obj):
+def test_build_case(parsed_case, adapter, institute_obj, testpanel_obj):
     """Test function that build a case object when a case is loaded"""
 
     # GIVEN a database containing an institute
     adapter.institute_collection.insert_one(institute_obj)
     # A gene panel
-    adapter.panel_collection.insert_one(dummypanel_obj)
+    adapter.panel_collection.insert_one(testpanel_obj)
     # And a phenotype term
     adapter.hpo_term_collection.insert_one(
         {"_id": "HP:0001250", "hpo_id": "HP:0001250", "description": "Seizures"}
@@ -53,7 +53,6 @@ def test_build_case(parsed_case, adapter, institute_obj, dummypanel_obj):
     assert case_obj["sv_rank_model_version"] == parsed_case["sv_rank_model_version"]
 
     assert case_obj["madeline_info"] == parsed_case["madeline_info"]
-
 
     assert case_obj["delivery_report"] == parsed_case["delivery_report"]
 

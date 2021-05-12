@@ -5,7 +5,7 @@ from scout import __version__
 from scout.commands import cli
 
 
-# Sanity check for cli
+# Coherence check for cli
 def test_base_cmd():
 
     # Create a test CLI runner
