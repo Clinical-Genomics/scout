@@ -4,9 +4,9 @@
 Scout has the possibility to store loads of information about a case and the samples that are included. It is cumbersome to specify too many parameters on the command line so there is an option to give this information in a yaml formatted config file.
 Here we can give scout some meta information about the analysis, how it was performed, information about family, samples etc.
 
-The format is [Yaml] [yaml].
+The format is [Yaml][yaml].
 
-Example configuration files are found here: `<scout root dir>/scout/demo/643594.config.yaml`
+Example configuration files are found here: `<scout root dir>/scout/demo/643594.config.yaml`. [Link](file://../../scout/demo/643594.config.yaml).
 
 ### Deprecation Warnings:
 `bam_file`, `bam_path` and `alignment_path` are redundant in internal usage. Future versions of Scout will only
