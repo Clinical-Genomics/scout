@@ -646,7 +646,6 @@ def test_cases_similar_phenotype_query(app, case_obj, institute_obj, test_hpo_te
         assert case_obj["display_name"] in str(resp.data)
 
 
-@pytest.mark.skip(reason="Marking causatives has stopped working. Fix that and then this test")
 def test_causatives(app, user_obj, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
