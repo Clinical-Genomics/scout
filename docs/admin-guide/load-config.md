@@ -1,14 +1,14 @@
 # The Load Config File
 
 
-Scout have the possibility to store loads of information about a case and the samples that are included. It is cumbersome to specify to many parameters on the command line so there is an option to give this information in a yaml formated config file.
+Scout has the possibility to store loads of information about a case and the samples that are included. It is cumbersome to specify too many parameters on the command line so there is an option to give this information in a yaml formatted config file.
 Here we can give scout some meta information about the analysis, how it was performed, information about family, samples etc.
 
-Format is [Yaml] [yaml].
+The format is [Yaml] [yaml].
 
 Example configuration files are found here: `<scout root dir>/scout/demo/643594.config.yaml`
 
-### Depreication Warnings:
+### Deprecation Warnings:
 `bam_file`, `bam_path` and `alignment_path` are redundant in internal usage. Future versions of Scout will only
 support `alignment_path`.
 
@@ -38,7 +38,7 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **peddy_sex** _String_ Path to a [peddy][peddy] ped sex check file.
 - **phenotype_terms** _List of strings_ List of phenotype terms.
 - **rank model version** _String_ Which rank model that was used when scoring the variants.
-- **rank_score_treshold** _Float_ Only include variants with a rank score above this treshold.
+- **rank_score_threshold** _Float_ Only include variants with a rank score above this threshold.
 - **samples** _List_ List of samples included in the case:
 	- **alignment_path** _String_ Path to bam file to view alignments
 	- **analysis_type** _String_ Specifies the analysis type for the sample
