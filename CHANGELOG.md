@@ -24,7 +24,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove padding from the list inside (Matching causatives from other cases) panel
 - Speed up user events view
 - Causative view sort out of memory error
-- Temporarily freeze Flask <2.0.0 due to unmitigated deprecation
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - Introduce deprecation warning for Loqus configs that are not dictionaries
