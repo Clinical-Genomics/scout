@@ -1,8 +1,6 @@
 # The Load Config File
 
-
-Scout has the possibility to store loads of information about a case and the samples that are included. It is cumbersome to specify too many parameters on the command line so there is an option to give this information in a yaml formatted config file.
-Here we can give scout some meta information about the analysis, how it was performed, information about family, samples etc.
+A case and its individuals (or samples, in cancer track) can be uploaded into Scout using specially formatted .yaml config files. Config files contain information about the analysis, panels used, path to VCF and eventual alignment files and more. The following template illustrates the basic structure of the .yaml config file:
 
 The format is [Yaml][yaml].
 
