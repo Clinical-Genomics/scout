@@ -12,17 +12,19 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added `ClinVar hits` to variants filter (rare disease track)
 - Load cancer demo case in docker-compose files (default and demo file)
 - Inclusive-language check using [woke](https://github.com/get-woke/woke) github action
+- Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
+- Grey background for dismissed compounds in variants list and variant page
+- Pin badge for pinned compounds in variants list and variant page
+- Support LoqusDB REST API queries
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
 - Redirect to last visited variantS page when dismissing variants from variants list
 - Improved matching of SVs Loqus occurrences in other cases
 - Remove padding from the list inside (Matching causatives from other cases) panel
-### Added
-- Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
-- Grey background for dismissed compounds in variants list and variant page
-- Pin badge for pinned compounds in variants list and variant page
-- Support LoqusDB REST API queries
+- Speed up user events view
+- Causative view sort out of memory error
+- Temporarily freeze Flask <2.0.0 due to unmitigated deprecation
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - Introduce deprecation warning for Loqus configs that are not dictionaries
