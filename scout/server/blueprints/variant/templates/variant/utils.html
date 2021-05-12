@@ -12,7 +12,7 @@
               <select name="user_tracks" class="selectpicker" data-width="90%" multiple>
                 {% for track in igv_tracks %}
                   <!--pre-select option if user has saved it in preferences or select all options if user has no preferences yet-->
-                  <option value="{{ track }}" {{ "selected" if track in current_user.igv_tracks or current_user.igv_tracks is not defined }}>{{ track }}</option>
+                  <option value="{{ track }}" {{ "selected" if current_user.igv_tracks and track in current_user.igv_tracks or current_user.igv_tracks is not defined }}>{{ track }}</option>
                 {% endfor %}
               </select>
             </div>
@@ -380,7 +380,7 @@
           Reset causative
         </button>
       </form>
-  {% elif variant._id in case.partial_causatives %}
+  {% elif case.partial_causatives and variant._id in case.partial_causatives %}
     <form action="{{ url_for('cases.mark_causative',
                              institute_id=institute._id,
                              case_name=case.display_name,
