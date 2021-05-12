@@ -34,13 +34,20 @@ def test_rerun(app, institute_obj, case_obj, monkeypatch):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
+        referer = url_for(
+            "cases.case",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+        )
+
         # WHEN rerun request is sent
         resp = client.post(
             url_for(
                 "cases.rerun",
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
-            )
+            ),
+            headers={"referer": referer},
         )
         assert resp.status_code == 302
         updated_case = store.case_collection.find_one()
@@ -109,6 +116,12 @@ def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj
             ".".join(["tumor_purity", ind_id]): "0.4",
         }
 
+        referer = url_for(
+            "cases.case",
+            institute_id=institute_obj["internal_id"],
+            case_name=cancer_case_obj["display_name"],
+        )
+
         resp = client.post(
             url_for(
                 "cases.update_cancer_sample",
@@ -116,6 +129,7 @@ def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj
                 case_name=cancer_case_obj["display_name"],
             ),
             data=form_data,
+            headers={"referer": referer},
         )
 
         # THEN the returned HTML page should redirect
@@ -227,6 +241,12 @@ def test_update_individual(app, user_obj, institute_obj, case_obj):
             "_".join(["tissue", ind_id]): "muscle",
         }
 
+        referer = url_for(
+            "cases.case",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+        )
+
         resp = client.post(
             url_for(
                 "cases.update_individual",
@@ -234,6 +254,7 @@ def test_update_individual(app, user_obj, institute_obj, case_obj):
                 case_name=case_obj["display_name"],
             ),
             data=form_data,
+            headers={"referer": referer},
         )
 
         # THEN the returned HTML page should redirect
@@ -263,6 +284,12 @@ def test_case_synopsis(app, institute_obj, case_obj):
 
         req_data = {"synopsis": "test synopsis"}
 
+        referer = url_for(
+            "cases.case",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+        )
+
         # WHEN updating the synopsis of a case
         resp = client.post(
             url_for(
@@ -270,7 +297,8 @@ def test_case_synopsis(app, institute_obj, case_obj):
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
                 data=req_data,
-            )
+            ),
+            headers={"referer": referer},
         )
         # then it should return a redirected page
         assert resp.status_code == 302
@@ -304,6 +332,13 @@ def test_update_case_comment(app, institute_obj, case_obj, user_obj):
             "updatedContent": "an updated comment",
             "edit": "",
         }
+
+        referer = url_for(
+            "cases.case",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+        )
+
         resp = client.post(
             url_for(
                 "cases.events",
@@ -312,6 +347,7 @@ def test_update_case_comment(app, institute_obj, case_obj, user_obj):
                 event_id=comment["_id"],
             ),
             data=form_data,
+            headers={"referer": referer},
         )
         # THEN it should redirect to case page
         assert resp.status_code == 302
@@ -460,6 +496,12 @@ def test_case_diagnosis(app, institute_obj, case_obj):
 
         req_data = {"omim_term": "OMIM:615349"}
 
+        referer = url_for(
+            "cases.case",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+        )
+
         # When updating an OMIM diagnosis for a case
         resp = client.post(
             url_for(
@@ -468,6 +510,7 @@ def test_case_diagnosis(app, institute_obj, case_obj):
                 case_name=case_obj["display_name"],
             ),
             data=req_data,
+            headers={"referer": referer},
         )
         # Response should be redirected to case page
         assert resp.status_code == 302
@@ -552,6 +595,12 @@ def test_status(app, institute_obj, case_obj, user_obj):
         # make sure test case status is inactive
         assert case_obj["status"] == "inactive"
 
+        referer = url_for(
+            "cases.case",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+        )
+
         # use status view to update status for test case
         request_data = {"status": "prioritized"}
         resp = client.post(
@@ -560,7 +609,8 @@ def test_status(app, institute_obj, case_obj, user_obj):
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
                 params=request_data,
-            )
+            ),
+            headers={"referer": referer},
         )
 
         assert resp.status_code == 302  # page should be redirected
@@ -666,22 +716,24 @@ def test_omimterms(app, test_omim_term):
         assert resp.mimetype == "application/json"
 
 
-def _test_beacon_submit(client, case_obj, vcf_files):
+def _test_beacon_submit(client, institute_obj, case_obj, vcf_files):
     """Test beacon connection: given client, produce response"""
     form_data = {
         "case": case_obj["_id"],
         "samples": "affected",
         "vcf_files": vcf_files,
     }
-    # WHEN case page is loaded
-    resp = client.post(
-        url_for("cases.beacon_submit"),
-        data=form_data,
+    referer = url_for(
+        "cases.case",
+        institute_id=institute_obj["internal_id"],
+        case_name=case_obj["display_name"],
     )
+    # WHEN case page is loaded
+    resp = client.post(url_for("cases.beacon_submit"), data=form_data, headers={"referer": referer})
     return resp
 
 
-def test_beacon_submit_wrong_config(app, case_obj):
+def test_beacon_submit_wrong_config(app, institute_obj, case_obj):
     """Test saving variants to a Beacon server when Beacon connection parameters are not set"""
 
     # GIVEN an initialized app
@@ -692,7 +744,7 @@ def test_beacon_submit_wrong_config(app, case_obj):
 
         vcf_files = ["vcf_snv_research", "vcf_snv"]
         # WHEN case page is loaded without beacon config settings
-        resp = _test_beacon_submit(client, case_obj, vcf_files)
+        resp = _test_beacon_submit(client, institute_obj, case_obj, vcf_files)
 
         # THEN it should redirect to case page
         assert resp.status_code == 302
@@ -701,7 +753,7 @@ def test_beacon_submit_wrong_config(app, case_obj):
         assert "beacon" not in updated_case
 
 
-def test_beacon_submit(app, case_obj, monkeypatch, mocked_beacon):
+def test_beacon_submit(app, institute_obj, case_obj, monkeypatch, mocked_beacon):
     """Test submitting variants to a Beacon server"""
 
     # GIVEN a mocked Beacon server
@@ -721,7 +773,7 @@ def test_beacon_submit(app, case_obj, monkeypatch, mocked_beacon):
 
         vcf_files = ["vcf_snv_research", "vcf_snv"]
         # WHEN case page is loaded
-        resp = _test_beacon_submit(client, case_obj, vcf_files)
+        resp = _test_beacon_submit(client, institute_obj, case_obj, vcf_files)
 
         # THEN it should redirect to case page
         assert resp.status_code == 302
@@ -732,7 +784,7 @@ def test_beacon_submit(app, case_obj, monkeypatch, mocked_beacon):
         assert updated_case["beacon"]["vcf_files"] == vcf_files
 
 
-def test_beacon_remove(app, case_obj, monkeypatch, mocked_beacon):
+def test_beacon_remove(app, institute_obj, case_obj, monkeypatch, mocked_beacon):
     """Test removing variants submitted to Beacon for test case"""
 
     # GIVEN a mocked Beacon server
@@ -757,12 +809,19 @@ def test_beacon_remove(app, case_obj, monkeypatch, mocked_beacon):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
+        referer = url_for(
+            "cases.case",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+        )
+
         # WHEN users submits a GET request to remove data from Beacon
         resp = client.get(
             url_for(
                 "cases.beacon_remove",
                 case_id=case_obj["_id"],
-            )
+            ),
+            headers={"referer": referer},
         )
         # THEN it should redirect to case page
         assert resp.status_code == 302
