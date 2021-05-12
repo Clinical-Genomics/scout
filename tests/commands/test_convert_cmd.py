@@ -24,7 +24,7 @@ def test_convert_wrong_path(mock_app):
     # Provide a non-valid path to a panel file
     result = runner.invoke(cli, ["convert", "wrong/path/to/file"])
     assert result.exit_code != 0
-    assert "Could not open file: wrong/path/to/file:" in result.output
+    assert "No such file or directory" in result.output
     runner = mock_app.test_cli_runner()
 
 
