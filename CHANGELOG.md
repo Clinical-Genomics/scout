@@ -22,6 +22,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Redirect to last visited variantS page when dismissing variants from variants list
 - Improved matching of SVs Loqus occurrences in other cases
 - Remove padding from the list inside (Matching causatives from other cases) panel
+- Pass None to get_app function in CLI base since passing script_info to app factory functions was deprecated in Flask 2.0
+- Fixed failing tests due to Flask update to version 2.0
 - Speed up user events view
 - Causative view sort out of memory error
 ### Changed
