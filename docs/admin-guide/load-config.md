@@ -6,7 +6,7 @@ Here we can give scout some meta information about the analysis, how it was perf
 
 The format is [Yaml][yaml].
 
-Example configuration files are found here: `<scout root dir>/scout/demo/643594.config.yaml`. [Link](http://../../scout/demo/643594.config.yaml).
+Example configuration files are found here: `<scout root dir>/scout/demo/643594.config.yaml`. [Link](../../scout/demo/643594.config.yaml).
 
 ### Deprecation Warnings:
 `bam_file`, `bam_path` and `alignment_path` are redundant in internal usage. Future versions of Scout will only
