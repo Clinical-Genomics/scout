@@ -380,7 +380,11 @@
           Reset causative
         </button>
       </form>
+<<<<<<< HEAD
   {% elif case.partial_causatives and variant._id in case.partial_causatives %}
+=======
+  {% elif partial_causatives in case and variant._id in case.partial_causatives %}
+>>>>>>> 672135c3980b61fd60c31cefa5282601afa9b40e
     <form action="{{ url_for('cases.mark_causative',
                              institute_id=institute._id,
                              case_name=case.display_name,
