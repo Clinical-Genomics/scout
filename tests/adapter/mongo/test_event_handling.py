@@ -606,11 +606,11 @@ def test_filter_audit(adapter, institute_obj, case_obj, user_obj, filter_obj):
     assert n_events_after > n_events_before
 
 
-def test_update_default_panels(adapter, institute_obj, case_obj, user_obj, dummypanel_obj):
+def test_update_default_panels(adapter, institute_obj, case_obj, user_obj, testpanel_obj):
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
     adapter.user_collection.insert_one(user_obj)
-    adapter.panel_collection.insert_one(dummypanel_obj)
+    adapter.panel_collection.insert_one(testpanel_obj)
     # GIVEN a case with one gene panel
     case_panels = case_obj["panels"]
     assert len(case_panels) == 1
