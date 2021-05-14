@@ -161,7 +161,9 @@ class QueryHandler(object):
 
         return mongo_variant_query
 
-    def build_query(self, case_id, query=None, variant_ids=None, category="snv") -> dict:
+    def build_query(
+        self, case_id, query=None, variant_ids=None, category="snv", build="37"
+    ) -> dict:
         """Build a mongo query
 
         These are the different query options:
@@ -240,9 +242,9 @@ class QueryHandler(object):
             # the rest of the query content is clear.
 
             if criterion in ["hgnc_symbols", "gene_panels"]:
-                gene_query = self.gene_filter(query, mongo_query)
+                gene_query = self.gene_filter(query, build=build)
                 if len(gene_query) > 0 or "hpo" in query.get("gene_panels", []):
-                    mongo_query["hgnc_symbols"] = {"$in": gene_query}
+                    mongo_query["hgnc_ids"] = {"$in": gene_query}
                 continue
 
             if criterion == "chrom" and query.get("chrom"):  # filter by coordinates
@@ -460,26 +462,27 @@ class QueryHandler(object):
             coordinate_query = chromosome_query
         return coordinate_query
 
-    def gene_filter(self, query, mongo_query):
+    def gene_filter(self, query, build="37"):
         """Adds gene symbols to the query. Gene symbols query is a list of combined hgnc_symbols and genes included in the given panels
 
         Args:
             query(dict): a dictionary of query filters specified by the users
-            mongo_query(dict): the query that is going to be submitted to the database
 
         Returns:
-            hgnc_symbols: The genes to filter by
+            hgnc_ids: The hgnc_ids of genes to filter by
 
         """
         LOG.debug("Adding panel and genes-related parameters to the query")
         hgnc_symbols = set(query.get("hgnc_symbols", []))
 
+        hgnc_ids = set([self.hgnc_id(symbol, build=build) for symbol in hgnc_symbols])
+
         for panel in query.get("gene_panels", []):
             if panel == "hpo":
                 continue  # HPO genes are already provided in the eventual hgnc_symbols fields
-            hgnc_symbols.update(self.panel_to_genes(panel_name=panel))
+            hgnc_ids.update(self.panel_to_genes(panel_name=panel, gene_format="hgnc_id"))
 
-        return list(hgnc_symbols)
+        return list(hgnc_ids)
 
     def secondary_query(self, query, mongo_query, secondary_filter=None):
         """Creates a secondary query object based on secondary parameters specified by user
