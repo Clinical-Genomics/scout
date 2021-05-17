@@ -3,9 +3,9 @@ import logging
 import os.path
 from datetime import date
 
-import pymongo_errors
 from flask import Response, flash, url_for
 from flask_login import current_user
+from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, MultiDict
 from xlsxwriter import Workbook
 
@@ -347,7 +347,7 @@ def parse_variant(
                 new_compounds = store.update_variant_compounds(variant_obj)
                 variant_obj["compounds"] = new_compounds
                 has_changed = True
-            except pymongo_errors.DocumentTooLarge:
+            except DocumentTooLarge:
                 flash(
                     f"An error occurred while updating variant: {variant_obj['_id']} --> pymongo_errors.DocumentTooLarge"
                 )
