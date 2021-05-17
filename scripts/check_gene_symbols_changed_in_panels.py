@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import logging
 from pprint import pprint as pp
 
@@ -102,7 +103,7 @@ def check_panels(context, mongodb, username, password, authdb, host, port, logle
     cases = 0
     panel_genes_incorrect = {}
     for case_obj in adapter.case_collection.find().sort("updated_at", -1):
-        if cases >= 100:
+        if case_obj.get("updated_at") < datetime.datetime(2020, 9, 8):
             break
         case_compromised = False
         for panel_info in case_obj.get("panels", []):

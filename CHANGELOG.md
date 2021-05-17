@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Grey background for dismissed compounds in variants list and variant page
 - Pin badge for pinned compounds in variants list and variant page
 - Support LoqusDB REST API queries
+- Script to investigate consequences of symbol search bug
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
