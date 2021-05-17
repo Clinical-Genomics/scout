@@ -343,14 +343,9 @@ def parse_variant(
     if compounds and get_compounds:
         # Check if we need to update compound information
         if compounds_need_updating(compounds, case_dismissed_vars):
-            try:
-                new_compounds = store.update_variant_compounds(variant_obj)
-                variant_obj["compounds"] = new_compounds
-                has_changed = True
-            except DocumentTooLarge:
-                flash(
-                    f"An error occurred while updating variant: {variant_obj['_id']} --> pymongo_errors.DocumentTooLarge"
-                )
+            new_compounds = store.update_variant_compounds(variant_obj)
+            variant_obj["compounds"] = new_compounds
+            has_changed = True
 
         # sort compounds on combined rank score
         variant_obj["compounds"] = sorted(
@@ -377,7 +372,12 @@ def parse_variant(
     # We update the variant if some information was missing from loading
     # Or if symbold in reference genes have changed
     if update and has_changed:
-        variant_obj = store.update_variant(variant_obj)
+        try:
+            variant_obj = store.update_variant(variant_obj)
+        except DocumentTooLarge:
+            flash(
+                f"An error occurred while updating variant: {variant_obj['_id']} --> pymongo_errors.DocumentTooLarge"
+            )
 
     variant_obj["comments"] = store.events(
         institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True
