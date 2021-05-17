@@ -10,20 +10,22 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
+VALID_CATEGORIES = ('dismissal_term', 'manual_rank')
+
 
 @click.command("evaluation-term", help="Load a variant evaluation term")
 @click.option("-i", "--internal-id", help="Unique id of a term")
 @click.option("-n", "--name", required=True, help="Displayed name of a term")
-@click.option("-l", "--label", help="Displayed shorthand name of a term")
-@click.option("-d", "--description", help="Full description of a term")
+@click.option("-l", "--label", help="Displayed shorthand name of a term [default: same as name]")
+@click.option("-d", "--description", help="Verbose description of a term")
 @click.option(
     "-r", "--rank", type=int, help="Rank used for determening the order entries are displayed"
 )
-@click.option("-e", "--evidence", multiple=True, help="Type of evidence for a term")
-@click.option("-s", "--institute", default="all", help="Limit the term to a an")
-@click.option("-c", "--term_category", help="Type of evaluation term")
+@click.option("-e", "--evidence", multiple=True, help="Type of evidence supporting a term")
+@click.option("-s", "--institute", default="all", help="Make a term exclusive for a institute [default: all]")
+@click.option("-c", "--term_category", type=click.Choice(VALID_CATEGORIES), required=True, help="Type of evaluation term")
 @click.option(
-    "-a", "--analysis_type", default="all", help="Limit the term to a given analysis type"
+    "-a", "--analysis_type", default="all", help="Make a term exclusive for a analysis type [default: all]"
 )
 @with_appcontext
 def evaluation_term(
@@ -32,14 +34,20 @@ def evaluation_term(
     """Create a new evalution term and add it to the database."""
     adapter = store
 
-    try:
-        # set default terms
-        if not internal_id:
-            internal_id = name.lower().replace(" ", "-")
-        if not label:
-            label = name
+    # assign users default values to options
+    if not internal_id:
+        internal_id = name.lower().replace(" ", "-")
 
-        LOG.info(f"adding a new term: {label} with {term_category} to {institute}")
+    if not label:
+        label = name
+
+    if not rank:
+        query = adapter.evaluation_terms_collection.find({"term_category": term_category})
+        term = max(query, key=lambda term: term['rank'])
+        rank = term['rank'] + 1
+
+    try:
+        LOG.info(f'adding a new term: "{label}" with category "{term_category}" to institute "{institute}"')
         load_evaluation_term(
             adapter=adapter,
             internal_id=internal_id,
@@ -53,7 +61,8 @@ def evaluation_term(
             analysis_type=analysis_type,
         )
     except ValueError as e:
-        raise click.UsageError(e)
+        message = f'{e}, please try to specify another value'
+        raise click.UsageError(message)
     except Exception as e:
         LOG.warning(e)
         raise click.Abort()
