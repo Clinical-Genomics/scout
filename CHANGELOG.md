@@ -31,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Use hgnc_id for gene filter query
 - Typo in case controllers displaying an error every time a patient is matched against external MatchMaker nodes
 - Do not crash while attemping an update for variant documents that are too big (> 16 MB)
+- Old STR causatives may not have HGNC symbols - fix sort lambda
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - Introduce deprecation warning for Loqus configs that are not dictionaries
