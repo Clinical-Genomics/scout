@@ -100,11 +100,15 @@ def check_panels(context, mongodb, username, password, authdb, host, port, logle
     adapter = MongoAdapter(database)
 
     cases_compromised = 0
+    compromised_cases = []
     cases = 0
+    funky_symbols = set()
     panel_genes_incorrect = {}
     for case_obj in adapter.case_collection.find().sort("updated_at", -1):
         if case_obj.get("updated_at") < datetime.datetime(2020, 9, 8):
             break
+        #        if cases_compromised >= 10:
+        #            break
         case_compromised = False
         for panel_info in case_obj.get("panels", []):
             panel_name = panel_info["panel_name"]
@@ -118,6 +122,7 @@ def check_panels(context, mongodb, username, password, authdb, host, port, logle
                 panel_obj = adapter.gene_panel(panel_name)
                 if not panel_obj:
                     LOG.warning("Panel: {0} does not exist in database".format(panel_name))
+                    continue
 
                 symbols_compromised = 0
                 for panel_gene in panel_obj["genes"]:
@@ -137,11 +142,13 @@ def check_panels(context, mongodb, username, password, authdb, host, port, logle
                                 hgnc_symbol_hgnc,
                             )
                         )
+                        funky_symbols.update([hgnc_symbol_hgnc, hgnc_symbol_panel])
                 panel_genes_incorrect[panel_name] = symbols_compromised
 
         cases += 1
         if case_compromised:
             cases_compromised += 1
+            compromised_cases.append(case_obj["_id"])
             LOG.warning(
                 "Case {} compromised.".format(
                     case_obj["display_name"],
@@ -154,9 +161,31 @@ def check_panels(context, mongodb, username, password, authdb, host, port, logle
                 )
             )
 
+    LOG.info("Locating interesting variants in compromised genes in compromised cases")
+
     LOG.warning("{} cases out of {} were compromised.".format(cases_compromised, cases))
     for panel, count in panel_genes_incorrect.items():
         LOG.warning("Panel {} had {} symbols compromised".format(panel, count))
+    query = {
+        "hgnc_symbols": list(funky_symbols),
+        "variant_type": "clinical",
+        "category": "snv",
+        "rank_score": 15,
+    }
+
+    variants_query = adapter.gene_variants(query=query, nr_of_variants=-1)
+
+    for variant in variants_query:
+        if variant["case_id"] in compromised_cases:
+            LOG.warning(
+                "{} {} {} {} Score: {}".format(
+                    variant["institute"],
+                    variant["case_id"],
+                    variant.get("hgnc_symbols"),
+                    variant.get("display_name"),
+                    variant.get("rank_score"),
+                )
+            )
 
 
 if __name__ == "__main__":
