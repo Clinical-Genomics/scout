@@ -11,6 +11,7 @@
 [![GitHub issues-closed][closed-issues-img]][closed-issues-url]
 [![Average time to resolve an issue][ismaintained-resolve-img]][ismaintained-resolve-url]
 [![Percentage of issues still open][ismaintained-open-rate-img]][ismaintained-open-rate-url]
+[![GitHub commit rate](https://img.shields.io/github/commit-activity/w/Clinical-Genomics/scout)](https://GitHub.com/Clinical-Genomics/scout/pulse/)
 [![GitHub commits](https://img.shields.io/github/commits-since/Clinical-Genomics/scout/v4.8.0.svg)](https://GitHub.com/Clinical-Genomics/scout/commit/)
 [![CodeFactor](https://www.codefactor.io/repository/github/clinical-genomics/scout/badge)](https://www.codefactor.io/repository/github/clinical-genomics/scout)
 [![Code style: black][black-image]][black-url]
@@ -133,7 +134,7 @@ This is an example of the config file:
 # list of email addresses to send errors to in production
 ADMINS = ['paul.anderson@magnolia.com']
 
-MONGO_HOST = 'localhost'		
+MONGO_HOST = 'localhost'
 MONGO_PORT = 27017
 MONGO_DBNAME = 'scout'
 MONGO_USERNAME = 'testUser'

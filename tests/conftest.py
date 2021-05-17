@@ -2,16 +2,16 @@
 import datetime
 import json
 import logging
-import os
-from pprint import pprint as pp
 
 import pymongo
 import pytest
 import yaml
 from cyvcf2 import VCF
+from flask import jsonify
 
 # Adapter stuff
 from mongomock import MongoClient
+from werkzeug.datastructures import MultiDict
 
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
 from scout.build import build_case, build_institute, build_panel
@@ -104,6 +104,17 @@ def mock_app(real_populated_database):
 def empty_mock_app(real_adapter):
     """Return the path to a mocked app object without any data"""
     return _mock_an_app()
+
+
+################## Requests fixture #####################
+
+
+@pytest.fixture
+def mock_redirect():
+    message = {"test": "redirect"}
+    resp = jsonify(message)
+    resp.status_code = 302
+    return resp
 
 
 ##################### Gene fixtures #####################
@@ -854,6 +865,25 @@ def sv_database(request, populated_database, variant_objs, sv_variant_objs):
     return adapter
 
 
+####################################
+########## Filter fixtures ##########
+####################################
+
+
+@pytest.fixture
+def filter_obj():
+    filter_obj_md = MultiDict(
+        {
+            "variant_type": "clinical",
+            "region_annotations": ["exonic", "splicing"],
+            "filter_display_name": "clinical-exonic-splicing",
+            "empty_value": "",
+            "save_filter": True,
+        }
+    )
+    return filter_obj_md
+
+
 #############################################################
 ##################### Panel fixtures #####################
 #############################################################
@@ -889,7 +919,7 @@ def parsed_panel(request, panel_info):
 
 
 @pytest.fixture(scope="function")
-def dummypanel_geneobj():
+def testpanel_geneobj():
     """A panel gene object"""
     gene_obj = {}
 
@@ -900,22 +930,22 @@ def dummypanel_geneobj():
 
 
 @pytest.fixture(scope="function")
-def dummypanel_obj(parsed_panel, dummypanel_geneobj):
-    """Return a dummy panel object"""
-    dummy_panel = {}
+def testpanel_obj(parsed_panel):
+    """Return a test panel object"""
+    testpanel = {}
 
-    dummy_panel["panel_name"] = parsed_panel["panel_id"]
-    dummy_panel["institute"] = parsed_panel["institute"]
-    dummy_panel["version"] = float(parsed_panel["version"])
-    dummy_panel["date"] = parsed_panel["date"]
-    dummy_panel["display_name"] = parsed_panel["display_name"]
-    dummy_panel["description"] = "A panel description"
-    dummy_panel["genes"] = [
+    testpanel["panel_name"] = parsed_panel["panel_id"]
+    testpanel["institute"] = parsed_panel["institute"]
+    testpanel["version"] = float(parsed_panel["version"])
+    testpanel["date"] = parsed_panel["date"]
+    testpanel["display_name"] = parsed_panel["display_name"]
+    testpanel["description"] = "A panel description"
+    testpanel["genes"] = [
         {"symbol": "AAA", "hgnc_id": 100},
         {"symbol": "BBB", "hgnc_id": 222},
     ]
 
-    return dummy_panel
+    return testpanel
 
 
 @pytest.fixture(scope="function")
@@ -1034,6 +1064,13 @@ def one_sv_variant(request, sv_clinical_file):
 
 
 @pytest.fixture(scope="function")
+def sv_variant_obj(request, parsed_sv_variant):
+    institute_id = "cust000"
+    variant = build_variant(parsed_sv_variant, institute_id=institute_id)
+    return variant
+
+
+@pytest.fixture(scope="function")
 def one_str_variant(request, str_clinical_file):
     LOG.info("Return one parsed STR variant")
     variant_parser = VCF(str_clinical_file)
@@ -1125,72 +1162,6 @@ def cyvcf2_variant():
 
     variant = Cyvcf2Variant()
     return variant
-
-
-# @pytest.fixture(scope='function')
-# def parsed_variant():
-#     """Return variant information for a parsed variant with minimal information"""
-#     variant = {'alternative': 'C',
-#                'callers': {
-#                    'freebayes': None,
-#                    'gatk': None,
-#                    'samtools': None
-#                },
-#                'case_id': 'cust000-643594',
-#                'category': 'snv',
-#                'chromosome': '2',
-#                'clnsig': [],
-#                'compounds': [],
-#                'conservation': {'gerp': [], 'phast': [], 'phylop': []},
-#                'dbsnp_id': None,
-#                'end': 176968945,
-#                'filters': ['PASS'],
-#                'frequencies': {
-#                    'exac': None,
-#                    'exac_max': None,
-#                    'thousand_g': None,
-#                    'thousand_g_left': None,
-#                    'thousand_g_max': None,
-#                    'thousand_g_right': None},
-#                'genes': [],
-#                'genetic_models': [],
-#                'hgnc_ids': [],
-#                'ids': {'display_name': '1_10_A_C_clinical',
-#                        'document_id': 'a1f1d2ac588dae7883f474d41cfb34b8',
-#                        'simple_id': '1_10_A_C',
-#                        'variant_id': 'e8e33544a4745f8f5a09c5dea3b0dbe4'},
-#                'length': 1,
-#                'local_obs_hom_old': None,
-#                'local_obs_old': None,
-#                'mate_id': None,
-#                'position': 176968944,
-#                'quality': 10.0,
-#                'rank_score': 0.0,
-#                'reference': 'A',
-#                'samples': [{'alt_depth': -1,
-#                             'display_name': 'NA12882',
-#                             'genotype_call': None,
-#                             'genotype_quality': None,
-#                             'individual_id': 'ADM1059A2',
-#                             'read_depth': None,
-#                             'ref_depth': -1},
-#                            {'alt_depth': -1,
-#                             'display_name': 'NA12877',
-#                             'genotype_call': None,
-#                             'genotype_quality': None,
-#                             'individual_id': 'ADM1059A1',
-#                             'read_depth': None,
-#                             'ref_depth': -1},
-#                            {'alt_depth': -1,
-#                             'display_name': 'NA12878',
-#                             'genotype_call': None,
-#                             'genotype_quality': None,
-#                             'individual_id': 'ADM1059A3',
-#                             'read_depth': None,
-#                             'ref_depth': -1}],
-#                'sub_category': 'snv',
-#                'variant_type': 'clinical'}
-#     return variant
 
 
 @pytest.fixture(scope="function")

@@ -74,6 +74,9 @@ def test_sidebar_macro(app, institute_obj, case_obj, user_obj):
     case_obj["delivery_report"] = new_report
     case_obj["analyses"] = case_analyses
 
+    # GIVEN that the case has no outdated panels
+    case_obj["outdated_panels"] = []
+
     # update test user by adding beacon_submitter as role
     user_obj["roles"] = ["beacon_submitter"]
 
@@ -106,7 +109,6 @@ def test_sidebar_macro(app, institute_obj, case_obj, user_obj):
         assert "Research list" in html
         assert "Reruns" in html
         assert "Share case" in html
-        assert "Share to Beacon" in html
 
 
 def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj, user_obj):

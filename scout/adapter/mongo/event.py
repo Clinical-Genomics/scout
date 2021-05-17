@@ -100,6 +100,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
           variant_id (str, optional): global variant id
           level (str, optional): restrict comments to 'specific' or 'global'
           comments (bool, optional): restrict events to include only comments
+          audits (bool, optional): restrict events to include only audits
           panel (str): A panel name
 
         Returns:

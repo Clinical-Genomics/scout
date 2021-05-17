@@ -78,7 +78,7 @@
                 variant_id=compound.variant) }}' target='_blank'>
                 {{ compound.display_name|truncate(20, True) }}
                 </a>
-                {% if compound.variant in case.suspects %}
+                {% if 'suspects' in case and compound.variant in case.suspects %}
                   <i class='fa fa-map-pin ml-1'></i>
                 {% endif %}
               {% endif %}
@@ -131,89 +131,11 @@
   </table>
 {% endmacro %}
 
-{% macro modal_causative(case, institute, variant) %}
-<div class="modal fade" id="causativeModal" tabindex="-1" role="dialog" aria-labelledby="causativeLabel"
-  aria-hidden="true" onsubmit="return validate_causative_form();">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-        <div class="modal-header">
-           <h5 class="modal-title" id="causativeLabel">Mark variant as causative</h5>
-           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-             <span aria-hidden="true">&times;</span>
-           </button>
-        </div>
-        <form action="{{ url_for('cases.mark_causative', institute_id=institute._id, case_name=case.display_name,
-           variant_id=variant._id, partial_causative=False) }}" method="POST">
-          <div class="modal-body">
-            <div class="row">
-              <div class="col d-flex">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div data-placement="top">
-                      Variant explains phenotype partially (partial causative)&nbsp;&nbsp;
-                    </div>
-                    <br>
-                    <br>
-                    <div>
-                      <input type="checkbox" class="ios8-switch" id="partial_causative" name="partial_causative"
-                        data-toggle='collapse' data-target='#partial_phenotypes'
-                          {% if case.phenotype_terms|length == 0 and case.diagnosis_phenotypes|length == 0 %}
-                            disabled
-                          {% endif %}>
-                      <label for="partial_causative"></label>
-                    </div>
-                  </div>
-              </div>
-            </div>
-            {% if case.phenotype_terms|length == 0 and case.diagnosis_phenotypes|length == 0 %}
-              <h5 class="text-danger small">Assign at least an OMIM diagnosis or a HPO phenotype term to this case to mark this variant as partial causative</h5>
-            {% endif %}
-            <div id="partial_phenotypes" class="collapse mt-2">
-              <h6><strong>Associated phenotype</strong></h6>
-              <!-- A partial causative variant is resposible for a specific phenotype. Make sure phenotype is specified -->
-              <div class="row ml-3">
-                <div class="col-4">
-                  <!-- Phenotype could be specified using OMIM -->
-                  <h6>Diagnosis phenotype (OMIM):</h6>
-                  <select multiple="multiple" name="omim_select" id="omim_select" class="selectpicker">
-                    {% for omim_id in case.diagnosis_phenotypes %}
-                      <option value="{{omim_id}}">
-                        {{ omim_id }}
-                      </option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="col-8">
-                  <!-- Phenotype could also be specified by HPO terms -->
-                  <h6>Phenotype terms (HPO):</h6>
-                  <select multiple="multiple" name="hpo_select" id="hpo_select" class="selectpicker">
-                    {% for hpo_term in case.phenotype_terms %}
-                      <option value="{{hpo_term.feature}}_{{hpo_term.phenotype_id}}">
-                        {{hpo_term.feature}} ({{ hpo_term.phenotype_id }})
-                      </option>
-                    {% endfor %}
-                  </select>
-                </div>
-              </div>
-            </div>
-            <br>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button name="action" value="ADD" type="submit" class="btn btn-primary" title="Mark causative">
-              Mark causative
-            </button>
-          </div>
-        </form>
-    </div>
-  </div>
-</div>
-{% endmacro %}
-
-{% macro snv_filters(form, institute, case)%}
+{% macro snv_filters(form, institute, case, filters)%}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
 <div class="form-group">
   <div class="row">
-    <div class="col-4">
+    <div class="col-2">
       {{ form.gene_panels.label(class="control-label", data_toggle="tooltip", data_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
       {{ form.gene_panels(class="selectpicker") }}
     </div>
@@ -232,6 +154,10 @@
     <div class="col-2">
       {{ form.genetic_models.label(class="control-label") }}
       {{ form.genetic_models(class="selectpicker") }}
+    </div>
+    <div class="col-2">
+      {{ form.clinvar_tag() }}
+      {{ form.clinvar_tag.label(class="ml-2") }}
     </div>
   </div>
 </div>
@@ -336,7 +262,7 @@
 </div>
 {% endmacro %}
 
-{% macro str_filters(form, institute, case) %}
+{% macro str_filters(form, institute, case, filters) %}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
 <div class="form-group">
   <div class="row">
@@ -530,7 +456,7 @@
 </div>
 {% endmacro %}
 
-{% macro cancer_filters(form, institute, case) %}
+{% macro cancer_filters(form, institute, case, filters) %}
     {{ form.csrf_token }}
     {{ form.variant_type() }}
     <div class="form-group">
@@ -556,8 +482,18 @@
           {{ form.clinsig(class="selectpicker") }}
         </div>
         <div class="col-2">
-          {{ form.mvl_tag.label(class="control-label") }}
-          <div>{{ form.mvl_tag() }}</div>
+          <div class="row form-inline">
+            {{ form.mvl_tag() }}
+            {{ form.mvl_tag.label(class="ml-2") }}
+          </div>
+          <div class="row form-inline">
+            {{ form.clinvar_tag() }}
+            {{ form.clinvar_tag.label(class="ml-2") }}
+          </div>
+          <div class="row form-inline">
+            {{ form.cosmic_tag() }}
+            {{ form.cosmic_tag.label(class="ml-2") }}
+          </div>
         </div>
       </div>
     </div>
@@ -676,19 +612,44 @@
 
 {% macro stash_filter_buttons(form, institute, case) %}
   <div class="row">
-    <div class="col-4 text-right">
+    <div class="col-3 text-right">
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#filterNameModal"><i class="fa fa-star"></i> Save filter</button>
     </div>
     {{ modal_prompt_filter_name(form) }}
-    <div class="col-4">
+    <div class="col-3">
       {{ form.filters(class="form-control") }}
     </div>
-    <div class="btn-group col-4" role="group">
-      {{ form.load_filter(class="btn btn-secondary", disabled=form.filters.choices|length==0) }}
+    <div class="btn-group col-6" role="group">
+      {{ form.load_filter(class="btn btn-secondary", title="Load selected filter", data_toggle="tooltip", data_placement="top", disabled=form.filters.choices|length==0) }}
+      {{ form.audit_filter(class="btn btn-secondary bg-info", title="Note selected filter audited for this case. Filter name, user and date will then show up on general report.", data_toggle="tooltip", data_placement="top", disabled=form.filters.choices|length==0) }}
+      <button name="lock_filter" type="submit" value="Lock filter" class="btn btn-primary btn-sm" id="lock_filter" data-toggle="tooltip" data-placement="top" title="Lock filter and make you owner. Unlock if you own it." disabled="{{form.filters.choices|length==0}}">
+              <span id="stash_filter_padlock" class="fa fa-lock-open"></span></button>
       {{ form.delete_filter(class="btn btn-secondary bg-danger", data_toggle="tooltip", data_placement="top",
-        title="Delete selected filter for this institute.", disabled=form.filters.choices|length==0) }}
+        id="stash_filter_delete", title="Delete selected filter for this institute.", disabled=form.filters.choices|length==0) }}
     </div>
   </div>
+{% endmacro %}
+
+{% macro update_stash_filter_button_status(current_user, filters) %}
+ {% for filter in filters %}
+    if ($("#filters").val() === "{{ filter._id }}") {
+      {% if filter.lock %}
+        $("#stash_filter_padlock").removeClass("fa-lock-open");
+        $("#stash_filter_padlock").addClass("fa-lock");
+        $("#stash_filter_delete").attr("disabled", true);
+        {% if filter.owner == current_user._id %}
+          $("#lock_filter").attr("disabled", false);
+        {% elif filter.owner and filter.owner != current_user._id %}
+          $("#lock_filter").attr("disabled",true);
+        {% endif %}
+      {% else %}
+        $("#stash_filter_padlock").removeClass("fa-lock");
+        $("#stash_filter_padlock").addClass("fa-lock-open");
+        $("#stash_filter_delete").attr("disabled",false);
+        $("#lock_filter").attr("disabled",false);
+      {% endif %}
+    };
+  {% endfor %}
 {% endmacro %}
 
 {% macro tier_cell(variant, manual_rank_options, dismiss_variant_options, cancer_tier_options) %}
@@ -699,7 +660,7 @@
   {% endif %}
 
   {% if variant.manual_rank %}
-    {% for option in manual_rank_options %}
+  {% for option in manual_rank_options %}
       {% if variant.manual_rank == option.internal_id %}
         <span class="badge badge-{{ option.label_class }}" data-toggle="tooltip" data-placement="right"
           title="Manual rank: {{ option.description }}">

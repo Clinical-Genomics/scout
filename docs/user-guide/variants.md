@@ -3,6 +3,11 @@ The big list of variants. This page serves as an overview of all data and annota
 
 The first couple of columns are meant to give you a sense of place in the overall ranked list. The "Rank" column is especially useful after applying various filters.
 
+Filters can be saved for reuse. A modal prompt will ask you for a name when you click "Save filter". Each user shares filters with the other users in their institute. Selecting a filter from the filter select box and pressing "Load" causes the saved
+filter settings to be recovered. Pressing "Audit filter" will store a mention of the triage in the case event log, and will also make the filter name appear below the case comments section on the
+general report. This way the user can remember what filters have been tried, and communicate what analysis has been performed to another medical professional reading the report. Proper naming of filters
+is important for this to be effective. Filters can be deleted by pressing "Delete filter". Filters can be locked by use of the padlock button to avoid them being deleted. A locked filter can only be unlocked by the person who locked it.
+
 Hovering over both "1000 Genomes" (frequency) and "CADD score" (severity) columns will reveal additional metrics in a popup.
 
 Hovering over "Inheritance models" will pop up a list of all possible compounds if the variants follows this pattern.

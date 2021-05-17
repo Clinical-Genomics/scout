@@ -1,5 +1,5 @@
 {% extends "layout_bs4.html" %}
-{% from "variants/utils.html" import sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer, dismiss_variants_block %}
+{% from "variants/utils.html" import sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer, update_stash_filter_button_status, dismiss_variants_block %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
@@ -186,7 +186,7 @@
 {% macro variant_row(variant) %}
   {% if variant.dismiss_variant %}
   <tr class="dismiss">
-  {% elif variant._id in case.causatives %}
+  {% elif 'causatives' in case and variant._id in case.causatives %}
   <tr class="causative">
   {% else %}
   <tr>
@@ -284,11 +284,18 @@
 
     window.onload=function() {
         populateCytobands({{cytobands|safe}});
+
+        {{ update_stash_filter_button_status(current_user, filters) }}
     }
 
     $('select[multiple]').selectpicker({
       width: '100%'
     });
+
+    $("#filters").change(function () {
+      {{ update_stash_filter_button_status(current_user, filters) }}
+    });
+
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
       $('[data-toggle="popover"]').popover({

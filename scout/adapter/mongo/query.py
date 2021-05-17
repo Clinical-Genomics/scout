@@ -161,7 +161,9 @@ class QueryHandler(object):
 
         return mongo_variant_query
 
-    def build_query(self, case_id, query=None, variant_ids=None, category="snv"):
+    def build_query(
+        self, case_id, query=None, variant_ids=None, category="snv", build="37"
+    ) -> dict:
         """Build a mongo query
 
         These are the different query options:
@@ -189,6 +191,8 @@ class QueryHandler(object):
                 'size_shorter': boolean,
                 'gene_panels': list(str),
                 'mvl_tag": boolean,
+                'clinvar_tag': boolean,
+                'cosmic_tag' boolean,
                 'decipher": boolean,
                 'hide_dismissed': boolean
             }
@@ -238,9 +242,9 @@ class QueryHandler(object):
             # the rest of the query content is clear.
 
             if criterion in ["hgnc_symbols", "gene_panels"]:
-                gene_query = self.gene_filter(query, mongo_query)
+                gene_query = self.gene_filter(query, build=build)
                 if len(gene_query) > 0 or "hpo" in query.get("gene_panels", []):
-                    mongo_query["hgnc_symbols"] = {"$in": gene_query}
+                    mongo_query["hgnc_ids"] = {"$in": gene_query}
                 continue
 
             if criterion == "chrom" and query.get("chrom"):  # filter by coordinates
@@ -268,7 +272,7 @@ class QueryHandler(object):
         # there is only 'clinsig' criterion among the primary terms right now
         primary_terms = False
 
-        # gnomad_frequency, local_obs, clingen_ngi, swegen, spidex_human, cadd_score, genetic_models, mvl_tag
+        # gnomad_frequency, local_obs, clingen_ngi, swegen, spidex_human, cadd_score, genetic_models, mvl_tag, clinvar_tag, cosmic_tag
         # functional_annotations, region_annotations, size, svtype, decipher, depth, alt_count, control_frequency, tumor_frequency
         secondary_terms = False
 
@@ -458,26 +462,27 @@ class QueryHandler(object):
             coordinate_query = chromosome_query
         return coordinate_query
 
-    def gene_filter(self, query, mongo_query):
+    def gene_filter(self, query, build="37"):
         """Adds gene symbols to the query. Gene symbols query is a list of combined hgnc_symbols and genes included in the given panels
 
         Args:
             query(dict): a dictionary of query filters specified by the users
-            mongo_query(dict): the query that is going to be submitted to the database
 
         Returns:
-            hgnc_symbols: The genes to filter by
+            hgnc_ids: The hgnc_ids of genes to filter by
 
         """
         LOG.debug("Adding panel and genes-related parameters to the query")
         hgnc_symbols = set(query.get("hgnc_symbols", []))
 
+        hgnc_ids = set([self.hgnc_id(symbol, build=build) for symbol in hgnc_symbols])
+
         for panel in query.get("gene_panels", []):
             if panel == "hpo":
                 continue  # HPO genes are already provided in the eventual hgnc_symbols fields
-            hgnc_symbols.update(self.panel_to_genes(panel_name=panel))
+            hgnc_ids.update(self.panel_to_genes(panel_name=panel, gene_format="hgnc_id"))
 
-        return list(hgnc_symbols)
+        return list(hgnc_ids)
 
     def secondary_query(self, query, mongo_query, secondary_filter=None):
         """Creates a secondary query object based on secondary parameters specified by user
@@ -514,7 +519,6 @@ class QueryHandler(object):
                             ]
                         }
                     )
-                LOG.debug("Adding gnomad_frequency to query")
 
             if criterion == "local_obs":
                 local_obs = query.get("local_obs")
@@ -587,11 +591,9 @@ class QueryHandler(object):
             if criterion == "cadd_score":
                 cadd = query["cadd_score"]
                 cadd_query = {"cadd_score": {"$gt": float(cadd)}}
-                LOG.debug("Adding cadd_score: %s to query", cadd)
 
                 if query.get("cadd_inclusive") is True:
                     cadd_query = {"$or": [cadd_query, {"cadd_score": {"$exists": False}}]}
-                    LOG.debug("Adding cadd inclusive to query")
 
                 mongo_secondary_query.append(cadd_query)
 
@@ -609,12 +611,9 @@ class QueryHandler(object):
                         {".".join(["genes", criterion[:-1]]): {"$in": criterion_values}}
                     )
 
-                LOG.debug("Adding {0}: {1} to query".format(criterion, ", ".join(criterion_values)))
-
             if criterion == "size":
                 size = query["size"]
                 size_query = {"length": {"$gt": int(size)}}
-                LOG.debug("Adding length: %s to query" % size)
 
                 if query.get("size_shorter"):
                     size_query = {
@@ -623,41 +622,41 @@ class QueryHandler(object):
                             {"length": {"$exists": False}},
                         ]
                     }
-                    LOG.debug("Adding size less than, undef inclusive to query.")
 
                 mongo_secondary_query.append(size_query)
 
             if criterion == "svtype":
                 svtype = query["svtype"]
                 mongo_secondary_query.append({"sub_category": {"$in": svtype}})
-                LOG.debug("Adding SV_type %s to query" % ", ".join(svtype))
 
             if criterion == "decipher":
                 mongo_query["decipher"] = {"$exists": True}
-                LOG.debug("Adding decipher to query")
 
             if criterion == "depth":
-                LOG.debug("add depth filter")
                 mongo_secondary_query.append({"tumor.read_depth": {"$gt": query.get("depth")}})
 
             if criterion == "alt_count":
-                LOG.debug("add min alt count filter")
                 mongo_secondary_query.append({"tumor.alt_depth": {"$gt": query.get("alt_count")}})
 
             if criterion == "control_frequency":
-                LOG.debug("add minimum control frequency filter")
                 mongo_secondary_query.append(
                     {"normal.alt_freq": {"$lt": float(query.get("control_frequency"))}}
                 )
 
             if criterion == "tumor_frequency":
-                LOG.debug("add minimum VAF filter")
                 mongo_secondary_query.append(
                     {"tumor.alt_freq": {"$gt": float(query.get("tumor_frequency"))}}
                 )
 
             if criterion == "mvl_tag":
-                LOG.debug("add managed variant list filter")
                 mongo_secondary_query.append({"mvl_tag": {"$exists": True}})
+
+            if criterion == "clinvar_tag":
+                mongo_secondary_query.append({"clnsig": {"$exists": True}})
+                mongo_secondary_query.append({"clnsig": {"$ne": None}})
+
+            if criterion == "cosmic_tag":
+                mongo_secondary_query.append({"cosmic_ids": {"$exists": True}})
+                mongo_secondary_query.append({"cosmic_ids": {"$ne": None}})
 
         return mongo_secondary_query

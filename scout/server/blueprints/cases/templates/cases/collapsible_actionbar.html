@@ -23,8 +23,11 @@
           {% endif %}
           {{ rerun(case) }}
           {{ share_case(institute, case, collaborators) }}
-          {% if "beacon_submitter" in current_user.roles %}
-            {{ beacon_share(institute, case) }}
+          {% if config.BEACON_URL %}
+            {{ beacon_share(institute, case, current_user) }}
+          {% endif %}
+          {% if config.MME_ACCEPTS and config.MME_URL and config.MME_TOKEN %}
+            {{ matchmaker_share(institute, case, current_user) }}
           {% endif %}
           {% if case.needs_check %}
             {{ check_decipher(case, institute) }}
@@ -44,7 +47,7 @@
             <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
               {{ panel.display_name|truncate(18, True) }}
             </a>
-            {% if panel.panel_name in case.outdated_panels %}
+            {% if case.outdated_panels and panel.panel_name in case.outdated_panels %}
               <a><span class="badge badge-pill badge-sm badge-warning" data-toggle="popover" data-placement="left" data-html="true" data-content="Panel version used in the analysis ({{panel.version}}) is outdated. Latest panel version is used in variants filtering.<br /><strong>Genes present in case panel and not in latest version</strong>: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}.<br /><strong>Genes present only in latest version</strong>: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.">!</span></a>
             {% endif %}
         </div>
@@ -321,14 +324,32 @@
 </div>
 {% endmacro %}
 
-{% macro beacon_share(institute, case) %}
-<a data-target="#beacon_modal" data-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
-  <div class="d-flex w-100 justify-content-start align-items-center">
-    <span class="fab fa-watchman-monitoring"></span>
-    <span class="menu-collapsed ml-3">Share to Beacon</span>
-    <span class="submenu-icon ml-auto"></span>
-  </div>
-</a>
+{% macro beacon_share(institute, case, current_user) %}
+  {% if "beacon_submitter" not in current_user.roles %}
+    <a disabled="disabled" data-toggle="popover" data-content="You don't have the permission to submit data to the Beacon. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+  {% else %}
+    <a data-target="#beacon_modal" data-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+  {% endif %}
+    <div class="d-flex w-100 justify-content-start align-items-center">
+      <span class="fab fa-watchman-monitoring"></span>
+      <span class="menu-collapsed ml-3">Share to Beacon</span>
+      <span class="submenu-icon ml-auto"></span>
+    </div>
+  </a>
+{% endmacro %}
+
+{% macro matchmaker_share(institute, case, current_user) %}
+  {% if "mme_submitter" not in current_user.roles %}
+    <a disabled="disabled" data-toggle="popover" data-content="You don't have the permission to submit data to MatchMaker Exchange. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+  {% else %}
+    <a data-target="#matchmaker_modal" data-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+  {% endif %}
+    <div class="d-flex w-100 justify-content-start align-items-center">
+      <span class="fas fa-people-arrows"></span>
+      <span class="menu-collapsed ml-3">MatchMaker</span>
+      <span class="submenu-icon ml-auto"></span>
+    </div>
+  </a>
 {% endmacro %}
 
 {% macro check_decipher(case, institute) %}

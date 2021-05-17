@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
-{% from "variants/utils.html" import compounds_table, modal_causative %}
-{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, igv_track_selection %}
+{% from "variants/utils.html" import compounds_table %}
+{% from "variant/utils.html" import modal_causative, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, igv_track_selection %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, severity_list, conservations, mappability %}
@@ -222,7 +222,7 @@
       <div class="card-body">
         <ul class="list-group list-group-flush">
           {% for other_variant in causatives %}
-            <li class="list-group-item">
+            <li class="list-group-item" style="padding: 0;">
               <a href="{{ url_for('variant.variant',
                                   institute_id=institute._id,
                                   case_name=other_variant.case_display_name,
@@ -349,7 +349,7 @@
       {{ acmg_form(variant.acmg_classification.code if variant.acmg_classification) }}
       <div class="mt-3">
         <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
-        {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
+        {% if 'suspects' in case and variant._id in case.suspects and not variant.clinvar_clinsig %}
           <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}"
             class="btn btn-outline-secondary form-control" target="_blank">Submit to ClinVar</a>
         {% endif %}

@@ -16,9 +16,11 @@ from scout.constants import (
     CANCER_TIER_OPTIONS,
     CHROMOSOMES,
     CHROMOSOMES_38,
+    CLINICAL_FILTER_BASE,
+    CLINICAL_FILTER_BASE_CANCER,
+    CLINICAL_FILTER_BASE_SV,
     CLINSIG_MAP,
     MOSAICISM_OPTIONS,
-    SEVERE_SO_TERMS,
     SO_TERMS,
 )
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
@@ -771,7 +773,20 @@ def gene_panel_choices(institute_obj, case_obj):
 
 
 def populate_filters_form(store, institute_obj, case_obj, user_obj, category, request_form):
-    # Update filter settings if Clinical Filter was requested
+    """Update filter settings if Clinical Filter was requested.
+        Ensure that persistent actions get acted on.
+
+    Args:
+        store: scout.adapter.MongoAdapter
+        institute_obj: scout.models.Institute dict
+        case_obj: scout.models.Case dict
+        user_obj: scout.models.Users
+        category: str
+        request_form: FiltersForm
+
+    Returns:
+        form: FiltersForm
+    """
     form = None
     clinical_filter_panels = []
 
@@ -780,7 +795,6 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
         if panel.get("is_default"):
             default_panels.append(panel["panel_name"])
 
-    # The clinical filter button will only
     if case_obj.get("hpo_clinical_filter"):
         clinical_filter_panels = ["hpo"]
     else:
@@ -789,66 +803,119 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
     FiltersFormClass = VariantFiltersForm
     if category == "snv":
         FiltersFormClass = FiltersForm
-        clinical_filter = MultiDict(
+        clinical_filter_dict = CLINICAL_FILTER_BASE
+        clinical_filter_dict.update(
             {
-                "variant_type": "clinical",
-                "region_annotations": ["exonic", "splicing"],
-                "functional_annotations": SEVERE_SO_TERMS,
-                "clinsig": [4, 5],
-                "clinsig_confident_always_returned": True,
                 "gnomad_frequency": str(institute_obj["frequency_cutoff"]),
                 "gene_panels": clinical_filter_panels,
             }
         )
+        clinical_filter = MultiDict(clinical_filter_dict)
     elif category in ("sv", "cancer_sv"):
         FiltersFormClass = SvFiltersForm
-        clinical_filter = MultiDict(
+        clinical_filter_dict = CLINICAL_FILTER_BASE_SV
+        clinical_filter_dict.update(
             {
-                "variant_type": "clinical",
-                "region_annotations": ["exonic", "splicing"],
-                "functional_annotations": SEVERE_SO_TERMS,
-                "thousand_genomes_frequency": str(institute_obj["frequency_cutoff"]),
-                "clingen_ngi": 10,
-                "swegen": 10,
-                "size": 100,
                 "gene_panels": clinical_filter_panels,
             }
         )
+        clinical_filter = MultiDict(clinical_filter_dict)
     elif category == "cancer":
         FiltersFormClass = CancerFiltersForm
-        clinical_filter = MultiDict(
+        clinical_filter_dict = CLINICAL_FILTER_BASE_CANCER
+        clinical_filter_dict.update(
             {
-                "variant_type": "clinical",
-                "region_annotations": ["exonic", "splicing"],
-                "functional_annotations": SEVERE_SO_TERMS,
+                "gene_panels": clinical_filter_panels,
             }
         )
+        clinical_filter = MultiDict(clinical_filter_dict)
+
     elif category == "str":
         FiltersFormClass = StrFiltersForm
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)
-    elif bool(request_form.get("save_filter")):
+    else:
+        form = persistent_filter_actions(
+            store, institute_obj, case_obj, user_obj, category, request_form, FiltersFormClass
+        )
+
+    return form
+
+
+def persistent_filter_actions(
+    store, institute_obj, case_obj, user_obj, category, request_form, FiltersFormClass
+):
+    """Act on persistent filter action requests.
+        Check request form for what action, call corresponding adapter function and then update Form.
+
+    Args
+        store: scout.adapter.MongoAdapter
+        institute_obj: scout.models.Institute dict
+        case_obj: scout.models.Case dict
+        user_obj: scout.models.Users
+        category: str
+        request_form: FiltersForm
+        FiltersFormClass: FiltersFormClass
+
+    Returns:
+        form: FiltersForm
+    """
+
+    form = None
+
+    if bool(request_form.get("lock_filter")):
+        filter_id = request_form.get("filters")
+
+        filter_obj = store.retrieve_filter(filter_id)
+        if not filter_obj:
+            flash("Requested filter could not be found", "warning")
+            return form
+
+        if filter_obj.get("lock"):
+            filter_obj = store.unlock_filter(filter_id, current_user.email)
+        else:
+            filter_obj = store.lock_filter(filter_id, current_user.email)
+
+        if filter_obj is not None:
+            form = FiltersFormClass(request_form)
+        else:
+            flash("Requested filter lock could not be toggled", "warning")
+            form = FiltersFormClass(request_form)
+
+    if bool(request_form.get("audit_filter")):
+        filter_id = request_form.get("filters")
+        filter_obj = store.audit_filter(filter_id, institute_obj, case_obj, user_obj, category)
+        if filter_obj is not None:
+            form = FiltersFormClass(request_form)
+        else:
+            flash("Requested filter could not be audited.", "warning")
+            form = FiltersFormClass(request_form)
+
+    if bool(request_form.get("save_filter")):
         # The form should be applied and remain set the page after saving
         form = FiltersFormClass(request_form)
         # Stash the filter to db to make available for this institute
         filter_obj = request_form
         store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category)
-    elif bool(request_form.get("load_filter")):
+
+    if bool(request_form.get("load_filter")):
         filter_id = request_form.get("filters")
         filter_obj = store.retrieve_filter(filter_id)
         if filter_obj is not None:
             form = FiltersFormClass(MultiDict(filter_obj))
         else:
             flash("Requested filter was not found", "warning")
-    elif bool(request_form.get("delete_filter")):
+
+    if bool(request_form.get("delete_filter")):
         filter_id = request_form.get("filters")
         institute_id = institute_obj.get("_id")
         filter_obj = store.delete_filter(filter_id, institute_id, current_user.email)
         if filter_obj is not None:
             form = FiltersFormClass(request_form)
         else:
-            flash("Requested filter was not found", "warning")
+            flash("Requested filter was locked or not found", "warning")
+
     if form is None:
         form = FiltersFormClass(request_form)
 
@@ -903,16 +970,8 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
             store, institute_obj, case_obj, user_obj, category, request_obj.form
         )
 
-    # populate filters dropdown
-    available_filters = store.filters(institute_obj["_id"], category)
-    form.filters.choices = [
-        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
-    ]
-
     # populate available panel choices
     form.gene_panels.choices = gene_panel_choices(institute_obj, case_obj)
-
-    form = update_form_hgnc_symbols(store, case_obj, form)
 
     return form
 

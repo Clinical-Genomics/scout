@@ -159,6 +159,7 @@ class VariantHandler(VariantLoader):
         nr_of_variants=10,
         skip=0,
         sort_key="variant_rank",
+        build="37",
     ):
         """Returns variants specified in question for a specific case.
 
@@ -172,7 +173,7 @@ class VariantHandler(VariantLoader):
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
             sort_key: ['variant_rank', 'rank_score', 'position']
-
+            build(str): genome build
         Returns:
              pymongo.cursor
         """
@@ -188,7 +189,11 @@ class VariantHandler(VariantLoader):
             nr_of_variants = skip + nr_of_variants
 
         mongo_query = self.build_query(
-            case_id, query=query, variant_ids=variant_ids, category=category
+            case_id,
+            query=query,
+            variant_ids=variant_ids,
+            category=category,
+            build=build,
         )
         sorting = []
         if sort_key == "variant_rank":
@@ -248,7 +253,7 @@ class VariantHandler(VariantLoader):
     ):
         """Returns the specified variant.
 
-        Arguments:
+        Args:
             document_id : A md5 key that represents the variant or "variant_id"
             gene_panels(List[GenePanel])
             case_id (str): case id (will search with "variant_id")
@@ -291,6 +296,52 @@ class VariantHandler(VariantLoader):
             variant_obj["is_par"] = is_par(variant_obj["chromosome"], variant_obj["position"])
 
         return variant_obj
+
+    def overlapping_sv_variant(self, case_id, variant_obj):
+        """Returns a SV for a case that is as similar as possible to a SV from another case
+
+        Args:
+            case_id (str): case id for the variant query
+            variant_obj (dict): a variant dictionary from another case
+
+        Returns:
+            hit (Variant): a variant object dictionary
+        """
+        coordinate_query = self.sv_coordinate_query(
+            {
+                "chrom": variant_obj["chromosome"],
+                "start": variant_obj["position"],
+                "end": variant_obj["end"],
+            }
+        )
+        query = {
+            "case_id": case_id,
+            "category": variant_obj["category"],  # sv
+            "variant_type": variant_obj["variant_type"],  # clinical or research
+            "sub_category": variant_obj["sub_category"],  # example -> "del"
+            "$and": coordinate_query["$and"],  # query for overlapping SV variants
+        }
+
+        overlapping_svs = list(
+            self.variant_collection.find(
+                query,
+            )
+        )
+        if not overlapping_svs:
+            return None
+        if len(overlapping_svs) == 1:
+            return overlapping_svs[0]
+
+        # If more than one SV is overlapping with this variant
+        # return the one with most similar size
+        query_size = variant_obj["length"]
+        hit_lengths = [hit["length"] for hit in overlapping_svs]
+        closest_length = min(hit_lengths, key=lambda x: abs(x - query_size))
+
+        # return the variant with the closes size
+        for hit in overlapping_svs:
+            if hit["length"] == closest_length:
+                return hit
 
     def gene_variants(
         self,

@@ -17,7 +17,6 @@ from scout.constants import (
     MOSAICISM_OPTIONS,
     VERBS_MAP,
 )
-from scout.parse.variant.ids import parse_document_id
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import (
@@ -311,7 +310,9 @@ def observations(store, loqusdb, case_obj, variant_obj):
         obs_data(dict)
     """
     chrom = variant_obj["chromosome"]
+    end_chrom = variant_obj.get("end_chrom", chrom)
     pos = variant_obj["position"]
+    end = variant_obj["end"]
     ref = variant_obj["reference"]
     alt = variant_obj["alternative"]
     var_case_id = variant_obj["case_id"]
@@ -326,28 +327,21 @@ def observations(store, loqusdb, case_obj, variant_obj):
     variant_query = {
         "_id": composite_id,
         "chrom": chrom,
-        "end_chrom": variant_obj.get("end_chrom", chrom),
+        "end_chrom": end_chrom,
         "pos": pos,
-        "end": variant_obj["end"],
+        "end": end,
         "length": variant_obj.get("length", 0),
         "variant_type": variant_obj.get("sub_category", "").upper(),
         "category": category,
     }
 
-    LOG.error(variant_query)
-
     institute_id = variant_obj["institute"]
     institute_obj = store.institute(institute_id)
-    obs_data = (
-        loqusdb.get_variant(variant_query, loqusdb_id=institute_obj.get("loqusdb_id", "default"))
-        or {}
-    )
+    loqusdb_id = institute_obj.get("loqusdb_id") or "default"
+    obs_data = loqusdb.get_variant(variant_query, loqusdb_id=loqusdb_id)
+
     if not obs_data:
-        LOG.debug("Could not find any observations for %s", composite_id)
-        obs_data["total"] = loqusdb.case_count(
-            variant_category=category,
-            loqusdb_id=institute_obj.get("loqusdb_id", "default"),
-        )
+        obs_data["total"] = loqusdb.case_count(variant_category=category, loqusdb_id=loqusdb_id)
         return obs_data
 
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
@@ -370,11 +364,15 @@ def observations(store, loqusdb, case_obj, variant_obj):
         if user_institutes_ids.isdisjoint(other_institutes):
             # If the user does not have access to the information we skip it
             continue
-        document_id = parse_document_id(chrom, str(pos), ref, alt, var_type, case_id)
-        other_variant = store.variant(document_id=document_id)
-        # If the other variant is not loaded we skip it
-        if not other_variant:
-            continue
+
+        other_variant = store.variant(
+            case_id=other_case["_id"], document_id=variant_obj["variant_id"]
+        )
+
+        # IF variant is SV variant, look for variants with different sub_category occurring at the same coordinates
+        if other_variant is None and category == "sv":
+            other_variant = store.overlapping_sv_variant(other_case["_id"], variant_obj)
+
         obs_data["cases"].append(dict(case=other_case, variant=other_variant))
 
     return obs_data
