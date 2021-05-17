@@ -340,6 +340,8 @@ def parse_variant(
     compounds = variant_obj.get("compounds", [])
 
     if compounds and get_compounds:
+        LOG.error(variant_obj["_id"])
+        LOG.error(compounds)
         # Check if we need to update compound information
         if compounds_need_updating(compounds, case_dismissed_vars):
             new_compounds = store.update_variant_compounds(variant_obj)
