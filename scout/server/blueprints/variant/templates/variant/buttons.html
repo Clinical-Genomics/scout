@@ -52,7 +52,7 @@
       <div class="col-8">
         <select multiple="multiple" name="dismiss_variant" id="dismiss_variant" class="selectpicker" data-width="100%">
           {% for data in dismiss_variant_options %}
-            <option {% if data.internal_id~"" in variant.dismiss_variant %} selected {% endif %} value="{{ data.internal_id }}">
+            <option {% if variant.dismiss_variant and data.internal_id~"" in variant.dismiss_variant %} selected {% endif %} value="{{ data.internal_id }}">
               {{ data.label }}
             </option>
           {% endfor %}
