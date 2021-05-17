@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed failing tests due to Flask update to version 2.0
 - Speed up user events view
 - Causative view sort out of memory error
+- Use hgnc_id for gene filter query
 - Typo in case controllers displaying an error every time a patient is matched against external MatchMaker nodes
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream

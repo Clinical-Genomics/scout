@@ -159,6 +159,7 @@ class VariantHandler(VariantLoader):
         nr_of_variants=10,
         skip=0,
         sort_key="variant_rank",
+        build="37",
     ):
         """Returns variants specified in question for a specific case.
 
@@ -172,7 +173,7 @@ class VariantHandler(VariantLoader):
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
             sort_key: ['variant_rank', 'rank_score', 'position']
-
+            build(str): genome build
         Returns:
              pymongo.cursor
         """
@@ -188,7 +189,11 @@ class VariantHandler(VariantLoader):
             nr_of_variants = skip + nr_of_variants
 
         mongo_query = self.build_query(
-            case_id, query=query, variant_ids=variant_ids, category=category
+            case_id,
+            query=query,
+            variant_ids=variant_ids,
+            category=category,
+            build=build,
         )
         sorting = []
         if sort_key == "variant_rank":
