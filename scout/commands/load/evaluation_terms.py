@@ -10,7 +10,7 @@ from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
-VALID_CATEGORIES = ('dismissal_term', 'manual_rank')
+VALID_CATEGORIES = ("dismissal_term", "manual_rank")
 
 
 @click.command("evaluation-term", help="Load a variant evaluation term")
@@ -22,10 +22,21 @@ VALID_CATEGORIES = ('dismissal_term', 'manual_rank')
     "-r", "--rank", type=int, help="Rank used for determening the order entries are displayed"
 )
 @click.option("-e", "--evidence", multiple=True, help="Type of evidence supporting a term")
-@click.option("-s", "--institute", default="all", help="Make a term exclusive for a institute [default: all]")
-@click.option("-c", "--term_category", type=click.Choice(VALID_CATEGORIES), required=True, help="Type of evaluation term")
 @click.option(
-    "-a", "--analysis_type", default="all", help="Make a term exclusive for a analysis type [default: all]"
+    "-s", "--institute", default="all", help="Make a term exclusive for a institute [default: all]"
+)
+@click.option(
+    "-c",
+    "--term_category",
+    type=click.Choice(VALID_CATEGORIES),
+    required=True,
+    help="Type of evaluation term",
+)
+@click.option(
+    "-a",
+    "--analysis_type",
+    default="all",
+    help="Make a term exclusive for a analysis type [default: all]",
 )
 @with_appcontext
 def evaluation_term(
@@ -46,11 +57,13 @@ def evaluation_term(
 
     if not rank:
         query = adapter.evaluation_terms_collection.find({"term_category": term_category})
-        term = max(query, key=lambda term: term['rank'])
-        rank = term['rank'] + 1
+        term = max(query, key=lambda term: term["rank"])
+        rank = term["rank"] + 1
 
     try:
-        LOG.info(f'adding a new term: "{label}" with category "{term_category}" to institute "{institute}"')
+        LOG.info(
+            f'adding a new term: "{label}" with category "{term_category}" to institute "{institute}"'
+        )
         load_evaluation_term(
             adapter=adapter,
             internal_id=internal_id,
@@ -64,7 +77,7 @@ def evaluation_term(
             analysis_type=analysis_type,
         )
     except ValueError as e:
-        message = f'{e}, please try to specify another value'
+        message = f"{e}, please try to specify another value"
         raise click.UsageError(message)
     except Exception as e:
         LOG.warning(e)
