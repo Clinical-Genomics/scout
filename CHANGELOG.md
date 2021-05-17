@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Grey background for dismissed compounds in variants list and variant page
 - Pin badge for pinned compounds in variants list and variant page
 - Support LoqusDB REST API queries
+- Add a docker-compose-matchmaker under scout/containers/development to test matchmaker locally
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
@@ -27,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Speed up user events view
 - Causative view sort out of memory error
 - Use hgnc_id for gene filter query
+- Typo in case controllers displaying an error every time a patient is matched against external MatchMaker nodes
 - Do not crash while attemping an update for variant documents that are too big (> 16 MB)
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
@@ -38,6 +40,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored the MatchMaker integration as an extension
 - Replaced some sensitive words as suggested by woke linter
 - Documentation for load-configuration rewritten.
+- Add styles to MatchMaker matches table
 
 ## [4.33.1]
 ### Fixed
