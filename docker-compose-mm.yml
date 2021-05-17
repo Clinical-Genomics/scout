@@ -1,0 +1,92 @@
+version: '3'
+# usage:
+# sudo docker-compose up
+services:
+  mongodb:
+    # Lightweight Docker image for MongoDB which makes it easy to create:
+    # - admin
+    # - database
+    # - database user with password
+    # when the container is first launched.
+    image: vepo/mongo
+    container_name: mongo
+    networks:
+      - custom-net
+    environment:
+      - AUTH=y
+      - ADMIN_USER=root
+      - ADMIN_PASS=admin123
+      - APPLICATION_DATABASE=pmatcher
+      - APPLICATION_USER=pmUser
+      - APPLICATION_PASS=pmPassword
+    ports:
+      - '27013:27017'
+    expose:
+      - '27017'
+
+  pmatcher-cli:
+    container_name: pmatcher-cli
+    image: clinicalgenomics/patientmatcher
+    environment:
+      MONGODB_HOST: mongodb
+      PMATCHER_CONFIG: '/home/worker/app/patientMatcher/patientMatcher/instance/config.py'
+    depends_on:
+      - mongodb
+    networks:
+      - custom-net
+    command: bash -c "pmatcher add client -id test_client -token custom_token -url custom_url && pmatcher add demodata --ensembl_genes"
+
+  pmatcher-web:
+    container_name: pmatcher-web
+    image: clinicalgenomics/patientmatcher
+    environment:
+      MONGODB_HOST: mongodb
+      PMATCHER_CONFIG: '/home/worker/app/patientMatcher/patientMatcher/instance/config.py'
+    depends_on:
+      - mongodb
+    networks:
+      - custom-net
+    ports:
+      - '9020:9020'
+    expose:
+      - '9020'
+    command: bash -c 'pmatcher run --host 0.0.0.0 -p 9020'
+
+  scout-cli:
+    build: .
+    container_name: scout-cli
+    command: bash -c "
+      scout --host mongodb setup demo
+      && scout --host mongodb --demo update user -u clark.kent@mail.com -r mme_submitter"
+    volumes:
+      - ./scout:/home/worker/app/scout
+      - ./volumes/scout/data:/home/worker/data
+    depends_on:
+      - mongodb
+    networks:
+      - custom-net
+
+  scout-web:
+    build: .
+    container_name: scout-web
+    expose:
+      - '5000'
+    ports:
+      - '5000:5000'
+    command: scout --host mongodb --demo serve --host 0.0.0.0
+    volumes:
+      - ./scout:/home/worker/app/scout
+      - ./volumes/scout/data:/home/worker/data
+    depends_on:
+      - mongodb
+      - pmatcher-web
+    networks:
+      - custom-net
+
+networks:
+  custom-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/24
