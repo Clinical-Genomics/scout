@@ -3,7 +3,7 @@ import logging
 import os.path
 from datetime import date
 
-from bson.BSON import encode
+import bson
 from flask import Response, flash, url_for
 from flask_login import current_user
 from pymongo.errors import DocumentTooLarge
@@ -377,7 +377,7 @@ def parse_variant(
             variant_obj = store.update_variant(variant_obj)
         except DocumentTooLarge:
             flash(
-                f"An error occurred while updating variant: {variant_obj['_id']} pymongo_errors.DocumentTooLarge: {len(encode(variant_obj))}",
+                f"An error occurred while updating variant: {variant_obj['_id']} pymongo_errors.DocumentTooLarge: {len(bson.BSON.encode(variant_obj))}",
                 "warning",
             )
 
