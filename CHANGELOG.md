@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added `ClinVar hits` to variants filter (rare disease track)
 - Load cancer demo case in docker-compose files (default and demo file)
 - Inclusive-language check using [woke](https://github.com/get-woke/woke) github action
+- Add a docker-compose file to be able to test matchmaker locally
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
@@ -31,6 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Commit pulse repo badge temporarily set to weekly
 - Sort ClinVar submissions objects by ascending "Last evaluated" date
 - Refactored the MatchMaker integration as an extension
+- Add styles to MatchMaker matches table
 
 ## [4.33.1]
 ### Fixed
