@@ -12,6 +12,7 @@ This includes instructions for bioinformaticians to install, manage and update a
   * [HPO terms](./hpo.md)
   * [Annotations](./annotations.md)
   * [IGV browser settings](./igv-settings.md)
+  * [Custom evaluation terms](./custom-evaluation-terms.md)
   * [Server](./server.md)
   * [Chanjo coverage integration](./chanjo_coverage_integration.md)
   * [Loqusdb integration](./loqusdb_integration.md)
