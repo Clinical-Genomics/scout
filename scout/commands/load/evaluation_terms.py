@@ -17,7 +17,7 @@ VALID_CATEGORIES = ('dismissal_term', 'manual_rank')
 @click.option("-i", "--internal-id", help="Unique id of a term")
 @click.option("-n", "--name", required=True, help="Displayed name of a term")
 @click.option("-l", "--label", help="Displayed shorthand name of a term [default: same as name]")
-@click.option("-d", "--description", help="Verbose description of a term")
+@click.option("-d", "--description", help="Verbose description of a term [default: same as name]")
 @click.option(
     "-r", "--rank", type=int, help="Rank used for determening the order entries are displayed"
 )
@@ -40,6 +40,9 @@ def evaluation_term(
 
     if not label:
         label = name
+
+    if not description:
+        description = name
 
     if not rank:
         query = adapter.evaluation_terms_collection.find({"term_category": term_category})
