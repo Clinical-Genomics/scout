@@ -16,8 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Grey background for dismissed compounds in variants list and variant page
 - Pin badge for pinned compounds in variants list and variant page
 - Support LoqusDB REST API queries
-- Speed up user events view
-- Causative view sort out of memory error
+- Add a docker-compose-matchmaker under scout/containers/development to test matchmaker locally
 - Test checking that case and case individuals keys are correctly saved when case is loaded with command line
 ### Fixed
 - Make MitoMap link work for hg38 again
@@ -41,6 +40,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored the MatchMaker integration as an extension
 - Replaced some sensitive words as suggested by woke linter
 - Documentation for load-configuration rewritten.
+- Add styles to MatchMaker matches table
 
 ## [4.33.1]
 ### Fixed
