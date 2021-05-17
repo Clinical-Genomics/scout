@@ -1219,7 +1219,7 @@ def matchmaker_match(request, match_type, institute_id, case_name):
             nodes = [node["id"] for node in matchmaker.connected_nodes]
             for node in nodes:
                 json_resp = matchmaker.match_external(patient_id, node)
-                if json_resp.get("status") != 200:
+                if json_resp.get("status_code") != 200:
                     flash(
                         f"An error occurred while matching patient against external node: '{node}' : {json_resp.get('message')}",
                         "danger",
