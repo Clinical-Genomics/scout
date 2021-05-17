@@ -3,6 +3,7 @@ import logging
 import os.path
 from datetime import date
 
+import pymongo_errors
 from flask import Response, flash, url_for
 from flask_login import current_user
 from werkzeug.datastructures import Headers, MultiDict
@@ -340,13 +341,16 @@ def parse_variant(
     compounds = variant_obj.get("compounds", [])
 
     if compounds and get_compounds:
-        LOG.error(variant_obj["_id"])
-        LOG.error(compounds)
         # Check if we need to update compound information
         if compounds_need_updating(compounds, case_dismissed_vars):
-            new_compounds = store.update_variant_compounds(variant_obj)
-            variant_obj["compounds"] = new_compounds
-            has_changed = True
+            try:
+                new_compounds = store.update_variant_compounds(variant_obj)
+                variant_obj["compounds"] = new_compounds
+                has_changed = True
+            except pymongo_errors.DocumentTooLarge:
+                flash(
+                    f"An error occurred while updating variant: {variant_obj['_id']} --> pymongo_errors.DocumentTooLarge"
+                )
 
         # sort compounds on combined rank score
         variant_obj["compounds"] = sorted(
