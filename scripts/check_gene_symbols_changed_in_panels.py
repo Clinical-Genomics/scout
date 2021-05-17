@@ -101,7 +101,7 @@ def check_panels(context, mongodb, username, password, authdb, host, port, logle
     cases_compromised = 0
     cases = 0
     panel_genes_incorrect = {}
-    for case_obj in adapter.case_collection.find():
+    for case_obj in adapter.case_collection.find().sort("updated_at", -1):
         if cases >= 100:
             break
         case_compromised = False
