@@ -4,7 +4,7 @@ A case and its individuals (or samples, in cancer track) can be uploaded into Sc
 
 The format is [Yaml][yaml].
 
-Example configuration files are found here: `<scout root dir>/scout/demo/643594.config.yaml`. [Link](../../scout/demo/643594.config.yaml).
+Example configuration files are found here: `<scout root dir>/scout/demo/643594.config.yaml` or on [Github](https://github.com/Clinical-Genomics/scout/blob/update_config_docs-210428/scout/demo/643594.config.yaml).
 
 ### Deprecation Warnings:
 `bam_file`, `bam_path` and `alignment_path` are redundant in internal usage. Future versions of Scout will only
