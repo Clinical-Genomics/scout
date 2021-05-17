@@ -33,7 +33,7 @@ def test_phenotypes_genes_research(gene_database, case_obj, hpo_term, gene_list)
     assert len(pheno_dict["HP:0001250"]["genes"].split(", ")) == len(hpo_term["genes"])
 
 
-def test_phenotypes_genes_clinical(gene_database, dummy_case, hpo_term, panel, gene_list):
+def test_phenotypes_genes_clinical(gene_database, test_case, hpo_term, panel, gene_list):
     """Test function that creates phenotype terms dictionaries with gene symbol info"""
     adapter = gene_database
     # Given a database with one phenotype term containing genes
@@ -44,16 +44,16 @@ def test_phenotypes_genes_clinical(gene_database, dummy_case, hpo_term, panel, g
     assert insert_panel
 
     # And a case with that dynamic phenotype and gene list
-    dummy_case["dynamic_panel_phenotypes"] = ["HP:0001250"]
-    dummy_case["dynamic_gene_list"] = [{"hgnc_id": gene_id} for gene_id in gene_list]
+    test_case["dynamic_panel_phenotypes"] = ["HP:0001250"]
+    test_case["dynamic_gene_list"] = [{"hgnc_id": gene_id} for gene_id in gene_list]
     # and the same panel registered for the case
-    dummy_case["panels"][0]["panel_id"] = insert_panel.inserted_id
+    test_case["panels"][0]["panel_id"] = insert_panel.inserted_id
 
     ## GIVEN a variant db with the same case
-    adapter.case_collection.insert_one(dummy_case)
+    adapter.case_collection.insert_one(test_case)
 
     # WHEN the phenotypes_genes is invoked providing test case
-    pheno_dict = phenotypes_genes(adapter, dummy_case, is_clinical=True)
+    pheno_dict = phenotypes_genes(adapter, test_case, is_clinical=True)
 
     # THEN it should return a dictionary
     # Containing the expected term
@@ -163,10 +163,10 @@ def test_cancer_case_report_content(adapter, institute_obj, cancer_case_obj, can
     test_case_report_content(adapter, institute_obj, cancer_case_obj, cancer_variant_obj)
 
 
-def test_case_controller_rank_model_link(adapter, institute_obj, dummy_case):
+def test_case_controller_rank_model_link(adapter, institute_obj, test_case):
     # GIVEN an adapter with a case
-    dummy_case["rank_model_version"] = "1.3"
-    adapter.case_collection.insert_one(dummy_case)
+    test_case["rank_model_version"] = "1.3"
+    adapter.case_collection.insert_one(test_case)
     adapter.institute_collection.insert_one(institute_obj)
     fetched_case = adapter.case_collection.find_one()
     app = Flask(__name__)
@@ -179,9 +179,9 @@ def test_case_controller_rank_model_link(adapter, institute_obj, dummy_case):
     assert "rank_model_link" in fetched_case
 
 
-def test_case_controller(adapter, institute_obj, dummy_case):
+def test_case_controller(adapter, institute_obj, test_case):
     # GIVEN an adapter with a case
-    adapter.case_collection.insert_one(dummy_case)
+    adapter.case_collection.insert_one(test_case)
     adapter.institute_collection.insert_one(institute_obj)
     fetched_case = adapter.case_collection.find_one()
     app = Flask(__name__)
@@ -192,9 +192,9 @@ def test_case_controller(adapter, institute_obj, dummy_case):
     assert "rank_model_link" not in fetched_case
 
 
-def test_case_controller_no_panels(adapter, institute_obj, dummy_case):
+def test_case_controller_no_panels(adapter, institute_obj, test_case):
     # GIVEN an adapter with a case without gene panels
-    adapter.case_collection.insert_one(dummy_case)
+    adapter.case_collection.insert_one(test_case)
     adapter.institute_collection.insert_one(institute_obj)
     fetched_case = adapter.case_collection.find_one()
     assert "panel_names" not in fetched_case
@@ -206,9 +206,9 @@ def test_case_controller_no_panels(adapter, institute_obj, dummy_case):
     assert fetched_case["panel_names"] == []
 
 
-def test_case_controller_with_panel(app, institute_obj, panel, dummy_case):
+def test_case_controller_with_panel(app, institute_obj, panel, test_case):
     # GIVEN an adapter with a case with a gene panel
-    dummy_case["panels"] = [
+    test_case["panels"] = [
         {
             "panel_name": panel["panel_name"],
             "version": panel["version"],
@@ -216,7 +216,7 @@ def test_case_controller_with_panel(app, institute_obj, panel, dummy_case):
             "is_default": True,
         }
     ]
-    store.case_collection.insert_one(dummy_case)
+    store.case_collection.insert_one(test_case)
 
     # GIVEN an adapter with a gene panel
     store.panel_collection.insert_one(panel)
@@ -229,9 +229,9 @@ def test_case_controller_with_panel(app, institute_obj, panel, dummy_case):
     assert len(fetched_case["panel_names"]) == 1
 
 
-def test_case_controller_panel_wrong_version(adapter, app, institute_obj, panel, dummy_case):
+def test_case_controller_panel_wrong_version(adapter, app, institute_obj, panel, test_case):
     # GIVEN an adapter with a case with a gene panel with wrong version
-    dummy_case["panels"] = [
+    test_case["panels"] = [
         {
             "panel_name": panel["panel_name"],
             "version": panel["version"] + 1,
@@ -239,7 +239,7 @@ def test_case_controller_panel_wrong_version(adapter, app, institute_obj, panel,
             "is_default": True,
         }
     ]
-    adapter.case_collection.insert_one(dummy_case)
+    adapter.case_collection.insert_one(test_case)
     adapter.institute_collection.insert_one(institute_obj)
     # GIVEN an adapter with a gene panel
     adapter.panel_collection.insert_one(panel)
@@ -256,9 +256,9 @@ def test_case_controller_panel_wrong_version(adapter, app, institute_obj, panel,
     assert str(panel["version"]) in fetched_case["panel_names"][0]
 
 
-def test_case_controller_non_existing_panel(adapter, app, institute_obj, dummy_case, panel):
+def test_case_controller_non_existing_panel(adapter, app, institute_obj, test_case, panel):
     # GIVEN an adapter with a case with a gene panel but no panel objects
-    dummy_case["panels"] = [
+    test_case["panels"] = [
         {
             "panel_name": panel["panel_name"],
             "version": panel["version"] + 1,
@@ -266,7 +266,7 @@ def test_case_controller_non_existing_panel(adapter, app, institute_obj, dummy_c
             "is_default": True,
         }
     ]
-    adapter.case_collection.insert_one(dummy_case)
+    adapter.case_collection.insert_one(test_case)
     fetched_case = adapter.case_collection.find_one()
 
     # GIVEN an initialized app

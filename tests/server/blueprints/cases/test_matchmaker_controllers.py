@@ -2,11 +2,15 @@ from flask import request, url_for
 from flask_login import current_user
 
 import scout.server.blueprints.cases.controllers as controllers
+from scout.server.blueprints.cases.controllers import redirect
 from scout.server.extensions import matchmaker, store
 
 
-def test_matchmaker_check_requirements_wrong_settings(app, user_obj):
+def test_matchmaker_check_requirements_wrong_settings(app, user_obj, mocker, mock_redirect):
     """Test that the matchmaker_check_requirements redirects if app settings requirements are not met"""
+
+    mocker.patch("scout.server.blueprints.cases.controllers.redirect", return_value=mock_redirect)
+
     # GIVEN an app that is not properly configured and it's missing either
     # matchmaker.host, matchmaker.accept, matchmaker.token
     with app.test_client() as client:
@@ -14,13 +18,17 @@ def test_matchmaker_check_requirements_wrong_settings(app, user_obj):
 
         # GIVEN a user that is logged in
         client.get(url_for("auto_login"))
+
         # THEN the matchmaker_check_requirements function should redirect to the previous page
         resp = controllers.matchmaker_check_requirements(request)
         assert resp.status_code == 302
 
 
-def test_matchmaker_check_requirements_unauthorized_user(app, user_obj):
+def test_matchmaker_check_requirements_unauthorized_user(app, user_obj, mocker, mock_redirect):
     """Test redirect when a user is not authorized to access MatchMaker functionality"""
+
+    mocker.patch("scout.server.blueprints.cases.controllers.redirect", return_value=mock_redirect)
+
     # GIVEN an app containing MatchMaker connection params
     with app.test_client() as client:
         # GIVEN a user that is logged in but doesn't have access to MatchMaker
@@ -30,8 +38,10 @@ def test_matchmaker_check_requirements_unauthorized_user(app, user_obj):
         assert resp.status_code == 302
 
 
-def test_matchmaker_add_no_genes_no_features(app, user_obj, case_obj):
+def test_matchmaker_add_no_genes_no_features(app, user_obj, case_obj, mocker, mock_redirect):
     """Testing adding a case to matchmaker when the case has no set phenotype or candidate gene/variant"""
+
+    mocker.patch("scout.server.blueprints.cases.controllers.redirect", return_value=mock_redirect)
 
     # GIVEN a case with no phenotype terms:
     store.case_collection.find_one_and_update(

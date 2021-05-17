@@ -70,7 +70,6 @@ SV_RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-file
 SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
 
 
-
 # MatchMaker
 MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
 MME_URL = "http://pmatcher-web:9020"

@@ -42,7 +42,7 @@ def panel():
 
 
 @pytest.fixture
-def dummy_case(panel):
+def test_case(panel):
     """Return a simple case"""
     case_info = {
         "case_id": "1",
