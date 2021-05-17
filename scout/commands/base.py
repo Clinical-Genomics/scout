@@ -39,9 +39,8 @@ def loglevel(ctx):
 
 
 @click.pass_context
-def get_app(ctx):
+def get_app(ctx=None):
     """Create an app with the correct config or with default app params"""
-
     # store provided params into a options variable
     options = ctx.find_root()
     cli_config = {}

@@ -12,17 +12,20 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added `ClinVar hits` to variants filter (rare disease track)
 - Load cancer demo case in docker-compose files (default and demo file)
 - Inclusive-language check using [woke](https://github.com/get-woke/woke) github action
+- Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
+- Grey background for dismissed compounds in variants list and variant page
+- Pin badge for pinned compounds in variants list and variant page
+- Support LoqusDB REST API queries
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
 - Redirect to last visited variantS page when dismissing variants from variants list
 - Improved matching of SVs Loqus occurrences in other cases
 - Remove padding from the list inside (Matching causatives from other cases) panel
-### Added
-- Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
-- Grey background for dismissed compounds in variants list and variant page
-- Pin badge for pinned compounds in variants list and variant page
-- Support LoqusDB REST API queries
+- Pass None to get_app function in CLI base since passing script_info to app factory functions was deprecated in Flask 2.0
+- Fixed failing tests due to Flask update to version 2.0
+- Speed up user events view
+- Causative view sort out of memory error
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - Introduce deprecation warning for Loqus configs that are not dictionaries
@@ -31,6 +34,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Commit pulse repo badge temporarily set to weekly
 - Sort ClinVar submissions objects by ascending "Last evaluated" date
 - Refactored the MatchMaker integration as an extension
+- Replaced some sensitive words as suggested by woke linter
 
 ## [4.33.1]
 ### Fixed

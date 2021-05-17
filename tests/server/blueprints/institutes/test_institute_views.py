@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 
+import pytest
 from flask import url_for
 from flask_login import current_user
 
@@ -38,8 +39,10 @@ def test_advanced_phenotypes_POST(app, user_obj, institute_obj):
         assert form_data["model_name"] in str(resp.data)
 
 
-def test_remove_phenomodel(app, user_obj, institute_obj):
+def test_remove_phenomodel(app, user_obj, institute_obj, mocker, mock_redirect):
     """Testing the endpoint to remove an existing phenotype model for an institute"""
+
+    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
 
     # GIVEN an institute with a phenotype model
     store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
@@ -86,8 +89,10 @@ def test_phenomodel_GET(app, user_obj, institute_obj):
         assert "Test model" in str(resp.data)
 
 
-def test_phenomodel_lock(app, user_obj, institute_obj):
+def test_phenomodel_lock(app, user_obj, institute_obj, mocker, mock_redirect):
     """Test the endpoint to lock a phenomodel and make it editable only by admins"""
+
+    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
 
     # GIVEN an institute with a phenotype model
     store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
@@ -114,8 +119,10 @@ def test_phenomodel_lock(app, user_obj, institute_obj):
         assert locked_model["admins"] == [current_user.email] + admins
 
 
-def test_phenomodel_unlock(app, user_obj, institute_obj):
+def test_phenomodel_unlock(app, user_obj, institute_obj, mocker, mock_redirect):
     """Test the endpoint to unlock a phenomodel and make it editable only by all users"""
+
+    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
 
     # GIVEN an institute with phenotype model
     store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
@@ -724,8 +731,10 @@ def test_gene_variants_filter(app, institute_obj, case_obj):
         assert "POT1" in str(resp.data)
 
 
-def test_gene_variants_no_valid_gene(app, institute_obj, case_obj):
+def test_gene_variants_no_valid_gene(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test the gene_variant endpoint with a gene symbol not in database"""
+
+    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
