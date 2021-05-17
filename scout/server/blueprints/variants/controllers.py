@@ -3,8 +3,10 @@ import logging
 import os.path
 from datetime import date
 
+import bson
 from flask import Response, flash, url_for
 from flask_login import current_user
+from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, MultiDict
 from xlsxwriter import Workbook
 
@@ -386,7 +388,13 @@ def parse_variant(
     # We update the variant if some information was missing from loading
     # Or if symbold in reference genes have changed
     if update and has_changed:
-        variant_obj = store.update_variant(variant_obj)
+        try:
+            variant_obj = store.update_variant(variant_obj)
+        except DocumentTooLarge:
+            flash(
+                f"An error occurred while updating info for variant: {variant_obj['_id']} (pymongo_errors.DocumentTooLarge: {len(bson.BSON.encode(variant_obj))})",
+                "warning",
+            )
 
     variant_obj["comments"] = store.events(
         institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True
