@@ -37,6 +37,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Sort ClinVar submissions objects by ascending "Last evaluated" date
 - Refactored the MatchMaker integration as an extension
 - Replaced some sensitive words as suggested by woke linter
+- Documentation for load-configuration rewritten.
 
 ## [4.33.1]
 ### Fixed
