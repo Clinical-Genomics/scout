@@ -26,6 +26,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed failing tests due to Flask update to version 2.0
 - Speed up user events view
 - Causative view sort out of memory error
+- Use hgnc_id for gene filter query
+- Typo in case controllers displaying an error every time a patient is matched against external MatchMaker nodes
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - Introduce deprecation warning for Loqus configs that are not dictionaries
@@ -35,6 +37,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Sort ClinVar submissions objects by ascending "Last evaluated" date
 - Refactored the MatchMaker integration as an extension
 - Replaced some sensitive words as suggested by woke linter
+- Documentation for load-configuration rewritten.
 - Configuration Parsing now uses Pydantic for improved typechecking and config handling
 
 ## [4.33.1]
