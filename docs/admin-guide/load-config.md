@@ -1,125 +1,93 @@
-# The load config
+# The Load Config File
 
-Scout have the possibility to store loads of information about a case and the samples that are included. It is cumbersome to specify to many parameters on the command line so there is an option to give this information in a yaml formated config file.
-Here we can give scout some meta information about the analysis, how it was performed, information about family, samples etc.
+A case and its individuals (or samples, in cancer track) can be uploaded into Scout using specially formatted .yaml config files. Config files contain information about the analysis, panels used, path to VCF and eventual alignment files and more. The following template illustrates the basic structure of the .yaml config file:
 
-The basic structure of a load config looks like:
+The format is [Yaml][yaml].
+
+Example configuration files are found here: `<scout root dir>/scout/demo/643594.config.yaml` or on [Github](https://github.com/Clinical-Genomics/scout/blob/update_config_docs-210428/scout/demo/643594.config.yaml).
+
+### Deprecation Warnings:
+`bam_file`, `bam_path` and `alignment_path` are redundant in internal usage. Future versions of Scout will only
+support `alignment_path`.
 
 
-```yaml
-owner: str(mandatory)
+### Configuration Parameters
+Below are available configuration parameters for a Scout case. Names marked with asterix (*) are mandatory. 
 
-family: str(mandatory)
-samples:
-  - analysis_type: str(optional), [wgs,wes,panel,external]
-    sample_id: str(mandatory)
-    capture_kit: str(optional)
-    father: str(mandatory)
-    mother: str(mandatory)
-    sample_name: str(mandatory)
-    phenotype: str(mandatory), [affected, unaffected, unknown]
-    sex: str(mandatory), [male, female, unknown]
-    expected_coverage: int(mandatory)
-    vcf2cytosure: str(optional) # path to CGH file
-    bam_path: str(optional) # path to bam file
-    mt_bam: str(optional) # path to downsampled mitochondrial bam/cram alignment file
-    rhocall_bed: str(optional) # path to bed file
-    rhocall_wig: str(optional) # path to wig file
-    upd_regions_bed: str(optional) # path to bed file
-    upd_sites_bed: str(optional) # path to bed file
-    tiddit_coverage_wig: str(optional) # path to wig file
+- **analysis_date(*)** _Datetime_ Time for analysis in datetime format. Defaults to time of uploading. Example `2016-10-12 14:00:46`.
+- **cnv_report** _String_ Path to the CNV report file.
+- **coverage_qc_report** _String_ Path to static coverage and QC report file.
+- **cohorts** _List of strings_ Meta organising study participants or cases.
+- **collaborators** _List of strings_ List of collaborators.
+- **coverage_qc_report** _String_ Path to HTML file with coverage and QC report.
+- **default_gene_panels** _List of strings_ List of default gene panels. Variants from the genes in the gene panels specified will be shown when opening the case in scout.
+- **delivery_report** _String_: Path to HTML delivery report.
+- **family(*)**  _String_ Unique ID of the case.
+- **gene_fusion_report** _String_ Path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from default clinical data.
+- **gene_fusion_report_research** _String_ Path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from research data.
+- **gene_panels** _List of strings_ List of gene panels. Specifies what panels the case has been run with.
+- **human_genome_build** _String_ Version of genome version used.
+- **lims_id** _String_ Case ID in Lims
+- **madeline** _String_ Path to a madeline pedigree file in XML format.
+- **multiqc** _String_ Path to a [multiqc][multiqc] report with arbitrary information.
+- **owner(*)**  _String_ Institute who owns current case. Must refer to existing institute.
+- **peddy_check** _String_ Path to a [peddy][peddy] ped check file.
+- **peddy_ped** _String_ Path to a [peddy][peddy] ped file with an analysis of the pedigree based on variant information.
+- **peddy_sex** _String_ Path to a [peddy][peddy] ped sex check file.
+- **phenotype_terms** _List of strings_ List of phenotype terms.
+- **rank model version** _String_ Which rank model that was used when scoring the variants.
+- **rank_score_threshold** _Float_ Only include variants with a rank score above this threshold.
+- **samples** _List_ List of samples included in the case:
+	- **alignment_path** _String_ Path to BAM/CRAM file to view alignments.
+	- **analysis_type** _String_ Specifies the analysis type for the sample. Options: {wgs, wes, panel}.
+	- **bam_file** _String_ Path to BAM/CRAM file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*.
+	- **bam_path** _String_ Path to BAM/CRAM file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*.
+	- **capture_kit** _String_ Exome specifies the capture kit.
+	- **chromograph_images** _List_
+		- **autozygous** _String_ Path to file.
+		- **upd_regions** _String_ Path to file.
+		- **upd_sites** _String_ Path to file.
+	- **confirmed_parent** _Bool_ True if parent confirmed.
+	- **expected_coverage** _Int_ The level of expected coverage.
+	- **father** _String/Int_ Sample ID for father or 0.
+	- **is_sma** _Bool/None_ if SMA status determined - None if not done.
+	- **is_sma_carrier**  _Bool/None_  # True / False if SMA carriership determined - None if not done.
+	- **mother** _String/Int_ Sample ID for mother or 0.
+	- **msi** _Int_ Microsatellite instability [0-60].
+        - **mt_bam** _String_ Path to the reduced mitochondrial BAM/CRAM alignment file.
+	- **phenotype(*)** _String_ Specifies the affection status {affected, unaffected, unknown}.
+	- **rhocall_bed** _String_ Path to BED file to view alignments [Reference][rhocall].
+	- **rhocall_wig** _String_ Path to WIG file to view alignments [Reference][rhocall].
+	- **samlple_id(*)** _String_ Identifyer for a sample.
+	- **sample_name**: _String_ Name of sample.
+	- **sex (*)**: _String_ One of: {male, female, unknown}.
+	- **smn1_cn** _Int_ Copynumber.
+	- **smn2_cn** _Int_ Copynumber.
+	- **smn2delta78_cn** _Int_ Copynumber.
+	- **sex(*)** _String_ Sex of the sample in human readable format.
+	- **tiddit_coverage_wig** _String_ Path to WIG file to view alignments [Reference][tiddit].
+	- **tissue_type** _String_ Sample tissue origin i.e. blood, muscle.
+	- **tmb** _Int_ Tumor mutational burden [0, 1000] (tumor case only).
+	- **tumor_purity** _Float_ Purity of tumor sample [0.1, 1.0] (tumor case only).
+	- **tumor_type** _String_ Type of tumor (tumor case only).
+	- **upd_regions_bed** _String_ Path to BED file to view alignments [Reference][upd].
+	- **upd_sites_bed** _String_ Path to BED file to view alignments [Reference][upd].
+	- **vcf2cytosure** _String_ Path to CGH file to allow download per individual. Such SV files can be visualized using standard arrayCGH analysis tools. See [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure/blob/master/README.md).
+- **smn_tsv** _String_ Path to an SMN TSV file.
+- **synopsis** _String_ Synopsis of case.
+- **sv_rank_model_version** _String_ Rank model that was used when scoring the variants.
+- **track** _String_ Type of track: {"rare", "cancer"}. Default: "rare".
+- **sv_rank_model_version** _String_ SV rank model version used when scoring SV variants.
+- **vcf_cancer** _String_ Path to canver VCF file (tumor case only).
+- **vcf_cancer_research** _String_ Path to VCF file with all variants (tumor case only).
+- **vcf_snv** _String_ Path to SNV VCF file  containing only clinical variants (a subset of all variants).
+- **vcf_snv_research** _String_ Path to VCF file with all variants.
+- **vcf_sv** _String_ Path to SV VCF file containing only clinical variants (a subset of all variants).
+- **vcf_sv_research** _String_ Path to VCF file with all SV variants.
 
-    tissue_type: str(optional)
-    tumor_type: str(optional)
-    tmb: str(optional) # Tumor mutational burder [0,1000]
-    msi: str(optional) # Microsatellite instability [0,60]
-    tumor_purity: float # [0.1,1]
 
-vcf_snv: str(optional)
-vcf_sv: str(optional)
-vcf_cancer: str(optional)
-vcf_cancer_sv: str(optional)
-vcf_cancer_sv_research: str(optional)
-vcf_snv_research: str(optional)
-vcf_sv_research: str(optional)
-vcf_cancer_research: str(optional)
 
-madeline: str(optional)
-
-peddy_ped: str(optional)
-peddy_check: str(optional)
-peddy_sex: str(optional)
-
-multiqc: str(optional)
-cnv_report: str(optional)
-coverage_qc_report: str(optional)
-gene_fusion_report: str(optional)
-gene_fusion_report_research: str(optional)
-
-default_gene_panels: list[str](optional)
-gene_panels: list[str](optional)
-
-# ATM rare or cancer
-track: list[str][optional]
-
-# meta data
-rank_model_version: str(optional)
-sv_rank_model_version: str(optional)
-rank_score_threshold: float(optional)
-analysis_date: datetime(optional)
-human_genome_build: str(optional)
-```
-
-Let's go through each field:
-
-- **owner** each case has to have a owner, this refers to an existing institute in the scout instance
-- **family** each case has to have a family id
-- **samples** list of samples included in the case
-	- *analysis_type* specifies the analysis type for the sample
-	- *samlple_id* identifyer for a sample
-	- *capture_kit* for exome specifies the capture kit
-	- *father* sample id for father or 0
-	- *mother* sample id for mother or 0
-	- *phenotype* specifies the affection status of the sample in human readable format
-	- *sex* specifies the sex of the sample in human readable format
-	- *expected_coverage* the level of expected coverage
-	- *bam_file* Path to bam file to view alignments
-	- *rhocall_bed* Path to bed file to view alignments (Reference)[https://github.com/dnil/rhocall]
-	- *rhocall_wig* Path to wig file to view alignments (Reference)[https://github.com/dnil/rhocall]
-	- *upd_regions_bed* Path to bed file to view alignments (Reference)[https://github.com/bjhall/upd]
-	- *upd_sites_bed* Path to bed file to view alignments (Reference)[https://github.com/bjhall/upd]
-	- *tiddit_coverage_wig* Path to wig file to view alignments (Reference)[https://github.com/SciLifeLab/TIDDIT]
-    - *vcf2cytosure* Path to CGH file to allow download per individual
-    - *tumor_type* Type of tumor
-    - *tissue_type* What tissue the sample originates from
-    - *tmb* Tumor mutational burden
-    - *msi* Microsatellite instability
-    - *tumor_purity* Purity of tumor sample
-
-- **vcf_snv** path to snv vcf file
-- **vcf_sv**
-- **vcf_snv_research** path to vcf file with all variants
-- **vcf_sv_research**
-- **vcf_cancer**
-- **vcf_cancer_research**
-- **madeline** path to a madeline pedigree file in xml format
-- **peddy_ped** path to a [peddy][peddy] ped file with an analysis of the pedigree based on variant information
-- **peddy_check** path to a [peddy][peddy] ped check file
-- **peddy_sex** path to a [peddy][peddy] ped sex check file
-- **multiqc** path to a [multiqc][multiqc] report with arbitrary information
-- **cnv_report** path to the CNV report file
-- **coverage_qc_report** path to static coverage and qc report file
-- **gene_fusion_report** path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from default clinical data.
-- **gene_fusion_report_research** path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from research data.
-- **default_gene_panels** list of default gene panels. Variants from the genes in the gene panels specified will be shown when opening the case in scout
-- **gene_panels** list of gene panels. This will specify what panels the case has been run with
-- **rank model version** which rank model that was used when scoring the variants
-- **SV rank model version** the SV rank model version used when scoring SV variants
-- **rank_score_treshold** only include variants with a rank score above this treshold
-- **analysis_date** time for analysis in datetime format. Defaults to time of uploading
-- **human_genome_build** what genome version was used.
-
-### Minimal config
+### Example Minimal config
 
 Here is an example of a minimal load config:
 
@@ -143,11 +111,11 @@ samples:
 vcf_snv: scout/demo/643594.clinical.vcf.gz
 ```
 
-### CGH (vcf2cytosure) for download
-By giving a path to each individual vcf2cytosure-file these are made available
-for download on the case page. Such SV files can be visualized using standard arrayCGH
-analysis tools. See [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure/blob/master/README.md).
 
-[peddy]: https://github.com/brentp/peddy
-[multiqc]: https://github.com/ewels/multiqc
 [arriba]: https://arriba.readthedocs.io/en/latest/
+[multiqc]: https://github.com/ewels/multiqc
+[peddy]: https://github.com/brentp/peddy
+[rhocall]: https://github.com/dnil/rhocall
+[tiddit]: https://github.com/SciLifeLab/TIDDIT
+[upd]: https://github.com/bjhall/upd
+[yaml]: https://yaml.org
