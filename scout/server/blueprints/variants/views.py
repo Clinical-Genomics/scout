@@ -356,10 +356,12 @@ def cancer_variants(institute_id, case_name):
     controllers.populate_chrom_choices(form, case_obj)
 
     form.gene_panels.choices = controllers.gene_panel_choices(institute_obj, case_obj)
+    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
+    cytobands = store.cytoband_by_chrom(genome_build)
 
-    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
-
-    variants_query = store.variants(case_obj["_id"], category="cancer", query=form.data)
+    variants_query = store.variants(
+        case_obj["_id"], category="cancer", query=form.data, build=genome_build
+    )
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     if request.form.get("export"):
