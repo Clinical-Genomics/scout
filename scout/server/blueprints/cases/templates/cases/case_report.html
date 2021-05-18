@@ -646,7 +646,11 @@
             <td>{{variant.rank_score}}</td>
             <td>
             {% if variant.manual_rank %}
-              <span class="badge badge-pill badge-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
+              {% for term in manual_rank_options %}
+                {% if variant.manual_rank == term.internal_id or variant.manual_rank == term.rank %}
+                  <span class="badge badge-pill badge-secondary" title="Manual rank">{{ term['label'] }}</span>
+                {% endif %}
+              {% endfor %}
             {% endif %}
             {% if variant.cancer_tier %}
               <span class="badge badge-pill badge-secondary" title="Tier">{{ cancer_tier_options[variant.cancer_tier]['label'] }}</span>
