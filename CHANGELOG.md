@@ -17,6 +17,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Pin badge for pinned compounds in variants list and variant page
 - Support LoqusDB REST API queries
 - Add a docker-compose-matchmaker under scout/containers/development to test matchmaker locally
+- Script to investigate consequences of symbol search bug
+- Added GATK to list of SV and cancer SV callers
 - Test checking that case and case individuals keys are correctly saved when case is loaded with command line
 ### Fixed
 - Make MitoMap link work for hg38 again
@@ -31,6 +33,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Use hgnc_id for gene filter query
 - Typo in case controllers displaying an error every time a patient is matched against external MatchMaker nodes
 - Do not crash while attemping an update for variant documents that are too big (> 16 MB)
+- Old STR causatives (and other variants) may not have HGNC symbols - fix sort lambda
+- Check if gene_obj has primary_transcript before trying to access it
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - Introduce deprecation warning for Loqus configs that are not dictionaries
@@ -42,6 +46,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Replaced some sensitive words as suggested by woke linter
 - Documentation for load-configuration rewritten.
 - Add styles to MatchMaker matches table
+- More detailed info on the data shared in MatchMaker submission form
 
 ## [4.33.1]
 ### Fixed
