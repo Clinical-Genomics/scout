@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support LoqusDB REST API queries
 - Add a docker-compose-matchmaker under scout/containers/development to test matchmaker locally
 - Script to investigate consequences of symbol search bug
+- Added GATK to list of SV and cancer SV callers
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
