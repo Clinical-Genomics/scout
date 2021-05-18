@@ -11,7 +11,7 @@
         <select name="manual_rank" class="form-control">
           <option value="-1">Select a tag...</option>
           {% for data in manual_rank_options %}
-            <option {% if data.rank == variant.manual_rank %} selected {% endif %} value="{{ data.rank }}">
+            <option {% if data.internal_id == variant.manual_rank or data.rank == variant.manual_rank %} selected {% endif %} value="{{ data.internal_id }}">
               {{ data.name }}
             </option>
           {% endfor %}
@@ -52,7 +52,7 @@
       <div class="col-8">
         <select multiple="multiple" name="dismiss_variant" id="dismiss_variant" class="selectpicker" data-width="100%">
           {% for data in dismiss_variant_options %}
-            <option {% if variant.dismiss_variant and data.rank~"" in variant.dismiss_variant %} selected {% endif %} value="{{ data.rank }}">
+            <option {% if variant.dismiss_variant and (data.internal_id in variant.dismiss_variant or data.rank~"" in variant.dismiss_variant) %} selected {% endif %} value="{{ data.internal_id }}">
               {{ data.label }}
             </option>
           {% endfor %}
