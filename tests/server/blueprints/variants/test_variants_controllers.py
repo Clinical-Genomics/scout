@@ -392,7 +392,7 @@ def test_update_form_hgnc_symbols_valid_gene_id(real_panel_database, case_obj):
     test_panel = adapter.panel_collection.find_one()
     case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
 
-    # GIVEN a user trying to filter clinical variants using a valid gene symbol
+    # GIVEN a user trying to filter clinical variants using a valid gene ID
     form = FiltersForm
     form.hgnc_symbols.data = ["17284"]
     form.data = {"gene_panels": []}
