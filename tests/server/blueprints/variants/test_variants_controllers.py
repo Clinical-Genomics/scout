@@ -374,13 +374,12 @@ def test_update_form_hgnc_symbols_valid_gene_symbol(app, case_obj):
     test_panel = store.panel_collection.find_one()
     case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
 
-    with app.test_client() as client:
-        # GIVEN a variants filter form
-        class TestForm(FlaskForm):
-            hgnc_symbols = StringField()
-            data = StringField()
+    # GIVEN a variants filter form
+    class TestForm(FlaskForm):
+        hgnc_symbols = StringField()
+        data = StringField()
 
-        form = TestForm()
+    form = TestForm()
 
     # GIVEN a user trying to filter clinical variants using a valid gene symbol
     form.hgnc_symbols.data = ["POT1"]
@@ -398,13 +397,12 @@ def test_update_form_hgnc_symbols_valid_gene_id(app, case_obj):
     test_panel = store.panel_collection.find_one()
     case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
 
-    with app.test_client() as client:
-        # GIVEN a variants filter form
-        class TestForm(FlaskForm):
-            hgnc_symbols = StringField()
-            data = StringField()
+    # GIVEN a variants filter form
+    class TestForm(FlaskForm):
+        hgnc_symbols = StringField()
+        data = StringField()
 
-        form = TestForm()
+    form = TestForm()
 
     # GIVEN a user trying to filter clinical variants using a valid gene ID
     form.hgnc_symbols.data = ["17284"]
