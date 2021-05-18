@@ -12,12 +12,10 @@ from scout.server.blueprints.variants.controllers import (
     match_gene_txs_variant_txs,
     populate_chrom_choices,
     sv_variants,
-    update_form_hgnc_symbols,
     variant_export_lines,
     variants,
     variants_export_header,
 )
-from scout.server.blueprints.variants.forms import FiltersForm
 
 LOG = logging.getLogger(__name__)
 
@@ -365,39 +363,3 @@ def test_variant_csv_export(real_variant_database, case_obj):
     for export_line in export_lines:
         export_cols = export_line.split(",")
         assert len(export_cols) == len(export_header)
-
-
-def test_update_form_hgnc_symbols_valid_gene_symbol(real_panel_database, case_obj):
-    """Test controller that populates HGNC symbols form filter in variants page. Provide valid gene symbol"""
-
-    adapter = real_panel_database
-    # GIVEN a case analysed with a gene panel
-    test_panel = adapter.panel_collection.find_one()
-    case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
-
-    # GIVEN a user trying to filter clinical variants using a valid gene symbol
-    form = FiltersForm
-    form.hgnc_symbols.data = ["POT1"]
-    form.data = {"gene_panels": []}
-    updated_form = update_form_hgnc_symbols(adapter, case_obj, form)
-
-    # Form should be updated correctly
-    assert form.hgnc_symbols.data == ["POT1"]
-
-
-def test_update_form_hgnc_symbols_valid_gene_id(real_panel_database, case_obj):
-    """Test controller that populates HGNC symbols form filter in variants page. Provide HGNC ID"""
-
-    adapter = real_panel_database
-    # GIVEN a case analysed with a gene panel
-    test_panel = adapter.panel_collection.find_one()
-    case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
-
-    # GIVEN a user trying to filter clinical variants using a valid gene ID
-    form = FiltersForm
-    form.hgnc_symbols.data = ["17284"]
-    form.data = {"gene_panels": []}
-    updated_form = update_form_hgnc_symbols(adapter, case_obj, form)
-
-    # Form should be updated correctly
-    assert form.hgnc_symbols.data == ["POT1"]
