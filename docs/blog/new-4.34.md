@@ -7,7 +7,7 @@ This is a relatively large release, forced out by the need to fix a **problem af
 ### Gene panel HGNC symbol search bug
 The 4.21 update allowed freer use of gene panels as lists, as well as the application of the latest version of the panel to each case.
 HGNC symbols were previously handled by a separate mechanism, and subject to some validation checks.
-Regrettably, HGNC symbols were taken as correct from the panels. This lead to a situation where if the gene symbol had been updated in HGNC
+Regrettably, HGNC symbols were taken as correct from the panels. This led to a situation where if the gene symbol had been updated in HGNC
 but not on the latest panel version, variants in that gene could be missed on panel search. This fixed in this release, and we now always use the HGNC id
 behind the scenes for panel searches as well as manually entered HGNC symbol searches.
 
@@ -64,6 +64,5 @@ Scout version 4.34 contains additionally a number of new features. This is the c
 - Replaced some sensitive words as suggested by woke linter
 - Documentation for load-configuration rewritten.
 - Add styles to MatchMaker matches table
-
 
 
