@@ -123,8 +123,12 @@ CALLERS = {
         {"id": "gatk", "name": "GATK"},
         {"id": "freebayes", "name": "Freebayes"},
     ],
-    "cancer_sv": [{"id": "manta", "name": "Manta"}],
+    "cancer_sv": [
+        {"id": "manta", "name": "Manta"},
+        {"id": "gatk", "name": "GATK"},
+    ],
     "sv": [
+        {"id": "gatk", "name": "GATK"},
         {"id": "cnvnator", "name": "CNVnator"},
         {"id": "delly", "name": "Delly"},
         {"id": "tiddit", "name": "TIDDIT"},
