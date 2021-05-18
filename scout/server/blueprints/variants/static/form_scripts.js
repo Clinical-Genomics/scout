@@ -2,7 +2,11 @@
 function populateCytobands(cytobands){
   var chromPosPattern = new RegExp("^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)$");
   var chrom = document.forms["filters_form"].elements["chrom"].value;
-  var chromPos = document.forms["filters_form"].elements["chrom_pos"].value;
+  var chromPos = "";
+  if (typeof document.forms["filters_form"].elements["chrom_pos"] != "undefined") {
+  	chromPos=document.forms["filters_form"].elements["chrom_pos"].value;
+	}
+
   var chromosome = "";
   console.log("Populate cytobands")
   var matchedChrName = chromPos.match(chromPosPattern)
