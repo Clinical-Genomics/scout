@@ -337,3 +337,35 @@ def test_apply_pending_edit_gene(adapter, testpanel_obj):
         "model_1",
         "model_2",
     ]
+
+
+def test_clinical_symbols(case_obj, real_panel_database):
+    """test function that returns a set of clinical genes symbols from test case panels"""
+
+    # GIVEN an adapter with genes and a gene panel
+    adapter = real_panel_database
+
+    test_panel = adapter.panel_collection.find_one()
+
+    # GIVEN a case analysed with that panel
+    case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
+
+    # THEN the clinical_symbols function should return a valid set of clinical genes symbols for the case panel
+    clinical_symbols = adapter.clinical_symbols(case_obj)
+    assert len(clinical_symbols) > 0
+
+
+def test_clinical_hgnc_ids(case_obj, real_panel_database):
+    """test function that returns a set of clinical genes HGNC IDs from test case panels"""
+
+    # GIVEN an adapter with genes and a gene panel
+    adapter = real_panel_database
+
+    test_panel = adapter.panel_collection.find_one()
+
+    # GIVEN a case analysed with that panel
+    case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
+
+    # THEN the clinical_hgnc_ids function should return a valid set of hgnc IDs for the case panel
+    clinical_hgnc_ids = adapter.clinical_symbols(case_obj)
+    assert len(clinical_hgnc_ids) > 0
