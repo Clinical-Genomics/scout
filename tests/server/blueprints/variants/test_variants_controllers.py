@@ -381,6 +381,7 @@ def test_update_form_hgnc_symbols_valid_gene_symbol(real_panel_database, case_ob
     form.data = {"gene_panels": []}
     updated_form = update_form_hgnc_symbols(adapter, case_obj, form)
 
+    # Form should be updated correctly
     assert form.hgnc_symbols.data == ["POT1"]
 
 
@@ -398,4 +399,5 @@ def test_update_form_hgnc_symbols_valid_gene_id(real_panel_database, case_obj):
     form.data = {"gene_panels": []}
     updated_form = update_form_hgnc_symbols(adapter, case_obj, form)
 
+    # Form should be updated correctly
     assert form.hgnc_symbols.data == ["POT1"]
