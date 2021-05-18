@@ -69,7 +69,7 @@
                   <td class="d-flex align-items-center">
                     <div> <!-- ID col-->
                       <span class="text"> {{ transcript.transcript_id }}</span>
-                      {% if gene.common and transcript.refseq_id in gene.common.primary_transcripts %}
+                      {% if (primary_transcripts in gene.common) and (gene.common and transcript.refseq_id in gene.common.primary_transcripts) %}
                         <a href="#" data-toggle="tooltip" title="hgnc primary"><span class="badge badge-primary" title="hgnc primary">P</span></a>
                       {% endif %}
                       {% if transcript.mane_select_transcript %}
