@@ -1015,7 +1015,6 @@ def update_form_hgnc_symbols(store, case_obj, form):
     clinical_symbols = store.clinical_symbols(case_obj)
 
     for hgnc_symbol in hgnc_symbols:
-        gene_obj = store.hgnc_genes_find_one(hgnc_symbol, genome_build)
         if hgnc_gene is None:
             not_found_symbols.append(hgnc_symbol)
         elif (

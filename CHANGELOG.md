@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [4.34]
+## [x.x.x]
 ### Added
 - Saved filter lock and unlock
 - Filters can optionally be marked audited, logging the filter name, user and date on the case events and general report.
