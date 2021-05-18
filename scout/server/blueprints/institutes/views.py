@@ -138,7 +138,10 @@ def causatives(institute_id):
 
     variants = list(store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id))
     if variants:
-        variants = sorted(variants, key=lambda k: k["hgnc_symbols"])
+        variants = sorted(
+            variants,
+            key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
+        )
     all_variants = {}
     all_cases = {}
     for variant_obj in variants:

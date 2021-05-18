@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added comands for loading variant evalutaion terms into database and viewing loaded terms
 - Added support for variant evaluation terms specific to a given type of analysis or institute
 - Display custom evaluation terms in institute settings
+- Script to investigate consequences of symbol search bug
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
@@ -33,6 +34,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Use hgnc_id for gene filter query
 - Typo in case controllers displaying an error every time a patient is matched against external MatchMaker nodes
 - Do not crash while attemping an update for variant documents that are too big (> 16 MB)
+- Old STR causatives (and other variants) may not have HGNC symbols - fix sort lambda
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - Introduce deprecation warning for Loqus configs that are not dictionaries
@@ -45,6 +47,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation for load-configuration rewritten.
 - Add styles to MatchMaker matches table
 - Manual rank and dismiss variant terms are read from database
+- More detailed info on the data shared in MatchMaker submission form
 
 ## [4.33.1]
 ### Fixed
