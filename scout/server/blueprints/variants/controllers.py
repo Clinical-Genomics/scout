@@ -978,16 +978,19 @@ def update_form_hgnc_symbols(store, case_obj, form):
 
     hgnc_symbols = []
     non_clinical_symbols = []
+    outdated_symbols = []
     not_found_symbols = []
     not_found_ids = []
     updated_hgnc_symbols = []
+    genome_build = "38" if str(case_obj.get("genome_build")) == "38" else "37"
+    hgnc_gene = None
 
     # retrieve current symbols from form
     if form.hgnc_symbols.data:
         # if symbols are numeric HGNC id, translate to current symbols
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
-                hgnc_gene = store.hgnc_gene(int(hgnc_symbol), case_obj["genome_build"])
+                hgnc_gene = store.hgnc_gene(int(hgnc_symbol), genome_build)
                 if hgnc_gene is None:
                     not_found_ids.append(hgnc_symbol)
                 else:
@@ -1008,14 +1011,28 @@ def update_form_hgnc_symbols(store, case_obj, form):
 
     # check if supplied gene symbols exist and are clinical
     is_clinical = form.data.get("variant_type", "clinical") == "clinical"
-    clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+    clinical_hgnc_ids = store.clinical_hgnc_ids(case_obj)
+    clinical_symbols = store.clinical_symbols(case_obj)
+
     for hgnc_symbol in hgnc_symbols:
-        if sum(1 for i in store.hgnc_genes(hgnc_symbol)) == 0:
+        gene_obj = store.hgnc_genes_find_one(hgnc_symbol, genome_build)
+        if hgnc_gene is None:
             not_found_symbols.append(hgnc_symbol)
-        elif is_clinical and (hgnc_symbol not in clinical_symbols):
-            non_clinical_symbols.append(hgnc_symbol)
-        else:
+        elif (
+            is_clinical
+            and (hgnc_symbol in clinical_symbols)
+            and hgnc_gene["hgnc_id"] in clinical_hgnc_ids
+        ):
             updated_hgnc_symbols.append(hgnc_symbol)
+        elif (
+            is_clinical
+            and (hgnc_symbol not in clinical_symbols)
+            and hgnc_gene["hgnc_id"] in clinical_hgnc_ids
+        ):
+            # Clinical symbols might not be up to date with latest gene names, but their HGNC id would still match
+            outdated_symbols.append(hgnc_symbol)
+        else:
+            non_clinical_symbols.append(hgnc_symbol)
 
     errors = {
         "non_clinical_symbols": {
@@ -1024,6 +1041,10 @@ def update_form_hgnc_symbols(store, case_obj, form):
         },
         "not_found_symbols": {"alert": "HGNC symbol not found", "gene_list": not_found_symbols},
         "not_found_ids": {"alert": "HGNC id not found", "gene_list": not_found_ids},
+        "outdated_symbols": {
+            "alert": "Clinical list contains an outdated symbol for genes",
+            "gene_list": outdated_symbols,
+        },
     }
 
     # warn user
