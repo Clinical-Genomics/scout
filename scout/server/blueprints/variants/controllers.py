@@ -1039,7 +1039,7 @@ def update_form_hgnc_symbols(store, case_obj, form):
 
     hgnc_symbols = []
     not_found_ids = []
-    genome_build = "38" if str(case_obj.get("genome_build")) == "38" else "37"
+    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
 
     # retrieve current symbols from form
     if form.hgnc_symbols.data:
