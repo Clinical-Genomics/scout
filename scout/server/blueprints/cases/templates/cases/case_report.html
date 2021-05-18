@@ -797,7 +797,13 @@
               <td>
                 <ul>
                   {% for reason in variant.dismiss_variant if not reason == "Select a tag"  %}
-                    <li>{{dismissed_options[reason|int]['description']}}
+                    {% set description = [] %}
+                    {% for term in dismissed_options %}
+                      {% if reason|string == term.internal_id|string or reason|string == term.rank|string %}
+                        {% do description.append(term.description) %}
+                      {% endif %}
+                    {% endfor %}
+                    <li>{{ description[0] }}
                       {% if reason == '2' and variant.category == 'snv'%} <!--variant dismissed as too common in public databases-->
                         <table class="table-borderless table-sm">
                           <thead>

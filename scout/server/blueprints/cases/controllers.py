@@ -285,13 +285,11 @@ def case_report_content(store, institute_obj, case_obj):
         individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
 
     evalutation_terms = store.evaluation_terms(
-        term_category="dismissal_term", institute_id=institute_obj["internal_id"]
+        term_category="dismissal_term",
+        institute_id=institute_obj["internal_id"],
+        analysis_type="cancer" if case_obj.get("track") == "cancer" else None,
     )
-    dismiss_options = build_variant_evaluation_terms(evalutation_terms)
-
-    data["cancer"] = case_obj.get("track") == "cancer"
-    if data["cancer"]:
-        dismiss_options = dismiss_options
+    data["dismissed_options"] = build_variant_evaluation_terms(evalutation_terms)
 
     data["comments"] = store.events(institute_obj, case=case_obj, comments=True)
     data["audits"] = store.case_events_by_verb(
@@ -300,13 +298,13 @@ def case_report_content(store, institute_obj, case_obj):
 
     # read manual rank options from database
     evalutation_terms = store.evaluation_terms(
-        term_category="manual_rank", institute_id=institute_obj["internal_id"]
+        term_category="manual_rank",
+        institute_id=institute_obj["internal_id"],
+        analysis_type="cancer" if case_obj.get("track") == "cancer" else None,
     )
-    manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
-    data["manual_rank_options"] = manual_rank_options
+    data["manual_rank_options"] = build_variant_evaluation_terms(evalutation_terms)
 
     data["cancer_tier_options"] = CANCER_TIER_OPTIONS
-    data["dismissed_options"] = dismiss_options
     data["genetic_models"] = dict(GENETIC_MODELS)
     data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
