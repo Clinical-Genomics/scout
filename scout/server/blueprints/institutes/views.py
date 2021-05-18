@@ -139,7 +139,7 @@ def causatives(institute_id):
     if variants:
         variants = sorted(
             variants,
-            key=lambda k: str(k.get("hgnc_symbols", [None])[0]) or k.get("str_repid") or "",
+            key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
         )
     all_variants = {}
     all_cases = {}
