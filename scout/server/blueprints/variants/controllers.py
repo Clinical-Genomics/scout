@@ -1011,7 +1011,7 @@ def check_form_gene_symbols(
         "not_found_symbols": {"alert": "HGNC symbol not found", "gene_list": not_found_symbols},
         "not_found_ids": {"alert": "HGNC id not found", "gene_list": not_found_ids},
         "outdated_symbols": {
-            "alert": "Clinical list contains an outdated symbol for genes",
+            "alert": "Clinical list contains a panel with an outdated symbol for genes",
             "gene_list": outdated_symbols,
         },
     }
