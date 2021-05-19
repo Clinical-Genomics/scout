@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [x.x.x]
+### Added
+### Fixed
+- Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
+### Changed
+
 ## [4.34]
 ### Added
 - Saved filter lock and unlock
