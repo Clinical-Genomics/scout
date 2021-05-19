@@ -6,6 +6,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+- Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
+### Changed
+- Configuration Parsing now uses Pydantic for improved typechecking and config handling
+
+## [4.34]
+### Added
 - Saved filter lock and unlock
 - Filters can optionally be marked audited, logging the filter name, user and date on the case events and general report.
 - Added `ClinVar hits` and `Cosmic hits` in cancer SNVs filters
@@ -17,6 +24,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Pin badge for pinned compounds in variants list and variant page
 - Support LoqusDB REST API queries
 - Add a docker-compose-matchmaker under scout/containers/development to test matchmaker locally
+- Script to investigate consequences of symbol search bug
+- Added GATK to list of SV and cancer SV callers
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
@@ -29,7 +38,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Causative view sort out of memory error
 - Use hgnc_id for gene filter query
 - Typo in case controllers displaying an error every time a patient is matched against external MatchMaker nodes
-- Do not crash while attemping an update for variant documents that are too big (> 16 MB)
+- Do not crash while attempting an update for variant documents that are too big (> 16 MB)
+- Old STR causatives (and other variants) may not have HGNC symbols - fix sort lambda
+- Check if gene_obj has primary_transcript before trying to access it
+- Warn if a gene manually searched is in a clinical panel with an outdated name when filtering variants
+- ChrPos split js not needed on STR page yet
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - Introduce deprecation warning for Loqus configs that are not dictionaries
@@ -41,7 +54,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Replaced some sensitive words as suggested by woke linter
 - Documentation for load-configuration rewritten.
 - Add styles to MatchMaker matches table
-- Configuration Parsing now uses Pydantic for improved typechecking and config handling
+- More detailed info on the data shared in MatchMaker submission form
 
 ## [4.33.1]
 ### Fixed

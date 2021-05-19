@@ -63,7 +63,6 @@ def remote_cors(remote_url):
 def remote_static():
     """Stream *large* static files with special requirements."""
     file_path = request.args.get("file")
-
     range_header = request.headers.get("Range", None)
     if not range_header and (file_path.endswith(".bam") or file_path.endswith(".cram")):
         return abort(500)
