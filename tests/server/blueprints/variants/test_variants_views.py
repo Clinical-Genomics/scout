@@ -44,13 +44,11 @@ def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_red
         assert resp.status_code == 200
 
         # WHEN submitting form data to the variants page (POST method) with clinical filter
-        data = urlencode(
-            {
-                "clinical_filter": "Clinical filter",
-                "variant_type": "clinical",
-                "gene_panels": "panel1",
-            }
-        )  # clinical filter
+        data = {
+            "clinical_filter": "Clinical filter",
+            "variant_type": "clinical",
+            "gene_panels": "panel1",
+        }
 
         resp = client.post(
             url_for(
@@ -59,7 +57,6 @@ def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_red
                 case_name=case_obj["display_name"],
             ),
             data=data,
-            content_type="application/x-www-form-urlencoded",
         )
 
         # THEN it should return a page
