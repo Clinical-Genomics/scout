@@ -1304,8 +1304,6 @@
         <tr>
           {% if variant.str_disease %}
             <td>{{ variant.str_disease }} ({{ variant.str_inheritance_mode }})</td>
-          {% else %}
-            <td>Disease information not provided with locus. Consider updating to a new version of Stranger.</td>
           {% endif %}
           {% if variant.str_source is defined %}
             <td>{{ variant.str_source.display }}</td>
