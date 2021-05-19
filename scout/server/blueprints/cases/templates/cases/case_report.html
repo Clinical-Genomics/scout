@@ -401,6 +401,8 @@
     {{ sn_variant_content(variant, index) }}
   {% elif variant.category == 'cancer' %}
     {{ sn_variant_content(variant, index) }}
+  {% elif variant.category == 'str' %}
+    {{ str_variant_content(variant, index) }}
   {% else %}
     {{ sv_variant_content(variant, index) }}
   {% endif %}
@@ -421,6 +423,8 @@
             {{ sn_variant_content(variant, loop.index) }}
           {% elif variant.category == 'cancer' %}
             {{ sn_variant_content(variant, loop.index) }}
+          {% elif variant.category == 'str' %}
+            {{ str_variant_content(variant, loop.index) }}
           {% else %}
             {{ sv_variant_content(variant, loop.index) }}
           {% endif %}
@@ -439,12 +443,13 @@
 </div>
 {% endmacro %}
 
+<!-- SNV -->
 {% macro sn_variant_content(variant, index) %} <!--The entire description of a single nucleotide variant, dynamic content -->
   <div class="card" style="border-width: 5px;">
     <div class="card-header">
       <div class="row d-flex align-items-center">
         # <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a>&nbsp;
-          <span class="badge badge-pill badge-success">SNV</span>&nbsp;
+          <span class="badge badge-pill badge-success">{{variant.category | upper}}</span>&nbsp;
           {% if variant.sanger_ordered and variant.validation %}
             <span class="badge badge-pill badge-info" title="verif-status">Verification:{{variant.validation}}</span>
           {% elif variant.sanger_ordered %}
@@ -921,12 +926,13 @@
 </div>
 {% endmacro %}
 
+<!-- SV -->
 {% macro sv_variant_content(variant,index) %} <!--The entire description of a structural variant, dynamic contentc -->
 <div class="card" style="border-width: 5px;">
   <div class="card-header">
     <div class="row d-flex align-items-center">
     # <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
-    &nbsp;<span class="badge badge-pill badge-warning">SV</span>
+    &nbsp;<span class="badge badge-pill badge-warning">{{variant.sub_category|upper}}</span>
     </div>
     {% if variant.get('phenotypes') %}
       <div class="row mt-3">
@@ -970,7 +976,7 @@
           {% endif %}
           <td>
             {% for panel_id in variant.panels %}
-              <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank">{{ panel_id }}</a><br>
+              <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
             {% endfor %}
           </td>
           <td>
@@ -1135,6 +1141,178 @@
             </td>
           </tr>
         {% endfor %}
+      </tbody>
+    </table>
+
+
+    {% if variant.comments | count_cursor > 0  %}
+      <br>
+      <table id="panel-table" class="table table-sm" style="background-color: transparent">
+        <thead>
+          <tr>
+            <td colspan=3><strong>Variant-related comments</strong></td>
+          </tr>
+        </thead>
+        <tbody>
+          {% for comment in variant.comments %}
+            <tr>
+              <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}</td>
+              <td class="text-break"><strong>{{ comment.content | fix_punctuation}}</strong></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+</div>
+{% endmacro %}
+
+<!-- STR -->
+{% macro str_variant_content(variant,index) %} 
+<div class="card" style="border-width: 5px;">
+  <div class="card-header">
+    <div class="row d-flex align-items-center">
+    # <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.str_repid}}:{{ variant.alternative|replace("<", "")|replace(">", "") }} - {{variant.str_display_ru or variant.str_ru}} - {{ variant.str_status| upper |replace("_", " ") }}</strong></a>
+    &nbsp;<span class="badge badge-pill badge-info">{{variant.category | upper}}</span>
+    </div>
+    {% if variant.get('phenotypes') %}
+      <div class="row mt-3">
+        <h6 class="card-subtitle mb-2 text-muted"><span class="badge badge-secondary">Partial causative</span>
+          OMIM terms: {{ variant['phenotypes'].get('diagnosis_phenotypes')|join(' ')}} -
+          HPO terms:&nbsp;
+          {%- for hpo_term in variant['phenotypes'].get('phenotype_terms') -%}
+            {{ hpo_term.phenotype_id}}({{hpo_term.feature}})&nbsp;
+          {%- endfor -%}
+        </h6>
+      </div>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    <table id="panel-table" class="table table-sm table-bordered" style="background-color: transparent">
+      <thead>
+        <tr class="table-secondary">
+          <th>Variant type</th>
+          <th>length</td>
+          <th>Coordinates</th>
+          <th>Cytoband</th>
+          <th>Gene panels</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-info">{{variant.category | upper}}</span></td>
+          <td>{{ variant.length }}</td>
+          <td>
+            {% if variant.chromosome == variant.end_chrom %}
+              chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}
+            {% else %}
+              chr{{variant.chromosome}}:{{variant.position}}/{{'chr'+variant.end_chrom}}:{{variant.end}}
+            {% endif %}
+          </td>
+          {% if variant.cytoband_start and variant.cytoband_end %}
+            <td>{{variant.cytoband_start}}-{{variant.cytoband_end}}</td>
+          {% else %}
+            <td>-</td>
+          {% endif %}
+          <td>
+            {% for panel_id in variant.panels %}
+              <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
+            {% endfor %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table id="panel-table" class="table table-sm" style="background-color: transparent">
+      <tr>
+          <table id="panel-table" class="table table-bordered " style="background-color: transparent">
+            <thead>
+              <tr class="table-secondary">
+                <th rowspan="2">Sample</th>
+                  <th rowspan="2">Genotype (GT)</th>
+                  <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
+                  <!-- <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th> -->
+                  <th rowspan="2" colspan="1">ExpansionHunter support</th>
+                </tr>
+                <tr class="table-secondary">
+                  <th>Reference</th>
+                  <th>Alternative</th>
+                </tr>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sample in variant.samples %}
+                <tr {% if sample.display_name in affected %} class="table-danger" {% endif %}>
+                  <td>{{ sample.display_name }}</td>
+                  <td class="text-center">{{ sample.genotype_call }}</td>
+                  {% if sample.allele_depths %}
+                      {% for number in sample.allele_depths %}
+                        <td class="text-right">
+                          {% if number == -1 %}
+                            <small>N/A</small>
+                          {% else %}
+                            {{ number }}
+                          {% endif %}
+                        </td>
+                      {% endfor %}
+                  {% else %}
+                      <td class="text-right"><small>N/A</small></td>
+                      <td class="text-right"><small>N/A</small></td>
+                  {% endif %}
+                    <!-- <td class="text-right">{{ sample.genotype_quality }}</td> -->
+                    <td><small>{{ sample.so }}</small></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <table id="panel-table" class="table table-sm table-bordered" style="background-color: transparent">
+      <thead>
+        <tr class="table-secondary">
+          <th>Scout Rank</th>
+          <th>Scout score</th>
+          <th>Manual rank</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{variant.variant_rank}}</td>
+          <td>{{variant.rank_score}}</td>
+          <td>
+          {% if variant.manual_rank %}
+            <span class="badge badge-pill badge-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
+          {% endif %}
+          {% if variant.cancer_tier %}
+            <span class="badge badge-pill badge-secondary" title="Tier">{{ cancer_rank_options[variant.cancer_tier]['label'] }}</span>
+          {% endif %}
+          {% if not (variant.manual_rank or variant.cancer_tier) %}
+            <span class="text-center">-</span>
+          {% endif %}
+          </td>
+      </tbody>
+    </table>
+
+    <table id="panel-table" class="table table-sm table-bordered" style="background-color: transparent">
+      <thead>
+        <tr class="table-secondary">
+          <th>Disease</th>
+          <th>Source</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {% if variant.str_disease %}
+            <td>{{ variant.str_disease }} ({{ variant.str_inheritance_mode }})</td>
+          {% else %}
+            <td>Disease information not provided with locus. Consider updating to a new version of Stranger.</td>
+          {% endif %}
+          {% if variant.str_source is defined %}
+            <td>{{ variant.str_source.display }}</td>
+          {% else %}
+            <td>-</td>
+          {% endif %}
+          </tr>
       </tbody>
     </table>
 

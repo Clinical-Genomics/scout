@@ -280,7 +280,7 @@
                    case_name=case.display_name,
                    variant_id=variant._id) }}">
   {% if variant.category in "str" %}
-  {{ variant.str_repid }} {{ variant.alternative }}
+  {{ variant.str_repid }} {{ variant.alternative | replace("<", " ") | replace(">", "")}}
   {% elif variant.category in ("snv", "cancer") %}
   {% set display_genes = [] %}
     {% for gene in variant.genes %}

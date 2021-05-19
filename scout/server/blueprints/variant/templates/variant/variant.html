@@ -290,7 +290,7 @@
                     style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.alternative}}" title="Copy to clipboard">
                     </button>
                 {%- else -%}
-                  <strong>{{ variant.alternative }}</strong>
+                  <strong>{{ variant.alternative | replace("<", " ") | replace(">", "")}}</strong>
                 {%- endif -%}
                 </span>
             </td>
