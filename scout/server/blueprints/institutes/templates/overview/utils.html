@@ -121,19 +121,30 @@
 
 
 {% macro custom_evaluation_terms_list(evaluation_terms) %}
-<div class="col-md-5 align-self-center">
+<div class="col-md-5 pl-0 align-self-center">
   <div>
-    <h6>Custom evaluation terms</h6>
+    <h6 >Custom evaluation terms</h6>
     <ul class="list-group">
       {% for term in evaluation_terms  %}
         {% set color =  term.label_class if term.label_class else "list-group-item-dark" %}
-        <li class="list-group-item list-group-item-action {{ color }}">
-          <div data-toggle="tooltip" title="{{ term.description }}; {{ term.evidence }}" class="d-flex flex-row justify-content-between">
-            <div>
-              <h6 class="mb-0">{{ term.name }}</h6>
-            </div>
-            <span class="text-sm font-weight-light">Analysis: {{ term.analysis_type }}</span>
-            <span class="text-sm font-weight-light">Category: {{ term.term_category }}</span>
+        <li class="list-group-item list-group-item-action {{ color }} p-2">
+          <div data-toggle="tooltip" data-html="true" title="
+            <div class='text-left'>
+              <h6>{{ term.name }}</h6>
+              {% if term.evidence %}
+                <span class='badge {{ term.label_class }}'>{{ term.label_class }}</span>
+              {% endif %}
+              <div><strong>ID</strong>: {{ term.internal_id }}</div>
+              <div><strong>Label</strong>: {{ term.label }}</div>
+              <div><strong>Rank</strong>: {{ term.rank }}</div>
+              {% if term.evidence %}
+                <div><strong>Evidence</strong>: {{ term.evidence|join(', ') }}</div>
+              {% endif %}
+              <div>{{ term.description }}<div>
+            </div>" class="d-flex flex-row justify-content-between">
+            <span class="mr-2 font-weight-bold">{{ term.name }}</span>
+            <span class="font-weight-light">Type: {{ term.analysis_type }}</span>
+            <span class="font-weight-light">Category: {{ term.term_category }}</span>
           </div>
         </li>
       {% endfor %}
