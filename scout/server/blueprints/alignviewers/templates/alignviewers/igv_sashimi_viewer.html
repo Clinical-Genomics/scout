@@ -69,7 +69,7 @@
                                 {
                                   type: 'wig',
                                   format: "bigwig",
-                                  url: "{{ url_for('alignviewers.unindexed_remote_static', file=track.coverage_wig) }}",
+                                  url: "{{ url_for('alignviewers.remote_static', file=track.coverage_wig) }}",
                                 },
                                 {
                                   type: 'spliceJunctions',
@@ -78,9 +78,7 @@
                                   thicknessBasedOn: 'numUniqueRead',
                                   labelUniqueReadCount: true,
                                   url: "{{ url_for('alignviewers.unindexed_remote_static', file=track.splicej_bed) }}",
-                                  {% if track.splicej_bed_index %} // this file should be present but you never know. The track loads more slowly if index is missing
-                                    indexURL: "{{ url_for('alignviewers.unindexed_remote_static', file=track.splicej_bed_index) }}",
-                                  {% endif %}
+                                  indexURL: "{{ url_for('alignviewers.unindexed_remote_static', file=track.splicej_bed_index) }}",
                                   minUniquelyMappedReads: 1
                                 }
                             ]

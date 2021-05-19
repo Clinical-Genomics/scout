@@ -6,6 +6,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+- Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
+### Changed
+
+## [4.34]
+### Added
 - Saved filter lock and unlock
 - Filters can optionally be marked audited, logging the filter name, user and date on the case events and general report.
 - Added `ClinVar hits` and `Cosmic hits` in cancer SNVs filters
@@ -36,6 +42,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Old STR causatives (and other variants) may not have HGNC symbols - fix sort lambda
 - Check if gene_obj has primary_transcript before trying to access it
 - Warn if a gene manually searched is in a clinical panel with an outdated name when filtering variants
+- ChrPos split js not needed on STR page yet
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - Introduce deprecation warning for Loqus configs that are not dictionaries
