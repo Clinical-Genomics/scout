@@ -59,7 +59,11 @@
               </a>
             </td>
             <td><span class="text-muted" style="display: inline-block; margin-left: 10px;" data-toggle='tooltip' data-container='body' title="{{ group_variant.reference|truncate(30, True) }} → {{ group_variant.alternative|truncate(30, True) }}">
-                {{ group_variant.reference|truncate(10, True) }} → {{ group_variant.alternative|truncate(10, True) | replace("<", " ") | replace(">", "")}}
+                {% if group_variant.category in 'str' %}
+                    {{ group_variant.alternative|truncate(10, True) | replace("<", " ") | replace(">", "")}}
+                {% else %}
+                    {{ group_variant.reference|truncate(10, True) }} → {{ group_variant.alternative|truncate(10, True) }}
+                {% endif%}                
               </span>
             </td>
             <td><span class="badge badge-secondary">{{ variant.category|upper }}</span></td>
