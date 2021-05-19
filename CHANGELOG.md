@@ -35,6 +35,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Old STR causatives (and other variants) may not have HGNC symbols - fix sort lambda
 - Check if gene_obj has primary_transcript before trying to access it
 - Warn if a gene manually searched is in a clinical panel with an outdated name when filtering variants
+- ChrPos split js not needed on STR page yet
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - Introduce deprecation warning for Loqus configs that are not dictionaries
