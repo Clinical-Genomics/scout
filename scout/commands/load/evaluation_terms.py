@@ -11,7 +11,7 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 VALID_CATEGORIES = ("dismissal_term", "manual_rank")
-REQUIRED_FIELDS = ['name', 'term_category', 'analysis_type', 'institute']
+REQUIRED_FIELDS = ["name", "term_category", "analysis_type", "institute"]
 
 
 def get_next_rank(term_category):
@@ -111,29 +111,33 @@ def batch_evaluation_terms(file):
         LOG.info(f"adding terms from {file}")
         entries = json.load(file)
         # validate terms
-        LOG.info('Validate evaluation terms')
+        LOG.info("Validate evaluation terms")
         for entry in entries:
             # validate content
             if not all(f in entry for f in REQUIRED_FIELDS):
-                raise ValueError(f'Some entries does not contain all required fields; required fields: {", ".join(REQUIRED_FIELDS)}')
+                raise ValueError(
+                    f'Some entries does not contain all required fields; required fields: {", ".join(REQUIRED_FIELDS)}'
+                )
             # validate term_category
-            if not entry['term_category'] in VALID_CATEGORIES:
-                raise ValueError(f'Invalida term_category "{entry["term_category"]}"; valid terms: {", ".join(VALID_CATEGORIES)}')
+            if not entry["term_category"] in VALID_CATEGORIES:
+                raise ValueError(
+                    f'Invalida term_category "{entry["term_category"]}"; valid terms: {", ".join(VALID_CATEGORIES)}'
+                )
         # store terms in database
-        LOG.info('Store evaluation terms in database')
+        LOG.info("Store evaluation terms in database")
         for entry in entries:
             # assign default values
             if "internal_id" not in entry:
-                entry['internal_id'] = entry['name'].lower().replace(" ", "-")
+                entry["internal_id"] = entry["name"].lower().replace(" ", "-")
 
             if "label" not in entry:
-                entry['label'] = entry['name']
+                entry["label"] = entry["name"]
 
             if "description" not in entry:
-                entry["description"] = entry['name']
+                entry["description"] = entry["name"]
 
             if "rank" not in entry:
-                entry["rank"] = get_next_rank(entry['term_category'])
+                entry["rank"] = get_next_rank(entry["term_category"])
             # load terms
             load_evaluation_term(adapter, **entry)
     except ValueError as e:
