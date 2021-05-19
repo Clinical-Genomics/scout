@@ -34,7 +34,7 @@
         <form id="mme_submit" method="POST" action="{{ url_for('cases.matchmaker_add', institute_id=institute._id, case_name=case.display_name )}}" >
             <div id="mme_form" class="collapse">
               <div class="d-flex justify-content-center">
-                <ul class="list-group">
+                <ul class="list-group w-75">
                   <li class="list-group-item">
                     <div class="d-flex justify-content-between">
                       <div data-placement="top" title="hpo">
@@ -71,7 +71,7 @@
                   <li class="list-group-item">
                     <div class="d-flex justify-content-between">
                       <div data-placement="top" title="genomicfeatures">
-                        Share variants
+                        Share pinned variants details
                       </div>
                       <div>
                         <input type="radio" class="ios8-switch" id="genomicfeatures" name="genomicfeatures" value="variants" checked>
@@ -82,7 +82,7 @@
                   <li class="list-group-item">
                     <div class="d-flex justify-content-between">
                       <div data-placement="top" title="genomicfeatures">
-                        Gene names only
+                        Share only gene names from pinned variants
                       </div>
                       <div>
                         <input type="radio" class="ios8-switch" id="genomicfeatures" name="genomicfeatures" value="genes" {% if case.mme_submission and case.mme_submission.genes_only %}checked{% endif %}>
