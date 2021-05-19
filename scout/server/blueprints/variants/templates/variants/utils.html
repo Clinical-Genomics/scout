@@ -660,8 +660,8 @@
   {% endif %}
 
   {% if variant.manual_rank %}
-  {% for option in manual_rank_options %}
-      {% if variant.manual_rank == option.internal_id %}
+    {% for option in manual_rank_options %}
+      {% if variant.manual_rank == option.internal_id or variant.manual_rank == option.rank %}
         <span class="badge badge-{{ option.label_class }}" data-toggle="tooltip" data-placement="right"
           title="Manual rank: {{ option.description }}">
           {{ option.label }}</span>
@@ -672,7 +672,7 @@
   {% if variant.dismiss_variant %}
     {% set dismiss_reasons = [] %}
     {% for option in dismiss_variant_options %}
-      {% if option.internal_id in variant.dismiss_variant %}
+      {% if option.internal_id in variant.dismiss_variant or option.rank|string in variant.dismiss_variant %}
         {% do dismiss_reasons.append(option) %}
       {% endif %}
     {% endfor %}
