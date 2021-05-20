@@ -1192,7 +1192,7 @@
       <thead>
         <tr class="table-secondary">
           <th>Variant type</th>
-          <th>length</td>
+          <th>Estimated size</th>
           <th>Coordinates</th>
           <th>Cytoband</th>
           <th>Gene panels</th>
@@ -1201,7 +1201,7 @@
       <tbody>
         <tr>
           <td><span class="badge badge-info">{{variant.category | upper}}</span></td>
-          <td>{{ variant.length }}</td>
+          <td>{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
           <td>
             {% if variant.chromosome == variant.end_chrom %}
               chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}
