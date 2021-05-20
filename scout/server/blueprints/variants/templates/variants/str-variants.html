@@ -124,10 +124,10 @@
 <!--  Pedigree_panel -->
 {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
 {% if has_pedigree %}
-<div class="row">
+  <div class="row">
     <div class="col-md-4">{{ pedigree_panel(case) }}</div>
-  {% endif %}
-</div>
+  </div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
