@@ -19,7 +19,7 @@ INDEXES = {
         ),
         IndexModel(
             [("build", ASCENDING), ("hgnc_symbol", ASCENDING)],
-            name="build_symbol",
+            name="build_hgnc_symbol",
             background=True,
         ),
     ],
