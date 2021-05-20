@@ -1,5 +1,5 @@
 {% extends "layout_bs4.html" %}
-{% from "utils.html" import comments_table %}
+{% from "utils.html" import comments_table, pedigree_panel %}
 {% from "variants/components.html" import gene_cell, frequency_cell_general %}
 {% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters %}
 {% from "variant/buttons.html" import igv_button %}
@@ -120,6 +120,13 @@
 </div> <!-- end of class="container-float"> -->
 <div class="container-fluid">
   {{ pagination_footer(more_variants, page) }}
+</div>
+<!--  Pedigree_panel -->
+<div class="row">
+  {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
+  {% if has_pedigree %}
+    <div class="col-md-4">{{ pedigree_panel(case) }}</div>
+  {% endif %}
 </div>
 {% endblock %}
 
