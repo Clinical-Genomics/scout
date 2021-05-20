@@ -17,6 +17,10 @@ INDEXES = {
             name="build_aliases",
             background=True,
         ),
+        IndexModel(
+            [("build", ASCENDING), ("hgnc_symbol", ASCENDING)],
+            name="build_hgnc_symbol",
+        ),
     ],
     "variant": [
         IndexModel(
