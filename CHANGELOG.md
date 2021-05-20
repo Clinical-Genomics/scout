@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 - A new index for hgnc_symbol in hgnc gene collection
+- A Pedigree panel in STR page
 ### Fixed
 - Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
 ### Changed
@@ -59,6 +60,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add styles to MatchMaker matches table
 - Manual rank and dismiss variant terms are read from database
 - More detailed info on the data shared in MatchMaker submission form
+- Update and style STR case report
 
 ## [4.33.1]
 ### Fixed
