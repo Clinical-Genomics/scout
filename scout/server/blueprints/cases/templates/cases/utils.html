@@ -328,7 +328,7 @@
 {% endmacro %}
 
 
-{% macro causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) %}
+{% macro causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options, acmg_options) %}
   {% set already_displayed_variant_ids = [] %}
   <div class="card panel-default">
     <div data-toggle='tooltip' class="panel-heading" title="Displays all variants that have been marked causative for this case">
@@ -444,10 +444,12 @@
 
       <!-- variants with cancer tier I or II -->
       {% if case.track == 'cancer' %}
+        {% set exp_tiers =  ['1A', '1B', '2C', '2D'] %}
+        {% set exp_acmg =  ['pathogenic', 'likely_pathogenic'] %}
         {% for variant in evaluated_variants %}
-          {% set exp_tiers =  ['1A', '1B', '2C', '2D'] %}
           {% if variant._id %}
-            {% if variant.cancer_tier in exp_tiers %}
+            <!-- set acmg classification -->
+            {% if variant.cancer_tier in exp_tiers or variant.acmg_classification in exp_acmg %}
               {% if variant._id not in already_displayed_variant_ids %}
                 {% do already_displayed_variant_ids.append(variant._id) %}
                 <li class="list-group-item list-group-item-action">
@@ -459,6 +461,11 @@
                       {{ tumor_allele_freq(variant) }}
                     <div class="col-2">
                       {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
+                      {% if variant.acmg_classification %}
+                        <span class="badge badge-pill badge-{{ variant.acmg_classification.color }}" title="ACMG classification: {{ variant.acmg_classification.label }}" data-toggle="tooltip">
+                          acmg-{{ variant.acmg_classification.short }}
+                        </span>
+                      {% endif %}
                     </div>
                   </div>
                 </li>

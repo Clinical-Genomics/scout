@@ -22,6 +22,8 @@ from scout.constants import (
     PHENOTYPE_MAP,
     SEX_MAP,
     VERBS_MAP,
+    ACMG_MAP,
+    ACMG_OPTIONS,
 )
 from scout.constants.variant_tags import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
@@ -197,6 +199,14 @@ def case(store, institute_obj, case_obj):
     # complete OMIM diagnoses specific for this case
     omim_terms = {term["disease_nr"]: term for term in store.case_omim_diagnoses(case_obj)}
 
+    # get evaluated variants
+    evaluated_variants = store.evaluated_variants(case_obj["_id"])
+    for variant in evaluated_variants:
+        if isinstance(variant.get('acmg_classification'), int):
+            classification = ACMG_MAP.get(variant['acmg_classification'])
+            for option in ACMG_OPTIONS:
+                if option['code'] == classification:
+                    variant['acmg_classification'] = option
     data = {
         "status_class": STATUS_MAP.get(case_obj["status"]),
         "other_causatives": [var for var in store.check_causatives(case_obj=case_obj)],
@@ -208,7 +218,7 @@ def case(store, institute_obj, case_obj):
         "events": events,
         "suspects": suspects,
         "causatives": causatives,
-        "evaluated_variants": store.evaluated_variants(case_obj["_id"]),
+        "evaluated_variants": evaluated_variants,
         "partial_causatives": partial_causatives,
         "collaborators": collab_ids,
         "cohort_tags": institute_obj.get("cohorts", []),
