@@ -202,11 +202,11 @@ def case(store, institute_obj, case_obj):
     # get evaluated variants
     evaluated_variants = store.evaluated_variants(case_obj["_id"])
     for variant in evaluated_variants:
-        if isinstance(variant.get('acmg_classification'), int):
-            classification = ACMG_MAP.get(variant['acmg_classification'])
+        if isinstance(variant.get("acmg_classification"), int):
+            classification = ACMG_MAP.get(variant["acmg_classification"])
             for option in ACMG_OPTIONS:
-                if option['code'] == classification:
-                    variant['acmg_classification'] = option
+                if option["code"] == classification:
+                    variant["acmg_classification"] = option
     data = {
         "status_class": STATUS_MAP.get(case_obj["status"]),
         "other_causatives": [var for var in store.check_causatives(case_obj=case_obj)],
