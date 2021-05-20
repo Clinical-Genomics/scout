@@ -275,8 +275,7 @@
               </span>
             </td>
             <td>
-              <!-- 🚧 untested code ahead 🚧 -->
-              {% if not variant.str_repid %}
+              {% if not variant.category == "str" %}
               Change
               <span>
                   {%- if variant.reference|length > 8 -%}
