@@ -994,22 +994,30 @@ def check_form_gene_symbols(
 
         if hgnc_gene is None:
             not_found_symbols.append(hgnc_symbol)
-        elif is_clinical and hgnc_gene["hgnc_id"] in clinical_hgnc_ids:
+        elif is_clinical is False:  # research variants
+            updated_hgnc_symbols.append(hgnc_symbol)
+        elif hgnc_gene["hgnc_id"] in clinical_hgnc_ids:  # clinical variants
             updated_hgnc_symbols.append(hgnc_symbol)
             if hgnc_symbol not in clinical_symbols:
                 # clinical symbols from gene panels might not be up to date with latest gene names
                 # but their HGNC id would still match
                 outdated_symbols.append(hgnc_symbol)
-        else:
+        else:  # clinical variants
             non_clinical_symbols.append(hgnc_symbol)
 
     errors = {
         "non_clinical_symbols": {
-            "alert": "Gene not included in clinical list",
+            "alert": "Gene not included in case clinical list",
             "gene_list": non_clinical_symbols,
         },
-        "not_found_symbols": {"alert": "HGNC symbol not found", "gene_list": not_found_symbols},
-        "not_found_ids": {"alert": "HGNC id not found", "gene_list": not_found_ids},
+        "not_found_symbols": {
+            "alert": "HGNC symbol not present in genes collection",
+            "gene_list": not_found_symbols,
+        },
+        "not_found_ids": {
+            "alert": "HGNC id not present in genes collection",
+            "gene_list": not_found_ids,
+        },
         "outdated_symbols": {
             "alert": "Clinical list contains a panel with an outdated symbol for genes",
             "gene_list": outdated_symbols,

@@ -7,9 +7,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 - A new index for hgnc_symbol in hgnc gene collection
+- A Pedigree panel in STR page
 ### Fixed
 - Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
 ### Changed
+- Switch off non-clinical gene warnings when filtering research variants
 - Configuration Parsing now uses Pydantic for improved typechecking and config handling
 
 ## [4.34]
@@ -56,6 +58,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation for load-configuration rewritten.
 - Add styles to MatchMaker matches table
 - More detailed info on the data shared in MatchMaker submission form
+- Update and style STR case report
 
 ## [4.33.1]
 ### Fixed
