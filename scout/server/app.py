@@ -47,7 +47,7 @@ except ImportError:
     LOG.info("chanjo report not installed!")
 
 
-def create_app(config_file=None, config=None):
+def create_app(config_file=None, config=None, validate_setup=True):
     """Flask app factory function."""
     app = Flask(__name__)
     app.config.from_pyfile("config.py")
@@ -69,10 +69,11 @@ def create_app(config_file=None, config=None):
         configure_email_logging(app)
 
     # validate setup
-    for category in EVALUATION_TERM_CATEGORIES:
-        terms = extensions.store.evaluation_terms(term_category=category)
-        if terms.count() == 0:
-            raise click.ClickException(f'No evaluation terms with category "{category}" in the database')
+    if validate_setup:
+        for category in EVALUATION_TERM_CATEGORIES:
+            terms = extensions.store.evaluation_terms(term_category=category)
+            if terms.count() == 0:
+                raise click.ClickException(f'No evaluation terms with category "{category}" in the database')
 
     @app.before_request
     def check_user():
