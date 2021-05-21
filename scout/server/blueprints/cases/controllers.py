@@ -15,6 +15,8 @@ from flask_mail import Message
 from xlsxwriter import Workbook
 
 from scout.constants import (
+    ACMG_MAP,
+    ACMG_OPTIONS,
     CANCER_PHENOTYPE_MAP,
     MT_COV_STATS_HEADER,
     MT_EXPORT_HEADER,
@@ -87,9 +89,12 @@ def case(store, institute_obj, case_obj):
     suspects = [
         store.variant(variant_id) or variant_id for variant_id in case_obj.get("suspects", [])
     ]
+    _populate_acmg(suspects)
     causatives = [
         store.variant(variant_id) or variant_id for variant_id in case_obj.get("causatives", [])
     ]
+    _populate_acmg(causatives)
+
     # check for partial causatives and associated phenotypes
     partial_causatives = []
     if case_obj.get("partial_causatives"):
@@ -197,6 +202,11 @@ def case(store, institute_obj, case_obj):
     # complete OMIM diagnoses specific for this case
     omim_terms = {term["disease_nr"]: term for term in store.case_omim_diagnoses(case_obj)}
 
+    # get evaluated variants
+    evaluated_variants = store.evaluated_variants(case_obj["_id"])
+
+    _populate_acmg(evaluated_variants)
+
     data = {
         "status_class": STATUS_MAP.get(case_obj["status"]),
         "other_causatives": [var for var in store.check_causatives(case_obj=case_obj)],
@@ -208,6 +218,7 @@ def case(store, institute_obj, case_obj):
         "events": events,
         "suspects": suspects,
         "causatives": causatives,
+        "evaluated_variants": evaluated_variants,
         "partial_causatives": partial_causatives,
         "collaborators": collab_ids,
         "cohort_tags": institute_obj.get("cohorts", []),
@@ -217,6 +228,24 @@ def case(store, institute_obj, case_obj):
     }
 
     return data
+
+
+def _populate_acmg(evaluated_variants):
+    """
+    Add ACMG classification options for display of ACMG badges to variants
+
+    Args:
+        evaluated_variants:
+
+    Returns:
+
+    """
+    for variant in evaluated_variants:
+        if isinstance(variant.get("acmg_classification"), int):
+            classification = ACMG_MAP.get(variant["acmg_classification"])
+            for option in ACMG_OPTIONS:
+                if option["code"] == classification:
+                    variant["acmg_classification"] = option
 
 
 def _check_outdated_gene_panel(panel_obj, latest_panel):
