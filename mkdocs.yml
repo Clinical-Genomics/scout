@@ -66,6 +66,7 @@ nav:
       - MatchMaker Exchange integration: 'admin-guide/matchmaker_exchange_integration.md'
       - Indexes: 'admin-guide/indexes.md'
       - Institutes: 'admin-guide/institute.md'
+      - Custom evaluation terms: 'admin-guide/custom-evaluation-terms.md'
       - Display data:
           - Cases: 'admin-guide/display-data/cases.md'
       - Export: 'admin-guide/export.md'
