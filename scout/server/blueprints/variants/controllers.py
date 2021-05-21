@@ -1005,15 +1005,15 @@ def check_form_gene_symbols(
 
     errors = {
         "non_clinical_symbols": {
-            "alert": "Gene not included in clinical list",
+            "alert": "Gene not included in case clinical list",
             "gene_list": non_clinical_symbols,
         },
         "not_found_symbols": {
-            "alert": "HGNC symbol not present in gene collection",
+            "alert": "HGNC symbol not present in genes collection",
             "gene_list": not_found_symbols,
         },
         "not_found_ids": {
-            "alert": "HGNC id not present in gene collection",
+            "alert": "HGNC id not present in genes collection",
             "gene_list": not_found_ids,
         },
         "outdated_symbols": {
