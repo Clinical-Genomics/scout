@@ -39,4 +39,9 @@ def build_variant_evaluation_terms(evaluation_terms):
         Returns:
             dissmiss_terms_obj(dict)
     """
-    return [build_evaluation_term(term) for term in evaluation_terms]
+    if evaluation_terms.count() == 0:
+        LOG.warning('No evaluation terms in query')
+        terms = []
+    else:
+        terms = [build_evaluation_term(term) for term in evaluation_terms]
+    return terms
