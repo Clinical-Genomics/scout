@@ -357,7 +357,9 @@
               {{ clinical_assessments_badge(variant) }}
               {{ tumor_allele_freq(variant) }}
               <div class="col-2">
-                  {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
+                  {% if case.track == 'cancer' %}
+                    {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
+                  {% endif %}
               </div>
               <div class="col-1">
                 {{ remove_form(url_for('cases.mark_causative',
@@ -461,9 +463,12 @@
                       {{ pretty_link_variant(variant, case) }}
                       {{ variant_validation_badge(variant) }}
                     </div>
+                      {{ clinical_assessments_badge(variant) }}
                       {{ tumor_allele_freq(variant) }}
                     <div class="col-2">
-                      {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
+                      {% if case.track == 'cancer' %}
+                        {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
+                      {% endif %}
                     </div>
                     <div class="col-1">
                       <!-- remove classification placeholder -->
@@ -512,7 +517,11 @@
                       {{ pretty_link_variant(variant, case) }}
                   </div>
                   <div style="padding: 0 10px 3px">
-                    {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
+                    {% if case.track == 'cancer' %}
+                      {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
+                    {% else %}
+                      {{ clinical_assessments_badge(variant) }}
+                    {% endif %}
                     {{ variant_validation_badge(variant) }}
                     {% if variant.mosaic_tags %}
                       <span class="badge badge-info">mosaic</span>

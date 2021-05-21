@@ -90,7 +90,6 @@ def case(store, institute_obj, case_obj):
         store.variant(variant_id) or variant_id for variant_id in case_obj.get("suspects", [])
     ]
     _populate_acmg(suspects)
-
     causatives = [
         store.variant(variant_id) or variant_id for variant_id in case_obj.get("causatives", [])
     ]
@@ -205,6 +204,7 @@ def case(store, institute_obj, case_obj):
 
     # get evaluated variants
     evaluated_variants = store.evaluated_variants(case_obj["_id"])
+
     _populate_acmg(evaluated_variants)
 
     data = {
