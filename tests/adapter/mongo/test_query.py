@@ -61,16 +61,23 @@ def test_gene_symbols_query(adapter, case_obj):
     """Test variants query using HGNC symbol"""
 
     # WHEN hgnc_symbols params is provided to the query builder
-    test_gene = "POT1"
-    query = {"hgnc_symbols": [test_gene], "gene_panels": []}
+    gene_obj = {
+        "hgnc_id": 17284,
+        "hgnc_symbol": "POT1",
+        "build": "37",
+        "aliases": ["POTTA", "POT1"],
+    }
+    adapter.load_hgnc_gene(gene_obj)
+
+    query = {"hgnc_symbols": [gene_obj["hgnc_symbol"]], "gene_panels": []}
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
 
-    # THEN the query should countain the gene
+    # THEN the query should countain the hgnc_id of the gene
     assert mongo_query == {
         "case_id": case_obj["_id"],
         "category": "snv",
         "variant_type": "clinical",
-        "hgnc_symbols": {"$in": [test_gene]},
+        "hgnc_ids": {"$in": [gene_obj["hgnc_id"]]},
     }
 
 
@@ -79,9 +86,14 @@ def test_gene_panel_query(adapter, case_obj):
 
     # GIVEN a database containing a minimal gene panel
     test_gene = "POT1"
-    test_panel = dict(panel_name="POT panel", version=1, genes=[{"symbol": test_gene}])
+    test_gene_hgnc_id = 17284
+
+    test_panel = dict(
+        panel_name="POT panel",
+        version=1,
+        genes=[{"symbol": test_gene, "hgnc_id": test_gene_hgnc_id}],
+    )
     adapter.panel_collection.insert_one(test_panel)
-    ínserted_panel = adapter.panel_collection.find_one()
 
     # WHEN the panel _id is provided to the query builder
     query = {"hgnc_symbols": [], "gene_panels": ["POT panel"]}
@@ -92,7 +104,7 @@ def test_gene_panel_query(adapter, case_obj):
         "case_id": case_obj["_id"],
         "category": "snv",
         "variant_type": "clinical",
-        "hgnc_symbols": {"$in": [test_gene]},
+        "hgnc_ids": {"$in": [test_gene_hgnc_id]},
     }
 
 
@@ -101,17 +113,31 @@ def test_gene_symbol_gene_panel_query(adapter, case_obj):
 
     # GIVEN a database containing a minimal gene panel
     test_gene = "POT1"
-    test_panel = dict(panel_name="POT panel", version=1, genes=[{"symbol": test_gene}])
+    test_gene_hgnc_id = 17284
+    test_panel = dict(
+        panel_name="POT panel",
+        version=1,
+        genes=[{"symbol": test_gene, "hgnc_id": test_gene_hgnc_id}],
+    )
     adapter.panel_collection.insert_one(test_panel)
-    ínserted_panel = adapter.panel_collection.find_one()
+
+    other_gene = "ATM"
+    other_gene_hgnc_id = 795
+    other_gene_obj = {
+        "hgnc_id": other_gene_hgnc_id,
+        "hgnc_symbol": other_gene,
+        "build": "37",
+        "aliases": [test_gene],
+    }
+    adapter.load_hgnc_gene(other_gene_obj)
 
     # WHEN the panel _id is provided to the query builder + a gene symbol for another gene
     query = {"hgnc_symbols": ["ATM"], "gene_panels": ["POT panel"]}
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
 
     # THEN the query should countain both genes in the hgnc_symbols list
-    mongo_query_gene_list = mongo_query["hgnc_symbols"]["$in"]
-    for gene in ["ATM", "POT1"]:
+    mongo_query_gene_list = mongo_query["hgnc_ids"]["$in"]
+    for gene in [test_gene_hgnc_id, other_gene_hgnc_id]:
         assert gene in mongo_query_gene_list
 
 
@@ -455,6 +481,34 @@ def test_build_spidex_high(adapter):
             ]
         }
     ]
+
+
+def test_build_has_clnsig(
+    adapter,
+    case_obj,
+):
+    """Test building query to retrieve all variants with ClinVar tag"""
+    case_id = case_obj["_id"]
+    query = {"clinvar_tag": True}
+
+    mongo_query = adapter.build_query(case_id, query=query)
+
+    assert {"clnsig": {"$exists": True}} in mongo_query["$and"]
+    assert {"clnsig": {"$ne": None}} in mongo_query["$and"]
+
+
+def test_build_has_cosmic_ids(
+    adapter,
+    case_obj,
+):
+    """Test building query to retrieve all variants with cosmic IDs"""
+    case_id = case_obj["_id"]
+    query = {"cosmic_tag": True}
+
+    mongo_query = adapter.build_query(case_id, query=query)
+
+    assert {"cosmic_ids": {"$exists": True}} in mongo_query["$and"]
+    assert {"cosmic_ids": {"$ne": None}} in mongo_query["$and"]
 
 
 def test_build_clinsig_always_only(adapter):

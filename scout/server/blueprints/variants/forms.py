@@ -132,6 +132,7 @@ class FiltersForm(VariantFiltersForm):
     local_obs = IntegerField("Local obs. (archive)")
 
     clinical_filter = SubmitField(label="Clinical filter")
+    clinvar_tag = BooleanField("ClinVar hits")
 
 
 class CancerFiltersForm(VariantFiltersForm):
@@ -145,7 +146,9 @@ class CancerFiltersForm(VariantFiltersForm):
     tumor_frequency = BetterDecimalField(
         "Tumor alt AF >", places=2, validators=[validators.Optional()]
     )
-    mvl_tag = BooleanField("In Managed Variant List")
+    clinvar_tag = BooleanField("ClinVar hits")
+    cosmic_tag = BooleanField("Cosmic hits")
+    mvl_tag = BooleanField("Managed Variants hits")
 
 
 class StrFiltersForm(VariantFiltersForm):

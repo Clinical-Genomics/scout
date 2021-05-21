@@ -6,26 +6,57 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- A new index for hgnc_symbol in hgnc gene collection
+- A Pedigree panel in STR page
+### Fixed
+- Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
+### Changed
+
+## [4.34]
+### Added
 - Saved filter lock and unlock
 - Filters can optionally be marked audited, logging the filter name, user and date on the case events and general report.
-### Fixed
-- Make MitoMap link work for hg38 again
-- Export Variants feature crashing when one of the variants has no primary transcripts
-- Redirect to last visited variantS page when dismissing variants from variants list
-### Added
+- Added `ClinVar hits` and `Cosmic hits` in cancer SNVs filters
+- Added `ClinVar hits` to variants filter (rare disease track)
+- Load cancer demo case in docker-compose files (default and demo file)
+- Inclusive-language check using [woke](https://github.com/get-woke/woke) github action
 - Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
 - Grey background for dismissed compounds in variants list and variant page
 - Pin badge for pinned compounds in variants list and variant page
 - Support LoqusDB REST API queries
+- Add a docker-compose-matchmaker under scout/containers/development to test matchmaker locally
+- Script to investigate consequences of symbol search bug
+- Added GATK to list of SV and cancer SV callers
+### Fixed
+- Make MitoMap link work for hg38 again
+- Export Variants feature crashing when one of the variants has no primary transcripts
+- Redirect to last visited variantS page when dismissing variants from variants list
+- Improved matching of SVs Loqus occurrences in other cases
+- Remove padding from the list inside (Matching causatives from other cases) panel
+- Pass None to get_app function in CLI base since passing script_info to app factory functions was deprecated in Flask 2.0
+- Fixed failing tests due to Flask update to version 2.0
+- Speed up user events view
+- Causative view sort out of memory error
+- Use hgnc_id for gene filter query
+- Typo in case controllers displaying an error every time a patient is matched against external MatchMaker nodes
+- Do not crash while attempting an update for variant documents that are too big (> 16 MB)
+- Old STR causatives (and other variants) may not have HGNC symbols - fix sort lambda
+- Check if gene_obj has primary_transcript before trying to access it
+- Warn if a gene manually searched is in a clinical panel with an outdated name when filtering variants
+- ChrPos split js not needed on STR page yet
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
-- Count cases in LoqusDB by variant type
 - Introduce deprecation warning for Loqus configs that are not dictionaries
 - SV clinical filter no longer filters out sub 100 nt variants
+- Count cases in LoqusDB by variant type
 - Commit pulse repo badge temporarily set to weekly
 - Sort ClinVar submissions objects by ascending "Last evaluated" date
-
-
+- Refactored the MatchMaker integration as an extension
+- Replaced some sensitive words as suggested by woke linter
+- Documentation for load-configuration rewritten.
+- Add styles to MatchMaker matches table
+- More detailed info on the data shared in MatchMaker submission form
+- Update and style STR case report
 
 ## [4.33.1]
 ### Fixed
@@ -643,7 +674,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clear panel pending changes
 - Adds option to setup the database with static files
 - Adds cli command to download the resources from CLI that scout needs
-- Adds dummy files for merged somatic SV and CNV; as well as merged SNV, and INDEL part of #1279
+- Adds test files for merged somatic SV and CNV; as well as merged SNV, and INDEL part of #1279
 - Allows for upload of OMIM-AUTO gene panel from static files without api-key
 
 ### Fixed

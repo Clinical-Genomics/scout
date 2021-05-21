@@ -37,7 +37,6 @@ def event_rank(count):
 def users(store):
     """Display a list of all users and which institutes they belong to."""
     user_objs = list(store.users())
-    total_events = sum([1 for event in store.user_events()])
     for user_obj in user_objs:
         user_institutes = user_obj.get("institutes")
         if user_institutes:
@@ -48,5 +47,4 @@ def users(store):
         user_obj["events_rank"] = event_rank(user_obj["events"])
     return dict(
         users=sorted(user_objs, key=lambda user: -user["events"]),
-        total_events=total_events,
     )

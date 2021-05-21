@@ -8,8 +8,6 @@ from flask_babel import Babel
 from flask_login import current_user
 from flaskext.markdown import Markdown
 
-from scout.utils.matchmaker import mme_nodes
-
 from . import extensions
 from .blueprints import (
     alignviewers,
@@ -56,10 +54,6 @@ def create_app(config_file=None, config=None):
         app.config.update(config)
     if config_file:
         app.config.from_pyfile(config_file)
-
-    # If there is a MatchMaker Exchange server
-    # collect the connected external nodes
-    app.mme_nodes = mme_nodes(app.config.get("MME_URL"), app.config.get("MME_TOKEN"))
 
     app.config["JSON_SORT_KEYS"] = False
     current_log_level = LOG.getEffectiveLevel()
@@ -115,7 +109,11 @@ def configure_extensions(app):
     if app.config.get("GENS_HOST"):
         LOG.info("Gens enabled")
         extensions.gens.init_app(app)
-
+        
+    if all([app.config.get("MME_URL"), app.config.get("MME_ACCEPTS"), app.config.get("MME_TOKEN")]):
+        LOG.info("MatchMaker Exchange enabled")
+        extensions.matchmaker.init_app(app)
+        
     if app.config.get("RERUNNER_HOST"):
         LOG.info("Rerunner service enabled")
         # setup LoqusDB

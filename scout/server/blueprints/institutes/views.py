@@ -135,9 +135,12 @@ def causatives(institute_id):
         except ValueError:
             flash("Provided gene info could not be parsed!", "warning")
 
-    variants = store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id)
+    variants = list(store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id))
     if variants:
-        variants.sort("hgnc_symbols", pymongo.ASCENDING)
+        variants = sorted(
+            variants,
+            key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
+        )
     all_variants = {}
     all_cases = {}
     for variant_obj in variants:

@@ -6,6 +6,7 @@ import pymongo
 import pytest
 import yaml
 from cyvcf2 import VCF
+from flask import jsonify
 
 # Adapter stuff
 from mongomock import MongoClient
@@ -100,6 +101,17 @@ def mock_app(real_populated_database):
 def empty_mock_app(real_adapter):
     """Return the path to a mocked app object without any data"""
     return _mock_an_app()
+
+
+################## Requests fixture #####################
+
+
+@pytest.fixture
+def mock_redirect():
+    message = {"test": "redirect"}
+    resp = jsonify(message)
+    resp.status_code = 302
+    return resp
 
 
 ##################### Gene fixtures #####################
@@ -893,7 +905,7 @@ def parsed_panel(request, panel_info):
 
 
 @pytest.fixture(scope="function")
-def dummypanel_geneobj():
+def testpanel_geneobj():
     """A panel gene object"""
     gene_obj = {}
 
@@ -904,22 +916,22 @@ def dummypanel_geneobj():
 
 
 @pytest.fixture(scope="function")
-def dummypanel_obj(parsed_panel, dummypanel_geneobj):
-    """Return a dummy panel object"""
-    dummy_panel = {}
+def testpanel_obj(parsed_panel):
+    """Return a test panel object"""
+    testpanel = {}
 
-    dummy_panel["panel_name"] = parsed_panel["panel_id"]
-    dummy_panel["institute"] = parsed_panel["institute"]
-    dummy_panel["version"] = float(parsed_panel["version"])
-    dummy_panel["date"] = parsed_panel["date"]
-    dummy_panel["display_name"] = parsed_panel["display_name"]
-    dummy_panel["description"] = "A panel description"
-    dummy_panel["genes"] = [
+    testpanel["panel_name"] = parsed_panel["panel_id"]
+    testpanel["institute"] = parsed_panel["institute"]
+    testpanel["version"] = float(parsed_panel["version"])
+    testpanel["date"] = parsed_panel["date"]
+    testpanel["display_name"] = parsed_panel["display_name"]
+    testpanel["description"] = "A panel description"
+    testpanel["genes"] = [
         {"symbol": "AAA", "hgnc_id": 100},
         {"symbol": "BBB", "hgnc_id": 222},
     ]
 
-    return dummy_panel
+    return testpanel
 
 
 @pytest.fixture(scope="function")
@@ -1034,6 +1046,13 @@ def one_sv_variant(request, sv_clinical_file):
     variant_parser = VCF(sv_clinical_file)
 
     variant = next(variant_parser)
+    return variant
+
+
+@pytest.fixture(scope="function")
+def sv_variant_obj(request, parsed_sv_variant):
+    institute_id = "cust000"
+    variant = build_variant(parsed_sv_variant, institute_id=institute_id)
     return variant
 
 

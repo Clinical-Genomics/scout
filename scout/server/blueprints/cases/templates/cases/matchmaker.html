@@ -25,7 +25,7 @@
 {% endblock %}
 
 {% block content_main %}
-{% set panel = panel|int %}
+{% set panel = panel or 1|int %}
 <div class="container-float">
   <div class="card">
     <div class="card-body">
@@ -146,8 +146,8 @@
             </div>
             <div id="div_{{match_obj.match_oid}}" class="collapse" aria-labelledby="heading_{{match_obj.match_oid}}" data-parent="#accordionExample">
               <div class="card-body">
-                <table class="table table-sm table-borderless">
-                  <thead>
+                <table class="table table-bordered">
+                  <thead class="table-secondary">
                     <tr>
                       <th scope="col" style="width: 5%">Score</th>
                       <th scope="col" style="width: 10%">Node</th>
@@ -155,13 +155,12 @@
                       <th scope="col" style="width: 20%">Contact</th>
                       <th scope="col" style="width: 35%">Phenotypes</th>
                       <th scope="col" style="width: 15%">Diagnoses</th>
-                      <th></th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody class="table-secondary">
                     {% for match_result in match_obj.patients %}
                        <tr class="{{ loop.cycle('odd', 'even') }}">
-                         <td style="width: 5%"><span class="badge badge-primary badge-pill">{{match_result.score.patient|round(4)}}</badge></td>
+                         <td style="width: 5%" class="border-bottom-0"><span class="badge badge-primary badge-pill">{{match_result.score.patient|round(4)}}</badge></td>
                          <td style="width: 10%">{{match_result.node.label}}</td>
                          <td style="width: 15%">
                            {% if "http" in match_result.patient_id %}
@@ -187,7 +186,7 @@
                            {% for feature in match_result.patient.features %}
                              <span data-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="badge badge-info">{{feature.label}}({{feature.id}})</span>
                            {% else %}
-                            -
+                           <p class="text-center">-</p> 
                            {% endfor %}
                          </td>
                          <td style="width: 15%">
@@ -196,27 +195,28 @@
                                <span class="badge badge-sm badge-secondary">{{omim.id}}</span>
                              </a>
                            {% else %}
-                            -
+                           <p class="text-center">-</p> 
                            {% endfor %}
                          </td>
                        </tr>
                        <!-- Display candidate genes for matches -->
                        {% if match_result.patient.genomicFeatures%}
                          <tr class="{{ loop.cycle('odd', 'even') }}">
+                           <td class="border-top-0"></td>
                            <td style="width: 20%"><strong>Gene/Variants:</strong></td>
                            <td colspan="5">
                               {% for g_feat in match_result.patient.genomicFeatures %}
-                                <div class="row">
-                                  <div>{{loop.index}}</div>
-                                  <div class="col"><!--gene info-->
-                                    <strong>{{ g_feat.gene._geneName}}</strong>
+                                <div style="display: flex;">
+                                  <div style="margin-left: 20px;"><strong>{{loop.index}}</strong></div>
+                                  <ul>
+                                    <li><strong>{{ g_feat.gene._geneName}}</strong>
                                     <a class="text-white" target="_blank" href="https://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={{g_feat.gene.id}}">
                                       <span class="badge badge-sm badge-secondary">{{g_feat.gene.id}}</span>
-                                    </a>,
-                                    <strong>Variant:</strong>{{g_feat.variant|replace("'", "") or '-'}},
-                                    <strong>Type:</strong>{{g_feat.type|replace("'", "") or '-'}},
-                                    <strong>zygosity:</strong>{{g_feat.zygosity or '-'}}
-                                  </div>
+                                    </a></li>
+                                    <li><strong>Variant: </strong>{{g_feat.variant|replace("'", "") or '-'}}</li>
+                                    <li><strong>Type: </strong>{{g_feat.type|replace("'", "") or '-'}}</li>
+                                    <li><strong>zygosity: </strong>{{g_feat.zygosity or '-'}}</li>
+                                  </ul>
                                 </div>
                               {% endfor %}
                             </div>

@@ -3,8 +3,10 @@ import logging
 import os.path
 from datetime import date
 
+import bson
 from flask import Response, flash, url_for
 from flask_login import current_user
+from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, MultiDict
 from xlsxwriter import Workbook
 
@@ -371,7 +373,13 @@ def parse_variant(
     # We update the variant if some information was missing from loading
     # Or if symbold in reference genes have changed
     if update and has_changed:
-        variant_obj = store.update_variant(variant_obj)
+        try:
+            variant_obj = store.update_variant(variant_obj)
+        except DocumentTooLarge:
+            flash(
+                f"An error occurred while updating info for variant: {variant_obj['_id']} (pymongo_errors.DocumentTooLarge: {len(bson.BSON.encode(variant_obj))})",
+                "warning",
+            )
 
     variant_obj["comments"] = store.events(
         institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True
@@ -955,6 +963,67 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     return form
 
 
+def check_form_gene_symbols(
+    store, case_obj, is_clinical, genome_build, hgnc_symbols, not_found_ids
+):
+    """Check that gene symbols provided by user exist and are up to date.
+       Flash a warning if gene is not found, gene symbol present in panel is outdated
+       or is not found in clinical list when search is performed on clinical variants
+
+     Args:
+        store(adapter.MongoAdapter)
+        case_obj(dict)
+        is_clinical(bool): type of variants (clinical, research)
+        genome_build(str): "37" or "38"
+        hgnc_symbols(list): list of gene symbols (strings)
+        not_found_ids(list): list of HGNC IDs not found if user provided numberical HGNC IDs in search form
+
+    Returns:
+        updated_hgnc_symbols(list): List of gene symbols that are found in database and are up to date
+    """
+    non_clinical_symbols = []
+    not_found_symbols = []
+    outdated_symbols = []
+    updated_hgnc_symbols = []
+
+    clinical_hgnc_ids = store.clinical_hgnc_ids(case_obj)
+    clinical_symbols = store.clinical_symbols(case_obj)
+
+    for hgnc_symbol in hgnc_symbols:
+        hgnc_gene = store.hgnc_genes_find_one(hgnc_symbol, genome_build)
+
+        if hgnc_gene is None:
+            not_found_symbols.append(hgnc_symbol)
+        elif is_clinical and hgnc_gene["hgnc_id"] in clinical_hgnc_ids:
+            updated_hgnc_symbols.append(hgnc_symbol)
+            if hgnc_symbol not in clinical_symbols:
+                # clinical symbols from gene panels might not be up to date with latest gene names
+                # but their HGNC id would still match
+                outdated_symbols.append(hgnc_symbol)
+        else:
+            non_clinical_symbols.append(hgnc_symbol)
+
+    errors = {
+        "non_clinical_symbols": {
+            "alert": "Gene not included in clinical list",
+            "gene_list": non_clinical_symbols,
+        },
+        "not_found_symbols": {"alert": "HGNC symbol not found", "gene_list": not_found_symbols},
+        "not_found_ids": {"alert": "HGNC id not found", "gene_list": not_found_ids},
+        "outdated_symbols": {
+            "alert": "Clinical list contains a panel with an outdated symbol for genes",
+            "gene_list": outdated_symbols,
+        },
+    }
+
+    # warn user if gene symbols are corresponding to any current gene,
+    for error, item in errors.items():
+        if item["gene_list"]:
+            flash(f"{item['alert']}: {item['gene_list']}", "warning")
+
+    return updated_hgnc_symbols
+
+
 def update_form_hgnc_symbols(store, case_obj, form):
     """Update variants filter form with HGNC symbols from HPO, and check if any non-clinical genes for the case were
     requested. If so, flash a warning to the user.
@@ -969,17 +1038,15 @@ def update_form_hgnc_symbols(store, case_obj, form):
     """
 
     hgnc_symbols = []
-    non_clinical_symbols = []
-    not_found_symbols = []
     not_found_ids = []
-    updated_hgnc_symbols = []
+    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
 
     # retrieve current symbols from form
     if form.hgnc_symbols.data:
         # if symbols are numeric HGNC id, translate to current symbols
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
-                hgnc_gene = store.hgnc_gene(int(hgnc_symbol), case_obj["genome_build"])
+                hgnc_gene = store.hgnc_gene(int(hgnc_symbol), genome_build)
                 if hgnc_gene is None:
                     not_found_ids.append(hgnc_symbol)
                 else:
@@ -1000,31 +1067,10 @@ def update_form_hgnc_symbols(store, case_obj, form):
 
     # check if supplied gene symbols exist and are clinical
     is_clinical = form.data.get("variant_type", "clinical") == "clinical"
-    clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
-    for hgnc_symbol in hgnc_symbols:
-        if sum(1 for i in store.hgnc_genes(hgnc_symbol)) == 0:
-            not_found_symbols.append(hgnc_symbol)
-        elif is_clinical and (hgnc_symbol not in clinical_symbols):
-            non_clinical_symbols.append(hgnc_symbol)
-        else:
-            updated_hgnc_symbols.append(hgnc_symbol)
-
-    errors = {
-        "non_clinical_symbols": {
-            "alert": "Gene not included in clinical list",
-            "gene_list": non_clinical_symbols,
-        },
-        "not_found_symbols": {"alert": "HGNC symbol not found", "gene_list": not_found_symbols},
-        "not_found_ids": {"alert": "HGNC id not found", "gene_list": not_found_ids},
-    }
-
-    # warn user
-    for error, item in errors.items():
-        if item["gene_list"]:
-            flash(f"{item['alert']}: {item['gene_list']}", "warning")
-
+    updated_hgnc_symbols = check_form_gene_symbols(
+        store, case_obj, is_clinical, genome_build, hgnc_symbols, not_found_ids
+    )
     form.hgnc_symbols.data = sorted(updated_hgnc_symbols)
-
     return form
 
 
