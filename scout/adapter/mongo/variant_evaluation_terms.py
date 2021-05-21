@@ -9,10 +9,10 @@ LOG = logging.getLogger(__name__)
 
 
 class VariantEvaluationHandler(object):
-    """Interact with variant evalutation information."""
+    """Interact with variant evaluation information."""
 
     def add_evaluation_term(self, evaluation_term_obj):
-        """Add evalutation term for a institute."""
+        """Add evaluation term for a institute."""
         self.evaluation_terms_collection.insert_one(evaluation_term_obj)
 
     def update_evaluation_term(self, institute_obj, term_id, evaluation_term_obj):

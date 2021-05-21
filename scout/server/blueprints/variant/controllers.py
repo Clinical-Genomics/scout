@@ -252,20 +252,20 @@ def variant(
     variant_obj["end_chrom"] = variant_obj.get("end_chrom", variant_obj["chromosome"])
 
     # get dismiss_variant_options
-    evalutation_terms = store.evaluation_terms(
+    evaluation_terms = store.evaluation_terms(
         term_category="dismissal_term",
         analysis_type="cancer" if case_obj.get("track") == "cancer" else None,
         institute_id=institute_obj["internal_id"],
     )
-    dismiss_options = build_variant_evaluation_terms(evalutation_terms)
+    dismiss_options = build_variant_evaluation_terms(evaluation_terms)
 
     # get manual rank options
-    evalutation_terms = store.evaluation_terms(
+    evaluation_terms = store.evaluation_terms(
         term_category="manual_rank",
         analysis_type="cancer" if case_obj.get("track") == "cancer" else None,
         institute_id=institute_obj["internal_id"],
     )
-    manual_rank_options = build_variant_evaluation_terms(evalutation_terms)
+    manual_rank_options = build_variant_evaluation_terms(evaluation_terms)
 
     return {
         "institute": institute_obj,
