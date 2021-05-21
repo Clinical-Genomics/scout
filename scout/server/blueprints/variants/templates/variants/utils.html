@@ -137,7 +137,7 @@
   <div class="row">
     <div class="col-2">
       {{ form.gene_panels.label(class="control-label", data_toggle="tooltip", data_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
-      {{ form.gene_panels(class="selectpicker", size="5") }}
+      {{ form.gene_panels(class="selectpicker") }}
     </div>
     <div class="col-2">
       {{ form.symbol_file.label(class="control-label", data_toggle="tooltip", data_placement="left", title="Load an HGNC gene symbol list file; a text file with one gene symbol starting each row. Extra columns separated with tab are ignored. Comment rows starting with # are ignored.") }}
