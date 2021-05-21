@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
 ### Changed
+- Switch off non-clinical gene warnings when filtering research variants
 
 ## [4.34]
 ### Added
