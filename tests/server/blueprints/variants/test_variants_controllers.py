@@ -383,7 +383,7 @@ def test_update_form_hgnc_symbols_valid_gene_symbol(app, case_obj):
 
     # GIVEN a user trying to filter clinical variants using a valid gene symbol
     form.hgnc_symbols.data = ["POT1"]
-    form.data = {"gene_panels": []}
+    form.data = {"gene_panels": [], "variant_type": "research"}
     updated_form = update_form_hgnc_symbols(store, case_obj, form)
 
     # Form should be updated correctly
@@ -406,7 +406,7 @@ def test_update_form_hgnc_symbols_valid_gene_id(app, case_obj):
 
     # GIVEN a user trying to filter clinical variants using a valid gene ID
     form.hgnc_symbols.data = ["17284"]
-    form.data = {"gene_panels": []}
+    form.data = {"gene_panels": [], "variant_type": "clinical"}
     updated_form = update_form_hgnc_symbols(store, case_obj, form)
 
     # Form should be updated correctly
