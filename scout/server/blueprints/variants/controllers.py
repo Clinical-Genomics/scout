@@ -1000,7 +1000,7 @@ def check_form_gene_symbols(
                 # clinical symbols from gene panels might not be up to date with latest gene names
                 # but their HGNC id would still match
                 outdated_symbols.append(hgnc_symbol)
-        else:
+        elif is_clinical:
             non_clinical_symbols.append(hgnc_symbol)
 
     errors = {
@@ -1008,8 +1008,14 @@ def check_form_gene_symbols(
             "alert": "Gene not included in clinical list",
             "gene_list": non_clinical_symbols,
         },
-        "not_found_symbols": {"alert": "HGNC symbol not found", "gene_list": not_found_symbols},
-        "not_found_ids": {"alert": "HGNC id not found", "gene_list": not_found_ids},
+        "not_found_symbols": {
+            "alert": "HGNC symbol not present in gene collection",
+            "gene_list": not_found_symbols,
+        },
+        "not_found_ids": {
+            "alert": "HGNC id not present in gene collection",
+            "gene_list": not_found_ids,
+        },
         "outdated_symbols": {
             "alert": "Clinical list contains a panel with an outdated symbol for genes",
             "gene_list": outdated_symbols,
