@@ -109,11 +109,11 @@ def configure_extensions(app):
     if app.config.get("GENS_HOST"):
         LOG.info("Gens enabled")
         extensions.gens.init_app(app)
-        
+
     if all([app.config.get("MME_URL"), app.config.get("MME_ACCEPTS"), app.config.get("MME_TOKEN")]):
         LOG.info("MatchMaker Exchange enabled")
         extensions.matchmaker.init_app(app)
-        
+
     if app.config.get("RERUNNER_HOST"):
         LOG.info("Rerunner service enabled")
         # setup LoqusDB
