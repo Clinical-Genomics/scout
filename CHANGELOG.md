@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
 ### Changed
+- Switch off non-clinical gene warnings when filtering research variants
 - Don't display OMIM disease card in case view for cancer cases
 - Refactored Individuals and Causative card in case view for cancer cases
 
