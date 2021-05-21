@@ -55,6 +55,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation for load-configuration rewritten.
 - Add styles to MatchMaker matches table
 - More detailed info on the data shared in MatchMaker submission form
+- Add max-height to all dropdowns in Clinical SNV and INDELs view
 
 ## [4.33.1]
 ### Fixed
