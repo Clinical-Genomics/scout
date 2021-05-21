@@ -6,12 +6,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
-- A new index for hgnc_symbol in hgnc gene collection
+- A new index for hgnc_symbol in the hgnc_gene collection
 - A Pedigree panel in STR page
+- Display Tier I and II variants in case view causatives card for cancer cases
 ### Fixed
 - Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
 ### Changed
 - Switch off non-clinical gene warnings when filtering research variants
+- Don't display OMIM disease card in case view for cancer cases
+- Refactored Individuals and Causative card in case view for cancer cases
 
 ## [4.34]
 ### Added
@@ -82,6 +85,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changed from deprecated db update method
 - Pre-selected fields to run queries with in dashboard page
 - Do not filter by any institute when first accessing the dashboard
+- Removed OMIM panel in case view for cancer cases
+- Display Tier I and II variants in case view causatives panel for cancer cases
+- Refactored Individuals and Causative panels in case view for cancer cases
 
 ## [4.32.1]
 ### Fixed
