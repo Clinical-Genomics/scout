@@ -4,8 +4,11 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-from flask_login import current_user
+from anytree import Node, RenderTree
+from anytree.exporter import DictExporter
 from flask import flash
+from flask_login import current_user
+
 from scout.constants import CASE_STATUSES
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.genes.controllers import gene
@@ -13,12 +16,11 @@ from scout.server.blueprints.variant.utils import predictions
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
 from scout.utils.md5 import generate_md5_key
-from .forms import CaseFilterForm
-from anytree.importer import DictImporter
-from anytree import RenderTree, Node
-from anytree.exporter import DictExporter
 
-TRACKS = {"rare": "Rare Disease", "cancer": "Cancer"}
+from .forms import CaseFilterForm
+
+# Do not assume all cases have a valid track set
+TRACKS = {None: "Rare Disease", "rare": "Rare Disease", "cancer": "Cancer"}
 
 
 def institute(store, institute_id):
@@ -171,7 +173,14 @@ def cases(store, case_query, prioritized_cases_query=None, limit=100):
         case_obj["assignees"] = [
             store.user(user_email) for user_email in case_obj.get("assignees", [])
         ]
-        case_obj["is_rerun"] = len(case_obj.get("analyses", [])) > 0
+        # Check if case was re-runned
+        analyses = case_obj.get("analyses", [])
+        now = datetime.datetime.now()
+        case_obj["is_rerun"] = (
+            len(analyses) > 1
+            or analyses
+            and analyses[0].get("date", now) < case_obj.get("analysis_date", now)
+        )
         case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
         case_obj["display_track"] = TRACKS[case_obj.get("track", "rare")]
         return case_obj
@@ -335,6 +344,17 @@ def gene_variants(store, pymongo_cursor, variant_count, institute_id, page=1, pe
         variants.append(variant_obj)
 
     return {"variants": variants, "more_variants": more_variants}
+
+
+def filters(store, institute_id):
+    """Retrieve all filters for an institute"""
+    filters = []
+    categories = ["cancer", "snv", "str", "sv"]
+    for category in categories:
+        category_filters = store.filters(institute_id, category)
+        filters.extend(category_filters)
+
+    return filters
 
 
 def clinvar_submissions(store, institute_id):
@@ -508,7 +528,7 @@ def get_hgvs(gene_obj):
 
 
 def hgvs_str(gene_symbols, hgvs_p, hgvs_c):
-    """"""
+    """ """
     if hgvs_p[0] != "None":
         return hgvs_p[0]
     if hgvs_c[0] != "None":
@@ -773,3 +793,19 @@ def update_phenomodel(model_id, user_form):
 
     if update_model:
         store.update_phenomodel(model_id=model_id, model_obj=model_dict)
+
+
+def lock_filter(store, user_obj, filter_id):
+    """Lock filter and set owner from"""
+    filter_obj = store.lock_filter(filter_id, user_obj.email)
+    if filter_obj is None:
+        flash("Requested filter could not be locked", "warning")
+    return filter_obj
+
+
+def unlock_filter(store, user_obj, filter_id):
+    """Unlock filter, unset owner"""
+    filter_obj = store.unlock_filter(filter_id, user_obj.email)
+    if filter_obj is None:
+        flash("Requested filter could not be unlocked.", "warning")
+    return filter_obj

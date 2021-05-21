@@ -1,25 +1,23 @@
 import logging
-
 from pprint import pprint as pp
 
-from scout.utils.md5 import generate_md5_key
-from .genotype import parse_genotypes
-from .compound import parse_compounds
-from .clnsig import parse_clnsig
-from .gene import parse_genes
-from .frequency import parse_frequencies, parse_sv_frequencies
-from .conservation import parse_conservations
-from .ids import parse_ids
-from .callers import parse_callers
-from .rank_score import parse_rank_score
-from .coordinates import parse_coordinates
-from .models import parse_genetic_models
-from .transcript import parse_transcripts
-from .deleteriousness import parse_cadd
-
 from scout.constants import CHR_PATTERN
-
 from scout.exceptions import VcfError
+from scout.utils.md5 import generate_md5_key
+
+from .callers import parse_callers
+from .clnsig import parse_clnsig
+from .compound import parse_compounds
+from .conservation import parse_conservations
+from .coordinates import parse_coordinates
+from .deleteriousness import parse_cadd
+from .frequency import parse_frequencies, parse_sv_frequencies
+from .gene import parse_genes
+from .genotype import parse_genotypes
+from .ids import parse_ids
+from .models import parse_genetic_models
+from .rank_score import parse_rank_score
+from .transcript import parse_transcripts
 
 LOG = logging.getLogger(__name__)
 
@@ -247,6 +245,18 @@ def parse_variant(
     somatic_score = variant.INFO.get("SOMATICSCORE")
     if somatic_score:
         parsed_variant["somatic_score"] = int(somatic_score)
+
+    ################# Add mitomap info, from HmtNote #################
+    mitomap_associated_diseases = variant.INFO.get("MitomapAssociatedDiseases")
+    if mitomap_associated_diseases and mitomap_associated_diseases != ".":
+        parsed_variant["mitomap_associated_diseases"] = str(
+            mitomap_associated_diseases.replace("_", " ")
+        )
+
+    ################# Add HmtVar variant id, from HmtNote #################
+    hmtvar_variant_id = variant.INFO.get("HmtVar")
+    if hmtvar_variant_id and hmtvar_variant_id != ".":
+        parsed_variant["hmtvar_variant_id"] = int(hmtvar_variant_id)
 
     ################# Add custom info ##################
     scout_custom_data = variant.INFO.get("SCOUT_CUSTOM")

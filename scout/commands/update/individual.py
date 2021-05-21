@@ -2,6 +2,7 @@
 from pathlib import Path
 
 import click
+
 from scout.server.extensions import store
 
 UPDATE_KEYS = [
@@ -13,6 +14,8 @@ UPDATE_KEYS = [
     "tiddit_coverage_wig",
     "upd_regions_bed",
     "upd_sites_bed",
+    "splice_junctions_bed",  # An indexed junctions .bed.gz file obtained from STAR v2 aligner *.SJ.out.tab file.
+    "rna_coverage_bigwig",  # Coverage islands generated from bam or cram files (RNA-seq analysis)
 ]
 
 
@@ -37,7 +40,7 @@ def individual(case_id, ind, key, value):
         return
     if ind not in individuals:
         click.echo(
-            f"Could not find individual '{ind}' in case individuals. Available individuals for this case: {list(individuals.keys)}"
+            f"Could not find individual '{ind}' in case individuals. Available individuals for this case: {list(individuals.keys())}"
         )
         return
     # If key is null or non-valid, print a list of all the keys that can be updated using this function
@@ -51,7 +54,8 @@ def individual(case_id, ind, key, value):
     # If file is not found on the server, ask if user wants to update the key anyway
     if file_path.exists() is False:
         click.confirm(
-            "The provided path was not found on the server, update key anyway?", abort=True
+            "The provided path was not found on the server, update key anyway?",
+            abort=True,
         )
     # perform the update
     for ind_obj in case_obj["individuals"]:

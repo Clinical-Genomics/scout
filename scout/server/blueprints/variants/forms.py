@@ -3,21 +3,21 @@ import decimal
 import logging
 
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField
 from wtforms import (
     BooleanField,
     DecimalField,
     Field,
-    TextField,
-    SelectMultipleField,
-    SelectField,
     HiddenField,
-    StringField,
     IntegerField,
+    SelectField,
+    SelectMultipleField,
+    StringField,
     SubmitField,
+    TextField,
     validators,
 )
 from wtforms.widgets import TextInput
-from flask_wtf.file import FileField
 
 from scout.constants import (
     CLINSIG_MAP,
@@ -26,11 +26,9 @@ from scout.constants import (
     SO_TERMS,
     SPIDEX_LEVELS,
     SV_TYPES,
-    CHROMOSOMES,
 )
 
 LOG = logging.getLogger(__name__)
-CHROMOSOME_OPTIONS = [("", "All")] + [(chrom, chrom) for chrom in CHROMOSOMES]
 
 CLINSIG_OPTIONS = list(CLINSIG_MAP.items())
 FUNC_ANNOTATIONS = [(term, term.replace("_", " ")) for term in SO_TERMS]
@@ -103,7 +101,9 @@ class VariantFiltersForm(FlaskForm):
     filter_display_name = StringField(default="")
     save_filter = SubmitField(label="Save filter")
     load_filter = SubmitField(label="Load filter")
+    lock_filter = SubmitField(label="Lock filter")
     delete_filter = SubmitField(label="Delete filter")
+    audit_filter = SubmitField(label="Audit filter")
 
     chrom_pos = StringField(
         "Chromosome position",
@@ -111,9 +111,7 @@ class VariantFiltersForm(FlaskForm):
         render_kw={"placeholder": "<chr>:<start pos>-<end pos>[optional +/-<span>]"},
     )
 
-    chrom = SelectField(
-        "Chromosome", [validators.Optional()], choices=CHROMOSOME_OPTIONS, default=""
-    )
+    chrom = NonValidatingSelectField("Chromosome", choices=[], default="")
     start = IntegerField("Start position", [validators.Optional()])
     end = IntegerField("End position", [validators.Optional()])
     cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])
@@ -134,6 +132,7 @@ class FiltersForm(VariantFiltersForm):
     local_obs = IntegerField("Local obs. (archive)")
 
     clinical_filter = SubmitField(label="Clinical filter")
+    clinvar_tag = BooleanField("ClinVar hits")
 
 
 class CancerFiltersForm(VariantFiltersForm):
@@ -147,7 +146,9 @@ class CancerFiltersForm(VariantFiltersForm):
     tumor_frequency = BetterDecimalField(
         "Tumor alt AF >", places=2, validators=[validators.Optional()]
     )
-    mvl_tag = BooleanField("In Managed Variant List")
+    clinvar_tag = BooleanField("ClinVar hits")
+    cosmic_tag = BooleanField("Cosmic hits")
+    mvl_tag = BooleanField("Managed Variants hits")
 
 
 class StrFiltersForm(VariantFiltersForm):

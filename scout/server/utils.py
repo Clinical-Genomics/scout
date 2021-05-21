@@ -1,7 +1,9 @@
 """Common utilities for the server code"""
+import io
 import logging
 import os
-import time
+import pathlib
+import zipfile
 from functools import wraps
 
 from flask import abort, flash, render_template, request
@@ -145,7 +147,11 @@ def case_append_alignments(case_obj):
     ]
 
     for individual in case_obj["individuals"]:
-        append_safe(case_obj, "sample_names", individual.get("display_name"))
+        append_safe(
+            case_obj,
+            "sample_names",
+            case_obj["display_name"] + " - " + individual.get("display_name"),
+        )
         for setting in unwrap_settings:
             file_path = individual.get(setting["path"])
             LOG.debug("filepath %s: ", file_path)
@@ -191,3 +197,23 @@ def find_index(align_file):
         if not os.path.exists(index_file):
             index_file = "{}.bai".format(align_file)
     return index_file
+
+
+def zip_dir_to_obj(path):
+    """
+    Zip the temp files in a directory on the fly and serve the archive to the user
+
+    Args:
+        path: path
+
+    Returns:
+        data(io.BytesIO): zipped data object
+    """
+
+    data = io.BytesIO()
+    with zipfile.ZipFile(data, mode="w") as z:
+        for f_name in pathlib.Path(path).iterdir():
+            z.write(f_name, os.path.basename(f_name))
+    data.seek(0)
+
+    return data

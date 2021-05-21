@@ -6,10 +6,190 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- A new index for hgnc_symbol in the hgnc_gene collection
+- A Pedigree panel in STR page
+- Display Tier I and II variants in case view causatives card for cancer cases
+### Fixed
+- Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
+### Changed
+- Switch off non-clinical gene warnings when filtering research variants
+- Don't display OMIM disease card in case view for cancer cases
+- Refactored Individuals and Causative card in case view for cancer cases
+
+## [4.34]
+### Added
+- Saved filter lock and unlock
+- Filters can optionally be marked audited, logging the filter name, user and date on the case events and general report.
+- Added `ClinVar hits` and `Cosmic hits` in cancer SNVs filters
+- Added `ClinVar hits` to variants filter (rare disease track)
+- Load cancer demo case in docker-compose files (default and demo file)
+- Inclusive-language check using [woke](https://github.com/get-woke/woke) github action
+- Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
+- Grey background for dismissed compounds in variants list and variant page
+- Pin badge for pinned compounds in variants list and variant page
+- Support LoqusDB REST API queries
+- Add a docker-compose-matchmaker under scout/containers/development to test matchmaker locally
+- Script to investigate consequences of symbol search bug
+- Added GATK to list of SV and cancer SV callers
+### Fixed
+- Make MitoMap link work for hg38 again
+- Export Variants feature crashing when one of the variants has no primary transcripts
+- Redirect to last visited variantS page when dismissing variants from variants list
+- Improved matching of SVs Loqus occurrences in other cases
+- Remove padding from the list inside (Matching causatives from other cases) panel
+- Pass None to get_app function in CLI base since passing script_info to app factory functions was deprecated in Flask 2.0
+- Fixed failing tests due to Flask update to version 2.0
+- Speed up user events view
+- Causative view sort out of memory error
+- Use hgnc_id for gene filter query
+- Typo in case controllers displaying an error every time a patient is matched against external MatchMaker nodes
+- Do not crash while attempting an update for variant documents that are too big (> 16 MB)
+- Old STR causatives (and other variants) may not have HGNC symbols - fix sort lambda
+- Check if gene_obj has primary_transcript before trying to access it
+- Warn if a gene manually searched is in a clinical panel with an outdated name when filtering variants
+- ChrPos split js not needed on STR page yet
+### Changed
+- Remove parsing of case `genome_version`, since it's not used anywhere downstream
+- Introduce deprecation warning for Loqus configs that are not dictionaries
+- SV clinical filter no longer filters out sub 100 nt variants
+- Count cases in LoqusDB by variant type
+- Commit pulse repo badge temporarily set to weekly
+- Sort ClinVar submissions objects by ascending "Last evaluated" date
+- Refactored the MatchMaker integration as an extension
+- Replaced some sensitive words as suggested by woke linter
+- Documentation for load-configuration rewritten.
+- Add styles to MatchMaker matches table
+- More detailed info on the data shared in MatchMaker submission form
+- Update and style STR case report
+
+## [4.33.1]
+### Fixed
+- Include markdown for release autodeploy docs
+- Use standard inheritance model in ClinVar (https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt)
+- Fix issue crash with variants that have been unflagged causative not being available in other causatives
+### Added
+### Changed
+
+## [4.33]
+### Fixed
+- Command line crashing when updating an individual not found in database
+- Dashboard page crashing when filters return no data
+- Cancer variants filter by chromosome
+- /api/v1/genes now searches for genes in all genome builds by default
+- Upgraded igv.js to version 2.8.1 (Fixed Unparsable bed record error)
+### Added
+- Autodeploy docs on release
+- Documentation for updating case individuals tracks
+- Filter cases and dashboard stats by analysis track
+### Changed
+- Changed from deprecated db update method
+- Pre-selected fields to run queries with in dashboard page
+- Do not filter by any institute when first accessing the dashboard
+- Removed OMIM panel in case view for cancer cases
+- Display Tier I and II variants in case view causatives panel for cancer cases
+- Refactored Individuals and Causative panels in case view for cancer cases
+
+## [4.32.1]
+### Fixed
+- iSort lint check only
+### Changed
+- Institute cases page crashing when a case has track:Null
+### Added
+
+## [4.32]
+### Added
+- Load and show MITOMAP associated diseases from VCF (INFO field: MitomapAssociatedDiseases, via HmtNote)
+- Show variant allele frequencies for mitochondrial variants (GRCh38 cases)
+- Extend "public" json API with diseases (OMIM) and phenotypes (HPO)
+- HPO gene list download now has option for clinical and non-clinical genes
+- Display gene splice junctions data in sashimi plots
+- Update case individuals with splice junctions tracks
+- Simple Docker compose for development with local build
+- Make Phenomodels subpanels collapsible
+- User side documentation of cytogenomics features (Gens, Chromograph, vcf2cytosure, rhocall)
+- iSort GitHub Action
+- Support LoqusDB REST API queries
+### Fixed
+- Show other causative once, even if several events point to it
+- Filtering variants by mitochondrial chromosome for cases with genome build=38
+- HPO gene search button triggers any warnings for clinical / non-existing genes also on first search
+- Fixed a bug in variants pages caused by MT variants without alt_frequency
+- Tests for CADD score parsing function
+- Fixed the look of IGV settings on SNV variant page
+- Cases analyzed once shown as `rerun`
+- Missing case track on case re-upload
+- Fixed severity rank for SO term "regulatory region ablation"
+### Changed
+- Refactor according to CodeFactor - mostly reuse of duplicated code
+- Phenomodels language adjustment
+- Open variants in a new window (from variants page)
+- Open overlapping and compound variants in a new window (from variant page)
+- gnomAD link points to gnomAD v.3 (build GRCh38) for mitochondrial variants.
+- Display only number of affected genes for dismissed SVs in general report
+- Chromosome build check when populating the variants filter chromosome selection
+- Display mitochondrial and rare diseases coverage report in cases with missing 'rare' track
+
+
+## [4.31.1]
+### Added
+### Changed
+- Remove mitochondrial and coverage report from cancer cases sidebar
+### Fixed
+- ClinVar page when dbSNP id is None
+
+## [4.31]
+### Added
+- gnomAD annotation field in admin guide
+- Export also dynamic panel genes not associated to an HPO term when downloading the HPO panel
+- Primary HGNC transcript info in variant export files
+- Show variant quality (QUAL field from vcf) in the variant summary
+- Load/update PDF gene fusion reports (clinical and research) generated with Arriba
+- Support new MANE annotations from VEP (both MANE Select and MANE Plus Clinical)
+- Display on case activity the event of a user resetting all dismissed variants
+- Support gnomAD population frequencies for mitochondrial variants
+- Anchor links in Casedata ClinVar panels to redirect after renaming individuals
+### Fixed
+- Replace old docs link www.clinicalgenomics.se/scout with new https://clinical-genomics.github.io/scout
+- Page formatting issues whenever case and variant comments contain extremely long strings with no spaces
+- Chromograph images can be one column and have scrollbar. Removed legacy code.
+- Column labels for ClinVar case submission
+- Page crashing looking for LoqusDB observation when variant doesn't exist
+- Missing inheritance models and custom inheritance models on newly created gene panels
+- Accept only numbers in managed variants filter as position and end coordinates
+- SNP id format and links in Variant page, ClinVar submission form and general report
+- Case groups tooltip triggered only when mouse is on the panel header
+### Changed
+- A more compact case groups panel
+- Added landscape orientation CSS style to cancer coverage and QC demo report
+- Improve user documentation to create and save new gene panels
+- Removed option to use space as separator when uploading gene panels
+- Separating the columns of standard and custom inheritance models in gene panels
+- Improved ClinVar instructions for users using non-English Excel
+
+## [4.30.2]
+### Added
+### Fixed
+- Use VEP RefSeq ID if RefSeq list is empty in RefSeq transcripts overview
+- Bug creating variant links for variants with no end_chrom
+### Changed
+
+## [4.30.1]
+### Added
+### Fixed
+- Cryptography dependency fixed to use version < 3.4
+### Changed
+
+## [4.30]
+### Added
 - Introduced a `reset dismiss variant` verb
 - Button to reset all dismissed variants for a case
-- Add black border to ideograms
+- Add black border to Chromograph ideograms
 - Show ClinVar annotations on variantS page
+- Added integration with GENS, copy number visualization tool
+- Added a VUS label to the manual classification variant tags
+- Add additional information to SNV verification emails
+- Tooltips documenting manual annotations from default panels
+- Case groups now show bam files from all cases on align view
 ### Fixed
 - Center initial igv view on variant start with SNV/indels
 - Don't set initial igv view to negative coordinates
@@ -18,12 +198,30 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - LoqusDB field in institute settings accepts only existing Loqus instances
 - Fix DECIPHER link to work after DECIPHER migrated to GRCh38
 - Removed visibility window param from igv.js genes track
-- Always load STR variants regardless of RankScore threshold
+- Updated HPO download URL
+- Patch HPO download test correctly
+- Reference size on STR hover not needed (also wrong)
+- Introduced genome build check (allowed values: 37, 38, "37", "38") on case load
+- Improve case searching by assignee full name
+- Populating the LoqusDB select in institute settings
 ### Changed
 - Cancer variants table header (pop freq etc)
 - Only admin users can modify LoqusDB instance in Institute settings
-- Style of case synopsis and variants and case comments
+- Style of case synopsis, variants and case comments
 - Switched to igv.js 2.7.5
+- Do not choke if case is missing research variants when research requested
+- Count cases in LoqusDB by variant type
+- Introduce deprecation warning for Loqus configs that are not dictionaries
+- Improve create new gene panel form validation
+- Make XM- transcripts less visible if they don't overlap with transcript refseq_id in variant page
+- Color of gene panels and comments panels on cases and variant pages
+- Do not choke if case is missing research variants when reserch requested
+
+## [4.29.1]
+### Added
+### Fixed
+- Always load STR variants regardless of RankScore threshold (hotfix)
+### Changed
 
 ## [4.29]
 ### Added
@@ -482,7 +680,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clear panel pending changes
 - Adds option to setup the database with static files
 - Adds cli command to download the resources from CLI that scout needs
-- Adds dummy files for merged somatic SV and CNV; as well as merged SNV, and INDEL part of #1279
+- Adds test files for merged somatic SV and CNV; as well as merged SNV, and INDEL part of #1279
 - Allows for upload of OMIM-AUTO gene panel from static files without api-key
 
 ### Fixed

@@ -4,9 +4,9 @@ from scout.update.panel import update_panel
 from scout.utils.date import get_date
 
 
-def test_update_panel_version(adapter, case_obj, dummypanel_obj):
+def test_update_panel_version(adapter, case_obj, testpanel_obj):
     adapter.case_collection.insert_one(case_obj)
-    adapter.panel_collection.insert_one(dummypanel_obj)
+    adapter.panel_collection.insert_one(testpanel_obj)
 
     ## GIVEN an adapter with a case with gene panels
     case_obj = adapter.case_collection.find_one()
@@ -42,9 +42,9 @@ def test_update_panel_version(adapter, case_obj, dummypanel_obj):
         assert panel["version"] == new_panel_version
 
 
-def test_update_panel_date(adapter, case_obj, dummypanel_obj):
+def test_update_panel_date(adapter, case_obj, testpanel_obj):
     adapter.case_collection.insert_one(case_obj)
-    adapter.panel_collection.insert_one(dummypanel_obj)
+    adapter.panel_collection.insert_one(testpanel_obj)
 
     ## GIVEN an adapter with a case with gene panels
     new_date_obj = get_date("2015-03-12")
@@ -80,9 +80,9 @@ def test_update_panel_date(adapter, case_obj, dummypanel_obj):
         assert panel["updated_at"] == new_date_obj
 
 
-def test_update_panel_version_multiple(adapter, case_obj, dummypanel_obj):
+def test_update_panel_version_multiple(adapter, case_obj, testpanel_obj):
     adapter.case_collection.insert_one(case_obj)
-    adapter.panel_collection.insert_one(dummypanel_obj)
+    adapter.panel_collection.insert_one(testpanel_obj)
 
     case_obj["_id"] = "test_2"
     # Add another case with same panels

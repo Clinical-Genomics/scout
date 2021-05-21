@@ -11,6 +11,7 @@
 [![GitHub issues-closed][closed-issues-img]][closed-issues-url]
 [![Average time to resolve an issue][ismaintained-resolve-img]][ismaintained-resolve-url]
 [![Percentage of issues still open][ismaintained-open-rate-img]][ismaintained-open-rate-url]
+[![GitHub commit rate](https://img.shields.io/github/commit-activity/w/Clinical-Genomics/scout)](https://GitHub.com/Clinical-Genomics/scout/pulse/)
 [![GitHub commits](https://img.shields.io/github/commits-since/Clinical-Genomics/scout/v4.8.0.svg)](https://GitHub.com/Clinical-Genomics/scout/commit/)
 [![CodeFactor](https://www.codefactor.io/repository/github/clinical-genomics/scout/badge)](https://www.codefactor.io/repository/github/clinical-genomics/scout)
 [![Code style: black][black-image]][black-url]
@@ -23,7 +24,7 @@
 
 ## Documentation
 
-This README only gives a brief overview of Scout, for a more complete reference, please check out our docs: [www.clinicalgenomics.se/scout](http://www.clinicalgenomics.se/scout/).
+This README only gives a brief overview of Scout, for a more complete reference, please check out our docs: https://clinical-genomics.github.io/scout .
 
 ## Runnable demo image - does not require installing of software and database
 
@@ -113,6 +114,12 @@ Scout may be configured to visualize local variant frequencies monitored by [Loq
 Instructions on how to enable this feature can be found in the document
 [loqusdb integration][loqusdb-scout].
 
+## Integration with Gens for displaying copy number profiles for variants
+
+Scout may be configured to link to a local [Gens][gens] installation.
+Instructions on how to enable this feature can be found in the document
+[Gens integration][gens-scout].
+
 ## Server setup
 
 Scout needs a server config to know which databases to connect to etc. Depending on which
@@ -127,7 +134,7 @@ This is an example of the config file:
 # list of email addresses to send errors to in production
 ADMINS = ['paul.anderson@magnolia.com']
 
-MONGO_HOST = 'localhost'		
+MONGO_HOST = 'localhost'
 MONGO_PORT = 27017
 MONGO_DBNAME = 'scout'
 MONGO_USERNAME = 'testUser'
@@ -239,6 +246,8 @@ be found in [CONTRIBUTING](CONTRIBUTING.md).
 [chanjo-scout]: docs/admin-guide/chanjo_coverage_integration.md
 [loqusdb]: https://github.com/moonso/loqusdb
 [loqusdb-scout]: docs/admin-guide/loqusdb_integration.md
+[gens]: https://github.com/Clinical-Genomics-Lund/gens
+[gens-scout]: docs/admin-guide/gens_integration.md
 [matchmaker-pub]: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6016856/
 [matchmaker-scout]: docs/admin-guide/matchmaker_exchange_integration.md
 [matchmaker-scout-sharing]: docs/user-guide/cases.md#matchmaker-exchange-integration

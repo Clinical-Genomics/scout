@@ -1,11 +1,11 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
-{% from "variants/utils.html" import compounds_table, modal_causative %}
-{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, igv_track_selection %}
+{% from "variants/utils.html" import compounds_table %}
+{% from "variant/utils.html" import modal_causative, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, igv_track_selection %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, severity_list, conservations, mappability %}
-{% from "variant/buttons.html" import variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button %}
+{% from "variant/buttons.html" import igv_button, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -221,7 +221,7 @@
       <div class="card-body">
         <ul class="list-group list-group-flush">
           {% for other_variant in causatives %}
-            <li class="list-group-item">
+            <li class="list-group-item" style="padding: 0;">
               <a href="{{ url_for('variant.variant',
                                   institute_id=institute._id,
                                   case_name=other_variant.case_display_name,
@@ -275,24 +275,28 @@
               </span>
             </td>
             <td>
+              {% if not variant.category == "str" %}
               Change
               <span>
-                {%- if variant.reference|length > 8 -%}
-                  <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
-                    style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.reference}}" title="Copy to clipboard">
-                  </button>
-                {%- else -%}
-                  <strong>{{ variant.reference }}</strong>
-                {%- endif -%}
-                  →
-                {%- if variant.alternative|length > 8 -%}
-                  <strong>{{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
-                    style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.alternative}}" title="Copy to clipboard">
+                  {%- if variant.reference|length > 8 -%}
+                    <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+                      style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.reference}}" title="Copy to clipboard">
                     </button>
+                  {%- else -%}
+                    <strong>{{ variant.reference }}</strong>
+                  {%- endif -%}
+                    →
+                  {%- if variant.alternative|length > 8 -%}
+                    <strong>{{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+                      style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.alternative}}" title="Copy to clipboard">
+                    </button>
+                  {%- else -%}
+                    <strong>{{ variant.alternative }}</strong>
+                  {%- endif -%}
                 {%- else -%}
-                  <strong>{{ variant.alternative }}</strong>
+                  <strong>{{ variant.alternative | replace("<", " ") | replace(">", "")}}</strong>
                 {%- endif -%}
-                </span>
+              </span>
             </td>
           </tr>
           {% if variant.str_repid %}
@@ -348,7 +352,7 @@
       {{ acmg_form(variant.acmg_classification.code if variant.acmg_classification) }}
       <div class="mt-3">
         <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
-        {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
+        {% if 'suspects' in case and variant._id in case.suspects and not variant.clinvar_clinsig %}
           <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}"
             class="btn btn-outline-secondary form-control" target="_blank">Submit to ClinVar</a>
         {% endif %}
@@ -387,6 +391,16 @@
               <span><strong>
                 {% if variant.cadd_score %}
                   {{ variant.cadd_score|round(1) }}
+                {% else %}
+                  -
+                {% endif %}
+              </strong></span>
+            </td>
+            <td>
+              QUAL
+              <span><strong>
+                {% if variant.quality %}
+                  {{ variant.quality|int }}
                 {% else %}
                   -
                 {% endif %}
@@ -441,77 +455,59 @@
           </tbody>
         </table>
       {% endif %}
-      <ul class="list-group">
+      {% if variant.mitomap_associated_diseases %}
+        <table class="table table-bordered table-fixed table-sm">
+          <tbody>
+            <tr>
+              <td><strong>MITOMAP associated diseases</strong></td>
+              <td>{{ variant.mitomap_associated_diseases.split('/')|join('<br>')|safe }}</td>
+            </tr>
+        </table>
+      {% endif %}
+      <ul class="list-group mb-3">
         {% if variant.dbsnp_id %}
+          {% set dbsnp_ids = variant.dbsnp_id.split(';') %}
           <li class="list-group-item">
-            SNPedia
+            SNP info
             <span class="float-right">
-              <a target="_blank" href="http://snpedia.com/index.php/{{ variant.dbsnp_id }}">
-                {{ variant.dbsnp_id }}
-              </a>
+              {% for snp in dbsnp_ids %}
+                <a target="_blank" href="{{variant.snp_links[snp]}}">
+                  {{ snp }}
+                </a>
+              {% endfor %}
             </span>
           </li>
         {% endif %}
       </ul>
-        <table class="table table-bordered table-fixed table-sm">
-          <tbody>
-            <tr>
-              <td style="width:20%;">
-                <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
-                  <!-- general hidden fields required to submit POST request to IGV viewer -->
-                  <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
-                  <input type="hidden" name="build" value="{{case.genome_build}}">
-                  <input type="hidden" name="contig" value="{{variant.chromosome}}">
-                  <input type="hidden" name="start" value="{{variant.position - 50}}">
-                  <input type="hidden" name="stop" value="{{variant.position + 50}}">
-                  <!-- end of general hidden form fields -->
-                {% if variant.chromosome == "MT" %}
-                  {% if case.mt_bams %}
-                    <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
-                    <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
-                    <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV viewer</button>
-                  {% else %}
-                    <span class="text-muted">MT BAM file(s) missing</span>
-                  {% endif %}
-                {% elif case.bam_files %}
-                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
-                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
-                  {% if case.rhocall_beds %}
-                    <input type="hidden" name="rhocall_bed" value="{{case.rhocall_beds|join(',')}}">
-                    <input type="hidden" name="rhocall_wig" value="{{case.rhocall_wigs|join(',')}}">
-                  {% endif %}
-                  {% if case.tiddit_coverage_wigs %}
-                    <input type="hidden" name="tiddit_coverage_wig" value="{{case.tiddit_coverage_wigs|join(',')}}">
-                  {% endif %}
-                  {% if case.upd_regions_beds %}
-                    <input type="hidden" name="upd_regions_bed" value="{{case.upd_regions_beds|join(',')}}">
-                  {% endif %}
-                  {% if case.upd_sites_beds %}
-                    <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
-                  {% endif %}
-                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
-                {% else %}
-                  <span class="text-muted">BAM file(s) missing</span>
-                {% endif %}
-              </form>
-              </td>
-              {% if case.mt_bams or case.bam_files %}
-              <td style="width:50%;">
-                {{ igv_track_selection(igv_tracks, current_user) }}
-              </td>
-              {% endif %}
-              {% if config.SQLALCHEMY_DATABASE_URI %}
-                {% for gene in variant.genes %}
-                  <td>
-                    <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
-                      {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                    </a>
-                  </td>
-                {% endfor %}
-              {% endif %}
-            </tr>
-          </tbody>
-        </table>
+      <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between">
+          <div>
+            {{ igv_button(case, variant, case_groups) }}
+          </div>
+
+          {% if config.SQLALCHEMY_DATABASE_URI %}
+          <div class="d-flex flex-wrap">
+            {% for gene in variant.genes %}
+              <span class="ml-5">
+                <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                </a>
+              </span>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </li>
+        <li class="list-group-item">
+          <div>
+            {{ igv_track_selection(igv_tracks, current_user) }}
+          </div>
+        </li>
+        {% if splice_junctions_tracks %}
+          <li class="list-group-item">
+            <div>{{ splice_junctions_button(institute._id, case.display_name, variant._id) }}</div>
+          </li>
+        {% endif %}
+      </ul>
       {% if variant.custom %}
       <table class="table table-bordered table-sm">
 	<thead>
@@ -536,6 +532,7 @@
     </div> <!-- end of card body -->
   </div> <!--  end of card div -->
 {% endmacro %}
+
 
 {% macro compounds_panel() %}
   <div class="card panel-default">
@@ -620,8 +617,11 @@
             <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
           {% endif %}
           <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
-          {% if variant.chromosome == 'MT' %}
-            <a href="https://www.mitomap.org/foswiki/bin/view////Main/SearchAllele" target="_blank">MitoMap</a>
+          {% if variant.chromosome in ['MT','M'] %}
+            <a href="{{ variant.mitomap_link }}" class="btn btn-outline-secondary" target="_blank">MitoMap</a>
+          {% endif %}
+          {% if variant.hmtvar_variant_id %}
+            <a href="{{ variant.hmtvar_link }}" class="btn btn-outline-secondary" target="_blank">HmtVar</a>
           {% endif %}
           {% if gene.tp53_link %}
             <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>

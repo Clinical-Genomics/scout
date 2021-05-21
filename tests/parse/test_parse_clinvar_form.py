@@ -1,7 +1,7 @@
 from scout.parse.clinvar import (
-    set_submission_objects,
-    get_submission_variants,
     clinvar_submission_header,
+    get_submission_variants,
+    set_submission_objects,
 )
 
 

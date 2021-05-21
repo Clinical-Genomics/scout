@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
-{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer %}
-{% from "variants/components.html" import gene_cell, frequency_cell %}
+{% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, mark_heteroplasmic_mt %}
+{% from "variants/components.html" import gene_cell, frequency_cell_general %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} variants
@@ -36,24 +36,23 @@
   {{ super() }}
 {% endblock %}
 {% block content_main %}
-    <div class="container-float">
-      <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
+  <form method="POST" id="filters_form" action="{{url_for('variants.variants', institute_id=institute._id, case_name=case.display_name)}}"
          enctype="multipart/form-data" onsubmit="return validateForm()">
-         {{ pagination_hidden_div(page) }}
-        <div class="card panel-default" id="accordion">
-          <div class="card-header">
-            <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
-          </div>
-          <!--Expand filters form if filters were used in a previous POST request-->
-          <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
-              {{ snv_filters(form, institute, case) }}
-          </div>
-          {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length) }}
-        </div>
-
-      <div class="card mt-3">
-        <table class="table table-hover table-bordered" style="table-layout: fixed">
-          <thead>
+    <div class="container-float">
+     {{ pagination_hidden_div(page) }}
+     <div class="card panel-default" id="accordion">
+       <div class="card-header">
+         <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
+       </div>
+       <!--Expand filters form if filters were used in a previous POST request-->
+       <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
+         {{ snv_filters(form, institute, case) }}
+       </div>
+       {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length) }}
+     </div>
+     <div class="card mt-3">
+       <table class="table table-hover table-bordered" style="table-layout: fixed">
+         <thead>
             <tr>
               <th style="width:3%"></th>
               <th style="width:12%" title="Rank position">Rank </th>
@@ -67,12 +66,12 @@
               <th style="width:18%" title="Inheritance models">Inheritance model</th>
               <th style="width:8%" title="Overlapping">Overlapping</th>
             </tr>
-          </thead>
-          <tbody>
+         </thead>
+         <tbody>
             {% for variant in variants %}
               {% if variant.dismiss_variant %}
                 <tr class="dismiss">
-              {% elif variant._id in case.causatives %}
+              {% elif 'causatives' in case and variant._id in case.causatives %}
                 <tr class="causative">
               {% else %}
                 <tr>
@@ -80,9 +79,14 @@
                 <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
                 <td class="text-left">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
                 <td class="text-right">{{ variant.rank_score|int }}</td>
-                <td>{{ variant.chromosome }}</td>
+                <td>
+                  {{ variant.chromosome }}
+                  {% if variant.chromosome in ["MT","M"] %}
+                    {{ mark_heteroplasmic_mt(case.individuals, variant.samples) }}
+                  {% endif %}
+		            </td>
                 <td>{{ gene_cell(variant) }}</td>
-                <td class="text-right">{{ frequency_cell(variant) }}</td>
+                <td class="text-right">{{ frequency_cell_general(variant) }}</td>
                 <td class="text-right">{{ cell_cadd(variant) }}</td>
                 <td>
                   {% for annotation in variant.region_annotations %}
@@ -104,15 +108,19 @@
                 </td>
               </tr>
             {% endfor %}
-          </tbody>
-        </table>
-        {{ dismiss_variants_block(dismiss_variant_options, institute, case) }}
-      </div><!-- end of <div class="card mt-3">-->
-    </form> <!--end of form containing filters and variants' table elements -->
+         </tbody>
+       </table>
+     </div><!-- end of <div class="card mt-3">-->
     </div> <!-- end of class="container-float"> -->
-    <div class="container-fluid">
-      {{ pagination_footer(more_variants, page) }}
+    <div class="fixed-bottom bg-light border">
+      <div class="pt-2 mx-4">
+        {{ dismiss_variants_block(dismiss_variant_options, institute, case) }}
+      </div>
     </div>
+  </form> <!--end of form containing filters and variants' table elements -->
+  <div class="container-fluid" style="padding-bottom: 100px">
+    {{ pagination_footer(more_variants, page) }}
+  </div>
 {% endblock %}
 
 {% macro cell_cadd(variant) %}
@@ -125,7 +133,7 @@
     </div>
   ">
     {% if variant.cadd_score %}
-      {{ variant.cadd_score|round(1) }}
+      {{ variant.cadd_score|round(1) }}
     {% else %}
       -
     {% endif %}
@@ -196,10 +204,16 @@
 
     window.onload=function() {
       populateCytobands({{cytobands|safe}});
+
+      {{ update_stash_filter_button_status(current_user, filters) }}
     }
 
     $('select[multiple]').selectpicker({
       width: '100%'
+    });
+
+    $("#filters").change(function () {
+      {{ update_stash_filter_button_status(current_user, filters) }}
     });
 
     $(function () {
@@ -225,6 +239,8 @@
         var the_form = document.forms['filters_form'];
         the_form.submit();
       };
+
     });
-  </script>
+   </script>
 {% endblock %}
+

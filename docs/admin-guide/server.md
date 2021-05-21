@@ -59,6 +59,10 @@ GOOGLE = dict(
 # enable the phenomizer service which links HPO phenotype terms to diseases/genes
 PHENOMIZER_USERNAME = 'phenoUser'
 PHENOMIZER_PASSWORD = 'phenoPassword'
+
+# Add a primer order link to complementary method verification emails - customise per genome build
+EXTERNAL_PRIMER_ORDER_LINK_37 = "https://www.primercompany.com/order?chr={chromosome}&pos={position}&build=37"
+EXTERNAL_PRIMER_ORDER_LINK_38 = "https://www.primercompany.com/order?chr={chromosome}&pos={position}"
 ```
 ### Minimal config
 

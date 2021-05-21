@@ -1,13 +1,13 @@
-import pytest
 from pprint import pprint as pp
 
+import pytest
+from cyvcf2 import VCF
+
+from scout.build.managed_variant import build_managed_variant
+from scout.constants import REV_CLINSIG_MAP
 from scout.exceptions.database import IntegrityError
 from scout.parse.variant import parse_variant
 from scout.server.blueprints.variants.controllers import variants
-from scout.constants import REV_CLINSIG_MAP
-from scout.build.managed_variant import build_managed_variant
-
-from cyvcf2 import VCF
 
 
 def test_load_variant(real_populated_database, variant_obj):
@@ -75,7 +75,7 @@ def test_load_vep97_parsed_variant(one_vep97_annotated_variant, real_populated_d
 def test_load_cancer_SV_variant(
     one_cancer_manta_SV_variant, real_populated_database, cancer_case_obj
 ):
-    """ Test loading a cancer SV variant into a mongo database """
+    """Test loading a cancer SV variant into a mongo database"""
 
     # GIVEN a database containing one cancer case
     adapter = real_populated_database

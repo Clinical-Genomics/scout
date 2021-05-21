@@ -1,48 +1,47 @@
 import datetime
 import logging
 import os.path
-import urllib.parse
 from datetime import date
-from pprint import pprint as pp
 
-from flask import Response, flash, request, url_for
+import bson
+from flask import Response, flash, url_for
 from flask_login import current_user
-from flask_mail import Message
+from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, MultiDict
 from xlsxwriter import Workbook
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
-    ACMG_OPTIONS,
     CALLERS,
-    CANCER_TIER_OPTIONS,
-    CLINSIG_MAP,
-    DISMISS_VARIANT_OPTIONS,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+    CANCER_TIER_OPTIONS,
+    CHROMOSOMES,
+    CHROMOSOMES_38,
+    CLINICAL_FILTER_BASE,
+    CLINICAL_FILTER_BASE_CANCER,
+    CLINICAL_FILTER_BASE_SV,
+    DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
-    SEVERE_SO_TERMS,
-    SPIDEX_HUMAN,
-    VERBS_MAP,
+    SO_TERMS,
 )
-from scout.constants.acmg import ACMG_CRITERIA
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
-from scout.server.blueprints.genes.controllers import gene
-from scout.server.blueprints.variant.utils import predictions, clinsig_human
-from scout.server.links import str_source_link, ensembl, cosmic_link
-from scout.server.utils import (
-    case_append_alignments,
-    institute_and_case,
-    user_institutes,
-    variant_case,
-)
-from scout.utils.scout_requests import fetch_refseq_version
+from scout.server.blueprints.variant.utils import clinsig_human, predictions
+from scout.server.links import cosmic_link, str_source_link
+from scout.server.utils import case_append_alignments, institute_and_case
 
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
 LOG = logging.getLogger(__name__)
+
+
+def populate_chrom_choices(form, case_obj):
+    """Populate the option of the chromosome select accordig to the case genome build"""
+    # Populate chromosome choices
+    chromosomes = CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
+    form.chrom.choices = [("", "All")] + [(chrom, chrom) for chrom in chromosomes]
 
 
 def variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
@@ -55,6 +54,8 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
     genome_build = str(case_obj.get("genome_build", "37"))
     if genome_build not in ["37", "38"]:
         genome_build = "37"
+
+    case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
     variants = []
     for variant_obj in variant_res:
@@ -91,7 +92,13 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
 
         variants.append(
             parse_variant(
-                store, institute_obj, case_obj, variant_obj, update=True, genome_build=genome_build
+                store,
+                institute_obj,
+                case_obj,
+                variant_obj,
+                update=True,
+                genome_build=genome_build,
+                case_dismissed_vars=case_dismissed_vars,
             )
         )
 
@@ -137,6 +144,8 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
     if genome_build not in ["37", "38"]:
         genome_build = "37"
 
+    case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
+
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
         # show previous classifications for research variants
         clinical_var_obj = variant_obj
@@ -148,7 +157,14 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
             variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
         variants.append(
-            parse_variant(store, institute_obj, case_obj, variant_obj, genome_build=genome_build)
+            parse_variant(
+                store,
+                institute_obj,
+                case_obj,
+                variant_obj,
+                genome_build=genome_build,
+                case_dismissed_vars=case_dismissed_vars,
+            )
         )
 
     return {"variants": variants, "more_variants": more_variants}
@@ -159,12 +175,33 @@ def str_variants(
 ):
     """Pre-process list of STR variants."""
 
+    return_view_data = {}
+
     # case bam_files for quick access to alignment view.
     case_append_alignments(case_obj)
 
-    return variants(
-        store, institute_obj, case_obj, variants_query, variant_count, page=page, per_page=per_page
+    # Fetch ids for grouped cases and prepare alignment display
+    case_groups = {}
+    if case_obj.get("group"):
+        for group in case_obj.get("group"):
+            case_groups[group] = list(store.cases(group=group))
+            for grouped_case in case_groups[group]:
+                case_append_alignments(grouped_case)
+        return_view_data["case_groups"] = case_groups
+
+    return_view_data.update(
+        variants(
+            store,
+            institute_obj,
+            case_obj,
+            variants_query,
+            variant_count,
+            page=page,
+            per_page=per_page,
+        )
     )
+
+    return return_view_data
 
 
 def get_manual_assessments(variant_obj):
@@ -254,8 +291,39 @@ def get_manual_assessments(variant_obj):
     return assessments
 
 
+def compounds_need_updating(compounds, dismissed):
+    """Checks if the list of compounds for a variant needs to be updated.
+     Returns True or False.
+
+    Args:
+      compounds (list): list of compounds dictionaries
+      dismissed (list): list of case dismissed variant ids
+
+    Returns:
+      True or False (bool)
+    """
+    for compound in compounds:
+        if "not_loaded" not in compound:  # This key should be always present
+            return True
+
+        if compound["variant"] in dismissed and compound.get("is_dismissed") is not True:
+            return True
+
+        if compound.get("is_dismissed") and compound["variant"] not in dismissed:
+            return True
+
+    return False
+
+
 def parse_variant(
-    store, institute_obj, case_obj, variant_obj, update=False, genome_build="37", get_compounds=True
+    store,
+    institute_obj,
+    case_obj,
+    variant_obj,
+    update=False,
+    genome_build="37",
+    get_compounds=True,
+    case_dismissed_vars=[],
 ):
     """Parse information about variants.
     - Adds information about compounds
@@ -266,14 +334,16 @@ def parse_variant(
         case_obj(scout.models.Case)
         variant_obj(scout.models.Variant)
         update(bool): If variant should be updated in database
+        get_compounds(bool): if compounds should be added to added to the returned variant object
         genome_build(str)
+        case_dismissed_vars(list): list of dismissed variants for this case
     """
     has_changed = False
     compounds = variant_obj.get("compounds", [])
+
     if compounds and get_compounds:
-        # Check if we need to add compound information
-        # If it is the first time the case is viewed we fill in some compound information
-        if "not_loaded" not in compounds[0]:
+        # Check if we need to update compound information
+        if compounds_need_updating(compounds, case_dismissed_vars):
             new_compounds = store.update_variant_compounds(variant_obj)
             variant_obj["compounds"] = new_compounds
             has_changed = True
@@ -303,7 +373,13 @@ def parse_variant(
     # We update the variant if some information was missing from loading
     # Or if symbold in reference genes have changed
     if update and has_changed:
-        variant_obj = store.update_variant(variant_obj)
+        try:
+            variant_obj = store.update_variant(variant_obj)
+        except DocumentTooLarge:
+            flash(
+                f"An error occurred while updating info for variant: {variant_obj['_id']} (pymongo_errors.DocumentTooLarge: {len(bson.BSON.encode(variant_obj))})",
+                "warning",
+            )
 
     variant_obj["comments"] = store.events(
         institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True
@@ -333,6 +409,21 @@ def parse_variant(
     variant_obj["str_source_link"] = str_source_link(variant_obj)
     # Format clinvar information
     variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    # Set the gene with most severe consequence as being representative
+    # used for display purposes
+    if variant_genes:
+        first_rep_gene = min(
+            variant_genes, key=lambda gn: SO_TERMS[gn["functional_annotation"]]["rank"]
+        )
+        # get HGVNp identifier from the canonical transcript
+        hgvsp_identifier = None
+        for tc in first_rep_gene["transcripts"]:
+            if tc["is_canonical"]:
+                hgvsp_identifier = tc.get("protein_sequence_name")
+        first_rep_gene["hgvsp_identifier"] = hgvsp_identifier
+        variant_obj["first_rep_gene"] = first_rep_gene
+    else:
+        variant_obj["first_rep_gene"] = None
 
     return variant_obj
 
@@ -362,7 +453,7 @@ def download_variants(store, case_obj, variant_objs):
     headers.add(
         "Content-Disposition",
         "attachment",
-        filename=str(case_obj["display_name"]) + "-filtered_sv-variants.csv",
+        filename=str(case_obj["display_name"]) + "-filtered-variants.csv",
     )
     # return a csv with the exported variants
     return Response(
@@ -398,7 +489,7 @@ def variant_export_lines(store, case_obj, variants_query):
 
         # if variant is in genes
         if gene_list is not None and len(gene_list) > 0:
-            gene_info = variant_export_genes_info(store, gene_list)
+            gene_info = variant_export_genes_info(store, gene_list, case_obj.get("genome_build"))
             variant_line += gene_info
         else:
             empty_col = 0
@@ -424,11 +515,52 @@ def variant_export_lines(store, case_obj, variants_query):
     return export_variants
 
 
-def variant_export_genes_info(store, gene_list):
+def match_gene_txs_variant_txs(variant_gene, hgnc_gene):
+    """Match gene transcript with variant transcript to extract primary and canonical tx info
+
+    Args:
+        variant_gene(dict): A gene dictionary with limited info present in variant.genes.
+                        contains info on which transcript is canonical, hgvs and protein changes
+        hgnc_gene(dict): A gene object obtained from the database containing a complete list of transcripts.
+
+    Returns:
+        canonical_txs, primary_txs(tuple): columns containing canonical and primary transcript info
+    """
+    canonical_txs = []
+    primary_txs = []
+
+    for tx in hgnc_gene.get("transcripts", []):
+        tx_id = tx["ensembl_transcript_id"]
+
+        # collect only primary of refseq trancripts from hgnc_gene gene
+        if not tx.get("refseq_identifiers") and tx.get("is_primary") is False:
+            continue
+
+        for var_tx in variant_gene.get("transcripts", []):
+            if var_tx["transcript_id"] != tx_id:
+                continue
+
+            tx_refseq = tx.get("refseq_id")
+            hgvs = var_tx.get("coding_sequence_name") or "-"
+            pt_change = var_tx.get("protein_sequence_name") or "-"
+
+            # collect info from primary transcripts
+            if tx_refseq in hgnc_gene.get("primary_transcripts", []):
+                primary_txs.append("/".join([tx_refseq or tx_id, hgvs, pt_change]))
+
+            # collect info from canonical transcript
+            if var_tx.get("is_canonical") is True:
+                canonical_txs.append("/".join([tx_refseq or tx_id, hgvs, pt_change]))
+
+    return canonical_txs, primary_txs
+
+
+def variant_export_genes_info(store, gene_list, genome_build="37"):
     """Adds gene info to a list of fields corresponding to a variant to be exported.
 
     Args:
-        gene_list(list) A list of gene objects contained in the variant
+        gene_list(list) A list of gene objects (with limited info) contained in the variant
+        genome_build(str): genome build to export gene list to
 
     Returns:
         gene_info(list) A list of gene-relates string info
@@ -436,35 +568,24 @@ def variant_export_genes_info(store, gene_list):
     gene_ids = []
     gene_names = []
     canonical_txs = []
-    hgvs_c = []
-    pt_c = []
-
+    primary_txs = []
     gene_info = []
 
     for gene_obj in gene_list:
         hgnc_id = gene_obj["hgnc_id"]
-        gene_name = gene(store, hgnc_id)["symbol"]
-
         gene_ids.append(hgnc_id)
-        gene_names.append(gene_name)
+        hgnc_gene = store.hgnc_gene(hgnc_id, genome_build)
+        if hgnc_gene is None:
+            continue
+        gene_names.append(hgnc_gene.get("hgnc_symbol"))
 
-        if gene_obj.get("canonical_transcript"):
-            canonical_txs.append(gene_obj.get("canonical_transcript"))
+        gene_canonical_txs, gene_primary_txs = match_gene_txs_variant_txs(gene_obj, hgnc_gene)
 
-        hgvs_nucleotide = "-"
-        protein_change = "-"
-        # gather HGVS info from gene transcripts
+        canonical_txs += gene_canonical_txs
+        primary_txs += gene_primary_txs
 
-        transcripts_list = gene_obj.get("transcripts")
-        for transcript_obj in transcripts_list:
-            if transcript_obj["transcript_id"] == gene_obj.get("canonical_transcript"):
-                hgvs_nucleotide = transcript_obj.get("coding_sequence_name") or "-"
-                protein_change = transcript_obj.get("protein_sequence_name") or "-"
-        hgvs_c.append(hgvs_nucleotide)
-        pt_c.append(protein_change)
-
-    for item in [gene_ids, gene_names, canonical_txs, hgvs_c, pt_c]:
-        gene_info.append(";".join(str(x) for x in item))
+    for item in [gene_ids, gene_names, canonical_txs, primary_txs]:
+        gene_info.append(" | ".join(str(x) for x in item))
 
     return gene_info
 
@@ -513,20 +634,45 @@ def get_variant_info(genes):
 
 
 def cancer_variants(store, institute_id, case_name, variants_query, variant_count, form, page=1):
-    """Fetch data related to cancer variants for a case."""
+    """Fetch data related to cancer variants for a case.
+
+    For each variant, if one or more gene panels are selected, assign the gene present
+    in the panel as the second representative gene. If no gene panel is selected dont assign such a gene.
+    """
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
     per_page = 50
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
 
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
+    gene_panel_lookup = store.gene_to_panels(case_obj)  # build variant object
     variants_list = []
-
     for variant in variant_res:
-        elem = parse_variant(store, institute_obj, case_obj, variant, update=True)
-        variants_list.append(elem)
+        variant_obj = parse_variant(
+            store,
+            institute_obj,
+            case_obj,
+            variant,
+            update=True,
+            case_dismissed_vars=case_dismissed_vars,
+        )
+        secondary_gene = None
+
+        if (
+            "first_rep_gene" in variant_obj
+            and variant_obj["first_rep_gene"] is not None
+            and variant_obj["first_rep_gene"].get("hgnc_id") not in gene_panel_lookup
+        ):
+            for gene in variant_obj["genes"]:
+                in_panels = set(gene_panel_lookup.get(gene["hgnc_id"], []))
+
+                if len(in_panels & set(form.gene_panels.data)) > 0:
+                    secondary_gene = gene
+        variant_obj["second_rep_gene"] = secondary_gene
+        variants_list.append(variant_obj)
 
     data = dict(
         page=page,
@@ -614,7 +760,20 @@ def gene_panel_choices(institute_obj, case_obj):
 
 
 def populate_filters_form(store, institute_obj, case_obj, user_obj, category, request_form):
-    # Update filter settings if Clinical Filter was requested
+    """Update filter settings if Clinical Filter was requested.
+        Ensure that persistent actions get acted on.
+
+    Args:
+        store: scout.adapter.MongoAdapter
+        institute_obj: scout.models.Institute dict
+        case_obj: scout.models.Case dict
+        user_obj: scout.models.Users
+        category: str
+        request_form: FiltersForm
+
+    Returns:
+        form: FiltersForm
+    """
     form = None
     clinical_filter_panels = []
 
@@ -623,7 +782,6 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
         if panel.get("is_default"):
             default_panels.append(panel["panel_name"])
 
-    # The clinical filter button will only
     if case_obj.get("hpo_clinical_filter"):
         clinical_filter_panels = ["hpo"]
     else:
@@ -632,66 +790,119 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
     FiltersFormClass = VariantFiltersForm
     if category == "snv":
         FiltersFormClass = FiltersForm
-        clinical_filter = MultiDict(
+        clinical_filter_dict = CLINICAL_FILTER_BASE
+        clinical_filter_dict.update(
             {
-                "variant_type": "clinical",
-                "region_annotations": ["exonic", "splicing"],
-                "functional_annotations": SEVERE_SO_TERMS,
-                "clinsig": [4, 5],
-                "clinsig_confident_always_returned": True,
                 "gnomad_frequency": str(institute_obj["frequency_cutoff"]),
                 "gene_panels": clinical_filter_panels,
             }
         )
+        clinical_filter = MultiDict(clinical_filter_dict)
     elif category in ("sv", "cancer_sv"):
         FiltersFormClass = SvFiltersForm
-        clinical_filter = MultiDict(
+        clinical_filter_dict = CLINICAL_FILTER_BASE_SV
+        clinical_filter_dict.update(
             {
-                "variant_type": "clinical",
-                "region_annotations": ["exonic", "splicing"],
-                "functional_annotations": SEVERE_SO_TERMS,
-                "thousand_genomes_frequency": str(institute_obj["frequency_cutoff"]),
-                "clingen_ngi": 10,
-                "swegen": 10,
-                "size": 100,
                 "gene_panels": clinical_filter_panels,
             }
         )
+        clinical_filter = MultiDict(clinical_filter_dict)
     elif category == "cancer":
         FiltersFormClass = CancerFiltersForm
-        clinical_filter = MultiDict(
+        clinical_filter_dict = CLINICAL_FILTER_BASE_CANCER
+        clinical_filter_dict.update(
             {
-                "variant_type": "clinical",
-                "region_annotations": ["exonic", "splicing"],
-                "functional_annotations": SEVERE_SO_TERMS,
+                "gene_panels": clinical_filter_panels,
             }
         )
+        clinical_filter = MultiDict(clinical_filter_dict)
+
     elif category == "str":
         FiltersFormClass = StrFiltersForm
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)
-    elif bool(request_form.get("save_filter")):
+    else:
+        form = persistent_filter_actions(
+            store, institute_obj, case_obj, user_obj, category, request_form, FiltersFormClass
+        )
+
+    return form
+
+
+def persistent_filter_actions(
+    store, institute_obj, case_obj, user_obj, category, request_form, FiltersFormClass
+):
+    """Act on persistent filter action requests.
+        Check request form for what action, call corresponding adapter function and then update Form.
+
+    Args
+        store: scout.adapter.MongoAdapter
+        institute_obj: scout.models.Institute dict
+        case_obj: scout.models.Case dict
+        user_obj: scout.models.Users
+        category: str
+        request_form: FiltersForm
+        FiltersFormClass: FiltersFormClass
+
+    Returns:
+        form: FiltersForm
+    """
+
+    form = None
+
+    if bool(request_form.get("lock_filter")):
+        filter_id = request_form.get("filters")
+
+        filter_obj = store.retrieve_filter(filter_id)
+        if not filter_obj:
+            flash("Requested filter could not be found", "warning")
+            return form
+
+        if filter_obj.get("lock"):
+            filter_obj = store.unlock_filter(filter_id, current_user.email)
+        else:
+            filter_obj = store.lock_filter(filter_id, current_user.email)
+
+        if filter_obj is not None:
+            form = FiltersFormClass(request_form)
+        else:
+            flash("Requested filter lock could not be toggled", "warning")
+            form = FiltersFormClass(request_form)
+
+    if bool(request_form.get("audit_filter")):
+        filter_id = request_form.get("filters")
+        filter_obj = store.audit_filter(filter_id, institute_obj, case_obj, user_obj, category)
+        if filter_obj is not None:
+            form = FiltersFormClass(request_form)
+        else:
+            flash("Requested filter could not be audited.", "warning")
+            form = FiltersFormClass(request_form)
+
+    if bool(request_form.get("save_filter")):
         # The form should be applied and remain set the page after saving
         form = FiltersFormClass(request_form)
         # Stash the filter to db to make available for this institute
         filter_obj = request_form
         store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category)
-    elif bool(request_form.get("load_filter")):
+
+    if bool(request_form.get("load_filter")):
         filter_id = request_form.get("filters")
         filter_obj = store.retrieve_filter(filter_id)
         if filter_obj is not None:
             form = FiltersFormClass(MultiDict(filter_obj))
         else:
             flash("Requested filter was not found", "warning")
-    elif bool(request_form.get("delete_filter")):
+
+    if bool(request_form.get("delete_filter")):
         filter_id = request_form.get("filters")
         institute_id = institute_obj.get("_id")
         filter_obj = store.delete_filter(filter_id, institute_id, current_user.email)
         if filter_obj is not None:
             form = FiltersFormClass(request_form)
         else:
-            flash("Requested filter was not found", "warning")
+            flash("Requested filter was locked or not found", "warning")
+
     if form is None:
         form = FiltersFormClass(request_form)
 
@@ -746,49 +957,112 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
             store, institute_obj, case_obj, user_obj, category, request_obj.form
         )
 
-    # populate filters dropdown
-    available_filters = store.filters(institute_obj["_id"], category)
-    form.filters.choices = [
-        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
-    ]
-
     # populate available panel choices
     form.gene_panels.choices = gene_panel_choices(institute_obj, case_obj)
 
-    # check if supplied gene symbols exist
-    hgnc_symbols = []
+    return form
+
+
+def check_form_gene_symbols(
+    store, case_obj, is_clinical, genome_build, hgnc_symbols, not_found_ids
+):
+    """Check that gene symbols provided by user exist and are up to date.
+       Flash a warning if gene is not found, gene symbol present in panel is outdated
+       or is not found in clinical list when search is performed on clinical variants
+
+     Args:
+        store(adapter.MongoAdapter)
+        case_obj(dict)
+        is_clinical(bool): type of variants (clinical, research)
+        genome_build(str): "37" or "38"
+        hgnc_symbols(list): list of gene symbols (strings)
+        not_found_ids(list): list of HGNC IDs not found if user provided numberical HGNC IDs in search form
+
+    Returns:
+        updated_hgnc_symbols(list): List of gene symbols that are found in database and are up to date
+    """
     non_clinical_symbols = []
     not_found_symbols = []
+    outdated_symbols = []
+    updated_hgnc_symbols = []
+
+    clinical_hgnc_ids = store.clinical_hgnc_ids(case_obj)
+    clinical_symbols = store.clinical_symbols(case_obj)
+
+    for hgnc_symbol in hgnc_symbols:
+        hgnc_gene = store.hgnc_genes_find_one(hgnc_symbol, genome_build)
+
+        if hgnc_gene is None:
+            not_found_symbols.append(hgnc_symbol)
+        elif is_clinical is False:  # research variants
+            updated_hgnc_symbols.append(hgnc_symbol)
+        elif hgnc_gene["hgnc_id"] in clinical_hgnc_ids:  # clinical variants
+            updated_hgnc_symbols.append(hgnc_symbol)
+            if hgnc_symbol not in clinical_symbols:
+                # clinical symbols from gene panels might not be up to date with latest gene names
+                # but their HGNC id would still match
+                outdated_symbols.append(hgnc_symbol)
+        else:  # clinical variants
+            non_clinical_symbols.append(hgnc_symbol)
+
+    errors = {
+        "non_clinical_symbols": {
+            "alert": "Gene not included in case clinical list",
+            "gene_list": non_clinical_symbols,
+        },
+        "not_found_symbols": {
+            "alert": "HGNC symbol not present in genes collection",
+            "gene_list": not_found_symbols,
+        },
+        "not_found_ids": {
+            "alert": "HGNC id not present in genes collection",
+            "gene_list": not_found_ids,
+        },
+        "outdated_symbols": {
+            "alert": "Clinical list contains a panel with an outdated symbol for genes",
+            "gene_list": outdated_symbols,
+        },
+    }
+
+    # warn user if gene symbols are corresponding to any current gene,
+    for error, item in errors.items():
+        if item["gene_list"]:
+            flash(f"{item['alert']}: {item['gene_list']}", "warning")
+
+    return updated_hgnc_symbols
+
+
+def update_form_hgnc_symbols(store, case_obj, form):
+    """Update variants filter form with HGNC symbols from HPO, and check if any non-clinical genes for the case were
+    requested. If so, flash a warning to the user.
+
+    Accepts:
+        store(adapter.MongoAdapter)
+        case_obj(dict)
+        form(FiltersForm)
+
+    Returns:
+        form(FiltersForm)
+    """
+
+    hgnc_symbols = []
     not_found_ids = []
-    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
-        is_clinical = form.data.get("variant_type", "clinical") == "clinical"
-        clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
+    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
+
+    # retrieve current symbols from form
+    if form.hgnc_symbols.data:
+        # if symbols are numeric HGNC id, translate to current symbols
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
-                hgnc_gene = store.hgnc_gene(int(hgnc_symbol), case_obj["genome_build"])
+                hgnc_gene = store.hgnc_gene(int(hgnc_symbol), genome_build)
                 if hgnc_gene is None:
                     not_found_ids.append(hgnc_symbol)
                 else:
                     hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
-            elif sum(1 for i in store.hgnc_genes(hgnc_symbol)) == 0:
-                not_found_symbols.append(hgnc_symbol)
-            elif is_clinical and (hgnc_symbol not in clinical_symbols):
-                non_clinical_symbols.append(hgnc_symbol)
             else:
                 hgnc_symbols.append(hgnc_symbol)
 
-    if not_found_ids:
-        flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
-    if not_found_symbols:
-        flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning")
-    if non_clinical_symbols:
-        flash(
-            "Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)),
-            "warning",
-        )
-    form.hgnc_symbols.data = hgnc_symbols
-
-    # handle HPO gene list separately
+    # add HPO genes to list, if they were missing
     if "hpo" in form.data["gene_panels"]:
         hpo_symbols = list(
             set(term_obj["hgnc_symbol"] for term_obj in case_obj["dynamic_gene_list"])
@@ -796,8 +1070,15 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
 
         current_symbols = set(hgnc_symbols)
         current_symbols.update(hpo_symbols)
-        form.hgnc_symbols.data = list(current_symbols)
 
+        hgnc_symbols = list(current_symbols)
+
+    # check if supplied gene symbols exist and are clinical
+    is_clinical = form.data.get("variant_type", "clinical") == "clinical"
+    updated_hgnc_symbols = check_form_gene_symbols(
+        store, case_obj, is_clinical, genome_build, hgnc_symbols, not_found_ids
+    )
+    form.hgnc_symbols.data = sorted(updated_hgnc_symbols)
     return form
 
 
@@ -878,6 +1159,14 @@ def reset_all_dimissed(store, institute_obj, case_obj):
         case_obj(dict): a case dictionary
     """
     evaluated_vars = store.evaluated_variants(case_id=case_obj["_id"])
+    user_obj = store.user(current_user.email)
+    # Create an associated case-level event
+    link = url_for(
+        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+    )
+    store.order_dismissed_variants_reset(institute_obj, case_obj, user_obj, link)
+
+    # Reset dismissed for each single dismissed variant
     for variant in evaluated_vars:
         if not variant.get("dismiss_variant"):  # not a dismissed variant
             continue
@@ -888,8 +1177,7 @@ def reset_all_dimissed(store, institute_obj, case_obj):
             case_name=case_obj["display_name"],
             variant_id=variant["_id"],
         )
-        user = store.user(current_user.email)
-        store.update_dismiss_variant(institute_obj, case_obj, user, link, variant, [])
+        store.update_dismiss_variant(institute_obj, case_obj, user_obj, link, variant, [])
 
 
 def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_list, dismiss_reasons):

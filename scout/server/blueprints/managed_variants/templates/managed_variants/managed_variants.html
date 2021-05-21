@@ -150,7 +150,7 @@
       <td>{{ modify_form.category(class_="form-control") }}</td>
       <td>
          <div class="input-group">
-           <input type="text" class="form-control" name="description" id="description" value="{{ variant.description }}">
+           <input type="text" class="form-control" name="description" id="description" value="{{ variant.description }}">
            <button name="add_variant" id="add_variant" type="submit" class="btn btn-primary btn-sm">Save</button>
            <button name="cancel" id="cancel" type="cancel" class="btn btn-outline-secondary btn-sm">Cancel</button>
          </div>
@@ -165,7 +165,7 @@
       <div class="col-sm-5 text-center">
         <input type="file" name="csv_file" class="custom-file-input" required>
         <label class="custom-file-label" for="csv_file">Choose file</label><br>
-        <p class="help-block">How do I format my <a href="https://www.clinicalgenomics.se/scout/user-guide/panels/#uploading-a-new-gene-panel-version">managed variants file</a>?</p>
+        <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/panels/#uploading-a-new-gene-panel-version">managed variants file</a>?</p>
       </div>
     </div>
     <div class="row">
@@ -217,9 +217,7 @@
 {% endmacro %}
 
 {% macro filter_variants_form() %}
-
     {{ filters_form.csrf_token }}
-
     <div class="row">
       <div class="col-2">
         {{ wtf.form_field(filters_form.category)}}
@@ -236,10 +234,10 @@
         {{ wtf.form_field(filters_form.chromosome) }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.position) }}
+        {{ wtf.form_field(filters_form.position, type="number") }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.end) }}
+        {{ wtf.form_field(filters_form.end, type="number") }}
       </div>
       <div class="col-2">
         {{ wtf.form_field(filters_form.cytoband_start) }}

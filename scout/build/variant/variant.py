@@ -234,6 +234,13 @@ def build_variant(
     if "str_source" in variant:
         variant_obj["str_source"] = variant["str_source"]
 
+    # Mitochondria specific
+    if "mitomap_associated_diseases" in variant:
+        variant_obj["mitomap_associated_diseases"] = variant["mitomap_associated_diseases"]
+
+    if "hmtvar_variant_id" in variant:
+        variant_obj["hmtvar_variant_id"] = variant["hmtvar_variant_id"]
+
     gt_types = []
     for sample in variant.get("samples", []):
         gt_call = build_genotype(sample)
@@ -366,6 +373,14 @@ def build_variant(
 
     if frequencies.get("gnomad_max"):
         variant_obj["max_gnomad_frequency"] = float(frequencies["gnomad_max"])
+
+    if frequencies.get("gnomad_mt_homoplasmic"):
+        variant_obj["gnomad_mt_homoplasmic_frequency"] = float(frequencies["gnomad_mt_homoplasmic"])
+
+    if frequencies.get("gnomad_mt_heteroplasmic"):
+        variant_obj["gnomad_mt_heteroplasmic_frequency"] = float(
+            frequencies["gnomad_mt_heteroplasmic"]
+        )
 
     if frequencies.get("thousand_g_left"):
         variant_obj["thousand_genomes_frequency_left"] = float(frequencies["thousand_g_left"])

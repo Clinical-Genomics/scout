@@ -1,11 +1,10 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
-{% from "variants/utils.html" import modal_causative %}
 {% from "variant/variant_details.html" import old_observations %}
-{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, sv_alignments, pin_button, causative_button, igv_track_selection %}
+{% from "variant/utils.html" import modal_causative, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, sv_alignments, pin_button, causative_button, igv_track_selection %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, genemodels_panel %}
 {% from "variant/variant_details.html" import gtcall_panel, frequencies, observations_panel %}
-{% from "variant/buttons.html" import variant_tag_button, dismiss_variant_button %}
+{% from "variant/buttons.html" import variant_tag_button, dismiss_variant_button, splice_junctions_button %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -192,6 +191,16 @@
             </div>
           </div>
         </li>
+        {% if gens_info.display %}
+        <li class="list-group-item">
+          Copy number profile
+          <div class="float-right">
+            {% for sample in variant.samples %}
+              <a class="btn btn-outline-dark" target="_blank" href="http://{{gens_info.host}}/{{sample.display_name}}?region={{variant.chromosome}}:{{variant.position-2000}}-{{variant.end+2000}}&variant={{variant._id}}&hg_type={{gens_info.genome_build}}", {{variant.chromosome}})>Gens {{ sample.display_name }}</a>
+            {% endfor %}
+          </div>
+        </li>
+        {% endif %}
         <li class="list-group-item">
           <div class="row d-flex justify-content-between">
             <div>Breakpoint 1</div>
@@ -227,6 +236,11 @@
             {{ igv_track_selection(igv_tracks, current_user) }}
           </li>
         {% endif %}
+        {% if splice_junctions_tracks %}
+          <li class="list-group-item">
+            {{ splice_junctions_button(institute._id, case.display_name, variant._id) }}
+          </li>
+        {% endif %}
       <li class="list-group-item">
         <div class="row d-flex justify-content-between">
           <div>Type</div><div class="float-right">{{ variant.sub_category|upper }}</div>
@@ -241,7 +255,7 @@
         </li>
         {% endfor %}
       {% endif %}
-      {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
+      {% if 'suspects' in case and variant._id in case.suspects and not variant.clinvar_clinsig %}
         <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-default form-control" target="_blank">Submit to ClinVar</a>
       {% endif %}
       {% if variant.clinvar_clinsig%}

@@ -1,17 +1,75 @@
 import copy
 import logging
-from scout.constants import EXPORT_HEADER
-from scout.server.blueprints.variants.controllers import (
-    gene_panel_choices,
-    variants_export_header,
-    variant_export_lines,
-    variants,
-    sv_variants,
-)
 
 from bson.objectid import ObjectId
+from flask_wtf import FlaskForm
+from wtforms import SelectField, StringField
+
+from scout.constants import CHROMOSOMES_38, EXPORT_HEADER
+from scout.server.blueprints.variants.controllers import (
+    compounds_need_updating,
+    gene_panel_choices,
+    match_gene_txs_variant_txs,
+    populate_chrom_choices,
+    sv_variants,
+    update_form_hgnc_symbols,
+    variant_export_lines,
+    variants,
+    variants_export_header,
+)
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
+
+
+def test_compounds_need_updating():
+    """Test function that checks if variant compound objects need updating"""
+
+    # GIVEN a list of compounds for a variant missing the "not loaded key"
+    compounds = [{"variant": "aaa"}, {"variant": "bbb"}]
+    # THEN the function that checks if the compounds need updating should return True
+    assert compounds_need_updating(compounds, []) is True
+
+    # GIVEN a list of dismissed variants for a case
+    dismissed_variants = ["aaa", "ddd"]
+
+    # GIVEN a list of compounds with a compound missing dismissed status
+    # THEN the function that checks if the compounds need updating should return True
+    assert compounds_need_updating(compounds, dismissed_variants) is True
+
+    # GIVEN a list of compounds with a dismissed one that is not up-to-date (not in list of case dismissed variants)
+    compounds = [{"variant": "ccc", "is_dismissed": True}, {"variant": "bbb"}]
+    # THEN the function that checks if the compounds need updating should return True
+    assert compounds_need_updating(compounds, dismissed_variants) is True
+
+    # GIVEN an up-to-date list of compounds
+    compounds = [
+        {"variant": "aaa", "is_dismissed": True, "not_loaded": False},
+        {"variant": "bbb", "not_loaded": True},
+    ]
+    # THEN the function that checks if the compounds need updating should return False
+    assert compounds_need_updating(compounds, dismissed_variants) is False
+
+
+def test_populate_chrom_choices(app):
+    """Test the function that populates the choices of the chromosome select in variants filters"""
+
+    # GIVEN a variants filter form
+    with app.test_client() as client:
+
+        class TestForm(FlaskForm):
+            chrom = SelectField("Chromosome", choices=[], default="")
+
+        form = TestForm()
+
+    # IF the case build is 38
+    case = {"genome_build": "38"}
+    # THEN chromosome choices should correspond to genome build 38 chromosomes
+    populate_chrom_choices(form, case)
+    choices = form.chrom.choices
+
+    for nr, choice in enumerate(choices[1:]):  # first choice is not a chromosome, but all chroms
+        assert choice[0] == CHROMOSOMES_38[nr]
 
 
 def test_gene_panel_choices(institute_obj, case_obj):
@@ -233,6 +291,48 @@ def test_sv_variants_research_shadow_clinical_assessments(
     assert any([variant.get("clinical_assessments") for variant in res_variants])
 
 
+def test_match_gene_txs_variant_txs():
+    """Test function matching gene and variant transcripts to export variants to file"""
+
+    variant_gene = {
+        "hgnc_id": 17284,
+        "transcripts": [
+            {
+                "transcript_id": "ENST00000357628",  # canonical
+                "coding_sequence_name": "c.903G>T",
+                "protein_sequence_name": "p.Gln301His",
+                "is_canonical": True,
+            },
+            {
+                "transcript_id": "ENST00000393329",  # primary
+                "coding_sequence_name": "c.510G>T",
+                "protein_sequence_name": "p.Gln170His",
+            },
+        ],
+    }
+    hgnc_gene = {
+        "hgnc_id": 17284,
+        "primary_transcripts": ["NM_001042594"],
+        "transcripts": [
+            {
+                "ensembl_transcript_id": "ENST00000357628",  # canonical
+                "refseq_identifiers": ["NM_015450"],
+                "refseq_id": "NM_015450",
+            },
+            {
+                "ensembl_transcript_id": "ENST00000393329",  # primary
+                "is_primary": True,
+                "refseq_identifiers": ["NM_001042594"],
+                "refseq_id": "NM_001042594",
+            },
+        ],
+    }
+
+    canonical_txs, primary_txs = match_gene_txs_variant_txs(variant_gene, hgnc_gene)
+    assert canonical_txs == ["NM_015450/c.903G>T/p.Gln301His"]
+    assert primary_txs == ["NM_001042594/c.510G>T/p.Gln170His"]
+
+
 def test_variant_csv_export(real_variant_database, case_obj):
     adapter = real_variant_database
     case_id = case_obj["_id"]
@@ -265,3 +365,49 @@ def test_variant_csv_export(real_variant_database, case_obj):
     for export_line in export_lines:
         export_cols = export_line.split(",")
         assert len(export_cols) == len(export_header)
+
+
+def test_update_form_hgnc_symbols_valid_gene_symbol(app, case_obj):
+    """Test controller that populates HGNC symbols form filter in variants page. Provide valid gene symbol"""
+
+    # GIVEN a case analysed with a gene panel
+    test_panel = store.panel_collection.find_one()
+    case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
+
+    # GIVEN a variants filter form
+    class TestForm(FlaskForm):
+        hgnc_symbols = StringField()
+        data = StringField()
+
+    form = TestForm()
+
+    # GIVEN a user trying to filter research variants using a valid gene symbol
+    form.hgnc_symbols.data = ["POT1"]
+    form.data = {"gene_panels": [], "variant_type": "research"}
+    updated_form = update_form_hgnc_symbols(store, case_obj, form)
+
+    # Form should be updated correctly
+    assert form.hgnc_symbols.data == ["POT1"]
+
+
+def test_update_form_hgnc_symbols_valid_gene_id(app, case_obj):
+    """Test controller that populates HGNC symbols form filter in variants page. Provide HGNC ID"""
+
+    # GIVEN a case analysed with a gene panel
+    test_panel = store.panel_collection.find_one()
+    case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
+
+    # GIVEN a variants filter form
+    class TestForm(FlaskForm):
+        hgnc_symbols = StringField()
+        data = StringField()
+
+    form = TestForm()
+
+    # GIVEN a user trying to filter clinical variants using a valid gene ID
+    form.hgnc_symbols.data = ["17284"]
+    form.data = {"gene_panels": [], "variant_type": "clinical"}
+    updated_form = update_form_hgnc_symbols(store, case_obj, form)
+
+    # Form should be updated correctly
+    assert form.hgnc_symbols.data == ["POT1"]

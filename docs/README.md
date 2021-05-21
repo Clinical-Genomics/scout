@@ -1,5 +1,5 @@
 <p align="center">
-	<a href="http://www.clinicalgenomics.se/scout">
+	<a href="https://clinical-genomics.github.io/scout">
 		<img height="165" width="637" src="img/logo-display.png">
 	</a>
 	<h3 align="center">Analyze VCFs and collaborate on solving rare diseases quicker</h3>
@@ -11,6 +11,8 @@
 - **Aggregation** - Combine results from multiple analyses and VCFs into a centralized database.
 - **Collaboration** - Write comments and share cases between users and institutes.
 
-<p align="center"><img height="450" width="800" src="img/v4.png"></p>
+![v4](img/v4.png)
 
-**New entry in the blog**: [What's new in 4.20?](blog/new-4.20.md)
+**Latest entry in the blog**: [What's new in 4.34?](blog/new-4.34.md)
+
+**Version migration issues**: [Breaking](admin-guide/breaking.md)

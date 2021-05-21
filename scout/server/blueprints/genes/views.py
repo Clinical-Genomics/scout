@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from flask import abort, Blueprint, request, jsonify, redirect, url_for, flash
+from flask import Blueprint, abort, flash, jsonify, redirect, request, url_for
 
 from scout.server.extensions import store
-from scout.server.utils import templated, public_endpoint
+from scout.server.utils import public_endpoint, templated
+
 from . import controllers
 
 genes_bp = Blueprint("genes", __name__, template_folder="templates")
@@ -49,5 +50,6 @@ def gene(hgnc_id=None, hgnc_symbol=None):
 def api_genes():
     """Return JSON data about genes."""
     query = request.args.get("query")
-    json_out = controllers.genes_to_json(store, query)
+    build = request.args.get("build", "all")
+    json_out = controllers.genes_to_json(store, query, build)
     return jsonify(json_out)

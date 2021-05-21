@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from scout.parse.variant import parse_variant
 from scout.exceptions import VcfError
+from scout.parse.variant import parse_variant
 
 
 def test_parse_minimal(one_variant, case_obj):
@@ -70,17 +70,6 @@ def test_parse_many_strs(str_variants, case_obj):
         assert parsed_variant["chromosome"] == variant.CHROM
 
 
-def test_parse_cadd(variants, case_obj):
-    # GIVEN some parsed variant dicts
-    for variant in variants:
-        # WHEN score is present
-        if "CADD" in variant.INFO:
-            cadd_score = float(variant.INFO["CADD"])
-            parsed_variant = parse_variant(variant, case_obj)
-            # THEN make sure that the cadd score is parsed correct
-            assert parsed_variant["cadd_score"] == cadd_score
-
-
 def test_parse_revel(cyvcf2_variant, case_obj):
     ## GIVEN a variant with REVEL score in the CSQ entry
     csq_header = "ALLELE|CONSEQUENCE|REVEL_rankscore"
@@ -103,3 +92,27 @@ def test_parse_customannotation(one_variant_customannotation, case_obj):
     """Test parsing of custom annotations"""
     parsed_variant = parse_variant(one_variant_customannotation, case_obj)
     assert parsed_variant["custom"] == [["key1", "val1"], ["key2", "val2"]]
+
+
+def test_parse_mitomapassociateddiseases(cyvcf2_variant, case_obj):
+    """Test parsing HmtVar value from variant annotated with HmtNote"""
+
+    # GIVEN a variant containing HmtVar key in the INFO field:
+    cyvcf2_variant.INFO["MitomapAssociatedDiseases"] = "LHON"
+
+    # THEN make sure that it is parsed correctly
+    mitomap_associated_diseases = cyvcf2_variant.INFO["MitomapAssociatedDiseases"]
+    parsed_variant = parse_variant(cyvcf2_variant, case_obj)
+    assert parsed_variant["mitomap_associated_diseases"] == mitomap_associated_diseases
+
+
+def test_parse_hmtvar(cyvcf2_variant, case_obj):
+    """Test parsing HmtVar value from variant annotated with HmtNote"""
+
+    # GIVEN a variant containing HmtVar key in the INFO field:
+    cyvcf2_variant.INFO["HmtVar"] = "39192"
+
+    # THEN make sure that it is parsed correctly
+    hmtvar_variant_id = int(cyvcf2_variant.INFO["HmtVar"])
+    parsed_variant = parse_variant(cyvcf2_variant, case_obj)
+    assert parsed_variant["hmtvar_variant_id"] == hmtvar_variant_id

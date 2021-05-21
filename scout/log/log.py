@@ -1,6 +1,6 @@
+import logging
 import os
 import sys
-import logging
 
 
 def init_log(logger, filename=None, loglevel=None):

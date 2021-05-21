@@ -1,8 +1,8 @@
 import pytest
 
+from scout.exceptions import IntegrityError
 from scout.models.hgnc_map import HgncGene
 
-from scout.exceptions import IntegrityError
 
 #################### HGNC gene tests ####################
 def test_insert_gene(adapter, parsed_gene):
@@ -201,6 +201,58 @@ def test_get_genes_regex(real_adapter):
     # This will only work with a real pymongo adapter
     ##THEN assert that the correct gene was fetched
     res = adapter.hgnc_genes(hgnc_symbol="a", search=True)
+    assert sum(1 for i in res) == 3
+
+
+def test_get_genes_per_build(real_adapter):
+    adapter = real_adapter
+    ##GIVEN a empty adapter
+    assert sum(1 for i in adapter.all_genes()) == 0
+
+    ##WHEN inserting two genes and fetching one
+    gene_obj = {
+        "hgnc_id": 1,
+        "hgnc_symbol": "AAA",
+        "build": "37",
+        "aliases": ["AAA", "BCD"],
+    }
+    adapter.load_hgnc_gene(gene_obj)
+
+    gene_obj2 = {
+        "hgnc_id": 2,
+        "hgnc_symbol": "AA",
+        "build": "37",
+        "aliases": ["AA", "AB"],
+    }
+    adapter.load_hgnc_gene(gene_obj2)
+
+    gene_obj3 = {
+        "hgnc_id": 3,
+        "hgnc_symbol": "AB",
+        "build": "38",
+        "aliases": ["C", "AC"],
+    }
+
+    adapter.load_hgnc_gene(gene_obj3)
+
+    ##THEN assert default genome build is 37
+    res = adapter.hgnc_genes(hgnc_symbol="AA", search=True)
+    assert sum(1 for i in res) == 1
+
+    ##THEN assert gene is excluded when using genome build is 38
+    res = adapter.hgnc_genes(hgnc_symbol="AA", build="38", search=True)
+    assert sum(1 for i in res) == 0
+
+    ##THEN assert that build==37 excludes 38 variants when using regex
+    res = adapter.hgnc_genes(hgnc_symbol="A", build="37", search=True)
+    assert sum(1 for i in res) == 2
+
+    ##THEN assert that build==38 excludes 37 variants when using regex
+    res = adapter.hgnc_genes(hgnc_symbol="A", build="38", search=True)
+    assert sum(1 for i in res) == 1
+
+    ##THEN assert that build==all includes both 37 and 38 variants when using regex
+    res = adapter.hgnc_genes(hgnc_symbol="A", build="all", search=True)
     assert sum(1 for i in res) == 3
 
 

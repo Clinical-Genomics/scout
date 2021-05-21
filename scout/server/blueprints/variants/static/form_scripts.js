@@ -1,7 +1,12 @@
+/* exported populateCytobands */
 function populateCytobands(cytobands){
   var chromPosPattern = new RegExp("^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)$");
   var chrom = document.forms["filters_form"].elements["chrom"].value;
-  var chromPos = document.forms["filters_form"].elements["chrom_pos"].value;
+  var chromPos = "";
+  if (typeof document.forms["filters_form"].elements["chrom_pos"] !== "undefined") {
+  	chromPos=document.forms["filters_form"].elements["chrom_pos"].value;
+	}
+
   var chromosome = "";
   console.log("Populate cytobands")
   var matchedChrName = chromPos.match(chromPosPattern)
@@ -60,6 +65,8 @@ function populateCytobands(cytobands){
     cytoEnd.appendChild(el);
   }
 }
+
+/* exported validateForm */
 // ValidateForm()
 // Controll user input fields (start, end) in varaint filter.
 // Verify the format of Chromosome position
@@ -107,6 +114,7 @@ function validateForm(){
   return true;
 }
 
+/* exported initSearchConstraints */
 // syncSearchConstraints(selectorId:HTML-selector, textId:HTML-textfield)
 //
 // Initialize and synchronize 'startelem' and 'cyto_start', used for setting
@@ -123,6 +131,7 @@ function initSearchConstraints(selectorId, textId){
     });
 }
 
+/* exported enableDismiss */
 function enableDismiss(){
   // before enabling the variant dismiss button
   var selectElem = document.getElementById("dismiss_choices");
@@ -144,7 +153,7 @@ function enableDismiss(){
       }
   }
   var btnElem = document.getElementById("dismiss_submit");
-  if (selectedOptions & checkedVars) {
+  if (selectedOptions & checkedVars) {
     btnElem.disabled = false;
   }
   else{
@@ -152,12 +161,14 @@ function enableDismiss(){
   }
 }
 
+/* exported eraseChromPosString() */
 function eraseChromPosString() {
   // Erase content of chrom_pos field
   document.forms["filters_form"].elements["chrom_pos"].value = "";
 }
 
 
+/* exported updateCoordinateFields */
 // Link chromosome position input field with chromosome and cytoband dropdowns.
 // Changes to chrom and cytoband dropdowns are reflected in chrom_pos input
 // Changes in chrom_pos input are reflected in chrom, start and end fields

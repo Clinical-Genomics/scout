@@ -1,0 +1,98 @@
+{% from "alignviewers/utils.html" import igv_script %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="//igv.org/web/img/favicon.ico">
+    <title>Scout: Splice junctions viewer</title>
+
+    {{ igv_script() }}
+
+    <!-- Flash eventual messages due to errors when creating the tracks -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-danger alert-dismissible" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+</head>
+
+<body>
+
+<h3>{{case}}: Splice junctions</h3>
+
+<div id="igvDiv" style="padding-top: 10px;padding-bottom: 10px; border:1px solid lightgray"></div>
+
+<script type="text/javascript">
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var options =
+            {
+                // Example of fully specifying a reference GRCh38. Scout is supporting only this for now
+                reference:
+                    {
+                        id: "GRCh38",
+                        fastaURL: "{{ reference_track.fastaURL }}",
+                        indexURL: "{{ reference_track.indexURL }}",
+                        cytobandURL: "{{ reference_track.cytobandURL }}"
+                    },
+                locus: '{{ locus }}',
+                tracks:
+                    [
+                      {% for custTrack in custom_tracks %}
+                        {% if custTrack.name == "Genes" %}
+                          {
+                            name: "{{ custTrack.name }}",
+                            type: "{{ custTrack.type }}",
+                            format: "{{ custTrack.format }}",
+                            sourceType: "{{ custTrack.sourceType }}",
+                            url: "{{ custTrack.url|replace('%2F','/') }}",
+                            indexURL: "{{ custTrack.indexURL|replace('%2F','/') }}",
+                            displayMode: "{{ custTrack.displayMode }}",
+                            visibilityWindow: 300000000,
+                            order: Number.MAX_VALUE,
+                          },
+                        {% endif %}
+                      {% endfor %}
+                        {% for track in tracks %} // sample tracks
+                          {
+                              type: 'merged',
+                              name: '{{ track.name }}',
+                              height: 500,
+                              tracks: [
+                                {
+                                  type: 'wig',
+                                  format: "bigwig",
+                                  url: "{{ url_for('alignviewers.remote_static', file=track.coverage_wig) }}",
+                                },
+                                {
+                                  type: 'spliceJunctions',
+                                  format: 'bed',
+                                  colorBy: 'strand',
+                                  thicknessBasedOn: 'numUniqueRead',
+                                  labelUniqueReadCount: true,
+                                  url: "{{ url_for('alignviewers.unindexed_remote_static', file=track.splicej_bed) }}",
+                                  indexURL: "{{ url_for('alignviewers.unindexed_remote_static', file=track.splicej_bed_index) }}",
+                                  minUniquelyMappedReads: 1
+                                }
+                            ]
+                          }, // end of sashimi track with data
+                        {% endfor %}
+                    ] // end of tracks
+            };
+        var igvDiv = document.getElementById("igvDiv");
+
+        igv.createBrowser(igvDiv, options)
+            .then(function (browser) {
+                console.log("Created IGV browser");
+            })
+    })
+</script>
+</body>
+</html>

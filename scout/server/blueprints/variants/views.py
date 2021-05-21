@@ -3,32 +3,21 @@ import datetime
 import io
 import logging
 import os.path
-import pathlib
 import shutil
-import zipfile
 
 import pymongo
-from flask import (
-    Blueprint,
-    abort,
-    current_app,
-    flash,
-    redirect,
-    request,
-    send_file,
-    url_for,
-)
+from flask import Blueprint, abort, current_app, flash, redirect, request, send_file, url_for
 from flask_login import current_user
 
 from scout.constants import (
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
+    DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
     SEVERE_SO_TERMS,
-    DISMISS_VARIANT_OPTIONS,
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
 )
 from scout.server.extensions import store
-from scout.server.utils import institute_and_case, templated
+from scout.server.utils import institute_and_case, templated, zip_dir_to_obj
 
 from . import controllers
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
@@ -91,10 +80,12 @@ def variants(institute_id, case_name):
             form.gene_panels.data = controllers.case_default_panels(case_obj)
 
     # populate filters dropdown
-    available_filters = store.filters(institute_id, category)
+    available_filters = list(store.filters(institute_id, category))
     form.filters.choices = [
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
+    # Populate chromosome select choices
+    controllers.populate_chrom_choices(form, case_obj)
 
     # populate available panel choices
     form.gene_panels.choices = controllers.gene_panel_choices(institute_obj, case_obj)
@@ -122,48 +113,7 @@ def variants(institute_id, case_name):
         # reset gene panels
         form.gene_panels.data = ""
 
-    # check if supplied gene symbols exist
-    hgnc_symbols = []
-    non_clinical_symbols = []
-    not_found_symbols = []
-    not_found_ids = []
-    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
-        is_clinical = form.data.get("variant_type", "clinical") == "clinical"
-        clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
-        for hgnc_symbol in form.hgnc_symbols.data:
-            if hgnc_symbol.isdigit():
-                hgnc_gene = store.hgnc_gene(int(hgnc_symbol), case_obj["genome_build"])
-                if hgnc_gene is None:
-                    not_found_ids.append(hgnc_symbol)
-                else:
-                    hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
-            elif sum(1 for i in store.hgnc_genes(hgnc_symbol)) == 0:
-                not_found_symbols.append(hgnc_symbol)
-            elif is_clinical and (hgnc_symbol not in clinical_symbols):
-                non_clinical_symbols.append(hgnc_symbol)
-            else:
-                hgnc_symbols.append(hgnc_symbol)
-
-    if not_found_ids:
-        flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
-    if not_found_symbols:
-        flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning")
-    if non_clinical_symbols:
-        flash(
-            "Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)),
-            "warning",
-        )
-    form.hgnc_symbols.data = hgnc_symbols
-
-    # handle HPO gene list separately
-    if "hpo" in form.data["gene_panels"]:
-        hpo_symbols = list(
-            set(term_obj["hgnc_symbol"] for term_obj in case_obj["dynamic_gene_list"])
-        )
-
-        current_symbols = set(hgnc_symbols)
-        current_symbols.update(hpo_symbols)
-        form.hgnc_symbols.data = list(current_symbols)
+    controllers.update_form_hgnc_symbols(store, case_obj, form)
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
@@ -179,6 +129,7 @@ def variants(institute_id, case_name):
         institute=institute_obj,
         case=case_obj,
         form=form,
+        filters=available_filters,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
@@ -221,10 +172,13 @@ def str_variants(institute_id, case_name):
         form.chrom.data = request.args.get("chrom", "")
 
     # populate filters dropdown
-    available_filters = store.filters(institute_id, category)
+    available_filters = list(store.filters(institute_id, category))
     form.filters.choices = [
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
+
+    # Populate chromosome select choices
+    controllers.populate_chrom_choices(form, case_obj)
 
     # populate available panel choices
     form.gene_panels.choices = controllers.gene_panel_choices(institute_obj, case_obj)
@@ -258,6 +212,7 @@ def str_variants(institute_id, case_name):
         cytobands=cytobands,
         form=form,
         page=page,
+        filters=available_filters,
         expand_search=str(request.method == "POST"),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
@@ -292,8 +247,21 @@ def sv_variants(institute_id, case_name):
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
+
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
+
+    # populate filters dropdown
+    available_filters = list(store.filters(institute_obj["_id"], category))
+    form.filters.choices = [
+        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
+    ]
+
+    # Populate chromosome select choices
+    controllers.populate_chrom_choices(form, case_obj)
+
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
+
+    form = controllers.update_form_hgnc_symbols(store, case_obj, form)
 
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
 
@@ -313,6 +281,7 @@ def sv_variants(institute_id, case_name):
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         variant_type=variant_type,
         form=form,
+        filters=available_filters,
         cytobands=cytobands,
         severe_so_terms=SEVERE_SO_TERMS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
@@ -378,28 +347,43 @@ def cancer_variants(institute_id, case_name):
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
     # populate filters dropdown
-    available_filters = store.filters(institute_id, category)
+    available_filters = list(store.filters(institute_id, category))
     form.filters.choices = [
         (filter.get("_id"), filter.get("display_name")) for filter in available_filters
     ]
 
+    # Populate chromosome select choices
+    controllers.populate_chrom_choices(form, case_obj)
+
     form.gene_panels.choices = controllers.gene_panel_choices(institute_obj, case_obj)
+    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
+    cytobands = store.cytoband_by_chrom(genome_build)
 
-    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
-
-    variants_query = store.variants(case_obj["_id"], category="cancer", query=form.data)
+    variants_query = store.variants(
+        case_obj["_id"], category="cancer", query=form.data, build=genome_build
+    )
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.cancer_variants(
-        store, institute_id, case_name, variants_query, result_size, form, page=page
+        store,
+        institute_id,
+        case_name,
+        variants_query,
+        result_size,
+        form,
+        page=page,
     )
-    expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
+    expand_search = request.method == "POST" and request.form.get("expand_search") in [
+        "True",
+        "",
+    ]
     return dict(
         variant_type=variant_type,
         cytobands=cytobands,
+        filters=available_filters,
         dismiss_variant_options={
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
@@ -439,6 +423,16 @@ def cancer_sv_variants(institute_id, case_name):
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
+
+    # populate filters dropdown
+    available_filters = list(store.filters(institute_obj["_id"], category))
+    form.filters.choices = [
+        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
+    ]
+
+    # Populate chromosome select choices
+    controllers.populate_chrom_choices(form, case_obj)
+
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
 
@@ -461,6 +455,7 @@ def cancer_sv_variants(institute_id, case_name):
         },
         variant_type=variant_type,
         form=form,
+        filters=available_filters,
         severe_so_terms=SEVERE_SO_TERMS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
         manual_rank_options=MANUAL_RANK_OPTIONS,
@@ -520,19 +515,13 @@ def download_verified():
     temp_excel_dir = os.path.join(variants_bp.static_folder, "verified_folder")
     os.makedirs(temp_excel_dir, exist_ok=True)
 
-    written_files = controllers.verified_excel_file(store, user_institutes, temp_excel_dir)
-    if written_files:
-        today = datetime.datetime.now().strftime("%Y-%m-%d")
-        # zip the files on the fly and serve the archive to the user
-        data = io.BytesIO()
-        with zipfile.ZipFile(data, mode="w") as z:
-            for f_name in pathlib.Path(temp_excel_dir).iterdir():
-                z.write(f_name, os.path.basename(f_name))
-        data.seek(0)
+    if controllers.verified_excel_file(store, user_institutes, temp_excel_dir):
+        data = zip_dir_to_obj(temp_excel_dir)
 
         # remove temp folder with excel files in it
         shutil.rmtree(temp_excel_dir)
 
+        today = datetime.datetime.now().strftime("%Y-%m-%d")
         return send_file(
             data,
             mimetype="application/zip",
@@ -540,5 +529,9 @@ def download_verified():
             attachment_filename="_".join(["scout", "verified_variants", today]) + ".zip",
             cache_timeout=0,
         )
+
+    # remove temp folder with excel files in it
+    shutil.rmtree(temp_excel_dir)
+
     flash("No verified variants could be exported for user's institutes", "warning")
     return redirect(request.referrer)

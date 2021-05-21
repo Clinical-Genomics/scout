@@ -2,6 +2,12 @@
 import logging
 from datetime import datetime
 
+from scout.constants import (
+    INCOMPLETE_PENETRANCE_MAP,
+    MODELS_MAP,
+    PANEL_GENE_INFO_MODELS,
+    PANEL_GENE_INFO_TRANSCRIPTS,
+)
 from scout.utils.date import get_date
 from scout.utils.handle import get_file_handle
 from scout.utils.link import get_correct_ids
@@ -9,24 +15,6 @@ from scout.utils.link import get_correct_ids
 from .omim import get_mim_genes
 
 LOG = logging.getLogger(__name__)
-
-VALID_MODELS = ("AR", "AD", "MT", "XD", "XR", "X", "Y")
-
-MODELS_MAP = {
-    "monoallelic_not_imprinted": ["AD"],
-    "monoallelic_maternally_imprinted": ["AD"],
-    "monoallelic_paternally_imprinted": ["AD"],
-    "monoallelic": ["AD"],
-    "biallelic": ["AR"],
-    "monoallelic_and_biallelic": ["AD", "AR"],
-    "monoallelic_and_more_severe_biallelic": ["AD", "AR"],
-    "xlinked_biallelic": ["XR"],
-    "xlinked_monoallelic": ["XD"],
-    "mitochondrial": ["MT"],
-    "unknown": [],
-}
-
-INCOMPLETE_PENETRANCE_MAP = {"unknown": None, "Complete": None, "Incomplete": True}
 
 
 def get_panel_info(panel_lines=None, panel_id=None, institute=None, **kwargs):
@@ -131,12 +119,10 @@ def parse_gene(gene_info):
     # Disease associated transcripts is a ','-separated list of
     # manually curated transcripts
     transcripts = ""
-    if "disease_associated_transcripts" in gene_info:
-        transcripts = gene_info["disease_associated_transcripts"]
-    elif "disease_associated_transcript" in gene_info:
-        transcripts = gene_info["disease_associated_transcript"]
-    elif "transcripts" in gene_info:
-        transcripts = gene_info["transcripts"]
+    for field in PANEL_GENE_INFO_TRANSCRIPTS:
+        if field not in gene_info:
+            continue
+        transcripts = gene_info[field].strip('"')
 
     gene["transcripts"] = [
         transcript.strip() for transcript in transcripts.split(",") if transcript
@@ -145,18 +131,14 @@ def parse_gene(gene_info):
     # Genetic disease models is a ','-separated list of manually curated
     # inheritance patterns that are followed for a gene
     models = ""
-    if "genetic_disease_models" in gene_info:
-        models = gene_info["genetic_disease_models"]
-    elif "genetic_disease_model" in gene_info:
-        models = gene_info["genetic_disease_model"]
-    elif "inheritance_models" in gene_info:
-        models = gene_info["inheritance_models"]
-    elif "genetic_inheritance_models" in gene_info:
-        models = gene_info["genetic_inheritance_models"]
+    for field in PANEL_GENE_INFO_MODELS:
+        if field not in gene_info:
+            continue
+        models = gene_info[field].strip().strip('"')
 
-    gene["inheritance_models"] = [
-        model.strip() for model in models.split(",") if model.strip() in VALID_MODELS
-    ]
+    # Collect whichever model provided by the user.
+    # Then populate inheritance_models and custom_inheritance_models on gene build step
+    gene["inheritance_models"] = [model.strip() for model in models.split(",")]
 
     # If a gene is known to be associated with mosaicism this is annotated
     gene["mosaicism"] = bool(gene_info.get("mosaicism"))
@@ -167,13 +149,12 @@ def parse_gene(gene_info):
     # The database entry version is a way to track when a a gene was added or
     # modified, optional
     gene["database_entry_version"] = gene_info.get("database_entry_version")
-
     return gene
 
 
 def get_delimiter(line):
     """Try to find out what delimiter to use"""
-    delimiters = ["\t", " ", ";"]
+    delimiters = ["\t", ";"]
     line_length = 0
     delimiter = None
 

@@ -40,11 +40,21 @@ The frequency from the [ExAC][exac] population database.
 
 #### ExAC_MAX_AF ####
 
-The maximum allele frequency of all populations [ExAC][exac] population database.
+The maximum allele frequency of all populations in the [ExAC][exac] population database.
+
 
 - Key: `EXAC_MAX_AF`
 - Value: `Float`
 - Tools: custom made, we have modified the exac file and use [genmod][genmod]
+
+#### GnomAD ####
+
+The maximum allele frequency of all populations in [gnomAD][gnomad] population database.
+
+
+- Key: `gnomAD_AF` in VEP `CSQ` field
+- Value: `Float`
+- Tools: [VEP][vep]
 
 ### Severity ###
 
@@ -60,7 +70,7 @@ The Combined Annotation Dependent Depletion([CADD][cadd]) score. A prediction of
 
 The [SIFT][sift] prediction for how a variation affects the protein.
 
-- Key: `CSQ`-`SIFT`
+- Key: `SIFT` in VEP `CSQ` field
 - Value: `String`
 - Tools: [VEP][vep]
 
@@ -68,7 +78,7 @@ The [SIFT][sift] prediction for how a variation affects the protein.
 
 The [PolyPhen][polyphen] prediction for how a variation affects the protein.
 
-- Key: `CSQ`-`PolyPhen`
+- Key: `PolyPhen` in VEP `CSQ` field
 - Value: `String`
 - Tools: [VEP][vep]
 
@@ -136,6 +146,7 @@ What variants is this variant in Autosomal Recessive Compound with?
 
 [1000g]: http://www.1000genomes.org/
 [exac]: http://exac.broadinstitute.org
+[gnomad]: https://gnomad.broadinstitute.org/
 [cadd]: http://cadd.gs.washington.edu
 [gerp]: http://mendel.stanford.edu/SidowLab/downloads/gerp/index.html
 [phastcons]: http://compgen.cshl.edu/phast/

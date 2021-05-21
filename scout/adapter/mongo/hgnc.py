@@ -1,8 +1,8 @@
 import logging
 from pprint import pprint as pp
-import intervaltree
 
-from pymongo.errors import DuplicateKeyError, BulkWriteError
+import intervaltree
+from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from scout.exceptions import IntegrityError
 
@@ -116,20 +116,21 @@ class GeneHandler(object):
             pymongo.cursor
         """
         LOG.debug("Fetching genes with symbol %s" % hgnc_symbol)
+        build_query = {}
+        if str(build) in ["37", "38"]:
+            build_query["build"] = str(build)
+
         if search:
             # first search for a full match
-            query = self.get_query_alias_or_id(hgnc_symbol, build)
-            nr_genes = self.nr_genes(query=query)
+            query_full_match = {**self.get_query_alias_or_id(hgnc_symbol, build), **build_query}
+            nr_genes = self.nr_genes(query=query_full_match)
             if nr_genes != 0:
-                return self.hgnc_collection.find(query)
+                return self.hgnc_collection.find(query_full_match)
 
             return self.hgnc_collection.find(
-                {
-                    "aliases": {"$regex": hgnc_symbol, "$options": "i"},
-                    "build": str(build),
-                }
+                {"aliases": {"$regex": hgnc_symbol, "$options": "i"}, **build_query}
             )
-        return self.hgnc_collection.find({"build": build, "aliases": hgnc_symbol})
+        return self.hgnc_collection.find({"aliases": hgnc_symbol, **build_query})
 
     def hgnc_genes_find_one(self, hgnc_symbol, build="37"):
         """Find one hgnc genes that match a hgnc symbol. Replaces depricated
@@ -148,14 +149,15 @@ class GeneHandler(object):
         return self.hgnc_collection.find_one(filter={"build": build, "aliases": hgnc_symbol})
 
     def get_query_alias_or_id(self, hgnc_symbol, build):
-        """ Return query to search for hgnc-symbol or aliases """
+        """Return query to search for hgnc-symbol or aliases"""
         query = {
             "$or": [
                 {"aliases": hgnc_symbol},
                 {"hgnc_id": int(hgnc_symbol) if hgnc_symbol.isdigit() else None},
             ],
-            "build": str(build),
         }
+        if build in ["37", "38"]:
+            query["build"] = str(build)
         return query
 
     def all_genes(self, build=None, add_transcripts=False, limit=100000):

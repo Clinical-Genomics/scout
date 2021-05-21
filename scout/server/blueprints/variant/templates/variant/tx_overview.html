@@ -1,7 +1,7 @@
 
 {% macro disease_associated(variant) %}
   <div class="card panel-default">
-    <div class="panel-heading" data-toggle='tooltip' title="Transcripts described as disease associated in any of the gene panels">Disease associated transcripts</div>
+    <div class="panel-heading" data-toggle='tooltip' title="Transcripts described as disease associated in the case default gene panels">Disease associated transcripts</div>
     <div class=card-body>
       <table class="table table-bordered table-hover table-sm">
         <tr>
@@ -28,8 +28,8 @@
 
 {% macro transcripts_overview(variant) %}
   <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Displays all transcripts with refseq ids. One ensembl transcript can have multiple refseq ids. Blue color indicates that the ensembl transcript is mapped to a transcript that is canonical according to HGNC">
-      Transcript overview</div>
+    <div data-toggle='tooltip' class="panel-heading" title="Displays all transcripts with RefSeq id. The complete list of transcripts is available below. One ensembl transcript can have multiple RefSeq ids. Blue color indicates that the ensembl transcript is mapped to a transcript that is primary according to HGNC">
+      RefSeq transcripts</div>
     <div class=card-body>
       <table id="transcript_overview_table" class="table table-bordered table-hover table-sm">
         <thead class="thead-light">
@@ -51,18 +51,32 @@
                       {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                     </a>
                   </td> <!-- end of gene symbol col-->
-                  <td>{{ transcript.refseq_identifiers|join(", ") }}</td> <!-- Refseq IDs -->
+                  <td>
+                    {% set decorated_txs = [] %}
+                    {% for tx_id in transcript.refseq_identifiers %}
+                      {% if tx_id.startswith('XM') and transcript.refseq_id != tx_id %} <!-- tx of minor importance -->
+                        {% set decorated_tx = '<font class="text-muted font-italic">' + tx_id + '</font>' %}
+                      {% else %}
+                        {% set decorated_tx = tx_id %} <!-- tx with refseq ID -->
+                      {% endif %}
+                      {{ decorated_txs.append(decorated_tx)|default("", true) }}
+                    {% endfor %}
+                    {% if transcript.transcript_id.startswith('NM') and not decorated_txs %} <!-- VEP RefSeq annotation, use tx id as refseq ID -->
+                      {{ decorated_txs.append(transcript.transcript_id)|default("", true) }}
+                    {% endif %}
+                    {{ decorated_txs|join(", ")|safe or '<font class="text-muted font-italic">Check complete list of transcripts</font>'|safe }}
+                  </td> <!-- Refseq IDs -->
                   <td class="d-flex align-items-center">
                     <div> <!-- ID col-->
                       <span class="text"> {{ transcript.transcript_id }}</span>
-                      {% if gene.common and transcript.refseq_id in gene.common.primary_transcripts %}
+                      {% if gene.common and 'primary_transcripts' in gene.common and transcript.refseq_id in gene.common.primary_transcripts %}
                         <a href="#" data-toggle="tooltip" title="hgnc primary"><span class="badge badge-primary" title="hgnc primary">P</span></a>
                       {% endif %}
-                      {% if transcript.mane_transcript %}
-                        {% set mane_transcript_parts = transcript.mane_transcript.split('.') %}
-                        {% if mane_transcript_parts[0] == refseq_id %}
-                          <span class="text-muted">(MANE)</span>
-                        {% endif %}
+                      {% if transcript.mane_select_transcript %}
+                          <a href="#" data-toggle="tooltip" title="MANE Select"><span class="badge badge-success" title="MANE Select">M</span></a>
+                      {% endif %}
+                      {% if transcript.mane_plus_clinical_transcript %}
+                          <a href="#" data-toggle="tooltip" title="MANE Plus Clinical"><span class="badge badge-success" title="MANE Plus Clinical">M+</span></a>
                       {% endif %}
                       {% if transcript.is_canonical %}
                         <a href="#" data-toggle="tooltip" title="vep canonical"><span class="badge badge-info" title="vep canonical">C</span></a>
@@ -70,7 +84,13 @@
                     </div>
                   </td> <!-- end of ID col-->
                   <td title="{{ transcript.coding_sequence_name or '' }}"> <!-- >HGVS Description col -->
-                    {{ (transcript.coding_sequence_name or '')|truncate(20, True) }}
+                    {% set hgvs_c = (transcript.coding_sequence_name or '')|truncate(20, True) %}
+                    {% if variant.chromosome in ["MT","M"] %}
+                      {% set mt_notation = "m." ~ variant.position ~ variant.reference ~ ">" ~ variant.alternative %}
+                      {{ mt_notation|truncate(20,True) }} <span class="text-muted">({{ hgvs_c }})</span>
+                    {% else %}
+                      {{ hgvs_c }}
+                    {% endif %}
                     <span class="text-muted float-right">
                       {{ (transcript.protein_sequence_name or '')|url_decode }}
                     </span>

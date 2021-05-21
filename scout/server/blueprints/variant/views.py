@@ -1,27 +1,23 @@
 import logging
 
-from flask import Blueprint, request, redirect, flash, current_app, url_for, jsonify
+from flask import Blueprint, current_app, flash, jsonify, redirect, request, url_for
 from flask_login import current_user
 
-from scout.utils.acmg import get_acmg
-from scout.server.utils import templated, public_endpoint, institute_and_case
-from scout.server.extensions import store, loqusdb
-from scout.server.blueprints.variant.controllers import variant as variant_controller
-from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
-from scout.server.blueprints.variant.controllers import variant_acmg as acmg_controller
-from scout.server.blueprints.variant.controllers import (
-    observations,
-    variant_acmg_post,
-    clinvar_export,
-)
-
-from scout.server.blueprints.variant.verification_controllers import (
-    variant_verification,
-    MissingVerificationRecipientError,
-)
-
-from scout.parse.clinvar import set_submission_objects
 from scout.constants import ACMG_CRITERIA, ACMG_MAP
+from scout.parse.clinvar import set_submission_objects
+from scout.server.blueprints.variant.controllers import clinvar_export
+from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
+from scout.server.blueprints.variant.controllers import observations
+from scout.server.blueprints.variant.controllers import variant as variant_controller
+from scout.server.blueprints.variant.controllers import variant_acmg as acmg_controller
+from scout.server.blueprints.variant.controllers import variant_acmg_post
+from scout.server.blueprints.variant.verification_controllers import (
+    MissingVerificationRecipientError,
+    variant_verification,
+)
+from scout.server.extensions import loqusdb, store
+from scout.server.utils import institute_and_case, public_endpoint, templated
+from scout.utils.acmg import get_acmg
 
 LOG = logging.getLogger(__name__)
 
@@ -47,11 +43,10 @@ def variant(institute_id, case_name, variant_id):
 
     data = variant_controller(store, institute_id, case_name, variant_id=variant_id)
     if data is None:
-        LOG.warning(
-            "An error occurred: variants view requesting data for variant {}".format(variant_id)
-        )
         flash("An error occurred while retrieving variant object", "danger")
-        return redirect(request.referrer)
+        return redirect(
+            url_for("variants.variants", institute_id=institute_id, case_name=case_name)
+        )
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
@@ -65,6 +60,12 @@ def variant(institute_id, case_name, variant_id):
 def sv_variant(institute_id, case_name, variant_id):
     """Display a specific structural variant."""
     data = variant_controller(store, institute_id, case_name, variant_id, add_other=False)
+
+    if data is None:
+        flash("An error occurred while retrieving variant object", "danger")
+        return redirect(
+            url_for("variants.sv_variants", institute_id=institute_id, case_name=case_name)
+        )
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
@@ -85,7 +86,11 @@ def str_variant(institute_id, case_name, variant_id):
         add_other=False,
         get_overlapping=False,
     )
-
+    if data is None:
+        flash("An error occurred while retrieving variant object", "danger")
+        return redirect(
+            url_for("variants.str_variants", institute_id=institute_id, case_name=case_name)
+        )
     return data
 
 

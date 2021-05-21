@@ -1,4 +1,4 @@
-from scout.constants import CLINVAR_HEADER, CASEDATA_HEADER
+from scout.constants import CASEDATA_HEADER, CLINVAR_HEADER
 
 
 def set_submission_objects(form_fields):

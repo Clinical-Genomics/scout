@@ -1,21 +1,28 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm
-from wtforms.widgets import TextInput
 from wtforms import (
     BooleanField,
+    DecimalField,
+    Field,
     IntegerField,
     SelectField,
     SelectMultipleField,
     SubmitField,
-    DecimalField,
     TextField,
     validators,
-    Field,
 )
-from scout.constants import PHENOTYPE_GROUPS, CASE_SEARCH_TERMS
-from scout.server.extensions import loqusdb
+from wtforms.widgets import TextInput
+
+from scout.constants import CASE_SEARCH_TERMS, PHENOTYPE_GROUPS
 
 CASE_SEARCH_KEY = [(value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()]
+
+
+class NonValidatingSelectField(SelectField):
+    """Necessary to skip validation of dynamic selects in form"""
+
+    def pre_validate(self, form):
+        pass
 
 
 class NonValidatingSelectMultipleField(SelectMultipleField):
@@ -26,7 +33,7 @@ class NonValidatingSelectMultipleField(SelectMultipleField):
 
 
 class InstituteForm(FlaskForm):
-    """ Instutute-specif settings """
+    """Instutute-specif settings"""
 
     hpo_tuples = []
     for key in PHENOTYPE_GROUPS.keys():
@@ -74,8 +81,7 @@ class InstituteForm(FlaskForm):
     )
     institutes = NonValidatingSelectMultipleField("Institutes to share cases with", choices=[])
 
-    loqus_instances = [instance["id"] for instance in loqusdb.loqusdb_settings]
-    loqusdb_id = SelectField("LoqusDB id", [validators.Optional()], choices=loqus_instances)
+    loqusdb_id = NonValidatingSelectField("LoqusDB id", choices=[])
 
     submit_btn = SubmitField("Save settings")
 
@@ -126,12 +132,12 @@ class PhenoModelForm(FlaskForm):
 
     model_name = TextField("Phenotype panel name", validators=[validators.InputRequired()])
     model_desc = TextField("Description", validators=[validators.Optional()])
-    create_model = SubmitField("create")
+    create_model = SubmitField("Create")
 
 
 class PhenoSubPanelForm(FlaskForm):
     """A form corresponfing to a phenopanel sub-panel"""
 
-    title = TextField("Subpanel title", validators=[validators.InputRequired()])
-    subtitle = TextField("Subpanel subtitle", validators=[validators.Optional()])
-    add_subpanel = SubmitField("save subpanel")
+    title = TextField("Phenotype subpanel title", validators=[validators.InputRequired()])
+    subtitle = TextField("Phenotype subpanel subtitle", validators=[validators.Optional()])
+    add_subpanel = SubmitField("Save phenotype subpanel")

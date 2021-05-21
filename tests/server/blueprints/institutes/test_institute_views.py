@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import datetime
+
+import pytest
 from flask import url_for
 from flask_login import current_user
+
 from scout.server.extensions import store
 
 TEST_SUBPANEL = dict(
@@ -36,8 +39,10 @@ def test_advanced_phenotypes_POST(app, user_obj, institute_obj):
         assert form_data["model_name"] in str(resp.data)
 
 
-def test_remove_phenomodel(app, user_obj, institute_obj):
+def test_remove_phenomodel(app, user_obj, institute_obj, mocker, mock_redirect):
     """Testing the endpoint to remove an existing phenotype model for an institute"""
+
+    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
 
     # GIVEN an institute with a phenotype model
     store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
@@ -84,8 +89,10 @@ def test_phenomodel_GET(app, user_obj, institute_obj):
         assert "Test model" in str(resp.data)
 
 
-def test_phenomodel_lock(app, user_obj, institute_obj):
+def test_phenomodel_lock(app, user_obj, institute_obj, mocker, mock_redirect):
     """Test the endpoint to lock a phenomodel and make it editable only by admins"""
+
+    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
 
     # GIVEN an institute with a phenotype model
     store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
@@ -112,8 +119,10 @@ def test_phenomodel_lock(app, user_obj, institute_obj):
         assert locked_model["admins"] == [current_user.email] + admins
 
 
-def test_phenomodel_unlock(app, user_obj, institute_obj):
+def test_phenomodel_unlock(app, user_obj, institute_obj, mocker, mock_redirect):
     """Test the endpoint to unlock a phenomodel and make it editable only by all users"""
+
+    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
 
     # GIVEN an institute with phenotype model
     store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
@@ -188,9 +197,9 @@ def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
         resp = client.get(url_for("auto_login"))
 
         form_data = dict(
-            title="Subpanel title",
-            subtitle="Subpanel subtitle",
-            add_subpanel="save subpanel",
+            title="Phenotype subpanel title",
+            subtitle="Phenotype subpanel subtitle",
+            add_subpanel="Save phenotype subpanel",
         )
         # WHEN the user creates subpanel in phenotype model via POST request
         resp = client.post(
@@ -204,8 +213,8 @@ def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
         # Then the subpanel dictionary should be added to model subpanels
         updated_model = store.phenomodel_collection.find_one()
         subpanel_id = list(updated_model["subpanels"].keys())[0]
-        assert updated_model["subpanels"][subpanel_id]["title"] == "Subpanel title"
-        assert updated_model["subpanels"][subpanel_id]["subtitle"] == "Subpanel subtitle"
+        assert updated_model["subpanels"][subpanel_id]["title"] == "Phenotype subpanel title"
+        assert updated_model["subpanels"][subpanel_id]["subtitle"] == "Phenotype subpanel subtitle"
 
         # WHEN the user sends a POST request to remove the subpanel
         form_data = dict(subpanel_delete=subpanel_id)
@@ -722,8 +731,10 @@ def test_gene_variants_filter(app, institute_obj, case_obj):
         assert "POT1" in str(resp.data)
 
 
-def test_gene_variants_no_valid_gene(app, institute_obj, case_obj):
+def test_gene_variants_no_valid_gene(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test the gene_variant endpoint with a gene symbol not in database"""
+
+    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -767,8 +778,30 @@ def test_institute_users(app, institute_obj, user_obj):
         assert user_obj["name"] in str(resp.data)
 
 
+def test_filters(app, institute_obj, user_obj, case_obj, filter_obj):
+    """Test the link to all institute users"""
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        category = "snv"
+        filter_id = store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category)
+        store.lock_filter(filter_id, user_obj.get("email"))
+
+        # WHEN accessing the cases page
+        resp = client.get(url_for("overview.filters", institute_id=institute_obj["internal_id"]))
+
+        # THEN it should return a page
+        assert resp.status_code == 200
+
+        # Containing the test user's name
+        assert user_obj["name"] in str(resp.data)
+
+
 def test_clinvar_submissions(app, institute_obj, clinvar_variant, clinvar_casedata):
-    """"Test the web page containing the clinvar submissions for an institute"""
+    """Test the web page containing the clinvar submissions for an institute"""
 
     # GIVEN an institute with a clinvar submission
     store.create_submission(institute_obj["_id"])
@@ -820,6 +853,8 @@ def test_rename_clinvar_samples(app, institute_obj, clinvar_variant, clinvar_cas
             new_name="new_sample_name",
         )
 
+        referer = url_for("overview.clinvar_submissions", institute_id=institute_obj["internal_id"])
+
         # WHEN the sample name is edited from the submission page (POST request)
         resp = client.post(
             url_for(
@@ -829,6 +864,7 @@ def test_rename_clinvar_samples(app, institute_obj, clinvar_variant, clinvar_cas
                 old_name=old_name,
             ),
             data=form_data,
+            headers={"referer": referer},
         )
         # a successful response should be redirect to the submssions page
         assert resp.status_code == 302

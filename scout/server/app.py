@@ -1,13 +1,12 @@
 """Code for flask app"""
 import logging
 import re
+
 import coloredlogs
 from flask import Flask, current_app, redirect, request, url_for
 from flask_babel import Babel
 from flask_login import current_user
 from flaskext.markdown import Markdown
-
-from scout.utils.matchmaker import mme_nodes
 
 from . import extensions
 from .blueprints import (
@@ -19,12 +18,12 @@ from .blueprints import (
     genes,
     institutes,
     login,
+    managed_variants,
     panels,
     phenotypes,
     public,
     variant,
     variants,
-    managed_variants,
 )
 
 try:
@@ -55,10 +54,6 @@ def create_app(config_file=None, config=None):
         app.config.update(config)
     if config_file:
         app.config.from_pyfile(config_file)
-
-    # If there is a MatchMaker Exchange server
-    # collect the connected external nodes
-    app.mme_nodes = mme_nodes(app.config.get("MME_URL"), app.config.get("MME_TOKEN"))
 
     app.config["JSON_SORT_KEYS"] = False
     current_log_level = LOG.getEffectiveLevel()
@@ -110,6 +105,14 @@ def configure_extensions(app):
         LOG.info("LoqusDB enabled")
         # setup LoqusDB
         extensions.loqusdb.init_app(app)
+
+    if app.config.get("GENS_HOST"):
+        LOG.info("Gens enabled")
+        extensions.gens.init_app(app)
+
+    if all([app.config.get("MME_URL"), app.config.get("MME_ACCEPTS"), app.config.get("MME_TOKEN")]):
+        LOG.info("MatchMaker Exchange enabled")
+        extensions.matchmaker.init_app(app)
 
     if app.config.get("LDAP_HOST"):
         LOG.info("LDAP login enabled")
@@ -219,6 +222,7 @@ def configure_oauth_login(app):
 def configure_email_logging(app):
     """Setup logging of error/exceptions to email."""
     import logging
+
     from scout.log import TlsSMTPHandler
 
     mail_handler = TlsSMTPHandler(

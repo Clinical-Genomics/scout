@@ -1,25 +1,23 @@
 # -*- coding: utf-8 -*-
 import datetime
-import requests
-from flask import url_for, current_app, jsonify
-from flask_login import current_user
 
+import requests
 from bson.objectid import ObjectId
+from flask import current_app, jsonify, url_for
+from flask_login import current_user
 
 from scout.demo import delivery_report_path
 from scout.server.blueprints.cases import controllers
-from scout.server.extensions import store
-from scout.server.extensions import mail
-from scout.server.blueprints.cases.views import (
-    parse_raw_gene_symbols,
-    parse_raw_gene_ids,
-)
+from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_gene_symbols
+from scout.server.extensions import mail, store
 
 TEST_TOKEN = "test_token"
 
 
-def test_rerun(app, institute_obj, case_obj, monkeypatch):
+def test_rerun(app, institute_obj, case_obj, monkeypatch, mocker, mock_redirect):
     """test case rerun function"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     # GIVEN a valid user
@@ -44,7 +42,7 @@ def test_rerun(app, institute_obj, case_obj, monkeypatch):
                 "cases.rerun",
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
-            )
+            ),
         )
         assert resp.status_code == 302
         updated_case = store.case_collection.find_one()
@@ -71,7 +69,7 @@ def test_parse_raw_gene_symbols(app):
 
 
 def test_parse_raw_gene_ids(app):
-    """ Test parse gene symbols"""
+    """Test parse gene symbols"""
 
     # GIVEN a list of autocompleted gene symbols
     gene_symbols = ["1234 | SYM (OLDSYM, SYM)", "4321 | MYS (OLDMYS, MYS)"]
@@ -83,7 +81,12 @@ def test_parse_raw_gene_ids(app):
     assert hgnc_ids == {1234, 4321}
 
 
-def test_update_cancer_case_sample(app, user_obj, institute_obj, cancer_case_obj):
+def test_update_cancer_case_sample(
+    app, user_obj, institute_obj, cancer_case_obj, mocker, mock_redirect
+):
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -150,7 +153,7 @@ def test_institutes(app):
         assert resp.status_code == 200
 
 
-def test_case_outdated_panel(app, institute_obj, case_obj, dummy_case):
+def test_case_outdated_panel(app, institute_obj, case_obj):
     """Test case displaying an outdated panel warning badge"""
 
     # GIVEN an adapter with a case with a gene panel of version 1
@@ -208,7 +211,9 @@ def test_case_sma(app, case_obj, institute_obj):
         assert resp.status_code == 200
 
 
-def test_update_individual(app, user_obj, institute_obj, case_obj):
+def test_update_individual(app, user_obj, institute_obj, case_obj, mocker, mock_redirect):
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -256,7 +261,10 @@ def test_update_individual(app, user_obj, institute_obj, case_obj):
         )
 
 
-def test_case_synopsis(app, institute_obj, case_obj):
+def test_case_synopsis(app, institute_obj, case_obj, mocker, mock_redirect):
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -274,14 +282,16 @@ def test_case_synopsis(app, institute_obj, case_obj):
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
                 data=req_data,
-            )
+            ),
         )
         # then it should return a redirected page
         assert resp.status_code == 302
 
 
-def test_update_case_comment(app, institute_obj, case_obj, user_obj):
+def test_update_case_comment(app, institute_obj, case_obj, user_obj, mocker, mock_redirect):
     """Test the functionality that allows updating of case-specific comments"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     with app.test_client() as client:
@@ -303,7 +313,12 @@ def test_update_case_comment(app, institute_obj, case_obj, user_obj):
         assert comment
 
         # WHEN a user updates the comment via the modal form
-        form_data = {"event_id": comment["_id"], "updatedContent": "an updated comment", "edit": ""}
+        form_data = {
+            "event_id": comment["_id"],
+            "updatedContent": "an updated comment",
+            "edit": "",
+        }
+
         resp = client.post(
             url_for(
                 "cases.events",
@@ -334,13 +349,20 @@ def test_add_case_group(app, case_obj, institute_obj):
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
 
+        referer = url_for(
+            "cases.case",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+        )
+
         # WHEN we invoke the add group endpoint with GET
         resp = client.get(
             url_for(
                 "cases.add_case_group",
                 institute_id=institute_obj["_id"],
                 case_name=case_obj["display_name"],
-            )
+            ),
+            headers={"referer": referer},
         )
 
         # THEN the response should be a redirect
@@ -349,6 +371,7 @@ def test_add_case_group(app, case_obj, institute_obj):
 
 def test_remove_case_group(app, case_obj, institute_obj):
     """Test removing a case group."""
+
     ### GIVEN an initialized app
     group_id = ObjectId("101010101010101010101010")
     result = store.case_collection.find_one_and_update(
@@ -360,6 +383,12 @@ def test_remove_case_group(app, case_obj, institute_obj):
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
 
+        referer = url_for(
+            "cases.case",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+        )
+
         # WHEN we invoke the add group endpoint with GET
         resp = client.get(
             url_for(
@@ -367,7 +396,8 @@ def test_remove_case_group(app, case_obj, institute_obj):
                 institute_id=institute_obj["_id"],
                 case_name=case_obj["display_name"],
                 case_group=group_id,
-            )
+            ),
+            headers={"referer": referer},
         )
 
         # THEN the response should be a redirect
@@ -379,7 +409,11 @@ def test_download_hpo_genes(app, case_obj, institute_obj):
 
     # GIVEN a case containing a dynamic gene list
     dynamic_gene_list = [
-        {"hgnc_symbol": "ACTA2", "hgnc_id": 130, "description": "actin alpha 2, smooth muscle"},
+        {
+            "hgnc_symbol": "ACTA2",
+            "hgnc_id": 130,
+            "description": "actin alpha 2, smooth muscle",
+        },
         {"hgnc_symbol": "LMNB2", "hgnc_id": 6638, "description": "lamin B2"},
     ]
 
@@ -399,6 +433,7 @@ def test_download_hpo_genes(app, case_obj, institute_obj):
                 "cases.download_hpo_genes",
                 institute_id=institute_obj["_id"],
                 case_name=case_obj["display_name"],
+                category="research",
             )
         )
         # THEN the response should be successful
@@ -428,8 +463,10 @@ def test_case_report(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_case_diagnosis(app, institute_obj, case_obj):
+def test_case_diagnosis(app, institute_obj, case_obj, mocker, mock_redirect):
     # Test the web page containing the general case report
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app and a valid user and institute
     with app.test_client() as client:
@@ -473,6 +510,29 @@ def test_pdf_case_report(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
+def test_gene_fusion_report(app, institute_obj, case_obj):
+    """Test the endpoint that allows users to download the PDF file containing the gene fusion report."""
+    # GIVEN an initialized app and a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # When clicking on gene fusion report link button on the sidebar
+        resp = client.get(
+            url_for(
+                "cases.gene_fusion_report",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+                report_type="gene_fusion_report",
+            )
+        )
+        # a successful response should be returned
+        assert resp.status_code == 200
+        # And the downloaded file should be a PDF file
+        assert resp.mimetype == "application/pdf"
+
+
 def test_mt_report(app, institute_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -496,141 +556,10 @@ def test_mt_report(app, institute_obj, case_obj):
         assert resp.mimetype == "application/zip"
 
 
-def test_matchmaker_add(app, institute_obj, case_obj):
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
+def test_status(app, institute_obj, case_obj, user_obj, mocker, mock_redirect):
 
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
-        # WHEN accessing the case page
-        resp = client.post(
-            url_for(
-                "cases.matchmaker_add",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            )
-        )
-        # page redirects in the views anyway, so it will return a 302 code
-        assert resp.status_code == 302
-
-
-def test_matchmaker_matches(app, institute_obj, case_obj, mme_submission, user_obj, monkeypatch):
-
-    # Given a case object with a MME submission
-    case_obj["mme_submission"] = mme_submission
-    store.update_case(case_obj)
-
-    res = store.case_collection.find({"mme_submission": {"$exists": True}})
-    assert res
-
-    # Monkeypatch response with MME matches
-    def mock_matches(*args, **kwargs):
-        return {"institute": institute_obj, "case": case_obj, "matches": {}}
-
-    monkeypatch.setattr(controllers, "mme_matches", mock_matches)
-
-    # GIVEN an initialized app
-    # GIVEN a valid institute and a user with mme_submitter role
-    store.user_collection.update_one(
-        {"_id": user_obj["_id"]}, {"$set": {"roles": ["mme_submitter"]}}
-    )
-
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        # Given mock MME connection parameters
-        current_app.config["MME_URL"] = "http://fakey_mme_url:fakey_port"
-        current_app.config["MME_TOKEN"] = TEST_TOKEN
-
-        # WHEN accessing the case page
-        resp = client.get(
-            url_for(
-                "cases.matchmaker_matches",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            )
-        )
-
-        # Then a successful response should be generated
-        assert resp.status_code == 200
-
-
-def test_matchmaker_match(app, institute_obj, case_obj, mme_submission, user_obj, monkeypatch):
-
-    # Given a case object with a MME submission
-    case_obj["mme_submission"] = mme_submission
-    store.update_case(case_obj)
-
-    res = store.case_collection.find({"mme_submission": {"$exists": True}})
-    assert sum(1 for i in res) == 1
-
-    # Monkeypatch response with MME match
-    def mock_match(*args, **kwargs):
-        return [{"status_code": 200}]
-
-    monkeypatch.setattr(controllers, "mme_match", mock_match)
-
-    # GIVEN an initialized app
-    # GIVEN a valid institute and a user with mme_submitter role
-    store.user_collection.update_one(
-        {"_id": user_obj["_id"]}, {"$set": {"roles": ["mme_submitter"]}}
-    )
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        # Given mock MME connection parameters
-        current_app.config["MME_URL"] = "http://fakey_mme_url:fakey_port"
-        current_app.config["MME_TOKEN"] = TEST_TOKEN
-
-        # WHEN sending a POST request to match a patient
-        resp = client.post(
-            url_for(
-                "cases.matchmaker_match",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-                target="mock_node_id",
-            )
-        )
-        # page redirects in the views anyway, so it will return a 302 code
-        assert resp.status_code == 302
-
-
-def test_matchmaker_delete(app, institute_obj, case_obj, mme_submission):
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
-
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        # add MME submission to case object
-        store.case_collection.find_one_and_update(
-            {"_id": case_obj["_id"]}, {"$set": {"mme_submission": mme_submission}}
-        )
-        res = store.case_collection.find({"mme_submission": {"$exists": True}})
-        assert sum(1 for i in res) == 1
-
-        # WHEN accessing the case page
-        resp = client.post(
-            url_for(
-                "cases.matchmaker_delete",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            )
-        )
-        # page redirects in the views anyway, so it will return a 302 code
-        assert resp.status_code == 302
-
-
-def test_status(app, institute_obj, case_obj, user_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -656,6 +585,27 @@ def test_status(app, institute_obj, case_obj, user_obj):
         assert resp.status_code == 302  # page should be redirected
 
 
+def _test_delivery_report(client, institute_obj, case_obj, response_format):
+    """Test helper: test report of given format"""
+
+    # WHEN the case has a delivery report
+    store.case_collection.update_one(
+        {"_id": case_obj["_id"]},
+        {"$set": {"delivery_report": delivery_report_path}},
+    )
+
+    # WHEN accessing the delivery report page with the format=pdf param
+    resp = client.get(
+        url_for(
+            "cases.delivery_report",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+            format=response_format,
+        )
+    )
+    return resp
+
+
 def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
 
     # GIVEN an initialized app
@@ -665,21 +615,7 @@ def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        # AND the case has a delivery report
-        store.case_collection.update_one(
-            {"_id": case_obj["_id"]},
-            {"$set": {"delivery_report": delivery_report_path}},
-        )
-
-        # WHEN accessing the delivery report page
-        resp = client.get(
-            url_for(
-                "cases.delivery_report",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            )
-        )
-
+        resp = _test_delivery_report(client, institute_obj, case_obj, response_format="html")
         # THEN the endpoint should return the delivery report HTML page
         assert "Leveransrapport Clinical Genomics" in str(resp.data)
 
@@ -693,22 +629,7 @@ def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        # AND the case has a delivery report
-        store.case_collection.update_one(
-            {"_id": case_obj["_id"]},
-            {"$set": {"delivery_report": delivery_report_path}},
-        )
-
-        # WHEN accessing the delivery report page with the format=pdf param
-        resp = client.get(
-            url_for(
-                "cases.delivery_report",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-                format="pdf",
-            )
-        )
-
+        resp = _test_delivery_report(client, institute_obj, case_obj, response_format="pdf")
         # a successful response should be returned
         assert resp.status_code == 200
         # and it should contain a pdf file, not HTML code
@@ -729,7 +650,9 @@ def test_caselist(app, case_obj):
         # WHEN the API is invoked with a query string containing part of the case term description
         resp = client.get(
             url_for(
-                "cases.caselist", institute_id=case_obj["owner"], query=case_obj["display_name"]
+                "cases.caselist",
+                institute_id=case_obj["owner"],
+                query=case_obj["display_name"],
             )
         )
         # THEN it should return a valid response
@@ -759,9 +682,25 @@ def test_omimterms(app, test_omim_term):
 
         # containing the OMIM term
         assert test_omim_term["_id"] in str(resp.data)
+        assert resp.mimetype == "application/json"
 
 
-def test_beacon_submit_wrong_config(app, case_obj):
+def _test_beacon_submit(client, institute_obj, case_obj, vcf_files, mocker, mock_redirect):
+    """Test beacon connection: given client, produce response"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
+    form_data = {
+        "case": case_obj["_id"],
+        "samples": "affected",
+        "vcf_files": vcf_files,
+    }
+    # WHEN case page is loaded
+    resp = client.post(url_for("cases.beacon_submit"), data=form_data)
+    return resp
+
+
+def test_beacon_submit_wrong_config(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test saving variants to a Beacon server when Beacon connection parameters are not set"""
 
     # GIVEN an initialized app
@@ -770,24 +709,22 @@ def test_beacon_submit_wrong_config(app, case_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        form_data = {
-            "case": case_obj["_id"],
-            "samples": "affected",
-            "vcf_files": ["vcf_snv_research", "vcf_snv"],
-        }
-        # WHEN case page is loaded
-        resp = client.post(
-            url_for("cases.beacon_submit"),
-            data=form_data,
+        vcf_files = ["vcf_snv_research", "vcf_snv"]
+        # WHEN case page is loaded without beacon config settings
+        resp = _test_beacon_submit(
+            client, institute_obj, case_obj, vcf_files, mocker, mock_redirect
         )
+
         # THEN it should redirect to case page
         assert resp.status_code == 302
         updated_case = store.case_collection.find_one()
-        # and submission should not be saved in case object
+        # but submission should not be saved in case object
         assert "beacon" not in updated_case
 
 
-def test_beacon_submit(app, case_obj, monkeypatch, mocked_beacon):
+def test_beacon_submit(
+    app, institute_obj, case_obj, monkeypatch, mocked_beacon, mocker, mock_redirect
+):
     """Test submitting variants to a Beacon server"""
 
     # GIVEN a mocked Beacon server
@@ -805,27 +742,32 @@ def test_beacon_submit(app, case_obj, monkeypatch, mocked_beacon):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        form_data = {
-            "case": case_obj["_id"],
-            "samples": "affected",
-            "vcf_files": ["vcf_snv_research", "vcf_snv"],
-        }
-        # WHEN users submits a POST request to Beacon
-        resp = client.post(
-            url_for("cases.beacon_submit"),
-            data=form_data,
+        vcf_files = ["vcf_snv_research", "vcf_snv"]
+        # WHEN case page is loaded
+        resp = _test_beacon_submit(
+            client,
+            institute_obj,
+            case_obj,
+            vcf_files,
+            mocker,
+            mock_redirect,
         )
+
         # THEN it should redirect to case page
         assert resp.status_code == 302
         updated_case = store.case_collection.find_one()
         # and submissions details should be saved in case object
         assert "beacon" in updated_case
         assert updated_case["beacon"]["samples"]
-        assert updated_case["beacon"]["vcf_files"] == form_data["vcf_files"]
+        assert updated_case["beacon"]["vcf_files"] == vcf_files
 
 
-def test_beacon_remove(app, case_obj, monkeypatch, mocked_beacon):
+def test_beacon_remove(
+    app, institute_obj, case_obj, monkeypatch, mocked_beacon, mocker, mock_redirect
+):
     """Test removing variants submitted to Beacon for test case"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN a mocked Beacon server
     def mock_response(*args, **kwargs):

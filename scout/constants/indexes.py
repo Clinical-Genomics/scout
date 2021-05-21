@@ -1,4 +1,4 @@
-from pymongo import IndexModel, ASCENDING, DESCENDING, TEXT
+from pymongo import ASCENDING, DESCENDING, TEXT, IndexModel
 
 INDEXES = {
     "hgnc_gene": [
@@ -16,6 +16,10 @@ INDEXES = {
             [("build", ASCENDING), ("aliases", ASCENDING)],
             name="build_aliases",
             background=True,
+        ),
+        IndexModel(
+            [("build", ASCENDING), ("hgnc_symbol", ASCENDING)],
+            name="build_hgnc_symbol",
         ),
     ],
     "variant": [
@@ -84,11 +88,21 @@ INDEXES = {
     "hpo_term": [
         IndexModel([("description", ASCENDING)], name="description"),
         IndexModel([("description", TEXT)], default_language="english", name="description_text"),
-        IndexModel([("hpo_number", ASCENDING)], name="number"),
+        IndexModel([("hpo_number", ASCENDING)], name="number", background=True),
     ],
     "event": [
         IndexModel([("category", ASCENDING), ("verb", ASCENDING)], name="category_verb"),
         IndexModel([("variant_id", ASCENDING)], name="variant_id"),
+        IndexModel(
+            [
+                ("institute", ASCENDING),
+                ("case", ASCENDING),
+                ("category", ASCENDING),
+                ("verb", ASCENDING),
+            ],
+            name="case_verb",
+        ),
+        IndexModel([("user_id", ASCENDING)], name="user_events"),
     ],
     "transcript": [
         IndexModel(
@@ -104,6 +118,5 @@ INDEXES = {
             background=True,
         )
     ],
-    "hpo_term": [IndexModel([("hpo_number", ASCENDING)], name="number", background=True)],
     "case": [IndexModel([("synopsis", TEXT)], default_language="english", name="synopsis_text")],
 }

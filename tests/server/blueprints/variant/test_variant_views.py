@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-from flask import url_for, current_app
-from flask_login import current_user
 from urllib.parse import urlencode
+
+from flask import current_app, url_for
+from flask_login import current_user
+
 from scout.server.extensions import store
 
 
@@ -60,7 +62,11 @@ def test_sv_variant(app, institute_obj, case_obj, variant_obj):
         assert resp.status_code == 200
 
 
-def test_variant_update_manual_rank(app, case_obj, variant_obj, institute_obj):
+def test_variant_update_manual_rank(
+    app, case_obj, variant_obj, institute_obj, mocker, mock_redirect
+):
+    mocker.patch("scout.server.blueprints.variant.views.redirect", return_value=mock_redirect)
+
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -85,8 +91,12 @@ def test_variant_update_manual_rank(app, case_obj, variant_obj, institute_obj):
         assert resp.status_code == 302
 
 
-def test_edit_variants_comments(app, institute_obj, case_obj, user_obj, variant_obj):
+def test_edit_variants_comments(
+    app, institute_obj, case_obj, user_obj, variant_obj, mocker, mock_redirect
+):
     """Test the functionality to modify a variants comment"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     with app.test_client() as client:
@@ -135,7 +145,11 @@ def test_edit_variants_comments(app, institute_obj, case_obj, user_obj, variant_
         assert updated_comment["level"] == "global"
 
 
-def test_variant_update_cancer_tier(app, case_obj, variant_obj, institute_obj):
+def test_variant_update_cancer_tier(
+    app, case_obj, variant_obj, institute_obj, mocker, mock_redirect
+):
+
+    mocker.patch("scout.server.blueprints.variant.views.redirect", return_value=mock_redirect)
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -211,8 +225,10 @@ def test_clinvar(app, case_obj, variant_obj, institute_obj):
         assert resp.status_code == 302
 
 
-def test_update_tracks_settings(app, user_obj):
+def test_update_tracks_settings(app, user_obj, mocker, mock_redirect):
     """Test the endpoint that updates the IGV track preferences for a user"""
+
+    mocker.patch("scout.server.blueprints.variant.views.redirect", return_value=mock_redirect)
 
     preferred_tracks = ["Genes", "ClinVar"]
     # GIVEN an initialized app

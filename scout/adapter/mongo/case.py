@@ -113,7 +113,7 @@ class CaseHandler(object):
         """
         hgnc_id = self.hgnc_id(hgnc_symbol=query_term)
         if hgnc_id is None:
-            LOG.debug(f"No gene with the HGNC symbol {hgnc_id} found.")
+            LOG.debug(f"No gene with the HGNC symbol {query_term} found.")
             query["_id"] = {"$in": []}  # No result should be returned by query
 
         unwind = "$causatives"
@@ -156,17 +156,15 @@ class CaseHandler(object):
         """
         order = None
         query_field = name_query.split(":")[0]  # example:status
-        query_term = name_query[name_query.index(":") + 1 :].replace(" ", "")  # example:active
+        query_term = name_query[name_query.index(":") + 1 :].strip()
 
         if query_field == "case" and query_term != "":
-            LOG.debug("Case display name query")
             query["$or"] = [
                 {"display_name": {"$regex": query_term}},
                 {"individuals.display_name": {"$regex": query_term}},
             ]
 
         if query_field == "exact_pheno":
-            LOG.debug("Exact HPO phenotype query")
             if query_term != "":
                 query["phenotype_terms.phenotype_id"] = query_term
             else:  # query for cases with no HPO terms
@@ -175,22 +173,21 @@ class CaseHandler(object):
                     {"phenotype_terms": {"$exists": False}},
                 ]
         if query_field == "synopsis":
-            LOG.debug("Case synopsis query")
             if query_term != "":
                 query["$text"] = {"$search": query_term}
             else:
                 query["synopsis"] = ""
 
         if query_field == "panel":
-            LOG.debug("Gene panel query")
             query["panels"] = {"$elemMatch": {"panel_name": query_term, "is_default": True}}
 
         if query_field == "status":
-            LOG.debug("Case status query")
             query["status"] = query_term
 
+        if query_field == "track":
+            query["track"] = query_term
+
         if query_field == "pheno_group":
-            LOG.debug("Phenotye group query")
             if query_term != "":
                 query["phenotype_groups.phenotype_id"] = query_term
             else:
@@ -199,7 +196,6 @@ class CaseHandler(object):
                     {"phenotype_groups": {"$exists": False}},
                 ]
         if query_field == "cohort":
-            LOG.debug("Case cohort query")
             query["cohorts"] = query_term
 
         if query_term != "" and (query_field == "similar_case" or query_field == "similar_pheno"):
@@ -211,14 +207,11 @@ class CaseHandler(object):
             self._set_genes_of_interest_query(query, query_field, query_term)
 
         if query_field == "user":
-            LOG.debug(f"Search for cases with assignee '{query_term}'.")
-            users = self.user_collection.find({"name": {"$regex": query_term, "$options": "i"}})
-            nr_users = sum(
-                1
-                for i in self.user_collection.find(
-                    {"name": {"$regex": query_term, "$options": "i"}}
-                )
-            )
+            query_terms = query_term.split(" ")
+            user_query = {
+                "$and": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]
+            }
+            users = self.user_collection.find(user_query)
             query["assignees"] = {"$in": [user["email"] for user in users]}
 
         return order
@@ -447,7 +440,7 @@ class CaseHandler(object):
             case (dict): The case that should be updated
             hgnc_symbols (iterable): A list of hgnc_symbols
             hgnc_ids (iterable): A list of hgnc_ids
-            phenotype_id(list): optionally add phenotype_ids used to generate list
+            phenotype_ids(list): optionally add phenotype_ids used to generate list
             add_only(bool): set by eg ADDGENE to add genes, and NOT reset previous dynamic_gene_list
 
         Returns:
@@ -490,7 +483,8 @@ class CaseHandler(object):
             {
                 "$set": {
                     "dynamic_gene_list": dynamic_gene_list,
-                    "dynamic_panel_phenotypes": phenotype_ids or [],
+                    "dynamic_panel_phenotypes": phenotype_ids
+                    or case.get("dynamic_panel_phenotypes", []),
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER,
@@ -688,26 +682,34 @@ class CaseHandler(object):
         """Update a case in the database
 
         The following will be updated:
-            - collaborators: If new collaborators these will be added to the old ones
             - analysis_date: Is updated to the new date
-            - analyses: The new analysis date will be added to old runs
-            - individuals: There could be new individuals
-            - updated_at: When the case was updated in the database
-            - rerun_requested: Is set to False since that is probably what happened
-            - panels: The new gene panels are added
-            - genome_build: If there is a new genome build
-            - genome_version: - || -
-            - rank_model_version: If there is a new rank model
-            - sv_rank_model_version: If there is a new sv rank model
-            - madeline_info: If there is a new pedigree
-            - vcf_files: paths to the new files
+            - chromograph_image_files: path to Chromograph image files
+            - chromograph_prefixes: path to Chromograph prefixes
             - cnv_report: path to the CNV report file
+            - collaborators: If new collaborators these will be added to the old ones
             - coverage_qc_report: path to the static coverage and qc report file
-            - has_svvariants: If there are new svvariants
+            - delivery_report: path to the static delivery report file
+            - gene_fusion_report: path to the gene fusions report
+            - gene_fusion_report_research: path to the research gene fusions report
+            - genome_build: If there is a new genome build
             - has_strvariants: If there are new strvariants
-            - multiqc: If there's an updated multiqc report location
+            - has_svvariants: If there are new svvariants
+            - individuals: There could be new individuals
+            - is_research: True is is a research case otherwise False
+            - madeline_info: If there is a new pedigree
             - mme_submission: If case was submitted to MatchMaker Exchange
+            - multiqc: If there's an updated multiqc report location
+            - panels: The new gene panels are added
+            - rank_model_version: If there is a new rank model
+            - rerun_requested: Is set to False since that is probably what happened
+            - research_requested: Boolean, if research variants where requested for this case
+            - smn_tsv: path to static SMN TSV file
+            - status: case status
+            - sv_rank_model_version: If there is a new sv rank model
+            - track: "rare" or "cancer"
+            - updated_at: When the case was updated in the database
             - variants_stats: number of variants by type
+            - vcf_files: paths to the new files
 
             Args:
                 case_obj(dict): The new case information
@@ -716,8 +718,6 @@ class CaseHandler(object):
             Returns:
                 updated_case(dict): The updated case information
         """
-        # Todo: rename to match the intended purpose
-
         LOG.info("Updating case {0}".format(case_obj["_id"]))
         old_case = self.case_collection.find_one({"_id": case_obj["_id"]})
 
@@ -750,30 +750,32 @@ class CaseHandler(object):
                 },
                 "$set": {
                     "analysis_date": case_obj["analysis_date"],
-                    "delivery_report": case_obj.get("delivery_report"),
-                    "cnv_report": case_obj.get("cnv_report"),
-                    "coverage_qc_report": case_obj.get("coverage_qc_report"),
-                    "individuals": case_obj["individuals"],
-                    "updated_at": updated_at,
-                    "rerun_requested": case_obj.get("rerun_requested", False),
-                    "panels": case_obj.get("panels", []),
-                    "genome_build": case_obj.get("genome_build", "37"),
-                    "genome_version": case_obj.get("genome_version"),
-                    "rank_model_version": case_obj.get("rank_model_version"),
-                    "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
-                    "madeline_info": case_obj.get("madeline_info"),
                     "chromograph_image_files": case_obj.get("chromograph_image_files"),
                     "chromograph_prefixes": case_obj.get("chromograph_prefixes"),
-                    "smn_tsv": case_obj.get("smn_tsv"),
-                    "vcf_files": case_obj.get("vcf_files"),
-                    "has_svvariants": case_obj.get("has_svvariants"),
+                    "cnv_report": case_obj.get("cnv_report"),
+                    "coverage_qc_report": case_obj.get("coverage_qc_report"),
+                    "delivery_report": case_obj.get("delivery_report"),
+                    "gene_fusion_report": case_obj.get("gene_fusion_report"),
+                    "gene_fusion_report_research": case_obj.get("gene_fusion_report_research"),
+                    "genome_build": case_obj.get("genome_build", "37"),
                     "has_strvariants": case_obj.get("has_strvariants"),
+                    "has_svvariants": case_obj.get("has_svvariants"),
+                    "individuals": case_obj["individuals"],
                     "is_research": case_obj.get("is_research", False),
-                    "research_requested": case_obj.get("research_requested", False),
-                    "multiqc": case_obj.get("multiqc"),
+                    "madeline_info": case_obj.get("madeline_info"),
                     "mme_submission": case_obj.get("mme_submission"),
+                    "multiqc": case_obj.get("multiqc"),
+                    "panels": case_obj.get("panels", []),
+                    "rank_model_version": case_obj.get("rank_model_version"),
+                    "rerun_requested": case_obj.get("rerun_requested", False),
+                    "research_requested": case_obj.get("research_requested", False),
+                    "smn_tsv": case_obj.get("smn_tsv"),
                     "status": case_obj.get("status"),
+                    "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
+                    "track": case_obj.get("track", "rare"),
+                    "updated_at": updated_at,
                     "variants_stats": case_obj.get("variants_stats"),
+                    "vcf_files": case_obj.get("vcf_files"),
                 },
             },
             return_document=pymongo.ReturnDocument.AFTER,
@@ -793,8 +795,6 @@ class CaseHandler(object):
         Returns:
             updated_case(dict)
         """
-        # Todo: Figure out and describe when this method destroys a case if invoked instead of
-        # update_case
         LOG.info("Saving case %s", case_obj["_id"])
         # update updated_at of case to "today"
 

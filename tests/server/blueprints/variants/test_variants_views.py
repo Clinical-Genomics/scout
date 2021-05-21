@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
-import pymongo
-from flask import url_for, current_app
-from flask_login import current_user
 from urllib.parse import urlencode
+
+import pymongo
+from flask import current_app, url_for
+from flask_login import current_user
+
 from scout.server.extensions import store
 
 
-def test_variants_clinical_filter(app, institute_obj, case_obj):
+def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_redirect):
+
+    mocker.patch("scout.server.blueprints.variants.views.redirect", return_value=mock_redirect)
 
     # GIVEN a variant without clinVar annotations
     test_var = store.variant_collection.find_one(
@@ -40,13 +44,11 @@ def test_variants_clinical_filter(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
         # WHEN submitting form data to the variants page (POST method) with clinical filter
-        data = urlencode(
-            {
-                "clinical_filter": "Clinical filter",
-                "variant_type": "clinical",
-                "gene_panels": "panel1",
-            }
-        )  # clinical filter
+        data = {
+            "clinical_filter": "Clinical filter",
+            "variant_type": "clinical",
+            "gene_panels": "panel1",
+        }
 
         resp = client.post(
             url_for(
@@ -55,7 +57,6 @@ def test_variants_clinical_filter(app, institute_obj, case_obj):
                 case_name=case_obj["display_name"],
             ),
             data=data,
-            content_type="application/x-www-form-urlencoded",
         )
 
         # THEN it should return a page
@@ -86,14 +87,17 @@ def test_variants(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_bulk_reset_dismiss_variants(app, institute_obj, case_obj):
+def test_bulk_reset_dismiss_variants(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test sending a GET request to reset all dismissed variants for a case"""
+
+    mocker.patch("scout.server.blueprints.variants.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
 
+        # GIVEN a variant
         variant = store.variant_collection.find_one()
 
         # WHEN dismissing a variant using a POST request
@@ -123,7 +127,7 @@ def test_bulk_reset_dismiss_variants(app, institute_obj, case_obj):
                 "variants.reset_dismissed",
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
-            ),
+            )
         )
         # THEN it should return redirect to variants page
         assert resp.status_code == 302
@@ -131,8 +135,11 @@ def test_bulk_reset_dismiss_variants(app, institute_obj, case_obj):
         updated_variant = store.variant_collection.find_one({"_id": variant["_id"]})
         assert updated_variant.get("dismiss_variant") is None
 
-        # And 2 relative events should be found in the database
-        assert sum(1 for i in store.event_collection.find()) == 2
+        # 2 variant-relative events should be found in the database
+        assert sum(1 for i in store.event_collection.find({"category": "variant"})) == 2
+
+        # And one case-specifuc event should also be created
+        assert sum(1 for i in store.event_collection.find({"category": "case"})) == 1
 
 
 def test_variants_research(app, institute_obj, case_obj):

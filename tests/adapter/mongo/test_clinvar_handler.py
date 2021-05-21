@@ -1,8 +1,25 @@
 import logging
+
 import pymongo
+
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 
 LOG = logging.getLogger(__name__)
+
+
+def test_sort_case_data(adapter):
+    """Test the function that sorts submission's case data according to submissions variants"""
+
+    # GIVEN a ClinVar submission with variants:
+    variants_list = [{"linking_id": "aaa"}, {"linking_id": "bbb"}]
+
+    # GIVEN that submission's case data is not sorted according to the order of variants:
+    case_data_list = [{"linking_id": "bbb"}, {"linking_id": "aaa"}]
+
+    # THEN the sorted case data list should reflect the order of variants
+    sorted_case_data = adapter.sort_clinvar_case_data(variants_list, case_data_list)
+    assert sorted_case_data[0]["linking_id"] == variants_list[0]["linking_id"]
+    assert sorted_case_data[1]["linking_id"] == variants_list[1]["linking_id"]
 
 
 def get_test_submission_variant(case_obj):

@@ -1,0 +1,84 @@
+
+{% from "utils.html" import comments_table %}
+
+{% macro pin_indicator(variant, case) %}
+  {% if 'suspects' in case and variant._id in case.suspects %}
+    <i class="fa fa-map-pin"></i>
+  {% endif %}
+{% endmacro %}
+
+
+{% macro causative_badge(variant, case) %}
+  {% if 'causatives' in case and variant._id in case.causatives %}
+    <span class="badge badge-success" style="margin-left:1px" data-toggle="tooltip" data-placement="right" title="Causative variant">Causative</span>
+  {% endif %}
+{% endmacro %}
+
+
+{% macro comments_badge(institute, case, variant) %}
+  {% set comment_count = variant.comments | count_cursor %}
+  {% if comment_count > 0 %}
+    {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
+    <a href="#"
+       class="badge badge-info"
+       data-toggle="popover"
+       data-placement="right"
+       data-html="true"
+       data-trigger="hover click"
+       data-content="{{ comments_content }}"
+       title=""
+       style="color:white;"
+       >
+      {{ comment_count }}
+      <i class="fa fa-comment"></i>
+      {% if 'GLOBAL' in comments_content %}
+        <i class="fa fa-globe" aria-hidden="true"></i>
+      {% endif %}
+    </a>
+  {% endif %}
+{% endmacro %}
+
+
+{% macro evaluations_badge(variant) %}
+  {% if variant.evaluations %}
+    {% for evaluation in (variant.evaluations or []) %}
+      <span class="badge badge-secondary" style="margin-left:1px" data-toggle="tooltip" data-placement="right"
+        title="Previously classified as {{ evaluation.classification.label }}">
+        {{ evaluation.classification.short }}
+      </span>
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+
+
+{% macro research_assessments_badge(variant) %}
+  {% if variant.research_assessments %}
+    {% for assessment in (variant.research_assessments or []) %}
+      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
+        title="Research {{ assessment.title }}">
+        {{ assessment.label }}</span>
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+
+
+{% macro clinical_assessments_badge(variant) %}
+  {% if variant.clinical_assessments %}
+    {% for assessment in (variant.clinical_assessments or []) %}
+      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
+          title="Clinical {{ assessment.title }}">
+          {{ assessment.label }}</span>
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+
+
+{% macro group_assessments_badge(variant) %}
+  {% if variant.group_assessments %}
+    {% for assessment in (variant.group_assessments or []) %}
+      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
+        title="Cohort {{ assessment.title }}">
+        {{ assessment.label }}</span>
+    {% endfor %}
+  {% endif %}
+{% endmacro %}

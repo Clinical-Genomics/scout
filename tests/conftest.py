@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
-import os
-from pprint import pprint as pp
 
 import pymongo
 import pytest
 import yaml
 from cyvcf2 import VCF
+from flask import jsonify
 
 # Adapter stuff
 from mongomock import MongoClient
+from werkzeug.datastructures import MultiDict
 
 from scout.adapter.mongo import MongoAdapter as PymongoAdapter
 from scout.build import build_case, build_institute, build_panel
@@ -20,8 +20,8 @@ from scout.build.user import build_user
 from scout.build.variant import build_variant
 from scout.demo import (
     cancer_load_path,
-    cancer_sv_path,
     cancer_snv_path,
+    cancer_sv_path,
     clinical_snv_path,
     clinical_str_path,
     clinical_sv_path,
@@ -43,13 +43,13 @@ from scout.demo.resources import (
     genemap2_reduced_path,
     genes37_reduced_path,
     genes38_reduced_path,
+    genes_to_phenotype_reduced_path,
     hgnc_reduced_path,
+    hpoterms_reduced_path,
     mim2gene_reduced_path,
+    phenotype_to_genes_reduced_path,
     transcripts37_reduced_path,
     transcripts38_reduced_path,
-    genes_to_phenotype_reduced_path,
-    hpoterms_reduced_path,
-    phenotype_to_genes_reduced_path,
 )
 from scout.load import load_hgnc_genes
 from scout.load.hpo import load_hpo
@@ -57,18 +57,14 @@ from scout.load.transcript import load_transcripts
 from scout.log import init_log
 from scout.models.hgnc_map import HgncGene
 from scout.parse.case import parse_case
-from scout.parse.ensembl import (
-    parse_ensembl_exons,
-    parse_ensembl_transcripts,
-    parse_transcripts,
-)
+from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_transcripts, parse_transcripts
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hgnc import parse_hgnc_genes
 from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
 from scout.parse.variant.headers import parse_rank_results_header
-from scout.server.blueprints.login.models import LoginUser
 from scout.server.app import create_app
+from scout.server.blueprints.login.models import LoginUser
 from scout.utils.handle import get_file_handle
 from scout.utils.link import link_genes
 
@@ -79,10 +75,10 @@ REAL_DATABASE = "realtestdb"
 # init_log(root_logger, loglevel='INFO')
 LOG = logging.getLogger(__name__)
 
+##################### App fixtures #####################
 
-@pytest.fixture
-def mock_app(real_populated_database):
-    """Return the path to a mocked app object with data"""
+
+def _mock_an_app():
     _mock_app = create_app(
         config=dict(
             TESTING=True,
@@ -93,6 +89,29 @@ def mock_app(real_populated_database):
         )
     )
     return _mock_app
+
+
+@pytest.fixture
+def mock_app(real_populated_database):
+    """Return the path to a mocked app object with data"""
+    return _mock_an_app()
+
+
+@pytest.fixture(scope="function")
+def empty_mock_app(real_adapter):
+    """Return the path to a mocked app object without any data"""
+    return _mock_an_app()
+
+
+################## Requests fixture #####################
+
+
+@pytest.fixture
+def mock_redirect():
+    message = {"test": "redirect"}
+    resp = jsonify(message)
+    resp.status_code = 302
+    return resp
 
 
 ##################### Gene fixtures #####################
@@ -381,7 +400,6 @@ def case_obj(request, parsed_case):
     case["owner"] = parsed_case["owner"]
     case["created_at"] = parsed_case["analysis_date"]
     case["dynamic_gene_list"] = []
-    case["genome_version"] = None
     case["has_svvariants"] = True
 
     case["individuals"][0]["sex"] = "1"
@@ -785,11 +803,10 @@ def real_populated_database(request, real_panel_database, parsed_case):
     return adapter
 
 
-@pytest.fixture(scope="function")
-def variant_database(request, populated_database):
+def _load_variants(database):
     """Returns an adapter to a database populated with user, institute, case
     and variants"""
-    adapter = populated_database
+    adapter = database
     # Load variants
     case_obj = adapter.case_collection.find_one()
 
@@ -800,27 +817,23 @@ def variant_database(request, populated_database):
         rank_threshold=-10,
         build="37",
     )
-
     return adapter
 
 
 @pytest.fixture(scope="function")
-def real_variant_database(request, real_populated_database):
+def variant_database(populated_database):
     """Returns an adapter to a database populated with user, institute, case
     and variants"""
-    adapter = real_populated_database
 
-    case_obj = adapter.case_collection.find_one()
-    # Load variants
-    adapter.load_variants(
-        case_obj,
-        variant_type="clinical",
-        category="snv",
-        rank_threshold=-10,
-        build="37",
-    )
+    return _load_variants(populated_database)
 
-    return adapter
+
+@pytest.fixture(scope="function")
+def real_variant_database(real_populated_database):
+    """Returns an adapter to a real database populated with user, institute, case
+    and variants"""
+
+    return _load_variants(real_populated_database)
 
 
 @pytest.fixture(scope="function")
@@ -836,6 +849,25 @@ def sv_database(request, populated_database, variant_objs, sv_variant_objs):
     )
 
     return adapter
+
+
+####################################
+########## Filter fixtures ##########
+####################################
+
+
+@pytest.fixture
+def filter_obj():
+    filter_obj_md = MultiDict(
+        {
+            "variant_type": "clinical",
+            "region_annotations": ["exonic", "splicing"],
+            "filter_display_name": "clinical-exonic-splicing",
+            "empty_value": "",
+            "save_filter": True,
+        }
+    )
+    return filter_obj_md
 
 
 #############################################################
@@ -873,7 +905,7 @@ def parsed_panel(request, panel_info):
 
 
 @pytest.fixture(scope="function")
-def dummypanel_geneobj():
+def testpanel_geneobj():
     """A panel gene object"""
     gene_obj = {}
 
@@ -884,22 +916,22 @@ def dummypanel_geneobj():
 
 
 @pytest.fixture(scope="function")
-def dummypanel_obj(parsed_panel, dummypanel_geneobj):
-    """Return a dummy panel object"""
-    dummy_panel = {}
+def testpanel_obj(parsed_panel):
+    """Return a test panel object"""
+    testpanel = {}
 
-    dummy_panel["panel_name"] = parsed_panel["panel_id"]
-    dummy_panel["institute"] = parsed_panel["institute"]
-    dummy_panel["version"] = float(parsed_panel["version"])
-    dummy_panel["date"] = parsed_panel["date"]
-    dummy_panel["display_name"] = parsed_panel["display_name"]
-    dummy_panel["description"] = "A panel description"
-    dummy_panel["genes"] = [
+    testpanel["panel_name"] = parsed_panel["panel_id"]
+    testpanel["institute"] = parsed_panel["institute"]
+    testpanel["version"] = float(parsed_panel["version"])
+    testpanel["date"] = parsed_panel["date"]
+    testpanel["display_name"] = parsed_panel["display_name"]
+    testpanel["description"] = "A panel description"
+    testpanel["genes"] = [
         {"symbol": "AAA", "hgnc_id": 100},
         {"symbol": "BBB", "hgnc_id": 222},
     ]
 
-    return dummy_panel
+    return testpanel
 
 
 @pytest.fixture(scope="function")
@@ -1018,6 +1050,13 @@ def one_sv_variant(request, sv_clinical_file):
 
 
 @pytest.fixture(scope="function")
+def sv_variant_obj(request, parsed_sv_variant):
+    institute_id = "cust000"
+    variant = build_variant(parsed_sv_variant, institute_id=institute_id)
+    return variant
+
+
+@pytest.fixture(scope="function")
 def one_str_variant(request, str_clinical_file):
     LOG.info("Return one parsed STR variant")
     variant_parser = VCF(str_clinical_file)
@@ -1109,72 +1148,6 @@ def cyvcf2_variant():
 
     variant = Cyvcf2Variant()
     return variant
-
-
-# @pytest.fixture(scope='function')
-# def parsed_variant():
-#     """Return variant information for a parsed variant with minimal information"""
-#     variant = {'alternative': 'C',
-#                'callers': {
-#                    'freebayes': None,
-#                    'gatk': None,
-#                    'samtools': None
-#                },
-#                'case_id': 'cust000-643594',
-#                'category': 'snv',
-#                'chromosome': '2',
-#                'clnsig': [],
-#                'compounds': [],
-#                'conservation': {'gerp': [], 'phast': [], 'phylop': []},
-#                'dbsnp_id': None,
-#                'end': 176968945,
-#                'filters': ['PASS'],
-#                'frequencies': {
-#                    'exac': None,
-#                    'exac_max': None,
-#                    'thousand_g': None,
-#                    'thousand_g_left': None,
-#                    'thousand_g_max': None,
-#                    'thousand_g_right': None},
-#                'genes': [],
-#                'genetic_models': [],
-#                'hgnc_ids': [],
-#                'ids': {'display_name': '1_10_A_C_clinical',
-#                        'document_id': 'a1f1d2ac588dae7883f474d41cfb34b8',
-#                        'simple_id': '1_10_A_C',
-#                        'variant_id': 'e8e33544a4745f8f5a09c5dea3b0dbe4'},
-#                'length': 1,
-#                'local_obs_hom_old': None,
-#                'local_obs_old': None,
-#                'mate_id': None,
-#                'position': 176968944,
-#                'quality': 10.0,
-#                'rank_score': 0.0,
-#                'reference': 'A',
-#                'samples': [{'alt_depth': -1,
-#                             'display_name': 'NA12882',
-#                             'genotype_call': None,
-#                             'genotype_quality': None,
-#                             'individual_id': 'ADM1059A2',
-#                             'read_depth': None,
-#                             'ref_depth': -1},
-#                            {'alt_depth': -1,
-#                             'display_name': 'NA12877',
-#                             'genotype_call': None,
-#                             'genotype_quality': None,
-#                             'individual_id': 'ADM1059A1',
-#                             'read_depth': None,
-#                             'ref_depth': -1},
-#                            {'alt_depth': -1,
-#                             'display_name': 'NA12878',
-#                             'genotype_call': None,
-#                             'genotype_quality': None,
-#                             'individual_id': 'ADM1059A3',
-#                             'read_depth': None,
-#                             'ref_depth': -1}],
-#                'sub_category': 'snv',
-#                'variant_type': 'clinical'}
-#     return variant
 
 
 @pytest.fixture(scope="function")

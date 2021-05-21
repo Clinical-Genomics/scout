@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
+from pprint import pprint as pp
 
 from scout.constants import SO_TERMS
-from pprint import pprint as pp
 
 LOG = logging.getLogger(__name__)
 
@@ -133,8 +133,13 @@ def parse_transcripts(raw_transcripts, allele=None):
         # Check if the transcript is marked cannonical by vep
         transcript["is_canonical"] = entry.get("CANONICAL") == "YES"
 
-        # Get MANE transcript
-        transcript["mane_transcript"] = entry.get("MANE")
+        # Get MANE transcripts (from VEP v103/MANE v0.92)
+        if "MANE_SELECT" in entry:
+            transcript["mane_select_transcript"] = entry.get("MANE_SELECT")
+            transcript["mane_plus_clinical_transcript"] = entry.get("MANE_PLUS_CLINICAL")
+        # Backwards compatibility with older versions of VEP/MANE
+        elif "MANE" in entry:
+            transcript["mane_select_transcript"] = entry.get("MANE")
 
         # Check if the CADD score is available on transcript level
         cadd_phred = entry.get("CADD_PHRED")
@@ -148,6 +153,12 @@ def parse_transcripts(raw_transcripts, allele=None):
             transcript["superdups_fracmatch"] = [
                 float(fractmatch) for fractmatch in superdups_fractmatch.split("&")
             ]
+
+        # Get mitochondrial gnomAD frequencies
+        if entry.get("GNOMAD_MT_AF_HOM", "") != "":
+            transcript["gnomad_mt_homoplasmic"] = float(entry.get("GNOMAD_MT_AF_HOM"))
+        if entry.get("GNOMAD_MT_AF_HET", "") != "":
+            transcript["gnomad_mt_heteroplasmic"] = float(entry.get("GNOMAD_MT_AF_HET"))
 
         # Check frequencies
         # There are different keys for different versions of VEP

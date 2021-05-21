@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 import logging
-
+import traceback
 from pprint import pprint as pp
 
-from flask.cli import with_appcontext
 import click
 import yaml
-import traceback
-
 from cyvcf2 import VCF
+from flask.cli import with_appcontext
 
+from scout.exceptions import ConfigError, IntegrityError
 from scout.load import load_scout
 from scout.parse.case import parse_case_data
-from scout.exceptions import IntegrityError, ConfigError
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
@@ -82,7 +80,7 @@ def case(
 
     # Scout needs a config object with the neccessary information
     # If no config is used create a dictionary
-    config_raw = yaml.load(config, Loader=yaml.FullLoader) if config else {}
+    config_raw = yaml.load(config, Loader=yaml.SafeLoader) if config else {}
 
     try:
         config_data = parse_case_data(
@@ -105,6 +103,13 @@ def case(
         LOG.error("KEYERROR {} missing when loading '{}'".format(err, config.name))
         LOG.debug("Stack trace: {}".format(traceback.format_exc()))
         raise click.Abort()
+
+    if config_data.get("human_genome_build") not in [37, 38, "37", "38"]:
+        config_data["human_genome_build"] = int(
+            click.prompt(
+                f"Please enter a valid genome build for this case", type=click.Choice(["37", "38"])
+            )
+        )
 
     LOG.info("Use family %s" % config_data["family"])
 

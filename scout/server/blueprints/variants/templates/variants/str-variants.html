@@ -1,8 +1,8 @@
 {% extends "layout_bs4.html" %}
-{% from "variants/components.html" import gene_cell, frequency_cell %}
-{% from "utils.html" import comments_table %}
-{% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, pagination_footer, pagination_hidden_div, str_filters %}
-
+{% from "utils.html" import comments_table, pedigree_panel %}
+{% from "variants/components.html" import gene_cell, frequency_cell_general %}
+{% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters %}
+{% from "variant/buttons.html" import igv_button %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - STR variants
@@ -77,7 +77,7 @@
           {% set ns.allele0 = variant.chromosome + variant.position|string %}
           {% if variant.dismiss_variant %}
               <tr class="dismiss">
-          {% elif variant._id in case.causatives %}
+          {% elif 'causatives' in case and variant._id in case.causatives %}
              <tr class="causative">
           {% elif variant.str_status == 'normal' %}
               <tr class="bg-primary">
@@ -104,19 +104,8 @@
             <td>{{ variant.chromosome }}</td>
             <td>
               {{ variant.position }}
-              {% if case.bam_files %}
-                <form name="form_{{variant._id}}" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
-                  <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
-                  <input type="hidden" name="build" value="{{case.genome_build}}">
-                  <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
-                  <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
-                  <input type="hidden" name="contig" value="{{variant.chromosome}}">
-                  <input type="hidden" name="start" value="{{variant.position - 50}}">
-                  <input type="hidden" name="stop" value="{{variant.position + 50}}">
-                  <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
-                </form>
-              {% endif %}
-            </td>
+              {{ igv_button(case,variant,case_groups) }}
+              </td>
         </tr>
         {% else %}
           <tr>
@@ -132,6 +121,13 @@
 <div class="container-fluid">
   {{ pagination_footer(more_variants, page) }}
 </div>
+<!--  Pedigree_panel -->
+{% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
+{% if has_pedigree %}
+  <div class="row">
+    <div class="col-md-4">{{ pedigree_panel(case) }}</div>
+  </div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
@@ -163,7 +159,12 @@
 
     window.onload=function() {
       populateCytobands({{cytobands|safe}});
+      {{ update_stash_filter_button_status(current_user, filters) }}
     }
+
+    $("#filters").change(function () {
+      {{ update_stash_filter_button_status(current_user, filters) }}
+    });
 
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
@@ -189,7 +190,6 @@
   data-trigger="hover click"
   data-content="{% if variant.str_normal_max %}
     <table>
-      <tr><td>Reference size</td><td>{{ variant.str_normal_max }}</td></tr>
       <tr><td>Normal max</td><td>{{ variant.str_normal_max }}</td></tr>
       <tr><td>Pathologic min</td><td>{{ variant.str_pathologic_min }}</td><tr>
       <tr><td colspan=2>&nbsp;</td></tr>

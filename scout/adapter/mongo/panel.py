@@ -532,3 +532,15 @@ class PanelHandler:
             ]
         )
         return set(item["_id"] for item in query)
+
+    def clinical_hgnc_ids(self, case_obj):
+        """Return all the clinical gene hgnc IDs for a case."""
+        panel_ids = [panel["panel_id"] for panel in case_obj["panels"]]
+        query = self.panel_collection.aggregate(
+            [
+                {"$match": {"_id": {"$in": panel_ids}}},
+                {"$unwind": "$genes"},
+                {"$group": {"_id": "$genes.hgnc_id"}},
+            ]
+        )
+        return set(item["_id"] for item in query)

@@ -1,5 +1,7 @@
 from pprint import pprint as pp
 
+from flask import current_app
+
 from scout.constants import SPIDEX_HUMAN
 from scout.utils.convert import amino_acid_residue_change_3_to_1
 
@@ -370,8 +372,11 @@ def get_variant_links(variant_obj, build=None):
         decipher_link=decipher_link(variant_obj, build),
         ensembl_link=ensembl_link(variant_obj, build),
         alamut_link=alamut_link(variant_obj, build),
+        mitomap_link=mitomap_link(variant_obj),
+        hmtvar_link=hmtvar_link(variant_obj),
         spidex_human=spidex_human(variant_obj),
         str_source_link=str_source_link(variant_obj),
+        snp_links=snp_links(variant_obj),
     )
     return links
 
@@ -419,7 +424,7 @@ def ensembl_link(variant_obj, build=37):
     """Compose (sv) variant link to ensembl"""
 
     my_end = variant_obj["end"]
-    if variant_obj["chromosome"] != variant_obj["end_chrom"]:
+    if variant_obj["chromosome"] != variant_obj.get("end_chrom", variant_obj["chromosome"]):
         my_end = variant_obj["position"]
 
     if build == 37:
@@ -433,7 +438,7 @@ def decipher_link(variant_obj, build=37):
     """Compose DECIPHER SV variant links"""
 
     my_end = variant_obj["end"]
-    if variant_obj["chromosome"] != variant_obj["end_chrom"]:
+    if variant_obj["chromosome"] != variant_obj.get("end_chrom", variant_obj["chromosome"]):
         my_end = variant_obj["position"]
 
     if build == 37:
@@ -454,20 +459,16 @@ def exac_link(variant_obj):
 
 
 def gnomad_link(variant_obj, build=37):
-    """Compose link to gnomAD website."""
+    """Compose link to gnomAD website for a variant."""
+    url_template = (
+        "http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
+        "{this[position]}-{this[reference]}-{this[alternative]}"
+    ).format(this=variant_obj)
 
-    if build == 38:
-        url_template = (
-            "http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
-            "{this[position]}-{this[reference]}-{this[alternative]}?dataset=gnomad_r3"
-        )
-    else:
-        url_template = (
-            "http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
-            "{this[position]}-{this[reference]}-{this[alternative]}"
-        )
+    if build == 38 or variant_obj["chromosome"] in ["M", "MT"]:
+        url_template += "?dataset=gnomad_r3"
 
-    return url_template.format(this=variant_obj)
+    return url_template
 
 
 def swegen_link(variant_obj):
@@ -521,6 +522,24 @@ def beacon_link(variant_obj, build=None):
     return url_template.format(this=variant_obj)
 
 
+def snp_links(variant_obj):
+    """Compose links to dbSNP and ClinVar variation"""
+
+    if variant_obj.get("dbsnp_id") is None:
+        return
+    snp_links = {}
+    snp_ids = variant_obj["dbsnp_id"].split(";")
+    for snp in snp_ids:
+        if "rs" in snp:
+            snp_links[snp] = f"https://www.ncbi.nlm.nih.gov/snp/{snp}"  # dbSNP
+        elif snp.isnumeric():
+            snp_links[
+                snp
+            ] = f"https://www.ncbi.nlm.nih.gov/clinvar/variation/{snp}"  # ClinVar variation
+
+    return snp_links
+
+
 def ucsc_link(variant_obj, build=None):
     """Compose link to UCSC."""
     build = build or 37
@@ -540,6 +559,7 @@ def ucsc_link(variant_obj, build=None):
 
 
 def mycancergenome(hgnc_symbol, protein_sequence_name):
+    """Compose link to variant in mycancergenome"""
     link = "https://www.mycancergenome.org/content/alteration/{}-{}"
 
     if not hgnc_symbol:
@@ -556,6 +576,7 @@ def mycancergenome(hgnc_symbol, protein_sequence_name):
 
 
 def cbioportal(hgnc_symbol, protein_sequence_name):
+    """Compose link to variant in cbioportal"""
     link = "https://www.cbioportal.org/ln?q={}:MUT%20%3D{}"
 
     if not hgnc_symbol:
@@ -572,6 +593,7 @@ def cbioportal(hgnc_symbol, protein_sequence_name):
 
 
 def mutantp53(hgnc_id, protein_variant):
+    """Compose link to variant in mutantp53"""
     if hgnc_id != 11998:
         return None
     if not protein_variant or protein_variant.endswith("=") or protein_variant.endswith("%3D"):
@@ -583,6 +605,7 @@ def mutantp53(hgnc_id, protein_variant):
 
 
 def alamut_link(variant_obj, build=None):
+    """Compose a link which open up variants in the Alamut software"""
     build = build or 37
 
     build_str = ""
@@ -597,6 +620,18 @@ def alamut_link(variant_obj, build=None):
     return url_template.format(this=variant_obj, build_str=build_str)
 
 
+def mitomap_link(variant_obj):
+    """Compose a link to a variant in mitomap"""
+    url_template = "https://mitomap.org/cgi-bin/search_allele?variant={this[position]}{this[reference]}%3E{this[alternative]}"
+    return url_template.format(this=variant_obj)
+
+
+def hmtvar_link(variant_obj):
+    """Compose a link to a variant in HmtVar"""
+    url_template = "https://www.hmtvar.uniba.it/varCard/{id}"
+    return url_template.format(id=variant_obj.get("hmtvar_variant_id"))
+
+
 def spidex_human(variant_obj):
     """Translate SPIDEX annotation to human readable string."""
     if variant_obj.get("spidex") is None:
@@ -607,3 +642,19 @@ def spidex_human(variant_obj):
         return "medium"
 
     return "high"
+
+
+def external_primer_order_link(variant_obj, build=None):
+    """Compose link for primers orders based on the configuration paramaters EXTERNAL_PRIMER_ORDER_LINK_(37|38)"""
+    build = build or 37
+
+    url_template = ""
+
+    if build == 38:
+        url_template = current_app.config.get("EXTERNAL_PRIMER_ORDER_LINK_38", "")
+    elif build == 37:
+        url_template = current_app.config.get("EXTERNAL_PRIMER_ORDER_LINK_37", "")
+
+    return url_template.format(
+        chromosome=variant_obj.get("chromosome"), position=variant_obj.get("position")
+    )

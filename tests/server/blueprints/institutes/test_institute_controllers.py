@@ -1,8 +1,9 @@
 import copy
+
 from werkzeug.datastructures import MultiDict
-from scout.server.extensions import store
 
 from scout.server.blueprints.institutes.controllers import cases, phenomodel_checkgroups_filter
+from scout.server.extensions import store
 
 
 def test_phenomodel_checkgroups_filter(app, institute_obj, hpo_checkboxes, omim_checkbox):
@@ -77,7 +78,7 @@ def test_cases(adapter, case_obj, institute_obj):
 
 def test_controller_cases(adapter):
     # GIVEN an adapter with a case
-    dummy_case = {
+    test_case = {
         "case_id": "1",
         "owner": "cust000",
         "individuals": [
@@ -85,7 +86,7 @@ def test_controller_cases(adapter):
         ],
         "status": "inactive",
     }
-    adapter.case_collection.insert_one(dummy_case)
+    adapter.case_collection.insert_one(test_case)
     case_query = adapter.case_collection.find()
     # WHEN fetching a case with the controller
     data = cases(adapter, case_query)

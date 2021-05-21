@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
 import logging
+
 import pymongo
 from bson import ObjectId
-
-from flask import Blueprint, render_template, flash, redirect, request, Response, url_for
+from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
-from . import controllers
 from scout.constants import (
-    PHENOTYPE_GROUPS,
-    CASEDATA_HEADER,
-    CLINVAR_HEADER,
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
+    CASE_SEARCH_TERMS,
+    CASEDATA_HEADER,
+    CLINVAR_HEADER,
+    PHENOTYPE_GROUPS,
 )
-from scout.constants import CASE_SEARCH_TERMS
-from scout.server.extensions import store
-from scout.server.utils import user_institutes, templated, institute_and_case
-from .forms import InstituteForm, GeneVariantFiltersForm, PhenoModelForm, PhenoSubPanelForm
+from scout.server.extensions import loqusdb, store
+from scout.server.utils import institute_and_case, templated, user_institutes
+
+from . import controllers
+from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
 
 LOG = logging.getLogger(__name__)
 
@@ -134,9 +135,12 @@ def causatives(institute_id):
         except ValueError:
             flash("Provided gene info could not be parsed!", "warning")
 
-    variants = store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id)
+    variants = list(store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id))
     if variants:
-        variants.sort("hgnc_symbols", pymongo.ASCENDING)
+        variants = sorted(
+            variants,
+            key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
+        )
     all_variants = {}
     all_cases = {}
     for variant_obj in variants:
@@ -154,6 +158,36 @@ def causatives(institute_id):
     acmg_map = {key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()}
 
     return dict(institute=institute_obj, variant_groups=all_variants, acmg_map=acmg_map)
+
+
+@blueprint.route("/<institute_id>/filters", methods=["GET"])
+@templated("overview/filters.html")
+def filters(institute_id):
+
+    form = request.form
+
+    institute_obj = institute_and_case(store, institute_id)
+
+    filters = controllers.filters(store, institute_id)
+
+    return dict(institute=institute_obj, form=form, filters=filters)
+
+
+@blueprint.route("/<institute_id>/lock_filter/<filter_id>", methods=["POST"])
+def lock_filter(institute_id, filter_id):
+
+    filter_lock = request.form.get("filter_lock", "False")
+    LOG.debug(
+        "Attempting to toggle lock %s for %s with status %s", filter_id, institute_id, filter_lock
+    )
+
+    if filter_lock == "True":
+        filter_obj = controllers.unlock_filter(store, current_user, filter_id)
+
+    if filter_lock == "False" or not filter_lock:
+        filter_obj = controllers.lock_filter(store, current_user, filter_id)
+
+    return redirect(request.referrer)
 
 
 @blueprint.route("/<institute_id>/gene_variants", methods=["GET", "POST"])
@@ -177,13 +211,10 @@ def gene_variants(institute_id):
 
     # check if supplied gene symbols exist
     hgnc_symbols = []
-    non_clinical_symbols = []
     not_found_symbols = []
     not_found_ids = []
     data = {}
     if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
-        is_clinical = form.data.get("variant_type", "clinical") == "clinical"
-        # clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
                 hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
@@ -201,11 +232,6 @@ def gene_variants(institute_id):
             flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
         if not_found_symbols:
             flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning")
-        if non_clinical_symbols:
-            flash(
-                "Gene not included in clinical list: {}".format(", ".join(non_clinical_symbols)),
-                "warning",
-            )
 
         if hgnc_symbols == []:
             # If there are not genes to search, return to previous page with a warning
@@ -246,12 +272,14 @@ def institute_settings(institute_id):
             return redirect(request.referrer)
 
     data = controllers.institute(store, institute_id)
+    loqus_instances = loqusdb.loqus_ids if hasattr(loqusdb, "loqus_ids") else []
     default_phenotypes = controllers.populate_institute_form(form, institute_obj)
 
     return render_template(
         "/overview/institute_settings.html",
         form=form,
         default_phenotypes=default_phenotypes,
+        loqus_instances=loqus_instances,
         panel=1,
         **data,
     )
@@ -274,7 +302,7 @@ def clinvar_rename_casedata(submission, case, old_name):
 
     new_name = request.form.get("new_name")
     controllers.update_clinvar_sample_names(store, submission, case, old_name, new_name)
-    return redirect(request.referrer)
+    return redirect(request.referrer + f"#cdata_{submission}")
 
 
 @blueprint.route("/<institute_id>/<submission>/update_status", methods=["POST"])

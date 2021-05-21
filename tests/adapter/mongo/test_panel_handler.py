@@ -1,20 +1,21 @@
+from pprint import pprint as pp
+
 import pytest
 
-from pprint import pprint as pp
 from scout.exceptions import IntegrityError
 
 
-def test_add_panel(adapter, dummypanel_obj):
+def test_add_panel(adapter, testpanel_obj):
     ## GIVEN a adapter with without panels
     assert adapter.panel_collection.find_one() is None
     ## WHEN inserting a panel
-    adapter.add_gene_panel(dummypanel_obj)
+    adapter.add_gene_panel(testpanel_obj)
     ## THEN assert that the panel was loaded
     assert adapter.panel_collection.find_one()
 
 
-def test_add_same_panel_twice(adapter, dummypanel_obj):
-    panel_obj = dummypanel_obj
+def test_add_same_panel_twice(adapter, testpanel_obj):
+    panel_obj = testpanel_obj
     ## GIVEN a adapter without gene panels
     assert adapter.panel_collection.find_one() is None
     ## WHEN inserting a panel twice
@@ -24,8 +25,8 @@ def test_add_same_panel_twice(adapter, dummypanel_obj):
         adapter.add_gene_panel(panel_obj)
 
 
-def test_get_panel_by_version(adapter, dummypanel_obj):
-    panel_obj = dummypanel_obj
+def test_get_panel_by_version(adapter, testpanel_obj):
+    panel_obj = testpanel_obj
     adapter.panel_collection.insert_one(panel_obj)
     ## GIVEN a adapter with one gene panel
     assert adapter.panel_collection.find_one()
@@ -35,8 +36,8 @@ def test_get_panel_by_version(adapter, dummypanel_obj):
     assert res["panel_name"] == panel_obj["panel_name"]
 
 
-def test_get_panel_by_name(adapter, panel_info, dummypanel_obj):
-    adapter.panel_collection.insert_one(dummypanel_obj)
+def test_get_panel_by_name(adapter, panel_info, testpanel_obj):
+    adapter.panel_collection.insert_one(testpanel_obj)
     ## GIVEN a adapter with one gene panel
     assert adapter.panel_collection.find_one()
     ## WHEN getting a panel without version
@@ -45,8 +46,8 @@ def test_get_panel_by_name(adapter, panel_info, dummypanel_obj):
     assert res["panel_name"] == panel_info["panel_name"]
 
 
-def test_get_non_existing_panel(adapter, dummypanel_obj):
-    panel_obj = dummypanel_obj
+def test_get_non_existing_panel(adapter, testpanel_obj):
+    panel_obj = testpanel_obj
     adapter.panel_collection.insert_one(panel_obj)
     ## GIVEN a adapter with one gene panel
     assert adapter.panel_collection.find_one()
@@ -56,35 +57,35 @@ def test_get_non_existing_panel(adapter, dummypanel_obj):
     assert res is None
 
 
-def test_get_panel_multiple_versions(adapter, dummypanel_obj):
+def test_get_panel_multiple_versions(adapter, testpanel_obj):
 
     ## GIVEN an adapter with multiple versions of same gene panel
-    dummypanel_obj["_id"] = 1
-    adapter.panel_collection.insert_one(dummypanel_obj)
-    dummypanel_obj["_id"] = 2
-    dummypanel_obj["version"] = 2.0
-    adapter.panel_collection.insert_one(dummypanel_obj)
+    testpanel_obj["_id"] = 1
+    adapter.panel_collection.insert_one(testpanel_obj)
+    testpanel_obj["_id"] = 2
+    testpanel_obj["version"] = 2.0
+    adapter.panel_collection.insert_one(testpanel_obj)
 
     res = adapter.gene_panels()
     assert sum(1 for i in res) == 2
     ## WHEN getting a panel
-    res = adapter.gene_panel(panel_id=dummypanel_obj["panel_name"])
+    res = adapter.gene_panel(panel_id=testpanel_obj["panel_name"])
     ## THEN assert that the last version is fetched
     assert res["version"] == 2.0
 
 
-def test_reset_pending(adapter, dummypanel_obj, gene_obj):
+def test_reset_pending(adapter, testpanel_obj, gene_obj):
     """Test the function that clears the pending changes from a gene panel"""
 
     # GIVEN a gene panel
-    adapter.panel_collection.insert_one(dummypanel_obj)
+    adapter.panel_collection.insert_one(testpanel_obj)
     # and a gene
     adapter.hgnc_collection.insert_one(gene_obj)
 
     hgnc_obj = adapter.hgnc_collection.find_one()
 
     ## WHEN adding a pending action of this gene to a panel
-    res = adapter.add_pending(panel_obj=dummypanel_obj, hgnc_gene=hgnc_obj, action="add")
+    res = adapter.add_pending(panel_obj=testpanel_obj, hgnc_gene=hgnc_obj, action="add")
     assert len(res["pending"]) == 1
 
     ## IF reset pending is used to clear pending actions
@@ -93,9 +94,9 @@ def test_reset_pending(adapter, dummypanel_obj, gene_obj):
     assert updated_panel.get("pending") is None
 
 
-def test_add_pending(adapter, dummypanel_obj, gene_obj):
+def test_add_pending(adapter, testpanel_obj, gene_obj):
 
-    adapter.panel_collection.insert_one(dummypanel_obj)
+    adapter.panel_collection.insert_one(testpanel_obj)
     adapter.hgnc_collection.insert_one(gene_obj)
     ## GIVEN a adapter with one gene panel and a gene
     panel_obj = adapter.panel_collection.find_one()
@@ -110,8 +111,8 @@ def test_add_pending(adapter, dummypanel_obj, gene_obj):
     assert len(res["pending"]) == 1
 
 
-def test_add_pending_wrong_action(adapter, dummypanel_obj, gene_obj):
-    adapter.panel_collection.insert_one(dummypanel_obj)
+def test_add_pending_wrong_action(adapter, testpanel_obj, gene_obj):
+    adapter.panel_collection.insert_one(testpanel_obj)
     adapter.hgnc_collection.insert_one(gene_obj)
     ## GIVEN a adapter with one gene panel and a gene
     panel_obj = adapter.panel_collection.find_one()
@@ -125,8 +126,8 @@ def test_add_pending_wrong_action(adapter, dummypanel_obj, gene_obj):
         res = adapter.add_pending(panel_obj=panel_obj, hgnc_gene=hgnc_obj, action="hello")
 
 
-def test_update_panel_panel_name(adapter, dummypanel_obj):
-    adapter.panel_collection.insert_one(dummypanel_obj)
+def test_update_panel_panel_name(adapter, testpanel_obj):
+    adapter.panel_collection.insert_one(testpanel_obj)
     ## GIVEN a adapter with a gene panel
     panel_obj = adapter.panel_collection.find_one()
     assert panel_obj
@@ -142,8 +143,8 @@ def test_update_panel_panel_name(adapter, dummypanel_obj):
     assert res["panel_name"] == new_name
 
 
-def test_update_panel_panel_description(adapter, dummypanel_obj):
-    adapter.panel_collection.insert_one(dummypanel_obj)
+def test_update_panel_panel_description(adapter, testpanel_obj):
+    adapter.panel_collection.insert_one(testpanel_obj)
     ## GIVEN a adapter with a gene panel
     panel_obj = adapter.panel_collection.find_one()
 
@@ -158,8 +159,8 @@ def test_update_panel_panel_description(adapter, dummypanel_obj):
     assert res["description"] == "Test description"
 
 
-def test_apply_pending_delete_gene(adapter, dummypanel_obj):
-    adapter.panel_collection.insert_one(dummypanel_obj)
+def test_apply_pending_delete_gene(adapter, testpanel_obj):
+    adapter.panel_collection.insert_one(testpanel_obj)
     ## GIVEN a adapter with a gene panel
     panel_obj = adapter.panel_collection.find_one()
 
@@ -186,8 +187,8 @@ def test_apply_pending_delete_gene(adapter, dummypanel_obj):
         assert gene["hgnc_id"] != hgnc_id
 
 
-def test_apply_pending_delete_two_genes(adapter, dummypanel_obj):
-    adapter.panel_collection.insert_one(dummypanel_obj)
+def test_apply_pending_delete_two_genes(adapter, testpanel_obj):
+    adapter.panel_collection.insert_one(testpanel_obj)
     ## GIVEN a adapter with a gene panel
     panel_obj = adapter.panel_collection.find_one()
 
@@ -221,8 +222,8 @@ def test_apply_pending_delete_two_genes(adapter, dummypanel_obj):
         assert gene["hgnc_id"] not in hgnc_ids
 
 
-def test_apply_pending_add_gene(adapter, dummypanel_obj):
-    adapter.panel_collection.insert_one(dummypanel_obj)
+def test_apply_pending_add_gene(adapter, testpanel_obj):
+    adapter.panel_collection.insert_one(testpanel_obj)
     ## GIVEN a adapter with a gene panel
     panel_obj = adapter.panel_collection.find_one()
 
@@ -252,8 +253,8 @@ def test_apply_pending_add_gene(adapter, dummypanel_obj):
     assert len(updated_panel["genes"]) == 1
 
 
-def test_apply_pending_add_two_genes(adapter, dummypanel_obj):
-    adapter.panel_collection.insert_one(dummypanel_obj)
+def test_apply_pending_add_two_genes(adapter, testpanel_obj):
+    adapter.panel_collection.insert_one(testpanel_obj)
     ## GIVEN a adapter with a gene panel
     panel_obj = adapter.panel_collection.find_one()
 
@@ -298,10 +299,10 @@ def test_apply_pending_add_two_genes(adapter, dummypanel_obj):
         assert gene["hgnc_id"] in hgnc_ids
 
 
-def test_apply_pending_edit_gene(adapter, dummypanel_obj):
+def test_apply_pending_edit_gene(adapter, testpanel_obj):
 
     ## GIVEN an adapter with a gene panel
-    adapter.panel_collection.insert_one(dummypanel_obj)
+    adapter.panel_collection.insert_one(testpanel_obj)
     panel_obj = adapter.panel_collection.find_one()
 
     # Given a gene of this panel
@@ -336,3 +337,35 @@ def test_apply_pending_edit_gene(adapter, dummypanel_obj):
         "model_1",
         "model_2",
     ]
+
+
+def test_clinical_symbols(case_obj, real_panel_database):
+    """test function that returns a set of clinical genes symbols from test case panels"""
+
+    # GIVEN an adapter with genes and a gene panel
+    adapter = real_panel_database
+
+    test_panel = adapter.panel_collection.find_one()
+
+    # GIVEN a case analysed with that panel
+    case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
+
+    # THEN the clinical_symbols function should return a valid set of clinical genes symbols for the case panel
+    clinical_symbols = adapter.clinical_symbols(case_obj)
+    assert len(clinical_symbols) > 0
+
+
+def test_clinical_hgnc_ids(case_obj, real_panel_database):
+    """test function that returns a set of clinical genes HGNC IDs from test case panels"""
+
+    # GIVEN an adapter with genes and a gene panel
+    adapter = real_panel_database
+
+    test_panel = adapter.panel_collection.find_one()
+
+    # GIVEN a case analysed with that panel
+    case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
+
+    # THEN the clinical_hgnc_ids function should return a valid set of hgnc IDs for the case panel
+    clinical_hgnc_ids = adapter.clinical_symbols(case_obj)
+    assert len(clinical_hgnc_ids) > 0

@@ -1,62 +1,146 @@
 {% macro gene_cell(variant) %}
   <div class="align-items-center">
-    {% for gene in variant.genes %}
+    {% if variant.category == "cancer" or variant.category == "sv_cancer" %}
       <a data-toggle="tooltip" data-html="true" title="
-      <div>
         <div>
-          <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
-        </div>
-        {% if gene.inheritance %}
           <div>
-            <strong>Models</strong>: {{ gene.inheritance|join(',') }}
+            <strong>{{ variant.first_rep_gene.hgnc_symbol }}</strong>: {{ variant.first_rep_gene.description }}
           </div>
-        {% endif %}
-        {% if gene.phenotypes %}
+          {% if variant.first_rep_gene.inheritance %}
+            <div>
+              <strong>Models</strong>: {{ variant.first_rep_gene.inheritance|join(',') }}
+            </div>
+          {% endif %}>
+        {% if variant.first_rep_gene.phenotypes %}
           <div><strong>OMIM disease</strong>
-          {% for disease in gene.phenotypes %}
+          {% for disease in variant.first_rep_gene.phenotypes %}
             <div>
                 {{ disease.description }}
             </div>
           {% endfor %}
           </div>
         {% endif %}
-      </div>"
-        href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
+        </div>"
+        {% if variant.first_rep_gene %}
+          href="{{ url_for('genes.gene', hgnc_id=variant.first_rep_gene.hgnc_id) }}"
+        {% endif %}>
+        {{ variant.first_rep_gene.hgnc_symbol or variant.first_rep_gene.hgnc_id }}
+        {% if variant.secondary_gene %}
+          <span class="text-muted">
+            ({{ variant.second_rep_gene.hgnc_symbol or variant.second_rep_gene.hgnc_id }})
+          </span>
+        {% endif %}
       </a>
-    {% endfor %}
-    {% if variant.panels|count > 0 %}
-        <a
-          class="badge badge-secondary text-white"
-          data-toggle="popover"
-          data-html="true"
-          data-trigger="hover click"
-          data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
-          title="">{{variant.panels|count}}
-         </a>
+      {% if variant.panels|count > 0 %}
+          <a
+            class="badge badge-secondary text-white"
+            data-toggle="popover"
+            data-html="true"
+            data-trigger="hover click"
+            data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
+            title="">{{variant.panels|count}}
+          </a>
+      {% endif %}
+    {% else %}
+      {% for gene in variant.genes %}
+        <a data-toggle="tooltip" data-html="true" title="
+        <div>
+          <div>
+            <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
+          </div>
+          {% if gene.inheritance %}
+            <div>
+              <strong>Models</strong>: {{ gene.inheritance|join(',') }}
+            </div>
+          {% endif %}
+          {% if gene.phenotypes %}
+            <div><strong>OMIM disease</strong>
+            {% for disease in gene.phenotypes %}
+              <div>
+                  {{ disease.description }}
+              </div>
+            {% endfor %}
+            </div>
+          {% endif %}
+        </div>"
+          href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
+        </a>
+      {% endfor %}
+      {% if variant.panels|count > 0 %}
+          <a
+            class="badge badge-secondary text-white"
+            data-toggle="popover"
+            data-html="true"
+            data-trigger="hover click"
+            data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
+            title="">{{variant.panels|count}}
+          </a>
+      {% endif %}
     {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro observed_cell_general(variant) %}
+  <div data-toggle="tooltip" data-placement="right" data-html="true" title="
+    <div class='text-left'>
+      <div>
+        <strong>Local (arch.)</strong>: {{ variant.local_obs_old or 0 }} obs.
+      </div>
+      {% if variant.mitomap_associated_diseases %}
+        <strong>MITOMAP</strong>: {{ variant.mitomap_associated_diseases }}<br>
+      {% endif %}
+      {% if variant.cosmic_ids %}
+      <strong>COSMIC</strong>: {{variant.cosmic_ids|count}} obs
+      <br>
+      {% endif %}
+      {% if variant.clinsig_human %}
+        <strong>ClinVar</strong>:
+          <ul>
+          {% for clinsig in variant.clinsig_human %}
+            <li>
+              <strong>{{clinsig.human}}</strong>
+              {% if clinsig.revstat %}{{ clinsig.revstat }} {% endif %}
+              {% if clinsig.accession %}{{ clinsig.accession }}{% else %}no accnr{% endif %}
+            </li>
+          {% endfor %}
+          </ul>
+      {% endif %}
+    </div>
+  ">
+  {% if variant.clinsig_human %}
+    <span class="badge badge-dark">ClinVar</span>
+    <br>
+  {% endif%}
+  {% if variant.cosmic_ids %}
+    <span class="badge badge-dark">COSMIC</span>
+    <br>
+  {% endif %}
+  {% if variant.mitomap_associated_diseases %}
+    <span class="badge badge-dark">MITOMAP</span>
+    <br>
+  {% endif %}
+  {% if variant.local_obs_old %}
+    <span class="badge badge-dark">Local</span>
+    <br>
+  {% endif %}
+
   </div>
 {% endmacro %}
 
 {% macro frequency_cell_general(variant) %}
   <div data-toggle="tooltip" data-placement="left" data-html="true" title="
-      <div class='text-left'>
-        {% for freq_name, value, link in variant.frequencies %}
-          <div>
-            <strong>freq_name</strong>: {{ value|human_decimal}}
-          </div>
-        {% endfor %}
-        <div>
-          <strong>Local (arch.)</strong>: {{ variant.local_obs_old or 0 }} obs.
-        </div>
-      </div>
-    ">
-    {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency else '~' }}
-  </div>
-{% endmacro %}
-
-{% macro frequency_cell(variant) %}
-  <div data-toggle="tooltip" data-placement="left" data-html="true" title="
     <div class='text-left'>
+      {% if 'gnomad_mt_homoplasmic_frequency' in variant %}
+        <div>
+          <strong>gnomAD(MT) hom</strong>: {{ variant.gnomad_mt_homoplasmic_frequency|human_decimal if variant.gnomad_mt_homoplasmic_frequency }}
+        </div>
+      {% endif %}
+      {% if 'gnomad_mt_heteroplasmic_frequency' in variant %}
+        <div>
+          <strong>gnomAD(MT) het</strong>: {{ variant.gnomad_mt_heteroplasmic_frequency|human_decimal if variant.gnomad_mt_heteroplasmic_frequency }}
+        </div>
+      {% endif %}
+
       {% if 'gnomad_frequency' in variant %}
         <div>
           <strong>gnomAD</strong>: {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency }}
@@ -79,27 +163,15 @@
         <strong>ExAC (max)</strong>:
         {{ variant.max_exac_frequency|human_decimal if variant.max_exac_frequency }}
       </div>
-      <div>
-        <strong>Local (arch.)</strong>: {{ variant.local_obs_old or 0 }} obs.
-      </div>
-      {% if variant.cosmic_ids %}
-      <strong>COSMIC</strong>: {{variant.cosmic_ids|count}} obs
-      {% endif %}
-      {% if variant.clinsig_human %}
-        <strong>ClinVar</strong>:
-          {% for clinsig in variant.clinsig_human %}
-            <strong>{{clinsig.human}}</strong> {{ clinsig.revstat }} {{ clinsig.accession }}<br>
-          {% endfor %}
-      {% endif %}
     </div>
   ">
-  {% if variant.clinsig_human %}
-    <span class="badge badge-dark">ClinVar</span>
-  {% endif%}
-  {% if variant.cosmic_ids %}
-    <span class="badge badge-dark">COSMIC</span>
-    <br>
+  {% if variant.category != "cancer" %}
+    {{ observed_cell_general(variant) }}
   {% endif %}
-  {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency else '~' }}
+  {% if variant.chromosome != "MT" %}
+    {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency else '~' }}
+  {% else %}
+    {{ variant.gnomad_mt_homoplasmic_frequency|human_decimal if variant.gnomad_mt_homoplasmic_frequency else '~' }}
+  {% endif %}
   </div>
 {% endmacro %}

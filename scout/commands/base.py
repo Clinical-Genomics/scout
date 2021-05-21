@@ -39,16 +39,15 @@ def loglevel(ctx):
 
 
 @click.pass_context
-def get_app(ctx):
+def get_app(ctx=None):
     """Create an app with the correct config or with default app params"""
-
     # store provided params into a options variable
     options = ctx.find_root()
     cli_config = {}
     # if a .yaml config file was provided use its params to intiate the app
     if options.params.get("config"):
         with open(options.params["config"], "r") as in_handle:
-            cli_config = yaml.load(in_handle, Loader=yaml.FullLoader)
+            cli_config = yaml.load(in_handle, Loader=yaml.SafeLoader)
 
     flask_conf = None
     if options.params.get("flask_config"):

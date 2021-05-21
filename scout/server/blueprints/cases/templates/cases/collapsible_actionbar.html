@@ -23,8 +23,11 @@
           {% endif %}
           {{ rerun(case) }}
           {{ share_case(institute, case, collaborators) }}
-          {% if "beacon_submitter" in current_user.roles %}
-            {{ beacon_share(institute, case) }}
+          {% if config.BEACON_URL %}
+            {{ beacon_share(institute, case, current_user) }}
+          {% endif %}
+          {% if config.MME_ACCEPTS and config.MME_URL and config.MME_TOKEN %}
+            {{ matchmaker_share(institute, case, current_user) }}
           {% endif %}
           {% if case.needs_check %}
             {{ check_decipher(case, institute) }}
@@ -44,7 +47,7 @@
             <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
               {{ panel.display_name|truncate(18, True) }}
             </a>
-            {% if panel.panel_name in case.outdated_panels %}
+            {% if case.outdated_panels and panel.panel_name in case.outdated_panels %}
               <a><span class="badge badge-pill badge-sm badge-warning" data-toggle="popover" data-placement="left" data-html="true" data-content="Panel version used in the analysis ({{panel.version}}) is outdated. Latest panel version is used in variants filtering.<br /><strong>Genes present in case panel and not in latest version</strong>: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}.<br /><strong>Genes present only in latest version</strong>: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.">!</span></a>
             {% endif %}
         </div>
@@ -64,26 +67,28 @@
 <div id='submenu1' class="collapse sidebar-submenu">
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row flex-fill bd-highlight">
-        <span class="menu-collapsed ml-2">General</span>
-        <a href="{{ url_for('cases.case_report', institute_id=institute._id,
-                              case_name=case.display_name) }}" target="_blank">
-                            <i class="fa fa-link"></i></a>
-        <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id,
-                              case_name=case.display_name) }}">
-                            <i class="fa fa-file-pdf-o"></i></a>
+        <div>
+          <span class="menu-collapsed ml-2">General</span>
+        </div>
+        <div>
+          <a href="{{ url_for('cases.case_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
+                <i class="fa fa-link"></i></a>
+        </div>
+        <div>
+          <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}">
+                <i class="fa fa-file-pdf-o"></i></a>
+        </div>
       </div>
     </div>
     {% if case.multiqc %}
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed ml-2">MultiQC</span>
-          <a href="{{ url_for('cases.multiqc', institute_id=institute._id,
-                              case_name=case.display_name) }}" target="_blank">
-                              <i class="fa fa-link"></i></a>
+          <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
         </div>
       </div>
     {% endif %}
-    {% if config.SQLALCHEMY_DATABASE_URI %}
+    {% if config.SQLALCHEMY_DATABASE_URI and case.track != "cancer" %}
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed ml-2">Coverage</span>
@@ -95,14 +100,23 @@
         </div>
       </div>
     {% endif %}
+    {% if case.track != "cancer" %}
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row flex-fill bd-highlight">
-        <span class="menu-collapsed ml-2">mtDNA report</span>
+        <div>
+          <span class="menu-collapsed ml-2">mtDNA report</span>
+        </div>
+        <div>
           <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-file-excel-o"></i></a>
+        </div>
       </div>
     </div>
+    {% endif %}
     {% if case.cnv_report %}
       {{ cnv_report(institute._id, case) }}
+    {% endif %}
+    {% if case.gene_fusion_report or case.gene_fusion_report_research %}
+      {{ gene_fusion_reports(institute._id, case) }}
     {% endif %}
     {% if case.coverage_qc_report %}
       {{ coverage_qc_report(institute._id, case) }}
@@ -310,14 +324,32 @@
 </div>
 {% endmacro %}
 
-{% macro beacon_share(institute, case) %}
-<a data-target="#beacon_modal" data-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
-  <div class="d-flex w-100 justify-content-start align-items-center">
-    <span class="fab fa-watchman-monitoring"></span>
-    <span class="menu-collapsed ml-3">Share to Beacon</span>
-    <span class="submenu-icon ml-auto"></span>
-  </div>
-</a>
+{% macro beacon_share(institute, case, current_user) %}
+  {% if "beacon_submitter" not in current_user.roles %}
+    <a disabled="disabled" data-toggle="popover" data-content="You don't have the permission to submit data to the Beacon. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+  {% else %}
+    <a data-target="#beacon_modal" data-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+  {% endif %}
+    <div class="d-flex w-100 justify-content-start align-items-center">
+      <span class="fab fa-watchman-monitoring"></span>
+      <span class="menu-collapsed ml-3">Share to Beacon</span>
+      <span class="submenu-icon ml-auto"></span>
+    </div>
+  </a>
+{% endmacro %}
+
+{% macro matchmaker_share(institute, case, current_user) %}
+  {% if "mme_submitter" not in current_user.roles %}
+    <a disabled="disabled" data-toggle="popover" data-content="You don't have the permission to submit data to MatchMaker Exchange. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+  {% else %}
+    <a data-target="#matchmaker_modal" data-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+  {% endif %}
+    <div class="d-flex w-100 justify-content-start align-items-center">
+      <span class="fas fa-people-arrows"></span>
+      <span class="menu-collapsed ml-3">MatchMaker</span>
+      <span class="submenu-icon ml-auto"></span>
+    </div>
+  </a>
 {% endmacro %}
 
 {% macro check_decipher(case, institute) %}
@@ -449,34 +481,69 @@
 
 {% macro delivery_report(institute, case, date=None) %}
 <div href="#" class="bg-dark list-group-item text-white">
-  <div class="d-flex flex-row flex-fill bd-highlight"></span>
-    <span class="menu-collapsed ml-2">Delivery ({{date or case.analysis_date.date() }})
+  <div class="d-flex flex-row flex-fill bd-highlight">
+    <div>
+      <span class="menu-collapsed ml-2">Delivery ({{date or case.analysis_date.date() }})</span>
+    </div>
+    <div>
       <a href="{{ url_for('cases.delivery_report', institute_id=institute,
                         case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
+    </div>
+    <div>
       <a href="{{ url_for('cases.delivery_report', institute_id=institute,
                         case_name=case.display_name, date=date, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
+    </div>
   </div>
 </div>
 {% endmacro %}
 
 {% macro cnv_report(institute, case) %}
 <div href="#" class="bg-dark list-group-item text-white">
-  <div class="d-flex flex-row flex-fill bd-highlight"></span>
-    <span class="menu-collapsed ml-2">CNV report
+  <div class="d-flex flex-row flex-fill bd-highlight">
+    <div>
+      <span class="menu-collapsed ml-2">CNV report</span>
+    </div>
+    <div>
       <a href="{{ url_for('cases.cnv_report', institute_id=institute,
                         case_name=case.display_name, format='pdf') }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+    </div>
   </div>
 </div>
 {% endmacro %}
 
+{% macro gene_fusion_reports(institute, case) %}
+{% set fusion_reports = ["gene_fusion_report", "gene_fusion_report_research"] %}
+{% for report_type in fusion_reports %}
+  {% if case[report_type] %}
+    <div href="#" class="bg-dark list-group-item text-white">
+      <div class="d-flex flex-row flex-fill bd-highlight">
+        <div class="text-nowrap">
+          <span class="menu-collapsed ml-2">{{ report_type|replace("_report","")|replace("_"," ")|capitalize }}</span>
+        </div>
+        <div>
+          <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
+                            case_name=case.display_name, report_type=report_type) }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}
+{% endmacro %}
+
 {% macro coverage_qc_report(institute, case) %}
 <div href="#" class="bg-dark list-group-item text-white">
-  <div class="d-flex flex-row flex-fill bd-highlight"></span>
-    <span class="menu-collapsed ml-2">Coverage and QC report
+  <div class="d-flex flex-row flex-fill bd-highlight">
+    <div>
+      <span class="menu-collapsed ml-2">Coverage and QC report</span>
+    </div>
+    <div>
       <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
                         case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
+    </div>
+    <div>
       <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
                         case_name=case.display_name, date=date, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
+    </div>
   </div>
 </div>
 {% endmacro %}

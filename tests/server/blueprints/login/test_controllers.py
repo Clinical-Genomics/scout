@@ -66,6 +66,5 @@ def test_event_rank_6000():
 def test_users_controller(user_adapter):
     """Test the uses controller"""
     res = users(user_adapter)
-    assert res["total_events"] == 0
     user = res["users"][0]
     assert user["events_rank"] == "aspirant"

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from flask import url_for
-from flask_login import current_user
-from scout.server.extensions import store
 from flask_ldap3_login.forms import LDAPLoginForm
+from flask_login import current_user
+
+from scout.server.extensions import store
 
 
 def test_unathorized_login(app, institute_obj, case_obj):
@@ -50,7 +51,7 @@ def test_ldap_login(ldap_app, user_obj, monkeypatch):
     with ldap_app.test_client() as client:
 
         # When submitting LDAP username and password
-        form_data = {"username": "dummy_user", "password": "dummy_password"}
+        form_data = {"username": "test_user", "password": "test_password"}
         resp = client.post(url_for("login.login", **form_data))
 
         # THEN current user should be authenticated

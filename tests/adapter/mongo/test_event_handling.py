@@ -1,8 +1,9 @@
-from pprint import pprint as pp
-import pytest
-import logging
 import datetime
+import logging
+from pprint import pprint as pp
+
 import pymongo
+import pytest
 
 from scout.constants import VERBS_MAP
 
@@ -534,11 +535,82 @@ def test_filter_stash(adapter, institute_obj, case_obj, user_obj, filter_obj):
     assert sum(1 for i in filters) == 0
 
 
-def test_update_default_panels(adapter, institute_obj, case_obj, user_obj, dummypanel_obj):
+def test_filter_lock(adapter, institute_obj, case_obj, user_obj, filter_obj):
+    # GIVEN a case, institute and user in a store
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
     adapter.user_collection.insert_one(user_obj)
-    adapter.panel_collection.insert_one(dummypanel_obj)
+
+    # WHEN storing a filter
+    category = "snv"
+    filter_id = adapter.stash_filter(
+        filter_obj, institute_obj, case_obj, user_obj, category, link="mock_link"
+    )
+    # THEN a filter id is returned
+    assert filter_id
+    # THEN an event can be found in the event collection
+    assert sum(1 for i in adapter.event_collection.find()) > 0
+
+    owner_id = "someone@somewhere.se"
+    # WHEN locking the filter
+    adapter.lock_filter(filter_id, owner_id)
+
+    # WHEN listing filters
+    institute_id = institute_obj.get("_id")
+    filters = list(adapter.filters(institute_id, category))
+    # THEN one filter is returned
+    assert len(filters) == 1
+    # THEN the one filter is locked
+    assert filters[0].get("lock") is True
+
+    # WHEN attempting to unlock filter with a non-owner user
+    adapter.unlock_filter(filter_id, "noone@nowhere.no")
+    filters = list(adapter.filters(institute_id, category))
+    # THEN one filter is returned
+    assert len(filters) == 1
+    # THEN the one filter is still locked
+    assert filters[0].get("lock") is True
+
+    # WHEN attempting to unlock filter with the owner user
+    adapter.unlock_filter(filter_id, owner_id)
+    filters = list(adapter.filters(institute_id, category))
+    # THEN one filter is returned
+    assert len(filters) == 1
+    # THEN the one filter is still locked
+    assert filters[0].get("lock") is False
+
+
+def test_filter_audit(adapter, institute_obj, case_obj, user_obj, filter_obj):
+    # GIVEN a case, institute and user in a store
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+
+    # WHEN storing a filter
+    category = "snv"
+    filter_id = adapter.stash_filter(
+        filter_obj, institute_obj, case_obj, user_obj, category, link="mock_link"
+    )
+    # THEN an event can be found in the event collection
+    n_events_before = sum(1 for i in adapter.event_collection.find())
+    assert n_events_before > 0
+
+    # WHEN marking a filter audited for a case
+    returned_filter = adapter.audit_filter(
+        filter_id, institute_obj, case_obj, user_obj, category, link="audit_mock_link"
+    )
+    # THEN the operation was successful
+    assert returned_filter is not None
+    # THEN another event has been logged for the audit
+    n_events_after = sum(1 for i in adapter.event_collection.find())
+    assert n_events_after > n_events_before
+
+
+def test_update_default_panels(adapter, institute_obj, case_obj, user_obj, testpanel_obj):
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.panel_collection.insert_one(testpanel_obj)
     # GIVEN a case with one gene panel
     case_panels = case_obj["panels"]
     assert len(case_panels) == 1

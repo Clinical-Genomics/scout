@@ -1,23 +1,105 @@
+{% macro modal_causative(case, institute, variant) %}
+<div class="modal fade" id="causativeModal" tabindex="-1" role="dialog" aria-labelledby="causativeLabel"
+  aria-hidden="true" onsubmit="return validate_causative_form();">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+           <h5 class="modal-title" id="causativeLabel">Mark variant as causative</h5>
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+           </button>
+        </div>
+        <form action="{{ url_for('cases.mark_causative', institute_id=institute._id, case_name=case.display_name,
+           variant_id=variant._id, partial_causative=False) }}" method="POST">
+          <div class="modal-body">
+            <div class="row">
+              <div class="col d-flex">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div data-placement="top">
+                      Variant explains phenotype partially (partial causative)&nbsp;&nbsp;
+                    </div>
+                    <br>
+                    <br>
+                    <div>
+                      <input type="checkbox" class="ios8-switch" id="partial_causative" name="partial_causative"
+                        data-toggle='collapse' data-target='#partial_phenotypes'
+                          {% if case.phenotype_terms|length == 0 and case.diagnosis_phenotypes|length == 0 %}
+                            disabled
+                          {% endif %}>
+                      <label for="partial_causative"></label>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            {% if case.phenotype_terms|length == 0 and case.diagnosis_phenotypes|length == 0 %}
+              <h5 class="text-danger small">Assign at least an OMIM diagnosis or a HPO phenotype term to this case to mark this variant as partial causative</h5>
+            {% endif %}
+            <div id="partial_phenotypes" class="collapse mt-2">
+              <h6><strong>Associated phenotype</strong></h6>
+              <!-- A partial causative variant is resposible for a specific phenotype. Make sure phenotype is specified -->
+              <div class="row ml-3">
+                <div class="col-4">
+                  <!-- Phenotype could be specified using OMIM -->
+                  <h6>Diagnosis phenotype (OMIM):</h6>
+                  <select multiple="multiple" name="omim_select" id="omim_select" class="selectpicker">
+                    {% for omim_id in case.diagnosis_phenotypes %}
+                      <option value="{{omim_id}}">
+                        {{ omim_id }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-8">
+                  <!-- Phenotype could also be specified by HPO terms -->
+                  <h6>Phenotype terms (HPO):</h6>
+                  <select multiple="multiple" name="hpo_select" id="hpo_select" class="selectpicker">
+                    {% for hpo_term in case.phenotype_terms %}
+                      <option value="{{hpo_term.feature}}_{{hpo_term.phenotype_id}}">
+                        {{hpo_term.feature}} ({{ hpo_term.phenotype_id }})
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <br>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button name="action" value="ADD" type="submit" class="btn btn-primary" title="Mark causative">
+              Mark causative
+            </button>
+          </div>
+        </form>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
 {% macro igv_track_selection(igv_tracks, current_user) %}
 <div id="accordion">
-  <a data-toggle="collapse" data-parent="#accordion" href="#track_settings">Settings</a>
-  <div id="track_settings" class="collapse">
-    <form action="{{url_for('variant.update_tracks_settings')}}" method="POST">
-      <div class="row d-flex align-items-center">
-          <div class="col-3">Show tracks:</div>
-          <div class="col-6">
-            <select name="user_tracks" class="selectpicker" data-width="80%" multiple>
-              {% for track in igv_tracks %}
-                <!--pre-select option if user has saved it in preferences or select all options if user has no preferences yet-->
-                <option value="{{ track }}" {{ "selected" if track in current_user.igv_tracks or current_user.igv_tracks is not defined }}>{{ track }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="col-3">
-            <button type="submit" class="btn btn-sm btn-outline-secondary">Save</button>
-          </div>
-      </div>
-    </form>
+  <div class="row">
+    <div class="col-4 d-flex align-items-center">
+     <span><a data-toggle="collapse" data-parent="#accordion" href="#track_settings" class="text-secondary">Settings DNA <i class="fas fa-cogs text-secondary"></i></a></span>
+    </div>
+    <div id="track_settings" class="col-8 collapse">
+      <form action="{{url_for('variant.update_tracks_settings')}}" method="POST">
+        <div class="row d-flex align-items-center">
+            <div class="col-3">Show tracks:</div>
+            <div class="col-6">
+              <select name="user_tracks" class="selectpicker" data-width="90%" multiple>
+                {% for track in igv_tracks %}
+                  <!--pre-select option if user has saved it in preferences or select all options if user has no preferences yet-->
+                  <option value="{{ track }}" {{ "selected" if current_user.igv_tracks and track in current_user.igv_tracks or current_user.igv_tracks is not defined }}>{{ track }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-3">
+              <button type="submit" class="btn btn-sm btn-outline-secondary">Save</button>
+            </div>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 {% endmacro %}
@@ -76,12 +158,12 @@
               <td>
                 {% if overlapping_variant.category in ("sv", "cancer_sv") %}
                   <a href="{{url_for('variant.sv_variant', institute_id=institute._id,
-                                   case_name=case.display_name, variant_id=overlapping_variant._id)}}">
+                                   case_name=case.display_name, variant_id=overlapping_variant._id)}}" target="_blank">
                     {{ overlapping_variant.display_name|truncate(20, True) }}
                   </a>
                 {% else %}
                   <a href="{{url_for('variant.variant', institute_id=institute._id,
-                                 case_name=case.display_name, variant_id=overlapping_variant._id)}}">
+                                 case_name=case.display_name, variant_id=overlapping_variant._id)}}" target="_blank">
                     {{ overlapping_variant.display_name|truncate(20, True) }}
                   </a>
                 {% endif %}
@@ -345,15 +427,7 @@
 {% endmacro %}
 
 {% macro pin_button(variant, case, institute) %}
-  {% if variant._id not in case.suspects %}
-    <form action="{{ url_for('cases.pin_variant',
-                             institute_id=institute._id,
-                             case_name=case.display_name,
-                             variant_id=variant._id) }}"
-          method="POST">
-      <button name="action" value="ADD" type="submit" class="btn btn-light navbar-btn" title="Pin variant">Pin</button>
-    </form>
-  {% else %}
+  {% if 'suspects' in case and case.suspects and variant._id in case.suspects %}
     <form action="{{ url_for('cases.pin_variant',
                              institute_id=institute._id,
                              case_name=case.display_name,
@@ -361,11 +435,19 @@
           method="POST">
       <button name="action" value="DELETE" type="submit" class="btn btn-light" title="Unpin variant">Unpin</button>
     </form>
+  {% else %}
+    <form action="{{ url_for('cases.pin_variant',
+                             institute_id=institute._id,
+                             case_name=case.display_name,
+                             variant_id=variant._id) }}"
+          method="POST">
+      <button name="action" value="ADD" type="submit" class="btn btn-light navbar-btn" title="Pin variant">Pin</button>
+    </form>
   {% endif %}
 {% endmacro %}
 
 {% macro causative_button(variant, case, institute) %}
-  {% if variant._id in case.causatives %}
+  {% if 'causatives' in case and case.causatives and variant._id in case.causatives %}
       <form action="{{ url_for('cases.mark_causative',
                                institute_id=institute._id,
                                case_name=case.display_name,
@@ -376,7 +458,7 @@
           Reset causative
         </button>
       </form>
-  {% elif variant._id in case.partial_causatives %}
+  {% elif 'partial_causatives' in case and case.partial_causatives and variant._id in case.partial_causatives %}
     <form action="{{ url_for('cases.mark_causative',
                              institute_id=institute._id,
                              case_name=case.display_name,

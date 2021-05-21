@@ -2,22 +2,20 @@
 import logging
 import os.path
 
+import requests
 from flask import (
-    abort,
     Blueprint,
-    render_template,
-    send_file,
-    request,
     Response,
+    abort,
     current_app,
     flash,
+    render_template,
+    request,
+    send_file,
 )
 
-from .partial import send_file_partial
-from scout.constants import HUMAN_REFERENCE
 from . import controllers
-
-import requests
+from .partial import send_file_partial
 
 alignviewers_bp = Blueprint(
     "alignviewers",
@@ -65,7 +63,6 @@ def remote_cors(remote_url):
 def remote_static():
     """Stream *large* static files with special requirements."""
     file_path = request.args.get("file")
-
     range_header = request.headers.get("Range", None)
     if not range_header and (file_path.endswith(".bam") or file_path.endswith(".cram")):
         return abort(500)
@@ -80,6 +77,17 @@ def unindexed_remote_static():
     base_name = os.path.basename(file_path)
     resp = send_file(file_path, attachment_filename=base_name)
     return resp
+
+
+@alignviewers_bp.route(
+    "/igv-splice-junctions/<institute_id>/<case_name>/<variant_id>", methods=["GET"]
+)
+def sashimi_igv(institute_id, case_name, variant_id):
+    """Visualize splice junctions on igv.js sashimi-like viewer for one or more individuals of a case.
+    wiki: https://github.com/igvteam/igv.js/wiki/Splice-Junctions
+    """
+    display_obj = controllers.make_sashimi_tracks(institute_id, case_name, variant_id)
+    return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
 
 
 @alignviewers_bp.route("/igv", methods=["POST"])
@@ -104,12 +112,8 @@ def igv():
 
     display_obj = {}  # Initialize the dictionary containing all tracks info
 
-    # Set up IGV tracks that are common for all cases:
-    display_obj["reference_track"] = HUMAN_REFERENCE[
-        chromosome_build
-    ]  # Human reference is always present
     # General tracks (Genes, Clinvar and ClinVar SNVs are shown according to user preferences)
-    controllers.set_common_tracks(display_obj, chromosome_build, request.form)
+    controllers.set_common_tracks(display_obj, chromosome_build)
 
     # Set up bam/cram alignments for case samples:
     controllers.set_sample_tracks(display_obj, request.form)

@@ -1,8 +1,9 @@
 import logging
+from collections import Counter
 from datetime import datetime
 
-from bson import ObjectId
 import pymongo
+from bson import ObjectId
 
 from scout.constants import CASE_STATUSES, REV_ACMG_MAP
 
@@ -280,6 +281,59 @@ class CaseEventHandler(object):
         )
         LOG.debug("Case updated")
         return updated_case
+
+    def case_dismissed_variants(self, institute, case):
+        """Collect the id of all dismissed variants for a case
+
+        Args:
+            institute (dict): an institute id
+            case (dict): a case id
+
+        Returns:
+            case_dismissed (list): a list of variant ids
+        """
+        dismissed_variants = Counter(
+            [
+                var.get("link").rsplit("/", 1)[1]
+                for var in self.case_events_by_verb(
+                    category="variant", institute=institute, case=case, verb="dismiss_variant"
+                )
+            ]
+        )
+        reset_dismissed_variants = Counter(
+            [
+                var.get("link").rsplit("/", 1)[1]
+                for var in self.case_events_by_verb(
+                    category="variant", institute=institute, case=case, verb="reset_dismiss_variant"
+                )
+            ]
+        )
+        diff_dismissed = dismissed_variants - reset_dismissed_variants
+        return list(diff_dismissed.elements())
+
+    def order_dismissed_variants_reset(self, institute, case, user, link):
+        """Register the event associated to a user resetting all dismissed variants.
+
+        Args:
+            institute (dict): A Institute object
+            case (dict): Case object
+            user (dict): A User object
+            link (str): The url to be used in the event
+
+        Return:
+            updated_case
+        """
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category="case",
+            verb="reset_dismiss_all_variants",
+            subject=case["display_name"],
+        )
+
+        return self.case_collection.find_one({"_id": case["_id"]})
 
     def request_rerun(self, institute, case, user, link):
         """Request a case to be re-analyzed.

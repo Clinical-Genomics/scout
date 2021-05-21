@@ -1,11 +1,19 @@
 # -*- coding: utf-8 -*-
 import logging
+
+import pymongo
 from bson.objectid import ObjectId
 from flask import url_for
 
-import pymongo
-
 LOG = logging.getLogger(__name__)
+
+VARIANTS_TARGET_FROM_CATEGORY = {
+    "sv": "variants.sv_variants",
+    "cancer": "variants.cancer_variants",
+    "cancer_sv": "variants.cancer_sv_variants",
+    "snv": "variants.variants",
+    "str": "variants.str_variants",
+}
 
 
 class FilterHandler(object):
@@ -81,13 +89,7 @@ class FilterHandler(object):
 
         # link e.g. to the variants view where filter was created
         if link is None:
-            variants_target_from_category = {
-                "sv": "variants.sv_variants",
-                "cancer": "variants.cancer_variants",
-                "snv": "variants.variants",
-                "str": "variants.str_variants",
-            }
-            target = variants_target_from_category.get(category)
+            target = VARIANTS_TARGET_FROM_CATEGORY.get(category)
 
             case_name = case_obj.get("display_name")
             # filter dict already contains institute_id=institute_id,
@@ -106,6 +108,98 @@ class FilterHandler(object):
 
         return filter_id
 
+    def audit_filter(self, filter_id, institute_obj, case_obj, user_obj, category="snv", link=None):
+        """Mark audit of filter for case in events.
+        Audit filter leaves a voluntary log trail to answer questions like "did I really check for recessive variants"
+        or "did we do both the stringent and relaxed filter on this tumor". The operator loads a set filter, checks
+        through the variants and then ticks off an audit, and the case event audit log and report will contain
+        mention of the filters investigated.
+
+             Arguments:
+                 filter_id(MultiDict)
+                 institute_obj(dict)
+                 user_obj(dict)
+                 case_obj(dict)
+                 category(str): in ['cancer', 'snv', 'str', 'sv']
+                 link(str): link (url connected to event, for filters variantS page of origin)
+
+             Returns:
+                 filter_obj(ReturnDocument)
+        """
+        filter_obj = None
+        LOG.debug("Retrieve filter {}".format(filter_id))
+        filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
+        if filter_obj is None:
+            return
+
+        # link e.g. to the variants view where filter was created
+        if link is None:
+            target = VARIANTS_TARGET_FROM_CATEGORY.get(category)
+
+            case_name = case_obj.get("display_name")
+            link = url_for(target, case_name=case_name, institute_id=institute_obj.get("_id"))
+
+        subject = filter_obj["display_name"]
+
+        self.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=link,
+            category="case",
+            verb="filter_audit",
+            subject=subject,
+            level="global",
+        )
+
+        return filter_obj
+
+    def lock_filter(self, filter_id: str, user_id: str):
+        """Lock a filter, set owner
+
+        Args:
+            filter_id: str
+            user_id: str
+
+        Returns:
+            result: ReturnDocument
+        """
+        filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
+
+        if filter_obj.get("lock"):
+            # Filter already locked
+            return
+
+        return_doc = self.filter_collection.find_one_and_update(
+            {"_id": ObjectId(filter_id)}, {"$set": {"lock": True, "owner": user_id}}
+        )
+        return return_doc
+
+    def unlock_filter(self, filter_id: str, user_id: str):
+        """Unlock a filter, clear owner
+
+        Args:
+            filter_id: str
+            user_id: str
+
+        Returns:
+            result: ReturnDocument
+        """
+        filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
+
+        if filter_obj is None or not filter_obj.get("lock"):
+            # Filter does not exist, or is not locked
+            return
+
+        if filter_obj.get("owner") != user_id:
+            return
+
+        filter_obj["lock"] = False
+        return_doc = self.filter_collection.find_one_and_update(
+            {"_id": ObjectId(filter_id)}, {"$set": {"lock": False, "owner": None}}
+        )
+        return return_doc
+
     def delete_filter(self, filter_id, institute_id, user_id):
         """Delete a filter.
 
@@ -119,6 +213,9 @@ class FilterHandler(object):
         """
         filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
         if filter_obj is None:
+            return
+
+        if filter_obj.get("lock"):
             return
 
         LOG.info(

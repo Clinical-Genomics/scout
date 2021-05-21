@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
-import pytest
-
 from copy import deepcopy
 
-from scout.demo import delivery_report_path
+import pytest
+
 from scout.commands import cli
+from scout.demo import delivery_report_path
 
 
 def test_load_delivery_report(mock_app, case_obj):

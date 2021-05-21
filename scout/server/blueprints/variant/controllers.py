@@ -12,17 +12,22 @@ from scout.constants import (
     CALLERS,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
+    CLINVAR_INHERITANCE_MODELS,
     DISMISS_VARIANT_OPTIONS,
+    IGV_TRACKS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     VERBS_MAP,
-    IGV_TRACKS,
 )
-from scout.parse.variant.ids import parse_document_id
+from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import ensembl, get_variant_links
-from scout.server.utils import institute_and_case, user_institutes, variant_case
+from scout.server.utils import (
+    case_append_alignments,
+    institute_and_case,
+    user_institutes,
+    variant_case,
+)
 from scout.utils.scout_requests import fetch_refseq_version
-from scout.server.extensions import cloud_tracks
 
 from .utils import (
     add_gene_info,
@@ -38,6 +43,22 @@ from .utils import (
 )
 
 LOG = logging.getLogger(__name__)
+
+
+def has_rna_tracks(case_obj):
+    """Returns True if one of more individuals of the case contain RNA-seq data
+
+    Args:
+        case_obj(dict)
+    Returns
+        True or False (bool)
+    """
+    # Display junctions track if available for any of the individuals
+    for ind in case_obj.get("individuals", []):
+        # Track contains 2 files and they should both be present
+        if all([ind.get("splice_junctions_bed"), ind.get("rna_coverage_bigwig")]):
+            return True
+    return False
 
 
 def get_igv_tracks(build="37"):
@@ -105,6 +126,7 @@ def variant(
             'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
             'ACMG_OPTIONS': ACMG_OPTIONS,
             'igv_tracks': IGV_TRACKS,
+            'gens_info': <dict>,
             'evaluations': <list(evaluations)>,
         }
 
@@ -131,11 +153,21 @@ def variant(
     if genome_build not in ["37", "38"]:
         genome_build = "37"
 
+    # add default panels extra gene information
     panels = default_panels(store, case_obj)
     variant_obj = add_gene_info(store, variant_obj, gene_panels=panels, genome_build=genome_build)
+
     # Add information about bam files and create a region vcf
     if add_case:
         variant_case(store, case_obj, variant_obj)
+
+    # Fetch ids for grouped cases and prepare alignment display
+    case_groups = {}
+    if case_obj.get("group"):
+        for group in case_obj.get("group"):
+            case_groups[group] = list(store.cases(group=group))
+            for grouped_case in case_groups[group]:
+                case_append_alignments(grouped_case)
 
     # Collect all the events for the variant
     events = list(store.events(institute_obj, case=case_obj, variant_id=variant_id))
@@ -231,6 +263,7 @@ def variant(
     return {
         "institute": institute_obj,
         "case": case_obj,
+        "case_groups": case_groups,
         "variant": variant_obj,
         variant_category: True,
         "causatives": other_causatives,
@@ -243,6 +276,8 @@ def variant(
         "mosaic_variant_options": MOSAICISM_OPTIONS,
         "ACMG_OPTIONS": ACMG_OPTIONS,
         "igv_tracks": get_igv_tracks(genome_build),
+        "splice_junctions_tracks": has_rna_tracks(case_obj),
+        "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
     }
 
@@ -270,30 +305,38 @@ def observations(store, loqusdb, case_obj, variant_obj):
         obs_data(dict)
     """
     chrom = variant_obj["chromosome"]
+    end_chrom = variant_obj.get("end_chrom", chrom)
     pos = variant_obj["position"]
+    end = variant_obj["end"]
     ref = variant_obj["reference"]
     alt = variant_obj["alternative"]
     var_case_id = variant_obj["case_id"]
     var_type = variant_obj.get("variant_type", "clinical")
+    category = variant_obj["category"]
+    if category == "cancer":
+        category = "snv"
+    if category == "cancer_sv":
+        category = "sv"
 
     composite_id = "{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt)
     variant_query = {
         "_id": composite_id,
         "chrom": chrom,
-        "end_chrom": variant_obj.get("end_chrom", chrom),
+        "end_chrom": end_chrom,
         "pos": pos,
-        "end": variant_obj["end"],
+        "end": end,
         "length": variant_obj.get("length", 0),
         "variant_type": variant_obj.get("sub_category", "").upper(),
-        "category": variant_obj["category"],
+        "category": category,
     }
 
     institute_id = variant_obj["institute"]
     institute_obj = store.institute(institute_id)
-    obs_data = loqusdb.get_variant(variant_query, loqusdb_id=institute_obj.get("loqusdb_id")) or {}
+    loqusdb_id = institute_obj.get("loqusdb_id") or "default"
+    obs_data = loqusdb.get_variant(variant_query, loqusdb_id=loqusdb_id)
+
     if not obs_data:
-        LOG.debug("Could not find any observations for %s", composite_id)
-        obs_data["total"] = loqusdb.case_count()
+        obs_data["total"] = loqusdb.case_count(variant_category=category, loqusdb_id=loqusdb_id)
         return obs_data
 
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
@@ -316,11 +359,15 @@ def observations(store, loqusdb, case_obj, variant_obj):
         if user_institutes_ids.isdisjoint(other_institutes):
             # If the user does not have access to the information we skip it
             continue
-        document_id = parse_document_id(chrom, str(pos), ref, alt, var_type, case_id)
-        other_variant = store.variant(document_id=document_id)
-        # If the other variant is not loaded we skip it
-        if not other_variant:
-            continue
+
+        other_variant = store.variant(
+            case_id=other_case["_id"], document_id=variant_obj["variant_id"]
+        )
+
+        # IF variant is SV variant, look for variants with different sub_category occurring at the same coordinates
+        if other_variant is None and category == "sv":
+            other_variant = store.overlapping_sv_variant(other_case["_id"], variant_obj)
+
         obs_data["cases"].append(dict(case=other_case, variant=other_variant))
 
     return obs_data
@@ -422,4 +469,5 @@ def clinvar_export(store, institute_id, case_name, variant_id):
         case=case_obj,
         variant=variant_obj,
         pinned_vars=pinned,
+        inheritance_models=CLINVAR_INHERITANCE_MODELS,
     )
