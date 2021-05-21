@@ -7,10 +7,10 @@ from flask.cli import with_appcontext
 
 from scout.load import load_evaluation_term
 from scout.server.extensions import store
+from scout.constants import EVALUATION_TERM_CATEGORIES
 
 LOG = logging.getLogger(__name__)
 
-VALID_CATEGORIES = ("dismissal_term", "manual_rank")
 VALID_TRACKS = ("cancer", "rd", "all")
 REQUIRED_FIELDS = ("name", "term_category", "track", "institute")
 
@@ -37,7 +37,7 @@ def get_next_rank(term_category):
 @click.option(
     "-c",
     "--term_category",
-    type=click.Choice(VALID_CATEGORIES),
+    type=click.Choice(EVALUATION_TERM_CATEGORIES),
     required=True,
     help="Type of evaluation term",
 )
@@ -122,9 +122,9 @@ def batch_evaluation_terms(file):
                     f'Some entries does not contain all required fields; required fields: {", ".join(REQUIRED_FIELDS)}'
                 )
             # validate term_category
-            if not entry["term_category"] in VALID_CATEGORIES:
+            if not entry["term_category"] in EVALUATION_TERM_CATEGORIES:
                 raise ValueError(
-                    f'Invalida term_category "{entry["term_category"]}"; valid terms: {", ".join(VALID_CATEGORIES)}'
+                    f'Invalida term_category "{entry["term_category"]}"; valid terms: {", ".join(EVALUATION_TERM_CATEGORIES)}'
                 )
 
             if not entry["track"] in VALID_TRACKS:
