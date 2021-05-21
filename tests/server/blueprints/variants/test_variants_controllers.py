@@ -381,7 +381,7 @@ def test_update_form_hgnc_symbols_valid_gene_symbol(app, case_obj):
 
     form = TestForm()
 
-    # GIVEN a user trying to filter clinical variants using a valid gene symbol
+    # GIVEN a user trying to filter research variants using a valid gene symbol
     form.hgnc_symbols.data = ["POT1"]
     form.data = {"gene_panels": [], "variant_type": "research"}
     updated_form = update_form_hgnc_symbols(store, case_obj, form)
