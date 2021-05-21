@@ -277,7 +277,7 @@
 {# Returns human readable links to the corresponding variant page #}
 
 
-  {% if variant.category in "str", "snv", "cancer" %}
+  {% if variant.category in ("str", "snv", "cancer") %}
     <a href="{{ url_for('variant.variant',
                    institute_id=variant.institute,
                    case_name=case.display_name,
