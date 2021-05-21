@@ -1002,7 +1002,7 @@ def check_form_gene_symbols(
                 # clinical symbols from gene panels might not be up to date with latest gene names
                 # but their HGNC id would still match
                 outdated_symbols.append(hgnc_symbol)
-        elif is_clinical:
+        else:
             non_clinical_symbols.append(hgnc_symbol)
 
     errors = {
@@ -1075,6 +1075,7 @@ def update_form_hgnc_symbols(store, case_obj, form):
 
     # check if supplied gene symbols exist and are clinical
     is_clinical = form.data.get("variant_type", "clinical") == "clinical"
+    flash(f"is_clinical:{is_clinical}")
     updated_hgnc_symbols = check_form_gene_symbols(
         store, case_obj, is_clinical, genome_build, hgnc_symbols, not_found_ids
     )
