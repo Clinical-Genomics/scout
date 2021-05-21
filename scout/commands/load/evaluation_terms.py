@@ -146,4 +146,4 @@ def batch_evaluation_terms(file):
         LOG.warning(e)
         raise click.Abort()
     else:
-        click.secho("✓ Added new term", fg="green")
+        click.secho("✓ Added new terms", fg="green")
