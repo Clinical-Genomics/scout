@@ -13,7 +13,7 @@ def test_insert_evaluation_term(adapter):
         "term_category": "dismissal_term",
         "rank": 0,
         "institute": "all",
-        "analysis_type": "all",
+        "track": "all",
         "label": "test a",
         "evidence": [],
     }
@@ -23,7 +23,7 @@ def test_insert_evaluation_term(adapter):
     assert sum(1 for i in adapter.evaluation_terms()) == 1
 
 
-@pytest.mark.parametrize("param_name", ["institute", "analysis_type"])
+@pytest.mark.parametrize("param_name", ["institute", "track"])
 def test_get_institute_exclusive_evaluation_term(adapter, param_name):
     ##GIVEN a empty adapter
     assert sum(1 for i in adapter.evaluation_terms()) == 0
@@ -35,7 +35,7 @@ def test_get_institute_exclusive_evaluation_term(adapter, param_name):
         "term_category": "dismissal_term",
         "rank": 0,
         "institute": "all",
-        "analysis_type": "all",
+        "track": "all",
         "label": "test a",
         "evidence": [],
     }

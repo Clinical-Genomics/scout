@@ -6,7 +6,7 @@
       "label_class": "default",
       "institute": "all",
       "internal_id": "unknown-significance",
-      "analysis_type": "all",
+      "track": "all",
       "term_category": "manual_rank",
       "rank": 9
    },
@@ -17,7 +17,7 @@
       "label_class": "danger",
       "institute": "all",
       "internal_id": "known-pathogenic",
-      "analysis_type": "all",
+      "track": "all",
       "term_category": "manual_rank",
       "rank": 8
    },
@@ -28,7 +28,7 @@
       "label_class": "danger",
       "institute": "all",
       "internal_id": "pathogenic",
-      "analysis_type": "all",
+      "track": "all",
       "term_category": "manual_rank",
       "rank": 7
    },
@@ -39,7 +39,7 @@
       "label_class": "danger",
       "institute": "all",
       "internal_id": "novel-validated-pathogenic",
-      "analysis_type": "all",
+      "track": "all",
       "term_category": "manual_rank",
       "rank": 6
    },
@@ -50,7 +50,7 @@
       "label_class": "danger",
       "institute": "all",
       "internal_id": "pathogenic-partial-phenotype",
-      "analysis_type": "all",
+      "track": "all",
       "term_category": "manual_rank",
       "rank": 5
    },
@@ -61,7 +61,7 @@
       "label_class": "warning",
       "institute": "all",
       "internal_id": "likely-pathogenic",
-      "analysis_type": "all",
+      "track": "all",
       "term_category": "manual_rank",
       "rank": 4
    },
@@ -72,7 +72,7 @@
       "label_class": "primary",
       "institute": "all",
       "internal_id": "possibly-pathogenic",
-      "analysis_type": "all",
+      "track": "all",
       "term_category": "manual_rank",
       "rank": 3
    },
@@ -83,7 +83,7 @@
       "label_class": "info",
       "institute": "all",
       "internal_id": "likely-benign",
-      "analysis_type": "all",
+      "track": "all",
       "term_category": "manual_rank",
       "rank": 2
    },
@@ -94,7 +94,7 @@
       "label_class": "success",
       "institute": "all",
       "internal_id": "benign",
-      "analysis_type": "all",
+      "track": "all",
       "term_category": "manual_rank",
       "rank": 1
    },
@@ -105,7 +105,7 @@
       "label_class": "default",
       "institute": "all",
       "internal_id": "other",
-      "analysis_type": "all",
+      "track": "all",
       "term_category": "manual_rank",
       "rank": 0
    }

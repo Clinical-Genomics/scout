@@ -11,7 +11,8 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 VALID_CATEGORIES = ("dismissal_term", "manual_rank")
-REQUIRED_FIELDS = ["name", "term_category", "analysis_type", "institute"]
+VALID_TRACKS = ("cancer", "rd", "all")
+REQUIRED_FIELDS = ("name", "term_category", "track", "institute")
 
 
 def get_next_rank(term_category):
@@ -41,14 +42,16 @@ def get_next_rank(term_category):
     help="Type of evaluation term",
 )
 @click.option(
-    "-a",
-    "--analysis_type",
+    "-t",
+    "--track",
     default="all",
-    help="Make a term exclusive for a analysis type [default: all]",
+    type=click.Choice(VALID_TRACKS),
+    required=True,
+    help="Make a term exclusive for a analysis track [default: all]",
 )
 @with_appcontext
 def evaluation_term(
-    internal_id, name, label, description, rank, evidence, institute, term_category, analysis_type
+    internal_id, name, label, description, rank, evidence, institute, term_category, track
 ):
     """Create a new evalution term and add it to the database."""
     adapter = store
@@ -80,7 +83,7 @@ def evaluation_term(
             evidence=evidence,
             institute=institute,
             term_category=term_category,
-            analysis_type=analysis_type,
+            track=track,
         )
     except ValueError as e:
         message = f"{e}, please try to specify another value"
@@ -122,6 +125,11 @@ def batch_evaluation_terms(file):
             if not entry["term_category"] in VALID_CATEGORIES:
                 raise ValueError(
                     f'Invalida term_category "{entry["term_category"]}"; valid terms: {", ".join(VALID_CATEGORIES)}'
+                )
+
+            if not entry["track"] in VALID_TRACKS:
+                raise ValueError(
+                    f'Invalida track "{entry["track"]}"; valid terms: {", ".join(VALID_CATEGORIES)}'
                 )
         # store terms in database
         LOG.info("Store evaluation terms in database")

@@ -287,7 +287,7 @@ def case_report_content(store, institute_obj, case_obj):
     evaluation_terms = store.evaluation_terms(
         term_category="dismissal_term",
         institute_id=institute_obj["internal_id"],
-        analysis_type="cancer" if case_obj.get("track") == "cancer" else None,
+        track="cancer" if case_obj.get("track") == "cancer" else None,
     )
     data["dismissed_options"] = build_variant_evaluation_terms(evaluation_terms)
 
@@ -300,7 +300,7 @@ def case_report_content(store, institute_obj, case_obj):
     evaluation_terms = store.evaluation_terms(
         term_category="manual_rank",
         institute_id=institute_obj["internal_id"],
-        analysis_type="cancer" if case_obj.get("track") == "cancer" else None,
+        track="cancer" if case_obj.get("track") == "cancer" else None,
     )
     data["manual_rank_options"] = build_variant_evaluation_terms(evaluation_terms)
 

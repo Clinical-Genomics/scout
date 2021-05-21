@@ -15,7 +15,7 @@ class VariantEvaluationHandler(object):
         """Add evaluation term for a institute."""
         self.evaluation_terms_collection.insert_one(evaluation_term_obj)
 
-    def evaluation_terms(self, term_category=None, analysis_type=None, institute_id=None):
+    def evaluation_terms(self, term_category=None, track=None, institute_id=None):
         """List evaluation terms used by a institute."""
         query = {}
         if term_category:
@@ -25,12 +25,12 @@ class VariantEvaluationHandler(object):
         if institute_id:
             target_institutes.append(institute_id)
 
-        target_analysis_types = ["all"]
-        if analysis_type:
-            target_analysis_types.append(analysis_type)
+        target_tracks = ["all"]
+        if track:
+            target_tracks.append(track)
 
         query = {
-            "analysis_type": {"$in": target_analysis_types},
+            "track": {"$in": target_tracks},
             "institute": {"$in": target_institutes},
             **query,
         }
@@ -38,7 +38,7 @@ class VariantEvaluationHandler(object):
         return self.evaluation_terms_collection.find(query, sort=[("rank", pymongo.ASCENDING)])
 
     def get_evaluation_term(
-        self, term_category, term_id=None, rank=None, analysis_type=None, institute_id=None
+        self, term_category, term_id=None, rank=None, track=None, institute_id=None
     ):
         """Get evaluation term data."""
         # for backwards compat
@@ -55,15 +55,15 @@ class VariantEvaluationHandler(object):
         if institute_id:
             target_institutes.append(institute_id)
 
-        target_analysis_types = ["all"]
-        if analysis_type:
-            target_analysis_types.append(analysis_type)
+        target_tracks = ["all"]
+        if track:
+            target_tracks.append(track)
 
         # build final query
         query = {
             **query,
             "term_category": term_category,
-            "analysis_type": {"$in": target_analysis_types},
+            "track": {"$in": target_tracks},
             "institute": {"$in": target_institutes},
         }
         return self.evaluation_terms_collection.find_one(query, sort=[("rank", pymongo.ASCENDING)])

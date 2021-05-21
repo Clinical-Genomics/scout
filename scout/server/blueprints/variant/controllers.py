@@ -254,7 +254,7 @@ def variant(
     # get dismiss_variant_options
     evaluation_terms = store.evaluation_terms(
         term_category="dismissal_term",
-        analysis_type="cancer" if case_obj.get("track") == "cancer" else None,
+        track="cancer" if case_obj.get("track") == "cancer" else None,
         institute_id=institute_obj["internal_id"],
     )
     dismiss_options = build_variant_evaluation_terms(evaluation_terms)
@@ -262,7 +262,7 @@ def variant(
     # get manual rank options
     evaluation_terms = store.evaluation_terms(
         term_category="manual_rank",
-        analysis_type="cancer" if case_obj.get("track") == "cancer" else None,
+        track="cancer" if case_obj.get("track") == "cancer" else None,
         institute_id=institute_obj["internal_id"],
     )
     manual_rank_options = build_variant_evaluation_terms(evaluation_terms)

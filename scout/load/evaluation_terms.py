@@ -17,7 +17,7 @@ def load_evaluation_term(
     term_category,
     rank=None,
     institute="all",
-    analysis_type="all",
+    track="all",
     **kwargs,
 ):
     """Load a evaluation term into the database.
@@ -30,7 +30,7 @@ def load_evaluation_term(
         rank: unique integer for displaying terms in a given order
         institute: limit the term to a an [institution_id|all]
         term_category: the type of term
-        analysis_type: limit the term to a given analysis type
+        track: limit the term to a given analysis type
         **kwargs: other variables to be associated with the term
     """
     if internal_id:  # verify unique internal_id
@@ -65,7 +65,7 @@ def load_evaluation_term(
         term_category=term_category,
         rank=rank,
         institute=institute,
-        analysis_type=analysis_type,
+        track=track,
         last_modified=datetime.datetime.utcnow(),
         **kwargs,
     )
