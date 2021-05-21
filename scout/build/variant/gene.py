@@ -1,8 +1,8 @@
 import logging
 
-from .transcript import build_transcript
-
 from scout.constants import CONSEQUENCE, FEATURE_TYPES, SO_TERM_KEYS
+
+from .transcript import build_transcript
 
 LOG = logging.getLogger(__name__)
 
@@ -94,6 +94,9 @@ def build_gene(gene, hgncid_to_gene=None):
             LOG.warning("Invalid polyphen prediction %s", polyphen_prediction)
         else:
             gene_obj["polyphen_prediction"] = polyphen_prediction
+
+    gene_obj["spliceai_score"] = gene.get("most_severe_spliceai_score")
+    gene_obj["spliceai_position"] = gene.get("most_severe_spliceai_position")
 
     gene_obj["hgvs_identifier"] = gene.get("hgvs_identifier")
     gene_obj["canonical_transcript"] = gene.get("canonical_transcript")

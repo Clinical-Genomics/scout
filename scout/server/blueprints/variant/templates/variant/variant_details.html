@@ -241,10 +241,10 @@
           <span class="float-right">{{ variant.spidex_human }}</span>
         </li>
         <li class="list-group-item">
-          SpliceAI DS max
+          <a hfref="https://github.com/Illumina/SpliceAI">SpliceAI</a> DS max
           <span class="float-right control-label" data-toggle="tooltip" data-placement="bottom"
-            title="{{ variant.spliceai or 'No SpliceAI data annotated for this variant.'}}">
-            {{ variant.spliceai_ds_max or "-"}}
+            title="{{ variant.spliceai_score or 'No SpliceAI data annotated for this variant.'}}">
+            {{ variant.spliceai_score or "-"}}
           </span>
         </li>
       </ul>

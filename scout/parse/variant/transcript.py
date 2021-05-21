@@ -72,6 +72,35 @@ def parse_transcripts(raw_transcripts, allele=None):
         if entry.get("REVEL_RANKSCORE"):
             transcript["revel"] = float(entry.get("REVEL_RANKSCORE"))
 
+        spliceai_tags = {
+            "SpliceAI_pred_DP_AG": "spliceai_dp_ag",
+            "SpliceAI_pred_DP_AL": "spliceai_dp_al",
+            "SpliceAI_pred_DP_DG": "spliceai_dp_dg",
+            "SpliceAI_pred_DP_DL": "spliceai_dp_dl",
+            "SpliceAI_pred_DS_AG": "spliceai_ds_ag",
+            "SpliceAI_pred_DS_AL": "spliceai_ds_al",
+            "SpliceAI_pred_DS_DG": "spliceai_ds_dg",
+            "SpliceAI_pred_DS_DL": "spliceai_ds_dl",
+        }
+        for spliceai_tag_csq, spliceai_annotation in spliceai_tags:
+            if entry.get(spliceai_tag_csq):
+                transcript[spliceai_annotation] = entry.get(spliceai_tag_csq)
+
+            spliceai_pairs = {
+                "spliceai_ds_ag": "spliceai_dp_ag",
+                "spliceai_ds_al": "spliceai_dp_al",
+                "spliceai_ds_dg": "spliceai_dp_dg",
+                "spliceai_ds_dl": "spliceai_dp_dl",
+            }
+
+            index, spliceai_delta_score = max(
+                [transcript.get(tag) for tag in spliceai_pairs.keys()]
+            )
+            spliceai_delta_position = transcript.get(spliceai_pairs.keys()[index])
+
+            transcript["spliceai_delta_score"] = spliceai_delta_score
+            transcript["spliceai_delta_position"] = spliceai_delta_position
+
         transcript["swiss_prot"] = entry.get("SWISSPROT") or "unknown"
 
         # Check for conservation annotations

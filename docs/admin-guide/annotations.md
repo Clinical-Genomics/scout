@@ -83,8 +83,16 @@ The [PolyPhen][polyphen] prediction for how a variation affects the protein.
 - Tools: [VEP][vep]
 
 #### SpliceAI ####
+
 The [SpliceAI][spliceai] prediction for how a variant affects splicing.
-- Key `CSQ` - `SpliceAI_pred_DS_AG`, `SpliceAI_pred_DP_AG`, `` `SpliceAI_pred_DP_AL`
+SpliceAI transcript delta score, defined as max of all transcipt delta scores DS, can be interpreted as a probabilty of
+splicing being affected for the current transcript. The DS and DP pairs describe probability and relative position scores.
+E.g. donor gain DS_DG 0.08 at DP_DG -31, acceptor loss DS_AL 0.58 at DP_AL -2.
+
+- Key `CSQ` - `SpliceAI_pred_DS_AG`, `SpliceAI_pred_DP_AG`, `SpliceAI_pred_DS_AL`, `SpliceAI_pred_DP_AL`,
+	`SpliceAI_pred_DS_DG`, `SpliceAI_pred_DP_DG`, `SpliceAI_pred_DS_DL`, `SpliceAI_pred_DP_DL`
+- Value: `Float` in `DS` and `Int` in `DP`
+- Tools: [SpliceAI][spliceai]
 
 #### Rank score ####
 

@@ -98,6 +98,8 @@ def parse_genes(transcripts):
                 most_severe_sift = transcript["sift_prediction"]
                 most_severe_polyphen = transcript["polyphen_prediction"]
                 most_severe_region = SO_TERMS[consequence]["region"]
+                most_severe_spliceai_score = transcript["spliceai_delta_score"]
+                most_severe_spliceai_position = transcript["spliceai_delta_position"]
 
             if transcript["is_canonical"] and transcript.get("coding_sequence_name"):
                 hgvs_identifier = transcript.get("coding_sequence_name")
@@ -110,6 +112,8 @@ def parse_genes(transcripts):
             "most_severe_consequence": most_severe_consequence,
             "most_severe_sift": most_severe_sift,
             "most_severe_polyphen": most_severe_polyphen,
+            "most_severe_spliceai_score": most_severe_spliceai_score,
+            "most_severe_spliceai_position": most_severe_spliceai_position,
             "hgnc_id": hgnc_id,
             "hgnc_symbol": hgnc_symbol,
             "region_annotation": most_severe_region,
