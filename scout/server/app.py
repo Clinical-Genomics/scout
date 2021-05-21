@@ -73,7 +73,9 @@ def create_app(config_file=None, config=None, validate_setup=True):
         for category in EVALUATION_TERM_CATEGORIES:
             terms = extensions.store.evaluation_terms(term_category=category)
             if terms.count() == 0:
-                raise click.ClickException(f'No evaluation terms with category "{category}" in the database')
+                raise click.ClickException(
+                    f'No evaluation terms with category "{category}" in the database'
+                )
 
     @app.before_request
     def check_user():

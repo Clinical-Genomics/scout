@@ -12,9 +12,7 @@ LOG = logging.getLogger(__name__)
 @click.command("evaluation-terms", short_help="Display evaluation terms")
 @click.option("-i", "--institute-id", help="Limit output to institute exclusive")
 @click.option("-c", "--term_category", help="Limit output to specific evaluation terms")
-@click.option(
-    "-t", "--track", default="all", help="Limit the term to a given analysis track"
-)
+@click.option("-t", "--track", default="all", help="Limit the term to a given analysis track")
 @with_appcontext
 def evaluation_terms(institute_id, term_category, track):
     """Show all institutes in the database"""
