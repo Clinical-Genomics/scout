@@ -658,7 +658,6 @@
       title="Tier: {{ cancer_tier_options[variant.cancer_tier].description }}">
       {{ cancer_tier_options[variant.cancer_tier].label }}</span>
   {% endif %}
-
   {% if variant.manual_rank %}
     {% for option in manual_rank_options %}
       {% if variant.manual_rank == option.internal_id or variant.manual_rank == option.rank %}
@@ -684,6 +683,11 @@
       {% endfor %}
          ">Dismissed</span>
     {% endif %}
+  {% endif %}
+  {% if variant.acmg_classification %}
+    <span class="badge badge-pill badge-{{ variant.acmg_classification.color }}" title="ACMG classification: {{ variant.acmg_classification.label }}" data-toggle="tooltip">
+      ACMG&nbsp;{{ variant.acmg_classification.short }}
+    </span>
   {% endif %}
 {% endmacro %}
 
