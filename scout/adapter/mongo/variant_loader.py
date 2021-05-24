@@ -312,7 +312,7 @@ class VariantLoader(object):
         try:
             result = self.variant_collection.insert_one(variant_obj)
         except DuplicateKeyError as err:
-            LOG.debug("Variant %s already exists in database", variant_obj["_id"])
+            LOG.warning("Variant %s already exists in database", variant_obj["_id"])
             result = self.variant_collection.find_one_and_update(
                 {"_id": variant_obj["_id"]},
                 {"$set": {"compounds": variant_obj.get("compounds", [])}},
@@ -338,14 +338,11 @@ class VariantLoader(object):
         except (DuplicateKeyError, BulkWriteError) as err:
             # If the bulk write is wrong there are probably some variants already existing
             # In the database. So insert each variant
+            LOG.debug("Bulk insertion failed - attempting separate upsert")
             for var_obj in variants:
                 try:
                     self.upsert_variant(var_obj)
                 except IntegrityError as err:
-                    LOG.warning(
-                        "Failed to insert variant %s: variant with the same ID already exists.",
-                        var_obj,
-                    )
                     pass
 
         return
