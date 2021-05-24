@@ -39,7 +39,7 @@
   width: 100%;
 }
 
-table.dataTable {margin-bottom: 0rem}
+table.dataTable {margin-bottom: 0}
 
 .dataTables_scrollBody {
   border-bottom-left-radius: 15px;
