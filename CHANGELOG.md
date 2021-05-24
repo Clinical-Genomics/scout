@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Switch off non-clinical gene warnings when filtering research variants
 - Don't display OMIM disease card in case view for cancer cases
 - Refactored Individuals and Causative card in case view for cancer cases
+- Warn when loading a case attempts to insert (upsert) an already existing variant
 
 ## [4.34]
 ### Added
