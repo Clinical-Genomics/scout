@@ -240,8 +240,10 @@ def _populate_acmg(evaluated_variants):
     Returns:
 
     """
+
     for variant in evaluated_variants:
-        if isinstance(variant.get("acmg_classification"), int):
+
+        if not isinstance(variant, str) and isinstance(variant.get("acmg_classification"), int):
             classification = ACMG_MAP.get(variant["acmg_classification"])
             for option in ACMG_OPTIONS:
                 if option["code"] == classification:
