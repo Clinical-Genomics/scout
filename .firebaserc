@@ -2,6 +2,6 @@
   "projects": {
     "default": "frontend-core-project",
     "production": "frontend-core-project-prod",
-    "stage": "frontend-core-project-stage",
+    "stage": "frontend-core-project-stage"
   }
 }
