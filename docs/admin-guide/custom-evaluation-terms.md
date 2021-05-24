@@ -24,7 +24,7 @@ A **term** is has the following structure.
   "name": "Name of a term",
   "description": "Verbose description of term",
   "institute": "all",
-  "analysis_type": "all",
+  "track": "all",
   "internal_id": "common-public",
   "term_category": "dismissal_term",
   "rank": 2
@@ -33,6 +33,6 @@ A **term** is has the following structure.
 
 Terms needs to be assigned to category which determines how and where they are shown in the GUI. The current categories are `dismissal_term` and `manual_rank`.
 
-The arguments `institute` and `analysis_type` determines when a given term is going to be displayed. For instance a term where `institute == "cust000"` is only going to be shown for cases assigned to institute **cust000**. Likewise are terms with `analysis_type == "cancer"` only going to be displayed for cancer cases. These defaults to **all** which means that it is a generic term for all insitutes and all types of analysis.
+The arguments `institute` and `track` determines when a given term is going to be displayed. For instance a term where `institute == "cust000"` is only going to be shown for cases assigned to institute **cust000**. Likewise are terms with `track == "cancer"` only going to be displayed for cancer cases. These defaults to **all** which means that it is a generic term for all insitutes and all track types.
 
 The argument "rank" determines the order of terms are shown.

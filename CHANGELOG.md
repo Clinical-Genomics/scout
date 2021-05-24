@@ -9,6 +9,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A new index for hgnc_symbol in the hgnc_gene collection
 - A Pedigree panel in STR page
 - Display Tier I and II variants in case view causatives card for cancer cases
+- Added comands for loading variant evaluation terms (manual rank, dismissed options) into database and viewing loaded terms
+- Added support for variant evaluation terms specific to a given type of track or institute
+- Display custom evaluation terms in institute settings
 ### Fixed
 - Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
 ### Changed
@@ -29,9 +32,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Pin badge for pinned compounds in variants list and variant page
 - Support LoqusDB REST API queries
 - Add a docker-compose-matchmaker under scout/containers/development to test matchmaker locally
-- Added comands for loading variant evalutaion terms into database and viewing loaded terms
-- Added support for variant evaluation terms specific to a given type of analysis or institute
-- Display custom evaluation terms in institute settings
 - Script to investigate consequences of symbol search bug
 - Added GATK to list of SV and cancer SV callers
 ### Fixed

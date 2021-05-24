@@ -8,6 +8,8 @@ from flask_babel import Babel
 from flask_login import current_user
 from flaskext.markdown import Markdown
 
+import click
+from scout.constants import EVALUATION_TERM_CATEGORIES
 from . import extensions
 from .blueprints import (
     alignviewers,
@@ -45,7 +47,7 @@ except ImportError:
     LOG.info("chanjo report not installed!")
 
 
-def create_app(config_file=None, config=None):
+def create_app(config_file=None, config=None, validate_setup=True):
     """Flask app factory function."""
     app = Flask(__name__)
     app.config.from_pyfile("config.py")
@@ -65,6 +67,15 @@ def create_app(config_file=None, config=None):
     if not (app.debug or app.testing) and app.config.get("MAIL_USERNAME"):
         # setup email logging of errors
         configure_email_logging(app)
+
+    # validate setup
+    if validate_setup:
+        for category in EVALUATION_TERM_CATEGORIES:
+            terms = extensions.store.evaluation_terms(term_category=category)
+            if terms.count() == 0:
+                raise click.ClickException(
+                    f'No evaluation terms with category "{category}" in the database'
+                )
 
     @app.before_request
     def check_user():

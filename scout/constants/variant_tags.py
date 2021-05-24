@@ -31,6 +31,9 @@ FEATURE_TYPES = (
     "intergenic_variant",
 )
 
+# constants relating to evaluation terms
+EVALUATION_TERM_CATEGORIES = ("dismissal_term", "manual_rank")
+
 SV_TYPES = ("ins", "del", "dup", "cnv", "inv", "bnd")
 
 GENETIC_MODELS = (

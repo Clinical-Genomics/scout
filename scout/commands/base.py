@@ -70,6 +70,7 @@ def get_app(ctx=None):
                 OMIM_API_KEY=cli_config.get("omim_api_key"),
             ),
             config_file=flask_conf,
+            validate_setup=False,
         )
     except SyntaxError as err:
         LOG.error(err)

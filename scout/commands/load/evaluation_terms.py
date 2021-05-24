@@ -7,11 +7,12 @@ from flask.cli import with_appcontext
 
 from scout.load import load_evaluation_term
 from scout.server.extensions import store
+from scout.constants import EVALUATION_TERM_CATEGORIES
 
 LOG = logging.getLogger(__name__)
 
-VALID_CATEGORIES = ("dismissal_term", "manual_rank")
-REQUIRED_FIELDS = ["name", "term_category", "analysis_type", "institute"]
+VALID_TRACKS = ("cancer", "rd", "all")
+REQUIRED_FIELDS = ("name", "term_category", "track", "institute")
 
 
 def get_next_rank(term_category):
@@ -36,19 +37,21 @@ def get_next_rank(term_category):
 @click.option(
     "-c",
     "--term_category",
-    type=click.Choice(VALID_CATEGORIES),
+    type=click.Choice(EVALUATION_TERM_CATEGORIES),
     required=True,
     help="Type of evaluation term",
 )
 @click.option(
-    "-a",
-    "--analysis_type",
+    "-t",
+    "--track",
     default="all",
-    help="Make a term exclusive for a analysis type [default: all]",
+    type=click.Choice(VALID_TRACKS),
+    required=True,
+    help="Make a term exclusive for a analysis track [default: all]",
 )
 @with_appcontext
 def evaluation_term(
-    internal_id, name, label, description, rank, evidence, institute, term_category, analysis_type
+    internal_id, name, label, description, rank, evidence, institute, term_category, track
 ):
     """Create a new evalution term and add it to the database."""
     adapter = store
@@ -80,7 +83,7 @@ def evaluation_term(
             evidence=evidence,
             institute=institute,
             term_category=term_category,
-            analysis_type=analysis_type,
+            track=track,
         )
     except ValueError as e:
         message = f"{e}, please try to specify another value"
@@ -119,9 +122,14 @@ def batch_evaluation_terms(file):
                     f'Some entries does not contain all required fields; required fields: {", ".join(REQUIRED_FIELDS)}'
                 )
             # validate term_category
-            if not entry["term_category"] in VALID_CATEGORIES:
+            if not entry["term_category"] in EVALUATION_TERM_CATEGORIES:
                 raise ValueError(
-                    f'Invalida term_category "{entry["term_category"]}"; valid terms: {", ".join(VALID_CATEGORIES)}'
+                    f'Invalida term_category "{entry["term_category"]}"; valid terms: {", ".join(EVALUATION_TERM_CATEGORIES)}'
+                )
+
+            if not entry["track"] in VALID_TRACKS:
+                raise ValueError(
+                    f'Invalida track "{entry["track"]}"; valid terms: {", ".join(VALID_CATEGORIES)}'
                 )
         # store terms in database
         LOG.info("Store evaluation terms in database")
@@ -146,4 +154,4 @@ def batch_evaluation_terms(file):
         LOG.warning(e)
         raise click.Abort()
     else:
-        click.secho("✓ Added new term", fg="green")
+        click.secho("✓ Added new terms", fg="green")

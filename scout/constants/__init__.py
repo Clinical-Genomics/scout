@@ -49,6 +49,7 @@ from .variant_tags import (
     SPIDEX_LEVELS,
     SV_TYPES,
     VARIANT_CALL,
+    EVALUATION_TERM_CATEGORIES,
 )
 from .variants_export import (
     EXPORT_HEADER,
