@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
 - Research variants filtering by gene
 - Do not attempt to populate annotations for not loaded pinned/causatives
+- Add max-height to all dropdowns in filters
 ### Changed
 - Switch off non-clinical gene warnings when filtering research variants
 - Don't display OMIM disease card in case view for cancer cases
