@@ -232,10 +232,12 @@ def case(store, institute_obj, case_obj):
 
 def _populate_acmg(evaluated_variants):
     """
-    Add ACMG classification options for display of ACMG badges to variants
+    Add ACMG classification options for display of ACMG badges to variants.
+    The list of variant objects can contain plain variant_id strings for deleted / no longer loaded variants.
+    These should not be populated.
 
     Args:
-        evaluated_variants:
+        evaluated_variants: list(variant_obj or str)
 
     Returns:
 
