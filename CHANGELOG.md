@@ -6,6 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+### Changed
+
+## [4.35]
+### Added
 - A new index for hgnc_symbol in the hgnc_gene collection
 - A Pedigree panel in STR page
 - Display Tier I and II variants in case view causatives card for cancer cases
