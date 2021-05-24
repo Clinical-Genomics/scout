@@ -202,7 +202,7 @@ def case(store, institute_obj, case_obj):
         term_category="manual_rank", institute_id=institute_obj["internal_id"]
     )
     manual_rank_options = build_variant_evaluation_terms(evaluation_terms)
-    
+
     # get evaluated variants
     evaluated_variants = store.evaluated_variants(case_obj["_id"])
 
