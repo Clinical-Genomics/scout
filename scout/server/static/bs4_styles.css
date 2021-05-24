@@ -15,8 +15,6 @@
 }
 
 .btn-custom-select {
-  color: white;
-  background-color: white;
   width: 100%;
   color: #495057;
   background-color: #fff;
@@ -41,7 +39,7 @@
   width: 100%;
 }
 
-table.dataTable {margin-bottom: 0rem}
+table.dataTable {margin-bottom: 0}
 
 .dataTables_scrollBody {
   border-bottom-left-radius: 15px;
@@ -60,7 +58,7 @@ table.dataTable {margin-bottom: 0rem}
 /* Custom navbar theme */
 .navbar{
   background-color:#1181B2;
-  padding: 0px 0px;
+  padding: 0;
   height: 50px;
 }
 
@@ -72,7 +70,7 @@ table.dataTable {margin-bottom: 0rem}
 
 .float-top-secondary {
 	position: fixed;
-	top: 0px;
+	top: 0;
 	left: 0;
 	right: 0;
 	padding: 1rem;
@@ -91,11 +89,11 @@ table.dataTable {margin-bottom: 0rem}
  .navbar-nav>.active, .navbar-default,
  .navbar-inverse>.active, .navbar-nav li.active > a {
   color:white;
-  background-color: #343a40; !important;
+  background-color: #343a40 !important;
 }
 
 .dropdown {
-  margin-top: 0px;
+  margin-top: 0;
 }
 
 .panel-default {
@@ -302,8 +300,8 @@ input[type="checkbox"].ios8-switch + label:after {
     content: "";
     position: absolute;
     display: block;
-    left: 0px;
-    top: 0px;
+    left: 0;
+    top: 0;
     width: 24px; /* x*3 */
     height: 24px; /* x*3 */
     border-radius: 16px; /* x*2 */
@@ -341,6 +339,10 @@ option {
    content: "\e114";
    float: right;
    transition: all 0.5s;
+}
+
+.dropdown-menu {
+  max-height: 130px !important;
 }
 
 
