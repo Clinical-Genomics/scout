@@ -2,7 +2,7 @@
 {% macro cancer_individuals_table(case, institute, tissues) %}
 <form method="POST" action="{{ url_for('cases.update_cancer_sample', institute_id=institute._id, case_name=case.display_name) }}">
   <div class="card panel-default">
-    <div class="panel-heading">Individuals</div>
+    <div class="panel-heading">Samples</div>
     <div class="table-responsive">
       <table class="table table-sm">
         <thead>

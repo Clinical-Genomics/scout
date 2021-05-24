@@ -92,7 +92,7 @@
       {% endif %}
 
       <div class="row ">
-        <div class="col-xs-12 col-md-6">{{ causatives_list(causatives, partial_causatives, institute, case) }}</div>
+        <div class="col-xs-12 col-md-6">{{ causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) }}</div>
         <div class="col-xs-12 col-md-6">{{ suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) }}</div>
       </div>
 
@@ -125,21 +125,23 @@
       </div>
 
         <!-- OMIM diagnoses-related code-->
-        <div class="row">
-          <div class="col-sm-12">
-            <div class="card panel-default ">
-                <div class="panel-heading"><i class="fa fa-user-md"></i>&nbsp;Diagnoses</div>
-                <div class="card-body d-flex flex-row">
-                  <div class="col-sm-6">
-                    {{ diagnosis_phenotypes(case, institute, omim_terms) }}
-                  </div>
-                  <div class="col-sm-6">
-                    {{ diagnosis_genes(case, institute) }}
-                  </div>
-                </div><!--end of card body-->
-            </div><!--end of card-->
+        {% if not case.track == 'cancer' %}
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="card panel-default ">
+                  <div class="panel-heading"><i class="fa fa-user-md"></i>&nbsp;Diagnoses</div>
+                  <div class="card-body d-flex flex-row">
+                    <div class="col-sm-6">
+                      {{ diagnosis_phenotypes(case, institute, omim_terms) }}
+                    </div>
+                    <div class="col-sm-6">
+                      {{ diagnosis_genes(case, institute) }}
+                    </div>
+                  </div><!--end of card body-->
+              </div><!--end of card-->
+            </div>
           </div>
-        </div>
+        {% endif %}
         <!-- end of OMIM diagnoses-related code-->
         <div class="row">
           <div class="col-md-6">{{ cohort_panel(case, institute, cohort_tags) }}</div>
