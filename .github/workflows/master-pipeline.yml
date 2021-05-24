@@ -47,7 +47,7 @@ jobs:
         with:
           args: deploy --only hosting -P stage
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_STAGE }}
   deploy-prod:
     needs: deploy-stage
     runs-on: ubuntu-latest
