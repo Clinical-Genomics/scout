@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "frontend-core-project"
+    "default": "frontend-core-project",
+    "stage": "frontend-core-project-stage"
   }
 }
