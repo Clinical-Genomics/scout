@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display Tier I and II variants in case view causatives card for cancer cases
 ### Fixed
 - Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
+- Research variants filtering by gene
 ### Changed
 - Switch off non-clinical gene warnings when filtering research variants
 - Don't display OMIM disease card in case view for cancer cases
