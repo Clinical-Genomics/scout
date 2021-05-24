@@ -342,6 +342,10 @@ class VariantLoader(object):
                 try:
                     self.upsert_variant(var_obj)
                 except IntegrityError as err:
+                    LOG.warning(
+                        "Failed to insert variant %s: variant with the same ID already exists.",
+                        var_obj,
+                    )
                     pass
 
         return
