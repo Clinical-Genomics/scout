@@ -91,7 +91,7 @@ table.dataTable {margin-bottom: 0rem}
  .navbar-nav>.active, .navbar-default,
  .navbar-inverse>.active, .navbar-nav li.active > a {
   color:white;
-  background-color: #343a40; !important;
+  background-color: #343a40 !important;
 }
 
 .dropdown {
@@ -341,6 +341,10 @@ option {
    content: "\e114";
    float: right;
    transition: all 0.5s;
+}
+
+.dropdown-menu {
+  max-height: 420px !important;
 }
 
 
