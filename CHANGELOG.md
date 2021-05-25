@@ -10,7 +10,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Warning on overwriting variants with same position was no longer shown
 ### Changed
-- Clearer warning messages for gene searches in variants filters
 
 ## [4.35]
 ### Added
