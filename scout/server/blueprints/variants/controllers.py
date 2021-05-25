@@ -1015,7 +1015,7 @@ def check_form_gene_symbols(
             "gene_list": not_found_symbols,
         },
         "not_found_ids": {
-            "alert": "HGNC id not present in database genes collection",
+            "alert": "HGNC ids not present in database genes collection",
             "gene_list": not_found_ids,
         },
         "outdated_symbols": {
