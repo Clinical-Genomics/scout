@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Parse and save splice junction tracks from case config file
 ### Fixed
+- Increase the height of the dropdowns to 600px
 ### Changed
 
 ## [4.35]
