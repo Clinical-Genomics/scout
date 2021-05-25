@@ -337,7 +337,7 @@ class VariantLoader(object):
         except (DuplicateKeyError, BulkWriteError) as err:
             # If the bulk write is wrong there are probably some variants already existing
             # In the database. So insert each variant
-            LOG.debug("Bulk insertion failed - attempting separate upsert")
+            LOG.warning("Bulk insertion failed - attempting separate variant upsert for this bulk")
             for var_obj in variants:
                 try:
                     self.upsert_variant(var_obj)
