@@ -6,19 +6,21 @@ import os.path
 import shutil
 
 import pymongo
-from flask import (Blueprint, abort, current_app, flash, redirect, request,
-                   send_file, url_for)
+from flask import Blueprint, abort, current_app, flash, redirect, request, send_file, url_for
 from flask_login import current_user
 
-from scout.constants import (CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-                             CANCER_TIER_OPTIONS, DISMISS_VARIANT_OPTIONS,
-                             MANUAL_RANK_OPTIONS, SEVERE_SO_TERMS)
+from scout.constants import (
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+    CANCER_TIER_OPTIONS,
+    DISMISS_VARIANT_OPTIONS,
+    MANUAL_RANK_OPTIONS,
+    SEVERE_SO_TERMS,
+)
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated, zip_dir_to_obj
 
 from . import controllers
-from .forms import (CancerFiltersForm, FiltersForm, StrFiltersForm,
-                    SvFiltersForm)
+from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
 
@@ -115,9 +117,7 @@ def variants(institute_id, case_name):
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
-    variants_query = store.variants(case_obj["_id"], query=form.data, "research", category=category)
-    variants_query = store.variants(case_obj["_id"], query=form.data, "clinical", category=category)
-
+    variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     if request.form.get("export"):

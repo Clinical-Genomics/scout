@@ -860,7 +860,7 @@ class VariantHandler(VariantLoader):
 
         return file_name
 
-    def case_variants_count(self, case_id, institute_id, type, update_case=True):
+    def case_variants_count(self, case_id, institute_id, type=None, update_case=True):
         """Returns the sum of all variants for a case by type
 
         Args:
@@ -889,7 +889,7 @@ class VariantHandler(VariantLoader):
         )
         # if case has stats and no update is needed, return variant count
         case_obj = self.case(case_id=case_id)
-        if case_obj.get("variants_stats", {}).get("type") and update_case is False:
+        if type and case_obj.get("variants_stats", {}).get("type") and update_case is False:
             return case_obj["variants_stats"]
 
         # Build query
