@@ -99,6 +99,8 @@ def demo_individual_keys():
         "smn2_cn",
         "smn2delta78_cn",
         "smn_27134_cn",
+        "splice_junctions_bed",
+        "rna_coverage_bigwig",
     ]
     return individual_keys
 
