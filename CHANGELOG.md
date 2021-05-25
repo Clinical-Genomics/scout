@@ -6,6 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+### Changed
+
+## [4.35]
+### Added
 - A new index for hgnc_symbol in the hgnc_gene collection
 - A Pedigree panel in STR page
 - Display Tier I and II variants in case view causatives card for cancer cases
@@ -14,11 +19,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display custom evaluation terms in institute settings
 ### Fixed
 - Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
+- Research variants filtering by gene
 - Do not attempt to populate annotations for not loaded pinned/causatives
+- Add max-height to all dropdowns in filters
 ### Changed
 - Switch off non-clinical gene warnings when filtering research variants
 - Don't display OMIM disease card in case view for cancer cases
 - Refactored Individuals and Causative card in case view for cancer cases
+- Update and style STR case report
 
 ## [4.34]
 ### Added
@@ -65,8 +73,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add styles to MatchMaker matches table
 - Manual rank and dismiss variant terms are read from database
 - More detailed info on the data shared in MatchMaker submission form
-- Update and style STR case report
-- Add max-height to all dropdowns in filters
 
 ## [4.33.1]
 ### Fixed
