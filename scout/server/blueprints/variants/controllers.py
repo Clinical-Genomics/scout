@@ -1019,7 +1019,7 @@ def check_form_gene_symbols(
             "gene_list": not_found_ids,
         },
         "outdated_symbols": {
-            "alert": "Case gene panels contains an outdated symbol for genes",
+            "alert": "Case gene panels contain an outdated symbol for genes",
             "gene_list": outdated_symbols,
         },
     }
