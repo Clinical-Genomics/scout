@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { GoogleLogin, GoogleLogout } from "react-google-login";
 import styles from "./Nav.module.scss";
 import DropdownMenu from "components/DropdownMenu/DropdownMenu";
-import { FaAngleDown, FaMoon, FaRegSun } from "react-icons/fa";
+import { FaAngleDown, FaMoon, FaSun } from "react-icons/fa";
 
 export interface Header {
   icon?: string; // Path to icon
@@ -52,7 +52,7 @@ const Nav: React.FC<Props> = ({
       <ul>
         {/* Header */}
         {header?.icon && header?.title && (
-          <li key={header.title}>
+          <li key={header.title} className={styles.nav_item}>
             <header>
               <Link to="/" className={styles.header}>
                 {header?.icon && <img src={header.icon} alt="Logo" />}
@@ -64,17 +64,16 @@ const Nav: React.FC<Props> = ({
 
         {/* Nav items */}
         {navItems.map((navItem) => (
-          <li key={navItem.linkTitle}>
+          <li key={navItem.linkTitle} className={styles.nav_item}>
             {/* Link */}
             {navItem.link && <Link to={navItem.link}>{navItem.linkTitle}</Link>}
 
             {/* Dropdown menu */}
             {navItem.dropdownList && (
               <>
-                <span>
-                  {navItem.linkTitle}
-                  <FaAngleDown className={styles.collapse_arrow} />
-                </span>
+                <span>{navItem.linkTitle}</span>
+                <div className={styles.dropdown_item_space}></div>
+                <FaAngleDown className={styles.collapse_arrow} />
 
                 <DropdownMenu>
                   {navItem.dropdownList.map((dropDownItem) => (
@@ -90,23 +89,22 @@ const Nav: React.FC<Props> = ({
           </li>
         ))}
       </ul>
-      <ul>
-        <li>
+      <ul className={styles.nav_settings}>
+        <li className={styles.nav_item}>
           <button
             className="no_button_style flex"
             onClick={() => toggleDarkMode()}
           >
             {darkMode && <FaMoon />}
-            {!darkMode && <FaRegSun />}
+            {!darkMode && <FaSun />}
           </button>
         </li>
         {/* Greeting */}
         {sigendIn && (
-          <li key={"logout"} className={styles.greeting}>
-            <span>
-              {`Hi ${userName}!`}
-              <FaAngleDown className={styles.collapse_arrow} />
-            </span>
+          <li key={"logout"} className={styles.nav_item}>
+            <span>{`Hi ${userName}!`}</span>
+            <div className={styles.dropdown_item_space}></div>
+            <FaAngleDown className={styles.collapse_arrow} />
             <DropdownMenu>
               <li>
                 <GoogleLogout
@@ -134,7 +132,7 @@ const Nav: React.FC<Props> = ({
               clientId={clientId}
               render={(renderProps) => (
                 <button
-                  className={`${styles.login_button} btn-style`}
+                  className={`${styles.login_button} btn_style`}
                   onClick={renderProps.onClick}
                   disabled={renderProps.disabled}
                 >

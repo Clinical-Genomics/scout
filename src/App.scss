@@ -1,9 +1,17 @@
 /***** Global colors *****/
-/** Primary color (nav, footer) */
-$primary_color: white;
-$primary_color_text: black;
-$primary_color_dark_mode: black;
-$primary_color_dark_mode_text: white;
+/** Background for app, dropdown, etc */
+$primary_bg_color: white;
+$primary_text_color: black;
+/** Headers, footers, etc*/
+$secondary_bg_color: white;
+$secondary_text_color: black;
+
+/** Background for app, dropdown, etc */
+$primary_bg_color_dark_mode: black;
+$primary_text_color_dark_mode: white;
+/** Headers, footers, etc*/
+$secondary_bg_color_dark_mode: #10151b;
+$secondary_text_color_dark_mode: white;
 
 $cg-color: #ef7c01;
 
@@ -35,7 +43,7 @@ li {
   cursor: pointer;
 }
 
-.btn-style {
+.btn_style {
   box-sizing: content-box;
   border: none;
   cursor: pointer;
@@ -46,19 +54,35 @@ li {
 
 /** Dark mode */
 .dark_mode {
-  background-color: black;
-  color: white;
+  background-color: $primary_bg_color_dark_mode;
+  color: $primary_text_color_dark_mode;
 }
-/** TODO: Check if this can be done better */
 .dark_mode Nav,
 .dark_mode Footer
  {
-  background-color: $primary_color_dark_mode;
-  color: $primary_color_dark_mode_text;
+  background-color: $secondary_bg_color_dark_mode;
+  color: $secondary_text_color_dark_mode;
+  box-shadow: none;
 }
-/** TODO: Add selected/hover color on dropdown items another color */
+.dark_mode .dropdown_menu{
+  background-color: $primary_bg_color_dark_mode;
+  color: $primary_text_color_dark_mode;
+  box-shadow: none;
+  border: 1px solid white;
+  > li:focus,
+  > li:hover {
+    background-color: $secondary_bg_color_dark_mode;
+  }
+}
+.dark_mode nav > ul > li {
+  > a::before,
+  > span::before,
+  .selected_nav::before {
+    background-color: white;
+  }
+}
 
-/** TODO: Add similar to Tailwind */
+/** TODO: Add similar automatic library as Tailwind (e.g. ml-3) */
 .flex {
   display: flex;
 }
