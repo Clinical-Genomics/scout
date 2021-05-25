@@ -77,8 +77,8 @@
                                   colorBy: 'strand',
                                   thicknessBasedOn: 'numUniqueRead',
                                   labelUniqueReadCount: true,
-                                  url: "{{ url_for('alignviewers.unindexed_remote_static', file=track.splicej_bed) }}",
-                                  indexURL: "{{ url_for('alignviewers.unindexed_remote_static', file=track.splicej_bed_index) }}",
+                                  url: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed) }}",
+                                  indexURL: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed_index) }}",
                                   minUniquelyMappedReads: 1
                                 }
                             ]
