@@ -6,21 +6,19 @@ import os.path
 import shutil
 
 import pymongo
-from flask import Blueprint, abort, current_app, flash, redirect, request, send_file, url_for
+from flask import (Blueprint, abort, current_app, flash, redirect, request,
+                   send_file, url_for)
 from flask_login import current_user
 
-from scout.constants import (
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-    CANCER_TIER_OPTIONS,
-    DISMISS_VARIANT_OPTIONS,
-    MANUAL_RANK_OPTIONS,
-    SEVERE_SO_TERMS,
-)
+from scout.constants import (CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+                             CANCER_TIER_OPTIONS, DISMISS_VARIANT_OPTIONS,
+                             MANUAL_RANK_OPTIONS, SEVERE_SO_TERMS)
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated, zip_dir_to_obj
 
 from . import controllers
-from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
+from .forms import (CancerFiltersForm, FiltersForm, StrFiltersForm,
+                    SvFiltersForm)
 
 LOG = logging.getLogger(__name__)
 
@@ -49,7 +47,7 @@ def variants(institute_id, case_name):
     category = "snv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = request.args.get("variant_type", "clinical")
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, False)
+    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
@@ -117,7 +115,9 @@ def variants(institute_id, case_name):
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
-    variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
+    variants_query = store.variants(case_obj["_id"], query=form.data, "research", category=category)
+    variants_query = store.variants(case_obj["_id"], query=form.data, "clinical", category=category)
+
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     if request.form.get("export"):
@@ -152,7 +152,7 @@ def str_variants(institute_id, case_name):
     category = "str"
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, False)
+    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     user_obj = store.user(current_user.email)
 
@@ -230,7 +230,7 @@ def sv_variants(institute_id, case_name):
     category = "sv"
     # Define case and institute objects
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, False)
+    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
@@ -300,7 +300,7 @@ def cancer_variants(institute_id, case_name):
     category = "cancer"
     variant_type = request.args.get("variant_type", "clinical")
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, False)
+    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     user_obj = store.user(current_user.email)
     if request.method == "POST":
@@ -405,7 +405,7 @@ def cancer_sv_variants(institute_id, case_name):
     category = "cancer_sv"
     # Define case and institute objects
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, False)
+    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
