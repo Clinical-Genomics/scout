@@ -702,7 +702,4 @@ class VariantLoader(object):
 
         self.update_variant_rank(case_obj, variant_type, category=category)
 
-        # Update case variants count
-        self.case_variants_count(case_obj["_id"], case_obj["owner"], True)
-
         return nr_inserted
