@@ -9,7 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse and save splice junction tracks from case config file
 ### Fixed
 - Warning on overwriting variants with same position was no longer shown
-- Increase the height of the dropdowns to 600px
+- Increase the height of the dropdowns to 425px
 ### Changed
 
 ## [4.35]
