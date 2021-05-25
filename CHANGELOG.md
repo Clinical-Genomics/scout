@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Parse and save splice junction tracks from case config file
 ### Fixed
 - Warning on overwriting variants with same position was no longer shown
 ### Changed
