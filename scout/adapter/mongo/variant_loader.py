@@ -312,12 +312,11 @@ class VariantLoader(object):
         try:
             result = self.variant_collection.insert_one(variant_obj)
         except DuplicateKeyError as err:
-            LOG.warning("Variant %s already exists in database", variant_obj["_id"])
+            LOG.warning("Variant %s already exists in database - modifying", variant_obj["_id"])
             result = self.variant_collection.find_one_and_update(
                 {"_id": variant_obj["_id"]},
                 {"$set": {"compounds": variant_obj.get("compounds", [])}},
             )
-            variant = self.variant_collection.find_one({"_id": variant_obj["_id"]})
         return result
 
     def load_variant_bulk(self, variants):
@@ -489,7 +488,17 @@ class VariantLoader(object):
                     bulk = {}
 
                 current_region = new_region
-                bulk[var_id] = variant_obj
+                if var_id in bulk:
+                    LOG.warning(
+                        "Duplicated variant %s detected in same bulk. Attempting separate upsert.",
+                        variant_obj.get("simple_id"),
+                    )
+                    try:
+                        self.upsert_variant(variant_obj)
+                    except IntegrityError as err:
+                        pass
+                else:
+                    bulk[var_id] = variant_obj
 
                 if nr_variants != 0 and nr_variants % 5000 == 0:
                     LOG.info("%s variants parsed", str(nr_variants))
