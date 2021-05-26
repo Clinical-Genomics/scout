@@ -84,7 +84,11 @@ INDEXES = {
             background=True,
         ),
         IndexModel([("sanger_ordered", ASCENDING)], name="sanger", background=True, sparse=True),
-        IndexModel([("variant_id", ASCENDING)], name="variant_id", background=True),
+        IndexModel(
+            [("variant_id", ASCENDING), ("institute", ASCENDING)],
+            name="variant_id_institute",
+            background=True,
+        ),
     ],
     "hpo_term": [
         IndexModel([("description", ASCENDING)], name="description"),
@@ -93,9 +97,7 @@ INDEXES = {
     ],
     "event": [
         IndexModel([("category", ASCENDING), ("verb", ASCENDING)], name="category_verb"),
-        IndexModel(
-            [("variant_id", ASCENDING), ("institute", ASCENDING)], name="variant_id_institute"
-        ),
+        IndexModel([("variant_id", ASCENDING)], name="variant_id"),
         IndexModel(
             [
                 ("institute", ASCENDING),
