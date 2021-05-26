@@ -106,10 +106,7 @@ class EnsemblRestApiClient:
         """
 
         build = "GRCh38" if "38" in str(build) else "GRCh37"
-
-        assembly2 = "GRCh38"
-        if build == "GRCh38":
-            assembly2 = "GRCh37"
+        assembly2 = "GRCh38" if build == "GRCh37" else "GRCh37"
 
         url = "/".join(
             [
@@ -120,6 +117,7 @@ class EnsemblRestApiClient:
                 f"{assembly2}?content-type=application/json",
             ]
         )
+        LOG.error(url)
         result = self.send_request(url)
         if isinstance(result, dict):
             return result.get("mappings")
