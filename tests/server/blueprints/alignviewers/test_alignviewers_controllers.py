@@ -9,7 +9,7 @@ from scout.server.extensions import cloud_tracks, store
 
 
 def test_make_sashimi_tracks_variant_38(app, case_obj):
-    """Test function that creates splice junction tracks for a variant with genome build 37"""
+    """Test function that creates splice junction tracks for a variant with genome build 38"""
 
     # GIVEN a case with genome build 38
     store.case_collection.find_one_and_update(
