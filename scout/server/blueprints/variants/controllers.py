@@ -1007,7 +1007,7 @@ def check_form_gene_symbols(
 
     errors = {
         "non_clinical_symbols": {
-            "info": "Genes not included in gene panels versions used for this case",
+            "info": "Genes not included in gene panels versions used when loading variants of this case",
             "gene_list": non_clinical_symbols,
         },
         "not_found_symbols": {
@@ -1019,7 +1019,7 @@ def check_form_gene_symbols(
             "gene_list": not_found_ids,
         },
         "outdated_symbols": {
-            "info": "Gene panels versions used for this case contain outdated symbols for genes",
+            "info": "Gene panels versions used for loading variants of this case contain outdated genes symbols",
             "gene_list": outdated_symbols,
         },
     }
