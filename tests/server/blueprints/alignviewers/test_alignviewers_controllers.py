@@ -47,7 +47,7 @@ def test_make_sashimi_tracks(app, case_obj):
 
         # THEN it should return the expected data
         display_obj = controllers.make_sashimi_tracks(
-            case_obj["owner"], case_obj["display_name"], test_variant["_id"], "37"
+            case_obj["owner"], case_obj["display_name"], test_variant["_id"]
         )
         assert display_obj["case"] == case_obj["display_name"]
         assert display_obj["genes"] == ["POT1"]
