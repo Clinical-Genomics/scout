@@ -25,12 +25,7 @@ from scout.constants import (
     SEX_MAP,
     VERBS_MAP,
 )
-from scout.constants.variant_tags import (
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-    CANCER_TIER_OPTIONS,
-    DISMISS_VARIANT_OPTIONS,
-    GENETIC_MODELS,
-)
+from scout.constants.variant_tags import CANCER_TIER_OPTIONS, GENETIC_MODELS
 from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
@@ -315,13 +310,10 @@ def case_report_content(store, institute_obj, case_obj):
 
         individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
 
-    dismiss_options = DISMISS_VARIANT_OPTIONS
+    dismiss_options = store.dismiss_variant_options(["rare"])
     data["cancer"] = case_obj.get("track") == "cancer"
     if data["cancer"]:
-        dismiss_options = {
-            **DISMISS_VARIANT_OPTIONS,
-            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-        }
+        dismiss_options = store.dismiss_variant_options(["rare", "cancer"])
 
     data["comments"] = store.events(institute_obj, case=case_obj, comments=True)
     data["audits"] = store.case_events_by_verb(

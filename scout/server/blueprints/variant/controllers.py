@@ -10,10 +10,8 @@ from scout.constants import (
     ACMG_MAP,
     ACMG_OPTIONS,
     CALLERS,
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CLINVAR_INHERITANCE_MODELS,
-    DISMISS_VARIANT_OPTIONS,
     IGV_TRACKS,
     MOSAICISM_OPTIONS,
     VERBS_MAP,
@@ -122,7 +120,7 @@ def variant(
             'overlapping_svs': <list(overlapping svs)>,
             'manual_rank_options': store.manual_rank_options,
             'cancer_tier_options': CANCER_TIER_OPTIONS,
-            'dismiss_variant_options': DISMISS_VARIANT_OPTIONS,
+            'dismiss_variant_options': store.dismiss_variant_options(traks),
             'ACMG_OPTIONS': ACMG_OPTIONS,
             'igv_tracks': IGV_TRACKS,
             'gens_info': <dict>,
@@ -252,13 +250,9 @@ def variant(
             overlapping_vars.append(var)
     variant_obj["end_chrom"] = variant_obj.get("end_chrom", variant_obj["chromosome"])
 
-    dismiss_options = DISMISS_VARIANT_OPTIONS
+    dismiss_options = store.dismiss_variant_options(["rare"])
     if case_obj.get("track") == "cancer":
-        dismiss_options = {
-            **DISMISS_VARIANT_OPTIONS,
-            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-        }
-
+        dismiss_options = store.dismiss_variant_options(["rare", "cancer"])
     return {
         "institute": institute_obj,
         "case": case_obj,

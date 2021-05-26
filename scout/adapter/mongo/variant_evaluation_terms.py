@@ -83,32 +83,29 @@ class VariantEvaluationHandler(object):
         self.evaluation_terms_collection.insert_one(evaluation_term.__repr__())
 
     def manual_rank_options(self, tracks):
-        """Return all manual rank evaluation terms for the given tracks"""
+        """Return all manual rank evaluation terms for the given tracks.
 
-        manual_rank_options = self._get_evaluation_terms("manual_rank", tracks)
-        return manual_rank_options
+        Args:
+            tracks(list): ["rare", "cancer"]
 
-        manual_rank_terms = {}
-        query = {"category": "manual_rank", "tracks": {"$in": tracks}}
-        results = self.evaluation_terms_collection.find(query)
-        # format terms as expected by templates
-        for term in results:
-            LOG.error(term)
-            key = term["key"]
-            manual_rank_terms[key] = dict(
-                label=term["label"],
-                description=term["description"],
-            )
-            if term.get("name"):
-                manual_rank_terms[key]["name"] = term["name"]
+        Returns:
+            manual_rank_options(dict): Dictionary containing manual rank options ready to be used in server templates
+        """
 
-            if term.get("term_evidence"):
-                manual_rank_terms[key]["term_evidence"] = term["term_evidence"]
-
-            if term.get("label_class"):
-                manual_rank_terms[key]["label_class"] = term["label_class"]
-
+        manual_rank_terms = self._get_evaluation_terms("manual_rank", tracks)
         return manual_rank_terms
+
+    def dismiss_variant_options(self, tracks):
+        """Return all variant dismiss options for the given tracks.
+
+        Args:
+            tracks(list): ["rare", "cancer"]
+
+        Returns:
+            dismiss_variant_terms(dict): Dictionary containing dismiss variant options ready to be used in server templates
+        """
+        dismiss_variant_terms = self._get_evaluation_terms("manual_rank", tracks)
+        return dismiss_variant_terms
 
     def _get_evaluation_terms(self, category, tracks):
         """Return evaluation terms for the given category and tracks.
@@ -118,7 +115,7 @@ class VariantEvaluationHandler(object):
             tracks(list): ["rare", "cancer"]
 
         Returns:
-            evaluation_terms(dict): Dictionary containing evaluation terms to be used in server templates
+            evaluation_terms(dict): Dictionary containing evaluation terms ready to be used in server templates
         """
 
         evaluation_terms = {}

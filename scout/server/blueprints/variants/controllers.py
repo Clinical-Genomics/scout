@@ -14,14 +14,12 @@ from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
     CALLERS,
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CHROMOSOMES,
     CHROMOSOMES_38,
     CLINICAL_FILTER_BASE,
     CLINICAL_FILTER_BASE_CANCER,
     CLINICAL_FILTER_BASE_SV,
-    DISMISS_VARIANT_OPTIONS,
     MOSAICISM_OPTIONS,
     SO_TERMS,
 )
@@ -261,10 +259,7 @@ def get_manual_assessments(store, variant_obj):
                 assessment["display_class"] = classification["color"]
 
             if assessment_type == "dismiss_variant":
-                dismiss_variant_options = {
-                    **DISMISS_VARIANT_OPTIONS,
-                    **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-                }
+                dismiss_variant_options = store.dismiss_variant_options(["rare", "cancer"])
                 assessment["label"] = "Dismissed"
                 assessment["title"] = "dismiss:<br>"
                 for reason in variant_obj[assessment_type]:
