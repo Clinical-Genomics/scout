@@ -1,7 +1,6 @@
 {
   "projects": {
-    "default": "frontend-core-project-stage",
-    "production": "frontend-core-project-prod",
-    "stage": "frontend-core-project-stage"
+    "default": "Scout-Stage",
+    "stage": "Scout-Stage"
   }
 }
