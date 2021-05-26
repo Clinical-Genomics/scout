@@ -25,7 +25,7 @@ def make_sashimi_tracks(institute_id, case_name, variant_id):
         display_obj(dict): A display object containing case name, list of genes, lucus and tracks
     """
     build = "38"  # This feature is only available for RNA tracks in build 38
-    # Collect locus coordinates. Take into account that variant can hit multiple genes
+
     variant_obj = store.variant(document_id=variant_id)
     _, case_obj = institute_and_case(store, institute_id, case_name)
 
@@ -52,8 +52,8 @@ def make_sashimi_tracks(institute_id, case_name, variant_id):
         locus_start_coords.append(variant_obj.get("position"))
         locus_end_coords.append(variant_obj.get("end"))
 
+    # Collect locus coordinates. Take into account that variant can hit multiple genes
     variant_genes_ids = [gene["hgnc_id"] for gene in variant_obj.get("genes", [])]
-
     gene_symbols = []
     for gene_id in variant_genes_ids:
         gene_obj = store.hgnc_gene(hgnc_identifier=gene_id, build=build)
