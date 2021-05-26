@@ -117,7 +117,6 @@ class EnsemblRestApiClient:
                 f"{assembly2}?content-type=application/json",
             ]
         )
-        LOG.error(url)
         result = self.send_request(url)
         if isinstance(result, dict):
             return result.get("mappings")

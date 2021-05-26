@@ -57,12 +57,10 @@ def make_sashimi_tracks(institute_id, case_name, variant_id):
 
     # Collect locus coordinates. Take into account that variant can hit multiple genes
     variant_genes_ids = [gene["hgnc_id"] for gene in variant_obj.get("genes", [])]
-    gene_symbols = []
     for gene_id in variant_genes_ids:
         gene_obj = store.hgnc_gene(hgnc_identifier=gene_id, build=build)
         if gene_obj is None:
             continue
-        gene_symbols.append(gene_obj.get("hgnc_symbol") or gene_obj["hgnc_id"])
         locus_start_coords.append(gene_obj["start"])
         locus_end_coords.append(gene_obj["end"])
 
@@ -70,7 +68,7 @@ def make_sashimi_tracks(institute_id, case_name, variant_id):
     locus_end = max(locus_end_coords)
 
     locus = f"{variant_obj['chromosome']}:{locus_start}-{locus_end}"  # Locus will span all genes the variant falls into
-    display_obj = {"locus": locus, "tracks": [], "genes": gene_symbols}
+    display_obj = {"locus": locus, "tracks": []}
 
     # Add Genes and reference tracks to display object
     set_common_tracks(display_obj, build)
