@@ -16,7 +16,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Clearer warning messages for gene searches in variants filters
 
-
 ## [4.35]
 ### Added
 - A new index for hgnc_symbol in the hgnc_gene collection
