@@ -46,7 +46,7 @@ def test_ping_ensemble_38(ensembl_rest_client_38):
 @responses.activate
 def test_liftover(ensembl_rest_client_37, ensembl_liftover_reasponse):
     """Test send request for coordinates liftover"""
-    # GIVEN a patched response from Ensmbl
+    # GIVEN a patched response from Ensembl
     url = "http://grch37.rest.ensembl.org/map/human/GRCh37/X:1000000..1000100/GRCh38?content-type=application/json"
     responses.add(
         responses.GET,
