@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Warning on overwriting variants with same position was no longer shown
 - Total number of research variants count
 ### Changed
+- Clearer warning messages for gene searches in variants filters
+- Increase the height of the dropdowns to 425px
 - Update variants stats in case documents every time new variants are loaded
 
 ## [4.35]
