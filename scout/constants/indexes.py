@@ -118,5 +118,13 @@ INDEXES = {
             background=True,
         )
     ],
-    "case": [IndexModel([("synopsis", TEXT)], default_language="english", name="synopsis_text")],
+    "case": [
+        IndexModel([("synopsis", TEXT)], default_language="english", name="synopsis_text"),
+        IndexModel([("causatives", ASCENDING)], name="causatives"),
+        IndexModel([("collaborators", ASCENDING)], name="collaborators"),
+        IndexModel(
+            [("collaborators", ASCENDING), ("updated_at", ASCENDING)],
+            name="collaborators_updated_at",
+        ),
+    ],
 }
