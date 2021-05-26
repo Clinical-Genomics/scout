@@ -3,13 +3,9 @@ import React, { useEffect, useState } from "react";
 import Nav, { NavItem } from "components/Nav/Nav";
 import styles from "./Layout.module.scss";
 import logo_scout from "assets/logo_scout.png";
-import logo_cg from "assets/logo_cg.svg";
 import Footer from "components/Footer/Footer";
 
-const header_cg = {
-  icon: logo_cg,
-  title: "Clinical Genomics",
-};
+
 const header_scout = {
   icon: logo_scout,
   title: "Scout",
@@ -67,7 +63,7 @@ const Layout: React.FC = ({ children }) => {
     <div className={`${styles.Layout} ${darkMode ? "dark_mode" : ""}`}>
       <header>
         <Nav
-          header={header_cg}
+          header={header_scout}
           navItems={cgNavItems}
           darkMode={darkMode}
           toggleDarkMode={toggleDarkMode}

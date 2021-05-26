@@ -1,4 +1,4 @@
-# Frontend Core Project
+# Scout react Project
 ## Standards 
 Type can be:
 - `feature`: (new feature for the user, not a new feature for build script)
