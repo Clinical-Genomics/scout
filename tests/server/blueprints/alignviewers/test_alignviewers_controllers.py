@@ -8,9 +8,39 @@ from scout.server.blueprints.alignviewers import controllers
 from scout.server.extensions import cloud_tracks, store
 
 
+def test_make_sashimi_tracks_variant_38(app, case_obj):
+    """Test function that creates splice junction tracks for a variant with genome build 37"""
+
+    # GIVEN a case with genome build 38
+    store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]}, {"$set": {"genome_build": "38"}}
+    )
+
+    # WHEN the gene splice junction track is created for any variant in a gene
+    test_variant = store.variant_collection.find_one({"hgnc_symbols": ["POT1"]})
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # THEN it should return the expected data
+        display_obj = controllers.make_sashimi_tracks(
+            case_obj["owner"], case_obj["display_name"], test_variant["_id"]
+        )
+        assert display_obj["case"] == case_obj["display_name"]
+        assert display_obj["locus"]
+        assert display_obj["tracks"][0]["name"]
+        assert display_obj["tracks"][0]["coverage_wig"]
+        assert display_obj["tracks"][0]["splicej_bed"]
+        assert display_obj["tracks"][0]["splicej_bed_index"]
+        assert display_obj["reference_track"]  # Reference genome track
+        assert display_obj["custom_tracks"]  # Custom tracks include gene track in the right build
+
+
 @responses.activate
-def test_make_sashimi_tracks_variant(app, case_obj, ensembl_liftover_reasponse):
-    """Test function that creates splice junction tracks"""
+def test_make_sashimi_tracks_variant_37(app, case_obj, ensembl_liftover_reasponse):
+    """Test function that creates splice junction tracks for a variant with genome build 37"""
 
     # WHEN the gene splice junction track is created for any variant in a gene
     test_variant = store.variant_collection.find_one({"hgnc_symbols": ["POT1"]})
@@ -24,15 +54,6 @@ def test_make_sashimi_tracks_variant(app, case_obj, ensembl_liftover_reasponse):
         status=200,
     )
 
-    # GIVEN a case's affected individual
-    affected_name = "NA12882"
-
-    # GIVEN a case with an individual containing splice junction data:
-    for ind in case_obj["individuals"]:
-        if ind["display_name"] == affected_name:
-            assert ind["rna_coverage_bigwig"]
-            assert ind["splice_junctions_bed"]
-
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
@@ -43,9 +64,8 @@ def test_make_sashimi_tracks_variant(app, case_obj, ensembl_liftover_reasponse):
             case_obj["owner"], case_obj["display_name"], test_variant["_id"]
         )
         assert display_obj["case"] == case_obj["display_name"]
-        # assert display_obj["genes"] == ["POT1"]
         assert display_obj["locus"]
-        assert display_obj["tracks"][0]["name"] == affected_name
+        assert display_obj["tracks"][0]["name"]
         assert display_obj["tracks"][0]["coverage_wig"]
         assert display_obj["tracks"][0]["splicej_bed"]
         assert display_obj["tracks"][0]["splicej_bed_index"]
