@@ -9,12 +9,13 @@ from scout.constants import (
 LOG = logging.getLogger(__name__)
 
 
-def _load_default_term(adapter, category, terms):
+def _load_default_terms(adapter, category, tracks, terms):
     """Interact with the database adapter that loads a default evaluation term in the database
 
     Args:
         adapter(MongoAdapter)
         category(str): "dismissal_term" or "manual_rank"
+        tracks(list): a list of tracks to apply the terms to
         terms(list): example -->
             [
                 8: {
@@ -27,26 +28,9 @@ def _load_default_term(adapter, category, terms):
             ]
     """
     for key, term in terms.items():
-        adapter.load_default_evaluation_term(category, key, term)
-
-
-def _load_default_dismiss_terms(adapter):
-    """Load default DISMISS_VARIANT_OPTIONS and CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS into database
-
-    Args:
-        adapter(MongoAdapter)
-    """
-    for terms in [DISMISS_VARIANT_OPTIONS, CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS]:
-        _load_default_term(adapter, "dismissal_term", terms)
-
-
-def _load_defaul_manual_rank_terms(adapter):
-    """Load default MANUAL_RANK_OPTIONS into database
-
-    Args:
-        adapter(MongoAdapter)
-    """
-    _load_default_term(adapter, "manual_rank", MANUAL_RANK_OPTIONS)
+        adapter.load_default_evaluation_term(
+            category=category, tracks=tracks, term_key=key, term_value=term
+        )
 
 
 def load_default_evaluation_terms(adapter):
@@ -55,7 +39,16 @@ def load_default_evaluation_terms(adapter):
     Args:
         adapter(MongoAdapter)
     """
-    # Load default dismiss variant terms
-    _load_default_dismiss_terms(adapter)
-    # Load default manual rank terms
-    _load_defaul_manual_rank_terms(adapter)
+    # Load default dismiss variant terms (rare and cancer tracks)
+    _load_default_terms(adapter, "dismissal_term", ["rare", "cancer"], DISMISS_VARIANT_OPTIONS)
+
+    # Load default dismiss variant terms (cancer track)
+    _load_default_terms(
+        adapter,
+        "dismissal_term",
+        ["cancer"],
+        CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+    )
+
+    # Load manual rank terms (rare and cancer tracks)
+    _load_default_terms(adapter, "manual_rank", ["rare", "cancer"], MANUAL_RANK_OPTIONS)

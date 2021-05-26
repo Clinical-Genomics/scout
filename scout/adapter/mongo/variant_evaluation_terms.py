@@ -5,6 +5,7 @@ from datetime import datetime
 
 import pymongo
 
+from scout.constants.case_tags import TRACKS
 from scout.constants.variant_tags import EVALUATION_TERM_CATEGORIES
 
 LOG = logging.getLogger(__name__)
@@ -18,6 +19,7 @@ class EvaluationTerm(object):
         self.label = term_obj["term_label"]
         self.description = term_obj.get("term_description")
         self.category = term_obj.get("term_category")
+        self.tracks = term_obj.get("term_tracks")
         if term_obj["term_name"]:
             self.name = term_obj["term_name"]
         if term_obj["term_evidence"]:
@@ -42,6 +44,15 @@ class EvaluationTerm(object):
             raise ValueError(
                 f"Variant evaluation term category 'category' is not valid. Valid categories: {EVALUATION_TERM_CATEGORIES}"
             )
+        if len(self.tracks) == 0:
+            raise ValueError(
+                f"At least a track type should be provided for this term. Valid tracks:{TRACKS}"
+            )
+        for track in self.tracks:
+            if track not in TRACKS:
+                raise ValueError(
+                    f"Variant evaluation terms track '{track}' is not valid. Valid tracks:{TRACKS}"
+                )
 
     def __repr__(self):
         """Return a dictionary representation of this object"""
@@ -51,10 +62,17 @@ class EvaluationTerm(object):
 class VariantEvaluationHandler(object):
     """Interact with variant evaluation information."""
 
-    def load_default_evaluation_term(self, category, term_key, term_value):
+    def load_default_evaluation_term(self, category, tracks, term_key, term_value):
+        """Load a default evaluation term into the database
+
+        Args:
+            category(str):
+
+        """
         term_dict = {
             "term_key": term_key,
             "term_category": category,
+            "term_tracks": tracks,
             "term_label": term_value.get("label"),
             "term_description": term_value.get("description"),
             "term_name": term_value.get("name"),

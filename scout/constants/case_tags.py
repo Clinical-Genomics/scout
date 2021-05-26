@@ -128,3 +128,5 @@ CASE_SEARCH_TERMS = {
     "causative": {"label": "Causative gene", "prefix": "causative:"},
     "user": {"label": "Assigned user", "prefix": "user:"},
 }
+
+TRACKS = ["rare", "cancer"]
