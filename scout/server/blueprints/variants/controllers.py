@@ -382,7 +382,10 @@ def parse_variant(
     # Or if symbold in reference genes have changed
     if update and has_changed:
         try:
+            flash(f"BEFORE{variant_obj}")
             variant_obj = store.update_variant(variant_obj)
+            flash(f"AFTER:{variant_obj}")
+
         except DocumentTooLarge:
             flash(
                 f"An error occurred while updating info for variant: {variant_obj['_id']} (pymongo_errors.DocumentTooLarge: {len(bson.BSON.encode(variant_obj))})",
