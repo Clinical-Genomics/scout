@@ -84,6 +84,7 @@ INDEXES = {
             background=True,
         ),
         IndexModel([("sanger_ordered", ASCENDING)], name="sanger", background=True, sparse=True),
+        IndexModel([("variant_id", ASCENDING)], name="variant_id", background=True),
     ],
     "hpo_term": [
         IndexModel([("description", ASCENDING)], name="description"),
