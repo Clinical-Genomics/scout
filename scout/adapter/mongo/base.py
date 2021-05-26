@@ -52,6 +52,7 @@ from .query import QueryHandler
 from .transcript import TranscriptHandler
 from .user import UserHandler
 from .variant import VariantHandler
+from .variant_evaluation_terms import VariantEvaluationHandler
 
 log = logging.getLogger(__name__)
 
@@ -77,6 +78,7 @@ class MongoAdapter(
     ManagedVariantHandler,
     CytobandHandler,
     PhenoModelHandler,
+    VariantEvaluationHandler,
 ):
 
     """Adapter for cummunication with a mongo database."""
@@ -115,6 +117,7 @@ class MongoAdapter(
         self.cytoband_collection = database.cytoband
         self.managed_variant_collection = database.managed_variant
         self.phenomodel_collection = database.phenomodel
+        self.evaluation_terms_collection = database.evaluation_term
 
     def collections(self):
         """Return all collection names

@@ -46,7 +46,6 @@ GENETIC_MODELS = (
     ("XD_dn", "X Linked Dominant De Novo"),
 )
 
-
 VARIANT_CALL = ("Pass", "Filtered", "Not Found", "Not Used")
 
 # Describe conversion between numerical SPIDEX values and human readable.
@@ -290,3 +289,5 @@ MOSAICISM_OPTIONS = {
         "evidence": ["allele_count"],
     },
 }
+
+EVALUATION_TERM_CATEGORIES = ("dismissal_term", "manual_rank")

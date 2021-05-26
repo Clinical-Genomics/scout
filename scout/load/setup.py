@@ -19,7 +19,13 @@ from scout.demo import load_path, panel_path
 
 ### Import demo files ###
 from scout.demo.resources import demo_files
-from scout.load import load_cytobands, load_hgnc_genes, load_hpo, load_transcripts
+from scout.load import (
+    load_cytobands,
+    load_default_evaluation_terms,
+    load_hgnc_genes,
+    load_hpo,
+    load_transcripts,
+)
 
 # Resources
 from scout.parse.case import parse_case_data
@@ -130,6 +136,9 @@ def setup_scout(
     # Load cytobands into cytoband collection
     for genome_build, cytobands_path in cytoband_files.items():
         load_cytobands(cytobands_path, genome_build, adapter)
+
+    # Load default variant evaluation terms into evaluation_term collection
+    load_default_evaluation_terms(adapter)
 
     builds = ["37", "38"]
     for build in builds:
