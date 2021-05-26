@@ -35,17 +35,18 @@ const Nav: React.FC<Props> = ({
   darkMode,
   toggleDarkMode,
 }) => {
-  const [userName, setUserName] = useState("");
-  const [sigendIn, setSigendIn] = useState(false);
+  const [userInfo, setUserInfo] = useState("");
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  const responseGoogle = (response: any) => {
-    setUserName(response.ft.Ue);
-    setSigendIn(true);
+  const onLoginSuccess = (response: any) => {
+    setUserInfo(response.profileObj.name);
+    setIsLoaded(true);
   };
 
   const onLogoutSuccess = () => {
-    setSigendIn(false);
+    setIsLoaded(false);
   };
+
 
   return (
     <nav className={styles.Nav}>
@@ -100,24 +101,24 @@ const Nav: React.FC<Props> = ({
           </button>
         </li>
         {/* Greeting */}
-        {sigendIn && (
+        {isLoaded && (
           <li key={"logout"} className={styles.nav_item}>
-            <span>{`Hi ${userName}!`}</span>
+            {<span>{`Hi ${userInfo}!`}</span>}
             <div className={styles.dropdown_item_space}></div>
             <FaAngleDown className={styles.collapse_arrow} />
             <DropdownMenu>
               <li>
                 <GoogleLogout
-                  clientId={clientId}
                   render={(renderProps) => (
                     <button
-                      className={"no_button_style"}
-                      onClick={renderProps.onClick}
-                      disabled={renderProps.disabled}
+                    className={"no_button_style"}
+                    onClick={renderProps.onClick}
+                    disabled={renderProps.disabled}
                     >
                       Sign out
                     </button>
                   )}
+                  clientId={clientId}
                   buttonText="Sign out"
                   onLogoutSuccess={onLogoutSuccess}
                 />
@@ -126,22 +127,21 @@ const Nav: React.FC<Props> = ({
           </li>
         )}
         {/* Login button */}
-        {!sigendIn && (
+        {!isLoaded && (
           <li>
             <GoogleLogin
-              clientId={clientId}
               render={(renderProps) => (
                 <button
-                  className={`${styles.login_button} btn_style`}
-                  onClick={renderProps.onClick}
-                  disabled={renderProps.disabled}
+                className={`${styles.login_button} btn_style`}
+                onClick={renderProps.onClick}
+                disabled={renderProps.disabled}
                 >
                   Login with Google
                 </button>
               )}
+              clientId={clientId}
               buttonText="Login"
-              onSuccess={responseGoogle}
-              onFailure={responseGoogle}
+              onSuccess={onLoginSuccess}
               isSignedIn={true}
               cookiePolicy={"single_host_origin"}
             />
