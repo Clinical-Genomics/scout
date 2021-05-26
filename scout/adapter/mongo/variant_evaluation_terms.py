@@ -15,11 +15,11 @@ class EvaluationTerm(object):
     """Represents a variant evaluation term"""
 
     def __init__(self, term_obj):
-        self.key = term_obj.get("term_key")
-        self.label = term_obj["term_label"]
-        self.description = term_obj.get("term_description")
-        self.category = term_obj.get("term_category")
-        self.tracks = term_obj.get("term_tracks")
+        self.key = term_obj.get("term_key")  # mandatory
+        self.label = term_obj["term_label"]  # mandatory
+        self.description = term_obj.get("term_description")  # mandatory
+        self.category = term_obj.get("term_category")  # mandatory
+        self.tracks = term_obj.get("term_tracks")  # mandatory
         if term_obj["term_name"]:
             self.name = term_obj["term_name"]
         if term_obj["term_evidence"]:
@@ -81,3 +81,64 @@ class VariantEvaluationHandler(object):
         }
         evaluation_term = EvaluationTerm(term_dict)
         self.evaluation_terms_collection.insert_one(evaluation_term.__repr__())
+
+    def manual_rank_options(self, tracks):
+        """Return all manual rank evaluation terms for the given tracks"""
+
+        manual_rank_options = self._get_evaluation_terms("manual_rank", tracks)
+        return manual_rank_options
+
+        manual_rank_terms = {}
+        query = {"category": "manual_rank", "tracks": {"$in": tracks}}
+        results = self.evaluation_terms_collection.find(query)
+        # format terms as expected by templates
+        for term in results:
+            LOG.error(term)
+            key = term["key"]
+            manual_rank_terms[key] = dict(
+                label=term["label"],
+                description=term["description"],
+            )
+            if term.get("name"):
+                manual_rank_terms[key]["name"] = term["name"]
+
+            if term.get("term_evidence"):
+                manual_rank_terms[key]["term_evidence"] = term["term_evidence"]
+
+            if term.get("label_class"):
+                manual_rank_terms[key]["label_class"] = term["label_class"]
+
+        return manual_rank_terms
+
+    def _get_evaluation_terms(self, category, tracks):
+        """Return evaluation terms for the given category and tracks.
+
+        Args:
+            category(str): "manual_rank" or "dismissal_term"
+            tracks(list): ["rare", "cancer"]
+
+        Returns:
+            evaluation_terms(dict): Dictionary containing evaluation terms to be used in server templates
+        """
+
+        evaluation_terms = {}
+        query = {"category": category, "tracks": {"$in": tracks}}
+        results = self.evaluation_terms_collection.find(query)
+
+        # format terms as expected by templates
+        for term in results:
+            key = term["key"]
+            evaluation_terms[key] = dict(
+                label=term["label"],
+                description=term["description"],
+            )
+            if term.get("name"):
+                evaluation_terms[key]["name"] = term["name"]
+
+            if term.get("term_evidence"):
+                evaluation_terms[key]["term_evidence"] = term["term_evidence"]
+
+            if term.get("label_class"):
+                evaluation_terms[key]["label_class"] = term["label_class"]
+
+        return evaluation_terms

@@ -22,7 +22,6 @@ from scout.constants import (
     CLINICAL_FILTER_BASE_CANCER,
     CLINICAL_FILTER_BASE_SV,
     DISMISS_VARIANT_OPTIONS,
-    MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     SO_TERMS,
 )
@@ -79,13 +78,13 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
 
         clinical_var_obj = variant_obj
         if is_research:
-            variant_obj["research_assessments"] = get_manual_assessments(variant_obj)
+            variant_obj["research_assessments"] = get_manual_assessments(store, variant_obj)
 
             clinical_var_obj = store.variant(
                 case_id=case_obj["_id"], simple_id=variant_obj["simple_id"], variant_type="clinical"
             )
 
-        variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
+        variant_obj["clinical_assessments"] = get_manual_assessments(store, clinical_var_obj)
 
         if case_obj.get("group"):
             variant_obj["group_assessments"] = _get_group_assessments(store, case_obj, variant_obj)
@@ -129,7 +128,7 @@ def _get_group_assessments(store, case_obj, variant_obj):
                 simple_id=variant_obj["simple_id"],
                 variant_type=variant_obj["variant_type"],
             )
-            group_assessments.extend(get_manual_assessments(cohort_var_obj))
+            group_assessments.extend(get_manual_assessments(store, cohort_var_obj))
 
     return group_assessments
 
@@ -154,7 +153,7 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
                 case_id=case_obj["_id"], simple_id=variant_obj["simple_id"], variant_type="clinical"
             )
         if clinical_var_obj is not None:
-            variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
+            variant_obj["clinical_assessments"] = get_manual_assessments(store, clinical_var_obj)
 
         variants.append(
             parse_variant(
@@ -204,12 +203,13 @@ def str_variants(
     return return_view_data
 
 
-def get_manual_assessments(variant_obj):
+def get_manual_assessments(store, variant_obj):
     """Return manual assessments ready for display.
 
     An assessment dict of str has keys "title", "label" and "display_class".
 
     args:
+        store(scout.adapter.MongoAdapter)
         variant_obj(variant)
 
     returns:
@@ -234,12 +234,13 @@ def get_manual_assessments(variant_obj):
         assessment = {}
         if variant_obj.get(assessment_type) is not None:
             if assessment_type == "manual_rank":
+                manual_rank_options = store.manual_rank_options(["rare", "cancer"])
                 manual_rank = variant_obj[assessment_type]
                 assessment["title"] = "Manual rank: {}".format(
-                    MANUAL_RANK_OPTIONS[manual_rank]["description"]
+                    manual_rank_options[manual_rank]["description"]
                 )
-                assessment["label"] = MANUAL_RANK_OPTIONS[manual_rank]["label"]
-                assessment["display_class"] = MANUAL_RANK_OPTIONS[manual_rank]["label_class"]
+                assessment["label"] = manual_rank_options[manual_rank]["label"]
+                assessment["display_class"] = manual_rank_options[manual_rank]["label_class"]
 
             if assessment_type == "cancer_tier":
                 cancer_tier = variant_obj[assessment_type]
@@ -680,7 +681,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
         institute=institute_obj,
         case=case_obj,
         variants=variants_list,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
+        manual_rank_options=store.manual_rank_options(["rare", "cancer"]),
         cancer_tier_options=CANCER_TIER_OPTIONS,
         form=form,
     )

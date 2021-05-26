@@ -30,7 +30,6 @@ from scout.constants.variant_tags import (
     CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
     GENETIC_MODELS,
-    MANUAL_RANK_OPTIONS,
 )
 from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
@@ -223,7 +222,7 @@ def case(store, institute_obj, case_obj):
         "collaborators": collab_ids,
         "cohort_tags": institute_obj.get("cohorts", []),
         "omim_terms": omim_terms,
-        "manual_rank_options": MANUAL_RANK_OPTIONS,
+        "manual_rank_options": store.manual_rank_options(["rare", "cancer"]),
         "cancer_tier_options": CANCER_TIER_OPTIONS,
     }
 
@@ -329,7 +328,7 @@ def case_report_content(store, institute_obj, case_obj):
         category="case", institute=institute_obj, case=case_obj, verb="filter_audit"
     )
 
-    data["manual_rank_options"] = MANUAL_RANK_OPTIONS
+    data["manual_rank_options"] = store.manual_rank_options(["rare", "cancer"])
     data["cancer_tier_options"] = CANCER_TIER_OPTIONS
     data["dismissed_options"] = dismiss_options
     data["genetic_models"] = dict(GENETIC_MODELS)
