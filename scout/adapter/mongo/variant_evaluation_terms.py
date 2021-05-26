@@ -104,7 +104,7 @@ class VariantEvaluationHandler(object):
         Returns:
             dismiss_variant_terms(dict): Dictionary containing dismiss variant options ready to be used in server templates
         """
-        dismiss_variant_terms = self._get_evaluation_terms("manual_rank", tracks)
+        dismiss_variant_terms = self._get_evaluation_terms("dismissal_term", tracks)
         return dismiss_variant_terms
 
     def _get_evaluation_terms(self, category, tracks):
