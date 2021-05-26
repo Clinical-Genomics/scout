@@ -240,6 +240,11 @@ def get_manual_assessments(store, variant_obj):
                     )
                     assessment["label"] = manual_rank_options[manual_rank]["label"]
                     assessment["display_class"] = manual_rank_options[manual_rank]["label_class"]
+                else:
+                    flash(
+                        "Manual rank evaluations not present in database. Please load them using the command line to use this feature.",
+                        "warning",
+                    )
 
             if assessment_type == "cancer_tier":
                 cancer_tier = variant_obj[assessment_type]
@@ -272,6 +277,11 @@ def get_manual_assessments(store, variant_obj):
                                 dismiss_variant_options[reason]["description"],
                             )
                     assessment["display_class"] = "secondary"
+                else:
+                    flash(
+                        "Dismiss variant options not present in database. Please load them using the command line to use this feature.",
+                        "warning",
+                    )
 
             if assessment_type == "mosaic_tags":
                 assessment["label"] = "Mosaicism"

@@ -50,5 +50,13 @@ def load_default_evaluation_terms(adapter):
         CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     )
 
+    LOG.debug(
+        f'{len(adapter.dismiss_variant_options(["rare","cancer"]).keys())} variant dismissal terms loaded into database.'
+    )
+
     # Load manual rank terms (rare and cancer tracks)
     _load_default_terms(adapter, "manual_rank", ["rare", "cancer"], MANUAL_RANK_OPTIONS)
+
+    LOG.debug(
+        f'{len(adapter.manual_rank_options(["rare","cancer"]).keys())} manual rank terms loaded into database.'
+    )
