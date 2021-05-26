@@ -152,8 +152,9 @@
 
 {% macro observations_panel(variant, observations, case) %}
   <div class="card panel-default">
-    <div class="panel-heading">
+    <div class="panel-heading d-flex justify-content-between">
       <a class="text-white" href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
+      <span data-toggle="tooltip" title="Nr of observations is the total seen in this loqusdb instance. Missing links on greyed out case names for shared local case variants might be caused by variants not loaded after a rerun or inexact SV matching. Only names of collaborator cases are shown.">?</span>
     </div>
     <div class="card-body">
       <table class="table">
@@ -182,7 +183,7 @@
             {% elif data.variant and data.variant.category == "sv"%}
               <a class="ml-3" href="{{ url_for('variant.sv_variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
             {% else %}
-              <span class="text-muted ml-3">{{ data.case.display_name }}</span>
+              <span class="text-muted ml-3" >{{ data.case.display_name }}</span>
             {% endif %}
           {% endfor %}
           {% if observations['cases']|length >= 10 %}
