@@ -8,7 +8,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Parse and save splice junction tracks from case config file
 ### Fixed
+- Warning on overwriting variants with same position was no longer shown
+- Increase the height of the dropdowns to 425px
 ### Changed
+- Clearer warning messages for gene searches in variants filters
 
 ## [4.35]
 ### Added
