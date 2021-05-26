@@ -233,12 +233,13 @@ def get_manual_assessments(store, variant_obj):
         if variant_obj.get(assessment_type) is not None:
             if assessment_type == "manual_rank":
                 manual_rank_options = store.manual_rank_options(["rare", "cancer"])
-                manual_rank = variant_obj[assessment_type]
-                assessment["title"] = "Manual rank: {}".format(
-                    manual_rank_options[manual_rank]["description"]
-                )
-                assessment["label"] = manual_rank_options[manual_rank]["label"]
-                assessment["display_class"] = manual_rank_options[manual_rank]["label_class"]
+                if manual_rank_options:
+                    manual_rank = variant_obj[assessment_type]
+                    assessment["title"] = "Manual rank: {}".format(
+                        manual_rank_options[manual_rank]["description"]
+                    )
+                    assessment["label"] = manual_rank_options[manual_rank]["label"]
+                    assessment["display_class"] = manual_rank_options[manual_rank]["label_class"]
 
             if assessment_type == "cancer_tier":
                 cancer_tier = variant_obj[assessment_type]
@@ -260,16 +261,17 @@ def get_manual_assessments(store, variant_obj):
 
             if assessment_type == "dismiss_variant":
                 dismiss_variant_options = store.dismiss_variant_options(["rare", "cancer"])
-                assessment["label"] = "Dismissed"
-                assessment["title"] = "dismiss:<br>"
-                for reason in variant_obj[assessment_type]:
-                    if not isinstance(reason, int):
-                        reason = int(reason)
-                        assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                            dismiss_variant_options[reason]["label"],
-                            dismiss_variant_options[reason]["description"],
-                        )
-                assessment["display_class"] = "secondary"
+                if dismiss_variant_options:
+                    assessment["label"] = "Dismissed"
+                    assessment["title"] = "dismiss:<br>"
+                    for reason in variant_obj[assessment_type]:
+                        if not isinstance(reason, int):
+                            reason = int(reason)
+                            assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
+                                dismiss_variant_options[reason]["label"],
+                                dismiss_variant_options[reason]["description"],
+                            )
+                    assessment["display_class"] = "secondary"
 
             if assessment_type == "mosaic_tags":
                 assessment["label"] = "Mosaicism"
