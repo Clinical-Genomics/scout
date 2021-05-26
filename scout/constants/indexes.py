@@ -93,7 +93,9 @@ INDEXES = {
     ],
     "event": [
         IndexModel([("category", ASCENDING), ("verb", ASCENDING)], name="category_verb"),
-        IndexModel([("variant_id", ASCENDING)], name="variant_id"),
+        IndexModel(
+            [("variant_id", ASCENDING), ("institute", ASCENDING)], name="variant_id_institute"
+        ),
         IndexModel(
             [
                 ("institute", ASCENDING),
