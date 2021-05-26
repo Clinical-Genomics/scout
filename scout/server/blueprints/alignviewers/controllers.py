@@ -48,8 +48,11 @@ def make_sashimi_tracks(institute_id, case_name, variant_id):
             mapped_end = mapped_coords[0]["mapped"].get("end") or mapped_start
             locus_start_coords.append(mapped_start)
             locus_end_coords.append(mapped_end)
-    else:
+
+    # Use original coordinates only genome build was 38 from the beginning of liftover didn't work
+    if not locus_start_coords:
         locus_start_coords.append(variant_obj.get("position"))
+    if not locus_end_coords:
         locus_end_coords.append(variant_obj.get("end"))
 
     # Collect locus coordinates. Take into account that variant can hit multiple genes
