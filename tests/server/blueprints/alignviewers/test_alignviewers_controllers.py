@@ -6,7 +6,6 @@ from flask_login import current_user
 from scout.commands.update.individual import individual as ind_cmd
 from scout.server.blueprints.alignviewers import controllers
 from scout.server.extensions import cloud_tracks, store
-from tests.utils.conftest import ensembl_liftover_reasponse
 
 
 @responses.activate
