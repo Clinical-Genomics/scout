@@ -35,7 +35,7 @@ def make_sashimi_tracks(institute_id, case_name, variant_id):
 
     # Check if variant coordinates are in genome build 38
     # Otherwise do variant coords liftover
-    if not build in str(case_obj.get("genome_build")):
+    if build not in str(case_obj.get("genome_build")):
         client = EnsemblRestApiClient()
         mapped_coords = client.liftover(
             case_obj.get("genome_build"),
