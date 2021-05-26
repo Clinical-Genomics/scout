@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "Scout-Stage",
-    "stage": "Scout-Stage"
+    "default": "scout-stage",
+    "stage": "scout-stage"
   }
 }
