@@ -15,4 +15,4 @@ def test_update_individuals_table(app, case_obj, institute_obj):
         html = macro(case_obj, institute_obj, SAMPLE_SOURCE)
 
         # THEN the macro should contain the expected html code
-        assert '<div class="panel-heading">Individuals</div>' in html
+        assert '<span>Individuals</span>' in html
