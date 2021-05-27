@@ -5,7 +5,6 @@ import logging
 import click
 from flask.cli import with_appcontext
 
-from scout.constants.variant_tags import EVALUATION_TERM_CATEGORIES
 from scout.load.evaluation_terms import load_default_evaluation_terms
 from scout.server.extensions import store
 
@@ -24,5 +23,4 @@ def default_variant_evaluation_terms():
         'This command will replace all evantual variant evaluation terms ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") present in the database with the default ones. Continue?',
         abort=True,
     )
-    store.drop_evaluation_terms(EVALUATION_TERM_CATEGORIES)
     load_default_evaluation_terms(store)

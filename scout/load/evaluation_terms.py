@@ -7,6 +7,7 @@ from scout.constants import (
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
 )
+from scout.constants.variant_tags import EVALUATION_TERM_CATEGORIES
 
 LOG = logging.getLogger(__name__)
 
@@ -41,6 +42,9 @@ def load_default_evaluation_terms(adapter):
     Args:
         adapter(MongoAdapter)
     """
+    # Remove all evaluation terms from database
+    adapter.drop_evaluation_terms(EVALUATION_TERM_CATEGORIES)
+
     # Load default dismiss variant terms (rare and cancer tracks)
     _load_default_terms(adapter, "dismissal_term", ["rare", "cancer"], DISMISS_VARIANT_OPTIONS)
     # Load default dismiss variant terms (cancer track)
