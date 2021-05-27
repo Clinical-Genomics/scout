@@ -186,11 +186,9 @@ def test_variants_research_no_shadow_clinical_assessments(
     assert not any([variant.get("clinical_assessments") for variant in res_variants])
 
 
-def test_variants_research_shadow_clinical_assessments(
-    real_variant_database, institute_obj, case_obj
-):
+def test_variants_research_shadow_clinical_assessments(app, institute_obj, case_obj):
     # GIVEN a db with variants,
-    adapter = real_variant_database
+    adapter = store
     case_id = case_obj["_id"]
 
     # GIVEN a clinical variant from one case
