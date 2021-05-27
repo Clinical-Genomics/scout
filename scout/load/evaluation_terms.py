@@ -12,7 +12,7 @@ LOG = logging.getLogger(__name__)
 
 
 def _load_default_terms(adapter, category, tracks, terms):
-    """Interact with the database adapter that loads a default evaluation term in the database
+    """Interact with the database adapter to load evaluation terms in the database
 
     Args:
         adapter(MongoAdapter)

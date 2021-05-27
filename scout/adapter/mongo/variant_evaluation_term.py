@@ -16,15 +16,15 @@ class EvaluationTerm(object):
 
     def __init__(self, term_obj):
         self.key = term_obj.get("term_key")  # mandatory
-        self.label = term_obj["term_label"]  # mandatory
+        self.label = term_obj.get("term_label")  # mandatory
         self.description = term_obj.get("term_description")  # mandatory
         self.category = term_obj.get("term_category")  # mandatory
         self.tracks = term_obj.get("term_tracks")  # mandatory
-        if term_obj["term_name"]:
+        if term_obj.get("term_name"):
             self.name = term_obj["term_name"]
-        if term_obj["term_evidence"]:
+        if term_obj.get("term_evidence"):
             self.evidence = term_obj["term_evidence"]
-        if term_obj["label_class"]:
+        if term_obj.get("label_class"):
             self.label_class = term_obj["label_class"]
 
         self._validate_self()
