@@ -520,7 +520,7 @@
                     {% if case.track == 'cancer' %}
                       {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
                     {% else %}
-                      {{ acmg_classification_badge }}
+                      {{ acmg_classification_badge(variant) }}
                       {{ clinical_assessments_badge(variant) }}
                     {% endif %}
                     {{ variant_validation_badge(variant) }}
