@@ -19,4 +19,8 @@ def default_variant_evaluation_terms():
     """Upload default manual rank terms and variant dismissal terms into the database.
     These terms reside in scout.constants.variant_tags.
     """
+    click.confirm(
+        'This command will replace all evantual ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") terms present in the database with the default ones. Continue?',
+        abort=True,
+    )
     load_default_evaluation_terms(store)
