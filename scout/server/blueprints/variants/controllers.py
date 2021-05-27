@@ -382,9 +382,7 @@ def parse_variant(
     # Or if symbold in reference genes have changed
     if update and has_changed:
         try:
-            flash(f"BEFORE{variant_obj}")
             variant_obj = store.update_variant(variant_obj)
-            flash(f"AFTER:{variant_obj}")
 
         except DocumentTooLarge:
             flash(
