@@ -1,5 +1,5 @@
 {% from "variants/utils.html" import tier_cell %}
-{% from "variants/indicators.html" import clinical_assessments_badge, research_assessments_badge %}
+{% from "variants/indicators.html" import clinical_assessments_badge, research_assessments_badge, acmg_classification_badge %}
 
 {% macro matchmaker_modal(institute, case, mme_nodes) %}
 <div class="modal fade" id="matchmaker_modal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -520,6 +520,7 @@
                     {% if case.track == 'cancer' %}
                       {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
                     {% else %}
+                      {{ acmg_classification_badge }}
                       {{ clinical_assessments_badge(variant) }}
                     {% endif %}
                     {{ variant_validation_badge(variant) }}

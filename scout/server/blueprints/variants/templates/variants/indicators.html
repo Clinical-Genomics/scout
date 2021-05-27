@@ -73,6 +73,16 @@
 {% endmacro %}
 
 
+{% macro acmg_classification_badge(variant) %}
+  {% if variant.acmg_classification %}
+      <span class="badge badge-{{ variant.acmg_classification.color }}" data-html="true" data-toggle="tooltip"
+            data-placement="right" title="Clinical {{ variant.acmg_classification.code }}">
+          {{ variant.acmg_classification.short }}
+      </span>
+  {% endif %}
+{% endmacro %}
+
+
 {% macro group_assessments_badge(variant) %}
   {% if variant.group_assessments %}
     {% for assessment in (variant.group_assessments or []) %}
