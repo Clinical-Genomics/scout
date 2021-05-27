@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 import logging
 import os.path
 import re
 import shutil
 from operator import itemgetter
-import requests
-from requests.auth import HTTPBasicAuth
-from requests.exceptions import ReadTimeout
-import json
 
+import requests
 from flask import (
     Blueprint,
     Response,
@@ -26,10 +24,12 @@ from flask import (
 )
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
+from requests.auth import HTTPBasicAuth
+from requests.exceptions import ReadTimeout
 from werkzeug.datastructures import Headers
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
-from scout.server.extensions import gens, mail, matchmaker, store, rerunner
+from scout.server.extensions import gens, mail, matchmaker, rerunner, store
 from scout.server.utils import institute_and_case, templated, user_institutes, zip_dir_to_obj
 
 from . import controllers

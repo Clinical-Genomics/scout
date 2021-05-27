@@ -16,7 +16,6 @@ from .matchmaker_extension import MatchMaker
 from .mongo_extension import MongoDB
 from .rerunner_extension import RerunnerService
 
-
 toolbar = DebugToolbarExtension()
 bootstrap = Bootstrap()
 store = MongoAdapter()
