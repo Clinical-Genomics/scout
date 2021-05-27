@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Increase the height of the dropdowns to 425px
 ### Changed
 - Clearer warning messages for gene searches in variants filters
+- Moved variant evaluation terms ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") from constants file to database
 
 ## [4.35]
 ### Added
