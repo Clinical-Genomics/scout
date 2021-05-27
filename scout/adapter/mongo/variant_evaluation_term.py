@@ -112,6 +112,11 @@ class VariantEvaluationHandler(object):
         cancer_tier_terms = self._get_evaluation_terms("cancer_tier", ["cancer"])
         return cancer_tier_terms
 
+    def mosaicism_options(self):
+        """Return mosaicism options terms in database, formattes as neeeded by templates"""
+        mosaicism_terms = self._get_evaluation_terms("mosaicism_options", ["rare"])
+        return mosaicism_terms
+
     def _get_evaluation_terms(self, category, tracks):
         """Return evaluation terms for the given category and tracks.
 

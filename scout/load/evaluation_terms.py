@@ -5,6 +5,7 @@ from scout.constants import (
     CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
+    MOSAICISM_OPTIONS,
 )
 
 LOG = logging.getLogger(__name__)
@@ -62,3 +63,9 @@ def load_default_evaluation_terms(adapter):
     # Load cancer tier terms (cancer track)
     _load_default_terms(adapter, "cancer_tier", ["cancer"], CANCER_TIER_OPTIONS)
     LOG.debug(f"{len(adapter.cancer_tier_terms().keys())} cancer tier terms loaded into database.")
+
+    # Load mosaicism options terms (rare track)
+    _load_default_terms(adapter, "mosaicism_options", ["rare"], MOSAICISM_OPTIONS)
+    LOG.debug(
+        f"{len(adapter.mosaicism_options().keys())} mosaicism options terms loaded into database."
+    )

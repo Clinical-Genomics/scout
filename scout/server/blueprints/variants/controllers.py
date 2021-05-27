@@ -19,7 +19,6 @@ from scout.constants import (
     CLINICAL_FILTER_BASE,
     CLINICAL_FILTER_BASE_CANCER,
     CLINICAL_FILTER_BASE_SV,
-    MOSAICISM_OPTIONS,
     SO_TERMS,
 )
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
@@ -297,15 +296,18 @@ def get_manual_assessments(store, variant_obj):
                     assessment["display_class"] = "secondary"
 
             if assessment_type == "mosaic_tags":
-                assessment["label"] = "Mosaicism"
-                assessment["title"] = "mosaicism:<br>"
-                for reason in variant_obj[assessment_type]:
-                    if not isinstance(reason, int):
-                        reason = int(reason)
-                    assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                        MOSAICISM_OPTIONS[reason]["label"], MOSAICISM_OPTIONS[reason]["description"]
-                    )
-                assessment["display_class"] = "secondary"
+                mosaicism_options = store.mosaicism_options()
+                if mosaicism_options:
+                    assessment["label"] = "Mosaicism"
+                    assessment["title"] = "mosaicism:<br>"
+                    for reason in variant_obj[assessment_type]:
+                        if not isinstance(reason, int):
+                            reason = int(reason)
+                        assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
+                            mosaicism_options[reason]["label"],
+                            mosaicism_options[reason]["description"],
+                        )
+                    assessment["display_class"] = "secondary"
 
             assessments.append(assessment)
 

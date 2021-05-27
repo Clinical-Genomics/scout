@@ -12,7 +12,6 @@ from scout.constants import (
     CALLERS,
     CLINVAR_INHERITANCE_MODELS,
     IGV_TRACKS,
-    MOSAICISM_OPTIONS,
     VERBS_MAP,
 )
 from scout.server.extensions import cloud_tracks, gens
@@ -265,7 +264,7 @@ def variant(
         "manual_rank_options": store.manual_rank_options(["rare"]),
         "cancer_tier_options": store.cancer_tier_terms(),
         "dismiss_variant_options": dismiss_options,
-        "mosaic_variant_options": MOSAICISM_OPTIONS,
+        "mosaic_variant_options": store.mosaicism_options(),
         "ACMG_OPTIONS": ACMG_OPTIONS,
         "igv_tracks": get_igv_tracks(genome_build),
         "splice_junctions_tracks": has_rna_tracks(case_obj),
