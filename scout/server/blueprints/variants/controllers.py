@@ -46,6 +46,7 @@ def check_missing_evaluation_terms(store):
         "Manual Rank options": store.manual_rank_options(["rare", "cancer"]),
         "Cancer Tier options": store.cancer_tier_terms(),
         "Variant dismissal terms": store.dismiss_variant_options(["rare", "cancer"]),
+        "Mosaicism terms": store.mosaicism_options(),
     }
     for key, terms in eval_terms.items():
         if terms:
