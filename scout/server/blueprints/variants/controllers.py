@@ -221,6 +221,67 @@ def str_variants(
     return return_view_data
 
 
+def _populate_assessment_type(assessment_obj, variant_obj, assessment_type, assessment_terms=None):
+    """Populate a variant assessment object specific to the type of assessment found in the variant
+
+    Args:
+        assessment_obj(dict)
+        variant_obj(dict)
+        assessment_type(str): "manual_rank", "cancer_tier", "acmg_classification", "dismiss_variant", "mosaic_tags"
+        assessment_terms(dict): eventual variant evaluattion terms assocuated to a type of assessment
+    """
+
+    variant_assessment = variant_obj[assessment_type]
+
+    if assessment_type == "manual_rank":
+        assessment_obj["title"] = "Manual rank: {}".format(
+            assessment_terms[variant_assessment]["description"]
+        )
+        assessment_obj["label"] = assessment_terms[variant_assessment]["label"]
+        assessment_obj["display_class"] = assessment_terms[variant_assessment]["label_class"]
+
+    elif assessment_type == "cancer_tier":
+        assessment_obj["title"] = "Cancer tier: {}".format(
+            assessment_terms[variant_assessment]["description"]
+        )
+        assessment_obj["label"] = assessment_terms[variant_assessment]["label"]
+        assessment_obj["display_class"] = assessment_terms[variant_assessment]["label_class"]
+
+    elif assessment_type == "acmg_classification":
+
+        if isinstance(variant_assessment, int):
+            acmg_code = ACMG_MAP[variant_assessment]
+            variant_assessment = ACMG_COMPLETE_MAP[acmg_code]
+
+        assessment_obj["title"] = "ACMG: {}".format(variant_assessment["label"])
+        assessment_obj["label"] = variant_assessment["short"]
+        assessment_obj["display_class"] = variant_assessment["color"]
+
+    elif assessment_type == "dismiss_variant":
+        assessment_obj["label"] = "Dismissed"
+        assessment_obj["title"] = "dismiss:<br>"
+        for reason in variant_obj[assessment_type]:
+            if not isinstance(reason, int):
+                reason = int(reason)
+                assessment_obj["title"] += "<strong>{}</strong> - {}<br><br>".format(
+                    assessment_terms[reason]["label"],
+                    assessment_terms[reason]["description"],
+                )
+        assessment_obj["display_class"] = "secondary"
+
+    elif assessment_type == "mosaic_tags":
+        assessment_obj["label"] = "Mosaicism"
+        assessment_obj["title"] = "mosaicism:<br>"
+        for reason in variant_obj[assessment_type]:
+            if not isinstance(reason, int):
+                reason = int(reason)
+            assessment_obj["title"] += "<strong>{}</strong> - {}<br><br>".format(
+                assessment_terms[reason]["label"],
+                assessment_terms[reason]["description"],
+            )
+        assessment_obj["display_class"] = "secondary"
+
+
 def get_manual_assessments(store, variant_obj):
     """Return manual assessments ready for display.
 
@@ -251,59 +312,33 @@ def get_manual_assessments(store, variant_obj):
     for assessment_type in assessment_keywords:
         assessment = {}
         if variant_obj.get(assessment_type) is not None:
+
             manual_rank_options = store.manual_rank_options(["rare", "cancer"])
             if assessment_type == "manual_rank" and manual_rank_options:
-                manual_rank = variant_obj[assessment_type]
-                assessment["title"] = "Manual rank: {}".format(
-                    manual_rank_options[manual_rank]["description"]
+                _populate_assessment_type(
+                    assessment, variant_obj, assessment_type, manual_rank_options
                 )
-                assessment["label"] = manual_rank_options[manual_rank]["label"]
-                assessment["display_class"] = manual_rank_options[manual_rank]["label_class"]
 
             cancer_tier_options = store.cancer_tier_terms()
             if assessment_type == "cancer_tier" and cancer_tier_options:
-                cancer_tier = variant_obj[assessment_type]
-                assessment["title"] = "Cancer tier: {}".format(
-                    cancer_tier_options[cancer_tier]["description"]
+                _populate_assessment_type(
+                    assessment, variant_obj, assessment_type, cancer_tier_options
                 )
-                assessment["label"] = cancer_tier_options[cancer_tier]["label"]
-                assessment["display_class"] = cancer_tier_options[cancer_tier]["label_class"]
 
             if assessment_type == "acmg_classification":
-                classification = variant_obj[assessment_type]
-                if isinstance(classification, int):
-                    acmg_code = ACMG_MAP[classification]
-                    classification = ACMG_COMPLETE_MAP[acmg_code]
-
-                assessment["title"] = "ACMG: {}".format(classification["label"])
-                assessment["label"] = classification["short"]
-                assessment["display_class"] = classification["color"]
+                _populate_assessment_type(assessment, variant_obj, assessment_type)
 
             dismiss_variant_options = store.dismiss_variant_options(["rare", "cancer"])
             if assessment_type == "dismiss_variant" and dismiss_variant_options:
-                assessment["label"] = "Dismissed"
-                assessment["title"] = "dismiss:<br>"
-                for reason in variant_obj[assessment_type]:
-                    if not isinstance(reason, int):
-                        reason = int(reason)
-                        assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                            dismiss_variant_options[reason]["label"],
-                            dismiss_variant_options[reason]["description"],
-                        )
-                assessment["display_class"] = "secondary"
+                _populate_assessment_type(
+                    assessment, variant_obj, assessment_type, dismiss_variant_options
+                )
 
             mosaicism_options = store.mosaicism_options()
             if assessment_type == "mosaic_tags" and mosaicism_options:
-                assessment["label"] = "Mosaicism"
-                assessment["title"] = "mosaicism:<br>"
-                for reason in variant_obj[assessment_type]:
-                    if not isinstance(reason, int):
-                        reason = int(reason)
-                    assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                        mosaicism_options[reason]["label"],
-                        mosaicism_options[reason]["description"],
-                    )
-                assessment["display_class"] = "secondary"
+                _populate_assessment_type(
+                    assessment, variant_obj, assessment_type, mosaicism_options
+                )
 
             assessments.append(assessment)
 
