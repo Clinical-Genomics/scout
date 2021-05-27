@@ -9,7 +9,7 @@ import pymongo
 from flask import Blueprint, abort, current_app, flash, redirect, request, send_file, url_for
 from flask_login import current_user
 
-from scout.constants import CANCER_TIER_OPTIONS, SEVERE_SO_TERMS
+from scout.constants import SEVERE_SO_TERMS
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated, zip_dir_to_obj
 
@@ -126,7 +126,7 @@ def variants(institute_id, case_name):
         filters=available_filters,
         manual_rank_options=store.manual_rank_options(["rare"]),
         dismiss_variant_options=store.dismiss_variant_options(["rare"]),
-        cancer_tier_options=CANCER_TIER_OPTIONS,
+        cancer_tier_options=store.cancer_tier_terms(),
         severe_so_terms=SEVERE_SO_TERMS,
         cytobands=cytobands,
         page=page,
@@ -445,7 +445,7 @@ def cancer_sv_variants(institute_id, case_name):
         form=form,
         filters=available_filters,
         severe_so_terms=SEVERE_SO_TERMS,
-        cancer_tier_options=CANCER_TIER_OPTIONS,
+        cancer_tier_options=store.cancer_tier_terms(),
         manual_rank_options=store.manual_rank_options(["rare", "cancer"]),
         cytobands=cytobands,
         page=page,

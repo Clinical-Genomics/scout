@@ -2,6 +2,7 @@ import logging
 
 from scout.constants import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+    CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
 )
@@ -41,7 +42,6 @@ def load_default_evaluation_terms(adapter):
     """
     # Load default dismiss variant terms (rare and cancer tracks)
     _load_default_terms(adapter, "dismissal_term", ["rare", "cancer"], DISMISS_VARIANT_OPTIONS)
-
     # Load default dismiss variant terms (cancer track)
     _load_default_terms(
         adapter,
@@ -49,14 +49,16 @@ def load_default_evaluation_terms(adapter):
         ["cancer"],
         CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     )
-
     LOG.debug(
         f'{len(adapter.dismiss_variant_options(["rare","cancer"]).keys())} variant dismissal terms loaded into database.'
     )
 
     # Load manual rank terms (rare and cancer tracks)
     _load_default_terms(adapter, "manual_rank", ["rare", "cancer"], MANUAL_RANK_OPTIONS)
-
     LOG.debug(
         f'{len(adapter.manual_rank_options(["rare","cancer"]).keys())} manual rank terms loaded into database.'
     )
+
+    # Load cancer tier terms (cancer track)
+    _load_default_terms(adapter, "cancer_tier", ["cancer"], CANCER_TIER_OPTIONS)
+    LOG.debug(f"{len(adapter.cancer_tier_terms().keys())} cancer tier terms loaded into database.")

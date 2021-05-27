@@ -25,7 +25,7 @@ from scout.constants import (
     SEX_MAP,
     VERBS_MAP,
 )
-from scout.constants.variant_tags import CANCER_TIER_OPTIONS, GENETIC_MODELS
+from scout.constants.variant_tags import GENETIC_MODELS
 from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
@@ -218,7 +218,7 @@ def case(store, institute_obj, case_obj):
         "cohort_tags": institute_obj.get("cohorts", []),
         "omim_terms": omim_terms,
         "manual_rank_options": store.manual_rank_options(["rare", "cancer"]),
-        "cancer_tier_options": CANCER_TIER_OPTIONS,
+        "cancer_tier_options": store.cancer_tier_terms(),
     }
 
     return data
@@ -321,7 +321,7 @@ def case_report_content(store, institute_obj, case_obj):
     )
 
     data["manual_rank_options"] = store.manual_rank_options(["rare", "cancer"])
-    data["cancer_tier_options"] = CANCER_TIER_OPTIONS
+    data["cancer_tier_options"] = store.cancer_tier_terms()
     data["dismissed_options"] = dismiss_options
     data["genetic_models"] = dict(GENETIC_MODELS)
     data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")

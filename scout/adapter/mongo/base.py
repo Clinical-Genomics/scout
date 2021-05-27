@@ -52,7 +52,7 @@ from .query import QueryHandler
 from .transcript import TranscriptHandler
 from .user import UserHandler
 from .variant import VariantHandler
-from .variant_evaluation_terms import VariantEvaluationHandler
+from .variant_evaluation_term import VariantEvaluationHandler
 
 log = logging.getLogger(__name__)
 

@@ -107,6 +107,11 @@ class VariantEvaluationHandler(object):
         dismiss_variant_terms = self._get_evaluation_terms("dismissal_term", tracks)
         return dismiss_variant_terms
 
+    def cancer_tier_terms(self):
+        """Returns all cancer tier terms in database, formatted as needed by templates"""
+        cancer_tier_terms = self._get_evaluation_terms("cancer_tier", ["cancer"])
+        return cancer_tier_terms
+
     def _get_evaluation_terms(self, category, tracks):
         """Return evaluation terms for the given category and tracks.
 

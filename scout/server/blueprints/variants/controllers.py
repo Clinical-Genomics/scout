@@ -14,7 +14,6 @@ from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
     CALLERS,
-    CANCER_TIER_OPTIONS,
     CHROMOSOMES,
     CHROMOSOMES_38,
     CLINICAL_FILTER_BASE,
@@ -247,12 +246,19 @@ def get_manual_assessments(store, variant_obj):
                     )
 
             if assessment_type == "cancer_tier":
-                cancer_tier = variant_obj[assessment_type]
-                assessment["title"] = "Cancer tier: {}".format(
-                    CANCER_TIER_OPTIONS[cancer_tier]["description"]
-                )
-                assessment["label"] = CANCER_TIER_OPTIONS[cancer_tier]["label"]
-                assessment["display_class"] = CANCER_TIER_OPTIONS[cancer_tier]["label_class"]
+                cancer_tier_options = store.cancer_tier_terms()
+                if cancer_tier_options:
+                    cancer_tier = variant_obj[assessment_type]
+                    assessment["title"] = "Cancer tier: {}".format(
+                        cancer_tier_options[cancer_tier]["description"]
+                    )
+                    assessment["label"] = cancer_tier_options[cancer_tier]["label"]
+                    assessment["display_class"] = cancer_tier_options[cancer_tier]["label_class"]
+                else:
+                    flash(
+                        "Cancer tier terms not present in database. Please load them using the command line to use this feature.",
+                        "warning",
+                    )
 
             if assessment_type == "acmg_classification":
                 classification = variant_obj[assessment_type]
@@ -690,7 +696,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
         case=case_obj,
         variants=variants_list,
         manual_rank_options=store.manual_rank_options(["rare", "cancer"]),
-        cancer_tier_options=CANCER_TIER_OPTIONS,
+        cancer_tier_options=store.cancer_tier_terms(),
         form=form,
     )
     return data
