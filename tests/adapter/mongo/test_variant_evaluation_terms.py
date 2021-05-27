@@ -65,7 +65,7 @@ def test_evaluation_term_no_tracks():
         EvaluationTerm(term_dict)
 
 
-def test_evaluation_term_wrong_trac k():
+def test_evaluation_term_wrong_track():
     """Test creating an evaluation term with non-standard tracks: should raise ValueError"""
     term_dict = dict(
         term_key=1,
