@@ -149,3 +149,18 @@ class VariantEvaluationHandler(object):
                 evaluation_terms[key]["label_class"] = term["label_class"]
 
         return evaluation_terms
+
+    def drop_evaluation_terms(self, category=[]):
+        """Delete from database variant evaluation terms from one or more categories
+
+        Args:
+            category(list): Any term specified in EVALUATION_TERM_CATEGORIES
+
+        Returns:
+            deleted_total(int): Total number of deleted terms
+        """
+        deleted_total = 0
+        for ctg in category:
+            result = self.evaluation_terms_collection.delete_many({"category": ctg})
+            deleted_total += result.deleted_count
+        LOG.warning(f"{deleted_total} variant evaluation terms deleted from database.")
