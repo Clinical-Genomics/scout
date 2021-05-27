@@ -6,7 +6,9 @@ import click
 
 from .case import case as case_command
 from .cytoband import cytoband as cytoband_command
-from .evaluation_terms import default_evaluations as default_evaluations_command
+from .evaluation_terms import (
+    default_variant_evaluation_terms as default_variant_evaluations_command,
+)
 from .exons import exons as exons_command
 from .institute import institute as institute_command
 from .panel import panel as panel_command
@@ -41,4 +43,4 @@ load.add_command(cnv_report_command)
 load.add_command(coverage_qc_report_command)
 load.add_command(gene_fusion_report_command)
 load.add_command(exons_command)
-load.add_command(default_evaluations_command)
+load.add_command(default_variant_evaluations_command)

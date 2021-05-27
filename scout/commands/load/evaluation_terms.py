@@ -11,9 +11,11 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 
-@click.command(short_help="Load default manual rank and variant dismissal terms into the database")
+@click.command(
+    short_help='Load default ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") terms into the database'
+)
 @with_appcontext
-def default_evaluations():
+def default_variant_evaluation_terms():
     """Upload default manual rank terms and variant dismissal terms into the database.
     These terms reside in scout.constants.variant_tags.
     """
