@@ -251,26 +251,23 @@ def get_manual_assessments(store, variant_obj):
     for assessment_type in assessment_keywords:
         assessment = {}
         if variant_obj.get(assessment_type) is not None:
-            if assessment_type == "manual_rank":
-                manual_rank_options = store.manual_rank_options(["rare", "cancer"])
-                if manual_rank_options:
-                    manual_rank = variant_obj[assessment_type]
-                    assessment["title"] = "Manual rank: {}".format(
-                        manual_rank_options[manual_rank]["description"]
-                    )
-                    assessment["label"] = manual_rank_options[manual_rank]["label"]
-                    assessment["display_class"] = manual_rank_options[manual_rank]["label_class"]
+            manual_rank_options = store.manual_rank_options(["rare", "cancer"])
+            if assessment_type == "manual_rank" and manual_rank_options:
+                manual_rank = variant_obj[assessment_type]
+                assessment["title"] = "Manual rank: {}".format(
+                    manual_rank_options[manual_rank]["description"]
+                )
+                assessment["label"] = manual_rank_options[manual_rank]["label"]
+                assessment["display_class"] = manual_rank_options[manual_rank]["label_class"]
 
-            if assessment_type == "cancer_tier":
-                cancer_tier_options = store.cancer_tier_terms()
-                if cancer_tier_options:
-                    flash(cancer_tier_options)
-                    cancer_tier = variant_obj[assessment_type]
-                    assessment["title"] = "Cancer tier: {}".format(
-                        cancer_tier_options[cancer_tier]["description"]
-                    )
-                    assessment["label"] = cancer_tier_options[cancer_tier]["label"]
-                    assessment["display_class"] = cancer_tier_options[cancer_tier]["label_class"]
+            cancer_tier_options = store.cancer_tier_terms()
+            if assessment_type == "cancer_tier" and cancer_tier_options:
+                cancer_tier = variant_obj[assessment_type]
+                assessment["title"] = "Cancer tier: {}".format(
+                    cancer_tier_options[cancer_tier]["description"]
+                )
+                assessment["label"] = cancer_tier_options[cancer_tier]["label"]
+                assessment["display_class"] = cancer_tier_options[cancer_tier]["label_class"]
 
             if assessment_type == "acmg_classification":
                 classification = variant_obj[assessment_type]
@@ -282,33 +279,31 @@ def get_manual_assessments(store, variant_obj):
                 assessment["label"] = classification["short"]
                 assessment["display_class"] = classification["color"]
 
-            if assessment_type == "dismiss_variant":
-                dismiss_variant_options = store.dismiss_variant_options(["rare", "cancer"])
-                if dismiss_variant_options:
-                    assessment["label"] = "Dismissed"
-                    assessment["title"] = "dismiss:<br>"
-                    for reason in variant_obj[assessment_type]:
-                        if not isinstance(reason, int):
-                            reason = int(reason)
-                            assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                                dismiss_variant_options[reason]["label"],
-                                dismiss_variant_options[reason]["description"],
-                            )
-                    assessment["display_class"] = "secondary"
-
-            if assessment_type == "mosaic_tags":
-                mosaicism_options = store.mosaicism_options()
-                if mosaicism_options:
-                    assessment["label"] = "Mosaicism"
-                    assessment["title"] = "mosaicism:<br>"
-                    for reason in variant_obj[assessment_type]:
-                        if not isinstance(reason, int):
-                            reason = int(reason)
+            dismiss_variant_options = store.dismiss_variant_options(["rare", "cancer"])
+            if assessment_type == "dismiss_variant" and dismiss_variant_options:
+                assessment["label"] = "Dismissed"
+                assessment["title"] = "dismiss:<br>"
+                for reason in variant_obj[assessment_type]:
+                    if not isinstance(reason, int):
+                        reason = int(reason)
                         assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                            mosaicism_options[reason]["label"],
-                            mosaicism_options[reason]["description"],
+                            dismiss_variant_options[reason]["label"],
+                            dismiss_variant_options[reason]["description"],
                         )
-                    assessment["display_class"] = "secondary"
+                assessment["display_class"] = "secondary"
+
+            mosaicism_options = store.mosaicism_options()
+            if assessment_type == "mosaic_tags" and mosaicism_options:
+                assessment["label"] = "Mosaicism"
+                assessment["title"] = "mosaicism:<br>"
+                for reason in variant_obj[assessment_type]:
+                    if not isinstance(reason, int):
+                        reason = int(reason)
+                    assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
+                        mosaicism_options[reason]["label"],
+                        mosaicism_options[reason]["description"],
+                    )
+                assessment["display_class"] = "secondary"
 
             assessments.append(assessment)
 
