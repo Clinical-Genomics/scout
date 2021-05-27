@@ -40,6 +40,23 @@ def populate_chrom_choices(form, case_obj):
     form.chrom.choices = [("", "All")] + [(chrom, chrom) for chrom in chromosomes]
 
 
+def check_missing_evaluation_terms(store):
+    """Flash a warning if variant evaluation terms of any kind are missing"""
+
+    eval_terms = {
+        "Manual Rank options": store.manual_rank_options(["rare", "cancer"]),
+        "Cancer Tier options": store.cancer_tier_terms(),
+        "Variant dismissal terms": store.dismiss_variant_options(["rare", "cancer"]),
+    }
+    for key, terms in eval_terms.items():
+        if terms:
+            continue
+        flash(
+            f"Missing '{key}' in database. This functionality will not be available. Please load these terms using the command line.",
+            "warning",
+        )
+
+
 def variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
     """Pre-process list of variants."""
 
@@ -52,6 +69,8 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
         genome_build = "37"
 
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
+
+    check_missing_evaluation_terms(store)
 
     variants = []
     for variant_obj in variant_res:
@@ -141,6 +160,8 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
         genome_build = "37"
 
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
+
+    check_missing_evaluation_terms(store)
 
     for variant_obj in variants_query.skip(skip_count).limit(per_page):
         # show previous classifications for research variants
@@ -239,26 +260,17 @@ def get_manual_assessments(store, variant_obj):
                     )
                     assessment["label"] = manual_rank_options[manual_rank]["label"]
                     assessment["display_class"] = manual_rank_options[manual_rank]["label_class"]
-                else:
-                    flash(
-                        "Manual rank evaluations not present in database. Please load them using the command line to use this feature.",
-                        "warning",
-                    )
 
             if assessment_type == "cancer_tier":
                 cancer_tier_options = store.cancer_tier_terms()
                 if cancer_tier_options:
+                    flash(cancer_tier_options)
                     cancer_tier = variant_obj[assessment_type]
                     assessment["title"] = "Cancer tier: {}".format(
                         cancer_tier_options[cancer_tier]["description"]
                     )
                     assessment["label"] = cancer_tier_options[cancer_tier]["label"]
                     assessment["display_class"] = cancer_tier_options[cancer_tier]["label_class"]
-                else:
-                    flash(
-                        "Cancer tier terms not present in database. Please load them using the command line to use this feature.",
-                        "warning",
-                    )
 
             if assessment_type == "acmg_classification":
                 classification = variant_obj[assessment_type]
@@ -283,11 +295,6 @@ def get_manual_assessments(store, variant_obj):
                                 dismiss_variant_options[reason]["description"],
                             )
                     assessment["display_class"] = "secondary"
-                else:
-                    flash(
-                        "Dismiss variant options not present in database. Please load them using the command line to use this feature.",
-                        "warning",
-                    )
 
             if assessment_type == "mosaic_tags":
                 assessment["label"] = "Mosaicism"
@@ -657,6 +664,8 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
+    check_missing_evaluation_terms(store)
+
     per_page = 50
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False

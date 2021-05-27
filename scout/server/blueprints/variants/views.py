@@ -202,7 +202,7 @@ def str_variants(institute_id, case_name):
         case=case_obj,
         dismiss_variant_options=store.dismiss_variant_options(["rare"]),
         variant_type=variant_type,
-        manual_rank_options=store.manual_rank_options("rare"),
+        manual_rank_options=store.manual_rank_options(["rare"]),
         cytobands=cytobands,
         form=form,
         page=page,

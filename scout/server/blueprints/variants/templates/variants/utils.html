@@ -653,12 +653,12 @@
 {% endmacro %}
 
 {% macro tier_cell(variant, manual_rank_options, cancer_tier_options) %}
-  {% if variant.cancer_tier %}
+  {% if cancer_tier_options and variant.cancer_tier %}
     <span class="badge badge-{{ cancer_tier_options[variant.cancer_tier].label_class }}" data-toggle="tooltip" data-placement="right"
       title="Tier: {{ cancer_tier_options[variant.cancer_tier].description }}">
       {{ cancer_tier_options[variant.cancer_tier].label }}</span>
   {% endif %}
-  {% if variant.manual_rank %}
+  {% if manual_rank_options and variant.manual_rank %}
     <span class="badge badge-{{ manual_rank_options[variant.manual_rank].label_class }}" data-toggle="tooltip" data-placement="right"
       title="Manual rank: {{ manual_rank_options[variant.manual_rank].description }}">
       {{ manual_rank_options[variant.manual_rank].label }}</span>
