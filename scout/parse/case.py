@@ -277,28 +277,27 @@ def parse_individual(sample):
             'analysis_type': str,
             'vcf2cytosure': str,
             'capture_kits': list(str),
-
             'upd_sites_bed': str,
             'upd_regions_bed': str,
             'rhocall_bed': str,
             'rhocall_wig': str,
             'tiddit_coverage_wig': str,
-
             'predicted_ancestry' = str,
-
             'is_sma': boolean,
             'is_sma_carrier': boolean,
             'smn1_cn' = int,
             'smn2_cn' = int,
             'smn2delta78_cn' = int,
             'smn_27134_cn' = int,
-
             'tumor_type': str,
             'tmb': str,
             'msi': str,
             'tumor_purity': float,
             'tissue_type': str,
             'chromograph_images': str
+            'vcf2cytosure': str
+            'rna_coverage_bigwig': str
+            'splice_junctions_bed': str
         }
 
     """
@@ -368,6 +367,10 @@ def parse_individual(sample):
 
     # Path to downloadable vcf2cytosure file
     ind_info["vcf2cytosure"] = sample.get("vcf2cytosure")
+
+    # Path to splice junctions data
+    ind_info["rna_coverage_bigwig"] = sample.get("rna_coverage_bigwig")
+    ind_info["splice_junctions_bed"] = sample.get("splice_junctions_bed")
 
     # load sma file if it is not done at this point!
     ind_info["is_sma"] = sample.get("is_sma", None)

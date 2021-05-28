@@ -84,6 +84,11 @@ INDEXES = {
             background=True,
         ),
         IndexModel([("sanger_ordered", ASCENDING)], name="sanger", background=True, sparse=True),
+        IndexModel(
+            [("variant_id", ASCENDING), ("institute", ASCENDING)],
+            name="variant_id_institute",
+            background=True,
+        ),
     ],
     "hpo_term": [
         IndexModel([("description", ASCENDING)], name="description"),
@@ -118,5 +123,12 @@ INDEXES = {
             background=True,
         )
     ],
-    "case": [IndexModel([("synopsis", TEXT)], default_language="english", name="synopsis_text")],
+    "case": [
+        IndexModel([("synopsis", TEXT)], default_language="english", name="synopsis_text"),
+        IndexModel([("causatives", ASCENDING)], name="causatives"),
+        IndexModel(
+            [("collaborators", ASCENDING), ("updated_at", ASCENDING)],
+            name="collaborators_updated_at",
+        ),
+    ],
 }

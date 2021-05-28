@@ -1007,19 +1007,19 @@ def check_form_gene_symbols(
 
     errors = {
         "non_clinical_symbols": {
-            "alert": "Gene not included in case clinical list",
+            "info": "Genes not included in gene panel versions in use when loading this case (clinical list).",
             "gene_list": non_clinical_symbols,
         },
         "not_found_symbols": {
-            "alert": "HGNC symbol not present in genes collection",
+            "alert": "HGNC symbols not present in database genes collection",
             "gene_list": not_found_symbols,
         },
         "not_found_ids": {
-            "alert": "HGNC id not present in genes collection",
+            "alert": "HGNC ids not present in database genes collection",
             "gene_list": not_found_ids,
         },
         "outdated_symbols": {
-            "alert": "Clinical list contains a panel with an outdated symbol for genes",
+            "info": "Gene panel versions used for loading variants of this case (clinical list) contain outdated gene symbols. The current HGNC id was found on the clinical list.",
             "gene_list": outdated_symbols,
         },
     }
