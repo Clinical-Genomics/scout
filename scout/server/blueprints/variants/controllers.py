@@ -1007,7 +1007,7 @@ def check_form_gene_symbols(
 
     errors = {
         "non_clinical_symbols": {
-            "info": "Genes not included in gene panels versions used when loading variants of this case",
+            "info": "Genes not included in gene panel versions in use when loading this case (clinical list).",
             "gene_list": non_clinical_symbols,
         },
         "not_found_symbols": {
