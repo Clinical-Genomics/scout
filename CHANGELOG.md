@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Splice junction tracks not centered over variant genes
 - Total number of research variants count
 - Update variants stats in case documents every time new variants are loaded
+- Bug in flashing warning messages when filtering variants
 ### Changed
 - Clearer warning messages for genes and gene/gene-panels searches in variants filters
 
