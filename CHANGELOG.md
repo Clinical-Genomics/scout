@@ -14,7 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - More indices for the case table as it grows, specifically for causatives queries
 - Splice junction tracks not centered over variant genes
 ### Changed
-- Clearer warning messages for gene searches in variants filters
+- Clearer warning messages for genes and gene/gene-panels searches in variants filters
 
 ## [4.35]
 ### Added
