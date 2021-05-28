@@ -39,7 +39,7 @@ def test_make_sashimi_tracks_variant_38(app, case_obj):
 
 
 @responses.activate
-def test_make_sashimi_tracks_variant_37(app, case_obj, ensembl_liftover_reasponse):
+def test_make_sashimi_tracks_variant_37(app, case_obj, ensembl_liftover_response):
     """Test function that creates splice junction tracks for a variant with genome build 37"""
 
     # WHEN the gene splice junction track is created for any variant in a gene
