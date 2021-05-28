@@ -13,7 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Increase the height of the dropdowns to 425px
 - More indices for the case table as it grows, specifically for causatives queries
 ### Changed
-- Clearer warning messages for gene searches in variants filters
+- Clearer warning messages for genes and gene/gene-panels searches in variants filters
 
 ## [4.35]
 ### Added
