@@ -44,6 +44,23 @@ def test_ping_ensemble_38(ensembl_rest_client_38):
 
 
 @responses.activate
+def test_liftover(ensembl_rest_client_37, ensembl_liftover_response):
+    """Test send request for coordinates liftover"""
+    # GIVEN a patched response from Ensembl
+    url = "http://grch37.rest.ensembl.org/map/human/GRCh37/X:1000000..1000100/GRCh38?content-type=application/json"
+    responses.add(
+        responses.GET,
+        url,
+        json=ensembl_liftover_response,
+        status=200,
+    )
+    client = ensembl_rest_client_37
+    # WHEN sending the liftover request the function should return a mapped locus
+    mapped_coords = client.liftover("37", "X", 1000000, 1000100)
+    assert mapped_coords[0]["mapped"]
+
+
+@responses.activate
 def test_send_gene_request(ensembl_gene_response, ensembl_rest_client_37):
     """Test send request with correct params and endpoint"""
     url = "https://grch37.rest.ensembl.org/overlap/id/ENSG00000103591?feature=gene"

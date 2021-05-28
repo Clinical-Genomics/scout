@@ -8,12 +8,13 @@ from flask_login import current_user
 from scout.constants import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS
 from scout.server.extensions import cloud_tracks, store
 from scout.server.utils import institute_and_case
+from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
 CUSTOM_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
 
 
-def make_sashimi_tracks(institute_id, case_name, variant_id, build="38"):
+def make_sashimi_tracks(institute_id, case_name, variant_id):
     """Create a dictionary containing the required tracks for a splice junction plot
 
     Accepts:
@@ -23,32 +24,56 @@ def make_sashimi_tracks(institute_id, case_name, variant_id, build="38"):
     Returns:
         display_obj(dict): A display object containing case name, list of genes, lucus and tracks
     """
+    build = "38"  # This feature is only available for RNA tracks in build 38
+
+    variant_obj = store.variant(document_id=variant_id)
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+
+    # Initialize locus coordinates it with variant coordinates so it won't crash if variant gene(s) no longer exist in database
+    locus_start_coords = []
+    locus_end_coords = []
+
+    # Check if variant coordinates are in genome build 38
+    # Otherwise do variant coords liftover
+    if build not in str(case_obj.get("genome_build")):
+        client = EnsemblRestApiClient()
+        mapped_coords = client.liftover(
+            case_obj.get("genome_build"),
+            variant_obj.get("chromosome"),
+            variant_obj.get("position"),
+            variant_obj.get("end"),
+        )
+        if mapped_coords:
+            mapped_start = mapped_coords[0]["mapped"].get("start")
+            mapped_end = mapped_coords[0]["mapped"].get("end") or mapped_start
+            locus_start_coords.append(mapped_start)
+            locus_end_coords.append(mapped_end)
+
+    # Use original coordinates only genome build was already 38 or liftover didn't work
+    if not locus_start_coords:
+        locus_start_coords.append(variant_obj.get("position"))
+    if not locus_end_coords:
+        locus_end_coords.append(variant_obj.get("end"))
 
     # Collect locus coordinates. Take into account that variant can hit multiple genes
-    variant_obj = store.variant(document_id=variant_id)
     variant_genes_ids = [gene["hgnc_id"] for gene in variant_obj.get("genes", [])]
-    # Initialize locus coordinates it with variant coordinates so it won't crash if variant gene(s) no longer exist in database
-    locus_start_coords = [variant_obj.get("position")]
-    locus_end_coords = [variant_obj.get("end")]
-    gene_symbols = []
     for gene_id in variant_genes_ids:
         gene_obj = store.hgnc_gene(hgnc_identifier=gene_id, build=build)
         if gene_obj is None:
             continue
-        gene_symbols.append(gene_obj.get("hgnc_symbol") or gene_obj["hgnc_id"])
         locus_start_coords.append(gene_obj["start"])
         locus_end_coords.append(gene_obj["end"])
 
     locus_start = min(locus_start_coords)
     locus_end = max(locus_end_coords)
+
     locus = f"{variant_obj['chromosome']}:{locus_start}-{locus_end}"  # Locus will span all genes the variant falls into
-    display_obj = {"locus": locus, "tracks": [], "genes": gene_symbols}
+    display_obj = {"locus": locus, "tracks": []}
 
     # Add Genes and reference tracks to display object
     set_common_tracks(display_obj, build)
 
     # Populate tracks for each individual with splice junction track data
-    _, case_obj = institute_and_case(store, institute_id, case_name)
     for ind in case_obj.get("individuals", []):
         if not all([ind.get("splice_junctions_bed"), ind.get("rna_coverage_bigwig")]):
             continue
