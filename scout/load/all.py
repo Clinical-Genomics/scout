@@ -132,6 +132,8 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
                 start=start,
                 end=end,
             )
+    # Update case variants count
+    adapter.case_variants_count(case_obj["_id"], case_obj["owner"], force_update_case=True)
 
 
 def load_scout(adapter, config, ped=None, update=False):

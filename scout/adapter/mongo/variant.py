@@ -860,13 +860,14 @@ class VariantHandler(VariantLoader):
 
         return file_name
 
-    def case_variants_count(self, case_id, institute_id, update_case=True):
+    def case_variants_count(self, case_id, institute_id, variant_type=None, force_update_case=True):
         """Returns the sum of all variants for a case by type
 
         Args:
             case_id(str): _id of a case
             institute_id(str): id of an institute
-            update_case(bool): whether the case document should be updated with these stats
+            variant_type(str): "clinical" or "research"
+            force_update_case(bool): whether the case document should be updated with these stats
 
         Returns:
             variants_by_type(dict). A dictionary like this:
@@ -882,16 +883,19 @@ class VariantHandler(VariantLoader):
                 }
         """
         LOG.info(
-            "Retrieving variants by categori for case: {0}, institute: {1}".format(
+            "Retrieving variants by category for case: {0}, institute: {1}".format(
                 case_id, institute_id
             )
         )
-        # if case has stats and no update is needed, return variant count
+
         case_obj = self.case(case_id=case_id)
-        if case_obj.get("variants_stats") and update_case is False:
+        variants_stats = case_obj.get("variants_stats") or {}
+
+        # if case has stats and no update is needed, return variant count
+        if variant_type and variant_type in variants_stats and force_update_case is False:
             return case_obj["variants_stats"]
 
-        # Build query
+        # Update case variant stats
         match = {"$match": {"case_id": case_id, "institute": institute_id}}
         group = {
             "$group": {
@@ -913,10 +917,8 @@ class VariantHandler(VariantLoader):
             else:
                 variants_by_type[var_type] = {var_category: item["total"]}
 
-        # If case needs to be updated with variants stats
-        if case_obj.get("variants_stats") is None or update_case:
-            case_obj["variants_stats"] = variants_by_type
-            self.update_case(case_obj=case_obj, keep_date=True)
+        case_obj["variants_stats"] = variants_by_type
+        self.update_case(case_obj=case_obj, keep_date=True)
 
         return variants_by_type
 
