@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Parse and save splice junction tracks from case config file
 - Tooltip in observations panel, explaining that case variants with no link might be old variants, not uploaded after a case rerun
+- Added integration to a rerunner service for toggling reanalysis with updated pedigree information
 ### Fixed
 - Warning on overwriting variants with same position was no longer shown
 - Increase the height of the dropdowns to 425px
@@ -207,7 +208,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add additional information to SNV verification emails
 - Tooltips documenting manual annotations from default panels
 - Case groups now show bam files from all cases on align view
-- Added integration to a rerunner service for toggling reanalysis with updated pedigree information
 ### Fixed
 - Center initial igv view on variant start with SNV/indels
 - Don't set initial igv view to negative coordinates
