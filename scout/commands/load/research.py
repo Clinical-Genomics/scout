@@ -122,3 +122,8 @@ def research(case_id, institute, force):
         case_obj["is_research"] = True
         case_obj["research_requested"] = False
         adapter.update_case(case_obj, keep_date=True)
+
+        # Update case variants count
+        adapter.case_variants_count(
+            case_obj["_id"], case_obj["owner"], "research", force_update_case=True
+        )
