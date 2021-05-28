@@ -177,4 +177,4 @@ def case(
                     rank_threshold=int(rankscore_treshold),
                 )
         # Update case variants count
-        adapter.case_variants_count(case_obj["_id"], case_obj["owner"], True)
+        adapter.case_variants_count(case_obj["_id"], case_obj["owner"], update_case=True)
