@@ -204,6 +204,34 @@ def ensembl_genes(request, gene_bulk):
     return _ensembl_genes
 
 
+@pytest.fixture
+def ensembl_liftover_response():
+    """Returns a  response from ensembl liftover api"""
+    _response = {
+        "mappings": [
+            {
+                "mapped": {
+                    "assembly": "GRCh38",
+                    "seq_region_name": "X",
+                    "end": 1039365,
+                    "start": 1039265,
+                    "coord_system": "chromosome",
+                    "strand": 1,
+                },
+                "original": {
+                    "strand": 1,
+                    "coord_system": "chromosome",
+                    "start": 1000000,
+                    "seq_region_name": "X",
+                    "end": 1000100,
+                    "assembly": "GRCh37",
+                },
+            }
+        ]
+    }
+    return _response
+
+
 @pytest.fixture(scope="function")
 def gene_bulk(genes):
     """Return a list with HgncGene objects"""
