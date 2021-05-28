@@ -23,6 +23,7 @@ MAIL_USE_SSL = False
 # Configure case-rerun service
 # RERUNNER_HOST = "127.0.0.1"
 # RERUNER_PORT = 7000
+# RERUNNER_API_KEY = "test_key"
 
 # MatchMaker connection parameters
 # - Tested with PatientMatcher (https://github.com/Clinical-Genomics/patientMatcher) -
