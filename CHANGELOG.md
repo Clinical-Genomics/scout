@@ -12,6 +12,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Warning on overwriting variants with same position was no longer shown
 - Increase the height of the dropdowns to 425px
 - More indices for the case table as it grows, specifically for causatives queries
+- Splice junction tracks not centered over variant genes
+- Total number of research variants count
+- Update variants stats in case documents every time new variants are loaded
 ### Changed
 - Clearer warning messages for genes and gene/gene-panels searches in variants filters
 - Moved variant evaluation terms ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") from constants file to database
