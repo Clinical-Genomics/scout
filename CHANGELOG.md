@@ -6,6 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+### Changed
+
+## [4.36]
+### Added
 - Parse and save splice junction tracks from case config file
 - Tooltip in observations panel, explaining that case variants with no link might be old variants, not uploaded after a case rerun
 ### Fixed
