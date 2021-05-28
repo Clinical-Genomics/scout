@@ -20,6 +20,10 @@ MAIL_USE_SSL = False
 # GENS_HOST = "127.0.0.1"
 # GENS_PORT = 5000
 
+# Configure case-rerun service
+# RERUNNER_HOST = "127.0.0.1"
+# RERUNER_PORT = 7000
+
 # MatchMaker connection parameters
 # - Tested with PatientMatcher (https://github.com/Clinical-Genomics/patientMatcher) -
 # MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
