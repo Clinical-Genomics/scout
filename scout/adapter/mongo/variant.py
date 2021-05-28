@@ -860,14 +860,14 @@ class VariantHandler(VariantLoader):
 
         return file_name
 
-    def case_variants_count(self, case_id, institute_id, variant_type=None, update_case=True):
+    def case_variants_count(self, case_id, institute_id, variant_type=None, force_update_case=True):
         """Returns the sum of all variants for a case by type
 
         Args:
             case_id(str): _id of a case
             institute_id(str): id of an institute
             variant_type(str): "clinical" or "research"
-            update_case(bool): whether the case document should be updated with these stats
+            force_update_case(bool): whether the case document should be updated with these stats
 
         Returns:
             variants_by_type(dict). A dictionary like this:
@@ -892,7 +892,7 @@ class VariantHandler(VariantLoader):
         variants_stats = case_obj.get("variants_stats") or {}
 
         # if case has stats and no update is needed, return variant count
-        if variant_type and variant_type in variants_stats and update_case is False:
+        if variant_type and variant_type in variants_stats and force_update_case is False:
             return case_obj["variants_stats"]
 
         # Update case variant stats
