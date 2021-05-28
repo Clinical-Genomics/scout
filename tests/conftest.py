@@ -202,7 +202,7 @@ def ensembl_genes(request, gene_bulk):
 
 
 @pytest.fixture
-def ensembl_liftover_reasponse():
+def ensembl_liftover_response():
     """Returns a  response from ensembl liftover api"""
     _response = {
         "mappings": [
