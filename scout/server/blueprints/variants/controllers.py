@@ -1064,7 +1064,7 @@ def check_form_gene_symbols(
 
     errors = {
         "non_clinical_symbols": {
-            "info": "Genes not included in case gene panels",
+            "info": "Genes not included in gene panel versions in use when loading this case (clinical list).",
             "gene_list": non_clinical_symbols,
         },
         "not_found_symbols": {
@@ -1076,7 +1076,7 @@ def check_form_gene_symbols(
             "gene_list": not_found_ids,
         },
         "outdated_symbols": {
-            "alert": "Case gene panels contain an outdated symbol for genes",
+            "info": "Gene panel versions used for loading variants of this case (clinical list) contain outdated gene symbols. The current HGNC id was found on the clinical list.",
             "gene_list": outdated_symbols,
         },
     }
