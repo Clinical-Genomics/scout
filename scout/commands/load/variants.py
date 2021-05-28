@@ -154,7 +154,7 @@ def variants(
                 build=case_obj["genome_build"],
             )
             # Update case variants count
-            adapter.case_variants_count(case_obj["_id"], case_obj["owner"], True)
+            adapter.case_variants_count(case_obj["_id"], case_obj["owner"], update_case=True)
 
         except Exception as e:
             LOG.warning(e)
