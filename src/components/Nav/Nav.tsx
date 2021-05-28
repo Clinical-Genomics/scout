@@ -13,6 +13,7 @@ export interface Header {
 export interface NavItem {
   linkTitle: string;
   public: boolean;
+  externalLink?: string;
   link?: string;
   dropdownList?: Array<NavItem>;
 }
@@ -68,6 +69,8 @@ const Nav: React.FC<Props> = ({
           <li key={navItem.linkTitle} className={styles.nav_item}>
             {/* Link */}
             {navItem.link && <Link to={navItem.link}>{navItem.linkTitle}</Link>}
+            {/* External links */}
+            {navItem.externalLink && <a href={navItem.externalLink} target="_blank" rel="noopener noreferrer">{navItem.linkTitle}</a>}
 
             {/* Dropdown menu */}
             {navItem.dropdownList && (
@@ -96,7 +99,7 @@ const Nav: React.FC<Props> = ({
             className="no_button_style flex"
             onClick={() => toggleDarkMode()}
           >
-            {darkMode && <FaMoon />}
+            {darkMode && <FaMoon color="#F5F16E"/>}
             {!darkMode && <FaSun />}
           </button>
         </li>

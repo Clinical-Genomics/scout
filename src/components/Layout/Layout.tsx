@@ -11,27 +11,22 @@ const header_scout = {
   title: "Scout",
 };
 
-const cgNavItems: Array<NavItem> = [
-  { linkTitle: "Beställninger", public: true, link: "/orders" },
-  { linkTitle: "Provkrav", public: true, link: "/requirements" },
-  { linkTitle: "Applikationer", public: true, link: "/applications" },
-  { linkTitle: "Dataleverans", public: true, link: "/delivery" },
-  {
-    linkTitle: "Support",
-    public: true,
-    dropdownList: [
-      { linkTitle: "FAQ", public: true, link: "/faq" },
-      { linkTitle: "Kontakt", public: true, link: "/contact" },
-      { linkTitle: "Feedback", public: false, link: "/feedback" },
-      { linkTitle: "Help", public: false, link: "/help" },
-    ],
-  },
-  { linkTitle: "New order", public: false, link: "/new-order" },
-  { linkTitle: "Status", public: false, link: "/status" },
-  { linkTitle: "Items", public: false, link: "/items" },
+/* Scout Navigation items */
+const scoutNavItems: Array<NavItem> = [
+  { linkTitle: "Home", public: false, link: "/home" },
+  { linkTitle: "Genes", public: false, link: "/genes" },
+  { linkTitle: "Gene Panels", public: false, link: "/gene-panels" },
+  { linkTitle: "Phenotype", public: false, link: "/phenotype" },
+  { linkTitle: "Diagnoses", public: false, link: "/diagnoses" },
+  { linkTitle: "Manages variants", public: false, link: "/manages-variants" },
+  { linkTitle: "Users", public: false, link: "/users" },
+  { linkTitle: "Institutes", public: false, link: "/institutes" },
+  { linkTitle: "Dashboard", public: false, link: "/dashboard" },
+  { linkTitle: "User guide", public: true, externalLink: "https://clinical-genomics.github.io/scout/" },
+  { linkTitle: "Open issues", public: true, externalLink: "https://github.com/Clinical-Genomics/scout/issues" },
 ];
 
-const Layout: React.FC = ({ children }) => {
+const Layout: React.FC = () => {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -64,12 +59,11 @@ const Layout: React.FC = ({ children }) => {
       <header>
         <Nav
           header={header_scout}
-          navItems={cgNavItems}
+          navItems={scoutNavItems}
           darkMode={darkMode}
           toggleDarkMode={toggleDarkMode}
         />
       </header>
-      <main>{children}</main>
       <Footer />
     </div>
   );
