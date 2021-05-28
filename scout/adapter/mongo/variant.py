@@ -889,7 +889,7 @@ class VariantHandler(VariantLoader):
         )
 
         case_obj = self.case(case_id=case_id)
-        variants_stats = case_obj.get("variants_stats",{})
+        variants_stats = case_obj.get("variants_stats", {})
 
         # if case has stats and no update is needed, return variant count
         if variant_type and variant_type in variants_stats and update_case is False:
