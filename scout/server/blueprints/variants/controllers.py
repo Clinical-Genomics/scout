@@ -1032,7 +1032,7 @@ def check_form_gene_symbols(
     for error in errors.values():
         if not error["gene_list"]:
             continue
-        flash(error["message"], error["label"])
+        flash(f'error["message"]:{error["gene_list"]}', error["label"])
 
     return updated_hgnc_symbols
 
