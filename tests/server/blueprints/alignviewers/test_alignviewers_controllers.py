@@ -50,7 +50,7 @@ def test_make_sashimi_tracks_variant_37(app, case_obj, ensembl_liftover_reaspons
     responses.add(
         responses.GET,
         url,
-        json=ensembl_liftover_reasponse,
+        json=ensembl_liftover_response,
         status=200,
     )
 
