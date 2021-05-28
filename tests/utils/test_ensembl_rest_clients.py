@@ -51,7 +51,7 @@ def test_liftover(ensembl_rest_client_37, ensembl_liftover_reasponse):
     responses.add(
         responses.GET,
         url,
-        json=ensembl_liftover_reasponse,
+        json=ensembl_liftover_response,
         status=200,
     )
     client = ensembl_rest_client_37
