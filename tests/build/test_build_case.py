@@ -122,9 +122,9 @@ def test_build_case_no_valid_panel(adapter, institute_obj):
     """Test loading a case containing a non-valid gene panel"""
 
     adapter.institute_collection.insert_one(institute_obj)
-    # GIVEN a case without case id
+    # GIVEN a case without a valid gene panel
     case_info = {"case_id": "test-case", "owner": "cust000", "panel": ["FOO"]}
     # WHEN case is built
     case_obj = build_case(case_info, adapter)
-    # THEN assert that it worked
+    # THEN assert that case is loaded and panel will not be saved in case document
     assert case_obj["panels"] == []
