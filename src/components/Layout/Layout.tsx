@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
+import {ThemeProvider, createMuiTheme} from "@material-ui/core/styles"
 import Nav, { NavItem } from "components/Nav/Nav";
 import styles from "./Layout.module.scss";
 import logo_scout from "assets/logo_scout.png";
 import Footer from "components/Footer/Footer";
+import { Paper } from "@material-ui/core";
 
 
 const header_scout = {
@@ -26,7 +28,7 @@ const scoutNavItems: Array<NavItem> = [
   { linkTitle: "Open issues", public: true, externalLink: "https://github.com/Clinical-Genomics/scout/issues" },
 ];
 
-const Layout: React.FC = () => {
+const Layout: React.FC = ({children}) => {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -53,19 +55,28 @@ const Layout: React.FC = () => {
     setDarkMode(newMode);
     localStorage.setItem("darkMode", newMode.toString());
   };
-
+const theme = createMuiTheme({
+  palette: {
+    type: darkMode ? "dark" : "light",
+  }
+});
   return (
-    <div className={`${styles.Layout} ${darkMode ? "dark_mode" : ""}`}>
-      <header>
-        <Nav
-          header={header_scout}
-          navItems={scoutNavItems}
-          darkMode={darkMode}
-          toggleDarkMode={toggleDarkMode}
-        />
-      </header>
-      <Footer />
-    </div>
+    <ThemeProvider theme={theme}>
+      <Paper>
+      <div className={`${styles.Layout} ${darkMode ? "dark_mode" : ""}`}>
+        <header>
+          <Nav
+            header={header_scout}
+            navItems={scoutNavItems}
+            darkMode={darkMode}
+            toggleDarkMode={toggleDarkMode}
+          />
+        </header>
+        <main>{children}</main>
+        <Footer />
+      </div>
+      </Paper>
+    </ThemeProvider>
   );
 };
 
