@@ -39,6 +39,13 @@
 {% endmacro %}
 
 
+{% macro other_tiered_badge(variant, cancer_tier_options) %}
+  {% for tiered in variant.matching_tiered or [] %}
+    <a href="{{tiered[1]}}" class="badge badge-light" target="blank" data-toggle="tooltip" data-placement="right" title="matching tier from another case">{{cancer_tier_options[tiered[0]].label}}</a>
+  {% endfor %}
+{% endmacro %}
+
+
 {% macro evaluations_badge(variant) %}
   {% if variant.evaluations %}
     {% for evaluation in (variant.evaluations or []) %}
