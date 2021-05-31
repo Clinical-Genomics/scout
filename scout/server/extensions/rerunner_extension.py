@@ -36,3 +36,7 @@ class RerunnerService:
                 "api_key": self.api_key,
             }
         return {"display": bool(settings), **settings}
+
+
+class RerunnerError(Exception):
+    pass

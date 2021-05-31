@@ -13,6 +13,7 @@ from flask import current_app, flash, redirect, request, url_for
 from flask_login import current_user
 from flask_mail import Message
 from xlsxwriter import Workbook
+from requests.auth import HTTPBasicAuth
 
 from scout.constants import (
     ACMG_MAP,
@@ -35,7 +36,7 @@ from scout.constants.variant_tags import (
 from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
-from scout.server.extensions import matchmaker, store
+from scout.server.extensions import matchmaker, store, rerunner, RerunnerError
 from scout.server.utils import institute_and_case
 from scout.utils.scout_requests import post_request_json
 
@@ -792,6 +793,32 @@ def rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
         mail.send(msg)
     else:
         LOG.error("Cannot send rerun message: no recipient defined in config.")
+
+
+def call_rerunner(case_name, metadata):
+    """Call rerunner with updated pedigree metadata."""
+    LOG.info("Building query for reanalysis")
+
+    # define the data to be passed
+    payload = {"case_id": case_name, "sample_ids": [m["sample_id"] for m in metadata]}
+
+    cnf = rerunner.connection_settings
+    url = f"http://{cnf.get('host')}/v1.0/rerun"
+    auth = HTTPBasicAuth(current_user.email, cnf.get("api_key"))
+    LOG.info(f"Sending request -- {url}; params={payload}")
+    resp = requests.post(
+        url,
+        params=payload,
+        json=metadata,
+        timeout=rerunner.timeout,
+        headers={"Content-Type": "application/json"},
+        auth=auth,
+    )
+    if resp.status_code == requests.codes.ok:
+        LOG.info(f"Reanalysis was successfully started; case: {case_name}")
+        flash(f"Reanalysis was successfully started; case: {case_name}", "info")
+    else:
+        raise RerunnerError(f"Error procejsing request: {resp.text}, {resp.status_code}")
 
 
 def update_default_panels(store, current_user, institute_id, case_name, panel_ids):

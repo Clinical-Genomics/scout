@@ -24,12 +24,11 @@ from flask import (
 )
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
-from requests.auth import HTTPBasicAuth
 from requests.exceptions import ReadTimeout
 from werkzeug.datastructures import Headers
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
-from scout.server.extensions import gens, mail, matchmaker, rerunner, store
+from scout.server.extensions import gens, mail, matchmaker, RerunnerError, store
 from scout.server.utils import institute_and_case, templated, user_institutes, zip_dir_to_obj
 
 from . import controllers
@@ -156,12 +155,6 @@ def update_individual(institute_id, case_name):
         age=age,
         tissue=tissue,
     )
-    return redirect(request.referrer)
-
-
-@cases_bp.route("/<institute_id>/<case_name>/edit_individuals", methods=["POST"])
-def edit_individual(institute_id, case_name):
-    """Update individual data (age and/or Tissue type) for a case"""
     return redirect(request.referrer)
 
 
@@ -762,34 +755,20 @@ def rerun(institute_id, case_name):
 @cases_bp.route("/<institute_id>/<case_name>/reanalysis", methods=["POST"])
 def reanalysis(institute_id, case_name):
     """Toggle a rerun by making a call to RERUNNER service."""
-    LOG.info("Building query for reanalysis")
     edited_metadata = json.loads(request.form["sample_metadata"])
 
-    # define the data to be passed
-    payload = {"case_id": case_name, "sample_ids": [s["sample_id"] for s in edited_metadata]}
-
-    cnf = rerunner.connection_settings
-    url = f"http://{cnf.get('host')}/v1.0/rerun"
-    auth = HTTPBasicAuth(current_user.email, cnf.get("api_key"))
-    LOG.info(f"Sending request -- {url}; params={payload}")
     try:
-        resp = requests.post(
-            url,
-            params=payload,
-            json=edited_metadata,
-            timeout=rerunner.timeout,
-            headers={"Content-Type": "application/json"},
-            auth=auth,
-        )
-        if resp.status_code == requests.codes.ok:
-            LOG.info(f"Reanalysis was successfully started; case: {case_name}")
-            flash(f"Reanalysis was successfully started; case: {case_name}", "info")
-        else:
-            msg = f"Error processing request: {resp.text}, {resp.status_code}"
-            LOG.error(msg)
-            flash(msg, "error")
+        controllers.call_rerunner(case_name, edited_metadata)
     except ReadTimeout as err:
         msg = f"Error processing request: {err.__class__.__name__}"
+        LOG.error(msg)
+        flash(msg, "error")
+    except RerunnerError as err:
+        msg = f"Error processing request: {str(err)}"
+        LOG.error(msg)
+        flash(msg, "error")
+    except Exception as err:
+        msg = f"Error processing request: {err.__class__.__name__} - {str(err)}"
         LOG.error(msg)
         flash(msg, "error")
 
