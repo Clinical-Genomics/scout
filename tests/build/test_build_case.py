@@ -118,14 +118,13 @@ def test_build_case_non_existing_owner(adapter, institute_obj):
         case_obj = build_case(case_info, adapter)
 
 
-def test_build_case_no_valid_panel():
+def test_build_case_no_valid_panel(adapter, institute_obj):
     """Test loading a case containing a non-valid gene panel"""
 
-    def test_build_minimal_case(adapter, institute_obj):
-        adapter.institute_collection.insert_one(institute_obj)
-        # GIVEN a case without case id
-        case_info = {"case_id": "test-case", "owner": "cust000", "panel": ["FOO"]}
-        # WHEN case is built
-        case_obj = build_case(case_info, adapter)
-        # THEN assert that it worked
-        assert case_obj["_id"] == case_info["case_id"]
+    adapter.institute_collection.insert_one(institute_obj)
+    # GIVEN a case without case id
+    case_info = {"case_id": "test-case", "owner": "cust000", "panel": ["FOO"]}
+    # WHEN case is built
+    case_obj = build_case(case_info, adapter)
+    # THEN assert that it worked
+    assert case_obj["_id"] == case_info["case_id"]
