@@ -188,9 +188,6 @@ def build_case(case_data, adapter):
             panel["is_default"] = False
         panels.append(panel)
 
-    if not panels:
-        raise IntegrityError("At least one existing gene panel must be associated to this case.")
-
     case_obj["panels"] = panels
 
     case_obj["dynamic_gene_list"] = []
