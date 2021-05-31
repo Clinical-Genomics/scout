@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import { GoogleLogin, GoogleLogout } from "react-google-login";
 import styles from "./Nav.module.scss";
 import DropdownMenu from "components/DropdownMenu/DropdownMenu";
-import { FaAngleDown, FaMoon, FaSun } from "react-icons/fa";
+import { FaAngleDown } from "react-icons/fa";
+import Brightness5TwoToneIcon from '@material-ui/icons/Brightness5TwoTone';
+import Brightness4TwoToneIcon from '@material-ui/icons/Brightness4TwoTone';
 
 export interface Header {
   icon?: string; // Path to icon
@@ -99,8 +101,8 @@ const Nav: React.FC<Props> = ({
             className="no_button_style flex"
             onClick={() => toggleDarkMode()}
           >
-            {darkMode && <FaMoon color="#F5F16E"/>}
-            {!darkMode && <FaSun />}
+            {darkMode && <Brightness5TwoToneIcon />}
+            {!darkMode && <Brightness4TwoToneIcon />}
           </button>
         </li>
         {/* Greeting */}
