@@ -127,4 +127,4 @@ def test_build_case_no_valid_panel(adapter, institute_obj):
     # WHEN case is built
     case_obj = build_case(case_info, adapter)
     # THEN assert that it worked
-    assert case_obj["_id"] == case_info["case_id"]
+    assert case_obj["panels"] == []
