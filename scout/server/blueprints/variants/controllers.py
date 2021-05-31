@@ -156,9 +156,6 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
         if clinical_var_obj is not None:
             variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
-        if case_obj.get("group"):
-            variant_obj["group_assessments"] = _get_group_assessments(store, case_obj, variant_obj)
-
         variants.append(
             parse_variant(
                 store,
@@ -680,10 +677,6 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
                     secondary_gene = gene
         variant_obj["second_rep_gene"] = secondary_gene
         variants_list.append(variant_obj)
-
-        variant_obj["clinical_assessments"] = get_manual_assessments(variant_obj)
-        if case_obj.get("group"):
-            variant_obj["group_assessments"] = _get_group_assessments(store, case_obj, variant_obj)
 
     data = dict(
         page=page,
