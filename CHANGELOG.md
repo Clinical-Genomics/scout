@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 ### Changed
+- Load case with missing panels in config files. Show warning instead.
 
 ## [4.36]
 ### Added
