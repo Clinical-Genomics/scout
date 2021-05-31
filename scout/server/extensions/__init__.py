@@ -14,7 +14,7 @@ from .gens_extension import GensViewer
 from .loqus_extension import LoqusDB
 from .matchmaker_extension import MatchMaker
 from .mongo_extension import MongoDB
-from .rerunner_extension import RerunnerService, RerunnerError
+from .rerunner_extension import RerunnerError, RerunnerService
 
 toolbar = DebugToolbarExtension()
 bootstrap = Bootstrap()

@@ -12,8 +12,8 @@ from bson.objectid import ObjectId
 from flask import current_app, flash, redirect, request, url_for
 from flask_login import current_user
 from flask_mail import Message
-from xlsxwriter import Workbook
 from requests.auth import HTTPBasicAuth
+from xlsxwriter import Workbook
 
 from scout.constants import (
     ACMG_MAP,
@@ -36,7 +36,7 @@ from scout.constants.variant_tags import (
 from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
-from scout.server.extensions import matchmaker, store, rerunner, RerunnerError
+from scout.server.extensions import RerunnerError, matchmaker, rerunner, store
 from scout.server.utils import institute_and_case
 from scout.utils.scout_requests import post_request_json
 
