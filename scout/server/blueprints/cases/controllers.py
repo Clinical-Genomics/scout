@@ -825,7 +825,7 @@ def call_rerunner(store, institute_id, case_name, metadata):
         # notfiy the user of the rerun
         flash(f"Reanalysis was successfully started; case: {case_name}", "info")
     else:
-        raise RerunnerError(f"Error procejsing request: {resp.text}, {resp.status_code}")
+        raise RerunnerError(f"Error processing request: {resp.text}, {resp.status_code}")
 
 
 def update_default_panels(store, current_user, institute_id, case_name, panel_ids):
