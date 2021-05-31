@@ -20,10 +20,11 @@ MAIL_USE_SSL = False
 # GENS_HOST = "127.0.0.1"
 # GENS_PORT = 5000
 
-# Configure case-rerun service
+# Connection details for communicating with a rerunner service
 # RERUNNER_HOST = "127.0.0.1"
-# RERUNER_PORT = 7000
-# RERUNNER_API_KEY = "test_key"
+# RERUNNER_PORT = 5000
+# RERUNNER_TIMEOUT = 10
+# RERUNNER_API_KEY = "this is not secret..."
 
 # MatchMaker connection parameters
 # - Tested with PatientMatcher (https://github.com/Clinical-Genomics/patientMatcher) -
@@ -73,9 +74,3 @@ RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/b
 RANK_MODEL_LINK_POSTFIX = "-.ini"
 SV_RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/svrank_model_-v"
 SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
-
-# Connection details for communicating with a rerunner service
-# RERUNNER_HOST = "127.0.0.1"
-# RERUNNER_PORT = 5000
-# RERUNNER_TIMEOUT = 10
-# RERUNNER_API_KEY = "this is not secret..."
