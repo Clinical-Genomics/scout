@@ -15,30 +15,6 @@
 {{ super() }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="{{ url_for('cases.static', filename='case_styles.css') }}"></link>
-<style>
-/*Matchmaker card styling*/
-.matchmaker-grid {
-  display: grid;
-  grid-gap: 15px;
-  grid-template-columns: auto auto;
-  grid-template-rows: auto auto;
-}
-
-.matchmaker-grid-item1 {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.matchmaker-grid-item2 {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-.matchmaker-grid-item3 {
-  grid-column: 2;
-  grid-row: 2;
-}
-</style>
 {% endblock %}
 
 {% block top_nav %}
