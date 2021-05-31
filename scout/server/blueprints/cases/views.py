@@ -28,7 +28,7 @@ from requests.exceptions import ReadTimeout
 from werkzeug.datastructures import Headers
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
-from scout.server.extensions import gens, mail, matchmaker, RerunnerError, store
+from scout.server.extensions import gens, mail, matchmaker, rerunner, RerunnerError, store
 from scout.server.utils import institute_and_case, templated, user_institutes, zip_dir_to_obj
 
 from . import controllers
@@ -758,7 +758,7 @@ def reanalysis(institute_id, case_name):
     edited_metadata = json.loads(request.form["sample_metadata"])
 
     try:
-        controllers.call_rerunner(case_name, edited_metadata)
+        controllers.call_rerunner(store, institute_id, case_name, edited_metadata)
     except ReadTimeout as err:
         msg = f"Error processing request: {err.__class__.__name__}"
         LOG.error(msg)

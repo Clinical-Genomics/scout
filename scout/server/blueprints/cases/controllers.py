@@ -795,7 +795,7 @@ def rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
         LOG.error("Cannot send rerun message: no recipient defined in config.")
 
 
-def call_rerunner(case_name, metadata):
+def call_rerunner(store, institute_id, case_name, metadata):
     """Call rerunner with updated pedigree metadata."""
     LOG.info("Building query for reanalysis")
 
@@ -814,8 +814,15 @@ def call_rerunner(case_name, metadata):
         headers={"Content-Type": "application/json"},
         auth=auth,
     )
+
     if resp.status_code == requests.codes.ok:
         LOG.info(f"Reanalysis was successfully started; case: {case_name}")
+        # get institute, case and user objects for adding a notification of the rerun to the database
+        institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+        user_obj = store.user(current_user.email)
+        link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
+        store.request_rerun(institute_obj, case_obj, user_obj, link)
+        # notfiy the user of the rerun
         flash(f"Reanalysis was successfully started; case: {case_name}", "info")
     else:
         raise RerunnerError(f"Error procejsing request: {resp.text}, {resp.status_code}")
