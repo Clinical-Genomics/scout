@@ -6,6 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+### Fixed
+### Changed
+
+## [4.36]
+### Added
 - Parse and save splice junction tracks from case config file
 - Tooltip in observations panel, explaining that case variants with no link might be old variants, not uploaded after a case rerun
 - Added integration to a rerunner service for toggling reanalysis with updated pedigree information
@@ -16,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Splice junction tracks not centered over variant genes
 - Total number of research variants count
 - Update variants stats in case documents every time new variants are loaded
+- Bug in flashing warning messages when filtering variants
 ### Changed
 - Clearer warning messages for genes and gene/gene-panels searches in variants filters
 
