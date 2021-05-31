@@ -189,7 +189,7 @@ def build_case(case_data, adapter):
         panels.append(panel)
 
     if not panels:
-        raise IntegrityError("At least an existing gene panel must be associated to this case.")
+        raise IntegrityError("At least one existing gene panel must be associated to this case.")
 
     case_obj["panels"] = panels
 
