@@ -30,7 +30,7 @@ from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEA
 from scout.export.variant import export_verified_variants
 from scout.server.blueprints.variant.utils import clinsig_human, predictions
 from scout.server.links import cosmic_link, str_source_link
-from scout.server.utils import case_append_alignments, institute_and_case
+from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
@@ -155,6 +155,9 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
             )
         if clinical_var_obj is not None:
             variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
+
+        if case_obj.get("group"):
+            variant_obj["group_assessments"] = _get_group_assessments(store, case_obj, variant_obj)
 
         variants.append(
             parse_variant(
@@ -383,6 +386,10 @@ def parse_variant(
 
     variant_obj["comments"] = store.events(
         institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True
+    )
+
+    variant_obj["matching_tiered"] = store.matching_tiered(
+        variant_obj, user_institutes(store, current_user)
     )
 
     if variant_genes:
@@ -673,6 +680,10 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
                     secondary_gene = gene
         variant_obj["second_rep_gene"] = secondary_gene
         variants_list.append(variant_obj)
+
+        variant_obj["clinical_assessments"] = get_manual_assessments(variant_obj)
+        if case_obj.get("group"):
+            variant_obj["group_assessments"] = _get_group_assessments(store, case_obj, variant_obj)
 
     data = dict(
         page=page,

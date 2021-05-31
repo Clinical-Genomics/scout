@@ -246,6 +246,37 @@ class VariantEventHandler(object):
         sanger_ordered = [item for item in results]
         return sanger_ordered
 
+    def matching_tiered(self, query_variant, user_institutes):
+        """Retrieve all tiered tags assigned to a cancer variant in other cases (accessible to the user)
+        Args:
+            query_variant(dict)
+            user_institutes(list): list of dictionaries
+
+        Returns:
+            matching_tier(list)
+        """
+        tiered = set()  # set of tuples like this: (tier, link_to_variant)
+        query = {
+            "category": "variant",
+            "verb": "cancer_tier",
+            "subject": query_variant["display_name"],
+            "institute": {"$in": [inst["_id"] for inst in user_institutes]},
+        }
+
+        for tiered_event in self.event_collection.find(query):
+            # Check if variant is still tiered as suggested by the event
+            tiered_matching_variant = self.variant(
+                case_id=tiered_event["case"], document_id=tiered_event["variant_id"]
+            )
+            if (
+                tiered_matching_variant is None
+                or tiered_matching_variant["_id"] == query_variant["_id"]
+            ):
+                continue
+            tiered.add((tiered_matching_variant["cancer_tier"], tiered_event["link"]))
+
+        return tiered
+
     def validate(self, institute, case, user, link, variant, validate_type):
         """Mark validation status for a variant.
 
