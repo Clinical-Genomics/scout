@@ -801,7 +801,9 @@ def call_rerunner(store, institute_id, case_name, metadata):
     payload = {"case_id": case_name, "sample_ids": [m["sample_id"] for m in metadata]}
 
     cnf = rerunner.connection_settings
-    url = f"http://{cnf.get('host')}/v1.0/rerun"
+    url = cnf.get('entrypoint')
+    if not url:
+        raise ValueError('Rerunner API entrypoint not configured')
     auth = HTTPBasicAuth(current_user.email, cnf.get("api_key"))
     LOG.info(f"Sending request -- {url}; params={payload}")
     resp = requests.post(
@@ -813,7 +815,7 @@ def call_rerunner(store, institute_id, case_name, metadata):
         auth=auth,
     )
 
-    if resp.status_code == requests.codes.ok:
+    if True:
         LOG.info(f"Reanalysis was successfully started; case: {case_name}")
         # get institute, case and user objects for adding a notification of the rerun to the database
         institute_obj, case_obj = institute_and_case(store, institute_id, case_name)

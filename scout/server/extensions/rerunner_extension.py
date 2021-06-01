@@ -14,8 +14,7 @@ class RerunnerService:
     def init_app(self, app):
         """Setup Rerunner config."""
         LOG.info("Init Rerunner app")
-        self.host = app.config.get("RERUNNER_HOST")
-        self.port = app.config.get("RERUNNER_PORT")
+        self.entrypoint = app.config.get("RERUNNER_API_ENTRYPOINT")
         self.timeout = app.config.get("RERUNNER_TIMEOUT", 10)
         self.api_key = app.config.get("RERUNNER_API_KEY")
 
@@ -32,7 +31,7 @@ class RerunnerService:
         settings = {}
         if self.host and self.api_key:
             settings = {
-                "host": f"{self.host}:{self.port}" if self.host and self.port else self.host,
+                "entrypoint": self.entrypoint,
                 "api_key": self.api_key,
             }
         return {"display": bool(settings), **settings}
