@@ -761,16 +761,13 @@ def reanalysis(institute_id, case_name):
         controllers.call_rerunner(store, institute_id, case_name, edited_metadata)
     except ReadTimeout as err:
         msg = f"Error processing request: {err.__class__.__name__}"
-        LOG.error(msg)
-        flash(msg, "error")
+        flash(msg, "danger")
     except RerunnerError as err:
         msg = f"Error processing request: {str(err)}"
-        LOG.error(msg)
-        flash(msg, "error")
+        flash(msg, "danger")
     except Exception as err:
         msg = f"Error processing request: {err.__class__.__name__} - {str(err)}"
-        LOG.error(msg)
-        flash(msg, "error")
+        flash(msg, "danger")
 
     return redirect(request.referrer)
 
