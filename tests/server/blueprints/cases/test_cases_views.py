@@ -14,6 +14,28 @@ from scout.server.extensions import mail, store
 TEST_TOKEN = "test_token"
 
 
+def test_reanalysis(mocker, rerunner_app, institute_obj, case_obj):
+    """Test the call to the case reanalysis API"""
+
+    # GIVEN a patched rerun request from a Scout user
+    mocker.patch(
+        "json.loads", return_value=[{"sample_id": "test_sample", "sex": 2, "phenotype": 2}]
+    )
+
+    with rerunner_app.test_request_context():
+        # WHEN rerun request is sent
+        client = rerunner_app.test_client()
+        resp = client.post(
+            url_for(
+                "cases.reanalysis",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+        )
+        # It should return redirect
+        assert resp.status_code == 302
+
+
 def test_rerun(app, institute_obj, case_obj, monkeypatch, mocker, mock_redirect):
     """test case rerun function"""
 
