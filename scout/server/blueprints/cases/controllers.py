@@ -797,7 +797,6 @@ def rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
 
 def call_rerunner(store, institute_id, case_name, metadata):
     """Call rerunner with updated pedigree metadata."""
-
     # define the data to be passed
     payload = {"case_id": case_name, "sample_ids": [m["sample_id"] for m in metadata]}
 
@@ -825,7 +824,7 @@ def call_rerunner(store, institute_id, case_name, metadata):
         flash(f"Reanalysis was successfully started; case: {case_name}", "info")
 
     else:
-        raise RerunnerError(f"{str(resp.reason)}, {resp.status_code}")
+        raise RerunnerError(f"{resp.reason}, {resp.status_code}")
 
 
 def update_default_panels(store, current_user, institute_id, case_name, panel_ids):
