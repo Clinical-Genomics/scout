@@ -8,8 +8,8 @@ class RerunnerService:
     """Interface to Rerunner."""
 
     def __init__(self):
-        self.host = None
-        self.port = None
+        self.entrypoint = None
+        self.api_key = None
 
     def init_app(self, app):
         """Setup Rerunner config."""
@@ -29,7 +29,7 @@ class RerunnerService:
             rerunner_info(dict): A dictionary containing information on where Rerunner if hosted.
         """
         settings = {}
-        if self.host and self.api_key:
+        if self.entrypoint and self.api_key:
             settings = {
                 "entrypoint": self.entrypoint,
                 "api_key": self.api_key,

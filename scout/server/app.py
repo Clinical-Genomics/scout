@@ -114,7 +114,7 @@ def configure_extensions(app):
         LOG.info("MatchMaker Exchange enabled")
         extensions.matchmaker.init_app(app)
 
-    if app.config.get("RERUNNER_HOST") and app.config.get("RERUNNER_API_KEY"):
+    if app.config.get("RERUNNER_API_ENTRYPOINT") and app.config.get("RERUNNER_API_KEY"):
         LOG.info("Rerunner service enabled")
         # setup rerunner service
         extensions.rerunner.init_app(app)

@@ -815,7 +815,7 @@ def call_rerunner(store, institute_id, case_name, metadata):
         auth=auth,
     )
 
-    if True:
+    if resp.status_code == 200:
         LOG.info(f"Reanalysis was successfully started; case: {case_name}")
         # get institute, case and user objects for adding a notification of the rerun to the database
         institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
