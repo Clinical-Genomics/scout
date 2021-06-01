@@ -19,7 +19,7 @@ def test_rerunner_connection_settings():
             RERUNNER_HOST=host,
             RERUNNER_PORT=port,
             RERUNNER_TIMEOUT=timeout,
-            RERUNNER_API_KEY=key
+            RERUNNER_API_KEY=key,
         )
     )
 
