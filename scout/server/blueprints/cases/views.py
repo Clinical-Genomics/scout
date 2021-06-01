@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import datetime
-import json
 import logging
 import os.path
 import re
@@ -755,7 +754,8 @@ def rerun(institute_id, case_name):
 @cases_bp.route("/<institute_id>/<case_name>/reanalysis", methods=["POST"])
 def reanalysis(institute_id, case_name):
     """Toggle a rerun by making a call to RERUNNER service."""
-    edited_metadata = json.loads(request.form["sample_metadata"])
+
+    edited_metadata = request.form.get("sample_metadata")
 
     try:
         controllers.call_rerunner(store, institute_id, case_name, edited_metadata)
