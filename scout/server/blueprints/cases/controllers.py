@@ -801,9 +801,9 @@ def call_rerunner(store, institute_id, case_name, metadata):
     payload = {"case_id": case_name, "sample_ids": [m["sample_id"] for m in metadata]}
 
     cnf = rerunner.connection_settings
-    url = cnf.get('entrypoint')
+    url = cnf.get("entrypoint")
     if not url:
-        raise ValueError('Rerunner API entrypoint not configured')
+        raise ValueError("Rerunner API entrypoint not configured")
     auth = HTTPBasicAuth(current_user.email, cnf.get("api_key"))
     LOG.info(f"Sending request -- {url}; params={payload}")
     resp = requests.post(
