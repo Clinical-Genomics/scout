@@ -116,7 +116,7 @@ def configure_extensions(app):
 
     if app.config.get("RERUNNER_HOST") and app.config.get("RERUNNER_API_KEY"):
         LOG.info("Rerunner service enabled")
-        # setup LoqusDB
+        # setup rerunner service
         extensions.rerunner.init_app(app)
 
     if app.config.get("LDAP_HOST"):
