@@ -4,8 +4,9 @@ import { GoogleLogin, GoogleLogout } from "react-google-login";
 import styles from "./Nav.module.scss";
 import DropdownMenu from "components/DropdownMenu/DropdownMenu";
 import { FaAngleDown } from "react-icons/fa";
-import Brightness5TwoToneIcon from '@material-ui/icons/Brightness5TwoTone';
-import Brightness4TwoToneIcon from '@material-ui/icons/Brightness4TwoTone';
+import Tooltip from '@material-ui/core/Tooltip';
+import Brightness4OutlinedIcon from '@material-ui/icons/Brightness4Outlined';
+import Brightness5OutlinedIcon from '@material-ui/icons/Brightness5Outlined';
 
 export interface Header {
   icon?: string; // Path to icon
@@ -101,8 +102,8 @@ const Nav: React.FC<Props> = ({
             className="no_button_style flex"
             onClick={() => toggleDarkMode()}
           >
-            {darkMode && <Brightness5TwoToneIcon />}
-            {!darkMode && <Brightness4TwoToneIcon />}
+            {darkMode && <Tooltip title="Toggle light/dark theme"><Brightness5OutlinedIcon /></Tooltip> }
+            {!darkMode && <Tooltip title="Toggle light/dark theme"><Brightness4OutlinedIcon /></Tooltip>}
           </button>
         </li>
         {/* Greeting */}
