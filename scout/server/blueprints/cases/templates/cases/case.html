@@ -183,17 +183,17 @@
   {% if case.is_research%}
   <div class="form-group">
     <div class="btn-group">
-    {% if case.vcf_files.vcf_cancer_research %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research somatic SNV and INDELs</a>
-    {% endif %}
-    {% if case.vcf_files.vcf_cancer_sv_research %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research somatic structural variants</a>
-    {% endif %}
     {% if case.vcf_files.vcf_snv_research %}
       <a class="btn btn-outline-dark" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research {% if case.track=="cancer" %}germline {% endif %}SNV and INDELs</a>
     {% endif %}
     {% if case.vcf_files.vcf_sv_research %}
       <a class="btn btn-outline-dark" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research {% if case.track=="cancer" %}germline {% endif %}structural variants</a>
+    {% endif %}
+    {% if case.vcf_files.vcf_cancer_research %}
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research somatic SNV and INDELs</a>
+    {% endif %}
+    {% if case.vcf_files.vcf_cancer_sv_research %}
+      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research somatic structural variants</a>
     {% endif %}
     </div>
   </div>
