@@ -100,7 +100,7 @@ def rerunner_app():
     _mock_app = create_app(
         config=dict(
             TESTING=True,
-            RERUNNER_HOST="test_rerunner_url",
+            RERUNNER_HOST="127.0.0.1",
             RERUNNER_PORT=9000,
             RERUNNER_TIMEOUT=10,
             RERUNNER_API_KEY="test_key",
