@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
+from urllib.parse import urlencode
 
 import requests
+import responses
 from bson.objectid import ObjectId
 from flask import current_app, jsonify, url_for
 from flask_login import current_user
@@ -14,25 +16,32 @@ from scout.server.extensions import mail, store
 TEST_TOKEN = "test_token"
 
 
-def test_reanalysis(mocker, rerunner_app, institute_obj, case_obj):
+@responses.activate
+def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test the call to the case reanalysis API"""
 
-    # GIVEN a patched rerun request from a Scout user
-    mocker.patch(
-        "json.loads", return_value=[{"sample_id": "test_sample", "sex": 2, "phenotype": 2}]
-    )
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
-    with rerunner_app.test_request_context():
-        # WHEN rerun request is sent
-        client = rerunner_app.test_client()
+    # WHEN the rerun is triggered using the reanalysis endpoint
+    with app.test_client() as client:
+
+        url = url_for(
+            "cases.reanalysis",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+        )
+
+        data = {"sample_metadata": "FOO"}
         resp = client.post(
             url_for(
                 "cases.reanalysis",
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
-            ),
+                json=data,
+            )
         )
-        # It should return redirect
+
+        # It should return redirect to previous page
         assert resp.status_code == 302
 
 
