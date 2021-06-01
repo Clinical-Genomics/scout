@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+Highlight and show version number for RefSeq MANE transcripts.
 ### Fixed
 ### Changed
 
