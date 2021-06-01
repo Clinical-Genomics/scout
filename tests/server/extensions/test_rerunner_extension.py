@@ -6,7 +6,7 @@ from scout.server.extensions import rerunner
 def test_rerunner_connection_settings(rerunner_app):
     """Test that the app is initialized with the Rerunner settings"""
 
-    host = "test_rerunner_url"
+    host = "127.0.0.1"
     port = 9000
     key = "test_key"
 
