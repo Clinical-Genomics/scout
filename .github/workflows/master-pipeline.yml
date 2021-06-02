@@ -13,6 +13,8 @@ jobs:
       uses: actions/checkout@master
     - name: Install
       run: yarn install
+    - name: Run lint check
+      run: yarn lint
     - name: Build Stage
       run: yarn build
       env:
