@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 Highlight and show version number for RefSeq MANE transcripts.
+- Added integration to a rerunner service for toggling reanalysis with updated pedigree information
 ### Fixed
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
