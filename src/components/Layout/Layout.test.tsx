@@ -1,15 +1,15 @@
-import React from 'react';
-import { shallow } from 'enzyme';
-import Layout from './Layout';
+import React from 'react'
+import { shallow } from 'enzyme'
+import Layout from './Layout'
 
 describe('<Layout />', () => {
-  let component;
+  let component
 
   beforeEach(() => {
-    component = shallow(<Layout />);
-  });
+    component = shallow(<Layout />)
+  })
 
   test('It should mount', () => {
-    expect(component.length).toBe(1);
-  });
-});
+    expect(component.length).toBe(1)
+  })
+})

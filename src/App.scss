@@ -13,7 +13,7 @@ $primary_text_color_dark_mode: white;
 $secondary_bg_color_dark_mode: #3d3d3d;
 $secondary_text_color_dark_mode: white;
 
-$scout-color: #1181B2;
+$scout-color: #1181b2;
 
 /** Shadow */
 //$shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
@@ -57,13 +57,12 @@ li {
   color: $primary_text_color_dark_mode;
 }
 .dark_mode Nav,
-.dark_mode Footer
- {
+.dark_mode Footer {
   background-color: $secondary_bg_color_dark_mode;
   color: $secondary_text_color_dark_mode;
   box-shadow: none;
 }
-.dark_mode .dropdown_menu{
+.dark_mode .dropdown_menu {
   background-color: $primary_bg_color_dark_mode;
   color: $primary_text_color_dark_mode;
   box-shadow: none;

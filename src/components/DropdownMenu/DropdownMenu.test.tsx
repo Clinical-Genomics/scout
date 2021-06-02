@@ -1,15 +1,15 @@
-import React from 'react';
-import { shallow } from 'enzyme';
-import DropdownMenu from './DropdownMenu';
+import React from 'react'
+import { shallow } from 'enzyme'
+import DropdownMenu from './DropdownMenu'
 
 describe('<DropdownMenu />', () => {
-  let component;
+  let component
 
   beforeEach(() => {
-    component = shallow(<DropdownMenu />);
-  });
+    component = shallow(<DropdownMenu />)
+  })
 
   test('It should mount', () => {
-    expect(component.length).toBe(1);
-  });
-});
+    expect(component.length).toBe(1)
+  })
+})

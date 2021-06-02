@@ -1,9 +1,9 @@
 @use 'App' as global;
 
-footer{
-    background-color:global.$primary_bg_color;
-    color:global.$primary_text_color;
-    padding: 1em;
-    margin-top: auto;
-    text-align: center;
+footer {
+  background-color: global.$primary_bg_color;
+  color: global.$primary_text_color;
+  padding: 1em;
+  margin-top: auto;
+  text-align: center;
 }
