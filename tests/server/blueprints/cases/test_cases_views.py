@@ -3,7 +3,7 @@ import datetime
 
 import requests
 from bson.objectid import ObjectId
-from flask import current_app, jsonify, url_for
+from flask import current_app, url_for
 from flask_login import current_user
 
 from scout.demo import delivery_report_path
@@ -12,6 +12,30 @@ from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_ge
 from scout.server.extensions import mail, store
 
 TEST_TOKEN = "test_token"
+
+
+def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
+    """Test the call to the case reanalysis API"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
+    # WHEN the rerun is triggered using the reanalysis endpoint
+    with app.test_client() as client:
+
+        json_string = '[{"sample_id": "NA12882", "sex": 1, "phenotype": 2}]'
+        data = {"sample_metadata": json_string}
+
+        resp = client.post(
+            url_for(
+                "cases.reanalysis",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=data,
+        )
+
+        # It should return redirect to previous page
+        assert resp.status_code == 302
 
 
 def test_rerun(app, institute_obj, case_obj, monkeypatch, mocker, mock_redirect):
