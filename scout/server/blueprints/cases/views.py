@@ -756,8 +756,7 @@ def rerun(institute_id, case_name):
 def reanalysis(institute_id, case_name):
     """Toggle a rerun by making a call to RERUNNER service."""
 
-    edited_metadata = request.form.get("sample_metadata")
-    LOG.error(edited_metadata)
+    edited_metadata = json.loads(request.form.get("sample_metadata"))
 
     try:
         controllers.call_rerunner(store, institute_id, case_name, edited_metadata)

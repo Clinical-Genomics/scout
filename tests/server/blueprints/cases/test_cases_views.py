@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
-from urllib.parse import urlencode
+import json
 
 import requests
 import responses
@@ -30,15 +30,16 @@ def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
             institute_id=institute_obj["internal_id"],
             case_name=case_obj["display_name"],
         )
+        json_string = '[{"sample_id": "NA12882", "sex": 1, "phenotype": 2}]'
+        data = {"sample_metadata": json_string}
 
-        data = {"sample_metadata": "FOO"}
         resp = client.post(
             url_for(
                 "cases.reanalysis",
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
-                json=data,
-            )
+            ),
+            data=data,
         )
 
         # It should return redirect to previous page
