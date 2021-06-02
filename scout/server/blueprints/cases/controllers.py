@@ -12,6 +12,7 @@ from bson.objectid import ObjectId
 from flask import current_app, flash, redirect, request, url_for
 from flask_login import current_user
 from flask_mail import Message
+from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
 
 from scout.build.variant import build_variant_evaluation_terms
@@ -30,7 +31,7 @@ from scout.constants.variant_tags import CANCER_TIER_OPTIONS, GENETIC_MODELS
 from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
-from scout.server.extensions import matchmaker, store
+from scout.server.extensions import RerunnerError, matchmaker, rerunner, store
 from scout.server.utils import institute_and_case
 from scout.utils.scout_requests import post_request_json
 
@@ -798,6 +799,40 @@ def rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
         mail.send(msg)
     else:
         LOG.error("Cannot send rerun message: no recipient defined in config.")
+
+
+def call_rerunner(store, institute_id, case_name, metadata):
+    """Call rerunner with updated pedigree metadata."""
+    # define the data to be passed
+    payload = {"case_id": case_name, "sample_ids": [m["sample_id"] for m in metadata]}
+
+    cnf = rerunner.connection_settings
+    url = cnf.get("entrypoint")
+    if not url:
+        raise ValueError("Rerunner API entrypoint not configured")
+    auth = HTTPBasicAuth(current_user.email, cnf.get("api_key"))
+    LOG.info(f"Sending request -- {url}; params={payload}")
+    resp = requests.post(
+        url,
+        params=payload,
+        json=metadata,
+        timeout=rerunner.timeout,
+        headers={"Content-Type": "application/json"},
+        auth=auth,
+    )
+
+    if resp.status_code == 200:
+        LOG.info(f"Reanalysis was successfully started; case: {case_name}")
+        # get institute, case and user objects for adding a notification of the rerun to the database
+        institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+        user_obj = store.user(current_user.email)
+        link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
+        store.request_rerun(institute_obj, case_obj, user_obj, link)
+        # notfiy the user of the rerun
+        flash(f"Reanalysis was successfully started; case: {case_name}", "info")
+
+    else:
+        raise RerunnerError(f"{resp.reason}, {resp.status_code}")
 
 
 def update_default_panels(store, current_user, institute_id, case_name, panel_ids):

@@ -20,6 +20,11 @@ MAIL_USE_SSL = False
 # GENS_HOST = "127.0.0.1"
 # GENS_PORT = 5000
 
+# Connection details for communicating with a rerunner service
+# RERUNNER_API_ENTRYPOINT = "http://rerunner:5001/v1.0/rerun"
+# RERUNNER_TIMEOUT = 10
+# RERUNNER_API_KEY = "I am the Keymaster of Gozer"
+
 # MatchMaker connection parameters
 # - Tested with PatientMatcher (https://github.com/Clinical-Genomics/patientMatcher) -
 # MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"

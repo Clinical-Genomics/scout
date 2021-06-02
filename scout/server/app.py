@@ -125,10 +125,16 @@ def configure_extensions(app):
         LOG.info("MatchMaker Exchange enabled")
         extensions.matchmaker.init_app(app)
 
+    if app.config.get("RERUNNER_API_ENTRYPOINT") and app.config.get("RERUNNER_API_KEY"):
+        LOG.info("Rerunner service enabled")
+        # setup rerunner service
+        extensions.rerunner.init_app(app)
+
     if app.config.get("LDAP_HOST"):
         LOG.info("LDAP login enabled")
         # setup connection to server
         extensions.ldap_manager.init_app(app)
+
     if app.config.get("GOOGLE"):
         LOG.info("Google login enabled")
         # setup connection to google oauth2
