@@ -25,11 +25,6 @@ def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
     # WHEN the rerun is triggered using the reanalysis endpoint
     with app.test_client() as client:
 
-        url = url_for(
-            "cases.reanalysis",
-            institute_id=institute_obj["internal_id"],
-            case_name=case_obj["display_name"],
-        )
         json_string = '[{"sample_id": "NA12882", "sex": 1, "phenotype": 2}]'
         data = {"sample_metadata": json_string}
 
