@@ -62,7 +62,7 @@ class EvaluationTerm(object):
 class VariantEvaluationHandler(object):
     """Interact with variant evaluation information."""
 
-    def load_default_evaluation_term(self, category, tracks, term_key, term_value):
+    def load_evaluation_term(self, category, tracks, term_key, term_value):
         """Load a default evaluation term into the database
 
         Args:

@@ -31,7 +31,7 @@ def _load_default_terms(adapter, category, tracks, terms):
             ]
     """
     for key, term in terms.items():
-        adapter.load_default_evaluation_term(
+        adapter.load_evaluation_term(
             category=category, tracks=tracks, term_key=key, term_value=term
         )
 
