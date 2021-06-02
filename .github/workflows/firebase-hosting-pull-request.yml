@@ -13,4 +13,4 @@ jobs:
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FRONTEND_CORE_PROJECT_STAGE }}'
-          projectId: Scout-Stage
+          projectId: scout-stage
