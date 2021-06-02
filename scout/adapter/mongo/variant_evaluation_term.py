@@ -114,7 +114,7 @@ class VariantEvaluationHandler(object):
 
     def mosaicism_options(self):
         """Return mosaicism options terms in database, formattes as neeeded by templates"""
-        mosaicism_terms = self._get_evaluation_terms("mosaicism_options", ["rare"])
+        mosaicism_terms = self._get_evaluation_terms("mosaicism_option", ["rare"])
         return mosaicism_terms
 
     def _get_evaluation_terms(self, category, tracks):

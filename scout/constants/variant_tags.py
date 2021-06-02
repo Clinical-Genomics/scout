@@ -290,4 +290,4 @@ MOSAICISM_OPTIONS = {
     },
 }
 
-EVALUATION_TERM_CATEGORIES = ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options")
+EVALUATION_TERM_CATEGORIES = ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_option")
