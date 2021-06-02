@@ -1,13 +1,30 @@
 # -*- coding: utf-8 -*-
 
 from scout.commands import cli
+from scout.demo import custom_evaluation_terms_file_path
 
 
-def test_default_evaluation_terms(mock_app, adapter):
+def test_load_default_terms(mock_app, adapter):
     """Test loading default variant evaluation terms into database"""
 
-    runner = mock_app.test_cli_runner()
     # GIVEN that the command for loading the default evaluation terms into database is executed
+    runner = mock_app.test_cli_runner()
     result = runner.invoke(cli, ["load", "evaluation-terms", "default-terms"], input="y")
+
+    # THEN assert that the program exits without problems
+    assert result.exit_code == 0
+
+
+def test_load_custom_terms(mock_app, adapter):
+    """Test loading custom variant evaluation terms contained in a json file into database"""
+
+    # GIVEN that the command for loading custom evaluations from file is executed
+    runner = mock_app.test_cli_runner()
+    result = runner.invoke(
+        cli,
+        ["load", "evaluation-terms", "custom-terms", "--file", custom_evaluation_terms_file_path],
+        input="y",
+    )
+
     # THEN assert that the program exits without problems
     assert result.exit_code == 0

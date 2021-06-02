@@ -53,3 +53,8 @@ coverage_qc_report_file = "demo/cancer_coverage_qc_report.html"
 coverage_qc_report_path = pkg_resources.resource_filename("scout", coverage_qc_report_file)
 gene_fusion_report_file = "demo/draw-fusions-example.pdf"
 gene_fusion_report_path = pkg_resources.resource_filename("scout", gene_fusion_report_file)
+
+custom_evaluation_terms_file = "demo/custom_evaluation_terms_example.json"
+custom_evaluation_terms_file_path = pkg_resources.resource_filename(
+    "scout", custom_evaluation_terms_file
+)
