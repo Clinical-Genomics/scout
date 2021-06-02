@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
-import json
 
 import requests
-import responses
 from bson.objectid import ObjectId
-from flask import current_app, jsonify, url_for
+from flask import current_app, url_for
 from flask_login import current_user
 
 from scout.demo import delivery_report_path
@@ -16,7 +14,6 @@ from scout.server.extensions import mail, store
 TEST_TOKEN = "test_token"
 
 
-@responses.activate
 def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test the call to the case reanalysis API"""
 
