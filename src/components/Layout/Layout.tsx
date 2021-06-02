@@ -58,7 +58,7 @@ const Layout: React.FC = ({children}) => {
 const theme = createMuiTheme({
   palette: {
     type: darkMode ? "dark" : "light",
-  }
+  },
 });
   return (
     <ThemeProvider theme={theme}>
