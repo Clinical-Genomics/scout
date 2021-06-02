@@ -759,14 +759,14 @@ def reanalysis(institute_id, case_name):
     edited_metadata = request.form.get("sample_metadata")
     LOG.error(edited_metadata)
 
-    # try:
-    controllers.call_rerunner(store, institute_id, case_name, edited_metadata)
-    """
+    try:
+        controllers.call_rerunner(store, institute_id, case_name, edited_metadata)
+
     except Exception as err:
         msg = f"Error processing request: {err.__class__.__name__} - {str(err)}"
         LOG.error(msg)
         flash(msg, "danger")
-    """
+
     return redirect(request.referrer)
 
 
