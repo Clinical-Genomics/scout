@@ -1,5 +1,4 @@
 """Tests for the Case Rerunner extension"""
-
 from scout.server.extensions import rerunner
 
 
