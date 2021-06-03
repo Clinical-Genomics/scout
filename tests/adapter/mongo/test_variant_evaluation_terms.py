@@ -1,6 +1,7 @@
 import pytest
 
 from scout.adapter.mongo.variant_evaluation_term import EvaluationTerm
+from scout.server.extensions import store
 
 
 def test_evaluation_term_no_key():
@@ -76,3 +77,21 @@ def test_evaluation_term_wrong_track():
     )
     with pytest.raises(ValueError):
         EvaluationTerm(term_dict)
+
+
+def test_evaluation_term_existing_key(adapter):
+    """Test creating an evaluation term for a category with a duplicated key: should raise ValueError"""
+
+    # GIVEN a dismissal term present in database with a certain key
+    term_category = "dismissal_term"
+    term_tracks = ["rare"]
+    term_key = 1
+    term_value = dict(label="test", description="This is a test term")
+
+    inserted_term = adapter.load_evaluation_term(term_category, term_tracks, term_key, term_value)
+    assert inserted_term
+
+    # WHEN another term having the same categoery and key is interted
+    # It should return error
+    with pytest.raises(ValueError):
+        adapter.load_evaluation_term(term_category, term_tracks, term_key, term_value)

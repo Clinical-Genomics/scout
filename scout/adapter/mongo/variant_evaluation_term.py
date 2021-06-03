@@ -80,7 +80,16 @@ class VariantEvaluationHandler(object):
             "label_class": term_value.get("label_class"),
         }
         evaluation_term = EvaluationTerm(term_dict)
-        self.evaluation_terms_collection.insert_one(evaluation_term.__repr__())
+
+        existing_key = self.evaluation_terms_collection.find_one(
+            {"category": evaluation_term.category, "key": evaluation_term.key}
+        )
+        if existing_key:
+            raise ValueError(
+                f"An evaluation term with category '{evaluation_term.category}' and key '{evaluation_term.key}' already exists in database."
+            )
+
+        return self.evaluation_terms_collection.insert_one(evaluation_term.__repr__())
 
     def manual_rank_options(self, tracks):
         """Return all manual rank evaluation terms for the given tracks.
