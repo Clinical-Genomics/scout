@@ -102,8 +102,16 @@ def test_gene_panel_choices(institute_obj, case_obj):
     assert ("institute_panel_name", "Institute Panel display name") in panel_options
 
 
-def test_variants_assessment_shared_with_group(app, institute_obj, case_obj):
+def test_variants_assessment_shared_with_group(
+    mocker, real_variant_database, institute_obj, case_obj
+):
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.user_institutes",
+        return_value=[{"_id": "cust000"}],
+    )
+
     # GIVEN a db with variants,
+    adapter = real_variant_database
     case_id = case_obj["_id"]
 
     other_case_id = "other_" + case_id
@@ -114,49 +122,47 @@ def test_variants_assessment_shared_with_group(app, institute_obj, case_obj):
     group_id = ObjectId("101010101010101010101010")
 
     other_case_obj["group"] = [group_id]
+    adapter.case_collection.insert_one(other_case_obj)
 
-    # GIVEN a user logged in the app
-    with app.test_client() as client:
-        resp = client.get(url_for("auto_login"))
+    # WHEN setting the same group id for the original case
+    adapter.case_collection.find_one_and_update({"_id": case_id}, {"$set": {"group": [group_id]}})
 
-        store.case_collection.insert_one(other_case_obj)
+    # GIVEN a clinical variant from one case
+    variant = adapter.variant_collection.find_one({"case_id": case_id, "variant_type": "clinical"})
 
-        # WHEN setting the same group id for the original case
-        store.case_collection.find_one_and_update({"_id": case_id}, {"$set": {"group": [group_id]}})
+    # GIVEN a copy of the variant for the other case
+    other_variant_obj = copy.deepcopy(variant)
+    other_variant_obj["case_id"] = other_case_id
+    other_variant_obj["_id"] = "another_variant"
+    adapter.variant_collection.insert_one(other_variant_obj)
 
-        # GIVEN a clinical variant from one case
-        variant = store.variant_collection.find_one(
-            {"case_id": case_id, "variant_type": "clinical"}
-        )
+    # WHEN updating an assessment on the same first case variant
+    adapter.variant_collection.find_one_and_update(
+        {"_id": variant["_id"]}, {"$set": {"acmg_classification": 4}}
+    )
 
-        # GIVEN a copy of the variant for the other case
-        other_variant_obj = copy.deepcopy(variant)
-        other_variant_obj["case_id"] = other_case_id
-        other_variant_obj["_id"] = "another_variant"
-        store.variant_collection.insert_one(other_variant_obj)
+    # WHEN retrieving assessments for the variant from the other case
+    variants_query = {"variant_type": "clinical"}
+    variants_query_res = adapter.variants(
+        other_case_id, query=variants_query, category=variant["category"]
+    )
 
-        # WHEN updating an assessment on the same first case variant
-        store.variant_collection.find_one_and_update(
-            {"_id": variant["_id"]}, {"$set": {"acmg_classification": 4}}
-        )
+    res = variants(adapter, institute_obj, other_case_obj, variants_query_res, 1000)
+    res_variants = res["variants"]
 
-        # WHEN retrieving assessments for the variant from the other case
-        variants_query = {"variant_type": "clinical"}
-        variants_query_res = store.variants(
-            other_case_id, query=variants_query, category=variant["category"]
-        )
-
-        res = variants(store, institute_obj, other_case_obj, variants_query_res, 1000)
-        res_variants = res["variants"]
-
-        # THEN a group assessment is recalled on the other case,
-        # since the variant in the first case had an annotation
-        assert any(variant.get("group_assessments") for variant in res_variants)
+    # THEN a group assessment is recalled on the other case,
+    # since the variant in the first case had an annotation
+    assert any(variant.get("group_assessments") for variant in res_variants)
 
 
 def test_variants_research_no_shadow_clinical_assessments(
-    real_variant_database, institute_obj, case_obj
+    mocker, real_variant_database, institute_obj, case_obj
 ):
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.user_institutes",
+        return_value=[{"_id": "cust000"}],
+    )
+
     # GIVEN a db with variants,
     adapter = real_variant_database
     case_id = case_obj["_id"]
@@ -194,8 +200,13 @@ def test_variants_research_no_shadow_clinical_assessments(
 
 
 def test_variants_research_shadow_clinical_assessments(
-    real_variant_database, institute_obj, case_obj
+    mocker, real_variant_database, institute_obj, case_obj
 ):
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.user_institutes",
+        return_value=[{"_id": "cust000"}],
+    )
+
     # GIVEN a db with variants,
     adapter = real_variant_database
     case_id = case_obj["_id"]
@@ -243,8 +254,13 @@ def test_variants_research_shadow_clinical_assessments(
 
 
 def test_sv_variants_research_shadow_clinical_assessments(
-    real_variant_database, institute_obj, case_obj
+    mocker, real_variant_database, institute_obj, case_obj
 ):
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.user_institutes",
+        return_value=[{"_id": "cust000"}],
+    )
+
     # GIVEN a db with variants,
     adapter = real_variant_database
     case_id = case_obj["_id"]
