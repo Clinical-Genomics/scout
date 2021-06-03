@@ -1,5 +1,5 @@
 {% extends "layout_bs4.html" %}
-{% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal %}
+{% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal, reanalysis_modal %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal %}
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
@@ -14,6 +14,7 @@
 {% block css %}
 {{ super() }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+<link rel="stylesheet" href="{{ url_for('cases.static', filename='case_styles.css') }}"></link>
 {% endblock %}
 
 {% block top_nav %}
@@ -75,7 +76,7 @@
         {% if case.track == 'cancer' %}
           <div class="col-xs-12 col-md-12">{{ cancer_individuals_table(case, institute, tissue_types) }}</div>
         {% else %}
-          <div class="col-xs-12 col-md-12">{{ individuals_table(case, institute, tissue_types) }}</div>
+          <div class="col-xs-12 col-md-12">{{ individuals_table(case, institute, tissue_types, display_rerunner) }}</div>
         {% endif %}
       </div>
 
@@ -147,6 +148,7 @@
         {{ modal_synopsis() }}
         {{ rerun_modal(institute, case) }}
         {{ research_modal(institute, case) }}
+        {{ reanalysis_modal(institute, case) }}
         {{ beacon_modal(case) }}
         {{ matchmaker_modal(institute, case, mme_nodes) }}
     </div> <!-- end of card body -->
@@ -395,6 +397,7 @@
 
 {% block scripts %}
 {{ super() }}
+<script src="{{ url_for('cases.static', filename='edit_pedigree.js') }}"></script>
 <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
 <script src="{{ url_for('cases.static', filename='case_images.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
