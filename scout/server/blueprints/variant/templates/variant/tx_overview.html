@@ -52,14 +52,24 @@
                     </a>
                   </td> <!-- end of gene symbol col-->
                   <td>
+		    {% set mane_select = transcript.get("mane_select_transcript","") %}
+		    {% set mane_plus_clinical = transcript.get("mane_plus_clinical_transcript","") %}
+		    {% if mane_select %}
+		      {{mane_select}} <a href="#" data-toggle="tooltip" title="MANE Select"><span class="badge badge-success" title="MANE Select">M</span></a>
+		    {% endif %}
+		    {% if mane_plus_clinical %}
+		      {{mane_plus_clincal}} <a href="#" data-toggle="tooltip" title="MANE Plus Clinical"><span class="badge badge-success" title="MANE Plus Clinical">M+</span></a>
+		    {% endif %}
                     {% set decorated_txs = [] %}
                     {% for tx_id in transcript.refseq_identifiers %}
-                      {% if tx_id.startswith('XM') and transcript.refseq_id != tx_id %} <!-- tx of minor importance -->
-                        {% set decorated_tx = '<font class="text-muted font-italic">' + tx_id + '</font>' %}
-                      {% else %}
-                        {% set decorated_tx = tx_id %} <!-- tx with refseq ID -->
+                      {% if not (mane_select.startswith(tx_id) or mane_plus_clinical.startswith(tx_id)) %}
+                        {% if tx_id.startswith('XM') and transcript.refseq_id != tx_id %} <!-- tx of minor importance -->
+                          {% set decorated_tx = '<font class="text-muted font-italic">' + tx_id + '</font>' %}
+                        {% else %}
+                          {% set decorated_tx = tx_id %} <!-- tx with refseq ID -->
+                        {% endif %}
+                        {{ decorated_txs.append(decorated_tx)|default("", true) }}
                       {% endif %}
-                      {{ decorated_txs.append(decorated_tx)|default("", true) }}
                     {% endfor %}
                     {% if transcript.transcript_id.startswith('NM') and not decorated_txs %} <!-- VEP RefSeq annotation, use tx id as refseq ID -->
                       {{ decorated_txs.append(transcript.transcript_id)|default("", true) }}

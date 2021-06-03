@@ -1012,12 +1012,12 @@ def check_form_gene_symbols(
             "label": "info",
         },
         "not_found_symbols": {
-            "message": "HGNC symbols not present in database genes collection",
+            "message": "HGNC symbols not present in database's genes collection",
             "gene_list": not_found_symbols,
             "label": "warning",
         },
         "not_found_ids": {
-            "message": "HGNC ids not present in database genes collection",
+            "message": "HGNC ids not present in database's genes collection",
             "gene_list": not_found_ids,
             "label": "warning",
         },
