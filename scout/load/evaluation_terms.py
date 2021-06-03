@@ -25,30 +25,6 @@ def _print_loaded(adapter):
     )
 
 
-def _load_default_terms(adapter, category, tracks, terms):
-    """Interact with the database adapter to load evaluation terms in the database
-
-    Args:
-        adapter(MongoAdapter)
-        category(str): "dismissal_term" or "manual_rank"
-        tracks(list): a list of tracks to apply the terms to
-        terms(list): example -->
-            [
-                8: {
-                    "label": "KP",
-                    "name": "Known pathogenic",
-                    "description": "Known pathogenic, previously known pathogenic in ClinVar, HGMD, literature, etc",
-                    "label_class": "danger",
-                },
-                ...
-            ]
-    """
-    for key, term in terms.items():
-        adapter.load_evaluation_term(
-            category=category, tracks=tracks, term_key=key, term_value=term
-        )
-
-
 def load_default_evaluation_terms(adapter):
     """Load default variant evaluation terms stored in json resource file
 

@@ -116,7 +116,7 @@ def variant(
             'causatives': <list(other_causatives)>,
             'events': <list(events)>,
             'overlapping_svs': <list(overlapping svs)>,
-            'manual_rank_options': store.manual_rank_options,
+            'manual_rank_options': store.manual_rank_options(),
             'cancer_tier_options': store.cancer_tier_terms(),
             'dismiss_variant_options': store.dismiss_variant_options(traks),
             'ACMG_OPTIONS': ACMG_OPTIONS,
