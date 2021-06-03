@@ -1,4 +1,4 @@
-# Scout react Project
+# Scout react https://scout-stage.web.app/
 ## Standards 
 Type can be:
 - `feature`: (new feature for the user, not a new feature for build script)
