@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from scout.commands import cli
-from scout.demo import custom_evaluation_terms_file_path
+from scout.resources import default_evaluations_file_path
 
 
 def test_load_default_terms(mock_app, adapter):
@@ -22,7 +22,7 @@ def test_load_custom_terms(mock_app, adapter):
     runner = mock_app.test_cli_runner()
     result = runner.invoke(
         cli,
-        ["load", "evaluation-terms", "custom-terms", "--file", custom_evaluation_terms_file_path],
+        ["load", "evaluation-terms", "custom-terms", "--file", default_evaluations_file_path],
         input="y",
     )
 
