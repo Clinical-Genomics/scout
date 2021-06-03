@@ -1,14 +1,8 @@
 import json
 import logging
 
-from scout.constants import (
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-    CANCER_TIER_OPTIONS,
-    DISMISS_VARIANT_OPTIONS,
-    MANUAL_RANK_OPTIONS,
-    MOSAICISM_OPTIONS,
-)
 from scout.constants.variant_tags import EVALUATION_TERM_CATEGORIES
+from scout.resources import default_evaluations_file_path
 
 LOG = logging.getLogger(__name__)
 
@@ -56,37 +50,16 @@ def _load_default_terms(adapter, category, tracks, terms):
 
 
 def load_default_evaluation_terms(adapter):
-    """Load default evaluation terms into database on database setup
+    """Load default variant evaluation terms stored in json resource file
 
     Args:
         adapter(MongoAdapter)
     """
-    # Remove all evaluation terms from database
-    adapter.drop_evaluation_terms(EVALUATION_TERM_CATEGORIES)
-
-    # Load default dismiss variant terms (rare and cancer tracks)
-    _load_default_terms(adapter, "dismissal_term", ["rare", "cancer"], DISMISS_VARIANT_OPTIONS)
-    # Load default dismiss variant terms (cancer track)
-    _load_default_terms(
-        adapter,
-        "dismissal_term",
-        ["cancer"],
-        CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-    )
-
-    # Load manual rank terms (rare and cancer tracks)
-    _load_default_terms(adapter, "manual_rank", ["rare", "cancer"], MANUAL_RANK_OPTIONS)
-
-    # Load cancer tier terms (cancer track)
-    _load_default_terms(adapter, "cancer_tier", ["cancer"], CANCER_TIER_OPTIONS)
-
-    # Load mosaicism options terms (rare track)
-    _load_default_terms(adapter, "mosaicism_option", ["rare"], MOSAICISM_OPTIONS)
-
-    _print_loaded(adapter)
+    with open(default_evaluations_file_path) as json_file:
+        load_evaluation_terms_from_file(adapter, json_file)
 
 
-def load_custom_evaluation_terms(adapter, json_file):
+def load_evaluation_terms_from_file(adapter, json_file):
     """Load into database custom variant evaluation terms read from a json file
 
     Args:

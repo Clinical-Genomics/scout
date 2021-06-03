@@ -5,7 +5,10 @@ import logging
 import click
 from flask.cli import with_appcontext
 
-from scout.load.evaluation_terms import load_custom_evaluation_terms, load_default_evaluation_terms
+from scout.load.evaluation_terms import (
+    load_default_evaluation_terms,
+    load_evaluation_terms_from_file,
+)
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
@@ -44,4 +47,4 @@ def custom_terms(file):
         'This command will replace all evantual variant evaluation terms ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") present in the database with the ones found on the provided file. Continue?',
         abort=True,
     )
-    load_custom_evaluation_terms(store, file)
+    load_evaluation_terms_from_file(store, file)

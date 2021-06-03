@@ -16,3 +16,6 @@ cytoband_files = {
     "37": cytobands_37_path,
     "38": cytobands_38_path,
 }
+
+default_evaluations_file = "resources/variant_evaluation_terms.json"
+default_evaluations_file_path = pkg_resources.resource_filename("scout", default_evaluations_file)
