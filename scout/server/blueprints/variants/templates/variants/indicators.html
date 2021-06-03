@@ -39,10 +39,16 @@
 {% endmacro %}
 
 
-{% macro other_tiered_badge(variant, cancer_tier_options) %}
-  {% for tiered in variant.matching_tiered or [] %}
-    <a href="{{tiered[1]}}" class="badge badge-light" target="blank" data-toggle="tooltip" data-placement="right" title="matching tier from another case">{{cancer_tier_options[tiered[0]].label}}</a>
-  {% endfor %}
+{% macro other_tiered_variants(variant) %}
+  {% if variant.matching_tiered %}
+    <a href="#" role="button" class="btn popovers" data-toggle="popover" data-html="true" title=""
+      data-content="
+        {% for tiered in variant.matching_tiered %}
+          <a href='#' class='badge badge-{{tiered[1]}} text-{{ 'white' if tiered[1] in ['danger','primary','default'] else 'black' }}' target='blank'>{{tiered[0]}}</a>
+        {% endfor %}
+      "
+     data-original-title="Previously tiered as"><span class="badge badge-dark">T</span></a>
+  {% endif %}
 {% endmacro %}
 
 

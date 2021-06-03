@@ -215,48 +215,53 @@
 {% endmacro %}
 
 {% macro matching_variants() %}
-  {% if causatives %}
-    <div class="card panel-default">
-      <div class="panel-heading">Matching causatives from other cases</div>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-          {% for other_variant in causatives %}
-            <li class="list-group-item" style="padding: 0;">
-              <a href="{{ url_for('variant.variant',
-                                  institute_id=institute._id,
-                                  case_name=other_variant.case_display_name,
-                                  variant_id=other_variant._id) }}">
-                {{ other_variant.case_display_name }}
-              </a>
-            </li>
+  <div class="card mt-3">
+    <div class="card-body d-flex justify-content-around" style="padding:2px !important;">
+
+      {% if not variant.matching_tiered and not causatives and not managed_variant %}
+        No matching variants to display
+      {% endif %}
+
+      {% if variant.matching_tiered %}
+        <div class="col">
+          Matching tiered:
+          {% for tiered in variant.matching_tiered %}
+            <a href='{{tiered[2]}}' class='badge badge-{{tiered[1]}} text-{{ 'white' if tiered[1] in ['danger','primary','default'] else 'black' }}' target='blank'>{{tiered[0]}}</a>&nbsp;
           {% endfor %}
-        </ul>
-      </div> <!--end of card body-->
-    </div><!--end of card-->
-  {% endif %}
-  {% if managed_variant %}
-    <div class="card panel-default">
-      <div class="panel-heading">Matching managed variant</div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-2">
-            {{ managed_variant.display_id }}
-          </div>
-          <div class="col-10">
-            {{ managed_variant.description }}
+        </div>
+      {% endif %} <!--end of matching tiered col -->
+
+      {% if causatives %}
+        <div class="col">
+          Matching causatives:
+          {% for other_variant in causatives%}
+            <a class='badge badge-secondary text-white' href="{{ url_for('variant.variant',
+                                institute_id=institute._id,
+                                case_name=other_variant.case_display_name,
+                                variant_id=other_variant._id) }}">
+              {{ other_variant.case_display_name }} &nbsp;
+            </a>
+          {% endfor %}
+        </div>
+      {% endif %} <!--end of other causatives col -->
+
+      {% if managed_variant %}
+        <div class="col">
+          <div class="row">
+            <div class="col-4">
+              Matching managed variant: {{ managed_variant.display_id }}
+            </div>
+            <div class="col-8">
+              {{ managed_variant.description }}
+            </div>
           </div>
         </div>
-      </div> <!--end of card body-->
-    </div><!--end of card-->
-  {% endif %}
-  {% if not managed_variant and not causatives %}
-    <div class="card mt-3">
-      <div class="card-body mt-1 ml-1" style="padding: 0;">
-        <h6>No matching causative or managed variants</h6>
-      </div> <!--end of card body-->
-    </div><!--end of card-->
-  {% endif%}
+      {% endif %} <!--end of managed variant col -->
+
+    </div> <!--end of body tag-->
+  </div><!-- end of card tag-->
 {% endmacro %}
+
 
 {% macro panel_basics() %}
   <div class="card panel-default">

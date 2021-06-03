@@ -4,7 +4,7 @@ from datetime import datetime
 import pymongo
 from bson import ObjectId
 
-from scout.constants import REV_ACMG_MAP
+from scout.constants import CANCER_TIER_OPTIONS, REV_ACMG_MAP
 
 SANGER_OPTIONS = ["True positive", "False positive", "Not validated"]
 
@@ -253,9 +253,9 @@ class VariantEventHandler(object):
             user_institutes(list): list of dictionaries
 
         Returns:
-            matching_tier(list)
+            matching_tier(set)  # set of tuples like this: (tier, label_class, link_to_variant)
         """
-        tiered = set()  # set of tuples like this: (tier, link_to_variant)
+        tiered = set()
         query = {
             "category": "variant",
             "verb": "cancer_tier",
@@ -273,7 +273,14 @@ class VariantEventHandler(object):
                 or tiered_matching_variant["_id"] == query_variant["_id"]
             ):
                 continue
-            tiered.add((tiered_matching_variant["cancer_tier"], tiered_event["link"]))
+            tier_id = tiered_matching_variant["cancer_tier"]
+            tiered.add(
+                (
+                    tier_id,
+                    CANCER_TIER_OPTIONS.get(tier_id, {}).get("label_class", "secondary"),
+                    tiered_event["link"],
+                )
+            )
 
         return tiered
 
