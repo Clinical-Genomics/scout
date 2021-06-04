@@ -9,12 +9,19 @@ import requests
 from defusedxml import ElementTree
 
 from scout.constants import CHROMOSOMES
+from scout.constants.update_links import (
+    EXACT_GENE_CONTRAINT,
+    EXACT_GENE_CONTRAINT_BUCKET,
+    HGNC_COMPLETE_SET,
+    HPO_TERMS_URL,
+    HPO_URL,
+    OMIM_DOWNLOADS_URL,
+    OMIM_TO_GENE_URL,
+)
 from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
 
 LOG = logging.getLogger(__name__)
 
-HPO_URL = "http://purl.obolibrary.org/obo/hp/hpoa/{}"
-HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
 TIMEOUT = 20
 
 
@@ -167,7 +174,7 @@ def fetch_hpo_terms():
     Returns:
         res(list(str)): A list with the lines
     """
-    url = "http://purl.obolibrary.org/obo/hp.obo"
+    url = HPO_TERMS_URL
 
     return fetch_resource(url)
 
@@ -242,10 +249,10 @@ def fetch_mim_files(api_key, mim2genes=False, mimtitles=False, morbidmap=False, 
     """
 
     LOG.info("Fetching OMIM files from https://omim.org/")
-    mim2genes_url = "https://omim.org/static/omim/data/mim2gene.txt"
-    mimtitles_url = "https://data.omim.org/downloads/{0}/mimTitles.txt".format(api_key)
-    morbidmap_url = "https://data.omim.org/downloads/{0}/morbidmap.txt".format(api_key)
-    genemap2_url = "https://data.omim.org/downloads/{0}/genemap2.txt".format(api_key)
+    mim2genes_url = OMIM_TO_GENE_URL
+    mimtitles_url = OMIM_DOWNLOADS_URL.format(api_key, "mimTitles.txt")
+    morbidmap_url = OMIM_DOWNLOADS_URL.format(api_key, "morbidmap.txt")
+    genemap2_url = OMIM_DOWNLOADS_URL.format(api_key, "genemap2.txt")
 
     mim_files = {}
     mim_urls = {}
@@ -379,8 +386,7 @@ def fetch_hgnc():
     Returns:
         hgnc_gene_lines(list(str))
     """
-    file_name = "hgnc_complete_set.txt"
-    url = "ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/{0}".format(file_name)
+    url = HGNC_COMPLETE_SET
     LOG.info("Fetching HGNC genes from %s", url)
 
     hgnc_lines = fetch_resource(url)
@@ -394,10 +400,7 @@ def fetch_exac_constraint():
     Returns:
         exac_lines(iterable(str))
     """
-    file_name = "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt"
-    url = (
-        "ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3/functional_gene_constraint" "/{0}"
-    ).format(file_name)
+    url = EXACT_GENE_CONTRAINT
 
     exac_lines = None
 
@@ -408,10 +411,7 @@ def fetch_exac_constraint():
     except HTTPError:
         LOG.info("Failed to fetch exac constraint scores file from ftp server")
         LOG.info("Try to fetch from google bucket...")
-        url = (
-            "https://storage.googleapis.com/gnomad-public/legacy/exacv1_downloads/release0.3.1"
-            "/manuscript_data/forweb_cleaned_exac_r03_march16_z_data_pLI.txt.gz"
-        )
+        url = EXACT_GENE_CONTRAINT_BUCKET
 
     if not exac_lines:
         exac_lines = fetch_resource(url)
@@ -429,13 +429,9 @@ def fetch_refseq_version(refseq_acc):
         version(str) example: NM_020533.3 or NM_020533 if no version associated is found
     """
     version = refseq_acc
-    base_url = (
-        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&"
-        "term={}&idtype=acc"
-    )
 
     try:
-        resp = get_request(base_url.format(refseq_acc))
+        resp = get_request(REFSEQ_URL.format(refseq_acc))
         tree = ElementTree.fromstring(resp.content)
         version = tree.find("IdList").find("Id").text or version
 
