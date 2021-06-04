@@ -9,11 +9,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Highlight and show version number for RefSeq MANE transcripts.
 - Added integration to a rerunner service for toggling reanalysis with updated pedigree information
 ### Fixed
+- Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
 - Moved variant evaluation terms ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") from constants file to database
 - Replace default variant evaluation terms with custom terms included in a json file
+
 
 ## [4.36]
 ### Added
