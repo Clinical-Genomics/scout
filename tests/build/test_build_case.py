@@ -6,13 +6,13 @@ from scout.exceptions import PedigreeError, ConfigError, IntegrityError
 from scout.build import build_case
 
 
-def test_build_case(parsed_case, adapter, institute_obj, dummypanel_obj):
+def test_build_case(parsed_case, adapter, institute_obj, testpanel_obj):
     """Test function that build a case object when a case is loaded"""
 
     # GIVEN a database containing an institute
     adapter.institute_collection.insert_one(institute_obj)
     # A gene panel
-    adapter.panel_collection.insert_one(dummypanel_obj)
+    adapter.panel_collection.insert_one(testpanel_obj)
     # And a phenotype term
     adapter.hpo_term_collection.insert_one(
         {"_id": "HP:0001250", "hpo_id": "HP:0001250", "description": "Seizures"}
@@ -53,7 +53,6 @@ def test_build_case(parsed_case, adapter, institute_obj, dummypanel_obj):
     assert case_obj["sv_rank_model_version"] == parsed_case["sv_rank_model_version"]
 
     assert case_obj["madeline_info"] == parsed_case["madeline_info"]
-
 
     assert case_obj["delivery_report"] == parsed_case["delivery_report"]
 
@@ -119,7 +118,13 @@ def test_build_case_non_existing_owner(adapter, institute_obj):
         case_obj = build_case(case_info, adapter)
 
 
-# def test_build_case_config(parsed_case):
-#     case_obj = build_case(parsed_case)
-#     print(case_obj.to_json())
-#     assert False
+def test_build_case_no_valid_panel(adapter, institute_obj):
+    """Test loading a case containing a non-valid gene panel"""
+
+    adapter.institute_collection.insert_one(institute_obj)
+    # GIVEN a case without a valid gene panel
+    case_info = {"case_id": "test-case", "owner": "cust000", "panel": ["FOO"]}
+    # WHEN case is built
+    case_obj = build_case(case_info, adapter)
+    # THEN assert that case is loaded and panel will not be saved in case document
+    assert case_obj["panels"] == []

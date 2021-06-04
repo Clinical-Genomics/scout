@@ -6,23 +6,86 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+Highlight and show version number for RefSeq MANE transcripts.
+- Added integration to a rerunner service for toggling reanalysis with updated pedigree information
+### Fixed
+- Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
+### Changed
+- Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
+- Load case with missing panels in config files, but show warning.
+- Moved variant, gene and panel info from the basic pane to summary panel for all variants.
+- Renamed basic panel to classify.
+- Added dedicated template for cancer variants
+- Removed OMIM, Inheritance, Old loqusdb and Pedigre panels for cancer variants
+- Reorganized the orders of panels for variant and cancer variant views
+- Revamped “basic” panel to a panel dedicated to classify variants
+- Revamped the summary panel to be more compact.
+- Added dedicated variant quality pane and removed relevant panes (mappability)
+
+
+## [4.36]
+### Added
+- Parse and save splice junction tracks from case config file
+- Tooltip in observations panel, explaining that case variants with no link might be old variants, not uploaded after a case rerun
+### Fixed
+- Warning on overwriting variants with same position was no longer shown
+- Increase the height of the dropdowns to 425px
+- More indices for the case table as it grows, specifically for causatives queries
+- Splice junction tracks not centered over variant genes
+- Total number of research variants count
+- Update variants stats in case documents every time new variants are loaded
+- Bug in flashing warning messages when filtering variants
+### Changed
+- Clearer warning messages for genes and gene/gene-panels searches in variants filters
+
+## [4.35]
+### Added
+- A new index for hgnc_symbol in the hgnc_gene collection
+- A Pedigree panel in STR page
+- Display Tier I and II variants in case view causatives card for cancer cases
+### Fixed
+- Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
+- Research variants filtering by gene
+- Do not attempt to populate annotations for not loaded pinned/causatives
+- Add max-height to all dropdowns in filters
+### Changed
+- Switch off non-clinical gene warnings when filtering research variants
+- Don't display OMIM disease card in case view for cancer cases
+- Refactored Individuals and Causative card in case view for cancer cases
+- Update and style STR case report
+
+## [4.34]
+### Added
 - Saved filter lock and unlock
 - Filters can optionally be marked audited, logging the filter name, user and date on the case events and general report.
 - Added `ClinVar hits` and `Cosmic hits` in cancer SNVs filters
 - Added `ClinVar hits` to variants filter (rare disease track)
 - Load cancer demo case in docker-compose files (default and demo file)
 - Inclusive-language check using [woke](https://github.com/get-woke/woke) github action
+- Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
+- Grey background for dismissed compounds in variants list and variant page
+- Pin badge for pinned compounds in variants list and variant page
+- Support LoqusDB REST API queries
+- Add a docker-compose-matchmaker under scout/containers/development to test matchmaker locally
+- Script to investigate consequences of symbol search bug
+- Added GATK to list of SV and cancer SV callers
 ### Fixed
 - Make MitoMap link work for hg38 again
 - Export Variants feature crashing when one of the variants has no primary transcripts
 - Redirect to last visited variantS page when dismissing variants from variants list
 - Improved matching of SVs Loqus occurrences in other cases
 - Remove padding from the list inside (Matching causatives from other cases) panel
-### Added
-- Add link to HmtVar for mitochondrial variants (if VCF is annotated with HmtNote)
-- Grey background for dismissed compounds in variants list and variant page
-- Pin badge for pinned compounds in variants list and variant page
-- Support LoqusDB REST API queries
+- Pass None to get_app function in CLI base since passing script_info to app factory functions was deprecated in Flask 2.0
+- Fixed failing tests due to Flask update to version 2.0
+- Speed up user events view
+- Causative view sort out of memory error
+- Use hgnc_id for gene filter query
+- Typo in case controllers displaying an error every time a patient is matched against external MatchMaker nodes
+- Do not crash while attempting an update for variant documents that are too big (> 16 MB)
+- Old STR causatives (and other variants) may not have HGNC symbols - fix sort lambda
+- Check if gene_obj has primary_transcript before trying to access it
+- Warn if a gene manually searched is in a clinical panel with an outdated name when filtering variants
+- ChrPos split js not needed on STR page yet
 ### Changed
 - Remove parsing of case `genome_version`, since it's not used anywhere downstream
 - Introduce deprecation warning for Loqus configs that are not dictionaries
@@ -31,6 +94,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Commit pulse repo badge temporarily set to weekly
 - Sort ClinVar submissions objects by ascending "Last evaluated" date
 - Refactored the MatchMaker integration as an extension
+- Replaced some sensitive words as suggested by woke linter
+- Documentation for load-configuration rewritten.
+- Add styles to MatchMaker matches table
+- More detailed info on the data shared in MatchMaker submission form
 
 ## [4.33.1]
 ### Fixed
@@ -55,14 +122,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changed from deprecated db update method
 - Pre-selected fields to run queries with in dashboard page
 - Do not filter by any institute when first accessing the dashboard
-- Moved variant, gene and panel info from the basic pane to summary panel for all variants.
-- Renamed basic panel to classify.
-- Added dedicated template for cancer variants
-- Removed OMIM, Inheritance, Old loqusdb and Pedigre panels for cancer variants
-- Reorganized the orders of panels for variant and cancer variant views
-- Revamped “basic” panel to a panel dedicated to classify variants
-- Revamped the summary panel to be more compact.
-- Added dedicated variant quality pane and removed relevant panes (mappability)
+- Removed OMIM panel in case view for cancer cases
+- Display Tier I and II variants in case view causatives panel for cancer cases
+- Refactored Individuals and Causative panels in case view for cancer cases
 
 ## [4.32.1]
 ### Fixed

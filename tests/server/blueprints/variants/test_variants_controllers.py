@@ -3,7 +3,7 @@ import logging
 
 from bson.objectid import ObjectId
 from flask_wtf import FlaskForm
-from wtforms import SelectField
+from wtforms import SelectField, StringField
 
 from scout.constants import CHROMOSOMES_38, EXPORT_HEADER
 from scout.server.blueprints.variants.controllers import (
@@ -12,10 +12,12 @@ from scout.server.blueprints.variants.controllers import (
     match_gene_txs_variant_txs,
     populate_chrom_choices,
     sv_variants,
+    update_form_hgnc_symbols,
     variant_export_lines,
     variants,
     variants_export_header,
 )
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
@@ -363,3 +365,49 @@ def test_variant_csv_export(real_variant_database, case_obj):
     for export_line in export_lines:
         export_cols = export_line.split(",")
         assert len(export_cols) == len(export_header)
+
+
+def test_update_form_hgnc_symbols_valid_gene_symbol(app, case_obj):
+    """Test controller that populates HGNC symbols form filter in variants page. Provide valid gene symbol"""
+
+    # GIVEN a case analysed with a gene panel
+    test_panel = store.panel_collection.find_one()
+    case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
+
+    # GIVEN a variants filter form
+    class TestForm(FlaskForm):
+        hgnc_symbols = StringField()
+        data = StringField()
+
+    form = TestForm()
+
+    # GIVEN a user trying to filter research variants using a valid gene symbol
+    form.hgnc_symbols.data = ["POT1"]
+    form.data = {"gene_panels": [], "variant_type": "research"}
+    updated_form = update_form_hgnc_symbols(store, case_obj, form)
+
+    # Form should be updated correctly
+    assert form.hgnc_symbols.data == ["POT1"]
+
+
+def test_update_form_hgnc_symbols_valid_gene_id(app, case_obj):
+    """Test controller that populates HGNC symbols form filter in variants page. Provide HGNC ID"""
+
+    # GIVEN a case analysed with a gene panel
+    test_panel = store.panel_collection.find_one()
+    case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
+
+    # GIVEN a variants filter form
+    class TestForm(FlaskForm):
+        hgnc_symbols = StringField()
+        data = StringField()
+
+    form = TestForm()
+
+    # GIVEN a user trying to filter clinical variants using a valid gene ID
+    form.hgnc_symbols.data = ["17284"]
+    form.data = {"gene_panels": [], "variant_type": "clinical"}
+    updated_form = update_form_hgnc_symbols(store, case_obj, form)
+
+    # Form should be updated correctly
+    assert form.hgnc_symbols.data == ["POT1"]

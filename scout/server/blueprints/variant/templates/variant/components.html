@@ -59,7 +59,7 @@
       {{ acmg_form(institute, case, variant, ACMG_OPTIONS, variant.acmg_classification.code if variant.acmg_classification) }}
       <div class="mt-3">
         <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
-        {% if variant._id in case.suspects and not variant.clinvar_clinsig %}
+        {% if case.suspects and variant._id in case.suspects and not variant.clinvar_clinsig %}
           <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}"
             class="btn btn-outline-secondary form-control" target="_blank">Submit to ClinVar</a>
         {% endif %}
@@ -79,7 +79,26 @@
 {% endmacro %}
 
 
-{% macro matching_variants(managed_variant) %}
+{% macro matching_variants(causatives, managed_variant) %}
+  {% if causatives %}
+    <div class="card panel-default">
+      <div class="panel-heading">Matching causatives from other cases</div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          {% for other_variant in causatives %}
+            <li class="list-group-item" style="padding: 0;">
+              <a href="{{ url_for('variant.variant',
+                                  institute_id=institute._id,
+                                  case_name=other_variant.case_display_name,
+                                  variant_id=other_variant._id) }}">
+                {{ other_variant.case_display_name }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div> <!--end of card body-->
+    </div><!--end of card-->
+  {% endif %}
   {% if managed_variant %}
     <div class="card panel-default">
       <div class="panel-heading">Matching managed variant</div>
@@ -95,15 +114,58 @@
       </div> <!--end of card body-->
     </div><!--end of card-->
   {% endif %}
-  {% if not managed_variant %}
+  {% if not managed_variant and not causatives %}
     <div class="card mt-3">
       <div class="card-body mt-1 ml-1" style="padding: 0;">
-        <h6>No managed variants</h6>
+        <h6>No matching causative or managed variants</h6>
       </div> <!--end of card body-->
     </div><!--end of card-->
   {% endif%}
 {% endmacro %}
 
+{% macro matching_variants(managed_variant, causatives) %}
+  {% if causatives %}
+    <div class="card panel-default">
+      <div class="panel-heading">Matching causatives from other cases</div>
+      <div class="card-body">
+        <ul class="list-group list-group-flush">
+          {% for other_variant in causatives %}
+            <li class="list-group-item" style="padding: 0;">
+              <a href="{{ url_for('variant.variant',
+                                  institute_id=other_variant.owner,
+                                  case_name=other_variant.case_display_name,
+                                  variant_id=other_variant._id) }}">
+                {{ other_variant.case_display_name }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div> <!--end of card body-->
+    </div><!--end of card-->
+  {% endif %}
+  {% if managed_variant %}
+    <div class="card panel-default">
+      <div class="panel-heading">Matching managed variant</div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-2">
+            {{ managed_variant.display_id }}
+          </div>
+          <div class="col-10">
+            {{ managed_variant.description }}
+          </div>
+        </div>
+      </div> <!--end of card body-->
+    </div><!--end of card-->
+  {% endif %}
+  {% if not managed_variant and not causatives %}
+    <div class="card mt-3">
+      <div class="card-body mt-1 ml-1" style="padding: 0;">
+        <h6>No matching causative or managed variants</h6>
+      </div> <!--end of card body-->
+    </div><!--end of card-->
+  {% endif%}
+{% endmacro %}
 
 {% macro compounds_panel(institute, case, variant) %}
   <div class="card panel-default">

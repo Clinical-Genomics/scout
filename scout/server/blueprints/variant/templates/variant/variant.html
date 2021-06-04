@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
-{% from "variants/utils.html" import modal_causative %}
-{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, igv_track_selection %}
+{% from "variants/utils.html" import compounds_table %}
+{% from "variant/utils.html" import modal_causative, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, igv_track_selection %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, old_observations, observations_panel, severity_list, conservations, mappability %}
@@ -69,7 +69,7 @@
     {% endif %}
 
     <div class="row">
-      <div class="col-sm-12">{{ matching_variants(managed_variant) }}</div>
+      <div class="col-sm-12">{{ matching_variants(managed_variant, causatives) }}</div>
       <div class="col-sm-4">
         {{ panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options) }}
         {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
@@ -340,7 +340,7 @@
         {% if splice_junctions_tracks %}
           <li class="list-group-item">
             <div>{{ splice_junctions_button(institute._id, case.display_name, variant._id) }}</div>
-          <li>
+          </li>
         {% endif %}
       </ul>
       {% if variant.custom %}
@@ -367,19 +367,6 @@
     </div> <!-- end of card body -->
   </div> <!--  end of card div -->
 {% endmacro %}
-
-
-<<<<<<< HEAD
-=======
-{% macro compounds_panel() %}
-  <div class="card panel-default">
-    <div class="panel-heading">Compounds (top 20)</div>
-    <div class="card-body">
-      {{ compounds_table(institute, case, variant.compounds[:20]) }}
-    </div>
-  </div>
-{% endmacro %}
-
 
 {% macro modal_sanger() %}
   <form action="{{ url_for('variant.verify', institute_id=institute._id,
@@ -429,52 +416,6 @@
       </div>
     </div>
   </form>
-{% endmacro %}
-
-{% macro external_links() %}
-  <div class="panel panel-default">
-    {% for gene in variant.genes %}
-      <div class="panel-heading">
-        External links: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-      </div>
-      <div class="panel-body">
-          <a href="{{ gene.ensembl_link }}" class="btn btn-outline-secondary" target="_blank">Ensembl</a>
-          <a href="{{ gene.hpa_link }}" class="btn btn-outline-secondary" target="_blank">HPA</a>
-          <a href="{{ gene.string_link }}" class="btn btn-outline-secondary" target="_blank">STRING</a>
-          <a href="{{ gene.genemania_link }}" class="btn btn-outline-secondary" target="_blank">GENEMANIA</a>
-          <a href="{{ variant.ucsc_link }}" class="btn btn-outline-secondary" target="_blank">UCSC</a>
-          {% if gene.entrez_link %}
-            <a href="{{ gene.entrez_link }}" class="btn btn-outline-secondary" target="_blank">Entrez</a>
-          {% endif %}
-          <a href="http://tools.genes.toronto.edu/" class="btn btn-outline-secondary" target="_blank">SPANR</a>
-          <a href="{{ gene.reactome_link }}" class="btn btn-outline-secondary" target="_blank">Reactome</a>
-          <a href="{{ gene.expression_atlas_link }}" class="btn btn-outline-secondary" target="_blank">Expr. Atlas</a>
-          <a href="{{ gene.clingen_link }}" class="btn btn-outline-secondary" target="_blank">ClinGen</a>
-          {% if case.mt_bams or case.bam_files %}
-            <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
-          {% endif %}
-          <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
-          {% if variant.chromosome in ['MT','M'] %}
-            <a href="{{ variant.mitomap_link }}" class="btn btn-outline-secondary" target="_blank">MitoMap</a>
-          {% endif %}
-          {% if variant.hmtvar_variant_id %}
-            <a href="{{ variant.hmtvar_link }}" class="btn btn-outline-secondary" target="_blank">HmtVar</a>
-          {% endif %}
-          {% if gene.tp53_link %}
-            <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>
-          {% endif %}
-          {% if gene.iarctp53_link %}
-            <a href="{{ gene.iarctp53_link }}" class="btn btn-outline-secondary" target="_blank">IARC TP53</a>
-          {% endif %}
-          {% if cancer %}
-            <a href="{{ gene.cbioportal_link }}" class="btn btn-outline-secondary" target="_blank">cBioPortal</a>
-            <a href="{{ gene.oncokb_link }}" class="btn btn-outline-secondary" target="_blank">OncoKB</a>
-            <a href="{{ gene.civic_link }}" class="btn btn-outline-secondary" target="_blank">CIViC</a>
-          {% endif %}
-            <a href="http://marrvel.org/human/variant/{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{variant.alternative}}" class="btn btn-outline-secondary" target="_blank">MARRVEL</a>
-      </div>
-    {% endfor %}
-  </div>
 {% endmacro %}
 
 {% macro acmg_form(selected=None) %}

@@ -113,7 +113,7 @@ class CaseHandler(object):
         """
         hgnc_id = self.hgnc_id(hgnc_symbol=query_term)
         if hgnc_id is None:
-            LOG.debug(f"No gene with the HGNC symbol {hgnc_id} found.")
+            LOG.debug(f"No gene with the HGNC symbol {query_term} found.")
             query["_id"] = {"$in": []}  # No result should be returned by query
 
         unwind = "$causatives"

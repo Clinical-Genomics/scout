@@ -2,7 +2,7 @@
 {% macro cancer_individuals_table(case, institute, tissues) %}
 <form method="POST" action="{{ url_for('cases.update_cancer_sample', institute_id=institute._id, case_name=case.display_name) }}">
   <div class="card panel-default">
-    <div class="panel-heading">Individuals</div>
+    <div class="panel-heading">Samples</div>
     <div class="table-responsive">
       <table class="table table-sm">
         <thead>
@@ -67,13 +67,24 @@
 </form>
 {% endmacro %}
 
-{% macro individuals_table(case, institute, tissues) %}
+{% macro individuals_table(case, institute, tissues, display_rerunner) %}
 <form method="POST" action="{{ url_for('cases.update_individual', institute_id=institute._id, case_name=case.display_name) }}">
   <div class="card panel-default">
-    <div class="panel-heading">Individuals</div>
+    <div class="panel-heading">
+      <span>Individuals</span>
+      {% if display_rerunner %}
+      <button id="edit-case-metadata" class="btn btn-sm btn-dark btn-header" value="toggle_reanalysis" name="update_ind_tbl" type="button" onclick="toggleEditMetadata()"><i class="fa fa-edit fa-fw mr-2"></i>Correct metadata</button>
+      <button id="toggle-case-rerun" class="btn btn-sm btn-success btn-header" value="toggle_reanalysis" data-toggle="modal" data-target="#reanalysis-modal" name="update_ind_tbl" type="button" onclick="forwardPedigreeData()" hidden><i class='fa fa-retweet fa-fw mr-2'></i>Toggle reanalysis</button>
+      <button id="edit-case-metadata-reset" class="btn btn-sm btn-danger btn-header" onclick="toggleEditMetadata()" type="button" hidden><span class="fa fa-times fa-fw mr-2"></span>Clear changes</button>
+      <div id="processing" class="btn btn-sm btn-dark btn-header" hidden>
+          <div class="loader"></div>
+          <p>Processing rerun</p>
+      </div>
+      {% endif %}
+    </div>
     <div class="panel-body">
     <div class="table-responsive">
-      <table class="table table-sm">
+      <table id="individuals-table" class="table table-sm">
         <thead>
           <tr>
             <th data-toggle='tooltip' data-container='body' style="width: 20%" title="Display name of sample">Sample</th>
@@ -90,21 +101,41 @@
         </thead>
         <tbody>
           {% for ind in case.individuals %}
-            <tr {% if ind.phenotype_human == 'affected' %} class="bg-danger-light" {% endif %}>
-              <td>{{ ind.display_name }}</td>
+            <tr {% if ind.phenotype_human == 'affected' %} class="bg-danger-light ind-row" {% else %} class="ind-row" {% endif %}>
               <td>
-                {% if ind.sex_human in ['female','male'] %}
-                  <i class="fa fa-{{ind.sex_human}}" aria-hidden="true"></i>
-                {% else %}
-                  {{ind.sex_human}}
-                {% endif %}
-                {% if ind.confirmed_sex %}
-                  <i class="fa fa-check"></i>
-                {% endif %}
+                <label for="{{ ind.display_name }}-check">
+                  <div class="form-check form-check-inline">
+                    <input id="{{ ind.display_name }}-check" class="sample-selection form-check-input" type="checkbox" name="{{ ind.display_name }}-check" value="{{ ind.display_name }}" hidden checked onclick="$(this)." />
+                    {{ ind.display_name }}
+                  </div>
+                </label>
+              </td>
+              <td>
+                <select class="sex-selector form-control-sm" name="sex-selector" hidden>
+                  <option {% if ind.sex_human == "male" %} selected {% endif %} value="male">Male</option>
+                  <option {% if ind.sex_human == "female" %} selected {% endif %} value="female">Female</option>
+                  <option {% if not ind.sex_human in ["female", "male"] %} selected= {% endif %} value="unknown">Unknown</option>
+                </select>
+                <div class="sex-display">
+                  {% if ind.sex_human in ['female','male'] %}
+                    <i class="fa fa-{{ind.sex_human}}" aria-hidden="true"></i>
+                  {% else %}
+                    {{ind.sex_human}}
+                  {% endif %}
+                  {% if ind.confirmed_sex %}
+                    <i class="fa fa-check"></i>
+                  {% endif %}
+                </div>
               </td>
               <td><input name="age_{{ind.individual_id}}" type="number" step="0.1" min="0"
-                  class="form-control col-8" value="{{ind.age}}"></td>
-              <td>{{ ind.phenotype_human }}</td>
+                  class="age-selection form-control-sm col-8" value="{{ind.age}}"></td>
+              <td>
+                <select class="phenotype-selector form-control-sm" name="phenotype-selector" hidden>
+                  <option {% if ind.phenotype_human == "affected" %} selected {% endif %} value="affected">Affected</option>
+                  <option {% if ind.phenotype_human == "unaffected" %} selected {% endif %} value="unaffected">Unaffected</option>
+                </select>
+                <div class="phenotype-display">{{ ind.phenotype_human }}</div>
+              </td>
               <td>{{ ind.analysis_type|upper }}</td>
               <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
               <td>
@@ -126,7 +157,7 @@
                   N/A
                 {% endif %}
                 <td>
-                  <select class="form-control col-10" name="tissue_{{ind.individual_id}}">
+                  <select id="tissue-selection" class="form-control-sm col-10" name="tissue_{{ind.individual_id}}">
                     {% for key,tissue in tissues.items() %}
                       <option value="{{tissue}}" {{ 'selected' if ind.tissue_type == tissue }}>{{tissue}}</option>
                     {% endfor %}

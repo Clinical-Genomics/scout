@@ -6,6 +6,7 @@ import pymongo
 import pytest
 import yaml
 from cyvcf2 import VCF
+from flask import jsonify
 
 # Adapter stuff
 from mongomock import MongoClient
@@ -102,6 +103,17 @@ def empty_mock_app(real_adapter):
     return _mock_an_app()
 
 
+################## Requests fixture #####################
+
+
+@pytest.fixture
+def mock_redirect():
+    message = {"test": "redirect"}
+    resp = jsonify(message)
+    resp.status_code = 302
+    return resp
+
+
 ##################### Gene fixtures #####################
 
 
@@ -187,6 +199,34 @@ def ensembl_genes(request, gene_bulk):
     for gene_obj in gene_bulk:
         _ensembl_genes[gene_obj["ensembl_id"]] = gene_obj
     return _ensembl_genes
+
+
+@pytest.fixture
+def ensembl_liftover_response():
+    """Returns a  response from ensembl liftover api"""
+    _response = {
+        "mappings": [
+            {
+                "mapped": {
+                    "assembly": "GRCh38",
+                    "seq_region_name": "X",
+                    "end": 1039365,
+                    "start": 1039265,
+                    "coord_system": "chromosome",
+                    "strand": 1,
+                },
+                "original": {
+                    "strand": 1,
+                    "coord_system": "chromosome",
+                    "start": 1000000,
+                    "seq_region_name": "X",
+                    "end": 1000100,
+                    "assembly": "GRCh37",
+                },
+            }
+        ]
+    }
+    return _response
 
 
 @pytest.fixture(scope="function")
@@ -893,7 +933,7 @@ def parsed_panel(request, panel_info):
 
 
 @pytest.fixture(scope="function")
-def dummypanel_geneobj():
+def testpanel_geneobj():
     """A panel gene object"""
     gene_obj = {}
 
@@ -904,22 +944,22 @@ def dummypanel_geneobj():
 
 
 @pytest.fixture(scope="function")
-def dummypanel_obj(parsed_panel, dummypanel_geneobj):
-    """Return a dummy panel object"""
-    dummy_panel = {}
+def testpanel_obj(parsed_panel):
+    """Return a test panel object"""
+    testpanel = {}
 
-    dummy_panel["panel_name"] = parsed_panel["panel_id"]
-    dummy_panel["institute"] = parsed_panel["institute"]
-    dummy_panel["version"] = float(parsed_panel["version"])
-    dummy_panel["date"] = parsed_panel["date"]
-    dummy_panel["display_name"] = parsed_panel["display_name"]
-    dummy_panel["description"] = "A panel description"
-    dummy_panel["genes"] = [
+    testpanel["panel_name"] = parsed_panel["panel_id"]
+    testpanel["institute"] = parsed_panel["institute"]
+    testpanel["version"] = float(parsed_panel["version"])
+    testpanel["date"] = parsed_panel["date"]
+    testpanel["display_name"] = parsed_panel["display_name"]
+    testpanel["description"] = "A panel description"
+    testpanel["genes"] = [
         {"symbol": "AAA", "hgnc_id": 100},
         {"symbol": "BBB", "hgnc_id": 222},
     ]
 
-    return dummy_panel
+    return testpanel
 
 
 @pytest.fixture(scope="function")

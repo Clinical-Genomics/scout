@@ -47,7 +47,7 @@
             <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
               {{ panel.display_name|truncate(18, True) }}
             </a>
-            {% if panel.panel_name in case.outdated_panels %}
+            {% if case.outdated_panels and panel.panel_name in case.outdated_panels %}
               <a><span class="badge badge-pill badge-sm badge-warning" data-toggle="popover" data-placement="left" data-html="true" data-content="Panel version used in the analysis ({{panel.version}}) is outdated. Latest panel version is used in variants filtering.<br /><strong>Genes present in case panel and not in latest version</strong>: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}.<br /><strong>Genes present only in latest version</strong>: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.">!</span></a>
             {% endif %}
         </div>
@@ -421,6 +421,31 @@
       </div>
     </div>
   </form>
+{% endmacro %}
+
+{% macro reanalysis_modal(institute, case) %}
+<div id="reanalysis-modal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Request reanalysis</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="toggleEditMetadata()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Please confirm that you want to toggle a <strong>reanalysis of {{ case.display_name }}</strong> with the updated pedigree information. This will <strong>create a new sample</strong> with updated information.</p>
+      </div>
+      <div class="modal-footer">
+        <form action="{{ url_for('cases.reanalysis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+          <input type="hidden" name="sample_metadata" id="reanalysis-data-container" value="" />
+          <button type="button" class="btn btn-default" data-dismiss="modal" onclick="toggleEditMetadata()">Close</button>
+          <button type="submit" value="{{ case.display_name }}" class="btn btn-primary">Confirm</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endmacro %}
 
 {% macro confirm_inactivate(institute, case) %}

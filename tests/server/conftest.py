@@ -96,6 +96,21 @@ def app(real_database_name, real_variant_database, user_obj):
 
 
 @pytest.fixture
+def rerunner_app(user_obj):
+    _mock_app = create_app(
+        config=dict(
+            TESTING=True,
+            LOGIN_DISABLED=True,
+            SERVER_NAME="test",
+            RERUNNER_API_ENTRYPOINT="http://rerunner:5001/v1.0/rerun",
+            RERUNNER_API_KEY="test_key",
+        )
+    )
+
+    return _mock_app
+
+
+@pytest.fixture
 def institute_info():
     _institute_info = dict(internal_id="cust000", display_name="test_institute")
     return _institute_info

@@ -91,6 +91,36 @@ class EnsemblRestApiClient:
             data = err
         return data
 
+    def liftover(self, build, chrom, start, end=None):
+        """Perform variant liftover using Ensembl REST API
+
+        Args:
+            build(str): genome build: "37" or "38"
+            chrom(str): 1-22,X,Y,MT,M
+            start(int): start coordinate
+            stop(int): stop coordinate or None
+
+        Returns:
+            mappings(list of dict): example:
+                example: https://rest.ensembl.org/map/human/GRCh37/X:1000000..1000100:1/GRCh38?content-type=application/json
+        """
+
+        build = "GRCh38" if "38" in str(build) else "GRCh37"
+        assembly2 = "GRCh38" if build == "GRCh37" else "GRCh37"
+
+        url = "/".join(
+            [
+                self.server,
+                "map/human",
+                build,
+                f"{chrom}:{start}..{end or start}",  # End variant provided is not required
+                f"{assembly2}?content-type=application/json",
+            ]
+        )
+        result = self.send_request(url)
+        if isinstance(result, dict):
+            return result.get("mappings")
+
     def __repr__(self):
         return f"EnsemblRestApiClient:server:{self.server}"
 
