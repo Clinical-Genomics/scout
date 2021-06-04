@@ -10,9 +10,11 @@ Highlight and show version number for RefSeq MANE transcripts.
 - Added integration to a rerunner service for toggling reanalysis with updated pedigree information
 - Display matching tiered variants for cancer variants
 ### Fixed
+- Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
+
 
 ## [4.36]
 ### Added
