@@ -9,9 +9,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 Highlight and show version number for RefSeq MANE transcripts.
 - Added integration to a rerunner service for toggling reanalysis with updated pedigree information
 ### Fixed
+- Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
+- Demo cancer case config file to load somatic SNVs and SVs only.
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
+
 
 ## [4.36]
 ### Added
