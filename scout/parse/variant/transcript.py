@@ -82,7 +82,7 @@ def parse_transcripts(raw_transcripts, allele=None):
             "SpliceAI_pred_DS_DG": "spliceai_ds_dg",
             "SpliceAI_pred_DS_DL": "spliceai_ds_dl",
         }
-        for spliceai_tag_csq, spliceai_annotation in spliceai_tags:
+        for spliceai_tag_csq, spliceai_annotation in spliceai_tags.items():
             if entry.get(spliceai_tag_csq):
                 transcript[spliceai_annotation] = entry.get(spliceai_tag_csq)
 
