@@ -216,6 +216,8 @@ def predictions(genes):
         "polyphen_predictions": [],
         "region_annotations": [],
         "functional_annotations": [],
+        "spliceai_scores": [],
+        "spliceai_positions ": [],
     }
     for gene_obj in genes:
         for pred_key in data:

@@ -88,17 +88,10 @@ def parse_transcripts(raw_transcripts, allele=None):
         for spliceai_tag_csq, spliceai_annotation in spliceai_positions.items():
             if entry.get(spliceai_tag_csq.upper()):
                 transcript[spliceai_annotation] = int(entry.get(spliceai_tag_csq))
-            else:
-                LOG.warning(
-                    "Did not find SpliceAI annotation %s with tag %s",
-                    spliceai_annotation,
-                    spliceai_tag_csq,
-                )
 
         for spliceai_tag_csq, spliceai_annotation in spliceai_delta_scores.items():
             if entry.get(spliceai_tag_csq):
                 transcript[spliceai_annotation] = float(entry.get(spliceai_tag_csq))
-                LOG.warning("Found SpliceAI score %f", transcript[spliceai_annotation])
 
         spliceai_pairs = {
             "spliceai_ds_ag": "spliceai_dp_ag",

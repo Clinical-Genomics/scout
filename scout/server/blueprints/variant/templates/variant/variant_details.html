@@ -244,8 +244,8 @@
         <li class="list-group-item">
           <a hfref="https://github.com/Illumina/SpliceAI">SpliceAI</a> DS max
           <span class="float-right control-label" data-toggle="tooltip" data-placement="bottom"
-            title="{{ variant.spliceai_score or 'No SpliceAI data annotated for this variant.'}}">
-            {{ variant.spliceai_score or "-"}}
+            title="{{ variant.spliceai_scores|join(', ') or 'No SpliceAI data annotated for this variant.'}}">
+            {{ variant.spliceai_scores|join(', ') or "-"}}
           </span>
         </li>
       </ul>
