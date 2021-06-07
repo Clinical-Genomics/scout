@@ -217,7 +217,7 @@ def predictions(genes):
         "region_annotations": [],
         "functional_annotations": [],
         "spliceai_scores": [],
-        "spliceai_positions ": [],
+        "spliceai_positions": [],
     }
     for gene_obj in genes:
         for pred_key in data:

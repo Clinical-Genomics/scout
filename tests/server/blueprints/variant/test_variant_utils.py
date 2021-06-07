@@ -300,48 +300,57 @@ def test_gene_predictions_no_info():
         "polyphen_predictions": [],
         "region_annotations": [],
         "functional_annotations": [],
+        "spliceai_scores": [],
+        "spliceai_positions": [],
     }
 
 
 def test_gene_predictions_one_gene():
-    ## GIVEN a empty list of genes
+    ## GIVEN a list with one gene
     gene = {
         "sift_prediction": "deleterious",
         "polyphen_prediction": "probably_damaging",
         "region_annotation": "exonic",
         "functional_annotation": "missense_variant",
+        "spliceai_score": 0.17,
+        "spliceai_position": -4,
     }
     genes = [gene]
 
     ## WHEN parsing the gene predictions
     res = predictions(genes)
-    ## THEN assert the result is not filled
+    ## THEN assert the result is filled
     assert res == {
         "sift_predictions": ["deleterious"],
         "polyphen_predictions": ["probably_damaging"],
         "region_annotations": ["exonic"],
         "functional_annotations": ["missense_variant"],
+        "spliceai_scores": [0.17],
+        "spliceai_positions": [-4],
     }
 
 
 def test_gene_predictions_one_gene_no_sift():
-    ## GIVEN a empty list of genes
+    ## GIVEN a list with one gene and some missing values
     gene = {
         "hgnc_symbol": "AAA",
         "polyphen_prediction": "probably_damaging",
         "region_annotation": "exonic",
         "functional_annotation": "missense_variant",
+        "spliceai_score": 0.17,
     }
     genes = [gene]
 
     ## WHEN parsing the gene predictions
     res = predictions(genes)
-    ## THEN assert the result is not filled
+    ## THEN assert the result is correctly filled
     assert res == {
         "sift_predictions": ["-"],
         "polyphen_predictions": ["probably_damaging"],
         "region_annotations": ["exonic"],
         "functional_annotations": ["missense_variant"],
+        "spliceai_scores": [0.17],
+        "spliceai_positions": ["-"],
     }
 
 
@@ -353,6 +362,8 @@ def test_gene_predictions_two_genes():
         "polyphen_prediction": "probably_damaging",
         "region_annotation": "exonic",
         "functional_annotation": "missense_variant",
+        "spliceai_scores": [0.17],
+        "spliceai_positions": [-4],
     }
     gene2 = {
         "hgnc_symbol": "BBB",
@@ -360,6 +371,8 @@ def test_gene_predictions_two_genes():
         "polyphen_prediction": "unknown",
         "region_annotation": "exonic",
         "functional_annotation": "synonymous_variant",
+        "spliceai_scores": [0.9],
+        "spliceai_positions": [5],
     }
     genes = [gene, gene2]
 
