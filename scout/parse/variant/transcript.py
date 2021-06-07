@@ -72,38 +72,53 @@ def parse_transcripts(raw_transcripts, allele=None):
         if entry.get("REVEL_RANKSCORE"):
             transcript["revel"] = float(entry.get("REVEL_RANKSCORE"))
 
-        spliceai_tags = {
-            "SpliceAI_pred_DP_AG": "spliceai_dp_ag",
-            "SpliceAI_pred_DP_AL": "spliceai_dp_al",
-            "SpliceAI_pred_DP_DG": "spliceai_dp_dg",
-            "SpliceAI_pred_DP_DL": "spliceai_dp_dl",
-            "SpliceAI_pred_DS_AG": "spliceai_ds_ag",
-            "SpliceAI_pred_DS_AL": "spliceai_ds_al",
-            "SpliceAI_pred_DS_DG": "spliceai_ds_dg",
-            "SpliceAI_pred_DS_DL": "spliceai_ds_dl",
+        ## SpliceAI ##
+        spliceai_positions = {
+            "SPLICEAI_PRED_DP_AG": "spliceai_dp_ag",
+            "SPLICEAI_PRED_DP_AL": "spliceai_dp_al",
+            "SPLICEAI_PRED_DP_DG": "spliceai_dp_dg",
+            "SPLICEAI_PRED_DP_DL": "spliceai_dp_dl",
         }
-        for spliceai_tag_csq, spliceai_annotation in spliceai_tags.items():
-            if entry.get(spliceai_tag_csq):
-                transcript[spliceai_annotation] = entry.get(spliceai_tag_csq)
-
-            spliceai_pairs = {
-                "spliceai_ds_ag": "spliceai_dp_ag",
-                "spliceai_ds_al": "spliceai_dp_al",
-                "spliceai_ds_dg": "spliceai_dp_dg",
-                "spliceai_ds_dl": "spliceai_dp_dl",
-            }
-
-            spliceai_delta_score = None
-            spliceai_delta_position = None
-            spliceai_tags = [transcript.get(tag) for tag in spliceai_pairs.keys()]
-            if any(spliceai_tags):
-                index, spliceai_delta_score = max(spliceai_tags)
-                spliceai_delta_position = (
-                    transcript.get(spliceai_pairs.keys()[index]) if index is not None else None
+        spliceai_delta_scores = {
+            "SPLICEAI_PRED_DS_AG": "spliceai_ds_ag",
+            "SPLICEAI_PRED_DS_AL": "spliceai_ds_al",
+            "SPLICEAI_PRED_DS_DG": "spliceai_ds_dg",
+            "SPLICEAI_PRED_DS_DL": "spliceai_ds_dl",
+        }
+        for spliceai_tag_csq, spliceai_annotation in spliceai_positions.items():
+            if entry.get(spliceai_tag_csq.upper()):
+                transcript[spliceai_annotation] = int(entry.get(spliceai_tag_csq))
+            else:
+                LOG.warning(
+                    "Did not find SpliceAI annotation %s with tag %s",
+                    spliceai_annotation,
+                    spliceai_tag_csq,
                 )
 
-            transcript["spliceai_delta_score"] = spliceai_delta_score
-            transcript["spliceai_delta_position"] = spliceai_delta_position
+        for spliceai_tag_csq, spliceai_annotation in spliceai_delta_scores.items():
+            if entry.get(spliceai_tag_csq):
+                transcript[spliceai_annotation] = float(entry.get(spliceai_tag_csq))
+                LOG.warning("Found SpliceAI score %f", transcript[spliceai_annotation])
+
+        spliceai_pairs = {
+            "spliceai_ds_ag": "spliceai_dp_ag",
+            "spliceai_ds_al": "spliceai_dp_al",
+            "spliceai_ds_dg": "spliceai_dp_dg",
+            "spliceai_ds_dl": "spliceai_dp_dl",
+        }
+
+        spliceai_delta_score = None
+        spliceai_delta_position = None
+        spliceai_tags = [transcript.get(tag) for tag in spliceai_pairs.keys()]
+        if any(spliceai_tags):
+            spliceai_delta_score = max(spliceai_tags)
+            index = spliceai_tags.index(spliceai_delta_score)
+            spliceai_delta_position = (
+                transcript.get(list(spliceai_pairs.values())[index]) if index is not None else None
+            )
+
+        transcript["spliceai_delta_score"] = spliceai_delta_score
+        transcript["spliceai_delta_position"] = spliceai_delta_position
 
         transcript["swiss_prot"] = entry.get("SWISSPROT") or "unknown"
 
