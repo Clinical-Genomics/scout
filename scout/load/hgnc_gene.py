@@ -137,14 +137,9 @@ def load_hgnc_genes(
 
     non_existing = 0
     nr_genes = len(genes)
-
     with progressbar(genes.values(), label="Building genes", length=nr_genes) as bar:
         for gene_data in bar:
             if not gene_data.get("chromosome"):
-                LOG.debug(
-                    "skipping gene: %s. No coordinates found",
-                    gene_data.get("hgnc_symbol", "?"),
-                )
                 non_existing += 1
                 continue
 

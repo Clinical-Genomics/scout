@@ -184,12 +184,13 @@ def parse_ensembl_transcripts(lines):
         ensembl_gene(dict): A dictionary with the relevant information
     """
     header = []
-    LOG.info("Parsing ensembl genes from file")
+    LOG.info("Parsing ensembl transcripts from file")
     for index, line in enumerate(lines):
-        LOG.error(line)
+
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")
+            LOG.error(line)
         # After that each line represents a transcript
         else:
             yield parse_ensembl_line(line, header)

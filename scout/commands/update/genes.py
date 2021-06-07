@@ -37,31 +37,83 @@ from scout.utils.scout_requests import (
 
 LOG = logging.getLogger(__name__)
 
-MIM_RESOURCES = {
+DOWNLOADED_RESOURCES = {
     "mim2genes": "mim2genes.txt",
     "genemap2": "genemap2.txt",
+    "hpo_genes": "phenotype_to_genes.txt",
+    "hgnc_lines": "hgnc.txt",
+    "exac_lines": "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt",
+    "ensembl_genes_37": "ensembl_genes_37.txt",
+    "ensembl_genes_38": "ensembl_genes_38.txt",
+    "ensembl_transcripts_37": "ensembl_transcripts_37.txt",
+    "ensembl_transcripts_38": "ensembl_genes_38.txt",
 }
-PHENOTYPE_TO_GENES_FILENAME = "phenotype_to_genes.txt"
-HGNC_FILENAME = "hgnc.txt"
-ENSEMBL_FILENAMES = {"37": "ensembl_transcripts_37.txt", "38": "ensembl_genes_38.txt"}
-EXAC_FILENAME = "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt"
 
 
-def fetch_downloaded_resource(downloads_folder, resource_filename):
-    """Checks that a resource file exists on disk and returns its content as a list of lines
+def download_and_fetch_resources(resources, api_key, builds):
+    """Download resource files and populate resources with their data
+    Args:
+        resources(dict): dictionary containing resource file name as key and resource file lines as values
+        api_key(str): eventual provided OMIM key
+        builds(list): ["37","38"] or a list with only one genome build
+    """
+    if api_key:
+        try:
+            mim_files = fetch_mim_files(api_key, mim2genes=True, morbidmap=False, genemap2=True)
+        except Exception as err:
+            LOG.warning(err)
+            raise click.Abort()
+        resources["mim2genes"] = mim_files["mim2genes"]
+        resources["genemap2"] = mim_files["genemap2"]
+    resources["hpo_genes"] = fetch_genes_to_hpo_to_disease()
+    resources["hgnc_lines"] = fetch_hgnc()
+    resources["exac_lines"] = fetch_exac_constraint()
 
+    for build in builds:
+        ensemble_gene_resource = f"ensembl_genes_{build}"
+        resources[ensemble_gene_resource] = fetch_ensembl_genes(build=build)
+
+        ensemble_transcript_resource = f"ensembl_transcripts_{build}"
+        resources[ensemble_gene_resource] = fetch_ensembl_transcripts(build=build)
+
+    # Make sure that the downloaded resource contain valid data
+    for res_name, resource_lines in resources.items():
+        if not resource_lines:
+            LOG.error(f"Resource file '{res_name}' doesn't contain valid data.")
+            raise click.Abort()
+
+
+def fetch_downloaded_resource(downloads_folder, resource_name, resource_filename, builds):
+    """Checks that a resource file exists on disk and has valid data. Return its content as a list of lines
     Args:
         downloads_folder(str): Path to downloaded resources. Provided by user in the cli command
         resource_filename(str): Resource file name
 
     Returns:
-        File.readlines(list): list of lines contained in the resource file
+        resource_lines(list) or None: list of lines contained in the resource file
     """
     resource_path = os.path.join(downloads_folder, resource_filename)
-    if os.path.isfile(resource_path) is False:
+    resource_exists = os.path.isfile(resource_path)
+
+    # If the resource is manadatory make sure it exists and contains data (OMIM data is NOT mandatory)
+    if resource_name in ["hpo_genes", "hgnc_lines", "exac_lines"] and resource_exists is False:
         LOG.error(f"Missing resource {resource_filename} in provided path.")
         raise click.Abort()
-    return get_file_handle(resource_path).readlines()
+
+    # Check that the available genes and transcripts file correspond to the required genome build
+    for build in builds:
+        if resource_name.endswith(build) and resource_exists is False:
+            LOG.error(
+                f"Updating genes for genome build '{build}' requires a resource '{resource_filename}' that is currenly missing in provided path."
+            )
+            raise click.Abort()
+
+    if resource_exists:
+        resource_lines = get_file_handle(resource_path).readlines()
+        if not resource_lines:
+            LOG.error(f"Resource file '{resource_filename}' doesn't contain valid data.")
+            raise click.Abort()
+        return resource_lines
 
 
 @click.command("genes", short_help="Update all genes")
@@ -86,82 +138,54 @@ def genes(build, downloads_folder, api_key):
     """
     LOG.info("Running scout update genes")
     adapter = store
+    builds = [build] if build else ["37", "38"]
+    resources = {}
 
-    if build:
-        builds = [build]
-    else:
-        builds = ["37", "38"]
-
-    mim_files = {}  # OMIM resource files
-    hpo_genes = []  # list of lines from HPO genes file
-    ensembl_genes = []  # list of lines from Ensembl genes file
-    exac_lines = []  # list of lines from the EXAC resource file
-
+    # If resources have been previosly doenloaded, read those file and return their linesFetch resources from folder containing previously-downloaded resource files
     if downloads_folder:
-        # Fetch resources lines from provided download folder
-        for resource_name, filename in MIM_RESOURCES.items():
-            mim_files[resource_name] = fetch_downloaded_resource(downloads_folder, filename)
-        hpo_genes = fetch_downloaded_resource(downloads_folder, PHENOTYPE_TO_GENES_FILENAME)
-        hgnc_lines = fetch_downloaded_resource(downloads_folder, HGNC_FILENAME)
-        exac_lines = fetch_downloaded_resource(downloads_folder, EXAC_FILENAME)
-
-    else:
-        # Download resources and return file lines from downloaded files
-        hpo_genes = fetch_genes_to_hpo_to_disease()
-        hgnc_lines = fetch_hgnc()
-        exac_lines = fetch_exac_constraint()
-
-        api_key = api_key or current_app.config.get("OMIM_API_KEY")
-        if api_key:
-            try:
-                mim_files = fetch_mim_files(api_key, mim2genes=True, morbidmap=False, genemap2=True)
-            except Exception as err:
-                LOG.warning(err)
-                raise click.Abort()
-
-    # Check that mandatory resources were collected correcly
-    for resource in hpo_genes, hgnc_lines, exac_lines:
-        if not resource:
-            LOG.error(
-                f"A resource necessary to update genes collection is missing:{resource}. Please download all necessary files by running 'scout download everything' or make sure the missing file is downloadable from the internet."
+        for resname, filename in DOWNLOADED_RESOURCES.items():
+            resources[resname] = fetch_downloaded_resource(
+                downloads_folder, resname, filename, builds
             )
-            raise click.Abort()
+
+    else:  # Download resource files and return their lines
+        api_key = api_key or current_app.config.get("OMIM_API_KEY")
+        download_and_fetch_resources(resources, api_key, builds)
 
     LOG.warning("Dropping all gene information")
     adapter.drop_genes(build)
-    LOG.info("Genes dropped")
     LOG.warning("Dropping all transcript information")
     adapter.drop_transcripts(build)
-    LOG.info("transcripts dropped")
 
-    for genome_build in builds:
-        if downloads_folder:
-            ensembl_genes = fetch_downloaded_resource(
-                downloads_folder, ENSEMBL_FILENAMES[genome_build]
-            )
-        else:
-            ensembl_genes = fetch_ensembl_genes(build=genome_build)
+    for build in builds:
+
+        ensembl_gene_res = (
+            resources["ensembl_genes_37"] if build == "37" else resources["ensembl_genes_38"]
+        )
+        ensembl_tx_res = (
+            resources["ensembl_transcripts_37"]
+            if build == "37"
+            else resources["ensembl_transcripts_38"]
+        )
+
         # load the genes
         hgnc_genes = load_hgnc_genes(
             adapter=adapter,
-            ensembl_lines=ensembl_genes,
-            hgnc_lines=hgnc_lines,
-            exac_lines=exac_lines,
-            mim2gene_lines=mim_files.get("mim2genes"),
-            genemap_lines=mim_files.get("genemap2"),
-            hpo_lines=hpo_genes,
-            build=genome_build,
+            ensembl_lines=ensembl_gene_res,
+            hgnc_lines=resources["hgnc_lines"],
+            exac_lines=resources["exac_lines"],
+            mim2gene_lines=resources.get("mim2genes"),
+            genemap_lines=resources.get("genemap2"),
+            hpo_lines=resources.get("hpo_genes"),
+            build=build,
         )
 
-        ensembl_genes = {}
+        ensembl_genes_dict = {}
         for gene_obj in hgnc_genes:
             ensembl_id = gene_obj["ensembl_id"]
-            ensembl_genes[ensembl_id] = gene_obj
+            ensembl_genes_dict[ensembl_id] = gene_obj
 
-        # Fetch the transcripts from ensembl
-        ensembl_transcripts = fetch_ensembl_transcripts(build=genome_build)
-
-        transcripts = load_transcripts(adapter, ensembl_transcripts, genome_build, ensembl_genes)
+        load_transcripts(adapter, ensembl_tx_res, build, ensembl_genes_dict)
 
     adapter.update_indexes()
 
