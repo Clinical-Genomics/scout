@@ -169,7 +169,11 @@ def build_case(case_data, adapter):
     for panel_name in case_panels:
         panel_obj = adapter.gene_panel(panel_name)
         if not panel_obj:
-            raise IntegrityError("Panel %s does not exist in database" % panel_name)
+            LOG.warning(
+                "Panel %s does not exist in database and will not be saved in case document."
+                % panel_name
+            )
+            continue
         panel = {
             "panel_id": panel_obj["_id"],
             "panel_name": panel_obj["panel_name"],

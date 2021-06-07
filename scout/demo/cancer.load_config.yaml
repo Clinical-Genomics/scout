@@ -30,6 +30,15 @@ samples:
 vcf_cancer: scout/demo/cancer_test.vcf.gz
 vcf_cancer_sv: scout/demo/manta_vep_94_annotated_sv_cancer_file.vcf.gz
 
+#vcf_snv: scout/demo/cancer_test.vcf.gz
+#vcf_sv: scout/demo/manta_vep_94_annotated_sv_cancer_file.vcf.gz
+
+#vcf_snv_research: scout/demo/cancer_test.vcf.gz
+#vcf_sv_research: scout/demo/manta_vep_94_annotated_sv_cancer_file.vcf.gz
+
+#vcf_cancer_research: scout/demo/manta_vep_94_annotated_sv_cancer_file.vcf.gz
+#vcf_cancer_sv_research: scout/demo/manta_vep_94_annotated_sv_cancer_file.vcf.gz
+
 delivery_report: scout/demo/delivery_report.html
 cnv_report: scout/demo/cancer_cnv_report.pdf
 coverage_qc_report: scout/demo/cancer_coverage_qc_report.html

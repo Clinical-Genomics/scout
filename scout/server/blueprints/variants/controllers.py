@@ -1007,27 +1007,32 @@ def check_form_gene_symbols(
 
     errors = {
         "non_clinical_symbols": {
-            "alert": "Gene not included in case clinical list",
+            "message": "Genes not included in gene panel versions in use when loading this case (clinical list)",
             "gene_list": non_clinical_symbols,
+            "label": "info",
         },
         "not_found_symbols": {
-            "alert": "HGNC symbol not present in genes collection",
+            "message": "HGNC symbols not present in database's genes collection",
             "gene_list": not_found_symbols,
+            "label": "warning",
         },
         "not_found_ids": {
-            "alert": "HGNC id not present in genes collection",
+            "message": "HGNC ids not present in database's genes collection",
             "gene_list": not_found_ids,
+            "label": "warning",
         },
         "outdated_symbols": {
-            "alert": "Clinical list contains a panel with an outdated symbol for genes",
+            "message": "Gene panel versions used for loading variants of this case (clinical list) contain outdated gene symbols. The current HGNC id was found on the clinical list.",
             "gene_list": outdated_symbols,
+            "label": "info",
         },
     }
 
     # warn user if gene symbols are corresponding to any current gene,
-    for error, item in errors.items():
-        if item["gene_list"]:
-            flash(f"{item['alert']}: {item['gene_list']}", "warning")
+    for error in errors.values():
+        if not error["gene_list"]:
+            continue
+        flash(f'{error["message"]}:{error["gene_list"]}', error["label"])
 
     return updated_hgnc_symbols
 

@@ -37,6 +37,8 @@ def build_individual(ind):
         upd_regions_bed = str, # Path to a UPD regions bed marking UPD calls
         upd_sites_bed = str, # Path to a UPD sites bed, showing UPD info for vars
         vcf2cytosure = str, # Path to CGH file
+        rna_coverage_bigwig = str, # Path to coverage islands file (RNA analysis)
+        splice_junctions_bed = str, # Path to indexed junctions .bed.gz file obtained from STAR v2 aligner *.SJ.out.tab file.
         is_sma = boolean,
         is_sma_carrier = boolean,
         smn1_cn = int,
@@ -83,12 +85,14 @@ def build_individual(ind):
     ind_files = [
         "bam_file",
         "mt_bam",
-        "vcf2cytosure",
+        "rna_coverage_bigwig",
+        "tiddit_coverage_wig",
         "rhocall_bed",
         "rhocall_wig",
-        "tiddit_coverage_wig",
+        "splice_junctions_bed",
         "upd_regions_bed",
-        "upd_sites_bed"
+        "upd_sites_bed",
+        "vcf2cytosure",
     ]
 
     for ind_file in ind_files:
@@ -104,8 +108,7 @@ def build_individual(ind):
     ind_obj["confirmed_sex"] = ind.get("confirmed_sex")
     ind_obj["confirmed_parent"] = ind.get("confirmed_parent")
     ind_obj["predicted_ancestry"] = ind.get("predicted_ancestry")
-    ind_obj['chromograph_images'] = ind.get("chromograph_images")
-
+    ind_obj["chromograph_images"] = ind.get("chromograph_images")
 
     # Check if the analysis type is ok
     # Can be anyone of ('wgs', 'wes', 'mixed', 'unknown')

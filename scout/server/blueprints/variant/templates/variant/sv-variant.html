@@ -401,6 +401,11 @@
   <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 
   <script>
+
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
     function set_scrolly_table(table_id) {
     if (document.getElementById(table_id).rows.length > 5) {
       $('#' + table_id).DataTable({

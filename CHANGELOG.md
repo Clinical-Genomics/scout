@@ -6,15 +6,46 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+Highlight and show version number for RefSeq MANE transcripts.
+- Added integration to a rerunner service for toggling reanalysis with updated pedigree information
+### Fixed
+- Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
+- Demo cancer case config file to load somatic SNVs and SVs only.
+### Changed
+- Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
+- Load case with missing panels in config files, but show warning.
+
+
+## [4.36]
+### Added
+- Parse and save splice junction tracks from case config file
+- Tooltip in observations panel, explaining that case variants with no link might be old variants, not uploaded after a case rerun
+### Fixed
+- Warning on overwriting variants with same position was no longer shown
+- Increase the height of the dropdowns to 425px
+- More indices for the case table as it grows, specifically for causatives queries
+- Splice junction tracks not centered over variant genes
+- Total number of research variants count
+- Update variants stats in case documents every time new variants are loaded
+- Bug in flashing warning messages when filtering variants
+### Changed
+- Clearer warning messages for genes and gene/gene-panels searches in variants filters
+
+## [4.35]
+### Added
 - A new index for hgnc_symbol in the hgnc_gene collection
 - A Pedigree panel in STR page
 - Display Tier I and II variants in case view causatives card for cancer cases
 ### Fixed
 - Send partial file data to igv.js when visualizing sashimi plots with splice junction tracks
+- Research variants filtering by gene
+- Do not attempt to populate annotations for not loaded pinned/causatives
+- Add max-height to all dropdowns in filters
 ### Changed
 - Switch off non-clinical gene warnings when filtering research variants
 - Don't display OMIM disease card in case view for cancer cases
 - Refactored Individuals and Causative card in case view for cancer cases
+- Update and style STR case report
 
 ## [4.34]
 ### Added
@@ -60,7 +91,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation for load-configuration rewritten.
 - Add styles to MatchMaker matches table
 - More detailed info on the data shared in MatchMaker submission form
-- Update and style STR case report
 
 ## [4.33.1]
 ### Fixed
