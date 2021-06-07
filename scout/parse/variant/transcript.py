@@ -93,10 +93,14 @@ def parse_transcripts(raw_transcripts, allele=None):
                 "spliceai_ds_dl": "spliceai_dp_dl",
             }
 
-            index, spliceai_delta_score = max(
-                [transcript.get(tag) for tag in spliceai_pairs.keys()]
-            )
-            spliceai_delta_position = transcript.get(spliceai_pairs.keys()[index])
+            spliceai_delta_score = None
+            spliceai_delta_position = None
+            spliceai_tags = [transcript.get(tag) for tag in spliceai_pairs.keys()]
+            if any(spliceai_tags):
+                index, spliceai_delta_score = max(spliceai_tags)
+                spliceai_delta_position = (
+                    transcript.get(spliceai_pairs.keys()[index]) if index is not None else None
+                )
 
             transcript["spliceai_delta_score"] = spliceai_delta_score
             transcript["spliceai_delta_position"] = spliceai_delta_position
