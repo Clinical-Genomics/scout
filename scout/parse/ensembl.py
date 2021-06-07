@@ -186,7 +186,7 @@ def parse_ensembl_transcripts(lines):
     header = []
     LOG.info("Parsing ensembl genes from file")
     for index, line in enumerate(lines):
-
+        LOG.error(line)
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")

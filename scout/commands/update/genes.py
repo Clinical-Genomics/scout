@@ -43,6 +43,7 @@ MIM_RESOURCES = {
 }
 PHENOTYPE_TO_GENES_FILENAME = "phenotype_to_genes.txt"
 HGNC_FILENAME = "hgnc.txt"
+ENSEMBL_FILENAMES = {"37": "ensembl_transcripts_37.txt", "38": "ensembl_genes_38.txt"}
 EXAC_FILENAME = "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt"
 
 
@@ -93,6 +94,8 @@ def genes(build, downloads_folder, api_key):
 
     mim_files = {}  # OMIM resource files
     hpo_genes = []  # list of lines from HPO genes file
+    ensembl_genes = []  # list of lines from Ensembl genes file
+    exac_lines = []  # list of lines from the EXAC resource file
 
     if downloads_folder:
         # Fetch resources lines from provided download folder
@@ -122,6 +125,7 @@ def genes(build, downloads_folder, api_key):
             LOG.error(
                 f"A resource necessary to update genes collection is missing:{resource}. Please download all necessary files by running 'scout download everything' or make sure the missing file is downloadable from the internet."
             )
+            raise click.Abort()
 
     LOG.warning("Dropping all gene information")
     adapter.drop_genes(build)
@@ -131,7 +135,12 @@ def genes(build, downloads_folder, api_key):
     LOG.info("transcripts dropped")
 
     for genome_build in builds:
-        ensembl_genes = fetch_ensembl_genes(build=genome_build)
+        if downloads_folder:
+            ensembl_genes = fetch_downloaded_resource(
+                downloads_folder, ENSEMBL_FILENAMES[genome_build]
+            )
+        else:
+            ensembl_genes = fetch_ensembl_genes(build=genome_build)
         # load the genes
         hgnc_genes = load_hgnc_genes(
             adapter=adapter,
