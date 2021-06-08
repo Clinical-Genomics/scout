@@ -121,6 +121,7 @@ def load_hgnc_genes(
                 mim_files = fetch_mim_files(omim_api_key, mim2genes=True, genemap2=True)
                 mim2gene_lines = mim_files["mim2genes"]
                 genemap_lines = mim_files["genemap2"]
+
         if not hpo_lines:
             hpo_files = fetch_hpo_files(genes_to_phenotype=True)
             hpo_lines = hpo_files["genes_to_phenotype"]

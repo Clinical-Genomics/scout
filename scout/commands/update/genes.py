@@ -22,6 +22,7 @@ import os
 import click
 from flask.cli import current_app, with_appcontext
 
+from scout.commands.download.omim import omim
 from scout.load import load_hgnc_genes, load_transcripts
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
@@ -68,7 +69,7 @@ def fetch_downloaded_resource(downloads_folder, resource_name, resource_filename
 
     if resource_exists:
         resource_lines = get_file_handle(resource_path).readlines()
-        if not resource_lines:
+        if not resource_lines or "<!DOCTYPE html>" in resource_lines[0]:
             LOG.error(f"Resource file '{resource_filename}' doesn't contain valid data.")
             raise click.Abort()
         return resource_lines
@@ -90,7 +91,8 @@ def fetch_downloaded_resource(downloads_folder, resource_name, resource_filename
     "--api-key", help="Specify the OMIM downloads api key. Only if downloads_folder is not provided"
 )
 @with_appcontext
-def genes(build, downloads_folder, api_key):
+@click.pass_context
+def genes(ctx, build, downloads_folder, api_key):
     """
     Load the hgnc aliases to the mongo database.
     """
@@ -102,6 +104,9 @@ def genes(build, downloads_folder, api_key):
 
     # If resources have been previosly doenloaded, read those file and return their linesFetch resources from folder containing previously-downloaded resource files
     if downloads_folder:
+        if api_key:  # Download OMIM resources in downloads_folder
+            ctx.invoke(omim, out_dir=downloads_folder, api_key=api_key)
+
         for resname, filename in DOWNLOADED_RESOURCES.items():
             resources[resname] = fetch_downloaded_resource(
                 downloads_folder, resname, filename, builds
@@ -130,6 +135,7 @@ def genes(build, downloads_folder, api_key):
             genemap_lines=resources.get("genemap2"),
             hpo_lines=resources.get("hpo_genes"),
             build=genome_build,
+            omim_api_key=api_key,
         )
 
         ensembl_genes_dict = {}
