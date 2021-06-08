@@ -25,14 +25,6 @@ from flask.cli import current_app, with_appcontext
 from scout.load import load_hgnc_genes, load_transcripts
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
-from scout.utils.scout_requests import (
-    fetch_ensembl_genes,
-    fetch_ensembl_transcripts,
-    fetch_exac_constraint,
-    fetch_genes_to_hpo_to_disease,
-    fetch_hgnc,
-    fetch_mim_files,
-)
 
 LOG = logging.getLogger(__name__)
 
@@ -105,18 +97,15 @@ def genes(build, downloads_folder, api_key):
     LOG.info("Running scout update genes")
     adapter = store
     builds = [build] if build else ["37", "38"]
+    api_key = api_key or current_app.config.get("OMIM_API_KEY")
     resources = {}
 
     # If resources have been previosly doenloaded, read those file and return their linesFetch resources from folder containing previously-downloaded resource files
     if downloads_folder:
-        api_key = None
         for resname, filename in DOWNLOADED_RESOURCES.items():
             resources[resname] = fetch_downloaded_resource(
                 downloads_folder, resname, filename, builds
             )
-
-    else:  # Download resource files and return their lines
-        api_key = api_key or current_app.config.get("OMIM_API_KEY")
 
     LOG.warning("Dropping all gene information")
     adapter.drop_genes(build)
@@ -124,10 +113,10 @@ def genes(build, downloads_folder, api_key):
     adapter.drop_transcripts(build)
 
     # Load genes and transcripts info
-    for build in builds:
+    for genome_build in builds:
         ensembl_gene_res = (
             resources.get("ensembl_genes_37")
-            if build == "37"
+            if genome_build == "37"
             else resources.get("ensembl_genes_38")
         )  # It will be none if everything needs to be downloaded
 
@@ -140,7 +129,7 @@ def genes(build, downloads_folder, api_key):
             mim2gene_lines=resources.get("mim2genes"),
             genemap_lines=resources.get("genemap2"),
             hpo_lines=resources.get("hpo_genes"),
-            build=build,
+            build=genome_build,
         )
 
         ensembl_genes_dict = {}
@@ -151,11 +140,11 @@ def genes(build, downloads_folder, api_key):
         # Load the transcripts
         ensembl_tx_res = (
             resources.get("ensembl_transcripts_37")
-            if build == "37"
+            if genome_build == "37"
             else resources.get("ensembl_transcripts_38")
         )  # It will be none if everything needs to be downloaded
 
-        load_transcripts(adapter, ensembl_tx_res, build, ensembl_genes_dict)
+        load_transcripts(adapter, ensembl_tx_res, genome_build, ensembl_genes_dict)
 
     adapter.update_indexes()
 
