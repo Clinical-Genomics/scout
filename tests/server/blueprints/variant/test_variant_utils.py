@@ -315,7 +315,7 @@ def test_gene_predictions_one_gene():
         "functional_annotation": "missense_variant",
         "spliceai_score": 0.17,
         "spliceai_position": -4,
-        "spliceai_prediction": "ds 0.17 dp -4",
+        "spliceai_prediction": ["ds 0.17 dp -4"],
     }
     genes = [gene]
 
@@ -329,7 +329,7 @@ def test_gene_predictions_one_gene():
         "functional_annotations": ["missense_variant"],
         "spliceai_scores": [0.17],
         "spliceai_positions": [-4],
-        "spliceai_predictions": ["ds 0.17 dp -4"],
+        "spliceai_predictions": [["ds 0.17 dp -4"]],
     }
 
 
@@ -341,7 +341,7 @@ def test_gene_predictions_one_gene_no_sift():
         "region_annotation": "exonic",
         "functional_annotation": "missense_variant",
         "spliceai_score": 0.17,
-        "spliceai_prediction": "ds 0.17",
+        "spliceai_prediction": ["ds 0.17"],
     }
     genes = [gene]
 
@@ -355,7 +355,7 @@ def test_gene_predictions_one_gene_no_sift():
         "functional_annotations": ["missense_variant"],
         "spliceai_scores": [0.17],
         "spliceai_positions": ["-"],
-        "spliceai_predictions": ["ds 0.17"],
+        "spliceai_predictions": [["ds 0.17"]],
     }
 
 
@@ -369,7 +369,7 @@ def test_gene_predictions_two_genes():
         "functional_annotation": "missense_variant",
         "spliceai_score": 0.17,
         "spliceai_position": -4,
-        "spliceai_prediction": "ds 0.17 dp -4",
+        "spliceai_prediction": ["ds 0.17 dp -4"],
     }
     gene2 = {
         "hgnc_symbol": "BBB",
@@ -379,7 +379,7 @@ def test_gene_predictions_two_genes():
         "functional_annotation": "synonymous_variant",
         "spliceai_score": 0.9,
         "spliceai_position": 5,
-        "spliceai_prediction": "ds 0.9 dp 5",
+        "spliceai_prediction": ["ds 0.9 dp 5"],
     }
     genes = [gene, gene2]
 
