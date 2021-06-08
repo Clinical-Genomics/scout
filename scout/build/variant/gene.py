@@ -97,6 +97,7 @@ def build_gene(gene, hgncid_to_gene=None):
 
     gene_obj["spliceai_score"] = gene.get("most_severe_spliceai_score")
     gene_obj["spliceai_position"] = gene.get("most_severe_spliceai_position")
+    gene_obj["spliceai_prediction"] = gene.get("spliceai_prediction")
 
     gene_obj["hgvs_identifier"] = gene.get("hgvs_identifier")
     gene_obj["canonical_transcript"] = gene.get("canonical_transcript")

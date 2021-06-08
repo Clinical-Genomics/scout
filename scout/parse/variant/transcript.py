@@ -73,23 +73,23 @@ def parse_transcripts(raw_transcripts, allele=None):
             transcript["revel"] = float(entry.get("REVEL_RANKSCORE"))
 
         ## SpliceAI ##
-        spliceai_positions = {
+        spliceai_positions_csq = {
             "SPLICEAI_PRED_DP_AG": "spliceai_dp_ag",
             "SPLICEAI_PRED_DP_AL": "spliceai_dp_al",
             "SPLICEAI_PRED_DP_DG": "spliceai_dp_dg",
             "SPLICEAI_PRED_DP_DL": "spliceai_dp_dl",
         }
-        spliceai_delta_scores = {
+        spliceai_delta_scores_csq = {
             "SPLICEAI_PRED_DS_AG": "spliceai_ds_ag",
             "SPLICEAI_PRED_DS_AL": "spliceai_ds_al",
             "SPLICEAI_PRED_DS_DG": "spliceai_ds_dg",
             "SPLICEAI_PRED_DS_DL": "spliceai_ds_dl",
         }
-        for spliceai_tag_csq, spliceai_annotation in spliceai_positions.items():
+        for spliceai_tag_csq, spliceai_annotation in spliceai_positions_csq.items():
             if entry.get(spliceai_tag_csq.upper()):
                 transcript[spliceai_annotation] = int(entry.get(spliceai_tag_csq))
 
-        for spliceai_tag_csq, spliceai_annotation in spliceai_delta_scores.items():
+        for spliceai_tag_csq, spliceai_annotation in spliceai_delta_scores_csq.items():
             if entry.get(spliceai_tag_csq):
                 transcript[spliceai_annotation] = float(entry.get(spliceai_tag_csq))
 
@@ -102,17 +102,33 @@ def parse_transcripts(raw_transcripts, allele=None):
 
         spliceai_delta_score = None
         spliceai_delta_position = None
-        spliceai_tags = [transcript.get(tag) for tag in spliceai_pairs.keys()]
-        if any(spliceai_tags):
-            spliceai_delta_score = max(spliceai_tags)
-            index = spliceai_tags.index(spliceai_delta_score)
+        spliceai_prediction = None
+        spliceai_delta_scores = [transcript.get(tag) for tag in spliceai_pairs.keys()]
+        if any(spliceai_delta_scores):
+            spliceai_delta_score = max(spliceai_delta_scores)
+            index = spliceai_delta_scores.index(spliceai_delta_score)
             spliceai_delta_position = (
                 transcript.get(list(spliceai_pairs.values())[index]) if index is not None else None
             )
 
+            spliceai_delta_positions = [transcript.get(tag) for tag in spliceai_pairs.values()]
+            spliceai_prediction = ""
+            for score_label, score, position_label, position in zip(
+                spliceai_pairs.keys(),
+                spliceai_delta_scores,
+                spliceai_pairs.values(),
+                spliceai_delta_positions,
+            ):
+                spliceai_prediction += (
+                    " ".join([score_label, str(score or "-"), position_label, str(position or "-")])
+                    + "\n"
+                )
+
         transcript["spliceai_delta_score"] = spliceai_delta_score
         transcript["spliceai_delta_position"] = spliceai_delta_position
+        transcript["spliceai_prediction"] = spliceai_prediction
 
+        ##  SWISSPROT ##
         transcript["swiss_prot"] = entry.get("SWISSPROT") or "unknown"
 
         # Check for conservation annotations

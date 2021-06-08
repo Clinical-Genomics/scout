@@ -245,6 +245,7 @@
           <a hfref="https://github.com/Illumina/SpliceAI">SpliceAI</a> DS max
           <span class="float-right control-label" data-toggle="tooltip" data-placement="bottom"
               title="{% if variant.spliceai_scores %} SpliceAI highest delta score {{ variant.spliceai_scores|join(', ') }} at position {{ variant.spliceai_positions|join(', ')}} relative to this variant.
+              {{ variant.spliceai_predictions }}
               {% else %}
               'No SpliceAI positions annotated for this variant.' {% endif %}">
             {{ variant.spliceai_scores|join(', ') or "-"}}
