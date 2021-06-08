@@ -14,6 +14,7 @@ Highlight and show version number for RefSeq MANE transcripts.
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
+- Print stacktrace if load command fails
 
 
 ## [4.36]
