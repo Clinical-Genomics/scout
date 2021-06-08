@@ -243,9 +243,13 @@
         </li>
         <li class="list-group-item">
           <a hfref="https://github.com/Illumina/SpliceAI">SpliceAI</a> DS max
-          <span class="float-right control-label" data-toggle="tooltip" data-placement="bottom"
-              title="{% if variant.spliceai_scores %} SpliceAI highest delta score {{ variant.spliceai_scores|join(', ') }} at position {{ variant.spliceai_positions|join(', ')}} relative to this variant.
-              {{ variant.spliceai_predictions }}
+          <span class="float-right control-label" data-toggle="tooltip" data-html="true" data-placement="bottom"
+              title="<strong>{% if variant.spliceai_scores %}
+                 {% for entry in variant.spliceai_scores %}
+                    SpliceAI highest delta score {{ entry }} </strong> at position {{ variant.spliceai_positions[loop.index0]}} relative to this variant.
+                    <br>All scores and positions(relative to variant):<br>
+                    {{ variant.spliceai_predictions[loop.index0] }}
+                  {% endfor %}
               {% else %}
               'No SpliceAI positions annotated for this variant.' {% endif %}">
             {{ variant.spliceai_scores|join(', ') or "-"}}

@@ -121,7 +121,7 @@ def parse_transcripts(raw_transcripts, allele=None):
             ):
                 spliceai_prediction += (
                     " ".join([score_label, str(score or "-"), position_label, str(position or "-")])
-                    + "\n"
+                    + "<br>"
                 )
 
         transcript["spliceai_delta_score"] = spliceai_delta_score
