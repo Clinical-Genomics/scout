@@ -6,8 +6,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
-Highlight and show version number for RefSeq MANE transcripts.
+- Highlight and show version number for RefSeq MANE transcripts.
 - Added integration to a rerunner service for toggling reanalysis with updated pedigree information
+- SpliceAI display and parsing from VEP CSQ
 - Update genes from pre-downloaded file resources
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
