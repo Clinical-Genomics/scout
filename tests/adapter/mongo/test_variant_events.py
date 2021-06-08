@@ -37,7 +37,7 @@ def test_matching_tiered(adapter, institute_obj, cancer_case_obj, user_obj, canc
     )
 
     # THEN it should return a set with the other variant tier info
-    assert matching_tiered == {(cancer_tier, "danger", "link")}
+    assert matching_tiered == {"1A": {"label": "danger", "links": {"link"}}}
 
 
 def test_mark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
