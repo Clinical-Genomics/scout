@@ -253,9 +253,10 @@ class VariantEventHandler(object):
             user_institutes(list): list of dictionaries
 
         Returns:
-            matching_tier(set)  # set of tuples like this: (tier, label_class, link_to_variant)
+            tiered(set)  # dictionary with tier_id as keys and links to tiered variants as values. Example:
+                        {'1A': {"links": "link/to/variant", "label": 'danger'}, '3': {..}, }
         """
-        tiered = set()
+        tiered = {}
         query = {
             "category": "variant",
             "verb": "cancer_tier",
@@ -271,17 +272,18 @@ class VariantEventHandler(object):
             if (
                 tiered_matching_variant is None
                 or tiered_matching_variant["_id"] == query_variant["_id"]
+                or tiered_matching_variant.get("cancer_tier") is None
             ):
                 continue
             tier_id = tiered_matching_variant["cancer_tier"]
-            tiered.add(
-                (
-                    tier_id,
-                    CANCER_TIER_OPTIONS.get(tier_id, {}).get("label_class", "secondary"),
-                    tiered_event["link"],
-                )
-            )
 
+            if tier_id in tiered:
+                tiered[tier_id]["links"].add(tiered_event["link"])
+            else:
+                tiered[tier_id] = {
+                    "links": {tiered_event["link"]},
+                    "label": CANCER_TIER_OPTIONS.get(tier_id, {}).get("label_class", "secondary"),
+                }
         return tiered
 
     def validate(self, institute, case, user, link, variant, validate_type):

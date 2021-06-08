@@ -225,8 +225,19 @@
       {% if variant.matching_tiered %}
         <div class="col">
           Matching tiered:
-          {% for tiered in variant.matching_tiered %}
-            <a href='{{tiered[2]}}' class='badge badge-{{tiered[1]}} text-{{ 'white' if tiered[1] in ['danger','primary','default'] else 'black' }}' target='blank'>{{tiered[0]}}</a>&nbsp;
+          {% for tier, tiered_info in variant.matching_tiered.items() %}
+            <a class="btn btn-{{tiered_info.label}} btn-xs" data-toggle="collapse" href="#collapse_{{tier}}" role="button" aria-expanded="false" aria-controls="collapseExample">
+              {{tier}} ({{tiered_info.links|length}}x)
+            </a>
+            <div class="collapse" id="collapse_{{tier}}">
+              <div>
+                {{tier}}:
+                {% for link in tiered_info["links"] %}
+                  {% set match_case = link.split('/') %}
+                    <a href="{{link}}" target="_blank">{{match_case[4]}}</a>&nbsp;
+                {% endfor %}
+              </div>
+            </div>
           {% endfor %}
         </div>
       {% endif %} <!--end of matching tiered col -->
