@@ -45,7 +45,7 @@ DOWNLOADED_RESOURCES = {
     "ensembl_genes_37": "ensembl_genes_37.txt",
     "ensembl_genes_38": "ensembl_genes_38.txt",
     "ensembl_transcripts_37": "ensembl_transcripts_37.txt",
-    "ensembl_transcripts_38": "ensembl_genes_38.txt",
+    "ensembl_transcripts_38": "ensembl_transcripts_38.txt",
 }
 
 

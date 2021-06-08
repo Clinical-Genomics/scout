@@ -181,7 +181,7 @@ def parse_ensembl_transcripts(lines):
     Args:
         lines(iterable(str)): An iterable with ensembl formated genes
     Yields:
-        ensembl_gene(dict): A dictionary with the relevant information
+        ensembl_transcript(dict): A dictionary with the relevant information
     """
     header = []
     LOG.info("Parsing ensembl transcripts from file")
@@ -190,7 +190,6 @@ def parse_ensembl_transcripts(lines):
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")
-            LOG.error(line)
         # After that each line represents a transcript
         else:
             yield parse_ensembl_line(line, header)
