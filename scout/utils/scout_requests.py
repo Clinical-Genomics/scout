@@ -337,6 +337,8 @@ def fetch_ensembl_transcripts(build=None, chromosomes=None):
         "refseq_ncrna",
     ]
 
+    ##### Add Mane Select and Mane Plus Clinical to the list of attributes
+
     filters = {"chromosome_name": chromosomes}
 
     return fetch_ensembl_biomart(attributes, filters, build)

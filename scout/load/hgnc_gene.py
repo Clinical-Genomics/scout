@@ -122,8 +122,8 @@ def load_hgnc_genes(
                 mim2gene_lines = mim_files["mim2genes"]
                 genemap_lines = mim_files["genemap2"]
         if not hpo_lines:
-            hpo_files = fetch_hpo_files(hpogenes=True)
-            hpo_lines = hpo_files["hpogenes"]
+            hpo_files = fetch_hpo_files(genes_to_phenotype=True)
+            hpo_lines = hpo_files["genes_to_phenotype"]
 
         # Link the resources
         genes = link_genes(
@@ -137,6 +137,7 @@ def load_hgnc_genes(
 
     non_existing = 0
     nr_genes = len(genes)
+    LOG.info(f"Building info for {nr_genes} genes")
     with progressbar(genes.values(), label="Building genes", length=nr_genes) as bar:
         for gene_data in bar:
             if not gene_data.get("chromosome"):
@@ -146,7 +147,7 @@ def load_hgnc_genes(
             gene_obj = build_hgnc_gene(gene_data, build=build)
             gene_objects.append(gene_obj)
 
-    LOG.info("Loading genes build %s", build)
+    LOG.info(f"Loading {len(gene_objects)} genes to database")
     adapter.load_hgnc_bulk(gene_objects)
 
     LOG.info("Loading done. %s genes loaded", len(gene_objects))
