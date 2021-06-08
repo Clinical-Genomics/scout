@@ -29,20 +29,24 @@ from scout.utils.handle import get_file_handle
 
 LOG = logging.getLogger(__name__)
 
+# Values can be the real resource or the Scout demo one
 DOWNLOADED_RESOURCES = {
-    "mim2genes": "mim2genes.txt",
-    "genemap2": "genemap2.txt",
-    "hpo_genes": "genes_to_phenotype.txt",
-    "hgnc_lines": "hgnc.txt",
-    "exac_lines": "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt",
-    "ensembl_genes_37": "ensembl_genes_37.txt",
-    "ensembl_genes_38": "ensembl_genes_38.txt",
-    "ensembl_transcripts_37": "ensembl_transcripts_37.txt",
-    "ensembl_transcripts_38": "ensembl_transcripts_38.txt",
+    "mim2genes": ["mim2genes.txt", "mim2gene_reduced.txt"],
+    "genemap2": ["genemap2.txt", "genemap2_reduced.txt"],
+    "hpo_genes": ["genes_to_phenotype.txt", "genes_to_phenotype_reduced.txt"],
+    "hgnc_lines": ["hgnc.txt", "hgnc_reduced_set.txt"],
+    "exac_lines": [
+        "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt",
+        "forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt",
+    ],
+    "ensembl_genes_37": ["ensembl_genes_37.txt", "ensembl_genes_37_reduced.txt"],
+    "ensembl_genes_38": ["ensembl_genes_38.txt", "ensembl_genes_38_reduced.txt"],
+    "ensembl_transcripts_37": ["ensembl_transcripts_37.txt", "ensembl_transcripts_37_reduced.txt"],
+    "ensembl_transcripts_38": ["ensembl_transcripts_38.txt", "ensembl_transcripts_38_reduced.txt"],
 }
 
 
-def fetch_downloaded_resource(downloads_folder, resource_name, resource_filename, builds):
+def fetch_downloaded_resources(resources, downloads_folder, builds):
     """Checks that a resource file exists on disk and has valid data. Return its content as a list of lines
     Args:
         downloads_folder(str): Path to downloaded resources. Provided by user in the cli command
@@ -51,28 +55,31 @@ def fetch_downloaded_resource(downloads_folder, resource_name, resource_filename
     Returns:
         resource_lines(list) or None: list of lines contained in the resource file
     """
-    resource_path = os.path.join(downloads_folder, resource_filename)
-    resource_exists = os.path.isfile(resource_path)
 
-    # If the resource is manadatory make sure it exists and contains data (OMIM data is NOT mandatory)
-    if resource_name in ["hpo_genes", "hgnc_lines", "exac_lines"] and resource_exists is False:
-        LOG.error(f"Missing resource {resource_filename} in provided path.")
-        raise click.Abort()
+    for resname, filenames in DOWNLOADED_RESOURCES.items():
+        for filename in filenames:
+            resource_path = os.path.join(downloads_folder, filename)
+            resource_exists = os.path.isfile(resource_path)
+            if resource_exists:
+                resources[resname] = get_file_handle(resource_path).readlines()
 
-    # Check that the available genes and transcripts file correspond to the required genome build
-    for build in builds:
-        if resource_name.endswith(build) and resource_exists is False:
-            LOG.error(
-                f"Updating genes for genome build '{build}' requires a resource '{resource_filename}' that is currenly missing in provided path."
-            )
+        # If the resource is manadatory make sure it exists and contains data (OMIM data is NOT mandatory)
+        if resname in ["hpo_genes", "hgnc_lines", "exac_lines"] and not resources[resname]:
+            LOG.error(f"Missing resource {resname} in provided path.")
             raise click.Abort()
 
-    if resource_exists:
-        resource_lines = get_file_handle(resource_path).readlines()
-        if not resource_lines or "<!DOCTYPE html>" in resource_lines[0]:
-            LOG.error(f"Resource file '{resource_filename}' doesn't contain valid data.")
+        # Check that the available genes and transcripts file correspond to the required genome build
+        for build in builds:
+            if resname.endswith(build) and resources.get(resname) is False:
+                LOG.error(
+                    f"Updating genes for genome build '{build}' requires a resource '{resname}' that is currenly missing in provided path."
+                )
+                raise click.Abort()
+
+        # Check that resource lines contain actual data
+        if resources.get(resname) and "<!DOCTYPE html>" in resources[resname][0]:
+            LOG.error(f"Resource file '{resname}' doesn't contain valid data.")
             raise click.Abort()
-        return resource_lines
 
 
 @click.command("genes", short_help="Update all genes")
@@ -91,8 +98,7 @@ def fetch_downloaded_resource(downloads_folder, resource_name, resource_filename
     "--api-key", help="Specify the OMIM downloads api key. Only if downloads_folder is not provided"
 )
 @with_appcontext
-@click.pass_context
-def genes(ctx, build, downloads_folder, api_key):
+def genes(build, downloads_folder, api_key):
     """
     Load the hgnc aliases to the mongo database.
     """
@@ -104,13 +110,8 @@ def genes(ctx, build, downloads_folder, api_key):
 
     # If resources have been previosly doenloaded, read those file and return their linesFetch resources from folder containing previously-downloaded resource files
     if downloads_folder:
-        if api_key:  # Download OMIM resources in downloads_folder
-            ctx.invoke(omim, out_dir=downloads_folder, api_key=api_key)
-
-        for resname, filename in DOWNLOADED_RESOURCES.items():
-            resources[resname] = fetch_downloaded_resource(
-                downloads_folder, resname, filename, builds
-            )
+        api_key = None
+        fetch_downloaded_resources(resources, downloads_folder, builds)
 
     LOG.warning("Dropping all gene information")
     adapter.drop_genes(build)
