@@ -28,10 +28,6 @@ def managed_variants():
 
     category = request.form.getlist("category") or ["snv", "sv", "cancer", "cancer_sv"]
 
-    # if not isinstance(category, list):
-    #    category:
-    LOG.warning("category {}".format(category))
-
     query_options = {}
     for option in ["chromosome", "sub_category", "position", "end", "description"]:
         if request.form.get(option, None):
