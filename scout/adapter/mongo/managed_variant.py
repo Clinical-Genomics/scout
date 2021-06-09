@@ -121,7 +121,9 @@ class ManagedVariantHandler(object):
 
         return managed_variant
 
-    def managed_variants(self, category="snv", build="37", query_options=None):
+    def managed_variants(
+        self, category=["snv", "sv", "cancer", "cancer_sv"], build="37", query_options=None
+    ):
         """Return a cursor to all managed variants of a particular category and build.
 
         Arguments:
@@ -134,12 +136,14 @@ class ManagedVariantHandler(object):
 
         """
 
-        query = {"category": category, "build": build}
+        query = {"category": {"$in": category}, "build": build}
         query_with_options = self.add_options(query, query_options)
 
         return self.managed_variant_collection.find(query_with_options)
 
-    def count_managed_variants(self, category="snv", build="37", query_options=None):
+    def count_managed_variants(
+        self, category=["snv", "sv", "cancer", "cancer_sv"], build="37", query_options=None
+    ):
         """Return count of documents to all managed variants of a particular category and build.
 
         Arguments:
@@ -151,7 +155,7 @@ class ManagedVariantHandler(object):
             integer
 
         """
-        query = {"category": category, "build": build}
+        query = {"category": {"$in": category}, "build": build}
         query_with_options = self.add_options(query, query_options)
 
         return self.managed_variant_collection.count_documents(query_with_options)
