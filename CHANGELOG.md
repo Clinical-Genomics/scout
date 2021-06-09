@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
+- Config parameter `SHOW_ARCHIVED_OBSERVATIONS` to hide archived local observations panel when set to False
 
 
 ## [4.36]
