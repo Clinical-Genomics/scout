@@ -116,11 +116,15 @@
                   <option {% if ind.sex_human == "female" %} selected {% endif %} value="female">Female</option>
                   <option {% if not ind.sex_human in ["female", "male"] %} selected= {% endif %} value="unknown">Unknown</option>
                 </select>
-                <div class="sex-display">
+                <div class="sex-display" style="font-weight: bold;">
                   {% if ind.sex_human in ['female','male'] %}
-                    <i class="fa fa-{{ind.sex_human}}" aria-hidden="true"></i>
-                  {% else %}
-                    {{ind.sex_human}}
+                    {% if ind.sex_human == 'female' %}
+                      F
+                    {% elif ind.sex_human == 'male' %}
+                      M
+                    {% else %}
+                      {{ind.sex_human}}
+                    {% endif %}
                   {% endif %}
                   {% if ind.confirmed_sex %}
                     <i class="fa fa-check"></i>
