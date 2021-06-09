@@ -173,6 +173,9 @@ class ManagedVariantHandler(object):
             if "end" in query_options:
                 query["position"] = {"$lte": int(query_options["end"])}
 
+            if "sub_category" in query_options:
+                query["sub_category"] = {"$in": query_options["sub_category"]}
+
         return query
 
     def get_managed_variants(self, institute_id=None, category=["snv"], build="37"):

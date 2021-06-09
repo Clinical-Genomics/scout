@@ -29,9 +29,12 @@ def managed_variants():
     category = request.form.getlist("category") or ["snv", "sv", "cancer", "cancer_sv"]
 
     query_options = {}
-    for option in ["chromosome", "sub_category", "position", "end", "description"]:
+    for option in ["chromosome", "position", "end", "description"]:
         if request.form.get(option, None):
             query_options[option] = request.form.get(option)
+
+    if request.form.get("sub_category", None):
+        query_options["sub_category"] = request.form.getlist("sub_category")
 
     managed_variants_query = store.managed_variants(category=category, query_options=query_options)
     variant_count = store.count_managed_variants(category=category, query_options=query_options)
