@@ -102,13 +102,12 @@ def test_gene_panel_choices(institute_obj, case_obj):
     assert ("institute_panel_name", "Institute Panel display name") in panel_options
 
 
-def test_variants_assessment_shared_with_group(
-    mocker, real_variant_database, institute_obj, case_obj
-):
+def test_variants_assessment_shared_with_group(app, mocker, institute_obj, case_obj):
     mocker.patch(
         "scout.server.blueprints.variants.controllers.user_institutes",
         return_value=[{"_id": "cust000"}],
     )
+    # mocker.patch()
 
     # GIVEN a db with variants,
     adapter = store
@@ -147,17 +146,16 @@ def test_variants_assessment_shared_with_group(
         other_case_id, query=variants_query, category=variant["category"]
     )
 
-    res = variants(adapter, institute_obj, other_case_obj, variants_query_res, 1000)
-    res_variants = res["variants"]
+    with app.app_context():
+        res = variants(adapter, institute_obj, other_case_obj, variants_query_res, 1000)
+        res_variants = res["variants"]
 
-    # THEN a group assessment is recalled on the other case,
-    # since the variant in the first case had an annotation
-    assert any(variant.get("group_assessments") for variant in res_variants)
+        # THEN a group assessment is recalled on the other case,
+        # since the variant in the first case had an annotation
+        assert any(variant.get("group_assessments") for variant in res_variants)
 
 
-def test_variants_research_no_shadow_clinical_assessments(
-    mocker, real_variant_database, institute_obj, case_obj
-):
+def test_variants_research_no_shadow_clinical_assessments(app, mocker, institute_obj, case_obj):
     mocker.patch(
         "scout.server.blueprints.variants.controllers.user_institutes",
         return_value=[{"_id": "cust000"}],
@@ -188,20 +186,19 @@ def test_variants_research_no_shadow_clinical_assessments(
     # called.
     number_variants = len(list(variants_query_res.clone()))
 
-    res = variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
-    res_variants = res["variants"]
+    with app.app_context():
+        res = variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
+        res_variants = res["variants"]
 
-    LOG.debug("Variants: {}".format(res_variants))
-    # THEN it is returned
-    assert any([variant["_id"] == variant_research["_id"] for variant in res_variants])
+        LOG.debug("Variants: {}".format(res_variants))
+        # THEN it is returned
+        assert any([variant["_id"] == variant_research["_id"] for variant in res_variants])
 
-    # THEN no previous annotations are reported back for the reseach case..
-    assert not any([variant.get("clinical_assessments") for variant in res_variants])
+        # THEN no previous annotations are reported back for the reseach case..
+        assert not any([variant.get("clinical_assessments") for variant in res_variants])
 
 
-def test_variants_research_shadow_clinical_assessments(
-    mocker, real_variant_database, institute_obj, case_obj
-):
+def test_variants_research_shadow_clinical_assessments(app, mocker, institute_obj, case_obj):
     mocker.patch(
         "scout.server.blueprints.variants.controllers.user_institutes",
         return_value=[{"_id": "cust000"}],
@@ -243,19 +240,18 @@ def test_variants_research_shadow_clinical_assessments(
     # NOTE in tests list length will be used, in live code count_documents{query} is
     # called.
     number_variants = len(list(variants_query_res.clone()))
-    res = variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
-    res_variants = res["variants"]
+    with app.app_context():
+        res = variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
+        res_variants = res["variants"]
 
-    # THEN it is returned
-    assert any([variant["_id"] == variant_research["_id"] for variant in res_variants])
+        # THEN it is returned
+        assert any([variant["_id"] == variant_research["_id"] for variant in res_variants])
 
-    # THEN previous annotations are reported back for the reseach case.
-    assert any([variant.get("clinical_assessments") for variant in res_variants])
+        # THEN previous annotations are reported back for the reseach case.
+        assert any([variant.get("clinical_assessments") for variant in res_variants])
 
 
-def test_sv_variants_research_shadow_clinical_assessments(
-    mocker, real_variant_database, institute_obj, case_obj
-):
+def test_sv_variants_research_shadow_clinical_assessments(app, mocker, institute_obj, case_obj):
     mocker.patch(
         "scout.server.blueprints.variants.controllers.user_institutes",
         return_value=[{"_id": "cust000"}],
@@ -302,16 +298,18 @@ def test_sv_variants_research_shadow_clinical_assessments(
     # NOTE in tests list length will be used, in live code count_documents{query} is
     # called.
     number_variants = len(list(variants_query_res.clone()))
-    res = sv_variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
-    res_variants = res["variants"]
 
-    LOG.debug("Variants: {}".format(res_variants))
+    with app.app_context():
+        res = sv_variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
+        res_variants = res["variants"]
 
-    # THEN it is returned
-    assert any([variant["_id"] == variant_research["_id"] for variant in res_variants])
+        LOG.debug("Variants: {}".format(res_variants))
 
-    # THEN previous annotations are reported back for the reseach case.
-    assert any([variant.get("clinical_assessments") for variant in res_variants])
+        # THEN it is returned
+        assert any([variant["_id"] == variant_research["_id"] for variant in res_variants])
+
+        # THEN previous annotations are reported back for the reseach case.
+        assert any([variant.get("clinical_assessments") for variant in res_variants])
 
 
 def test_match_gene_txs_variant_txs():
