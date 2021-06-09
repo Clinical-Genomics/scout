@@ -18,4 +18,8 @@ gene = dict(
     sift_prediction=str,  # choices=CONSEQUENCE
     # This is most severe polyphen prediction of all transcripts
     polyphen_prediction=str,  # choices=CONSEQUENCE
+    # The SpliceAI predictions for the transcript with the most severe consequence
+    spliceai_score=float,  # highest delta score
+    spliceai_position=int,  # position relative to the variant for prediction with highest delta score
+    spliceai_prediction=list,  # list of str, with more detailed spliceai info
 )
