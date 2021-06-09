@@ -176,6 +176,9 @@ class ManagedVariantHandler(object):
             if "sub_category" in query_options:
                 query["sub_category"] = {"$in": query_options["sub_category"]}
 
+            if "chromosome" in query_options:
+                query["chromosome"] = query_options["chromosome"]
+
         return query
 
     def get_managed_variants(self, institute_id=None, category=["snv"], build="37"):
