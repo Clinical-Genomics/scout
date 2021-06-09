@@ -175,7 +175,7 @@ class ManagedVariantHandler(object):
 
         return query
 
-    def get_managed_variants(self, institute_id=None, category="snv", build="37"):
+    def get_managed_variants(self, institute_id=None, category=["snv"], build="37"):
         """Return managed variant_ids. Limit by institute, category and build.
 
         Returns:
