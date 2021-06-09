@@ -6,10 +6,14 @@ import pymongo
 import pytest
 
 from scout.constants import VERBS_MAP
+from scout.load.evaluation_terms import load_default_evaluation_terms
 
 
 def test_matching_tiered(adapter, institute_obj, cancer_case_obj, user_obj, cancer_variant_obj):
     """Test retrieving matching tiered variants from other cancer cases"""
+
+    # GIVEN a database containing cancer tier terms:
+    load_default_evaluation_terms(adapter)
 
     # GIVEN a database containing a cancer variant in another case
     other_var = deepcopy(cancer_variant_obj)
