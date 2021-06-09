@@ -183,6 +183,11 @@ def variant(
 
     managed_variant = store.find_managed_variant_id(variant_obj["variant_id"])
 
+    if variant_obj.get("category") == "cancer":
+        variant_obj["matching_tiered"] = store.matching_tiered(
+            variant_obj, user_institutes(store, current_user)
+        )
+
     # Gather display information for the genes
     variant_obj.update(predictions(variant_obj.get("genes", [])))
 

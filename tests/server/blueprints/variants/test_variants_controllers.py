@@ -2,6 +2,7 @@ import copy
 import logging
 
 from bson.objectid import ObjectId
+from flask import url_for
 from flask_wtf import FlaskForm
 from wtforms import SelectField, StringField
 
@@ -101,7 +102,14 @@ def test_gene_panel_choices(institute_obj, case_obj):
     assert ("institute_panel_name", "Institute Panel display name") in panel_options
 
 
-def test_variants_assessment_shared_with_group(app, institute_obj, case_obj):
+def test_variants_assessment_shared_with_group(
+    mocker, real_variant_database, institute_obj, case_obj
+):
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.user_institutes",
+        return_value=[{"_id": "cust000"}],
+    )
+
     # GIVEN a db with variants,
     adapter = store
     case_id = case_obj["_id"]
@@ -147,7 +155,14 @@ def test_variants_assessment_shared_with_group(app, institute_obj, case_obj):
     assert any(variant.get("group_assessments") for variant in res_variants)
 
 
-def test_variants_research_no_shadow_clinical_assessments(app, institute_obj, case_obj):
+def test_variants_research_no_shadow_clinical_assessments(
+    mocker, real_variant_database, institute_obj, case_obj
+):
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.user_institutes",
+        return_value=[{"_id": "cust000"}],
+    )
+
     # GIVEN a db with variants,
     adapter = store
     case_id = case_obj["_id"]
@@ -184,7 +199,14 @@ def test_variants_research_no_shadow_clinical_assessments(app, institute_obj, ca
     assert not any([variant.get("clinical_assessments") for variant in res_variants])
 
 
-def test_variants_research_shadow_clinical_assessments(app, institute_obj, case_obj):
+def test_variants_research_shadow_clinical_assessments(
+    mocker, real_variant_database, institute_obj, case_obj
+):
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.user_institutes",
+        return_value=[{"_id": "cust000"}],
+    )
+
     # GIVEN a db with variants,
     adapter = store
     case_id = case_obj["_id"]
@@ -231,7 +253,14 @@ def test_variants_research_shadow_clinical_assessments(app, institute_obj, case_
     assert any([variant.get("clinical_assessments") for variant in res_variants])
 
 
-def test_sv_variants_research_shadow_clinical_assessments(app, institute_obj, case_obj):
+def test_sv_variants_research_shadow_clinical_assessments(
+    mocker, real_variant_database, institute_obj, case_obj
+):
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.user_institutes",
+        return_value=[{"_id": "cust000"}],
+    )
+
     # GIVEN a db with variants,
     adapter = store
     case_id = case_obj["_id"]
