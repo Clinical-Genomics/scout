@@ -162,20 +162,17 @@ class ManagedVariantHandler(object):
 
     def add_options(self, query, query_options):
         """Update query with `query_options`"""
-        # TODO: why is `query_options` both popped and then updated?
+
         if query_options:
             if "description" in query_options:
                 query["description"] = {"$regex": ".*" + query_options["description"] + ".*"}
-                query_options.pop("description")
 
             if "position" in query_options:
                 query["end"] = {"$gte": int(query_options["position"])}
-                query_options.pop("position")
 
             if "end" in query_options:
                 query["position"] = {"$lte": int(query_options["end"])}
-                query_options.pop("end")
-            return query.update(query_options)
+
         return query
 
     def get_managed_variants(self, institute_id=None, category="snv", build="37"):
@@ -184,6 +181,8 @@ class ManagedVariantHandler(object):
         Returns:
             managed_variant_ids(iterable(variant_id: String))
         """
+        if not isinstance(category, list):
+            category = [category]
 
         return [
             managed_variant["variant_id"]
