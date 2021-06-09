@@ -254,7 +254,7 @@ class VariantEventHandler(object):
 
         Returns:
             tiered(set)  # dictionary with tier_id as keys and links to tiered variants as values. Example:
-                        {'1A': {"links": "link/to/variant", "label": 'danger'}, '3': {..}, }
+                        {'1A': {"links": ["link/to/variant1", "link/to/variant2"], "label": 'danger'}, '3': {..}, }
         """
         tiered = {}
         query = {
