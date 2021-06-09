@@ -40,7 +40,8 @@ The frequency from the [ExAC][exac] population database.
 
 #### ExAC_MAX_AF ####
 
-The maximum allele frequency of all populations in [ExAC][exac] population database.
+The maximum allele frequency of all populations in the [ExAC][exac] population database.
+
 
 - Key: `EXAC_MAX_AF`
 - Value: `Float`
@@ -67,7 +68,7 @@ The Combined Annotation Dependent Depletion([CADD][cadd]) score. A prediction of
 
 #### SIFT ####
 
-The [SIFT][sift]) prediction for how a variation affects the protein.
+The [SIFT][sift] prediction for how a variation affects the protein.
 
 - Key: `SIFT` in VEP `CSQ` field
 - Value: `String`
@@ -75,12 +76,23 @@ The [SIFT][sift]) prediction for how a variation affects the protein.
 
 #### PolyPhen ####
 
-The [PolyPhen][polyphen]) prediction for how a variation affects the protein.
+The [PolyPhen][polyphen] prediction for how a variation affects the protein.
 
 - Key: `PolyPhen` in VEP `CSQ` field
 - Value: `String`
 - Tools: [VEP][vep]
 
+#### SpliceAI ####
+
+The [SpliceAI][spliceai] prediction for how a variant affects splicing.
+SpliceAI transcript delta score, defined as max of all transcipt delta scores DS, can be interpreted as a probabilty of
+splicing being affected for the current transcript. The DS and DP pairs describe probability and relative position scores.
+E.g. donor gain DS_DG 0.08 at DP_DG -31, acceptor loss DS_AL 0.58 at DP_AL -2.
+
+- Key `CSQ` - `SpliceAI_pred_DS_AG`, `SpliceAI_pred_DP_AG`, `SpliceAI_pred_DS_AL`, `SpliceAI_pred_DP_AL`,
+	`SpliceAI_pred_DS_DG`, `SpliceAI_pred_DP_DG`, `SpliceAI_pred_DS_DL`, `SpliceAI_pred_DP_DL`
+- Value: `Float` in `DS` and `Int` in `DP`
+- Tools: [SpliceAI][spliceai]
 
 #### Rank score ####
 
@@ -149,6 +161,6 @@ What variants is this variant in Autosomal Recessive Compound with?
 [phylop]: http://genome.ucsc.edu/cgi-bin/hgTrackUi?db=hg19&g=cons100way
 [sift]: http://sift.jcvi.org
 [polyphen]: http://genetics.bwh.harvard.edu/pph2/dokuwiki/
-[polyphen]: http://genetics.bwh.harvard.edu/pph2/dokuwiki/
+[spliceai]: https://github.com/Illumina/SpliceAI
 
 [rank_score_test]: https://github.com/Clinical-Genomics/scout/blob/master/tests/parse/test_parse_rank_score.py
