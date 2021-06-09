@@ -107,6 +107,7 @@ def test_load_case_KeyError2(mock_app, institute_obj, case_obj, monkeypatch):
     assert result.exit_code == 1
     assert "KeyError" in result.output
 
+
 def test_load_case_SyntaxError(mock_app, institute_obj, case_obj, monkeypatch):
     """Test loading a case with a config file that will trigger KeyError"""
     runner = mock_app.test_cli_runner()
@@ -165,7 +166,6 @@ def test_load_case_KeyMissing(mock_app, institute_obj, case_obj):
     result = runner.invoke(cli, ["load", "case", temp_conf])
     # THEN KeyError is caught and exit value is non-zero
     assert result.exit_code != 0
-
 
 
 def test_load_case_NoConf(mock_app, institute_obj, case_obj):
