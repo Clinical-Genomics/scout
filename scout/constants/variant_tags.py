@@ -56,6 +56,12 @@ SPIDEX_HUMAN = {
     "high": {"neg": [-2, -float("inf")], "pos": [2, float("inf")]},
 }
 
+SPLICEAI_LIMITS = {
+    "high recall": 0.2,
+    "recommended": 0.5,
+    "high precision": 0.8,
+}
+
 SPIDEX_LEVELS = ("not_reported", "low", "medium", "high")
 
 EVALUATION_TERM_CATEGORIES = ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_option")
