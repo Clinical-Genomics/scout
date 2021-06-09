@@ -4,7 +4,7 @@ from datetime import datetime
 import pymongo
 from bson import ObjectId
 
-from scout.constants import REV_ACMG_MAP
+from scout.constants import CANCER_TIER_OPTIONS, REV_ACMG_MAP
 
 SANGER_OPTIONS = ["True positive", "False positive", "Not validated"]
 
@@ -245,6 +245,46 @@ class VariantEventHandler(object):
 
         sanger_ordered = [item for item in results]
         return sanger_ordered
+
+    def matching_tiered(self, query_variant, user_institutes):
+        """Retrieve all tiered tags assigned to a cancer variant in other cases (accessible to the user)
+        Args:
+            query_variant(dict)
+            user_institutes(list): list of dictionaries
+
+        Returns:
+            tiered(set)  # dictionary with tier_id as keys and links to tiered variants as values. Example:
+                        {'1A': {"links": ["link/to/variant1", "link/to/variant2"], "label": 'danger'}, '3': {..}, }
+        """
+        tiered = {}
+        query = {
+            "category": "variant",
+            "verb": "cancer_tier",
+            "subject": query_variant["display_name"],
+            "institute": {"$in": [inst["_id"] for inst in user_institutes]},
+        }
+
+        for tiered_event in self.event_collection.find(query):
+            # Check if variant is still tiered as suggested by the event
+            tiered_matching_variant = self.variant(
+                case_id=tiered_event["case"], document_id=tiered_event["variant_id"]
+            )
+            if (
+                tiered_matching_variant is None
+                or tiered_matching_variant["_id"] == query_variant["_id"]
+                or tiered_matching_variant.get("cancer_tier") is None
+            ):
+                continue
+            tier_id = tiered_matching_variant["cancer_tier"]
+
+            if tier_id in tiered:
+                tiered[tier_id]["links"].add(tiered_event["link"])
+            else:
+                tiered[tier_id] = {
+                    "links": {tiered_event["link"]},
+                    "label": CANCER_TIER_OPTIONS.get(tier_id, {}).get("label_class", "secondary"),
+                }
+        return tiered
 
     def validate(self, institute, case, user, link, variant, validate_type):
         """Mark validation status for a variant.

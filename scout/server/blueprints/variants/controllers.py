@@ -30,7 +30,7 @@ from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEA
 from scout.export.variant import export_verified_variants
 from scout.server.blueprints.variant.utils import clinsig_human, predictions
 from scout.server.links import cosmic_link, str_source_link
-from scout.server.utils import case_append_alignments, institute_and_case
+from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
@@ -383,6 +383,10 @@ def parse_variant(
 
     variant_obj["comments"] = store.events(
         institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True
+    )
+
+    variant_obj["matching_tiered"] = store.matching_tiered(
+        variant_obj, user_institutes(store, current_user)
     )
 
     if variant_genes:
