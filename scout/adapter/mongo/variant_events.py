@@ -4,7 +4,7 @@ from datetime import datetime
 import pymongo
 from bson import ObjectId
 
-from scout.constants import CANCER_TIER_OPTIONS, REV_ACMG_MAP
+from scout.constants import REV_ACMG_MAP
 
 SANGER_OPTIONS = ["True positive", "False positive", "Not validated"]
 
@@ -280,9 +280,10 @@ class VariantEventHandler(object):
             if tier_id in tiered:
                 tiered[tier_id]["links"].add(tiered_event["link"])
             else:
+                cancer_tier_options = self.cancer_tier_terms()
                 tiered[tier_id] = {
                     "links": {tiered_event["link"]},
-                    "label": CANCER_TIER_OPTIONS.get(tier_id, {}).get("label_class", "secondary"),
+                    "label": cancer_tier_options.get(tier_id, {}).get("label_class", "secondary"),
                 }
         return tiered
 
