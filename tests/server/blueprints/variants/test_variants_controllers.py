@@ -2,6 +2,7 @@ import copy
 import logging
 
 from bson.objectid import ObjectId
+from flask import url_for
 from flask_wtf import FlaskForm
 from wtforms import SelectField, StringField
 
@@ -101,7 +102,14 @@ def test_gene_panel_choices(institute_obj, case_obj):
     assert ("institute_panel_name", "Institute Panel display name") in panel_options
 
 
-def test_variants_assessment_shared_with_group(real_variant_database, institute_obj, case_obj):
+def test_variants_assessment_shared_with_group(
+    mocker, real_variant_database, institute_obj, case_obj
+):
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.user_institutes",
+        return_value=[{"_id": "cust000"}],
+    )
+
     # GIVEN a db with variants,
     adapter = real_variant_database
     case_id = case_obj["_id"]
@@ -148,8 +156,13 @@ def test_variants_assessment_shared_with_group(real_variant_database, institute_
 
 
 def test_variants_research_no_shadow_clinical_assessments(
-    real_variant_database, institute_obj, case_obj
+    mocker, real_variant_database, institute_obj, case_obj
 ):
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.user_institutes",
+        return_value=[{"_id": "cust000"}],
+    )
+
     # GIVEN a db with variants,
     adapter = real_variant_database
     case_id = case_obj["_id"]
@@ -187,8 +200,13 @@ def test_variants_research_no_shadow_clinical_assessments(
 
 
 def test_variants_research_shadow_clinical_assessments(
-    real_variant_database, institute_obj, case_obj
+    mocker, real_variant_database, institute_obj, case_obj
 ):
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.user_institutes",
+        return_value=[{"_id": "cust000"}],
+    )
+
     # GIVEN a db with variants,
     adapter = real_variant_database
     case_id = case_obj["_id"]
@@ -236,8 +254,13 @@ def test_variants_research_shadow_clinical_assessments(
 
 
 def test_sv_variants_research_shadow_clinical_assessments(
-    real_variant_database, institute_obj, case_obj
+    mocker, real_variant_database, institute_obj, case_obj
 ):
+    mocker.patch(
+        "scout.server.blueprints.variants.controllers.user_institutes",
+        return_value=[{"_id": "cust000"}],
+    )
+
     # GIVEN a db with variants,
     adapter = real_variant_database
     case_id = case_obj["_id"]
