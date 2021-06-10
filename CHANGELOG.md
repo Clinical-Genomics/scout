@@ -13,10 +13,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 - Demo cancer case config file to load somatic SNVs and SVs only.
+- Loading of OMIM diagnoses in Scout demo instance
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
 - Changing the (Female, Male) symbols to (F/M) letters in individuals_table and case-sma.
+- Introduce resource file check before starting updating OMIM diagnoses
 
 
 ## [4.36]
