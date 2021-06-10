@@ -95,10 +95,13 @@ def setup_scout(
     resource_files = resource_files or {}
     if demo:
         resource_files = demo_files
+
+    # Load diseases
     mim2gene_lines = None
     genemap_lines = None
     mim2gene_path = resource_files.get("mim2gene_path")
-    genemap_path = resource_files.get("genemap_path")
+    genemap_path = resource_files.get("genemap2_path")
+
     if genemap_path and mim2gene_path:
         mim2gene_lines = [line for line in get_file_handle(mim2gene_path)]
         genemap_lines = [line for line in get_file_handle(genemap_path)]
