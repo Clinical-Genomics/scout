@@ -26,6 +26,7 @@ from scout.utils.scout_requests import (
 
 LOG = logging.getLogger(__name__)
 
+# Downloaded resources can be real downloaded files or demo files (located in scout/scout/demo/resources)
 DOWNLOADED_RESOURCES = {
     "genemap_lines": ["genemap2.txt", "genemap2_reduced.txt"],
     "hpo_gene_lines": ["phenotype_to_genes.txt", "phenotype_to_genes_reduced.txt"],

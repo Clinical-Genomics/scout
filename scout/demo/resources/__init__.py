@@ -1,6 +1,7 @@
 import pkg_resources
 
 ###### Files ######
+resources_folder = "demo/resources"
 
 # Gene sources:
 hgnc_file = "demo/resources/hgnc_reduced_set.txt"
@@ -27,6 +28,7 @@ hpo_terms_def_file = "demo/resources/hpo_terms.csv"
 madeline_file = "demo/madeline.xml"
 
 ###### Paths ######
+reduced_resources_path = pkg_resources.resource_filename("scout", resources_folder)
 
 # Gene paths
 hgnc_reduced_path = pkg_resources.resource_filename("scout", hgnc_file)
