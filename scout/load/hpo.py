@@ -27,7 +27,7 @@ def load_hpo(
         disease_lines(iterable(str)): These are the omim genemap2 information
         hpo_lines(iterable(str)): lines from file http://purl.obolibrary.org/obo/hp.obo
         hpo_gene_lines(iterable(str)): lines from file
-            http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/phenotype_to_genes.txt
+            http://purl.obolibrary.org/obo/hp/hpoa/phenotype_to_genes.txt
 
     """
     # Create a map from gene aliases to gene objects
